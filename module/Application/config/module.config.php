@@ -92,4 +92,26 @@ return array(
             __DIR__ . '/../view',
         ),
     ),
+    'doctrine' => array(
+    	'driver' => array(
+    		'application_entities' => array(
+				'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+				'cache' => 'array',
+				'paths' => array(__DIR__ . '/../src/Application/Entity')
+    		),
+    		'orm_default' => array(
+    			'drivers' => array(
+    				'Application\Entity' => 'application_entities'
+    			)
+    		)
+    	)
+    ),
+    /**
+     * Remove this configuration once ZF 2.2.2 is released.
+     *
+     * See https://github.com/zendframework/zf2/pull/4652
+     */
+    'console' => array(
+    		'router' => array(),
+    ),
 );
