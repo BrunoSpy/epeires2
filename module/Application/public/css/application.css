@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+
+.header {
+	position: absolute;
+	top:0px;
+	height:2em;
+	width:100%;
+	background-color:gray;
+}
+
+.nav-centered {
+	width: 50%;
+	padding-left: 25%;
+}
+
+#clock {
+	position:absolute;
+	right:10px;
+	margin-top:0.25em;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+#create-evt {
+	display:none;
+}

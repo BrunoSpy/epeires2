@@ -31,11 +31,30 @@ class Event {
 	/** @ORM\ManyToOne(targetEntity="Impact") */
 	protected $impact;
 	
+	/** @ORM\Column(type="datetime") */
+	protected $start_date;
+	
+	/** @ORM\Column(type="datetime") */
+	protected $end_date;
+	
+	/** @ORM\Column(type="datetime") */
+	protected $created_on;
+	
+	/** @ORM\Column(type="datetime") */
+	protected $last_modified_on;
+	
+	/** @ORM\ManyToOne(targetEntity="Category") */
+	protected $category;
+	
 	public function isPunctual() {
 		return $punctual;
 	}
 	
 	public function setPunctual($punctual){
 		$this->punctual = $punctual;
+	}
+	/** @ORM\PrePersist */
+	public function setCreatedOn(){
+		$this->created_on = new \DateTime('NOW');
 	}
 }

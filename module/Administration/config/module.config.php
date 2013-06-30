@@ -1,24 +1,24 @@
 <?php
 /**
  * Epeires 2
- * Application module configuration
+ * Admin module configuration
  * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
 
 return array(
     'router' => array(
         'routes' => array(
-            'application' => array(
+            'administration' => array(
                 'type'    => 'segment',
                 'options' => array(
-                    'route'    => '/[:controller[/:action]]',
+                    'route'    => '/admin[/:controller[/:action]]',
                 	'constraints' => array(
                 			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     		'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                		),
                     'defaults' => array(
-                        '__NAMESPACE__' => 'Application\Controller',
-                        'controller'    => 'Events',
+                        '__NAMESPACE__' => 'Administration\Controller',
+                        'controller'    => 'Index',
                         'action'        => 'index',
                     ),
                 ),
@@ -46,8 +46,7 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Application\Controller\Events' => 'Application\Controller\EventsController',
-            'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
+            'Administration\Controller\Index' => 'Administration\Controller\IndexController',
         ),
     ),
     'view_manager' => array(
@@ -64,25 +63,8 @@ return array(
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
-            __DIR__ . '/../view/application',
+            __DIR__ . '/../view/administration',
         ),
-    ),
-    /**
-     * Doctrine 2 Configuration
-     */
-    'doctrine' => array(
-    	'driver' => array(
-    		'application_entities' => array(
-				'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-				'cache' => 'array',
-				'paths' => array(__DIR__ . '/../src/Application/Entity')
-    		),
-    		'orm_default' => array(
-    			'drivers' => array(
-    				'Application\Entity' => 'application_entities'
-    			)
-    		)
-    	)
     ),
     /**
      * Automatically use module assets
