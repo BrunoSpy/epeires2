@@ -1,8 +1,10 @@
 <div class="event">
 <?php 
+	$this->form->setAttribute('action', $this->url('application', array('controller'=>'events', 'action'=>'create')));
 	$this->form->prepare();
 	echo $this->form()->openTag($this->form);
 	echo $this->formRow($this->form->get('name'));
+	echo $this->formRow($this->form->get('punctual'));
 	echo $this->formSubmit($this->form->get('submit'));
 	echo $this->form()->closeTag();
 ?>

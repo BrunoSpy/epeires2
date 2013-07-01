@@ -15,8 +15,15 @@ class EventForm extends Form {
 	public function __construct(){
 		parent::__construct('event');
 		
-		$this->setAttribute('action', '/create');
 		$this->setAttribute('method', 'post');
+		
+		$this->add(array(
+				'name' => 'id',
+				'attributes' => array(
+						'type' => 'hidden',
+						'id' => 'name'
+				)
+		));
 		
 		$this->add(array(
 				'name' => 'name',
@@ -26,6 +33,17 @@ class EventForm extends Form {
 				),
 				'options' => array(
 					'label' => 'Event name'
+				)
+		));
+		
+		$this->add(array(
+				'name' => 'punctual',
+				'type' => 'Zend\Form\Element\Checkbox',
+				'attributes' => array(
+						'id' => 'name'
+				),
+				'options' => array(
+						'label' => 'Ponctuel'
 				)
 		));
 		
