@@ -14,7 +14,9 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
 /**
- * @ORM\Entity @ORM\Table(name="events") @ORM\HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\Table(name="events")
+ * @ORM\HasLifecycleCallbacks
  **/
 class Event implements InputFilterAwareInterface {
 	/**
@@ -24,7 +26,7 @@ class Event implements InputFilterAwareInterface {
 	 */
 	protected $id;
 
-	/** @ORM\COlumn(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $name;
 	
 	/** @ORM\Column(type="boolean") */
@@ -75,6 +77,8 @@ class Event implements InputFilterAwareInterface {
 	}
 	
 	/*** Form Validation ****/
+	private $inputFilter;
+	
 	public function populate($data){
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;

@@ -7,7 +7,8 @@ return array(
     	'DoctrineORMModule',
     	'AssetManager',
     	'Application',
-    	'Administration'
+    	'Administration',
+    	'IPO'
     ),
 
     // These are various options for the listeners attached to the ModuleManager

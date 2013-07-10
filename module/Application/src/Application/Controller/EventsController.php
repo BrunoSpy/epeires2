@@ -35,6 +35,8 @@ class EventsController extends AbstractActionController
 
     			$objectManager->persist($event);
     			$objectManager->flush();
+    		} else {
+    			//warn user
     		}
     	} 
     	
