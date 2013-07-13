@@ -13,10 +13,20 @@ use Application\Form\EventForm;
 
 class EventsController extends AbstractActionController
 {
+	private function getAllStatus($em){
+		$list = $em->getRepository('Application\Entity\Status')->findAll();
+		$res = array();
+		foreach ($list as $element) {
+			$res[$element->getId()]= $element->getName();
+		}
+		return $res;
+	}
+	
     public function indexAction()
     {
-   	
-        return array('form' => new EventForm());
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$status = new Status();
+        return array('form' => new EventForm($this->getAllStatus($objectManager)));
     }
     
     public function createAction(){
@@ -24,15 +34,14 @@ class EventsController extends AbstractActionController
     	
     	if($this->getRequest()->isPost()){
     		$event = new Event();
-    		
-    		$form = new EventForm();
+    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		$form = new EventForm($this->getAllStatus($objectManager));
     		$form->setInputFilter($event->getInputFilter());
     		$form->setData($this->getRequest()->getPost());
     		if($form->isValid()){
     			//save new event
-				$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    			$event->populate($form->getData());
-
+    			$event->populate($form->getData());	
+    			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
     			$objectManager->persist($event);
     			$objectManager->flush();
     		} else {

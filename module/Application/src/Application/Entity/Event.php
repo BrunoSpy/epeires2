@@ -32,8 +32,8 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\Column(type="boolean") */
 	protected $punctual;
 
-// 	/** @ORM\ManyToOne(targetEntity="Status") */
-// 	protected $status;
+ 	/** @ORM\ManyToOne(targetEntity="Status") */
+ 	protected $status;
 	
 // 	/** @ORM\ManyToOne(targetEntity="Event") */
 // 	protected $parent;
@@ -74,6 +74,10 @@ class Event implements InputFilterAwareInterface {
 	
 	public function getName(){
 		return $this->name;
+	}
+	
+	public function setStatus($status){
+		$this->status = $status;
 	}
 	
 	/*** Form Validation ****/

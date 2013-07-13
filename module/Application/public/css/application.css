@@ -24,3 +24,9 @@
 #create-evt {
 	display:none;
 }
+
+.status {
+	width: 120px;
+	text-align:center;
+}
+
