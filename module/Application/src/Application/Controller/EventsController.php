@@ -11,7 +11,7 @@ use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
 use Application\Form\EventForm;
 
-class EventsController extends AbstractActionController
+class EventsController extends AbstractActionController implements LoggerAware
 {
 	private function getAllStatus($em){
 		$list = $em->getRepository('Application\Entity\Status')->findAll();
@@ -24,8 +24,8 @@ class EventsController extends AbstractActionController
 	
     public function indexAction()
     {
+    	   	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	$status = new Status();
         return array('form' => new EventForm($this->getAllStatus($objectManager)));
     }
     
@@ -46,10 +46,22 @@ class EventsController extends AbstractActionController
     			$objectManager->flush();
     		} else {
     			//warn user
+    			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
     		}
     	} 
     	
     	return $this->redirect()->toRoute('application');
     	
+    }
+    
+    //Logger
+    private $logger;
+    
+    public function setLogger(\Zend\Log\Logger $logger){
+    	$this->logger = $logger;
+    }
+    
+    public function getLogger(){
+    	return $logger;
     }
 }
