@@ -13,29 +13,18 @@ use Application\Form\EventForm;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
-	private function getAllStatus($em){
-		$list = $em->getRepository('Application\Entity\Status')->findAll();
-		$res = array();
-		foreach ($list as $element) {
-			$res[$element->getId()]= $element->getName();
-		}
-		return $res;
-	}
 	
     public function indexAction()
     {
-    	   	
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        return array('form' => new EventForm($this->getAllStatus($objectManager)));
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        return array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray()));
     }
     
     public function createAction(){
-
-    	
     	if($this->getRequest()->isPost()){
     		$event = new Event();
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		$form = new EventForm($this->getAllStatus($objectManager));
+    		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray());
     		$form->setInputFilter($event->getInputFilter());
     		$form->setData($this->getRequest()->getPost());
     		if($form->isValid()){
@@ -44,6 +33,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
     			$objectManager->persist($event);
     			$objectManager->flush();
+    			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
     		} else {
     			//warn user
     			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");

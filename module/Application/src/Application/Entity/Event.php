@@ -50,8 +50,8 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\Column(type="datetime") */
 	protected $created_on;
 	
-// 	/** @ORM\Column(type="datetime") */
-// 	protected $last_modified_on;
+ 	/** @ORM\Column(type="datetime") */
+ 	protected $last_modified_on;
 	
 // 	/** @ORM\ManyToOne(targetEntity="Category") */
 // 	protected $category;
@@ -66,6 +66,14 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
+	}
+	
+	/** 
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist 
+	 */
+	public function setLastModifiedOn(){
+		$this->last_modified_on = new \DateTime('NOW');
 	}
 	
 	public function setName($name){
@@ -130,6 +138,11 @@ class Event implements InputFilterAwareInterface {
 					),
 			)));
 	
+			$inputFilter->add($factory->createInput(array(
+					'name'     => 'status',
+					'required' => true,
+			)));
+			
 			$this->inputFilter = $inputFilter;
 		}
 	
