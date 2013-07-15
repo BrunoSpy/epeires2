@@ -7,6 +7,8 @@
 	echo $this->formRow($this->form->get('name'));
 	echo $this->formRow($this->form->get('punctual'));
 	echo $this->formRow($this->form->get('status'));
+	echo $this->formLabel($this->form->get('start_date'));
+	echo $this->formDateTime($this->form->get('start_date'));
 	echo $this->formSubmit($this->form->get('submit'));
 	echo $this->form()->closeTag();
 ?>

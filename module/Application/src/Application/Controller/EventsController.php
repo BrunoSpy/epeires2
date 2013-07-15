@@ -58,6 +58,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     }
     
+    public function modifyAction(){
+    	
+    }
+    
     //Logger
     private $logger;
     
