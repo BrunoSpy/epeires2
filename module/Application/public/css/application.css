@@ -1,16 +1,13 @@
 @CHARSET "UTF-8";
 
+/* Bandeau du haut */ 
+
 .header {
 	position: absolute;
 	top:0px;
 	height:2em;
 	width:100%;
 	background-color:gray;
-}
-
-.nav-centered {
-	width: 50%;
-	padding-left: 25%;
 }
 
 #clock {
@@ -21,12 +18,59 @@
 	font-size: 1.2em;
 }
 
+/* Barre de nav */ 
+
+.nav-centered {
+	width: 50%;
+	padding-left: 25%;
+}
+
+
+/* menu à gauche */ 
+
+.container {
+	border:1px;
+	border-color:CadetBlue ;
+	border-style:solid;
+	background-color:AliceBlue;
+	position:absolute;
+	width: 23%;
+	margin-left: 1%;
+}
+
+#create {
+	text-align:center;
+}
+
+#modify {
+	text-align:center;
+}
+
+/* création d'évènement */
+
 #create-evt {
 	display:none;
 }
 
+#name {
+	width:140px;
+}
+
+.event {
+	width: 90%;
+	margin-left: 5%;
+	border:1px;
+	border-color:black;
+	border-style:dashed;
+}
+
 .status {
 	width: 120px;
-	text-align:center;
+/*	text-align:center; */
 }
+
+
+
+
+
 

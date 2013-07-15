@@ -25,7 +25,6 @@ class EventsController extends AbstractActionController
     public function indexAction()
     {
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	$status = new Status();
         return array('form' => new EventForm($this->getAllStatus($objectManager)));
     }
     

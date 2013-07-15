@@ -1,13 +1,13 @@
-<p>
-<a href="#" id="create-link">Create event</a>
-</p>
+<div id="create">
+	<a href="#" id="create-link">Créer un évènement</a>
+</div>
 <div id="create-evt">
 <?php 
 	echo $this->partial('events/create.phtml', array('form'=>$this->form));
 ?>
 </div>
-<div class="row">
-
-   Timeline
-   
+<div id="modify">
+<?php
+   echo "Modifier un évènement";
+ ?>
 </div>

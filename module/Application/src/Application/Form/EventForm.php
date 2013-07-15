@@ -32,7 +32,7 @@ class EventForm extends Form {
 					'id' => 'name'
 				),
 				'options' => array(
-					'label' => 'Event name'
+					'label' => 'Titre'
 				)
 		));
 		
@@ -48,22 +48,23 @@ class EventForm extends Form {
 		));
 		
 		$this->add(array(
-				'name' => 'submit',
-				'attributes' => array(
-					'type' => 'submit',
-					'value' => 'Add',
-						'class' => 'subm'
-				)
-		));
-		
-		$this->add(array(
 				'name' => 'status',
 				'type' => 'Zend\Form\Element\Select',
-				'options' => array('label' => 'etat', 'value_options' => $statusList),
+				'options' => array('label' => 'Etat', 'value_options' => $statusList),
 				'attributes' => array(
 						'class' => 'status'
 				)
 		));
+		
+		$this->add(array(
+				'name' => 'submit',
+				'attributes' => array(
+					'type' => 'submit',
+					'value' => 'Ajouter',
+						'class' => 'subm'
+				)
+		));
+	
 	}
 	
 }
