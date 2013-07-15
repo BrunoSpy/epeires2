@@ -15,9 +15,22 @@ class EventsController extends AbstractActionController implements LoggerAware
 {
 	
     public function indexAction()
-    {
+    {    	
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        return array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray()));
+    	
+    	$return = array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray()));
+    	
+    	if($this->flashMessenger()->hasErrorMessages()){
+    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    	}
+    	
+    	if($this->flashMessenger()->hasSuccessMessages()){
+    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    	}
+    	
+    	$this->flashMessenger()->clearMessages();
+    	
+        return $return;
     }
     
     public function createAction(){
@@ -34,9 +47,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
+    			$this->flashMessenger()->addSuccessMessage("Evènement enregistré");
     		} else {
-    			//warn user
     			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
+    			$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
     		}
     	} 
     	
