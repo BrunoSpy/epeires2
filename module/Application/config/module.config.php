@@ -34,6 +34,14 @@ return array(
         'aliases' => array(
             'translator' => 'MvcTranslator',
         ),
+        'factories' => array(
+        	'logger' => function($sl){
+        		$logger = new \Zend\Log\Logger();
+        		$logger->addWriter('FirePhp');
+        		$logger->addWriter('ChromePhp');
+        		return $logger;
+        	}
+        ),
     ),
     'translator' => array(
         'locale' => 'fr_FR',
@@ -49,6 +57,13 @@ return array(
         'invokables' => array(
             'Application\Controller\Events' => 'Application\Controller\EventsController',
             'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
+        ),
+        'initializers' => array(
+        	'logger' => function($instance, $serviceManager){
+        		if($instance instanceof \Application\Controller\LoggerAware){
+        			$instance->setLogger($serviceManager->getServiceLocator()->get('logger'));
+        		}
+        				}
         ),
     ),
     'view_manager' => array(

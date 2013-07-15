@@ -41,8 +41,8 @@ class Event implements InputFilterAwareInterface {
 // 	/** @ORM\ManyToOne(targetEntity="Impact") */
 // 	protected $impact;
 	
-// 	/** @ORM\Column(type="datetime") */
-// 	protected $start_date;
+ 	/** @ORM\Column(type="datetime") */
+ 	protected $start_date;
 	
 // 	/** @ORM\Column(type="datetime") */
 // 	protected $end_date;
@@ -50,8 +50,8 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\Column(type="datetime") */
 	protected $created_on;
 	
-// 	/** @ORM\Column(type="datetime") */
-// 	protected $last_modified_on;
+ 	/** @ORM\Column(type="datetime") */
+ 	protected $last_modified_on;
 	
 // 	/** @ORM\ManyToOne(targetEntity="Category") */
 // 	protected $category;
@@ -66,6 +66,14 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
+	}
+	
+	/** 
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist 
+	 */
+	public function setLastModifiedOn(){
+		$this->last_modified_on = new \DateTime('NOW');
 	}
 	
 	public function setName($name){
@@ -87,6 +95,7 @@ class Event implements InputFilterAwareInterface {
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;
 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
+		$this->start_date = (isset($data['start_date'])) ? new \DateTime($data['start_date']) : null;
 	}
 	
 	public function setInputFilter(InputFilterInterface $inputFilter){
@@ -130,6 +139,16 @@ class Event implements InputFilterAwareInterface {
 					),
 			)));
 	
+			$inputFilter->add($factory->createInput(array(
+					'name'     => 'start_date',
+					'required' => true,
+			)));
+			
+			$inputFilter->add($factory->createInput(array(
+					'name'     => 'status',
+					'required' => true,
+			)));
+			
 			$this->inputFilter = $inputFilter;
 		}
 	

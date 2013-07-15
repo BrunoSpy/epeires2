@@ -18,11 +18,12 @@
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 	  	<div class="controls"> <?php echo $this->formSelect($this->form->get('status')); ?> </div>
 	</div>
+		<div class="control-group">
+		<?php echo $this->formDateTime($this->form->get('start_date')); ?>
+	</div>
 	<div class="control-group">
 		<div class="controls"> <?php	echo $this->formSubmit($this->form->get('submit')); ?> </div> 
 	</div>
-	<div class="control-group">
-		<?php	echo $this->form()->closeTag(); ?>
-	</div>
+	<?php echo $this->form()->closeTag(); ?>
 </form>
 </div>

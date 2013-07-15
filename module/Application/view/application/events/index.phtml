@@ -1,7 +1,23 @@
+
+<div class="warnings">
+<?php if ($this->successMessages) { ?>
+	<?php foreach ($this->successMessages as $message) { ?>
+		<div class="alert alert-success"><?php echo $message ?></div>
+	<?php }?>
+<?php } ?>
+
+<?php if ($this->errorMessages) { ?>
+	<?php foreach ($this->errorMessages as $message) { ?>
+		<div class="alert alert-error">
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+</div>
+
 <div id="create">
 	<a href="#" id="create-link">Créer un évènement</a>
-</div>
-<div id="create-evt">
+</div><div id="create-evt">
 <?php 
 	echo $this->partial('events/create.phtml', array('form'=>$this->form));
 ?>
