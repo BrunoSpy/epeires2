@@ -27,3 +27,17 @@
 	<?php echo $this->form()->closeTag(); ?>
 </form>
 </div>
+
+<?php $this->inlineScript()->captureStart(); ?>
+Modernizr.load({
+    test: Modernizr.inputtypes.datetime,
+    nope: [
+        'js/jquery-ui.min.js', 
+        'js/jquery-datetimepicker.js',
+        'css/jquery-ui.min.css'
+    ],
+    complete: function () {
+        $('input[type=datetime]').datetimepicker(); 
+    }
+});
+<?php $this->inlineScript()->captureEnd(); ?>
