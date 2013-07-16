@@ -26,9 +26,15 @@ $(document).ready(function(){
 
    //higlight tabs
    var url = window.location;
-   $(".nav > li a").filter(function(){
-	  return this.href == url; 
-   }).parent().addClass('active');
+   if(url == ""){
+	   
+   } else {
+	   $(".nav > li a").filter(function(){
+		   return this.href == url; 
+	   }).parent().addClass('active') //on ajoute la classe active
+	   .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
+   }
+   
    
    //datetimepicker
    $(".datetime").datetimepicker();

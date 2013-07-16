@@ -2,9 +2,11 @@
 
 /* Bandeau du haut */ 
 
+body{
+	padding-top: 0px;
+}
+
 .header {
-	position: absolute;
-	top:0px;
 	height:2em;
 	width:100%;
 	background-color:gray;
@@ -25,17 +27,24 @@
 	padding-left: 25%;
 }
 
+.navbar-after-top {
+	right:0px;
+	left:0px;
+	margin-bottom:0px;
+}
 
 /* menu à gauche */ 
 
-.container {
+.content {
 	border:1px;
 	border-color:CadetBlue ;
 	border-style:solid;
 	background-color:AliceBlue;
-	position:absolute;
+	position:relative;
 	width: 23%;
 	margin-left: 1%;
+	clear: both;
+	top: 10px;
 }
 
 #create {
