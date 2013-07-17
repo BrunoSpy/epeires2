@@ -78,6 +78,10 @@ body{
 /*	text-align:center; */
 }
 
+.dateDeb {
+	width: 140px;
+}
+
 
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }

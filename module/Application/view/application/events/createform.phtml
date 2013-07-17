@@ -1,0 +1,29 @@
+
+<form class="form-horizontal">
+<?php
+$this->form->setAttribute('action', $this->url('application', array('controller'=>'events', 'action'=>'create')));
+$this->form->prepare();
+echo $this->form()->openTag($this->form);
+echo $this->formRow($this->form->get('id'));
+?>
+	<div class="control-group">
+	    <?php echo $this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))); ?>
+	  	<div class="controls"> <?php echo $this->formInput($this->form->get('name')); ?></div>
+	</div>
+	<div class="control-group">
+	    <?php echo $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))); ?>
+	  	<div class="controls"> <?php echo $this->formInput($this->form->get('punctual')); ?></div>
+	</div>
+	<div class="control-group">
+		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
+	  	<div class="controls"> <?php echo $this->formSelect($this->form->get('status')); ?> </div>
+	</div>
+		<div class="control-group">
+		<?php echo $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))); ?>
+		<div class="controls"> <?php echo $this->formDateTime($this->form->get('start_date')); ?> </div>
+	</div>
+	<div class="control-group">
+		<div class="controls"> <?php	echo $this->formSubmit($this->form->get('submit')); ?> </div> 
+	</div>
+	<?php echo $this->form()->closeTag(); ?>
+</form>

@@ -39,7 +39,7 @@
     			</ul>
 	        	<ul class="nav-centered nav">
 	            	<li class="dropdown active">  <!-- lien par défaut, classe "active" supprimée par jquery si besoin -->
-	            		<a class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>">Filtres <b class="caret"></b></a>
+	            		<a class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>"><i class="icon-home"></i> Filtres <b class="caret"></b></a>
 	            		<ul class="dropdown-menu">
 	            			<li><a href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>">Tous</a></li>
 	            			<li><a href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index', 'filter'=>'important'))?>">Importants</a></li>
@@ -57,6 +57,7 @@
         <div class="content">
             <?php echo $this->content; ?>
         </div> <!-- /container -->
+        
         <?php echo $this->inlineScript() ?>
     </body>
 </html>
