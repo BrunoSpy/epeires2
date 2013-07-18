@@ -64,7 +64,8 @@ class EventForm extends Form {
 					'format' => 'd-m-Y H:i'
 				),
 				'attributes' => array(
-					'class' => 'datetime'
+					'class' => 'datetime',
+						'id' => 'dateDeb'
 				),			
 		));
 		

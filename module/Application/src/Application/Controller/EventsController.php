@@ -16,10 +16,8 @@ class EventsController extends AbstractActionController implements LoggerAware
 	
     public function indexAction()
 
-    {    	
-    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	
-    	$return = array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray()));
+    {    	    	
+    	$return = array();
     	
     	if($this->flashMessenger()->hasErrorMessages()){
     		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
@@ -56,6 +54,19 @@ class EventsController extends AbstractActionController implements LoggerAware
     	} 
     	
     	return $this->redirect()->toRoute('application');
+    	
+    }
+    
+    public function createformAction(){
+    	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	 
+    	$viewmodel->setVariables(array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray())));
+    	return $viewmodel;
     	
     }
     
