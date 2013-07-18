@@ -17,6 +17,21 @@ function updateClock ( )
         
  };
 
+function loadModernizr(){
+	Modernizr.load({
+	    test: Modernizr.inputtypes.datetime,
+	    nope: [
+	        'js/jquery-ui.min.js', 
+	        'js/jquery-datetimepicker.js',
+	        'css/jquery-ui.min.css'
+	    ],
+	    complete: function () {
+	    alert("test");
+	        $('input[type=datetime]').datetimepicker(); 
+	    }
+	});
+}
+ 
 $(document).ready(function(){
    setInterval('updateClock()', 1000);
 
@@ -29,4 +44,7 @@ $(document).ready(function(){
    $(".nav > li a").filter(function(){
 	   return this.href == url; 
    }).parent().addClass('active') //on ajoute la classe active
-   .siblings().removeClass('active'); //suppression des classes active positionnées dans la page});
+   .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
+});
+
+
