@@ -26,7 +26,6 @@ function loadModernizr(){
 	        'css/jquery-ui.min.css'
 	    ],
 	    complete: function () {
-	    alert("test");
 	        $('input[type=datetime]').datetimepicker(); 
 	    }
 	});

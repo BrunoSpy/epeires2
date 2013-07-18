@@ -1,7 +1,13 @@
 <div id="event">
+<div id="loading">Chargement...</div>
 <!-- formulaire createform.phtml récupéré via ajax -->
 </div>
 <?php $this->inlineScript()->captureStart();?>
+$("#loading").ajaxStart(function(){
+	$(this).show();})
+	.ajaxStop(function(){
+	$(this).hide();});
+	
 $("#create-link").on("click", function(){
 
 	$.post(

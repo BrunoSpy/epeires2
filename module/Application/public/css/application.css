@@ -35,18 +35,6 @@ body{
 
 /* menu à gauche */ 
 
-.content {
-	border:1px;
-	border-color:CadetBlue ;
-	border-style:solid;
-	background-color:AliceBlue;
-	position:relative;
-	width: 23%;
-	margin-left: 1%;
-	clear: both;
-	top: 10px;
-}
-
 #create {
 	text-align:center;
 }
@@ -59,6 +47,15 @@ body{
 
 #create-evt {
 	display:none;
+	border:1px;
+	border-color:CadetBlue ;
+	border-style:solid;
+	background-color:AliceBlue;
+	position:relative;
+	width: 23%;
+	margin-left: 1%;
+	clear: both;
+	top: 10px;
 }
 
 #name {

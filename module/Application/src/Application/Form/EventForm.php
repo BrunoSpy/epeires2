@@ -65,7 +65,7 @@ class EventForm extends Form {
 				),
 				'attributes' => array(
 					'class' => 'datetime',
-						'id' => 'dateDeb'
+					'id' => 'dateDeb'
 				),			
 		));
 		
@@ -74,7 +74,7 @@ class EventForm extends Form {
 				'attributes' => array(
 					'type' => 'submit',
 					'value' => 'Ajouter',
-						'class' => 'subm'
+					'class' => 'btn btn-primary'
 				)
 		));
 	}
