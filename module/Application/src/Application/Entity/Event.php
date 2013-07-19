@@ -53,8 +53,8 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\Column(type="datetime") */
  	protected $last_modified_on;
 	
-// 	/** @ORM\ManyToOne(targetEntity="Category") */
-// 	protected $category;
+ 	/** @ORM\ManyToOne(targetEntity="Category") */
+ 	protected $category;
 	
 	public function isPunctual() {
 		return $punctual;
@@ -88,6 +88,9 @@ class Event implements InputFilterAwareInterface {
 		$this->status = $status;
 	}
 	
+	public function setCategory($category){
+		$this->category = $category;
+	}
 	/*** Form Validation ****/
 	private $inputFilter;
 	
@@ -109,7 +112,7 @@ class Event implements InputFilterAwareInterface {
 	
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'id',
-					'required' => true,
+					'required' => false,
 					'filters'  => array(
 							array('name' => 'Int'),
 					),
@@ -141,7 +144,7 @@ class Event implements InputFilterAwareInterface {
 	
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'start_date',
-					'required' => true,
+					'required' => false,
 			)));
 			
 			$inputFilter->add($factory->createInput(array(

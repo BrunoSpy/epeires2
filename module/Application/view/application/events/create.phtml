@@ -8,16 +8,25 @@ $("#loading").ajaxStart(function(){
 	.ajaxStop(function(){
 	$(this).hide();});
 	
+	
 $("#create-link").on("click", function(){
 
-	$.post(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'createform'))?>',
-		function(data){
-			$("#event").html(data);
-			//load modernizr
-			loadModernizr();
-		}
+	$("#event").load(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'createform'))?>'
 	);
-
+	
+	loadModernizr();
 });
+
+//TODO : trouver un moyen de mettre ce code dans createform.phtml
+$(document).on("blur", "#name", function(){
+	$.post(
+	'<?php echo $this->url('application',
+							array('controller'=>'events', 'action'=>'createform'),
+							array('query'=>array('type'=>'category')) ) ?>',
+	function(data){
+		$("#category").html(data);
+	});
+});
+
 <?php $this->inlineScript()->captureEnd();?>

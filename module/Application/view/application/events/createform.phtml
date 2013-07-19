@@ -1,29 +1,86 @@
-
-<form class="form-horizontal">
 <?php
-$this->form->setAttribute('action', $this->url('application', array('controller'=>'events', 'action'=>'create')));
-$this->form->prepare();
-echo $this->form()->openTag($this->form);
-echo $this->formRow($this->form->get('id'));
-?>
+	if($this->title){
+		$this->form->prepare(); ?>
+		<div class="control-group">
+			<?php echo $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))); ?>
+			<div class="controls">
+				<?php echo $this->formSelect($this->form->get('categories')->get('root_categories')); ?>
+			</div>
+		</div>
+	<?php
+	} else {
+//structure du formulaire
+//rempli via jquery
+	?>
+	<?php
+	$this->form->setAttributes(array(
+				'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
+				'class' => 'form-horizontal'));
+	$this->form->prepare();
+	echo $this->form()->openTag($this->form);
+	echo $this->formHidden($this->form->get('id'));
+	?>
+	
+	<div class="accordion" id="form">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#accordion-categories">
+					Catégories
+				</a>
+			</div>
+			<div class="accordion-body collapse in" id="accordion-categories">
+				<div class="accordion-inner" id="category">
+
+				</div>
+			</div>
+		</div>
+	
+	
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#accordion-others">
+					Le reste
+				</a>
+			</div>
+			<div class="accordion-body collapse" id="accordion-others">
+				<div class="accordion-inner" id="others">
+				
+				
+
 	<div class="control-group">
-	    <?php echo $this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))); ?>
-	  	<div class="controls"> <?php echo $this->formInput($this->form->get('name')); ?></div>
+		<?php echo $this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))); ?>
+		<div class="controls">
+			<?php echo $this->formInput($this->form->get('name')); ?>
+		</div>
 	</div>
 	<div class="control-group">
-	    <?php echo $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))); ?>
-	  	<div class="controls"> <?php echo $this->formInput($this->form->get('punctual')); ?></div>
+		<?php echo $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))); ?>
+		<div class="controls">
+			<?php echo $this->formCheckbox($this->form->get('punctual')); ?>
+		</div>
 	</div>
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
-	  	<div class="controls"> <?php echo $this->formSelect($this->form->get('status')); ?> </div>
-	</div>
-		<div class="control-group">
-		<?php echo $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))); ?>
-		<div class="controls"> <?php echo $this->formDateTime($this->form->get('start_date')); ?> </div>
+		<div class="controls">
+			<?php echo $this->formSelect($this->form->get('status')); ?>
+		</div>
 	</div>
 	<div class="control-group">
-		<div class="controls"> <?php	echo $this->formSubmit($this->form->get('submit')); ?> </div> 
+		<?php echo $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))); ?>
+		<div class="controls">
+			<?php echo $this->formDateTime($this->form->get('start_date')); ?>
+		</div>
 	</div>
+	<div class="control-group">
+		<div class="controls">
+			<?php	echo $this->formSubmit($this->form->get('submit')); ?>
+		</div>
+	</div>
+	</div>
+			</div>
+		</div>
+	
+	</div>	
 	<?php echo $this->form()->closeTag(); ?>
 </form>
+<?php }?>

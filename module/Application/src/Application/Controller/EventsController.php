@@ -10,13 +10,12 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
 use Application\Form\EventForm;
+use Application\Form\CategoryFormFieldset;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
 	
-    public function indexAction()
-
-    {    	    	
+    public function indexAction(){    	
     	$return = array();
     	
     	if($this->flashMessenger()->hasErrorMessages()){
@@ -32,17 +31,24 @@ class EventsController extends AbstractActionController implements LoggerAware
         return $return;
     }
     
-    public function createAction(){
+    public function createAction(){    	 
     	if($this->getRequest()->isPost()){
+    		
     		$event = new Event();
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray());
     		$form->setInputFilter($event->getInputFilter());
+    		    	
+    		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
+    		$form->add($categoryfieldset);
+    		  		
     		$form->setData($this->getRequest()->getPost());
+    		
     		if($form->isValid()){
     			//save new event
     			$event->populate($form->getData());	
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
+    			$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
@@ -58,18 +64,35 @@ class EventsController extends AbstractActionController implements LoggerAware
     }
     
     public function createformAction(){
+    	
+    	$type = $this->params()->fromQuery('type',null);
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();
     	//disable layout if request by Ajax
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
-    	
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	 
-    	$viewmodel->setVariables(array('form' => new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray())));
-    	return $viewmodel;
     	
+    	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray());
+    	
+    	if($type){
+    		switch ($type) {
+    			case 'category':
+    				$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
+    				$viewmodel->setVariables(array(
+    						'title' => 'Catégorie',
+    				));
+    				break;
+    			
+    			default:
+    				;
+    			break;
+    		}
+    	}
+    	$viewmodel->setVariables(array('form' => $form));
+    	return $viewmodel;
+    	 
     }
-    
+
     public function modifyAction(){
     	
     }
