@@ -56,6 +56,20 @@ class EventsController extends AbstractActionController implements LoggerAware
     		} else {
     			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
     			$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
+    			//traitement des erreurs de validation
+    			foreach($form->getMessages() as $key => $message){
+    				foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
+    					if(is_array($mvalue)){
+    						foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
+    							$this->flashMessenger()->addErrorMessage(
+    									"Champ ".$mkey." incorrect : ".$nvalue);
+    						}
+    					} else {
+    						$this->flashMessenger()->addErrorMessage(
+    								"Champ ".$key." incorrect : ".$mvalue);
+    					}
+    				}
+    			}
     		}
     	} 
     	
@@ -73,13 +87,15 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray());
+    	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
     	
     	if($type){
     		switch ($type) {
-    			case 'category':
-    				$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
+    			case 'subcategories':
+					$id = $this->params()->fromQuery('id');
     				$viewmodel->setVariables(array(
-    						'title' => 'Catégorie',
+    						'type' => $type,
+    						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
     				));
     				break;
     			

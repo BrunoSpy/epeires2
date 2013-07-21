@@ -18,14 +18,13 @@ $("#create-link").on("click", function(){
 	loadModernizr();
 });
 
-//TODO : trouver un moyen de mettre ce code dans createform.phtml
-$(document).on("blur", "#name", function(){
+$(document).on("change", "#root_categories", function(){
 	$.post(
 	'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('type'=>'category')) ) ?>',
+							array('query'=>array('type'=>'subcategories')) ) ?>'+'&id='+$(this).val(),
 	function(data){
-		$("#category").html(data);
+		$("#subcategories").html(data);
 	});
 });
 

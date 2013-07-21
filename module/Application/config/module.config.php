@@ -66,6 +66,11 @@ return array(
         				}
         ),
     ),
+    'view_helpers' => array(
+    	'invokables' => array(
+    		'accordionGroup' => 'Application\View\Helper\AccordionGroup',
+    	),
+    ),
     'view_manager' => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,

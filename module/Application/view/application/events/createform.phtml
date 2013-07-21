@@ -1,13 +1,19 @@
 <?php
-	if($this->title){
-		$this->form->prepare(); ?>
-		<div class="control-group">
-			<?php echo $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))); ?>
-			<div class="controls">
-				<?php echo $this->formSelect($this->form->get('categories')->get('root_categories')); ?>
-			</div>
-		</div>
-	<?php
+	if($this->type){
+		switch ($this->type) {
+			case 'subcategories':
+				echo '<option value=\"-1\">Choisir la sous-catégorie</option>'; 
+				foreach($this->values as $key => $value){?>
+					<option value="<?php echo $key; ?>"><?php echo $value; ?></option>
+	<?php 		};
+				break;
+			case 'predefined_events':
+				
+				break;
+			default:
+				;
+			break;
+		}		
 	} else {
 //structure du formulaire
 //rempli via jquery
@@ -22,20 +28,24 @@
 	?>
 	
 	<div class="accordion" id="form">
-		<div class="accordion-group">
-			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#accordion-categories">
-					Catégories
-				</a>
-			</div>
-			<div class="accordion-body collapse in" id="accordion-categories">
-				<div class="accordion-inner" id="category">
+		<?php 
+		$html = "<div class=\"control-group\">";
+		$html .=  $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label')));
+		$html .= "<div class=\"controls\">";
+		$html .=  $this->formSelect($this->form->get('categories')->get('root_categories'));
+		$html .= "</div>";
+		$html .= "</div>";
+		$html .= "<div class=\"control-group\">";
+		$html .= $this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label')));
+		$html .= "<div class=\"controls\" id=\"form_subcategories\">";
+		$html .= $this->formSelect($this->form->get('categories')->get('subcategories'));
+		$html .= "</div>";
+		$html .= "</div>";
+		?>
+		<?php echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form'));	?>
 
-				</div>
-			</div>
-		</div>
-	
-	
+		<?php echo $this->accordionGroup("Évènements prédéfinis", "", array('data-parent'=>'form')); ?>
+		
 		<div class="accordion-group">
 			<div class="accordion-heading">
 				<a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#accordion-others">
@@ -71,16 +81,16 @@
 			<?php echo $this->formDateTime($this->form->get('start_date')); ?>
 		</div>
 	</div>
-	<div class="control-group">
-		<div class="controls">
-			<?php	echo $this->formSubmit($this->form->get('submit')); ?>
-		</div>
-	</div>
+	
 	</div>
 			</div>
 		</div>
 	
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<?php	echo $this->formSubmit($this->form->get('submit')); ?>
+		</div>
 	</div>	
 	<?php echo $this->form()->closeTag(); ?>
-</form>
 <?php }?>
