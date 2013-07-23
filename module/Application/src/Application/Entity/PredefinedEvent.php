@@ -15,10 +15,10 @@ use Zend\InputFilter\Factory as InputFactory;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="events")
- * @ORM\HasLifecycleCallbacks
- **/
-class Event implements InputFilterAwareInterface {
+ * @ORM\Table(name="predefined_events")
+ * @ORM\Entity(repositoryClass="Application\Repository\PredefinedEventRepository")
+**/
+class PredefinedEvent implements InputFilterAwareInterface {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
@@ -32,51 +32,34 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\Column(type="boolean") */
 	protected $punctual;
 
- 	/** @ORM\ManyToOne(targetEntity="Status") */
- 	protected $status;
-	
-// 	/** @ORM\ManyToOne(targetEntity="Event") */
-// 	protected $parent;
+ 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent") */
+ 	protected $parent;
 	
 // 	/** @ORM\ManyToOne(targetEntity="Impact") */
 // 	protected $impact;
 	
- 	/** @ORM\Column(type="datetime") */
- 	protected $start_date;
-	
- 	/** 
- 	 * @ORM\Column(type="datetime")
- 	 * @ORM\Column(nullable=true);
- 	 */
- 	protected $end_date;
-	
-	/** @ORM\Column(type="datetime") */
-	protected $created_on;
-	
- 	/** @ORM\Column(type="datetime") */
- 	protected $last_modified_on;
-	
  	/** @ORM\ManyToOne(targetEntity="Category") */
  	protected $category;
+ 	
+ 	/** @ORM\Column(type="boolean") */
+ 	protected $listable;
+ 	
+ 	/** @ORM\Column(type="boolean") */
+ 	protected $searchable;
 	
+ 	/** @ORM\Column(type="integer") */
+ 	protected $order;
+ 	
+ 	public function getId(){
+ 		return $this->id;
+ 	}
+ 	
 	public function isPunctual() {
 		return $punctual;
 	}
 	
 	public function setPunctual($punctual){
 		$this->punctual = $punctual;
-	}
-	/** @ORM\PrePersist */
-	public function setCreatedOn(){
-		$this->created_on = new \DateTime('NOW');
-	}
-	
-	/** 
-	 * @ORM\PreUpdate
-	 * @ORM\PrePersist 
-	 */
-	public function setLastModifiedOn(){
-		$this->last_modified_on = new \DateTime('NOW');
 	}
 	
 	public function setName($name){
@@ -101,7 +84,6 @@ class Event implements InputFilterAwareInterface {
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;
 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-		$this->start_date = (isset($data['start_date'])) ? new \DateTime($data['start_date']) : null;
 	}
 	
 	public function setInputFilter(InputFilterInterface $inputFilter){
@@ -143,16 +125,6 @@ class Event implements InputFilterAwareInterface {
 									),
 							),
 					),
-			)));
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'start_date',
-					'required' => false,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'end_date',
-					'required' => false,
 			)));
 			
 			$inputFilter->add($factory->createInput(array(

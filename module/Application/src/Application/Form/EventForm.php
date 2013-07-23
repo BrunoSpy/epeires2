@@ -70,6 +70,19 @@ class EventForm extends Form {
 		));
 		
 		$this->add(array(
+				'name' => 'end_date',
+				'type' => 'Zend\Form\Element\DateTime',
+				'options' => array(
+						'label' => 'Fin',
+						'format' => 'd-m-Y H:i'
+				),
+				'attributes' => array(
+						'class' => 'datetime',
+						'id' => 'dateFin'
+				),
+		));
+		
+		$this->add(array(
 				'name' => 'submit',
 				'attributes' => array(
 					'type' => 'submit',

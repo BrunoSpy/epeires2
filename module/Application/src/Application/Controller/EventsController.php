@@ -31,6 +31,9 @@ class EventsController extends AbstractActionController implements LoggerAware
         return $return;
     }
     
+    /**
+     * Create a new event
+     */
     public function createAction(){    	 
     	if($this->getRequest()->isPost()){
     		
@@ -41,7 +44,11 @@ class EventsController extends AbstractActionController implements LoggerAware
     		    	
     		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
     		$form->add($categoryfieldset);
-    		  		
+    		//fill form subcategories    		
+    		$form->get('categories')
+    			 ->get('subcategories')
+    			 ->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']));
+  		
     		$form->setData($this->getRequest()->getPost());
     		
     		if($form->isValid()){
@@ -77,6 +84,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     }
     
+    /**
+     * Create a new form or a part of it
+     * @return \Zend\View\Model\ViewModel
+     */
     public function createformAction(){
     	
     	$type = $this->params()->fromQuery('type',null);
@@ -87,6 +98,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray());
+    	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
     	
     	if($type){
@@ -98,7 +110,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
     				));
     				break;
-    			
+    			case 'predefined_events':
+    				$id = $this->params()->fromQuery('id');
+    				$viewmodel->setVariables(array(
+    					'type' => $type,
+    					'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),	
+    				));
+    				break;
     			default:
     				;
     			break;

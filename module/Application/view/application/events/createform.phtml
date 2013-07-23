@@ -8,7 +8,17 @@
 	<?php 		};
 				break;
 			case 'predefined_events':
-				
+				echo '<table class="table table-hover" >';
+				echo '<tbody>';
+				foreach ($this->values as $key => $value){
+					echo '<tr>';
+					echo '<td>'.$key.'</td>';
+					echo '<td>'.$value.'</td>';
+					echo '<td><a href="#" class="btn btn-small">Utiliser</a></td>';
+					echo '</tr>';
+				}
+				echo '</tbody>';
+				echo '</table>';
 				break;
 			default:
 				;
@@ -18,6 +28,7 @@
 //structure du formulaire
 //rempli via jquery
 	?>
+		
 	<?php
 	$this->form->setAttributes(array(
 				'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
@@ -42,9 +53,34 @@
 		$html .= "</div>";
 		$html .= "</div>";
 		?>
-		<?php echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form'));	?>
+		<?php echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));	?>
 
-		<?php echo $this->accordionGroup("Évènements prédéfinis", "", array('data-parent'=>'form')); ?>
+		<?php echo $this->accordionGroup("Modèles", "", array('data-parent'=>'form', 'inner-id'=> 'predefined_events')); ?>
+		
+		<?php 
+		$html = "<div class=\"control-group\">";
+		$html .= $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label')));
+		$html .= "<div class=\"controls\">";
+		$html .= $this->formCheckbox($this->form->get('punctual'));
+		$html .= "</div>";
+		$html .= "</div>";
+	    $html .= "<div class=\"control-group\">";
+		$html .= $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label')));
+		$html .= "<div class=\"controls\">";
+		$html .= "<div class=\"input-prepend\">";
+		$html .= "<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date'));
+		$html .= "</div></div>";
+		$html .= "</div>";
+		$html .= "<div class=\"control-group\">";
+		$html .= $this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label')));
+		$html .= "<div class=\"controls\">";
+		$html .= "<div class=\"input-prepend\">";
+		$html .= "<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('end_date'));
+		$html .= "</div></div>";
+		$html .= "</div>";
+		
+	
+		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form')); ?>
 		
 		<div class="accordion-group">
 			<div class="accordion-heading">
@@ -63,24 +99,14 @@
 			<?php echo $this->formInput($this->form->get('name')); ?>
 		</div>
 	</div>
-	<div class="control-group">
-		<?php echo $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))); ?>
-		<div class="controls">
-			<?php echo $this->formCheckbox($this->form->get('punctual')); ?>
-		</div>
-	</div>
+	
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">
 			<?php echo $this->formSelect($this->form->get('status')); ?>
 		</div>
 	</div>
-	<div class="control-group">
-		<?php echo $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))); ?>
-		<div class="controls">
-			<?php echo $this->formDateTime($this->form->get('start_date')); ?>
-		</div>
-	</div>
+	
 	
 	</div>
 			</div>

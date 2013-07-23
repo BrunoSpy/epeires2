@@ -26,6 +26,34 @@ $(document).on("change", "#root_categories", function(){
 	function(data){
 		$("#subcategories").html(data);
 	});
+	
+	if($(this).val() > 0) {
+		$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+	} else {
+		$("#category_title").html('Catégories');
+	}
+});
+
+$(document).on("change", "#subcategories", function(){
+	$.post(
+	'<?php echo $this->url('application',
+							array('controller'=>'events', 'action'=>'createform'),
+							array('query'=>array('type'=>'predefined_events')) ) ?>'+'&id='+$(this).val(),
+	function(data){
+		$("#predefined_events").html(data);
+	});
+	
+	if($(this).val() > 0) {
+		$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
+	} else {
+		if($("#root_categories").val() > 0) {
+			$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+		}
+	}
+});
+
+$(document).on("change", "#punctual", function(){
+	$("#dateFin").prop('disabled',$(this).is(':checked')); 
 });
 
 <?php $this->inlineScript()->captureEnd();?>
