@@ -8,17 +8,21 @@
 	<?php 		};
 				break;
 			case 'predefined_events':
-				echo '<table class="table table-hover" >';
-				echo '<tbody>';
-				foreach ($this->values as $key => $value){
-					echo '<tr>';
-					echo '<td>'.$key.'</td>';
-					echo '<td>'.$value.'</td>';
-					echo '<td><a href="#" class="btn btn-small">Utiliser</a></td>';
-					echo '</tr>';
+				if(empty($this->values)){
+					echo 'Aucun modèle défini.';
+				} else {
+					echo '<table class="table table-hover" >';
+					echo '<tbody>';
+					foreach ($this->values as $key => $value){
+						echo '<tr>';
+						echo '<td>'.$key.'</td>';
+						echo '<td>'.$value.'</td>';
+						echo '<td><a href="#" class="btn btn-small">Utiliser</a></td>';
+						echo '</tr>';
+					}
+					echo '</tbody>';
+					echo '</table>';
 				}
-				echo '</tbody>';
-				echo '</table>';
 				break;
 			default:
 				;
@@ -40,65 +44,50 @@
 	
 	<div class="accordion" id="form">
 		<?php 
-		$html = "<div class=\"control-group\">";
-		$html .=  $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label')));
-		$html .= "<div class=\"controls\">";
-		$html .=  $this->formSelect($this->form->get('categories')->get('root_categories'));
-		$html .= "</div>";
-		$html .= "</div>";
-		$html .= "<div class=\"control-group\">";
-		$html .= $this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label')));
-		$html .= "<div class=\"controls\" id=\"form_subcategories\">";
-		$html .= $this->formSelect($this->form->get('categories')->get('subcategories'));
-		$html .= "</div>";
-		$html .= "</div>";
-		?>
-		<?php echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));	?>
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formSelect($this->form->get('categories')->get('root_categories')));
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formSelect($this->form->get('categories')->get('subcategories')),
+					array('control_id'=>'form_categories'));
+		
+		echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));	?>
 
-		<?php echo $this->accordionGroup("Modèles", "", array('data-parent'=>'form', 'inner-id'=> 'predefined_events')); ?>
+		<?php echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events')); ?>
 		
 		<?php 
-		$html = "<div class=\"control-group\">";
-		$html .= $this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label')));
-		$html .= "<div class=\"controls\">";
-		$html .= $this->formCheckbox($this->form->get('punctual'));
-		$html .= "</div>";
-		$html .= "</div>";
-	    $html .= "<div class=\"control-group\">";
-		$html .= $this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label')));
-		$html .= "<div class=\"controls\">";
-		$html .= "<div class=\"input-prepend\">";
-		$html .= "<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date'));
-		$html .= "</div></div>";
-		$html .= "</div>";
-		$html .= "<div class=\"control-group\">";
-		$html .= $this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label')));
-		$html .= "<div class=\"controls\">";
-		$html .= "<div class=\"input-prepend\">";
-		$html .= "<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('end_date'));
-		$html .= "</div></div>";
-		$html .= "</div>";
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formCheckbox($this->form->get('punctual')));
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))),
+					"<div class=\"input-prepend\">".
+					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date')).
+					"</div>");
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label'))),
+					"<div class=\"input-prepend\">".
+					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('end_date')).
+					"</div>");
 		
-	
-		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form')); ?>
+		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
-		<div class="accordion-group">
-			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#accordion-others">
-					Le reste
-				</a>
-			</div>
-			<div class="accordion-body collapse" id="accordion-others">
-				<div class="accordion-inner" id="others">
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formInput($this->form->get('name')));
+		
+		echo $this->accordionGroup("Description", $html, array('data-parent'=>'form'));
+		
+		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form'));
+		
+		?>
+		
+		<?php 
+		
+		
+		?>
 				
-				
-
-	<div class="control-group">
-		<?php echo $this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))); ?>
-		<div class="controls">
-			<?php echo $this->formInput($this->form->get('name')); ?>
-		</div>
-	</div>
 	
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
@@ -107,12 +96,6 @@
 		</div>
 	</div>
 	
-	
-	</div>
-			</div>
-		</div>
-	
-	</div>
 	<div class="control-group">
 		<div class="controls">
 			<?php	echo $this->formSubmit($this->form->get('submit')); ?>

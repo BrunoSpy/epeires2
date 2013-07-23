@@ -69,6 +69,7 @@ return array(
     'view_helpers' => array(
     	'invokables' => array(
     		'accordionGroup' => 'Application\View\Helper\AccordionGroup',
+    		'controlGroup' => 'Application\View\Helper\ControlGroup',
     	),
     ),
     'view_manager' => array(
