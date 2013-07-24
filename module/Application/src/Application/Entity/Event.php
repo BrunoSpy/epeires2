@@ -59,6 +59,19 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\ManyToOne(targetEntity="Category") */
  	protected $category;
 	
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event")
+ 	 */
+ 	protected $custom_fields_values;
+ 	
+ 	public function __construct(){
+ 		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function getCustomFieldsValues(){
+ 		return $this->custom_fields_values;
+ 	}
+ 	
 	public function isPunctual() {
 		return $punctual;
 	}
@@ -101,7 +114,8 @@ class Event implements InputFilterAwareInterface {
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;
 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-		$this->start_date = (isset($data['start_date'])) ? new \DateTime($data['start_date']) : null;
+		error_log("start date : ".print_r($data['start_date'], true));
+		$this->start_date = (isset($data['start_date']) && !empty($data['start_date'])) ? new \DateTime($data['start_date']) : null;
 	}
 	
 	public function setInputFilter(InputFilterInterface $inputFilter){
@@ -147,7 +161,7 @@ class Event implements InputFilterAwareInterface {
 	
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'start_date',
-					'required' => false,
+					'required' => true,
 			)));
 			
 			$inputFilter->add($factory->createInput(array(

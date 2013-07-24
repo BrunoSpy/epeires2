@@ -8,7 +8,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\StatusRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="status")
  **/
 class Status {

@@ -50,7 +50,14 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 					);
 					$definition['options'] = $options;
 				break;
-				
+				case 'antenna':
+					$definition['type'] = 'Zend\Form\Element\Select';
+					$options = array(
+							'label' => $customfield->getName(),
+							'value_options' => $om->getRepository('Application\Entity\Antenna')->getAllAsArray(),
+					);
+					$definition['options'] = $options;
+				break;
 				default:
 					;
 				break;

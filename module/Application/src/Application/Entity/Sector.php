@@ -14,7 +14,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="sectors")
- * @ORM\Entity(repositoryClass="Application\Repository\StatusRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  **/
 class Sector {
 	

@@ -12,6 +12,8 @@ use Application\Entity\Event;
 use Application\Form\EventForm;
 use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
+use Application\Entity\CustomFieldValue;
+use Zend\View\Model\JsonModel;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
@@ -59,8 +61,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
     		}
     		
-    		error_log(print_r($this->getRequest()->getPost(), true));
-    		
+    		if(isset($post['custom_fields'])){
+    			error_log(print_r($post['custom_fields'], true));
+    		}
+    		    		
     		if($form->isValid()){
     			//save new event
     			$event->populate($form->getData());	
@@ -69,7 +73,17 @@ class EventsController extends AbstractActionController implements LoggerAware
     			
     			//save optional datas
     			if(isset($post['custom_fields'])){
-    				
+    				foreach ($post['custom_fields'] as $key => $value){
+    					//génération des customvalues si un customfield dont le nom est $key est trouvé
+						$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
+						if($customfield){
+    						$customvalue = new CustomFieldValue();
+    						$customvalue->setEvent($event);
+    						$customvalue->setCustomField($customfield);
+    						$customvalue->setValue($value);
+    						$objectManager->persist($customvalue);
+    					}
+    				}
     			}
     			
     			$objectManager->persist($event);
@@ -151,6 +165,30 @@ class EventsController extends AbstractActionController implements LoggerAware
     	 
     }
 
+    public function getpredefinedvaluesAction(){
+    	$predefinedId = $this->params()->fromQuery('id',null);
+    	$json = array();
+    	$defaultvalues = array();
+    	$customvalues = array();
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$predefinedEvt = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($predefinedId);
+    	
+    	$defaultvalues['name'] = $predefinedEvt->getName();
+    	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
+
+    	$json['defaultvalues'] = $defaultvalues;
+    	
+    	foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue){
+    		$customvalues[$customfieldvalue->getCustomField()->getName()] = $customfieldvalue->getValue();
+    	}
+    	
+    	$json['customvalues'] = $customvalues;
+    	
+    	return new JsonModel($json);
+    }
+    
     public function modifyAction(){
     	
     }

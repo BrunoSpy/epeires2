@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Expression;
 
-class SectorRepository extends EntityRepository {
+class ExtendedRepository extends EntityRepository {
 	
 	/**
 	 * @return array

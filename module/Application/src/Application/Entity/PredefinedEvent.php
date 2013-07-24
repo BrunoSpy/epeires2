@@ -50,12 +50,25 @@ class PredefinedEvent implements InputFilterAwareInterface {
  	/** @ORM\Column(type="integer") */
  	protected $order;
  	
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="event")
+ 	 */
+ 	protected $custom_fields_values;
+ 	
+ 	public function __construct(){
+ 		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function getCustomFieldsValues(){
+ 		return $this->custom_fields_values;
+ 	}
+ 	
  	public function getId(){
  		return $this->id;
  	}
  	
 	public function isPunctual() {
-		return $punctual;
+		return $this->punctual;
 	}
 	
 	public function setPunctual($punctual){

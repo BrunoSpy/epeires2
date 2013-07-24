@@ -88,6 +88,9 @@ return array(
             __DIR__ . '/../view',
             __DIR__ . '/../view/application',
         ),
+    	'strategies' => array(
+    		'ViewJsonStrategy',	
+    	),
     ),
     /**
      * Doctrine 2 Configuration
@@ -115,13 +118,5 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
-    ),
-    /**
-     * Remove this configuration once ZF 2.2.2 is released.
-     *
-     * See https://github.com/zendframework/zf2/pull/4652
-     */
-    'console' => array(
-    		'router' => array(),
     ),
 );

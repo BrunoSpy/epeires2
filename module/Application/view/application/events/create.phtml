@@ -22,6 +22,17 @@ $("#create-link").on("click", function(){
 	loadModernizr();
 });
 
+//click on a predefined events
+$(document).on("click", "a#predefined", function(){
+	$.getJSON(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getpredefinedvalues'))?>'+'?id='+$(this).data('id'),
+		function(data){
+			alert(data.defaultvalues.name);
+			$("#name").val(data.defaultvalues.name);
+		});
+});
+
+//choosing a category
 $(document).on("change", "#root_categories", function(){
 	$.post(
 	'<?php echo $this->url('application',
@@ -50,6 +61,7 @@ $(document).on("change", "#root_categories", function(){
 	
 });
 
+//choosing a subcategory
 $(document).on("change", "#subcategories", function(){
 	$.post(
 		'<?php echo $this->url('application',

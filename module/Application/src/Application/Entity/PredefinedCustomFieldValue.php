@@ -10,9 +10,9 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity @ORM\Table(name="customfieldvalues")
+ * @ORM\Entity @ORM\Table(name="predefinedcustomfieldvalues")
  **/
-class CustomFieldValue {
+class PredefinedCustomFieldValue {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
@@ -21,7 +21,7 @@ class CustomFieldValue {
 	protected $id;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Event", inversedBy="custom_fields_values")
+	 * @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="custom_fields_values")
 	 */
 	protected $event;
 	
@@ -33,7 +33,7 @@ class CustomFieldValue {
 	/** @ORM\Column(type="string") */
 	protected $value;
 
-	public function setEvent($event){
+	public function setPredefinedEvent($event){
 		$this->event = $event;
 	}
 	
@@ -41,8 +41,15 @@ class CustomFieldValue {
 		$this->customfield = $customfield;
 	}
 	
+	public function getCustomField(){
+		return $this->customfield;
+	}
+	
 	public function setValue($value){
 		$this->value = $value;
 	}
 	
+	public function getValue(){
+		return $this->value;
+	}
 }
