@@ -1,8 +1,9 @@
 <?php
 	if($this->type){
+		$this->form->prepare();
 		switch ($this->type) {
 			case 'subcategories':
-				echo '<option value=\"-1\">Choisir la sous-catégorie</option>'; 
+				echo '<option value="-1">Choisir la sous-catégorie</option>'; 
 				foreach($this->values as $key => $value){?>
 					<option value="<?php echo $key; ?>"><?php echo $value; ?></option>
 	<?php 		};
@@ -22,6 +23,19 @@
 					}
 					echo '</tbody>';
 					echo '</table>';
+				}
+				break;
+			case 'custom_fields':
+				foreach ($this->form->get('custom_fields')->getElements() as $element){
+					if($element instanceof \Zend\Form\Element\Select){
+						echo $this->controlGroup(
+								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+								$this->formSelect($element));
+					} elseif ($element instanceof \Zend\Form\Element\Checkbox){
+						//TODO
+					} else {
+						echo $this->formRow($element);
+					}
 				}
 				break;
 			default:
@@ -49,7 +63,7 @@
 					$this->formSelect($this->form->get('categories')->get('root_categories')));
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($this->form->get('categories')->get('subcategories')),
+					$this->formSelect($this->form->get('categories')->get('subcategories')->setAttribute('disabled',true)),
 					array('control_id'=>'form_categories'));
 		
 		echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));	?>
@@ -76,6 +90,7 @@
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formInput($this->form->get('name')));
+		$html .= "<div id=\"custom_fields\"></div>";
 		
 		echo $this->accordionGroup("Description", $html, array('data-parent'=>'form'));
 		

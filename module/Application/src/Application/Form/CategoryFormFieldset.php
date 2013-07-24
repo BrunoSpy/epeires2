@@ -19,7 +19,6 @@ class CategoryFormFieldset extends Fieldset implements InputFilterProviderInterf
 						'empty_option' => 'Choisir la catégorie',
 				),
 				'attributes' => array(
-						'class' => 'categories',
 						'id' => 'root_categories',
 				)
 		));

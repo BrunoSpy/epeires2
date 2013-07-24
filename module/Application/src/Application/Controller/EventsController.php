@@ -11,6 +11,7 @@ use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
 use Application\Form\EventForm;
 use Application\Form\CategoryFormFieldset;
+use Application\Form\CustomFieldset;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
@@ -37,6 +38,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     public function createAction(){    	 
     	if($this->getRequest()->isPost()){
     		
+    		$post = $this->getRequest()->getPost();
+    		
     		$event = new Event();
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray());
@@ -49,13 +52,26 @@ class EventsController extends AbstractActionController implements LoggerAware
     			 ->get('subcategories')
     			 ->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']));
   		
-    		$form->setData($this->getRequest()->getPost());
+    		$form->setData($post);
+    		
+    		//fill optional form fieldsets
+    		if(isset($post['custom_fields'])){
+    			$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
+    		}
+    		
+    		error_log(print_r($this->getRequest()->getPost(), true));
     		
     		if($form->isValid()){
     			//save new event
     			$event->populate($form->getData());	
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
     			$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
+    			
+    			//save optional datas
+    			if(isset($post['custom_fields'])){
+    				
+    			}
+    			
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
@@ -94,6 +110,9 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();
     	//disable layout if request by Ajax
+    	
+    	error_log("xmlhttp : "+$request->isXmlHttpRequest());
+    	
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
@@ -116,6 +135,11 @@ class EventsController extends AbstractActionController implements LoggerAware
     					'type' => $type,
     					'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),	
     				));
+    				break;
+    			case 'custom_fields':
+    				$viewmodel->setVariables(array(
+    						'type' => $type));
+    				$form->add(new CustomFieldset($em, $this->params()->fromQuery('id')));
     				break;
     			default:
     				;

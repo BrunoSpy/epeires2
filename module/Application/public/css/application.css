@@ -79,6 +79,11 @@ body{
 	width: 140px;
 }
 
+a.disabled {
+	pointer-events: none;
+	cursor: default;
+	color: gray;
+}
 
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
