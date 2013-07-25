@@ -44,7 +44,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     		
     		$event = new Event();
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray());
+    		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray(),
+    				$objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
     		$form->setInputFilter($event->getInputFilter());
     		    	
     		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
@@ -60,17 +61,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     		if(isset($post['custom_fields'])){
     			$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
     		}
-    		
-    		if(isset($post['custom_fields'])){
-    			error_log(print_r($post['custom_fields'], true));
-    		}
     		    		
     		if($form->isValid()){
     			//save new event
     			$event->populate($form->getData());	
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
     			$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
-    			
+    			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
@@ -123,14 +120,14 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$type = $this->params()->fromQuery('type',null);
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();
-    	//disable layout if request by Ajax
     	
-    	error_log("xmlhttp : "+$request->isXmlHttpRequest());
-    	
+    	//disable layout if request by Ajax    	
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
-    	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray());
+    	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray(),
+    						$em->getRepository('Application\Entity\Impact')->getAllAsArray());
     	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
     	
@@ -185,6 +182,20 @@ class EventsController extends AbstractActionController implements LoggerAware
     	}
     	
     	$json['customvalues'] = $customvalues;
+    	
+    	return new JsonModel($json);
+    }
+    
+    public function getactionsAction(){
+    	$parentId = $this->params()->fromQuery('id', null);
+    	$json = array();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('order' => 'DESC')) as $action){
+    		$json[$action->getId()] = array('name' => $action->getName(),
+    										'impactname' => $action->getImpact()->getName(),
+    										'impactstyle' => $action->getImpact()->getStyle());
+    	}
     	
     	return new JsonModel($json);
     }

@@ -12,7 +12,7 @@ use Zend\Form\Form;
 
 class EventForm extends Form {
 	
-	public function __construct($statusList = array()){
+	public function __construct($statusList = array(), $impact = array()){
 		parent::__construct('event');
 		
 		$this->setAttribute('method', 'post');
@@ -53,6 +53,15 @@ class EventForm extends Form {
 				'options' => array('label' => 'Etat', 'value_options' => $statusList),
 				'attributes' => array(
 						'class' => 'status'
+				)
+		));
+		
+		$this->add(array(
+				'name' => 'impact',
+				'type' => 'Zend\Form\Element\Select',
+				'options' => array('label' => 'Impact', 'value_options' => $impact),
+				'attributes' => array(
+						'class' => 'impact'
 				)
 		));
 		

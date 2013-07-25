@@ -18,7 +18,7 @@ use Zend\InputFilter\Factory as InputFactory;
  * @ORM\Table(name="predefined_events")
  * @ORM\Entity(repositoryClass="Application\Repository\PredefinedEventRepository")
 **/
-class PredefinedEvent implements InputFilterAwareInterface {
+class PredefinedEvent {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
@@ -35,8 +35,8 @@ class PredefinedEvent implements InputFilterAwareInterface {
  	/** @ORM\ManyToOne(targetEntity="PredefinedEvent") */
  	protected $parent;
 	
-// 	/** @ORM\ManyToOne(targetEntity="Impact") */
-// 	protected $impact;
+ 	/** @ORM\ManyToOne(targetEntity="Impact") */
+ 	protected $impact;
 	
  	/** @ORM\ManyToOne(targetEntity="Category") */
  	protected $category;
@@ -83,71 +83,16 @@ class PredefinedEvent implements InputFilterAwareInterface {
 		return $this->name;
 	}
 	
-	public function setStatus($status){
-		$this->status = $status;
-	}
-	
 	public function setCategory($category){
 		$this->category = $category;
 	}
-	/*** Form Validation ****/
-	private $inputFilter;
 	
-	public function populate($data){
-		$this->id     = (isset($data['id']))     ? $data['id']     : null;
-		$this->name = (isset($data['name'])) ? $data['name'] : null;
-		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
+	public function setImpact($impact){
+		$this->impact = $impact;
 	}
 	
-	public function setInputFilter(InputFilterInterface $inputFilter){
-		throw new \Exception("Not used");
+	public function getImpact(){
+		return $this->impact;
 	}
 	
-	public function getInputFilter(){
-		if (!$this->inputFilter) {
-			$inputFilter = new InputFilter();
-			$factory     = new InputFactory();
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'id',
-					'required' => false,
-					'filters'  => array(
-							array('name' => 'Int'),
-					),
-			)));
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'punctual',
-					'required' => true,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'name',
-					'required' => true,
-					'filters'  => array(
-							array('name' => 'StripTags'),
-							array('name' => 'StringTrim'),
-					),
-					'validators' => array(
-							array(
-									'name'    => 'StringLength',
-									'options' => array(
-											'encoding' => 'UTF-8',
-											'min'      => 1,
-											'max'      => 100,
-									),
-							),
-					),
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'status',
-					'required' => true,
-			)));
-			
-			$this->inputFilter = $inputFilter;
-		}
-	
-		return $this->inputFilter;
-	}
 }

@@ -38,8 +38,8 @@ class Event implements InputFilterAwareInterface {
 // 	/** @ORM\ManyToOne(targetEntity="Event") */
 // 	protected $parent;
 	
-// 	/** @ORM\ManyToOne(targetEntity="Impact") */
-// 	protected $impact;
+ 	/** @ORM\ManyToOne(targetEntity="Impact") */
+ 	protected $impact;
 	
  	/** @ORM\Column(type="datetime") */
  	protected $start_date;
@@ -107,6 +107,15 @@ class Event implements InputFilterAwareInterface {
 	public function setCategory($category){
 		$this->category = $category;
 	}
+	
+	public function setImpact($impact){
+		$this->impact = $impact;
+	}
+	
+	public function getImpact(){
+		return $this->impact;
+	}
+	
 	/*** Form Validation ****/
 	private $inputFilter;
 	
@@ -114,7 +123,6 @@ class Event implements InputFilterAwareInterface {
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;
 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-		error_log("start date : ".print_r($data['start_date'], true));
 		$this->start_date = (isset($data['start_date']) && !empty($data['start_date'])) ? new \DateTime($data['start_date']) : null;
 	}
 	
@@ -159,6 +167,11 @@ class Event implements InputFilterAwareInterface {
 					),
 			)));
 	
+			$inputFilter->add($factory->createInput(array(
+					'name'     => 'impact',
+					'required' => true,
+			)));
+			
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'start_date',
 					'required' => true,

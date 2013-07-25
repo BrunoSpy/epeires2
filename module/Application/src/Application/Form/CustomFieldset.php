@@ -41,27 +41,27 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 			$definition['name'] = $customfield->getName();
 			$this->names[] = $customfield->getName();
 			$definition['attributes'] = array('id' => $customfield->getName());
+			$options = array('label' => $customfield->getName());
 			switch ($customfield->getType()->getType()) {
+				case 'string':
+					$definition['type'] = 'Zend\Form\Element\Text';
+					break;
+				case 'text':
+					$definition['type'] = 'Zend\Form\Element\Textarea';
+					break;
 				case 'sector':
 					$definition['type'] = 'Zend\Form\Element\Select';
-					$options = array(
-							'label' => $customfield->getName(),
-							'value_options' => $om->getRepository('Application\Entity\Sector')->getAllAsArray(),
-					);
-					$definition['options'] = $options;
+					$options['value_options'] = $om->getRepository('Application\Entity\Sector')->getAllAsArray();
 				break;
 				case 'antenna':
 					$definition['type'] = 'Zend\Form\Element\Select';
-					$options = array(
-							'label' => $customfield->getName(),
-							'value_options' => $om->getRepository('Application\Entity\Antenna')->getAllAsArray(),
-					);
-					$definition['options'] = $options;
+					$options['value_options'] = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();					
 				break;
 				default:
 					;
 				break;
 			}
+			$definition['options'] = $options;
 			$this->add($definition);
 		}
 		

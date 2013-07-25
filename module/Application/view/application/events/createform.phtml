@@ -33,10 +33,21 @@
 								$this->formSelect($element));
 					} elseif ($element instanceof \Zend\Form\Element\Checkbox){
 						//TODO
+					} elseif ($element instanceof \Zend\Form\Element\Text){
+						echo $this->controlGroup(
+								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+								$this->formText($element));
+					} elseif ($element instanceof \Zend\Form\Element\Textarea){
+						echo $this->controlGroup(
+							$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+							$this->formTextarea($element));
 					} else {
 						echo $this->formRow($element);
 					}
 				}
+				break;
+			case 'actions':
+				//done by jquery
 				break;
 			default:
 				;
@@ -90,11 +101,14 @@
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formInput($this->form->get('name')));
+		$html .= $this->controlGroup(
+				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
+				$this->formSelect($this->form->get('impact')));
 		$html .= "<div id=\"custom_fields\"></div>";
 		
 		echo $this->accordionGroup("Description", $html, array('data-parent'=>'form'));
 		
-		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form'));
+		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		
 		?>
 		

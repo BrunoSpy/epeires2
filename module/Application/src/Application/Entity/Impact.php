@@ -8,7 +8,8 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity @ORM\Table(name="impact")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Table(name="impact")
  **/
 class Impact {
 	/**
@@ -18,11 +19,14 @@ class Impact {
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="integer") */
+	/** @ORM\Column(type="integer", unique=true) */
 	protected $value;
 	
 	/** @ORM\Column(type="string") */
 	protected $name;
+	
+	/** @ORM\Column(type="string") */
+	protected $style;
 	
 	public function getId(){
 		return $this->id;
@@ -44,4 +48,11 @@ class Impact {
 		$this->name = $name;
 	}
 	
+	public function getStyle(){
+		return $this->style;
+	}
+	
+	public function setStyle($style){
+		$this->style = $style;
+	}
 }
