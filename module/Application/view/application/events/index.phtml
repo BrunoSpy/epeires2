@@ -1,0 +1,24 @@
+
+<div class="warnings">
+<?php if ($this->successMessages) { ?>
+	<?php foreach ($this->successMessages as $message) { ?>
+		<a class="close" data-dismiss="alert" href="#">&times;</a>
+		<div class="alert alert-success"><?php echo $message ?></div>
+	<?php }?>
+<?php } ?>
+
+<?php if ($this->errorMessages) { ?>
+	<?php foreach ($this->errorMessages as $message) { ?>
+		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+</div>
+
+<div id="create-evt">
+<?php 
+	echo $this->partial('events/create.phtml');
+?>
+</div>

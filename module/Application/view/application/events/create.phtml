@@ -1,0 +1,98 @@
+<div id="event">
+<div id="loading">Chargement...</div>
+<!-- formulaire createform.phtml récupéré via ajax -->
+</div>
+<?php $this->inlineScript()->captureStart();?>
+$("#loading").ajaxStart(function(){
+	$(this).show();})
+	.ajaxStop(function(){
+	$(this).hide();});
+	
+	
+$("#create-link").on("click", function(){
+
+	$("#event").load(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'createform'))?>',
+		function(){
+			//disable every accordion but the first
+			$("a.accordion-toggle:gt(0)").addClass("disabled");
+		}
+	);
+	
+	loadModernizr();
+});
+
+//click on a predefined events
+$(document).on("click", "a#predefined", function(){
+	$.getJSON(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getpredefinedvalues'))?>'+'?id='+$(this).data('id'),
+		function(data){
+			alert(data.defaultvalues.name);
+			$("#name").val(data.defaultvalues.name);
+		});
+});
+
+//choosing a category
+$(document).on("change", "#root_categories", function(){
+	$.post(
+	'<?php echo $this->url('application',
+							array('controller'=>'events', 'action'=>'createform'),
+							array('query'=>array('type'=>'subcategories')) ) ?>'+'&id='+$(this).val(),
+	function(data){
+		$("#subcategories").html(data);
+		if($("#root_categories option:selected").val() > 0) {
+			$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+			$("#Horairesid").removeClass("disabled");
+			$("#Descriptionid").removeClass("disabled");
+			$('#subcategories').prop('disabled',false);
+			$('#subcategories option[value=-1]').prop('selected', true);
+			$('#subcategories').trigger("change");
+		
+		} else {
+			$("#category_title").html('Catégories');
+			$("#Horairesid").addClass("disabled");
+			$("#Descriptionid").addClass("disabled");
+			$('#subcategories option[value=-1]').prop('selected', true);
+			$('#subcategories').trigger("change");
+			$('#subcategories').prop('disabled',true);
+		}
+	});
+	
+	
+});
+
+//choosing a subcategory
+$(document).on("change", "#subcategories", function(){
+	$.post(
+		'<?php echo $this->url('application',
+							array('controller'=>'events', 'action'=>'createform'),
+							array('query'=>array('type'=>'predefined_events')) ) ?>'+'&id='+$(this).val(),
+		function(data){
+			$("#predefined_events").html(data);
+			if($("#subcategories option:selected").val() > 0) {
+				$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
+				$("#Modèlesid").removeClass("disabled");
+				$.post(
+					'<?php echo $this->url('application',
+							array('controller'=>'events', 'action'=>'createform'),
+							array('query'=>array('type'=>'custom_fields')) ) ?>'+'&id='+$("#subcategories option:selected").val(),
+					function(data){
+						$("#custom_fields").html(data);
+					}			
+				);
+			} else {
+				if($("#root_categories").val() > 0) {
+					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+				}
+				$("#Modèlesid").addClass("disabled");
+			}
+		}
+	);
+	
+});
+
+$(document).on("change", "#punctual", function(){
+	$("#dateFin").prop('disabled',$(this).is(':checked')); 
+});
+
+<?php $this->inlineScript()->captureEnd();?>
