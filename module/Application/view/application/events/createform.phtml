@@ -4,9 +4,9 @@
 		switch ($this->type) {
 			case 'subcategories':
 				echo '<option value="-1">Choisir la sous-catégorie</option>'; 
-				foreach($this->values as $key => $value){?>
-					<option value="<?php echo $key; ?>"><?php echo $value; ?></option>
-	<?php 		};
+				foreach($this->values as $key => $value){
+					echo "<option value=\"".$key."\">".$value."</option>";
+				};
 				break;
 			case 'predefined_events':
 				if(empty($this->values)){
@@ -32,7 +32,9 @@
 								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
 								$this->formSelect($element));
 					} elseif ($element instanceof \Zend\Form\Element\Checkbox){
-						//TODO
+						echo $this->controlGroup(
+								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+								$this->formCheckbox($element));
 					} elseif ($element instanceof \Zend\Form\Element\Text){
 						echo $this->controlGroup(
 								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
@@ -46,10 +48,6 @@
 					}
 				}
 				break;
-			case 'actions':
-				//done by jquery
-				break;
-			default:
 				;
 			break;
 		}		
@@ -111,13 +109,7 @@
 		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		
 		?>
-		
-		<?php 
-		
-		
-		?>
-				
-	
+
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">

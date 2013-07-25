@@ -50,10 +50,12 @@ class EventsController extends AbstractActionController implements LoggerAware
     		    	
     		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
     		$form->add($categoryfieldset);
-    		//fill form subcategories    		
+    		//fill form subcategories    
+    		$valueoptions = $objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']);
+    		$valueoptions[-1] = "";		
     		$form->get('categories')
     			 ->get('subcategories')
-    			 ->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']));
+    			 ->setValueOptions($valueoptions);
   		
     		$form->setData($post);
     		
@@ -82,6 +84,18 @@ class EventsController extends AbstractActionController implements LoggerAware
     					}
     				}
     			}
+    			//create associated actions
+				if(isset($post['modelid'])){
+					$parentID = $post['modelid'];
+					//get actions
+					foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+						$child = new Event();
+						$child->setParent($event);
+						$child->createFromPredefinedEvent($action);
+						$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true)));
+						$objectManager->persist($child);
+					}
+				}
     			
     			$objectManager->persist($event);
     			$objectManager->flush();

@@ -25,8 +25,9 @@ $("#create-link").on("click", function(){
 //click on a predefined events
 $(document).on("click", "a#predefined", function(){
 	$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
+	var me = $(this);
 	$.getJSON(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getpredefinedvalues'))?>'+'?id='+$(this).data('id'),
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getpredefinedvalues'))?>'+'?id='+me.data('id'),
 		function(data){
 			$("#name").val(data.defaultvalues.name);
 			$("#punctual").prop('checked', data.defaultvalues.punctual);
@@ -46,18 +47,21 @@ $(document).on("click", "a#predefined", function(){
 			$("#Horairesid").trigger('click');
 			//prepare actions
 			$("#actionsTitle").removeClass("disabled");
-			
 	});
 	//get actions
 	$.getJSON(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getactions'))?>'+'?id='+$(this).data('id'),
+		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getactions'))?>'+'?id='+me.data('id'),
 		function(data){
 			var container = $("#inner-Ficheréflexe");
 			container.html("");
-			var content = '<table class="table table-hover"><tbody>';
+			//save id of model
+			var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
+			//then the table of actions
+			content += '<table class="table table-hover"><tbody>';
 			$.each(data, function(key, value){
 				content += "<tr data-id=\""+key+"\">";
 				content += "<td><span class=\"label label-"+value.impactstyle+"\">"+value.impactname+"</span></td>";
+				content += "<td>"+value.name+"</td>";
 				content += '</tr>';
 			});						
 			content += '</tbody></table>';

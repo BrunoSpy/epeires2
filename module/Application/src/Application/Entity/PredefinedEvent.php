@@ -86,6 +86,10 @@ class PredefinedEvent {
 	public function setCategory($category){
 		$this->category = $category;
 	}
+
+	public function getCategory(){
+		return $this->category;
+	}
 	
 	public function setImpact($impact){
 		$this->impact = $impact;
