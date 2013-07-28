@@ -75,7 +75,7 @@ $(document).on("change", "#root_categories", function(){
 	$.post(
 	'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('type'=>'subcategories')) ) ?>'+'&id='+$(this).val(),
+							array('query'=>array('subform'=>'subcategories')) ) ?>'+'&id='+$(this).val(),
 	function(data){
 		$("#subcategories").html(data);
 		if($("#root_categories option:selected").val() > 0) {
@@ -103,7 +103,7 @@ $(document).on("change", "#subcategories", function(){
 	$.post(
 		'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('type'=>'predefined_events')) ) ?>'+'&id='+$(this).val(),
+							array('query'=>array('subform'=>'predefined_events')) ) ?>'+'&id='+$(this).val(),
 		function(data){
 			$("#predefined_events").html(data);
 			if($("#subcategories option:selected").val() > 0) {
@@ -112,7 +112,7 @@ $(document).on("change", "#subcategories", function(){
 				$.post(
 					'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('type'=>'custom_fields')) ) ?>'+'&id='+$("#subcategories option:selected").val(),
+							array('query'=>array('subform'=>'custom_fields')) ) ?>'+'&id='+$("#subcategories option:selected").val(),
 					function(data){
 						$("#custom_fields").html(data);
 					}			

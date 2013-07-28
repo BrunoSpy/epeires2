@@ -69,6 +69,10 @@ class Event implements InputFilterAwareInterface {
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
+ 	public function getId(){
+ 		return $this->id;
+ 	}
+ 	
  	public function getCustomFieldsValues(){
  		return $this->custom_fields_values;
  	}
@@ -105,6 +109,10 @@ class Event implements InputFilterAwareInterface {
 		$this->status = $status;
 	}
 	
+	public function getCategory(){
+		return $this->category;
+	}
+	
 	public function setCategory($category){
 		$this->category = $category;
 	}
@@ -125,7 +133,7 @@ class Event implements InputFilterAwareInterface {
 		return $this->parent;
 	}
 	
-  	public function setStartDate(DateTime $startdate = null){
+  	public function setStartDate($startdate = null){
   		$this->start_date = $startdate;
   	}
 	
@@ -162,6 +170,10 @@ class Event implements InputFilterAwareInterface {
 		if(isset($data['end_date']) && !empty($data['end_date'])){
 			$this->end_date = new \DateTime($data['end_date']);
 		}
+	}
+	
+	public function getArrayCopy() {
+		return get_object_vars($this);
 	}
 	
 	public function setInputFilter(InputFilterInterface $inputFilter){
