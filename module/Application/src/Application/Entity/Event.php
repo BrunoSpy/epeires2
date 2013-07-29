@@ -35,18 +35,19 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\ManyToOne(targetEntity="Status") */
  	protected $status;
 	
-// 	/** @ORM\ManyToOne(targetEntity="Event") */
-// 	protected $parent;
+ 	/** @ORM\ManyToOne(targetEntity="Event") */
+ 	protected $parent;
 	
  	/** @ORM\ManyToOne(targetEntity="Impact") */
  	protected $impact;
 	
- 	/** @ORM\Column(type="datetime") */
+ 	/** 
+ 	 * @ORM\Column(type="datetime", nullable=true)
+ 	 */
  	protected $start_date;
 	
  	/** 
- 	 * @ORM\Column(type="datetime")
- 	 * @ORM\Column(nullable=true);
+ 	 * @ORM\Column(type="datetime", nullable=true)
  	 */
  	protected $end_date;
 	
@@ -66,6 +67,10 @@ class Event implements InputFilterAwareInterface {
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function getId(){
+ 		return $this->id;
  	}
  	
  	public function getCustomFieldsValues(){
@@ -104,6 +109,10 @@ class Event implements InputFilterAwareInterface {
 		$this->status = $status;
 	}
 	
+	public function getCategory(){
+		return $this->category;
+	}
+	
 	public function setCategory($category){
 		$this->category = $category;
 	}
@@ -116,6 +125,38 @@ class Event implements InputFilterAwareInterface {
 		return $this->impact;
 	}
 	
+	public function setParent($parent){
+		$this->parent = $parent;
+	}
+	
+	public function getParent(){
+		return $this->parent;
+	}
+	
+  	public function setStartDate($startdate = null){
+  		$this->start_date = $startdate;
+  	}
+	
+ 	public function getStartDate(){
+ 		return $this->start_date;
+ 	}
+	
+	public function setEndDate($enddate = null){
+		$this->end_date = $enddate;
+	}
+	
+	public function getEndDate(){
+		return $this->end_date;
+	}
+	
+	public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined){
+		$this->setName($predefined->getName());
+		$this->setCategory($predefined->getCategory());
+		$this->setImpact($predefined->getImpact());
+		$this->setPunctual($predefined->isPunctual());
+		//custom fields ???
+	}
+	
 	/*** Form Validation ****/
 	private $inputFilter;
 	
@@ -123,7 +164,16 @@ class Event implements InputFilterAwareInterface {
 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
 		$this->name = (isset($data['name'])) ? $data['name'] : null;
 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-		$this->start_date = (isset($data['start_date']) && !empty($data['start_date'])) ? new \DateTime($data['start_date']) : null;
+		if(isset($data['start_date']) && !empty($data['start_date'])){
+			$this->start_date = new \DateTime($data['start_date']);
+		}
+		if(isset($data['end_date']) && !empty($data['end_date'])){
+			$this->end_date = new \DateTime($data['end_date']);
+		}
+	}
+	
+	public function getArrayCopy() {
+		return get_object_vars($this);
 	}
 	
 	public function setInputFilter(InputFilterInterface $inputFilter){
@@ -170,6 +220,11 @@ class Event implements InputFilterAwareInterface {
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'impact',
 					'required' => true,
+			)));
+			
+			$inputFilter->add($factory->createInput(array(
+					'name'     => 'parent',
+					'required' => false,
 			)));
 			
 			$inputFilter->add($factory->createInput(array(

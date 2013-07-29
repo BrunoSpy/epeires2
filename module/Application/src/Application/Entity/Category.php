@@ -29,6 +29,10 @@ class Category {
 	/** @ORM\Column(type="string") */
 	protected $name;
 	
+	public function getParent(){
+		return $this->parent;
+	}
+	
 	public function getId(){
 		return $this->id;
 	}

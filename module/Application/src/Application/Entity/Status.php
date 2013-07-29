@@ -25,6 +25,9 @@ class Status {
 	/** @ORM\Column(type="string") */
 	protected $name;
 	
+	/** @ORM\Column(type="boolean") */
+	protected $default;
+	
 	public function getId(){
 		return $this->id;
 	}
@@ -35,6 +38,14 @@ class Status {
 	
 	public function setOpen($open){
 		$this->open = $open;
+	}
+	
+	public function isDefault(){
+		return $this->default;
+	}
+	
+	public function setDefault($default){
+		$this->default = $default;
 	}
 	
 	public function getName(){

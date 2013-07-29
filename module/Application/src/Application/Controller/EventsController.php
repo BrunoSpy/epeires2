@@ -19,6 +19,9 @@ class EventsController extends AbstractActionController implements LoggerAware
 {
 	
     public function indexAction(){    	
+    	
+    	$viewmodel = new ViewModel();
+    	
     	$return = array();
     	
     	if($this->flashMessenger()->hasErrorMessages()){
@@ -31,7 +34,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$this->flashMessenger()->clearMessages();
     	
-        return $return;
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$events = $objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=> null));
+    	
+    	$viewmodel->setVariables(array('messages'=>$return, 'events'=>$events));
+    	
+        return $viewmodel;
     }
     
     /**
@@ -50,10 +59,12 @@ class EventsController extends AbstractActionController implements LoggerAware
     		    	
     		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
     		$form->add($categoryfieldset);
-    		//fill form subcategories    		
+    		//fill form subcategories    
+    		$valueoptions = $objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']);
+    		$valueoptions[-1] = "";		
     		$form->get('categories')
     			 ->get('subcategories')
-    			 ->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']));
+    			 ->setValueOptions($valueoptions);
   		
     		$form->setData($post);
     		
@@ -66,7 +77,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     			//save new event
     			$event->populate($form->getData());	
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
-    			$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
+    			if(isset($form->getData()['categories']['subcategories']) 
+    				&& !empty($form->getData()['categories']['subcategories'])
+    				&& $form->getData()['categories']['subcategories'] > 0){
+    				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['subcategories']));
+    			} else {
+    				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
+    			}
     			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
     			//save optional datas
     			if(isset($post['custom_fields'])){
@@ -82,6 +99,18 @@ class EventsController extends AbstractActionController implements LoggerAware
     					}
     				}
     			}
+    			//create associated actions
+				if(isset($post['modelid'])){
+					$parentID = $post['modelid'];
+					//get actions
+					foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+						$child = new Event();
+						$child->setParent($event);
+						$child->createFromPredefinedEvent($action);
+						$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true)));
+						$objectManager->persist($child);
+					}
+				}
     			
     			$objectManager->persist($event);
     			$objectManager->flush();
@@ -117,7 +146,12 @@ class EventsController extends AbstractActionController implements LoggerAware
      */
     public function createformAction(){
     	
-    	$type = $this->params()->fromQuery('type',null);
+    	//query param to get a part of the form
+    	$subform = $this->params()->fromQuery('subform',null);
+    	
+    	//typ of the form : creation or modification
+    	$type = $this->params()->fromQuery('type', null);
+    	
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();
     	
@@ -126,30 +160,66 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
+    	//création du formulaire : identique en cas de modif ou création
     	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray(),
-    						$em->getRepository('Application\Entity\Impact')->getAllAsArray());
+    			$em->getRepository('Application\Entity\Impact')->getAllAsArray());
     	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
+    	 
     	
     	if($type){
     		switch ($type) {
+    			case 'modification':
+    				$id = $this->params()->fromQuery('id', null);
+    				try {
+    					$event = $em->getRepository('Application\Entity\Event')->find($id);
+    				}
+    				catch (\Exception $ex) {
+    					$this->flashMessenger()->addErrorMessage("Impossible de modifier l'évènement.");
+    					return $this->redirect()->toRoute('application');
+    				}
+    				$cat = $event->getCategory();
+    				if($cat->getParent()){
+    					$form->get('categories')->get('subcategories')->setValueOptions(
+    							$em->getRepository('Application\Entity\Category')->getChildsAsArray($cat->getParent()->getId()));
+    					$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getParent()->getId());
+    					$form->get('categories')->get('subcategories')->setAttribute('value', $cat->getId());
+    				} else {
+    					$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getId());
+    				}
+    				$form->bind($event);
+    				//form is filled by the view
+    				$viewmodel->setVariables(array('event'=>$event));
+    				break;
+    			case 'creation':
+    			break;
+    			default:
+    				;
+    			break;
+    		}
+    		
+    	}
+    	
+    	
+    	if($subform){
+    		switch ($subform) {
     			case 'subcategories':
 					$id = $this->params()->fromQuery('id');
     				$viewmodel->setVariables(array(
-    						'type' => $type,
+    						'subform' => $subform,
     						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
     				));
     				break;
     			case 'predefined_events':
     				$id = $this->params()->fromQuery('id');
     				$viewmodel->setVariables(array(
-    					'type' => $type,
+    					'subform' => $subform,
     					'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),	
     				));
     				break;
     			case 'custom_fields':
     				$viewmodel->setVariables(array(
-    						'type' => $type));
+    						'subform' => $subform));
     				$form->add(new CustomFieldset($em, $this->params()->fromQuery('id')));
     				break;
     			default:

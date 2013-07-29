@@ -1,12 +1,12 @@
 <?php
-	if($this->type){
+	if($this->subform){
 		$this->form->prepare();
-		switch ($this->type) {
+		switch ($this->subform) {
 			case 'subcategories':
 				echo '<option value="-1">Choisir la sous-catégorie</option>'; 
-				foreach($this->values as $key => $value){?>
-					<option value="<?php echo $key; ?>"><?php echo $value; ?></option>
-	<?php 		};
+				foreach($this->values as $key => $value){
+					echo "<option value=\"".$key."\">".$value."</option>";
+				};
 				break;
 			case 'predefined_events':
 				if(empty($this->values)){
@@ -32,7 +32,9 @@
 								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
 								$this->formSelect($element));
 					} elseif ($element instanceof \Zend\Form\Element\Checkbox){
-						//TODO
+						echo $this->controlGroup(
+								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+								$this->formCheckbox($element));
 					} elseif ($element instanceof \Zend\Form\Element\Text){
 						echo $this->controlGroup(
 								$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
@@ -46,10 +48,6 @@
 					}
 				}
 				break;
-			case 'actions':
-				//done by jquery
-				break;
-			default:
 				;
 			break;
 		}		
@@ -59,9 +57,19 @@
 	?>
 		
 	<?php
-	$this->form->setAttributes(array(
-				'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
-				'class' => 'form-horizontal'));
+	if($this->event){
+		//form de modif
+		echo "<h2>".$this->event->getName()."</h2>";
+		$this->form->setAttributes(array(
+		'action' => $this->url('application', array('controller'=>'events', 'action'=>'edit')),
+		'class' => 'form-horizontal'));
+	} else {
+		//form de creation
+		$this->form->setAttributes(array(
+		'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
+		'class' => 'form-horizontal'));
+	}
+	
 	$this->form->prepare();
 	echo $this->form()->openTag($this->form);
 	echo $this->formHidden($this->form->get('id'));
@@ -69,19 +77,29 @@
 	
 	<div class="accordion" id="form">
 		<?php 
+		//category and subcategory		
+		$formSelectCat = $this->form->get('categories')->get('root_categories');
+		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
+ 		if($event){
+			//Catégorie non modifiale si modification
+			$formSelectCat->setAttribute('disabled',true);
+ 		}
+		
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($this->form->get('categories')->get('root_categories')));
+					$this->formSelect($formSelectCat));
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($this->form->get('categories')->get('subcategories')->setAttribute('disabled',true)),
-					array('control_id'=>'form_categories'));
+					$this->formSelect($formSelectSubCat->setAttribute('disabled',true)),
+					array('control_id'=>'form_categories'));		
 		
-		echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));	?>
-
-		<?php echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events')); ?>
-		
-		<?php 
+		echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
+ 
+		//Modèles uniquement si création
+		if(!$event){
+			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
+		}
+			
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formCheckbox($this->form->get('punctual')));
@@ -111,13 +129,7 @@
 		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		
 		?>
-		
-		<?php 
-		
-		
-		?>
-				
-	
+
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">
@@ -132,3 +144,5 @@
 	</div>	
 	<?php echo $this->form()->closeTag(); ?>
 <?php }?>
+
+
