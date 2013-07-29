@@ -1,14 +1,18 @@
 
 <div class="warnings">
-<?php if ($this->successMessages) { ?>
-	<?php foreach ($this->successMessages as $message) { ?>
-		<div class="alert alert-success"><?php echo $message ?></div>
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
 	<?php }?>
 <?php } ?>
 
-<?php if ($this->errorMessages) { ?>
-	<?php foreach ($this->errorMessages as $message) { ?>
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
 		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
 			<?php echo $message ?>
 		</div>
 	<?php }?>
@@ -20,8 +24,38 @@
 	echo $this->partial('events/create.phtml');
 ?>
 </div>
-<div id="modify">
-<?php
-   echo "Modifier un évènement";
- ?>
+<div id="list-events">
+<table>
+<tbody>
+<?php 
+	foreach ($this->events as $event){
+		echo "<tr>";
+		echo "<td>";
+		if($event->getImpact()){
+			echo "<span class=\"label label-".$event->getImpact()->getStyle()."\">";
+			echo $event->getImpact()->getName()."</span>";
+		}
+		echo "</td>";
+		echo "<td>".$event->getName()."</td>";
+		echo "<td><a id=\"modify-evt\" href=\"#\" class=\"btn\" data-id=\"".$event->getId()."\" >Modifier</a></td>";
+		echo "</tr>";
+	}
+?>
+</tbody>
+</table>
+
 </div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(document).on("click", "a#modify-evt", function(){
+	$("#event").html('<div id="loading">Chargement...</div>');
+	$("#create-evt").show();
+	$("#event").load(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action' =>'createform'))?>'+'?type=modification&id='+$(this).data('id'),
+		function(){
+
+		}
+	);
+});
+<?php $this->inlineScript()->captureEnd();?>

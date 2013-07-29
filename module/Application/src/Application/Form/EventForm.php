@@ -12,7 +12,7 @@ use Zend\Form\Form;
 
 class EventForm extends Form {
 	
-	public function __construct($statusList = array()){
+	public function __construct($statusList = array(), $impact = array()){
 		parent::__construct('event');
 		
 		$this->setAttribute('method', 'post');
@@ -57,6 +57,15 @@ class EventForm extends Form {
 		));
 		
 		$this->add(array(
+				'name' => 'impact',
+				'type' => 'Zend\Form\Element\Select',
+				'options' => array('label' => 'Impact', 'value_options' => $impact),
+				'attributes' => array(
+						'class' => 'impact'
+				)
+		));
+		
+		$this->add(array(
 				'name' => 'start_date',
 				'type' => 'Zend\Form\Element\DateTime',
 				'options' => array(
@@ -65,8 +74,21 @@ class EventForm extends Form {
 				),
 				'attributes' => array(
 					'class' => 'datetime',
-						'id' => 'dateDeb'
+					'id' => 'dateDeb'
 				),			
+		));
+		
+		$this->add(array(
+				'name' => 'end_date',
+				'type' => 'Zend\Form\Element\DateTime',
+				'options' => array(
+						'label' => 'Fin',
+						'format' => 'd-m-Y H:i'
+				),
+				'attributes' => array(
+						'class' => 'datetime',
+						'id' => 'dateFin'
+				),
 		));
 		
 		$this->add(array(
@@ -74,7 +96,7 @@ class EventForm extends Form {
 				'attributes' => array(
 					'type' => 'submit',
 					'value' => 'Ajouter',
-						'class' => 'subm'
+					'class' => 'btn btn-primary'
 				)
 		));
 	}

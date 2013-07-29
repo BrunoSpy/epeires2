@@ -9,9 +9,9 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="status")
+ * @ORM\Table(name="antennas")
  **/
-class Status {
+class Antenna {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
@@ -19,33 +19,23 @@ class Status {
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="boolean") */
-	protected $open;
+ 	/** @ORM\ManyToOne(targetEntity="Organisation") */
+	protected $organisation;
 	
 	/** @ORM\Column(type="string") */
 	protected $name;
 	
+	/** @ORM\Column(type="string") */
+	protected $short_name;
+	
+	/** @ORM\Column(type="string") */
+	protected $location;
+	
 	/** @ORM\Column(type="boolean") */
-	protected $default;
+	protected $state;
 	
 	public function getId(){
 		return $this->id;
-	}
-	
-	public function isOpen(){
-		return $this->open;
-	}
-	
-	public function setOpen($open){
-		$this->open = $open;
-	}
-	
-	public function isDefault(){
-		return $this->default;
-	}
-	
-	public function setDefault($default){
-		$this->default = $default;
 	}
 	
 	public function getName(){

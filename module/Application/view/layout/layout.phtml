@@ -1,6 +1,6 @@
 <?php echo $this->doctype(); ?>
 
-<html lang="fr">
+<html lang="fr" class="no-js">
     <head>
         <meta charset="utf-8">
         <?php echo $this->headTitle($this->translate('PV CdS'))->setSeparator(' - ')->setAutoEscape(false) ?>
@@ -21,6 +21,7 @@
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
         							  ->prependFile($this->basePath() . '/js/timeline.js')
         							  ->prependFile($this->basePath() . '/js/jquery-datetimepicker.js')
+        							  ->prependFile($this->basePath() . '/js/modernizr.custom.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
@@ -36,7 +37,7 @@
     		<div class="navbar-inner">
     			<ul class="nav pull-left">
     				<li>
-    					<a href="#" id="create-link">Evt <i class="icon-chevron-down"></i></a>
+    					<a href="#" id="create-link"><i class="icon-pencil"></i> <i class="icon-chevron-down"></i></a>
     				</li>
     			</ul>
 	        	<ul class="nav-centered nav">
@@ -49,6 +50,7 @@
 	            		
 	            	</li>
 	            	<li class="divider-vertical"></li>
+	            	<li><a href="<?php echo $this->url('application', array('controller'=>'sar', 'action'=>'index')) ?>">SAR</a></li>
 	            	<li><a href="<?php echo $this->url('application', array('controller'=>'frequencies', 'action'=>'index')) ?>">Fréquences</a></li>
 	        	</ul>
 	        	<form class="navbar-search pull-right">

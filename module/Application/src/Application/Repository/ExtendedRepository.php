@@ -2,9 +2,14 @@
 namespace Application\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Expression;
 
-class StatusRepository extends EntityRepository {
+class ExtendedRepository extends EntityRepository {
 	
+	/**
+	 * @return array
+	 */
 	public function getAllAsArray(){
 		$list = parent::findAll();
 		$res = array();
@@ -13,5 +18,6 @@ class StatusRepository extends EntityRepository {
 		}
 		return $res;
 	}
+
 	
 }

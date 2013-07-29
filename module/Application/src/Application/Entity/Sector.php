@@ -13,7 +13,8 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity @ORM\Table(name="sectors")
+ * @ORM\Table(name="sectors")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  **/
 class Sector {
 	
@@ -42,5 +43,13 @@ class Sector {
 	
 	public function __construct(){
 		$this->sectorGroups = new Doctrine\Common\Collections\ArrayCollection();
+	}
+	
+	public function getId(){
+		return $this->id;
+	}
+	
+	public function getName(){
+		return $this->name;
 	}
 }

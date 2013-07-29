@@ -12,11 +12,10 @@ return array(
                 'type'    => 'segment',
             	'may_terminate' => true,
                 'options' => array(
-                    'route'    => '/[:controller[/:action[/:filter]]]',
+                    'route'    => '/[:controller[/:action]]',
                 	'constraints' => array(
                 			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     		'controller' => '[a-zA-Z][a-zA-Z0-9-]*',
-                			'filter' => '[a-zA-Z][a-zA-Z0-9_-]*',
                		),
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',
@@ -67,6 +66,12 @@ return array(
         				}
         ),
     ),
+    'view_helpers' => array(
+    	'invokables' => array(
+    		'accordionGroup' => 'Application\View\Helper\AccordionGroup',
+    		'controlGroup' => 'Application\View\Helper\ControlGroup',
+    	),
+    ),
     'view_manager' => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
@@ -83,6 +88,9 @@ return array(
             __DIR__ . '/../view',
             __DIR__ . '/../view/application',
         ),
+    	'strategies' => array(
+    		'ViewJsonStrategy',	
+    	),
     ),
     /**
      * Doctrine 2 Configuration
@@ -110,13 +118,5 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
-    ),
-    /**
-     * Remove this configuration once ZF 2.2.2 is released.
-     *
-     * See https://github.com/zendframework/zf2/pull/4652
-     */
-    'console' => array(
-    		'router' => array(),
     ),
 );

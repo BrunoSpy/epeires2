@@ -12,7 +12,8 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity @ORM\Table(name="categories")
+ * @ORM\Table(name="categories")
+ * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  **/
 class Category {
 	/**
@@ -27,6 +28,10 @@ class Category {
 	
 	/** @ORM\Column(type="string") */
 	protected $name;
+	
+	public function getParent(){
+		return $this->parent;
+	}
 	
 	public function getId(){
 		return $this->id;

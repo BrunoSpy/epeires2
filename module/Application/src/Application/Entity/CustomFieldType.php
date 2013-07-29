@@ -10,10 +10,9 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity
- * @ORM\Table(name="customfields")
+ * @ORM\Entity @ORM\Table(name="customfieldtypes")
  **/
-class CustomField {
+class CustomFieldType {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
@@ -21,25 +20,22 @@ class CustomField {
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="string", unique=true) */
+	/** @ORM\Column(type="string") */
 	protected $name;
 	
-	/**
-	 * @ORM\ManyToOne(targetEntity="Category")
-	 */
-	protected $category;
-	
-	/**
-	 * @ORM\ManyToOne(targetEntity="CustomFieldType")
-	 */
+	/** @ORM\Column(type="string") */
 	protected $type;
 	
-	public function getId(){
-		return $this->id;
+	public function setName($name){
+		$this->name = $name;
 	}
 	
 	public function getName(){
 		return $this->name;
+	}
+	
+	public function setType($type){
+		$this->type = $type;
 	}
 	
 	public function getType(){
