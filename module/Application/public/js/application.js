@@ -16,20 +16,6 @@ function updateClock ( )
     $("#clock").html(currentTimeString);
         
  };
-
-function loadModernizr(){
-	Modernizr.load({
-	    test: Modernizr.inputtypes.datetime,
-	    nope: [
-	        'js/jquery-ui.min.js', 
-	        'js/jquery-datetimepicker.js',
-	        'css/jquery-ui.min.css'
-	    ],
-	    complete: function () {
-	        $('input[type=datetime]').datetimepicker(); 
-	    }
-	});
-}
  
 $(document).ready(function(){
    setInterval('updateClock()', 1000);
@@ -38,6 +24,12 @@ $(document).ready(function(){
 	   $("#create-evt").toggle();
    });
 
+   $("#event").on("focus", 'input[type=datetime]', function(){
+	  $(this).datetimepicker({
+		  dateFormat: "dd-mm-yy",
+	  });
+   });
+   
    //higlight tabs
    var url = window.location;
    $(".nav > li a").filter(function(){

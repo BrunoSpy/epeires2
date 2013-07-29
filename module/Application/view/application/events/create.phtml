@@ -19,11 +19,10 @@ $("#create-link").on("click", function(){
 		}
 	);
 	
-	loadModernizr();
 });
 
 //click on a predefined events
-$(document).on("click", "a#predefined", function(){
+$("#event").on("click", "a#predefined", function(){
 	$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 	var me = $(this);
 	$.getJSON(
@@ -71,7 +70,7 @@ $(document).on("click", "a#predefined", function(){
 });
 
 //choosing a category
-$(document).on("change", "#root_categories", function(){
+$("#event").on("change", "#root_categories", function(){
 	$.post(
 	'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
@@ -99,7 +98,7 @@ $(document).on("change", "#root_categories", function(){
 });
 
 //choosing a subcategory
-$(document).on("change", "#subcategories", function(){
+$("#event").on("change", "#subcategories", function(){
 	$.post(
 		'<?php echo $this->url('application',
 							array('controller'=>'events', 'action'=>'createform'),
@@ -135,7 +134,7 @@ $(document).on("change", "#subcategories", function(){
 	
 });
 
-$(document).on("change", "#punctual", function(){
+$("#event").on("change", "#punctual", function(){
 	$("#dateFin").prop('disabled',$(this).is(':checked')); 
 });
 
