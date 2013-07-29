@@ -10,7 +10,7 @@ $("#loading").ajaxStart(function(){
 	
 	
 $("#create-link").on("click", function(){
-
+	$("#event").html('<div id="loading">Chargement...</div>');
 	$("#event").load(
 		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'createform'))?>',
 		function(){

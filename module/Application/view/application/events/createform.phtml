@@ -80,7 +80,7 @@
 		//category and subcategory		
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
 		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
- 		if($event){
+ 		if($this->event){
 			//Catégorie non modifiale si modification
 			$formSelectCat->setAttribute('disabled',true);
  		}
@@ -93,10 +93,10 @@
 					$this->formSelect($formSelectSubCat->setAttribute('disabled',true)),
 					array('control_id'=>'form_categories'));		
 		
-		echo $this->accordionGroup("Catégories", $html, array('in'=>true, 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
+		echo $this->accordionGroup("Catégories", $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
  
 		//Modèles uniquement si création
-		if(!$event){
+		if(!$this->event){
 			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
 		}
 			
@@ -122,9 +122,34 @@
 		$html .= $this->controlGroup(
 				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
 				$this->formSelect($this->form->get('impact')));
-		$html .= "<div id=\"custom_fields\"></div>";
 		
-		echo $this->accordionGroup("Description", $html, array('data-parent'=>'form'));
+		if($this->event){
+			//TODO FACTORISER !
+			foreach ($this->form->get('custom_fields')->getElements() as $element){
+				if($element instanceof \Zend\Form\Element\Select){
+					$html .= $this->controlGroup(
+						$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+						$this->formSelect($element));
+				} elseif ($element instanceof \Zend\Form\Element\Checkbox){
+					$html .= $this->controlGroup(
+						$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+						$this->formCheckbox($element));
+				} elseif ($element instanceof \Zend\Form\Element\Text){
+					$html .= $this->controlGroup(
+						$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+						$this->formText($element));
+				} elseif ($element instanceof \Zend\Form\Element\Textarea){
+					$html .= $this->controlGroup(
+						$this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
+						$this->formTextarea($element));
+				} else {
+					$html .= $this->formRow($element);
+				}
+			}
+		} else {
+			$html .= "<div id=\"custom_fields\"></div>";
+		}	
+		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
 		
 		echo $this->accordionGroup("Fiche réflexe", "", array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		
@@ -139,7 +164,12 @@
 	
 	<div class="control-group">
 		<div class="controls">
-			<?php	echo $this->formSubmit($this->form->get('submit')); ?>
+			<?php	
+			if($this->event){
+				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', "Modifier"));
+			} else {
+				echo $this->formSubmit($this->form->get('submit'));
+			}?>
 		</div>
 	</div>	
 	<?php echo $this->form()->closeTag(); ?>

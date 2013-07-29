@@ -49,6 +49,7 @@
 <?php $this->inlineScript()->captureStart();?>
 
 $(document).on("click", "a#modify-evt", function(){
+	$("#event").html('<div id="loading">Chargement...</div>');
 	$("#create-evt").show();
 	$("#event").load(
 		'<?php echo $this->url('application', array('controller'=>'events', 'action' =>'createform'))?>'+'?type=modification&id='+$(this).data('id'),
