@@ -10,6 +10,7 @@
         <!-- Le styles -->
         <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
                         ->prependStylesheet($this->basePath() . '/css/application.css') 
+                        ->prependStylesheet($this->basePath() . '/css/timeline.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
                         ->prependStylesheet($this->basePath() . '/css/style.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
@@ -18,6 +19,7 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
+        							  ->prependFile($this->basePath() . '/js/timeline.js')
         							  ->prependFile($this->basePath() . '/js/jquery-datetimepicker.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
@@ -54,6 +56,7 @@
 	        	</form>
         	</div>
         </div>
+        <div class="timeline"></div>
         <div class="content">
             <?php echo $this->content; ?>
         </div> <!-- /container -->
