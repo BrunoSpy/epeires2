@@ -70,6 +70,7 @@ return array(
     	'invokables' => array(
     		'accordionGroup' => 'Application\View\Helper\AccordionGroup',
     		'controlGroup' => 'Application\View\Helper\ControlGroup',
+    		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     	),
     ),
     'view_manager' => array(

@@ -35,9 +35,12 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\ManyToOne(targetEntity="Status") */
  	protected $status;
 	
- 	/** @ORM\ManyToOne(targetEntity="Event") */
+ 	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="childs") */
  	protected $parent;
 	
+ 	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent") */
+ 	protected $childs;
+ 	
  	/** @ORM\ManyToOne(targetEntity="Impact") */
  	protected $impact;
 	
@@ -67,6 +70,7 @@ class Event implements InputFilterAwareInterface {
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
  	public function getId(){
@@ -133,6 +137,10 @@ class Event implements InputFilterAwareInterface {
 		return $this->parent;
 	}
 	
+	public function getChilds(){
+		return $this->childs;
+	}
+	
   	public function setStartDate($startdate = null){
   		$this->start_date = $startdate;
   	}
@@ -154,7 +162,6 @@ class Event implements InputFilterAwareInterface {
 		$this->setCategory($predefined->getCategory());
 		$this->setImpact($predefined->getImpact());
 		$this->setPunctual($predefined->isPunctual());
-		//custom fields ???
 	}
 	
 	/*** Form Validation ****/

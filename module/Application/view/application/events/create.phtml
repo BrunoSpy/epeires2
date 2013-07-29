@@ -22,7 +22,7 @@ $("#create-link").on("click", function(){
 });
 
 //click on a predefined events
-$("#event").on("click", "a#predefined", function(){
+$("#event").on("click", "a.predefined", function(){
 	$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 	var me = $(this);
 	$.getJSON(
