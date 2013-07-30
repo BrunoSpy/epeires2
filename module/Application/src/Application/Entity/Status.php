@@ -22,6 +22,9 @@ class Status {
 	/** @ORM\Column(type="boolean") */
 	protected $open;
 	
+	/** @ORM\Column(type="boolean") */
+	protected $display;
+	
 	/** @ORM\Column(type="string") */
 	protected $name;
 	
@@ -48,6 +51,14 @@ class Status {
 		$this->default = $default;
 	}
 	
+	public function isDisplay(){
+		return $this->display;
+	}
+	
+	public function setDisplay($display){
+		$this->display = $display;
+	}
+	
 	public function getName(){
 		return $this->name;
 	}
@@ -55,5 +66,7 @@ class Status {
 	public function setName($name){
 		$this->name = $name;
 	}
+	
+	
 	
 }

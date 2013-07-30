@@ -113,6 +113,10 @@ class Event implements InputFilterAwareInterface {
 		$this->status = $status;
 	}
 	
+	public function getStatus(){
+		return $this->status;
+	}
+	
 	public function getCategory(){
 		return $this->category;
 	}

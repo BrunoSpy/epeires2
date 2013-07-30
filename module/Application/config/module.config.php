@@ -12,10 +12,11 @@ return array(
                 'type'    => 'segment',
             	'may_terminate' => true,
                 'options' => array(
-                    'route'    => '/[:controller[/:action]]',
+                    'route'    => '/[:controller[/:action[/:id]]]',
                 	'constraints' => array(
                 			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     		'controller' => '[a-zA-Z][a-zA-Z0-9-]*',
+                			'id' => '[0-9]+',
                		),
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',

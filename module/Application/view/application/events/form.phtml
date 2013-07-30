@@ -21,6 +21,24 @@ $("#create-link").on("click", function(){
 	
 });
 
+//click sur une fiche reflexe
+$("#event").on("click", "a.fiche", function(){
+	var id = $(this).data('id');
+	var me = $(this);
+	//tell the server to toggle the status
+	$.getJSON('<?php echo $this->url('application', array('controller'=>'events', 'action' => 'togglefiche'))?>'+'?id='+id,
+		function(data){
+			if(data.open){
+				me.html("A faire");
+				me.removeClass("active");
+			} else {
+				me.html("Fait");
+				me.addClass("active");
+			}
+		}
+	);
+});
+
 //click on a predefined events
 $("#event").on("click", "a.predefined", function(){
 	$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());

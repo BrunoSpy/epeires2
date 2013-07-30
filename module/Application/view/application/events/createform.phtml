@@ -34,16 +34,12 @@
 			break;
 		}		
 	} else {
-//structure du formulaire
-//rempli via jquery
-	?>
-		
-	<?php
+
 	if($this->event){
 		//form de modif
 		echo "<h2>".$this->event->getName()."</h2>";
 		$this->form->setAttributes(array(
-		'action' => $this->url('application', array('controller'=>'events', 'action'=>'edit')),
+		'action' => $this->url('application', array('controller'=>'events', 'action'=>'modify', 'id'=>$this->event->getId())),
 		'class' => 'form-horizontal'));
 	} else {
 		//form de creation
@@ -122,7 +118,7 @@
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$child->getName()."</td>";
-					$html .= "<td><a class=\"btn btn-small\">"."A faire"."</a></td>";
+					$html .= "<td><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
 					$html .= '</tr>';
 			}
 			$html .= '</table>';
@@ -136,7 +132,11 @@
 	<div class="control-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">
-			<?php echo $this->formSelect($this->form->get('status')); ?>
+			<?php if($this->event){
+				echo $this->formSelect($this->form->get('status')->setAttribute('value', $this->event->getStatus()->getId()));
+			} else {
+				echo $this->formSelect($this->form->get('status')); 
+			}?>
 		</div>
 	</div>
 	

@@ -45,52 +45,38 @@ class EventsController extends AbstractActionController implements LoggerAware
     
     /**
      * Create a new event
+     * TODO: don't redirect but return JSON with event info
      */
     public function createAction(){    	 
     	if($this->getRequest()->isPost()){
     		
     		$post = $this->getRequest()->getPost();
-    		
-    		$event = new Event();
+
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray(),
-    				$objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
-    		$form->setInputFilter($event->getInputFilter());
-    		    	
-    		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
-    		$form->add($categoryfieldset);
-    		//fill form subcategories    
-    		$valueoptions = $objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($this->getRequest()->getPost()['categories']['root_categories']);
-    		$valueoptions[-1] = "";		
-    		$form->get('categories')
-    			 ->get('subcategories')
-    			 ->setValueOptions($valueoptions);
-  		
+    		 
+    		$event = new Event();
+    		$form = $this->prepareForm($event, $post['categories']['root_categories']);
     		$form->setData($post);
-    		
-    		//fill optional form fieldsets
-    		if(isset($post['custom_fields'])){
-    			$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
-    		}
-    		    		
+    		 
     		if($form->isValid()){
     			//save new event
-    			$event->populate($form->getData());	
+    			$event->populate($form->getData());
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
-    			if(isset($form->getData()['categories']['subcategories']) 
-    				&& !empty($form->getData()['categories']['subcategories'])
-    				&& $form->getData()['categories']['subcategories'] > 0){
+    			if(isset($form->getData()['categories']['subcategories'])
+    					&& !empty($form->getData()['categories']['subcategories'])
+    					&& $form->getData()['categories']['subcategories'] > 0){
     				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['subcategories']));
     			} else {
     				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
     			}
     			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
+
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
-						$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
-						if($customfield){
+    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
+    					if($customfield){
     						$customvalue = new CustomFieldValue();
     						$customvalue->setEvent($event);
     						$customvalue->setCustomField($customfield);
@@ -100,18 +86,18 @@ class EventsController extends AbstractActionController implements LoggerAware
     				}
     			}
     			//create associated actions
-				if(isset($post['modelid'])){
-					$parentID = $post['modelid'];
-					//get actions
-					foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
-						$child = new Event();
-						$child->setParent($event);
-						$child->createFromPredefinedEvent($action);
-						$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true)));
-						$objectManager->persist($child);
-					}
-				}
-    			
+    			if(isset($post['modelid'])){
+    				$parentID = $post['modelid'];
+    				//get actions
+    				foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+    					$child = new Event();
+    					$child->setParent($event);
+    					$child->createFromPredefinedEvent($action);
+    					$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true, 'open'=> true)));
+    					$objectManager->persist($child);
+    				}
+    			}
+    			 
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
@@ -120,25 +106,108 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
     			$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
     			//traitement des erreurs de validation
-    			foreach($form->getMessages() as $key => $message){
-    				foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
-    					if(is_array($mvalue)){
-    						foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
-    							$this->flashMessenger()->addErrorMessage(
-    									"Champ ".$mkey." incorrect : ".$nvalue);
-    						}
-    					} else {
-    						$this->flashMessenger()->addErrorMessage(
-    								"Champ ".$key." incorrect : ".$mvalue);
-    					}
-    				}
-    			}
+    			$this->processFormMessages($form->getMessages());
     		}
-    	} 
+    	}
     	
     	return $this->redirect()->toRoute('application');
     	
     }
+    
+
+    /**
+     * TODO: don't redirect but return JSON
+     */
+    public function modifyAction(){
+    	$id = $this->params()->fromRoute('id', 0);
+    	
+    	if($id && $this->getRequest()->isPost()){
+    		
+    		$post = $this->getRequest()->getPost();
+    	
+    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		
+    		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    		    		
+    		$form = $this->prepareForm($event);
+    		$form->bind($event);
+    		$form->setData($post);
+    		    		
+    		if($form->isValid()){
+    			//dates are changed via bind() and categories don't change
+    			$event->setStatus($objectManager->find('Application\Entity\Status', $post['status']));
+    			$event->setImpact($objectManager->find('Application\Entity\Impact', $post['impact']));
+    			//update custom field values if needed
+    			if(isset($post['custom_fields'])){
+    				foreach ($post['custom_fields'] as $key => $value){
+    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
+    					if($customfield){
+    						$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
+    						if($customfieldvalue){
+    							$customfieldvalue->setValue($value);
+    							$objectManager->persist($customfieldvalue);
+    						}
+    					}
+    					//TODO : historique
+    				}
+    			}
+    			$objectManager->persist($event);
+    			$objectManager->flush();
+    			$this->logger->log(\Zend\Log\Logger::INFO, "event modified");
+    			$this->flashMessenger()->addSuccessMessage("Evènement modifié");
+    		} else {
+    			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide, modification impossible");
+    			$this->flashMessenger()->addErrorMessage("Impossible de modifier l'évènement.");
+    			//traitement des erreurs de validation
+    			$this->processFormMessages($form->getMessages());
+    		}
+    		
+    	}
+    	
+    	return $this->redirect()->toRoute('application');
+    }
+    
+    private function processFormMessages($messages){
+    	foreach($messages as $key => $message){
+    		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
+    			if(is_array($mvalue)){
+    				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
+    					$this->flashMessenger()->addErrorMessage(
+    							"Champ ".$mkey." incorrect : ".$nvalue);
+    				}
+    			} else {
+    				$this->flashMessenger()->addErrorMessage(
+    						"Champ ".$key." incorrect : ".$mvalue);
+    			}
+    		}
+    	}
+    }
+    
+    private function prepareForm($event, $root_category = 0){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray(),
+    			$objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
+    	$form->setInputFilter($event->getInputFilter());
+    	 
+    	if($root_category){ //pas de catégories pour la modification d'un evt
+    		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
+    		$form->add($categoryfieldset);
+    		//fill form subcategories
+    		$valueoptions = $objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($root_category);
+    		$valueoptions[-1] = "";
+    		$form->get('categories')
+    		->get('subcategories')
+    		->setValueOptions($valueoptions);
+    	}
+    	//fill optional form fieldsets
+    	if(isset($post['custom_fields'])){
+    		$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
+    	}
+    	
+    	return $form;
+    }
+
     
     /**
      * Create a new form or a part of it
@@ -194,6 +263,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
   						$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
     				}
+    				//status
+    				$form->get('status')->setAttribute('value', $event->getStatus()->getId());
+    				//impact
+    				$form->get('impact')->setAttribute('value', $event->getImpact()->getId());
     				$form->bind($event);
     				$viewmodel->setVariables(array('event'=>$event));
     				break;
@@ -276,8 +349,27 @@ class EventsController extends AbstractActionController implements LoggerAware
     	return new JsonModel($json);
     }
     
-    public function modifyAction(){
+    /**
+     * Return {'open' => '<true or false>'}
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function toggleficheAction(){
+    	$evtId = $this->params()->fromQuery('id', null);
+    	$json = array();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
+    	$event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
+    	
+    	if($event){
+    		$event->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true, 
+    																									'open' => !$event->getStatus()->isOpen())));
+    		$objectManager->persist($event);
+    		$objectManager->flush();
+    	}
+    	
+    	$json['open'] = $event->getStatus()->isOpen();
+    	    	
+    	return new JsonModel($json);
     }
     
     //Logger
