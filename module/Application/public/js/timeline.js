@@ -24,29 +24,29 @@ $(document).ready(function() {
 
 			tableau: function() {
 				var tab = new Array(); // données
-				var debut = new Date(2013,06,29,14,50,00,00);
-				var fin = new Date(2013,06,29,21,15,00,00);
+				var debut = new Date(2013,06,30,14,50,00,00);
+				var fin = new Date(2013,06,30,21,15,00,00);
 				// id, heure de début, heure de fin, libellé, importance, catégorie, action list, état 
 				tab[0] = [1, debut, fin, "test_1 : où est-ce que j'apparais ?", 1, "Zone militaire",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,29,15,45,00,00);
-				fin = new Date(2013,06,29,17,53,00,00);
+				debut = new Date(2013,06,30,15,45,00,00);
+				fin = new Date(2013,06,30,17,53,00,00);
 				tab[1] = [2, debut, fin, "test_2", 2, "Technique",['a','b','c','d'], "terminé"];
 				debut = new Date(2013,06,28,01,45,00,00);
-				fin = new Date(2013,06,29,13,53,00,00);
+				fin = new Date(2013,06,30,13,53,00,00);
 				tab[2] = [4, debut, fin, "test_3", 2, "CA",["absolument épatant","bravo !","coupable","dessinateur industriel","etudes spécialisées"], "terminé"];
-				debut = new Date(2013,06,29,19,00,00,00);
-				fin = new Date(2013,06,29,22,30,00,00);
+				debut = new Date(2013,06,30,19,00,00,00);
+				fin = new Date(2013,06,30,22,30,00,00);
 				tab[3] = [7, debut, fin, "test_4", 3, "Attente",['a','b','c','d'], "à venir"];
-				debut = new Date(2013,06,29,23,45,00,00);
-				fin = new Date(2013,06,29,23,53,00,00);
+				debut = new Date(2013,06,30,23,45,00,00);
+				fin = new Date(2013,06,30,23,53,00,00);
 				tab[4] = [12, debut, fin, "test_5", 1, "Attente",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,29,16,10,00,00);
+				debut = new Date(2013,06,30,16,10,00,00);
 				fin = -1; // new Date(2013,06,24,21,10,00,00);
 				tab[5] = [19, debut, fin, "test_6", 3, "CA",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,29,11,37,00,00);
-				tab[6] = [15, debut, debut, "test_7", 2, "Technique",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,29,19,45,00,00);
-				fin = new Date(2013,06,29,20,53,00,00);
+				debut = new Date(2013,06,30,11,00,00,00);
+				tab[6] = [15, debut, debut, "test_7", 1, "Technique",['a','b','c','d'], "en cours"];
+				debut = new Date(2013,06,30,19,45,00,00);
+				fin = new Date(2013,06,30,20,53,00,00);
 				tab[7] = [42, debut, fin, "VOL CORONET", 2, "CA",['abracadabra','bravanida','carbonara','detresfa'], "à venir"];
 				return tab;
 			}
@@ -240,8 +240,19 @@ $(document).ready(function() {
 						elmt_ponct = $('<div class="ponct_elmt"></div>');
 						$(elmt).append(elmt_ponct);
 						x2 = x1 + 10;
-						elmt_ponct.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': 10, 'height':dy ,'z-index' : 1, 
-							'background-color':couleur,'border-style':'solid', 'border-width': '1px', 'border-radius': '15px'});
+					//	elmt_ponct.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': 10, 'height':dy ,'z-index' : 1, 
+					//		'background-color':couleur,'border-style':'solid', 'border-width': '1px', 'border-radius': '15px'});
+						var haut = dy*2/3;
+						var larg = haut*5/8;
+						elmt_ponct.css({'position':'absolute', 'left': x1-larg+'px', 'width':0, 'height':0, 'border-left':larg+'px solid transparent',
+							'border-right':larg+'px solid transparent', 'border-bottom':haut+'px solid '+couleur,'z-index' : 2});
+						var empt = $('<div></div>');
+						elmt_ponct.after(empt);
+						empt.css({'position':'absolute', 'left': x1+'px','width':0, 'height':0, 'border-left':larg+'px solid transparent',
+							'border-right':larg+'px solid transparent', 'border-top':haut+'px solid '+couleur, 'margin':haut*3/8+'px 0 0 -'+larg+'px','z-index' : 2});
+						wid = larg*2;
+						x1 -= larg;	
+						x2 = x1+wid;
 					} else {
 						// ajout du rectangle
 						elmt_rect = $('<div class="rect_elmt"></div>');
@@ -299,6 +310,7 @@ $(document).ready(function() {
 					$(elmt).append(elmt_txt);
 					elmt_txt.addClass('label_elmt');
 					// ajout de l'heure de début
+					if (d_debut != d_fin) {
 					var hDeb = d_debut.toLocaleTimeString().substr(0,5);						
 					if (d_debut < d_ref_deb && d_debut.getDate() != d_ref_deb.getDate()){ 
 						var dDeb = d_debut.toLocaleDateString();
@@ -307,6 +319,7 @@ $(document).ready(function() {
 					} else {
 						h1 = 4;
 					}
+					} else { hDeb = ""; }
 					elmt_deb = $('<p>'+hDeb+'</p>');
 					$(elmt).append(elmt_deb);
 					elmt_deb.addClass('elmt_deb');
@@ -330,25 +343,26 @@ $(document).ready(function() {
 					// positionnement des différents objets sur la ligne elmt
 					elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
 					var txt_wid = elmt_txt.width();
-					if (wid - txt_wid > 0) { // si on a la place d'écrire le txt dans le rectangle
+					var ponctuel = (d_debut == d_fin);
+					if (wid - txt_wid > 0 && !ponctuel) { // si on a la place d'écrire le txt dans le rectangle
 						if (wid - txt_wid < 70) { x1 = x1 - 60;} // si il n'y a pas la place de mettre les boutons en plus, on les met à gauche
-						elmt_b1.css({'position':'absolute', 'top': 4+'px', 'left': x1+2+'px', 'z-index' : 1});
-						elmt_b2.css({'position':'absolute', 'top': 4+'px', 'left': x1+32+'px', 'z-index' : 1});
-						elmt_b2bis.css({'position':'absolute', 'top': 4+'px', 'left': x1+32+'px', 'z-index' : 1});
-						elmt_txt.css({'position':'absolute', 'top': 4+'px', 'left': x1+62+'px', 'font-weight':'normal', 'z-index' : 2});
+						elmt_b1.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+2+'px', 'z-index' : 1});
+						elmt_b2.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
+						elmt_b2bis.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
+						elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+62+'px', 'font-weight':'normal', 'z-index' : 2});
 					} else { // on n'a pas la place d'écrire le txt dans le rectangle...
-						if (wid < 70) { x1 = x1 - 60; } // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
-						elmt_b1.css({'position':'absolute', 'top': 4+'px', 'left': x1+2+'px', 'z-index' : 1});
-						elmt_b2.css({'position':'absolute', 'top': 4+'px', 'left': x1+32+'px', 'z-index' : 1});
-						elmt_b2bis.css({'position':'absolute', 'top': 4+'px', 'left': x1+32+'px', 'z-index' : 1});
+						if (wid < 70 || ponctuel) { x1 = x1 - 60; } // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
+						elmt_b1.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+2+'px', 'z-index' : 1});
+						elmt_b2.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
+						elmt_b2bis.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
 						if (x2+50+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-							elmt_txt.css({'position':'absolute', 'top': 4+'px', 'left': x2+50+'px', 'font-weight':'normal', 'z-index' : 2,
+							elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x2+50+'px', 'font-weight':'normal', 'z-index' : 2,
 								'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 							var lien = $('<div class="lien"></div>');
 							$(elmt).append(lien);
 							lien.css({'position':'absolute', 'top': dy/2+'px', 'left': x2+'px','width':50+'px','height':'1px','background-color':'gray', 'z-index' : 1});
 						} else { // sinon on le met à gauche
-							elmt_txt.css({'position':'absolute', 'top': 4+'px', 'left': x1-45-txt_wid-2+'px', 'font-weight':'normal', 'z-index' : 2,
+							elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1-45-txt_wid-2+'px', 'font-weight':'normal', 'z-index' : 2,
 								'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 							var lien = $('<div class="lien"></div>');
 							$(elmt).append(lien);
