@@ -37,7 +37,6 @@
 
 	if($this->event){
 		//form de modif
-		echo "<h2>".$this->event->getName()."</h2>";
 		$this->form->setAttributes(array(
 		'action' => $this->url('application', array('controller'=>'events', 'action'=>'modify', 'id'=>$this->event->getId())),
 		'class' => 'form-horizontal'));
@@ -86,11 +85,17 @@
 					"<div class=\"input-prepend\">".
 					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date')).
 					"</div>");
+		
+		$formEndDate = $this->form->get('end_date');
+		if($this->event){
+			if($this->event->isPunctual()){
+				$formEndDate->setAttribute('disabled', true);
+			}
+		}
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label'))),
 					"<div class=\"input-prepend\">".
-					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('end_date')).
-					"</div>");
+					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($formEndDate)."</div>");
 		
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		

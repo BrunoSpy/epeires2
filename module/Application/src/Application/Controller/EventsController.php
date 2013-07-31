@@ -35,6 +35,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$this->flashMessenger()->clearMessages();
     	
+     	$viewmodel->setVariables(array('messages'=>$return));
+    	 
         return $viewmodel;
     }
     
