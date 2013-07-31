@@ -19,24 +19,12 @@
 <?php } ?>
 </div>
 
-<div id="create-evt">
+<div id="create-evt" class="popover fade bottom in" style="top: 70px; left: 3.5px;">
+<div class="arrow"></div>
+<h3 class="popover-title" id="form-title">Nouvel évènement</h3>
 <?php 
 	echo $this->partial('events/form.phtml');
 ?>
 </div>
 
 <div class="timeline"></div>
-
-<?php $this->inlineScript()->captureStart();?>
-
-$(document).on("click", "a#modify-evt", function(){
-	$("#event").html('<div id="loading">Chargement...</div>');
-	$("#create-evt").show();
-	$("#event").load(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action' =>'createform'))?>'+'?type=modification&id='+$(this).data('id'),
-		function(){
-
-		}
-	);
-});
-<?php $this->inlineScript()->captureEnd();?>

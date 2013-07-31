@@ -21,6 +21,21 @@ $("#create-link").on("click", function(){
 	
 });
 
+//click sur modification d'un évènement
+$("#event").on("click", "a#modify-evt", function(){
+	var me = $(this);	
+	$("#event").html('<div id="loading">Chargement...</div>');
+	$("#create-evt").slideDown('fast');
+	$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+	
+	$("#event").load(
+		'<?php echo $this->url('application', array('controller'=>'events', 'action' =>'createform'))?>'+'?type=modification&id='+$(this).data('id'),
+		function(){
+			$("#form-title").html(me.data('name'));
+		}
+	);
+});
+
 //click sur une fiche reflexe
 $("#event").on("click", "a.fiche", function(){
 	var id = $(this).data('id');

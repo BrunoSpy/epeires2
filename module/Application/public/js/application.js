@@ -19,11 +19,21 @@ function updateClock ( )
  
 $(document).ready(function(){
    setInterval('updateClock()', 1000);
-
+   
    $("#create-link").on("click", function(){
-	   $("#create-evt").toggle();
+	   if($("#create-evt").is(':visible')){
+		   $("#create-evt").slideUp('fast');
+		   $("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
+	   } else {
+		   $("#create-evt").slideDown('fast');
+		   $("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+	   }
    });
 
+   $("#event").on("click", "#cancel-form", function(){
+	   $("#create-link").trigger("click");
+   });
+   
    $("#event").on("focus", 'input[type=datetime]', function(){
 	  $(this).datetimepicker({
 		  dateFormat: "dd-mm-yy",
