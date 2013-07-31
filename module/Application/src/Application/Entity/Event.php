@@ -82,7 +82,7 @@ class Event implements InputFilterAwareInterface {
  	}
  	
 	public function isPunctual() {
-		return $punctual;
+		return $this->punctual;
 	}
 	
 	public function setPunctual($punctual){

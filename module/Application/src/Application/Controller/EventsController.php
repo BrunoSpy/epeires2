@@ -35,12 +35,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$this->flashMessenger()->clearMessages();
     	
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	
-    	$events = $this->getevents();// $objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=> null));
-    	
-    	$viewmodel->setVariables(array('messages'=>$return, 'events'=>$events));
-    	
+     	$viewmodel->setVariables(array('messages'=>$return));
+    	 
         return $viewmodel;
     }
     

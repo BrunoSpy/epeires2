@@ -51,15 +51,13 @@ body{
 	border-color:CadetBlue ;
 	border-style:solid;
 	background-color:AliceBlue;
-	position:relative;
-	width: 30%;
+/*	position:relative; */
+	width: 30%; 
 	margin-left: 1%;
 	clear: both;
-	top: 10px;
-}
-
-#name {
-	width:140px;
+/*	top: 10px; */
+	max-width:400px;
+	min-width:400px;
 }
 
 .event {
@@ -70,14 +68,32 @@ body{
 	border-style:dashed;
 }
 
-.status {
-	width: 120px;
-/*	text-align:center; */
+#ui-datepicker-div {
+	z-index: 3000 !important;
 }
 
-.dateDeb {
-	width: 140px;
+/* *** Tune Bootstrap css *** */
+.form-horizontal .control-group {
+	margin-bottom: 10px;
 }
+.form-horizontal .controls {
+    margin-left: 130px;
+}
+.form-horizontal .control-label {
+    width: 110px;
+}
+select {
+    width: 200px;
+}
+
+input, textarea, .uneditable-input {
+    width: 187px;
+}
+
+.popover-title {
+	font-weight:bold;
+}
+/* ************************** */
 
 a.disabled {
 	pointer-events: none;
