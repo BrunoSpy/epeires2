@@ -24,27 +24,8 @@
 	echo $this->partial('events/form.phtml');
 ?>
 </div>
-<div id="list-events">
-<table>
-<tbody>
-<?php 
-	foreach ($this->events as $event){
-		echo "<tr>";
-		echo "<td>";
-		if($event->getImpact()){
-			echo "<span class=\"label label-".$event->getImpact()->getStyle()."\">";
-			echo $event->getImpact()->getName()."</span>";
-		}
-		echo "</td>";
-		echo "<td>".$event->getName()."</td>";
-		echo "<td><a id=\"modify-evt\" href=\"#\" class=\"btn\" data-id=\"".$event->getId()."\" >Modifier</a></td>";
-		echo "</tr>";
-	}
-?>
-</tbody>
-</table>
 
-</div>
+<div class="timeline"></div>
 
 <?php $this->inlineScript()->captureStart();?>
 

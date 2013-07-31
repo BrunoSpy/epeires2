@@ -14,6 +14,7 @@ use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
 use Application\Entity\CustomFieldValue;
 use Zend\View\Model\JsonModel;
+use Doctrine\Common\Collections\Criteria;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
@@ -36,7 +37,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
-    	$events = $objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=> null));
+    	$events = $this->getevents();// $objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=> null));
     	
     	$viewmodel->setVariables(array('messages'=>$return, 'events'=>$events));
     	
@@ -369,6 +370,56 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$json['open'] = $event->getStatus()->isOpen();
     	    	
+    	return new JsonModel($json);
+    }
+    
+    /**
+     * {'evt_id_0' => {
+     * 		'name' => evt_name,
+     * 		'start_date' => evt_start_date,
+     *		'end_date' => evt_end_date,
+     *		'category' => evt_category_name,
+     *		'category_short' => evt_category_short_name,
+     *		'status_name' => evt_status_name,
+     *		'actions' => {
+     *			'action_name0' => open? (boolean),
+     *			'action_name1' => open? (boolean),
+     *			...
+     *			}
+     * 		},
+     * 	'evt_id_1' => ...
+     * }
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function geteventsAction(){
+    	$now = new \DateTime('NOW');
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$criteria = Criteria::create();
+    	$criteria->andWhere(Criteria::expr()->gte('start_date', $now->sub(new \DateInterval('P3D'))));
+    	
+    	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
+    	
+    	$json = array();
+    	foreach ($events as $event){
+    		$evt = array('name' => $event->getName(),
+    					'start_date' => $event->getStartDate(),
+    					'end_date' => $event->getEndDate(),
+    					'category' => $event->getCategory()->getName(),
+    					'category_short' => $event->getCategory()->getShortName(),
+    					'status_name' => $event->getStatus()->getName(),
+    		);
+    		
+    		$actions = array();
+    		foreach ($event->getChilds() as $child){
+    			$actions[$child->getName] = $child->getStatus()->isOpen();
+    		}
+    		$evt['actions'] = $actions;
+    		
+    		$json[$event->getId()] = $evt;
+    	}
+    	
     	return new JsonModel($json);
     }
     

@@ -26,8 +26,21 @@ class Category {
 	/** @ORM\ManyToOne(targetEntity="Category") */
 	protected $parent;
 	
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $short_name;
+	
+	/**
+	 * @ORM\Column(type="string")
+	 * Color coded in hexa, ex: #FFFFFF
+	 */
+	protected $color;
+	
 	/** @ORM\Column(type="string") */
 	protected $name;
+	
+	//TODO : ajouter couleur et short_name
 	
 	public function getParent(){
 		return $this->parent;
@@ -45,4 +58,19 @@ class Category {
 		$this->name = $name;
 	}
 	
+	public function getShortName(){
+		return $this->short_name;
+	}
+	
+	public function setShortName($short_name){
+		$this->short_name = $short_name;
+	}
+	
+	public function getColor(){
+		return $this->color;
+	}
+	
+	public function setColor($color){
+		$this->color = $color;
+	}
 }
