@@ -31,7 +31,7 @@
 
 <?php $this->inlineScript()->captureStart();?>
 //click sur modification d'un évènement
-$(document).on("click", "a#modify-evt", function(){
+$(document).on("click", "button.modify-evt", function(){
 	var me = $(this);	
 	$("#event").html('<div id="loading">Chargement...</div>');
 	$("#create-evt").slideDown('fast');
@@ -44,4 +44,8 @@ $(document).on("click", "a#modify-evt", function(){
 		}
 	);
 });
+
+timeline.conf($('.timeline'), 
+				'<?php echo $this->url('application', array('controller' => 'events', ''))?>');
+				
 <?php $this->inlineScript()->captureEnd();?>

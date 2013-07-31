@@ -25,7 +25,7 @@
 				var debut = new Date(2013,06,31,14,50,00,00);
 				var fin = new Date(2013,06,31,21,15,00,00);
 				// id, heure de début, heure de fin, libellé, importance, catégorie, action list, état 
-				tab[0] = [1, debut, fin, "test_1 : où est-ce que j'apparais ?", 1, "Zone militaire",['a','b','c','d'], "en cours"];
+				tab[0] = [5, debut, fin, "test_1 : où est-ce que j'apparais ?", 1, "Zone militaire",['a','b','c','d'], "en cours"];
 				debut = new Date(2013,06,31,15,45,00,00);
 				fin = new Date(2013,06,31,17,53,00,00);
 				tab[1] = [2, debut, fin, "test_2", 2, "Technique",['a','b','c','d'], "terminé"];
@@ -321,7 +321,7 @@
 						elmt_opt.css({'left': x1+5-elmt_opt.width()+'px'});
 					}
 					// ajout du bouton modifications
-					elmt_b1 = $('<button type="button" class="mod"></button>');
+					elmt_b1 = $('<button type="button" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></button>');
 					$(elmt).append(elmt_b1);
 					elmt_b1.addClass('btn btn-mini');
 					$(elmt_b1).append('<i class="icon-pencil"></i>');
@@ -548,7 +548,7 @@
 				var yy = 0;
 				var elmt;
 				var cat;
-				y_temp = 0;
+				y_temp = delt_ligne;
 				for (var j = 0; j<nb; j++) {
 					cat = timeline_elmt.find('categorie '+j);
 					cat.each(function(index, value){
@@ -642,7 +642,7 @@
 	$('.timeline').on('mouseenter','.elmt', function(){
 		$(this).css({'z-index':3});
 	//	$(this).find('.label_elmt').css({'font-weight':'bold'});
-		$(this).find('.mod').show();
+		$(this).find('.modify-evt').show();
 		$(this).find('.plus').show();
 		$(this).find('.elmt_deb').show();
 		$(this).find('.elmt_fin').show();
@@ -653,7 +653,7 @@
 	$('.timeline').on('mouseleave','.elmt',function(){
 		$(this).css({'z-index':1});
 		$(this).find('.label_elmt').css({'font-weight':'normal'});
-		$(this).find('.mod').hide();
+		$(this).find('.modify-evt').hide();
 		$(this).find('.plus').hide();
 		$(this).find('.elmt_deb').hide();
 		$(this).find('.elmt_fin').hide();
