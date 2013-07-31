@@ -1,4 +1,3 @@
-$(document).ready(function() {
 
 	var categorie = new Array();
 	var cat_coul = new Array();
@@ -18,35 +17,34 @@ $(document).ready(function() {
 	var h_ref;
 	var m_act;
 	var vue;
-//	var context;
 
 	var exemple = {
 
 			tableau: function() {
 				var tab = new Array(); // données
-				var debut = new Date(2013,06,30,14,50,00,00);
-				var fin = new Date(2013,06,30,21,15,00,00);
+				var debut = new Date(2013,06,31,14,50,00,00);
+				var fin = new Date(2013,06,31,21,15,00,00);
 				// id, heure de début, heure de fin, libellé, importance, catégorie, action list, état 
 				tab[0] = [1, debut, fin, "test_1 : où est-ce que j'apparais ?", 1, "Zone militaire",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,30,15,45,00,00);
-				fin = new Date(2013,06,30,17,53,00,00);
+				debut = new Date(2013,06,31,15,45,00,00);
+				fin = new Date(2013,06,31,17,53,00,00);
 				tab[1] = [2, debut, fin, "test_2", 2, "Technique",['a','b','c','d'], "terminé"];
 				debut = new Date(2013,06,28,01,45,00,00);
-				fin = new Date(2013,06,30,13,53,00,00);
+				fin = new Date(2013,06,31,13,53,00,00);
 				tab[2] = [4, debut, fin, "test_3", 2, "CA",["absolument épatant","bravo !","coupable","dessinateur industriel","etudes spécialisées"], "terminé"];
-				debut = new Date(2013,06,30,19,00,00,00);
-				fin = new Date(2013,06,30,22,30,00,00);
+				debut = new Date(2013,06,31,19,00,00,00);
+				fin = new Date(2013,06,31,22,30,00,00);
 				tab[3] = [7, debut, fin, "test_4", 3, "Attente",['a','b','c','d'], "à venir"];
-				debut = new Date(2013,06,30,23,45,00,00);
-				fin = new Date(2013,06,30,23,53,00,00);
+				debut = new Date(2013,06,31,23,45,00,00);
+				fin = new Date(2013,06,31,23,53,00,00);
 				tab[4] = [12, debut, fin, "test_5", 1, "Attente",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,30,16,10,00,00);
+				debut = new Date(2013,06,31,16,10,00,00);
 				fin = -1; // new Date(2013,06,24,21,10,00,00);
 				tab[5] = [19, debut, fin, "test_6", 3, "CA",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,30,11,00,00,00);
-				tab[6] = [15, debut, debut, "test_7", 1, "Technique",['a','b','c','d'], "en cours"];
-				debut = new Date(2013,06,30,19,45,00,00);
-				fin = new Date(2013,06,30,20,53,00,00);
+				debut = new Date(2013,06,31,11,00,00,00);
+				tab[6] = [15, debut, debut, "test_7", 3, "Technique",['a','b','c','d'], "en cours"];
+				debut = new Date(2013,06,31,19,45,00,00);
+				fin = new Date(2013,06,31,20,53,00,00);
 				tab[7] = [42, debut, fin, "VOL CORONET", 2, "CA",['abracadabra','bravanida','carbonara','detresfa'], "à venir"];
 				return tab;
 			}
@@ -54,6 +52,34 @@ $(document).ready(function() {
 
 	var timeline = {
 
+			conf:function (element, url) {
+				timeline.init(element);
+				var base_elmt = $('<div class="Base"></div>');
+				$(element).append(base_elmt);
+				timeline.base(base_elmt);
+				var timeline_content = $('<div class="timeline_content"></div>');
+				$(element).append(timeline_content);
+				$(element).append('<div class="btn-group">');
+				$(element).append('<button type="button" class="btn journee">Vue Journée</button>');
+				$(element).append('<button type="button" class="btn courante">Vue courante</button>');
+				$(element).append('<button type="button" class="btn tri_cat">Tri par catégorie</button>');
+				$(element).append('<button type="button" class="btn tri_deb">Tri par h_début</button>');
+				$(element).append('</div>');
+				var timeline_other = $('<div class="timeline_other"></div>');
+				$(element).append(timeline_other);
+				$.getJSON(url, function (data) {
+					$.each(data, function(key, value) {
+						
+				
+					});
+				});
+				
+				
+				var res = timeline.create_cat(timeline_content, exemple.tableau());
+				timeline.affiche_listes(timeline_other, res[0], res[1]);
+				timeline.timeBar(timeline_content);
+			},
+			
 			init : function(element) {
 				d_actuelle = new Date();
 				h_act = d_actuelle.getHours();
@@ -209,7 +235,7 @@ $(document).ready(function() {
 				var elmt, elmt_ponct, elmt_rect , elmt_b1, elmt_b2, elmt_txt, elmt_deb, elmt_fin, elmt_opt, elmt_fleche1, elmt_fleche2, elmt_qm_txt, elmt_qm_fleche, elmt_qm_but;
 				if (x1 > 0) {
 					// création d'un élément
-					elmt = $('<div class="elmt" id='+id+'></div>');
+					elmt = $('<div class="elmt id'+id+'"></div>');
 					$(base_element).append(elmt);
 					elmt.css({'position':'absolute', 'top': y1+'px', 'left': 0+'px', 'width': largeur, 'height':dy});
 					if (d_fin < 0) {
@@ -220,20 +246,24 @@ $(document).ready(function() {
 						$(elmt).append(elmt_rect);
 						x2 = x1 + wid;
 						elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-							'background-color':couleur,'border-style':'solid', 'border-width': '1px', 'border-radius': '5px'});
+							'background-color':couleur,'border-style':'solid', 'border-color':'transparent', 'border-width': '1px', 'border-radius': '5px'});
 						// ajout d'une flèche droite et d'un point d'interrogation (ainsi qu'un bouton en survol)
-						elmt_qm_fleche = $('<div class="elmt_qm_fleche"></div>');
-						elmt.append(elmt_qm_fleche);
-						elmt_qm_fleche.css({'position':'absolute', 'top': dy-22+'px', 'left': x2+'px'});
-						$(elmt_qm_fleche).append('<i class="icon-arrow-right"></i>');
+						emt_fleche_droite = $('<div class="elmt_fleche_droite"></div>');
+						elmt_rect.after(emt_fleche_droite);
+						emt_fleche_droite.css({'position':'absolute','left':x1+wid-2+'px' , 'width':0, 'height':0, 'border-left':dy+'px solid '+couleur, 
+							'border-top':dy/2+1+'px solid transparent', 'border-bottom': dy/2+1+'px solid transparent' });
+					//	elmt_qm_fleche = $('<div class="elmt_qm_fleche"></div>');
+					//	elmt.append(elmt_qm_fleche);
+					//	elmt_qm_fleche.css({'position':'absolute', 'top': dy-22+'px', 'left': x2+'px'});
+					//	$(elmt_qm_fleche).append('<i class="icon-arrow-right"></i>');
 						elmt_qm_txt = $('<div class="elmt_qm_txt"></div>');
 						elmt.append(elmt_qm_txt);
-						elmt_qm_txt.css({'position':'absolute', 'top': -3+'px', 'left': x2+'px'});
+						elmt_qm_txt.css({'position':'absolute', 'top': dy/2-10+'px', 'left': x2+'px', 'z-index':2});
 						$(elmt_qm_txt).append('<i class="icon-question-sign"></i>');
-						elmt_qm_but = $('<button type="button" id="elmt_qm_but"></button>');
+						elmt_qm_but = $('<button type="button" class="elmt_qm_but"></button>');
 						elmt.append(elmt_qm_but);
 						elmt_qm_but.addClass('btn btn-mini');
-						elmt_qm_but.css({'position':'absolute', 'top': 4+'px', 'left': x2+4+'px'});
+						elmt_qm_but.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x2-8+'px', 'z-index':2});
 						$(elmt_qm_but).append('<i class="icon-question-sign"></i>');
 					} else if (d_debut == d_fin) {
 						// ajout du ponctuel
@@ -259,7 +289,7 @@ $(document).ready(function() {
 						$(elmt).append(elmt_rect);
 						x2 = x1 + wid;
 						elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-							'background-color':couleur,'border-style':'solid', 'border-width': '1px', 'border-radius': '5px'});
+							'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
 					}
 					// si l'événement a commencé avant la timeline, ajout d'une flèche gauche
 					if (d_debut < d_ref_deb) {
@@ -278,7 +308,7 @@ $(document).ready(function() {
 					// création du cadre des infos optionnelles, accessible par le bouton +
 					elmt_opt = $('<div class="elmt_opt"></div>');
 					elmt_opt.css({'position':'absolute', 'top':dy+1+'px', 'left': x1+5+'px', 'width': 'auto', 'height':'auto' ,'z-index' : 1, 
-						'background-color':couleur,'border-style':'solid', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
+						'background-color':couleur,'border-style':'solid','border-color':'transparent', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
 					$(elmt).append(elmt_opt);
 					var list_tag = $('<ul >'); // class="nav nav-pills nav-stacked"
 					elmt_opt.append(list_tag);
@@ -291,17 +321,17 @@ $(document).ready(function() {
 						elmt_opt.css({'left': x1+5-elmt_opt.width()+'px'});
 					}
 					// ajout du bouton modifications
-					elmt_b1 = $('<button type="button" id="mod"></button>');
+					elmt_b1 = $('<button type="button" class="mod"></button>');
 					$(elmt).append(elmt_b1);
 					elmt_b1.addClass('btn btn-mini');
 					$(elmt_b1).append('<i class="icon-pencil"></i>');
 					// ajout du bouton développé
-					elmt_b2 = $('<button type="button" id="plus"></button>');
+					elmt_b2 = $('<button type="button" class="plus"></button>');
 					$(elmt).append(elmt_b2);
 					elmt_b2.addClass('btn btn-mini');
 					$(elmt_b2).append('<i class="icon-plus"></i>');
 					// ajout du bouton minimisé
-					elmt_b2bis = $('<button type="button" id="moins"></button>');
+					elmt_b2bis = $('<button type="button" class="moins"></button>');
 					$(elmt).append(elmt_b2bis);
 					elmt_b2bis.addClass('btn btn-mini');
 					$(elmt_b2bis).append('<i class="icon-minus"></i>');
@@ -377,20 +407,20 @@ $(document).ready(function() {
 					}
 					// on place l'heure de début à gauche
 					elmt_deb.css({'position':'absolute', 'top': h1+'px','left': x1-45+'px', 'width': '40px', 'text-align' : 'center', 
-						'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
+						'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':1});
 					// on place l'heure de fin à droite
 					elmt_fin.css({'position':'absolute', 'top': h2+'px','left': x2+5+'px', 'width': '40px', 'text-align' : 'center', 
-						'font-style':'italic', 'background-color':'LemonChiffon', 'z-index':2});
+						'font-style':'italic', 'background-color':'LemonChiffon', 'z-index':1});
 					y_temp += dy + delt_ligne;  
 				} else if (y1 > 0) { 
 					// ajout de l'élément warning
-					elmt = $('<div class="elmt" id='+id+'></div>');
+					elmt = $('<div class="elmt id'+id+'"></div>');
 					$(base_element).append(elmt);
 					elmt.css({'position':'absolute', 'top': y1+'px', 'left': 0+'px', 'width': largeur, 'height':dy});
 					rect_elmt = $('<div class="rect_elmt"></div>');
 					elmt.append(rect_elmt);
 					rect_elmt.css({'position':'absolute', 'top': '0px', 'left': lar_unit+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-						'background-color':couleur,'border-style':'solid', 'border-width': '1px','border-radius': '5px'});
+						'background-color':couleur,'border-style':'solid', 'border-color':'transparent', 'border-width': '1px','border-radius': '5px'});
 					// ajout du bouton warning
 					elmt_obj = $('<button type="button"></button>');
 					$(elmt).append(elmt_obj);
@@ -432,11 +462,11 @@ $(document).ready(function() {
 			affiche_listes: function (element, liste_passee, liste_avenir) {
 				var nb1 = liste_passee.length;
 				var nb2 = liste_avenir.length;
-				var button1 = $('<button type="button" id="passee"><strong>'+nb1+'</strong></button>');
+				var button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
 				$(element).append(button1);
 				button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
 				button1.append('<i class="icon-chevron-right"></i>');
-				var button2 = $('<button type="button" id="avenir"><strong>'+nb2+'</strong></button>');
+				var button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
 				$(element).append(button2);
 				button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
 				button2.append('<i class="icon-chevron-left"></i>');
@@ -472,6 +502,7 @@ $(document).ready(function() {
 				var id = 0;
 				var yy = 0
 				var cpt = 0;
+				var h_current;
 //				tableau.sort(function(a,b){return b[5]-a[5];});
 				for (var j = 0; j<nb; j++) {
 					cpt = 0;
@@ -491,18 +522,53 @@ $(document).ready(function() {
 							}
 						}
 					}
-					if (cpt > 0) {
-						var categ = $('<div class="elmt categorie">'+cat_short[j]+'</div>');
-						timeline_elmt.append(categ);
-						categ.css({'position':'absolute', 'top':yy+'px', 'left':'0px', 'width':30+'px', 'height':y_temp-7-yy+'px', 'text-align':'center',
-							'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-radius': '0px', 'z-index':1});
-						var separateur = $('<div class="elmt separateur"></div>');
-						timeline_elmt.append(separateur);
-						separateur.css({'position':'absolute', 'top':y_temp-6+'px', 'left':'0px', 'width':largeur+'px', 'height':'2px', 'background-color':'black','z-index':1});
+					var categ = $('<div class="categorie '+j+'">'+cat_short[j]+'</div>');
+					timeline_elmt.append(categ);
+					categ.css({'position':'absolute', 'top':yy+'px', 'left':'0px', 'width':30+'px', 'height':'auto', 'text-align':'center', 'display':'none',
+						'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-radius': '0px', 'z-index':1});
+					var separateur = $('<div class="elmt separateur"></div>');
+					timeline_elmt.append(separateur);
+					h_current = y_temp-7-yy;
+					if (categ.height() > h_current) {
+						y_temp = yy + categ.height() + 7;
+					} else {
+						categ.css({'height':h_current+'px'})
 					}
+					separateur.css({'position':'absolute', 'top':y_temp-6+'px', 'left':'0px', 'width':largeur+'px', 'height':'2px', 'display':'none', 'background-color':'black','z-index':1});
 					yy = y_temp-4;
 				}
 				return [liste_passee, liste_avenir];
+			},
+			
+			tri_cat: function(timeline_elmt, tableau) {
+				var len = tableau[0].length;
+				var nb = categorie.length;
+				var debut, fin, etat;
+				var id = 0;
+				var yy = 0;
+				var elmt;
+				var cat;
+				y_temp = 0;
+				for (var j = 0; j<nb; j++) {
+					cat = timeline_elmt.find('categorie '+j);
+					cat.each(function(index, value){
+						y_temp = $(value).position().top - delt_ligne/2;
+						$(value).css({'display':'inline'});
+					});
+					for (var i = 0; i<len; i++) {
+						if (tableau[i][5] == categorie[j]) {
+							id = tableau[i][0];
+							debut = tableau[i][1];
+							fin = tableau[i][2];
+							etat = tableau[i][7];
+							if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
+								elmt = timeline_elmt.find('.id'+id);
+								elmt.animate({'top':y_temp+'px'});
+								y_temp = y_temp + elmt.height() + delt_ligne;
+							}
+						}
+					}
+				}	
 			},
 			
 			create: function(timeline_elmt, tableau) {
@@ -511,7 +577,6 @@ $(document).ready(function() {
 				var liste_avenir = new Array();
 				var debut, fin, etat;
 				var id = 0;
-				var yy = 0
 				tableau.sort(function(a,b){return b[5]-a[5];});
 					for (var i = 0; i<len; i++) {
 					
@@ -528,6 +593,27 @@ $(document).ready(function() {
 							}
 						}
 					return [liste_passee, liste_avenir];
+			},
+			
+			sort: function(timeline_elmt, tableau) {
+				var len = tableau[0].length;
+				var debut, fin, etat;
+				var elmt;
+				y_temp = 0;
+				tableau.sort(function(a,b){return a[1]-b[1];});
+					for (var i = 0; i<len; i++) {
+							id = tableau[i][0];
+							debut = tableau[i][1];
+							fin = tableau[i][2];
+							etat = tableau[i][7];
+							if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
+								y_temp += delt_ligne;
+								elmt = timeline_elmt.find('.id'+tableau[i][0]);
+							//	$('.timeline').append($('<div>'+elmt+'</div>'));
+								elmt.animate({'top':y_temp+'px'});
+								y_temp += elmt.height();
+							}
+						}
 			},
 			
 			update: function(base_element, tableau) {
@@ -549,75 +635,89 @@ $(document).ready(function() {
 				}
 			}
 	};
+	
+	
 
-
-	$.each($('.timeline'), function(index, element) {
-		timeline.init(element);
-		var base_elmt = $('<div class="Base"></div>');
-		$(element).append(base_elmt);
-		timeline.base(base_elmt);
-		var timeline_content = $('<div class="timeline_content"></div>');
-		$(element).append(timeline_content);
-		$(element).append('<div class="btn-group">');
-		$(element).append('<button type="button" class="btn" id="journee">Vue Journée</button>');
-		$(element).append('<button type="button" class="btn" id="courante">Vue courante</button>');
-		$(element).append('<button type="button" class="btn" id="tri_cat">Tri par catégorie</button>');
-		$(element).append('</div>');
-		var timeline_other = $('<div class="timeline_other"></div>');
-		$(element).append(timeline_other);
-		var res = timeline.create(timeline_content, exemple.tableau());
-		timeline.affiche_listes(timeline_other, res[0], res[1]);
-		timeline.timeBar(timeline_content);
-	});
-	$('.timeline_content').on('mouseenter','.elmt', function(){
+	$(document).ready(function() {	
+	$('.timeline').on('mouseenter','.elmt', function(){
 		$(this).css({'z-index':3});
-		$(this).find('.label_elmt').css({'font-weight':'bold'});
-		$(this).find('#mod').show();
-		$(this).find('#plus').show();
+	//	$(this).find('.label_elmt').css({'font-weight':'bold'});
+		$(this).find('.mod').show();
+		$(this).find('.plus').show();
 		$(this).find('.elmt_deb').show();
 		$(this).find('.elmt_fin').show();
-		$(this).find('#elmt_qm_but').show();
+		$(this).find('.elmt_qm_but').show();
 		$(this).find('.elmt_qm_txt').hide();
 		$(this).find('.elmt_qm_fleche').hide();
 	});
-	$('.timeline_content').on('mouseleave','.elmt',function(){
+	$('.timeline').on('mouseleave','.elmt',function(){
 		$(this).css({'z-index':1});
 		$(this).find('.label_elmt').css({'font-weight':'normal'});
-		$(this).find('#mod').hide();
-		$(this).find('#plus').hide();
+		$(this).find('.mod').hide();
+		$(this).find('.plus').hide();
 		$(this).find('.elmt_deb').hide();
 		$(this).find('.elmt_fin').hide();
-		$(this).find('#elmt_qm_but').hide();
+		$(this).find('.elmt_qm_but').hide();
 		$(this).find('.elmt_qm_txt').show();
 		$(this).find('.elmt_qm_fleche').show();
 	});
-	$('.timeline_content').on('mouseenter','.warn_elmt', function(){
+	$('.timeline').on('mouseenter','.warn_elmt', function(){
 		$(this).css({'z-index':3});
 		$(this).find('.label_elmt').css({'font-weight':'bold'});
 	});
-	$('.timeline_content').on('mouseleave','.warn_elmt',function(){
+	$('.timeline').on('mouseleave','.warn_elmt',function(){
 		$(this).css({'z-index':1});
 		$(this).find('.label_elmt').css({'font-weight':'normal'});
 	});
-	$('.timeline_content').on('click','#plus', function(){
+	$('.timeline').on('click','.plus', function(){
 		$(this).hide();
-		var elmt = $(this).closest('.elmt');
-		elmt.find('#moins').show();
-		var elmt_opt = elmt.find('.elmt_opt');
+		var timeline_content = $(this).closest('.timeline_content');
+		var this_elmt = $(this).closest('.elmt');
+		var h = this_elmt.position().top;
+		this_elmt.find('.moins').show();
+		var elmt_opt = this_elmt.find('.elmt_opt');
 		var dh = elmt_opt.outerHeight();
-		elmt.nextAll('.elmt').animate({'top': '+='+dh});
+		var all_elmt = timeline_content.find('.elmt');
+		all_elmt.each(function(index, elmt){
+			if ($(elmt).position().top > h) {
+				$(elmt).animate({'top': '+='+dh});
+			}
+		});
+		var this_cat = this_elmt.next('.categorie');
+//		this_cat.animate({'height':'-='+dh});
+		var all_cat = timeline_content.find('.categorie');
+		all_cat.each(function(index, cat){
+			if ($(cat).position().top > h) {
+				$(cat).animate({'top': '+='+dh});
+			}
+		});
 		elmt_opt.slideDown();
 	});
-	$('.timeline_content').on('click','#moins', function(){
+	$('.timeline').on('click','.moins', function(){
 		$(this).hide();
-		var elmt = $(this).closest('.elmt');
-		elmt.find('#plus').show();
-		var elmt_opt = elmt.find('.elmt_opt');
+		var timeline_content = $(this).closest('.timeline_content');
+		var this_elmt = $(this).closest('.elmt');
+		var h = this_elmt.position().top;
+		this_elmt.find('.plus').show();
+		var elmt_opt = this_elmt.find('.elmt_opt');
 		var dh = elmt_opt.outerHeight();
+		var all_elmt = timeline_content.find('.elmt');
+		all_elmt.each(function(index, elmt){
+			if ($(elmt).position().top > h) {
+				$(elmt).animate({'top': '-='+dh});
+			}
+		});
+		var this_cat = this_elmt.next('.categorie');
+//		this_cat.animate({'height':'-='+dh});
+		var all_cat = timeline_content.find('.categorie');
+		all_cat.each(function(index, cat){
+			if ($(cat).position().top > h) {
+				$(cat).animate({'top': '-='+dh});
+			}
+		});
 		elmt_opt.slideUp();	
-		elmt.nextAll('.elmt').animate({'top': '-='+dh});
 	});
-	$('.timeline').on('click','#journee', function(){
+	$('.timeline').on('click','.journee', function(){
 		var timel = $(this).closest('.timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
@@ -631,7 +731,7 @@ $(document).ready(function() {
 		timeline.affiche_listes(other, res[0], res[1]);
 		timeline.timeBar(timeline_content);
 	});
-	$('.timeline').on('click','#courante', function(){
+	$('.timeline').on('click','.courante', function(){
 		var timel = $(this).closest('.timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
@@ -645,8 +745,11 @@ $(document).ready(function() {
 		timeline.affiche_listes(other, res[0], res[1]);
 		timeline.timeBar(timeline_content);
 	});
-	$('.timeline').on('click','#tri_cat', function(){
+	$('.timeline').on('click','.tri_cat', function(){
 		var timel = $(this).closest('.timeline');
+		var timeline_content = timel.find('.timeline_content');
+		timeline.tri_cat(timeline_content, exemple.tableau());
+/*		var timel = $(this).closest('.timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');
@@ -657,9 +760,13 @@ $(document).ready(function() {
 		timeline.base(base);	
 		var res = timeline.create_cat(timeline_content, exemple.tableau());
 		timeline.affiche_listes(other, res[0], res[1]);
-		timeline.timeBar(timeline_content);
+		timeline.timeBar(timeline_content);*/
 	});
-	$('.timeline').on('click','#passee', function(){
+	$('.timeline').on('click','.tri_deb', function(){
+		var timel = $(this).closest('.timeline').find('.timeline_content');
+		timeline.sort(timel, exemple.tableau());
+	});
+	$('.timeline').on('click','.passee', function(){
 		var timel = $(this).closest('.timeline_other');
 		var liste_passee = timel.find('.liste_passee');
 		var len = liste_passee.outerWidth(); 
@@ -677,7 +784,7 @@ $(document).ready(function() {
 			liste_passee.show();
 		}
 	});
-	$('.timeline').on('click','#avenir', function(){
+	$('.timeline').on('click','.avenir', function(){
 		var timel = $(this).closest('.timeline_other');
 		var liste_avenir = timel.find('.liste_avenir');
 		var len = liste_avenir.outerWidth();
@@ -696,56 +803,3 @@ $(document).ready(function() {
 		}
 	});
 });
-
-
-/*	var canvas = {
-
-init : function(element) {
-	d_actuelle = new Date();
-	h_act = d_actuelle.getHours();
-	m_act = d_actuelle.getMinutes();
-	d_ref_deb = new Date();
-	d_ref_deb.setHours(d_ref_deb.getHours()-1,0,0);
-	h_ref = d_ref_deb.getHours(); 
-	d_ref_fin = new Date();
-	d_ref_fin.setDate(d_ref_deb.getDate());
-	d_ref_fin.setHours(d_ref_deb.getHours()+h_aff, 0, 0);
-	decoup = (h_aff + 1) * 2;
-	largeur = $(element).width();
-	hauteur = $(element).height();
-	lar_unit = largeur / decoup;
-},
-
-base : function(element) {
-	context = element.getContext('2d');
-	var h_temp = h_ref;
-	context.beginPath();
-	context.lineWidth=2;
-	context.moveTo(lar_unit, 40);
-	context.lineTo(lar_unit*(decoup-1), 40);
-	context.strokeStyle = '#0000FF';
-	context.stroke();
-	context.closePath();
-	context.beginPath();
-	context.strokeStyle = '#C0C0C0';
-	context.fillStyle = '#0000FF';
-	for (var i=1;i<decoup;i++) { 
-		context.moveTo(lar_unit*i, 35);
-		context.lineTo(lar_unit*i, hauteur-15);
-		if (i%2 == 0) {
-			context.font = '8pt Calibri';
-			context.fillText('30', lar_unit*i-6, 30);
-		} else {
-			context.font = '12pt Calibri';
-			context.fillText(h_temp+':00', lar_unit*i-15, 20);
-			if (h_temp == 23) {
-				h_temp = 0;
-			} else {
-				h_temp ++;
-			}
-		}
-	}
-	context.stroke();
-	context.closePath();
-}		
-};*/

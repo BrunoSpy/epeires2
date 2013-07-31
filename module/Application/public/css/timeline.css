@@ -37,7 +37,7 @@
 }
 
 
-.elmt #plus, .elmt #moins, .elmt #mod, .elmt #elmt_qm_but {
+.elmt .plus, .elmt .moins, .elmt .mod, .elmt .elmt_qm_but {
 	height : 22px;
 	width : 27px;
 	display:none;
@@ -53,4 +53,5 @@
 	width : 27px;
 	display:inline;
 }
+
 
