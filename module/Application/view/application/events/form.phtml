@@ -1,159 +1,136 @@
-<div id="event">
-<div id="loading">Chargement...</div>
-<!-- formulaire createform.phtml récupéré via ajax -->
-</div>
-<?php $this->inlineScript()->captureStart();?>
-$("#loading").ajaxStart(function(){
-	$(this).show();})
-	.ajaxStop(function(){
-	$(this).hide();});
-	
-	
-$("#create-link").on("click", function(){
-	$("#event").html('<div id="loading">Chargement...</div>');
-	$("#event").load(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'createform'))?>',
-		function(){
-			//disable every accordion but the first
-			$("a.accordion-toggle:gt(0)").addClass("disabled");
-		}
-	);
-	
-});
+<?php
+	if($this->error){
+		echo "<div class=\"alert alert-error\">";
+		echo $this->error."</div>";
+		return false;
+	}
 
-//click sur une fiche reflexe
-$("#event").on("click", "a.fiche", function(){
-	var id = $(this).data('id');
-	var me = $(this);
-	//tell the server to toggle the status
-	$.getJSON('<?php echo $this->url('application', array('controller'=>'events', 'action' => 'togglefiche'))?>'+'?id='+id,
-		function(data){
-			if(data.open){
-				me.html("A faire");
-				me.removeClass("active");
-			} else {
-				me.html("Fait");
-				me.addClass("active");
+	if($this->subform){
+		
+	} else {
+
+	if($this->event){
+		//form de modif
+		$this->form->setAttributes(array(
+		'action' => $this->url('application', array('controller'=>'events', 'action'=>'modify', 'id'=>$this->event->getId())),
+		'class' => 'form-horizontal'));
+	} else {
+		//form de creation
+		$this->form->setAttributes(array(
+		'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
+		'class' => 'form-horizontal'));
+	}
+	
+	$this->form->prepare();
+	echo $this->form()->openTag($this->form);
+	echo $this->formHidden($this->form->get('id'));
+	?>
+	
+	<div class="accordion" id="form">
+		<?php 
+		//category and subcategory		
+		$formSelectCat = $this->form->get('categories')->get('root_categories');
+		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
+ 		if($this->event){
+			//Catégorie non modifiale si modification
+			$formSelectCat->setAttribute('disabled',true);
+ 		}
+		
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formSelect($formSelectCat));
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formSelect($formSelectSubCat->setAttribute('disabled',true)),
+					array('control_id'=>'form_categories'));		
+		
+		echo $this->accordionGroup("Catégories", $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
+ 
+		//Modèles uniquement si création
+		if(!$this->event){
+			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
+		}
+			
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formCheckbox($this->form->get('punctual')));
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))),
+					"<div class=\"input-prepend\">".
+					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date')).
+					"</div>");
+		
+		$formEndDate = $this->form->get('end_date');
+		if($this->event){
+			if($this->event->isPunctual()){
+				$formEndDate->setAttribute('disabled', true);
 			}
 		}
-	);
-});
-
-//click on a predefined events
-$("#event").on("click", "a.predefined", function(){
-	$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
-	var me = $(this);
-	$.getJSON(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getpredefinedvalues'))?>'+'?id='+me.data('id'),
-		function(data){
-			$("#name").val(data.defaultvalues.name);
-			$("#punctual").prop('checked', data.defaultvalues.punctual);
-			$("#punctual").trigger("change");
-			$.each(data.customvalues, function(key, value){
-				var elt = $("#"+key);
-				if(elt.is("select")){
-					$("#"+key+" option[value="+value+"]").prop('selected', true);
-				} else if(elt.is('textarea')){
-					elt.html(value);
-				} else if(elt.is('input')){
-					elt.prop('value', value);
-				}
-				//TODO les autres types de champs : 
-			});
-			//open hour accordion
-			$("#Horairesid").trigger('click');
-			//prepare actions
-			$("#actionsTitle").removeClass("disabled");
-	});
-	//get actions
-	$.getJSON(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action'=>'getactions'))?>'+'?id='+me.data('id'),
-		function(data){
-			var container = $("#inner-Ficheréflexe");
-			container.html("");
-			//save id of model
-			var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
-			//then the table of actions
-			content += '<table class="table table-hover"><tbody>';
-			$.each(data, function(key, value){
-				content += "<tr data-id=\""+key+"\">";
-				content += "<td><span class=\"label label-"+value.impactstyle+"\">"+value.impactname+"</span></td>";
-				content += "<td>"+value.name+"</td>";
-				content += '</tr>';
-			});						
-			content += '</tbody></table>';
-			container.html(content);
-		}
-	);
-});
-
-//choosing a category
-$("#event").on("change", "#root_categories", function(){
-	$.post(
-	'<?php echo $this->url('application',
-							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('subform'=>'subcategories')) ) ?>'+'&id='+$(this).val(),
-	function(data){
-		$("#subcategories").html(data);
-		if($("#root_categories option:selected").val() > 0) {
-			$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
-			$("#Horairesid").removeClass("disabled");
-			$("#Descriptionid").removeClass("disabled");
-			$('#subcategories option[value=-1]').prop('selected', true);
-			$('#subcategories').trigger("change");
-			$('#subcategories').prop('disabled',false);
+		$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label'))),
+					"<div class=\"input-prepend\">".
+					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($formEndDate)."</div>");
+		
+		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
+		
+		$html = $this->controlGroup(
+					$this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formInput($this->form->get('name')));
+		$html .= $this->controlGroup(
+				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
+				$this->formSelect($this->form->get('impact')));
+		
+		if($this->event){
+			foreach ($this->form->get('custom_fields')->getElements() as $element){
+				$html .= $this->customFieldGroup($element);
+			}
 		} else {
-			$("#category_title").html('Catégories');
-			$("#Horairesid").addClass("disabled");
-			$("#Descriptionid").addClass("disabled");
-			$('#subcategories option[value=-1]').prop('selected', true);
-			$('#subcategories').trigger("change");
-			$('#subcategories').prop('disabled',true);
-		}
-	});
-	
-	
-});
-
-//choosing a subcategory
-$("#event").on("change", "#subcategories", function(){
-	$.post(
-		'<?php echo $this->url('application',
-							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('subform'=>'predefined_events')) ) ?>'+'&id='+$(this).val(),
-		function(data){
-			$("#predefined_events").html(data);
-			if($("#subcategories option:selected").val() > 0) {
-				$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
-				$("#Modèlesid").removeClass("disabled");
-				$.post(
-					'<?php echo $this->url('application',
-							array('controller'=>'events', 'action'=>'createform'),
-							array('query'=>array('subform'=>'custom_fields')) ) ?>'+'&id='+$("#subcategories option:selected").val(),
-					function(data){
-						$("#custom_fields").html(data);
-					}			
-				);
-				$('#Modèlesid').trigger('click');
-
-			} else {
-				//pas de sous-catégorie choisie, on supprime les champs spécifiques
-				if($("#root_categories").val() > 0) {
-					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
-				}
-				
-				$("#Modèlesid").html('Modèles').addClass("disabled");
-				$("#actionsTitle").addClass("disabled");
-				$("#custom_fields").html("");
-				$("#inner-Ficheréflexe").html("");
+			$html .= "<div id=\"custom_fields\"></div>";
+		}	
+		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
+		
+		$html = "";
+		if($this->event) {
+			$html .= '<table class="table table-hover" >';
+			$html .= '<tbody>';
+			foreach ($this->event->getChilds() as $child){
+					$html .= "<tr data-id=\"".$child->getId()."\">";
+					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
+					$html .= "<td>".$child->getName()."</td>";
+					$html .= "<td><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
+					$html .= '</tr>';
 			}
+			$html .= '</table>';
+			$html .= '</tbody>';
 		}
-	);
+		
+		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
+		
+		?>
+
+	<div class="control-group">
+		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
+		<div class="controls">
+			<?php if($this->event){
+				echo $this->formSelect($this->form->get('status')->setAttribute('value', $this->event->getStatus()->getId()));
+			} else {
+				echo $this->formSelect($this->form->get('status')); 
+			}?>
+		</div>
+	</div>
 	
-});
+	<div class="control-group">
+		<div class="controls">
+			<?php	
+			if($this->event){
+				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', "Modifier"));
+			} else {
+				echo $this->formSubmit($this->form->get('submit'));
+			}?>
+			<a class="btn" id="cancel-form">Annuler</a>
+		</div>
+	</div>	
+	<?php echo $this->form()->closeTag(); ?>
+<?php }?>
 
-$("#event").on("change", "#punctual", function(){
-	$("#dateFin").prop('disabled',$(this).is(':checked')); 
-});
 
-<?php $this->inlineScript()->captureEnd();?>

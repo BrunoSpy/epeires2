@@ -18,6 +18,7 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
+        							  ->prependFile($this->basePath() . '/js/form.js')
         							  ->prependFile($this->basePath() . '/js/timeline.js')
         							  ->prependFile($this->basePath() . '/js/jquery-datetimepicker.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
