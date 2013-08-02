@@ -45,7 +45,12 @@ class CategoriesController extends AbstractActionController{
     		$subcategories[$category->getId()] = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	}
     	
-    	$viewmodel->setVariables(array('categories' => $rootcategories, 'subcategories' => $subcategories));
+    	$events = array();
+    	foreach ($objectManager->getRepository('Application\Entity\Category')->findAll() as $cat){
+    		$events[$cat->getId()] = count($objectManager->getRepository('Application\Entity\Event')->findBy(array('category' => $cat->getId())));
+    	}
+    	
+    	$viewmodel->setVariables(array('categories' => $rootcategories, 'subcategories' => $subcategories, 'events' => $events));
     	
     	return $viewmodel;
     }
@@ -138,6 +143,8 @@ class CategoriesController extends AbstractActionController{
     		$objectManager->remove($category);
     		$objectManager->flush();
     	}
+    	//TODO cas particuliers :
+    	// cat avec evt : supprimer evt ??
     	
     	return $this->redirect()->toRoute('administration', array('controller'=>'categories'));
     }
