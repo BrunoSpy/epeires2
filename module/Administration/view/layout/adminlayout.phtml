@@ -32,13 +32,23 @@
     	</div>
     	<div class="navbar navbar-after-top">
     		<div class="navbar-inner">
-	        	<ul class="nav-centered nav">
+    			<a class="brand" href="#"><?php echo $this->title; ?></a>
+	        	<ul class="nav">
+	        		<li class="divider-vertical"></li>
 	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
 	            		data-original-title="Paramètres globaux de l'application" data-placement="bottom" data-toggle="tooltip">Paramètres</a>
 	            	</li>
 	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'centre', 'action'=>'index')) ?>">Centre</a></li>
-	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a></li>
-	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'fields', 'action'=>'index')) ?>">Champs</a></li>
+	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'users', 'action'=>'index')) ?>">Utilisateurs</a></li>
+	            	<li class="dropdown">
+	            		<a class="dropdown-toggle" data-toggle="dropdown" href="#">Personnalisation <b class="caret"></b></a>
+	            		<ul class="dropdown-menu">
+	            			<li><a class="for-nav-title" data-title="Personnalisation > Catégories" href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a></li>
+	            			<li><a href="<?php echo $this->url('administration', array('controller'=>'fields', 'action'=>'index')) ?>">Champs</a></li>
+	            			<li><a href="<?php echo $this->url('administration', array('controller'=>'models', 'action'=>'index')) ?>">Modèles</a></li>
+	            		</ul>
+	            	</li>
+	               	<li><a href="<?php echo $this->url('administration', array('controller'=>'maintenance', 'action'=>'index')) ?>">Maintenance</a></li>
 	        	</ul>
         	</div>
         </div>

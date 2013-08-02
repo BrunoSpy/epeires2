@@ -61,6 +61,8 @@ class CategoriesController extends AbstractActionController{
     			'fields' => $fields,
     	));
     	
+    	$this->layout()->title = "Personnalisation > Catégories";
+    	
     	return $viewmodel;
     }
     
