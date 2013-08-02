@@ -58,6 +58,21 @@ class Category {
 	 */
 	protected $name;
 	
+	/**
+	* @ORM\OneToMany(targetEntity="Event", mappedBy="category", cascade={"remove"})
+	*/
+	protected $events;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"})
+	 */
+	protected $customfields;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="category", cascade={"remove"})
+	 */
+	protected $predefinedevents;
+	
 	public function getParent(){
 		return $this->parent;
 	}

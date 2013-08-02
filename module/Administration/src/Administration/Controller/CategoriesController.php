@@ -140,11 +140,10 @@ class CategoriesController extends AbstractActionController{
     			$child->setParent(null);
     			$objectManager->persist($child);
     		}
+    		//suppression des evts associés par cascade
     		$objectManager->remove($category);
     		$objectManager->flush();
     	}
-    	//TODO cas particuliers :
-    	// cat avec evt : supprimer evt ??
     	
     	return $this->redirect()->toRoute('administration', array('controller'=>'categories'));
     }

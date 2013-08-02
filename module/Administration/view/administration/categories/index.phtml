@@ -29,7 +29,7 @@
 						<th>Nom</th>
 						<th>Nom court</th>
 						<th>Couleur</th>
-						<th>Evts</th>th>
+						<th>Evts</th>
 						<th><a href="#" class="btn btn-mini" id="add-cat">Ajouter</a></th>
 					</tr>
 				</thead>
@@ -44,7 +44,7 @@
 					echo "<td>".$this->events[$category->getId()]."</td>";
 					echo "<td>";
 						echo "<a href=\"#\" class=\"mod\" data-id=\"".$category->getId()."\"><i class=\"icon-pencil\"></i></a> ";
-						echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\"><i class=\"icon-remove-sign\"></i> </a>";
+						echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\"><i class=\"icon-remove-sign\"></i> </a>";
 					echo "</td>";
 					echo "</tr>";
 					
@@ -57,7 +57,7 @@
 							echo "<td>".$this->events[$subcategory->getId()]."</td>";
 							echo "<td>";
 								echo "<a href=\"#\" class=\"mod\" data-id=\"".$subcategory->getId()."\"><i class=\"icon-pencil\"></i></a>  ";
-								echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\"><i class=\"icon-remove-sign\"></i> </a>";
+								echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\"><i class=\"icon-remove-sign\"></i> </a>";
 							echo "</td>";
 							echo "</tr>";
 						}			
@@ -70,6 +70,11 @@
 		</div>
 	</div>
 	
+</div>
+
+<div id="dialog" title="Confirmation requise">
+<p>Voulez-vous vraiment supprimer <span id="cat_name"></span> ?</p>
+<p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>
 </div>
 
 <?php $this->inlineScript()->captureStart(); ?>
@@ -105,5 +110,31 @@ $("#add-cat").on('click', function(){
 $("#form").on("click", "#cancel-form", function(){
 	$("#form").hide();
 });
+
+$("#dialog").dialog({
+      autoOpen: false,
+      modal: true
+});
+
+$(".delete").click(function(e) {
+    e.preventDefault();
+    var targetUrl = $(this).attr("href");
+
+    $("#cat_name").html($(this).data('name'));
+    
+    $("#dialog").dialog({
+      buttons : {
+        "Valider" : function() {
+          window.location.href = targetUrl;
+        },
+        "Annuler" : function() {
+          $(this).dialog("close");
+        }
+      }
+      });
+    $("#dialog").dialog("open");
+});
+
+
 
 <?php $this->inlineScript()->captureEnd(); ?>

@@ -32,13 +32,18 @@ class PredefinedEvent {
 	/** @ORM\Column(type="boolean") */
 	protected $punctual;
 
- 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent") */
+ 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="childs") */
  	protected $parent;
 	
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="parent", cascade={"remove"})
+ 	 */
+ 	protected $childs;
+ 	
  	/** @ORM\ManyToOne(targetEntity="Impact") */
  	protected $impact;
 	
- 	/** @ORM\ManyToOne(targetEntity="Category") */
+ 	/** @ORM\ManyToOne(targetEntity="Category", inversedBy="predefinedevents") */
  	protected $category;
  	
  	/** @ORM\Column(type="boolean") */
@@ -51,7 +56,7 @@ class PredefinedEvent {
  	protected $order;
  	
  	/**
- 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="event")
+ 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="event", cascade={"remove"})
  	 */
  	protected $custom_fields_values;
  	

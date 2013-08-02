@@ -26,7 +26,7 @@ class CustomFieldValue {
 	protected $event;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="CustomField")
+	 * @ORM\ManyToOne(targetEntity="CustomField", inversedBy="values")
 	 */
 	protected $customfield;
 	

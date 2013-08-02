@@ -25,7 +25,7 @@ class CustomField {
 	protected $name;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Category")
+	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="customfields")
 	 */
 	protected $category;
 	
@@ -33,6 +33,11 @@ class CustomField {
 	 * @ORM\ManyToOne(targetEntity="CustomFieldType")
 	 */
 	protected $type;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
+	 */
+	protected $values;
 	
 	public function getId(){
 		return $this->id;
