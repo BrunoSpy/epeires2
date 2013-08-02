@@ -116,7 +116,7 @@ var form = function(url){
 	$("#event").on("change", "#root_categories", function(){
 		//disable subcategories select form before getting datas
 		$('#subcategories option[value=-1]').prop('selected', true);
-		$('#subcategories').prop('disabled',false);
+		$('#subcategories').prop('disabled',true);
 		$.post(url+'/subform?part=subcategories&id='+$(this).val(),
 				function(data){
 			$("#subcategories").html(data);
@@ -129,9 +129,7 @@ var form = function(url){
 				$("#category_title").html('Catégories');
 				$("#Horairesid").addClass("disabled");
 				$("#Descriptionid").addClass("disabled");
-				$('#subcategories option[value=-1]').prop('selected', true);
 				$('#subcategories').trigger("change");
-				$('#subcategories').prop('disabled',true);
 			}
 		});
 	});
@@ -141,6 +139,7 @@ var form = function(url){
 		$.post(
 				url+'/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
+					$('#subcategories').prop('disabled',false);
 					$("#predefined_events").html(data);
 					if($("#subcategories option:selected").val() > 0) {
 						$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
