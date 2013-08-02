@@ -46,11 +46,20 @@ class CategoriesController extends AbstractActionController{
     	}
     	
     	$events = array();
+    	$models = array();
+    	$fields = array();
     	foreach ($objectManager->getRepository('Application\Entity\Category')->findAll() as $cat){
     		$events[$cat->getId()] = count($objectManager->getRepository('Application\Entity\Event')->findBy(array('category' => $cat->getId())));
+    		$models[$cat->getId()] = count($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('category' => $cat->getId(), 'parent'=> null)));
+    		$fields[$cat->getId()] = count($objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $cat->getId())));
     	}
     	
-    	$viewmodel->setVariables(array('categories' => $rootcategories, 'subcategories' => $subcategories, 'events' => $events));
+    	$viewmodel->setVariables(array('categories' => $rootcategories, 
+    			'subcategories' => $subcategories,
+    			'events' => $events,
+    			'models' => $models,
+    			'fields' => $fields,
+    	));
     	
     	return $viewmodel;
     }
@@ -90,8 +99,7 @@ class CategoriesController extends AbstractActionController{
     			),
     	));
     	    	
-    	$viewmodel->setVariables(array('form' =>$form, 
-    								   'title'=>($id ? "Modification de \"".$category->getName()."\"" : "Nouvelle categorie")));
+    	$viewmodel->setVariables(array('form' =>$form));
     	return $viewmodel;
     }
     

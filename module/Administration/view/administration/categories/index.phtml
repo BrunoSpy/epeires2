@@ -21,7 +21,7 @@
 
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span8">
+		<div class="span12">
 			<table class="table table-striped">
 				<thead>
 					<tr>
@@ -30,7 +30,9 @@
 						<th>Nom court</th>
 						<th>Couleur</th>
 						<th>Evts</th>
-						<th><a href="#" class="btn btn-mini" id="add-cat">Ajouter</a></th>
+						<th>Modèles</th>
+						<th>Champs</th>
+						<th><a href="#form-container" class="btn btn-mini" id="add-cat" data-toggle="modal">Ajouter</a></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -42,9 +44,11 @@
 					echo "<td>".$category->getShortName()."</td>";
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
 					echo "<td>".$this->events[$category->getId()]."</td>";
+					echo "<td>".$this->models[$category->getId()]."</td>";
+					echo "<td>".$this->fields[$category->getId()]."</td>";
 					echo "<td>";
-						echo "<a href=\"#\" class=\"mod\" data-id=\"".$category->getId()."\"><i class=\"icon-pencil\"></i></a> ";
-						echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\"><i class=\"icon-remove-sign\"></i> </a>";
+						echo "<a href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+						echo "<a href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-remove-sign\"></i> </a>";
 					echo "</td>";
 					echo "</tr>";
 					
@@ -55,9 +59,11 @@
 							echo "<td>".$subcategory->getShortName()."</td>";
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
 							echo "<td>".$this->events[$subcategory->getId()]."</td>";
+							echo "<td>".$this->models[$subcategory->getId()]."</td>";
+							echo "<td>".$this->fields[$subcategory->getId()]."</td>";
 							echo "<td>";
-								echo "<a href=\"#\" class=\"mod\" data-id=\"".$subcategory->getId()."\"><i class=\"icon-pencil\"></i></a>  ";
-								echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\"><i class=\"icon-remove-sign\"></i> </a>";
+								echo "<a href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+								echo "<a href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-remove-sign\"></i> </a>";
 							echo "</td>";
 							echo "</tr>";
 						}			
@@ -66,20 +72,38 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="span4" id="form">
-		</div>
+		
 	</div>
 	
 </div>
 
-<div id="dialog" title="Confirmation requise">
-<p>Voulez-vous vraiment supprimer <span id="cat_name"></span> ?</p>
-<p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>
+<div class="modal hide fade" id="form-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="form-title"></h3>
+	</div>
+	<div id="form"></div>
+</div>
+
+<div class="modal hide fade" id="confirm-delete">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Confirmer la suppression ?</h3>
+	</div>
+	<div class="modal-body">
+		<p>Voulez-vous vraiment supprimer la catégorie <em><span id="cat_name"></span></em> ?</p>
+		<p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>
+	</div>	
+	<div class="modal-footer">
+		<a class="btn btn-danger" id="delete-href">Confirmer</a>
+		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+	</div>	
 </div>
 
 <?php $this->inlineScript()->captureStart(); ?>
 
 $(".mod").on('click', function(){
+	$("#form-title").html("Modification de "+$(this).data('name'));
 	$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>'+'?id='+$(this).data('id'),
 					function(){
 						$("#form").find(".colorpicker").spectrum({
@@ -88,51 +112,27 @@ $(".mod").on('click', function(){
     							preferredFormat: "hex",
     						}
     					);
-    					$("#form").show();
 					}
 	);	
 });
 
-$("#add-cat").on('click', function(){
-	$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>',
-					function(){
-						$("#form").find(".colorpicker").spectrum({
-								showInitial: false,
-    							showInput: true,
-    							preferredFormat: "hex",
-    						}
-    					);
-    					$("#form").show();
-					}
-	);	
+$("#add-cat").on('click', function(evt){
+		$("#form-title").html("Nouvelle catégorie");
+		$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>',
+				function(){
+					$("#form").find(".colorpicker").spectrum({
+							showInitial: false,
+   							showInput: true,
+   							preferredFormat: "hex",
+   						}
+   					);
+				}
+		);	
 });
 
-$("#form").on("click", "#cancel-form", function(){
-	$("#form").hide();
-});
-
-$("#dialog").dialog({
-      autoOpen: false,
-      modal: true
-});
-
-$(".delete").click(function(e) {
-    e.preventDefault();
-    var targetUrl = $(this).attr("href");
-
-    $("#cat_name").html($(this).data('name'));
-    
-    $("#dialog").dialog({
-      buttons : {
-        "Valider" : function() {
-          window.location.href = targetUrl;
-        },
-        "Annuler" : function() {
-          $(this).dialog("close");
-        }
-      }
-      });
-    $("#dialog").dialog("open");
+$(".delete").on('click', function(){
+	$('a#delete-href').attr('href', $(this).data('href'));
+	$('#cat_name').html($(this).data('name'));
 });
 
 
