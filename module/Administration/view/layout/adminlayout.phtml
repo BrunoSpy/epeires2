@@ -33,9 +33,8 @@
     	<div class="navbar navbar-after-top">
     		<div class="navbar-inner">
 	        	<ul class="nav-centered nav">
-	            	<li><a class="pop" href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
-	            		data-content="Paramètres globaux de l'application" data-placement="bottom" data-toggle="popover"
-	            		data-trigger="hover">Paramètres</a>
+	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
+	            		data-original-title="Paramètres globaux de l'application" data-placement="bottom" data-toggle="tooltip">Paramètres</a>
 	            	</li>
 	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'centre', 'action'=>'index')) ?>">Centre</a></li>
 	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a></li>
