@@ -18,7 +18,7 @@ return array(
                		),
                     'defaults' => array(
                         '__NAMESPACE__' => 'Administration\Controller',
-                        'controller'    => 'Index',
+                        'controller'    => 'Home',
                         'action'        => 'index',
                     ),
                 ),
@@ -46,7 +46,8 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Administration\Controller\Index' => 'Administration\Controller\IndexController',
+            'Administration\Controller\Home' => 'Administration\Controller\HomeController',
+            'Administration\Controller\Categories' => 'Administration\Controller\CategoriesController',
         ),
     ),
     'view_manager' => array(

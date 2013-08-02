@@ -27,6 +27,8 @@ $(document).ready(function(){
    }).parent().addClass('active') //on ajoute la classe active
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
    
+   $(".pop").popover();
+   
 });
 
 

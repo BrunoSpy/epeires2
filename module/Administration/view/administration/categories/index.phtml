@@ -1,0 +1,106 @@
+
+<div class="warnings">
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+</div>
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span8">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>Nom</th>
+						<th>Nom court</th>
+						<th>Couleur</th>
+						<th><a href="#" class="btn btn-mini" id="add-cat">Ajouter</a></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+					foreach ($this->categories as $category){
+					echo "<tr>";
+					echo "<td>".$category->getId()."</td>";		
+					echo "<td>".$category->getName()."</td>";
+					echo "<td>".$category->getShortName()."</td>";
+					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
+					echo "<td>";
+						echo "<a href=\"#\" class=\"mod\" data-id=\"".$category->getId()."\"><i class=\"icon-pencil\"></i></a> ";
+						echo "<a href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\"><i class=\"icon-remove-sign\"></i> </a>";
+					echo "</td>";
+					echo "</tr>";
+					
+						foreach ($this->subcategories[$category->getId()] as $subcategory){
+							echo "<tr>";
+							echo "<td>".$subcategory->getId()."</td>";
+							echo "<td>  <i class=\"icon-chevron-right\"></i> ".$subcategory->getName()."</td>";
+							echo "<td>".$subcategory->getShortName()."</td>";
+							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
+							echo "<td>";
+								echo "<a href=\"#\" class=\"mod\" data-id=\"".$subcategory->getId()."\"><i class=\"icon-pencil\"></i></a>  ";
+								echo "<a href=\"#\" class=\"delete\" data-id=\"".$subcategory->getId()."\"><i class=\"icon-remove-sign\"></i></a>";
+							echo "</td>";
+							echo "</tr>";
+						}			
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
+		<div class="span4" id="form">
+		</div>
+	</div>
+	
+</div>
+
+<?php $this->inlineScript()->captureStart(); ?>
+
+$(".mod").on('click', function(){
+	$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>'+'?id='+$(this).data('id'),
+					function(){
+						$("#form").find(".colorpicker").spectrum({
+								showInitial: false,
+    							showInput: true,
+    							preferredFormat: "hex",
+    						}
+    					);
+    					$("#form").show();
+					}
+	);	
+});
+
+$("#add-cat").on('click', function(){
+	$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>',
+					function(){
+						$("#form").find(".colorpicker").spectrum({
+								showInitial: false,
+    							showInput: true,
+    							preferredFormat: "hex",
+    						}
+    					);
+    					$("#form").show();
+					}
+	);	
+});
+
+$("#form").on("click", "#cancel-form", function(){
+	$("#form").hide();
+});
+
+<?php $this->inlineScript()->captureEnd(); ?>

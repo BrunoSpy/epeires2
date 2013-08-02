@@ -9,26 +9,43 @@
 
         <!-- Le styles -->
         <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-               //         ->prependStylesheet($this->basePath() . '/css/application.css') 
+                        ->prependStylesheet($this->basePath() . '/css/application.css') 
+                        ->prependStylesheet($this->basePath() . '/css/spectrum.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
-                        ->prependStylesheet($this->basePath() . '/css/style.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
+                        ->prependStylesheet($this->basePath() . '/css/jquery-ui.min.css')
         				?>
 
         <!-- Scripts -->
-        <?php echo $this->headScript()/*->prependFile($this->basePath() . '/js/application.js')*/
+        <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
+        							  ->prependFile($this->basePath() . '/js/spectrum.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+                                      ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery.min.js')
         							   ?>
 
     </head>
     <body>
-    	<p>Admin layout</p>
-    	
-        <div class="container">
+    	<div class="header">
+    		<span id="clock"></span>
+    	</div>
+    	<div class="navbar navbar-after-top">
+    		<div class="navbar-inner">
+	        	<ul class="nav-centered nav">
+	            	<li><a class="pop" href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
+	            		data-content="Paramètres globaux de l'application" data-placement="bottom" data-toggle="popover"
+	            		data-trigger="hover">Paramètres</a>
+	            	</li>
+	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'centre', 'action'=>'index')) ?>">Centre</a></li>
+	            	<li><a href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a></li>
+	        	</ul>
+        	</div>
+        </div>
+        <div class="content">
             <?php echo $this->content; ?>
         </div> <!-- /container -->
+        
         <?php echo $this->inlineScript() ?>
     </body>
 </html>

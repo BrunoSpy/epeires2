@@ -10,8 +10,11 @@ class CategoryRepository extends EntityRepository {
 	/**
 	 * @return array
 	 */
-	public function getRootsAsArray(){
+	public function getRootsAsArray($id){
 		$criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
+		if($id){
+			$criteria->andWhere(Criteria::expr()->neq('id', $id));
+		}
 		$list = parent::matching($criteria);
 		$res = array();
 		foreach ($list as $element) {
