@@ -8,6 +8,7 @@
  */
 namespace Application\Entity;
 
+use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
@@ -18,19 +19,30 @@ class CustomField {
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
+	 * @Annotation\Type("Zend\Form\Element\Hidden")
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="string", unique=true) */
+	/** @ORM\Column(type="string", unique=true)
+ 	 * @Annotation\Type("Zend\Form\Element\Text")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Nom :"})
+	 */
 	protected $name;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="customfields")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Catégorie :"})
 	 */
 	protected $category;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="CustomFieldType")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Type :", "empty_option":"Choisir le type"})
 	 */
 	protected $type;
 	
@@ -47,8 +59,23 @@ class CustomField {
 		return $this->name;
 	}
 	
+	public function setName($name){
+		$this->name = $name;
+	}
+	
 	public function getType(){
 		return $this->type;
 	}
 	
+	public function setCategory($category){
+		$this->category = $category;
+	}
+	
+	public function setType($type){
+		$this->type = $type;
+	}
+	
+	public function getArrayCopy() {
+		return get_object_vars($this);
+	}
 }

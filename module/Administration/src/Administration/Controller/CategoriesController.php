@@ -82,8 +82,8 @@ class CategoriesController extends AbstractActionController{
     	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Category'))
     		->setObject($category);
     	
-    	//TODO use Annotation ?
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($id));
+        
     	if($id){
     		$category = $objectManager->getRepository('Application\Entity\Category')->find($id);
     		if($category){
@@ -158,6 +158,22 @@ class CategoriesController extends AbstractActionController{
     	return $this->redirect()->toRoute('administration', array('controller'=>'categories'));
     }
     
+    public function fieldsAction(){
+    	$request = $this->getRequest();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	 
+    	$id = $this->params()->fromQuery('id', null);
+    	
+    	$fields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $id));
+    	    	
+    	$viewmodel->setVariables(array('fields' => $fields, 'categoryid' => $id));
+    	return $viewmodel;
+    }
+    
+    //TODO factoriser
     private function processFormMessages($messages){
     	foreach($messages as $key => $message){
     		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'

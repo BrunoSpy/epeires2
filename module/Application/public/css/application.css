@@ -93,12 +93,30 @@ input, textarea, .uneditable-input {
 .popover-title {
 	font-weight:bold;
 }
+
+.up-caret {
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    border-bottom: 4px solid #000000;
+    display: inline-block;
+    height: 0;
+    vertical-align: top;
+    width: 0;
+}
+
+.middle {
+	vertical-align: 25%;	
+}
 /* ************************** */
 
 a.disabled {
 	pointer-events: none;
 	cursor: default;
 	color: gray;
+}
+
+.unvisible{
+	display:none;
 }
 
 /* css for timepicker */

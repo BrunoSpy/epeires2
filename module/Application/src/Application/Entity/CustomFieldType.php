@@ -10,7 +10,8 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * @ORM\Entity @ORM\Table(name="customfieldtypes")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Table(name="customfieldtypes")
  **/
 class CustomFieldType {
 	/**
@@ -25,6 +26,10 @@ class CustomFieldType {
 	
 	/** @ORM\Column(type="string") */
 	protected $type;
+	
+	public function getId(){
+		return $this->id;
+	}
 	
 	public function setName($name){
 		$this->name = $name;

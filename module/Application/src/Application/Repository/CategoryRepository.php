@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Expression;
 
-class CategoryRepository extends EntityRepository {
+class CategoryRepository extends ExtendedRepository {
 	
 	/**
 	 * @return array
@@ -25,6 +25,7 @@ class CategoryRepository extends EntityRepository {
 	
 	public function getChildsAsArray($parentId){
 		$criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $parentId));
+		
 		$list = parent::matching($criteria);
 		$res = array();
 		foreach ($list as $element) {

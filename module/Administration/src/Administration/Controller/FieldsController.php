@@ -8,6 +8,9 @@ namespace Administration\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Application\Entity\CustomField;
+use Zend\Form\Annotation\AnnotationBuilder;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
 class FieldsController extends AbstractActionController
 {
@@ -17,5 +20,129 @@ class FieldsController extends AbstractActionController
         return array();
     }
     
+    public function fieldupAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    }
     
+    public function deleteAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    	$returnRoute = $this->params()->fromQuery('return', null);
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	 
+    	$customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
+    	
+    	if($customfield){
+    		$objectManager->remove($customfield);
+    		$objectManager->flush();
+    	}
+    	
+    	if($returnRoute){
+    		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
+    	} else {
+    		return $this->redirect()->toRoute('administration', array('controller'=>'fields'));
+    	}
+    }
+    
+    public function saveAction(){
+    	$returnRoute = $this->params()->fromQuery('return', null);
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    	
+    		$id = $post['id'];
+ 		
+    		$datas = $this->getForm($id);
+    		$form = $datas['form'];
+    		$customfield = $datas['customfield'];
+    		$form->setData($post);
+    		
+    		if($form->isValid()){
+    			$customfield->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
+    			$customfield->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->find($post['type']));
+    			$objectManager->persist($customfield);
+    			$objectManager->flush();
+    			$this->flashMessenger()->addSuccessMessage("Champ modifié");
+    		} else {
+    			$this->flashMessenger()->addErrorMessage("Impossible de modifier le champ.");
+    			//traitement des erreurs de validation
+    			$this->processFormMessages($form->getMessages());
+    		}
+    	}
+    	if($returnRoute){
+    		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
+    	} else {
+    		return $this->redirect()->toRoute('administration', array('controller'=>'fields'));
+    	}
+    }
+    
+    public function formAction(){
+
+    	$request = $this->getRequest();
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	 
+    	$id = $this->params()->fromQuery('id', null);
+    	$return = $this->params()->fromQuery('return', null);
+    	$categoryid = $this->params()->fromQuery('categoryid', null);
+     	
+    	$viewmodel->setVariables(array('form' => $this->getForm($id, $categoryid)['form'], 'return'=>$return, 'id'=>$id));
+    	return $viewmodel;
+    }
+    
+    
+    
+    private function getForm($id = null, $categoryid = null){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$customfield = new CustomField();
+    	$builder = new AnnotationBuilder();
+    	$form = $builder->createForm($customfield);
+    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\CustomField'))
+    	->setObject($customfield);
+    	 
+    	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getAllAsArray());
+    	if($categoryid){
+    		$form->get('category')->setAttribute('value', $categoryid);
+    	}
+    	
+    	$form->get('type')->setValueOptions($objectManager->getRepository('Application\Entity\CustomFieldType')->getAllAsArray());
+    	
+    	if($id){
+    		$customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
+    		if($customfield){
+    			$form->bind($customfield);
+    			$form->setData($customfield->getArrayCopy());
+    		}
+    	}
+    	 
+    	$form->add(array(
+    			'name' => 'submit',
+    			'attributes' => array(
+    					'type' => 'submit',
+    					'value' => 'Enregistrer',
+    					'class' => 'btn btn-primary btn-small',
+    			),
+    	));
+    	
+    	return array('form' => $form, 'customfield'=>$customfield);
+    }
+    
+    //TODO Factoriser
+    private function processFormMessages($messages){
+    	foreach($messages as $key => $message){
+    		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
+    			if(is_array($mvalue)){
+    				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
+    					$this->flashMessenger()->addErrorMessage(
+    							"Champ ".$mkey." incorrect : ".$nvalue);
+    				}
+    			} else {
+    				$this->flashMessenger()->addErrorMessage(
+    						"Champ ".$key." incorrect : ".$mvalue);
+    			}
+    		}
+    	}
+    }
 }

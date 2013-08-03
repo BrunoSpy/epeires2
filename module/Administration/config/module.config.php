@@ -48,6 +48,7 @@ return array(
         'invokables' => array(
             'Administration\Controller\Home' => 'Administration\Controller\HomeController',
             'Administration\Controller\Categories' => 'Administration\Controller\CategoriesController',
+            'Administration\Controller\Fields' => 'Administration\Controller\FieldsController',
         ),
     ),
     'view_manager' => array(
@@ -75,13 +76,5 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
-    ),
-    /**
-     * Remove this configuration once ZF 2.2.2 is released.
-     *
-     * See https://github.com/zendframework/zf2/pull/4652
-     */
-    'console' => array(
-    		'router' => array(),
     ),
 );
