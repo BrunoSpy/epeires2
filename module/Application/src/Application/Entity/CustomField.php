@@ -47,9 +47,19 @@ class CustomField {
 	protected $type;
 	
 	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $place;
+	
+	/**
 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
 	 */
 	protected $values;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="customfield", cascade={"remove"})
+	 */
+	protected $predefinedvalues;
 	
 	public function getId(){
 		return $this->id;
@@ -71,8 +81,21 @@ class CustomField {
 		$this->category = $category;
 	}
 	
+	public function getCategory(){
+		return $this->category;
+	}
+	
+	
 	public function setType($type){
 		$this->type = $type;
+	}
+	
+	public function getPlace(){
+		return $this->place;
+	}
+	
+	public function setPlace($place){
+		$this->place = $place;
 	}
 	
 	public function getArrayCopy() {

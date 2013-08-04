@@ -56,7 +56,7 @@ class PredefinedEvent {
  	protected $order;
  	
  	/**
- 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="event", cascade={"remove"})
+ 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="predefinedevent", cascade={"remove"})
  	 */
  	protected $custom_fields_values;
  	

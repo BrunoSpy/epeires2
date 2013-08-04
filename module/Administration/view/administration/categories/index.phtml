@@ -47,8 +47,8 @@
 					echo "<td>".$this->models[$category->getId()]."</td>";
 					echo "<td>".$this->fields[$category->getId()]."</td>";
 					echo "<td>";
-						echo "<a href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
-						echo "<a href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-remove-sign\"></i> </a>";
+						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
 					echo "</td>";
 					echo "</tr>";
 					
@@ -62,8 +62,8 @@
 							echo "<td>".$this->models[$subcategory->getId()]."</td>";
 							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
 							echo "<td>";
-								echo "<a href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-								echo "<a href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-remove-sign\"></i> </a>";
+								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
 							echo "</td>";
 							echo "</tr>";
 						}			
@@ -90,7 +90,7 @@
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3  id="fields-title"></h3>
 	</div>
-	<form action="<?php echo $this->url('administration', array('controller' => 'fields', 'action'=>'save'), array('query'=>array('return'=>'categories')));?>" method="POST" name="CustomField" id="CustomField">
+	<form action="<?php echo $this->url('administration', array('controller' => 'fields', 'action'=>'save'));?>" method="POST" name="CustomField" id="CustomField">
 	<div id="fields-table">
 	</div>
 	</form>
@@ -118,6 +118,7 @@
 	</div>
 	<div class="modal-body">
 		<p>Voulez-vous vraiment supprimer le champ <em><span id="field_name"></span></em> ?</p>
+		<p>Toutes les valeurs associées à ce champ seront supprimées.</p>
 	</div>	
 	<div class="modal-footer">
 		<a class="btn btn-danger" id="delete-field-href">Confirmer</a>
@@ -127,79 +128,6 @@
 
 <?php $this->inlineScript()->captureStart(); ?>
 
-$(".mod").on('click', function(){
-	$("#form-title").html("Modification de "+$(this).data('name'));
-	$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>'+'?id='+$(this).data('id'),
-					function(){
-						$("#form").find(".colorpicker").spectrum({
-								showInitial: false,
-    							showInput: true,
-    							preferredFormat: "hex",
-    						}
-    					);
-					}
-	);	
-});
-
-$("#add-cat").on('click', function(evt){
-		$("#form-title").html("Nouvelle catégorie");
-		$("#form").load('<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'form'))?>',
-				function(){
-					$("#form").find(".colorpicker").spectrum({
-							showInitial: false,
-   							showInput: true,
-   							preferredFormat: "hex",
-   						}
-   					);
-				}
-		);	
-});
-
-$(".mod_fields").on('click', function(){
-	$("#fields-title").html("Champs de la catégorie <em>"+$(this).data('name')+"</em>");
-	$("#fields-table").load('<?php echo $this->url('administration', array('controller'=>'categories', 'action' => 'fields'))?>'+'?id='+$(this).data('id'));
-});
-
-$(".delete").on('click', function(){
-	$('a#delete-href').attr('href', $(this).data('href'));
-	$('#cat_name').html($(this).data('name'));
-});
-
-$("#fieldscontainer").on('click', '#new-field', function(){
-	$("#add-field").load('<?php echo $this->url('administration', array('controller'=>'fields', 'action'=>'form'), array('query'=>array('return'=>'categories')))?>'+'&categoryid='+$(this).data('id'));
-});
-
-$("#fieldscontainer").on('click', '#cancel-form-field', function(){
-	$("#add-field").html('');
-});
-
-$("#fieldscontainer").on('click', '.mod-field', function(){
-	var me = $(this);	
-	me.closest('tr').load('<?php echo $this->url('administration', array('controller'=>'fields', 'action'=>'form'))?>'+'?id='+$(this).data('id'));
-});
-
-//var closesttr;
-$("#fieldscontainer").on('click', '.delete-field', function(){
-	var me = $(this);	
-	$('#field_name').html(me.data('name'));
-	$('#delete-field-href').attr('href', me.data('href'));
-//	closesttr = me.closest('tr')
-});
-
-//$("#delete-field-href").on('click', function(event){
-//	event.preventDefault();
-//	$.post($(this).attr('href'));
-//	$("#confirm-delete-field").modal('hide');
-//	closesttr.remove();
-//	return false;
-//});
-
-//$('#cancel-delete-field').on('click', function(){
-//	closesttr = null;
-//});
-
-//$("#fieldscontainer").on('click', 'input[type=submit]', function(){
-//	$.post('<?php echo $this->url('administration', array('controller' => 'fields', 'action'=>'save'));?>');
-//});
+categories('<?php echo $this->url('administration')?>');
 
 <?php $this->inlineScript()->captureEnd(); ?>

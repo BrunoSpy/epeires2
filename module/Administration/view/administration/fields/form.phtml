@@ -1,11 +1,10 @@
 
 
 <?php 
-$this->form->setAttribute('action', $this->url('administration', array('controller'=>'fields', 'action'=>'save'), array('query'=>array('return'=>$this->return))));
+$this->form->setAttribute('action', $this->url('administration', array('controller'=>'fields', 'action'=>'save')));
 
 $this->form->prepare();
 
-//echo $this->form()->openTag($this->form);
 ?>
 <td>
 <?php if($this->id) {

@@ -23,17 +23,17 @@ class PredefinedCustomFieldValue {
 	/**
 	 * @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="custom_fields_values")
 	 */
-	protected $event;
+	protected $predefinedevent;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="CustomField")
+	 * @ORM\ManyToOne(targetEntity="CustomField", inversedBy="predefinedvalues")
 	 */
 	protected $customfield;
 	
 	/** @ORM\Column(type="string") */
 	protected $value;
 
-	public function setPredefinedEvent($event){
+	public function setPredefinedEvent($predefinedevent){
 		$this->event = $event;
 	}
 	

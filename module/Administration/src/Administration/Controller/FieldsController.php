@@ -8,6 +8,7 @@ namespace Administration\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
 use Application\Entity\CustomField;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
@@ -22,6 +23,58 @@ class FieldsController extends AbstractActionController
     
     public function fieldupAction(){
     	$id = $this->params()->fromQuery('id', null);
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($id){
+    		$customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
+    		if($customfield){
+    			//get the field just before
+    			$qb = $objectManager->createQueryBuilder();
+    			$qb->select('f')
+    				->from('Application\Entity\CustomField', 'f')
+    				->where('f.place < '.$customfield->getPlace())
+    				->orderBy('f.place','DESC')
+    				->setMaxResults(1);
+    			$result = $qb->getQuery()->getSingleResult();
+    			//switch places
+    			$temp = $result->getPlace();
+    			$result->setPlace($customfield->getPlace());
+    			$customfield->setPlace($temp);
+    			$objectManager->persist($result);
+    			$objectManager->persist($customfield);
+    			$objectManager->flush();
+    		}
+    	}
+    	
+    	//on gruge en renvoyant un json vide
+    	return new JsonModel();
+    }
+    
+    public function fielddownAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($id){
+    		$customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
+    		if($customfield){
+    			//get the field just after
+    			$qb = $objectManager->createQueryBuilder();
+    			$qb->select('f')
+    			->from('Application\Entity\CustomField', 'f')
+    			->where('f.place > '.$customfield->getPlace())
+    			->orderBy('f.place','ASC')
+    			->setMaxResults(1);
+    			$result = $qb->getQuery()->getSingleResult();
+    			//switch places
+    			$temp = $result->getPlace();
+    			$result->setPlace($customfield->getPlace());
+    			$customfield->setPlace($temp);
+    			$objectManager->persist($result);
+    			$objectManager->persist($customfield);
+    			$objectManager->flush();
+    		}
+    	}
+    	 
+    	//on gruge en renvoyant un json vide
+    	return new JsonModel();
     }
     
     public function deleteAction(){
@@ -40,7 +93,7 @@ class FieldsController extends AbstractActionController
     	if($returnRoute){
     		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
     	} else {
-    		return $this->redirect()->toRoute('administration', array('controller'=>'fields'));
+    		return new JsonModel();
     	}
     }
     
@@ -56,11 +109,22 @@ class FieldsController extends AbstractActionController
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$customfield = $datas['customfield'];
+    		
+    		
+    		
     		$form->setData($post);
     		
     		if($form->isValid()){
     			$customfield->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
     			$customfield->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->find($post['type']));
+				// calculate next order avalaible
+				$qb = $objectManager->createQueryBuilder ();
+				$qb->select ( 'MAX(f.place)' )
+					->from ( 'Application\Entity\CustomField', 'f' )
+					->where ( 'f.category = ' . $post ['category'] );
+				$order = $qb->getQuery ()->getSingleResult ()[1] + 1;    			
+    			$customfield->setPlace($order);
+    			
     			$objectManager->persist($customfield);
     			$objectManager->flush();
     			$this->flashMessenger()->addSuccessMessage("Champ modifié");
@@ -73,7 +137,7 @@ class FieldsController extends AbstractActionController
     	if($returnRoute){
     		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
     	} else {
-    		return $this->redirect()->toRoute('administration', array('controller'=>'fields'));
+    		return new JsonModel(array('id'=>$customfield->getId(), 'name' => $customfield->getName(), 'type' => $customfield->getType()->getName()));
     	}
     }
     
@@ -85,10 +149,10 @@ class FieldsController extends AbstractActionController
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
     	 
     	$id = $this->params()->fromQuery('id', null);
-    	$return = $this->params()->fromQuery('return', null);
+    //	$return = $this->params()->fromQuery('return', null);
     	$categoryid = $this->params()->fromQuery('categoryid', null);
      	
-    	$viewmodel->setVariables(array('form' => $this->getForm($id, $categoryid)['form'], 'return'=>$return, 'id'=>$id));
+    	$viewmodel->setVariables(array('form' => $this->getForm($id, $categoryid)['form'],'id'=>$id));
     	return $viewmodel;
     }
     

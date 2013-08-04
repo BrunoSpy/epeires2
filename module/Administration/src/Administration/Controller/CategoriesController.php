@@ -167,7 +167,7 @@ class CategoriesController extends AbstractActionController{
     	 
     	$id = $this->params()->fromQuery('id', null);
     	
-    	$fields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $id));
+    	$fields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $id), array('place' => 'asc'));
     	    	
     	$viewmodel->setVariables(array('fields' => $fields, 'categoryid' => $id));
     	return $viewmodel;
