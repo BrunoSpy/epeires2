@@ -1,5 +1,29 @@
 var form = function(url){
+	/***** Suggestions *****/
+	$("#event").on('change', '#root_categories', function(event){
+		var offset = $("#create-evt").offset();
+		$("#suggest-evt").offset({top: $("#create-evt").offset().top, left: (offset.left + $("#create-evt").width())}).show();
+	});
+	
+	
+	$('html').click(function() {
+		if($("#suggest-evt").is(':visible')){
+			$("#suggest-evt").offset({top:0, left:0});
+			$("#suggest-evt").hide();
+		}
+	});
 
+	$('#suggest-evt').click(function(event){
+		event.stopPropagation();
+	});
+	
+	$('#event').on('click', '#root_categories', function(event){
+		event.stopPropagation();
+	});
+	
+	/**********************/
+	
+	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-link").trigger("click");
 	});
