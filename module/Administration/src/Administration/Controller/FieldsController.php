@@ -31,7 +31,8 @@ class FieldsController extends AbstractActionController
     			$qb = $objectManager->createQueryBuilder();
     			$qb->select('f')
     				->from('Application\Entity\CustomField', 'f')
-    				->where('f.place < '.$customfield->getPlace())
+    				->andWhere('f.category = '.$customfield->getCategory()->getId())
+    				->andWhere('f.place < '.$customfield->getPlace())
     				->orderBy('f.place','DESC')
     				->setMaxResults(1);
     			$result = $qb->getQuery()->getSingleResult();
@@ -59,7 +60,8 @@ class FieldsController extends AbstractActionController
     			$qb = $objectManager->createQueryBuilder();
     			$qb->select('f')
     			->from('Application\Entity\CustomField', 'f')
-    			->where('f.place > '.$customfield->getPlace())
+    			->andWhere('f.category = '.$customfield->getCategory()->getId())
+    			->andWhere('f.place > '.$customfield->getPlace())
     			->orderBy('f.place','ASC')
     			->setMaxResults(1);
     			$result = $qb->getQuery()->getSingleResult();

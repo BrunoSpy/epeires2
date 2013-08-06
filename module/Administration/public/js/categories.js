@@ -149,13 +149,13 @@ var categories = function(url){
 							' class="delete-field" '+ 
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
-		'data-toggle="modal"><i class="icon-trash"></i> </a>');					
-		if(i == 0){
-			tr.find('td:eq(3) a.up-field').addClass('disabled');
-		}
-		if(i == (size-2)){
-			tr.find('td:eq(3) a.down-field').addClass('disabled');
-		}	
+							'data-toggle="modal"><i class="icon-trash"></i> </a>');					
+				if(i == 0){
+					tr.find('td:eq(3) a.up-field').addClass('disabled');
+				}
+				if(i == (size-2)){
+					tr.find('td:eq(3) a.down-field').addClass('disabled');
+				}	
 			} else {
 				var tr = me.closest('tr');
 				var newhtml = $("<tr></tr>");
@@ -170,23 +170,23 @@ var categories = function(url){
 							' class="delete-field" '+ 
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
-	'data-toggle="modal"><i class="icon-trash"></i> </a></td>');
+							'data-toggle="modal"><i class="icon-trash"></i> </a></td>');
 
-	newhtml.insertBefore(tr);
-	var newtr = tr.prev();
-	var i = newtr.parent().children().index(tr);
-	var size = newtr.parent().children().size();
-	if(i == 0){
-		newtr.find('td:eq(3) a.up-field').addClass('disabled');
-	}
-	if(i == (size-2)){
-		newtr.find('td:eq(3) a.down-field').addClass('disabled');
-	}
-	var prevtr = newtr.prev();
-	if(prevtr.is('tr')){
-		prevtr.find('a.down-field').removeClass('disabled');
-	}
-	tr.remove();
+				newhtml.insertBefore(tr);
+				var newtr = tr.prev();
+				var i = newtr.parent().children().index(tr);
+				var size = newtr.parent().children().size();
+				if(i == 0){
+					newtr.find('td:eq(3) a.up-field').addClass('disabled');
+				}
+				if(i == (size-2)){
+					newtr.find('td:eq(3) a.down-field').addClass('disabled');
+				}
+				var prevtr = newtr.prev();
+				if(prevtr.is('tr')){
+					prevtr.find('a.down-field').removeClass('disabled');
+				}
+				tr.remove();
 			}
 			reload = true;
 		}, 'json');

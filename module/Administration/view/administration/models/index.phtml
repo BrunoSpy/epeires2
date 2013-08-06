@@ -1,6 +1,27 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/js/models.js')?>
 
+
+<div class="warnings">
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+</div>
+
 <table class="table table-striped sortable">
 <thead>
 	<tr>
@@ -37,7 +58,7 @@
 		echo "<a 
 				title=\"Supprimer\" 
 				href=\"#confirm-delete\" 
-				data-href=\"\" 
+				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
 				class=\"delete\" 
 				data-id=\"".$model->getId()."\" 
 				data-name=\"".$model->getName()."\" 
@@ -64,6 +85,21 @@
 		<h3  id="action-title">Nouvelle action</h3>
 	</div>
 	<div id="action-form"></div>
+</div>
+
+<div class="modal hide fade" id="confirm-delete">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Confirmer la suppression ?</h3>
+	</div>
+	<div class="modal-body">
+		<p>Voulez-vous vraiment supprimer le modèle <em><span id="model_name"></span></em> ?</p>
+		<p>La fiche réflexe associée sera supprimée également.</p>
+	</div>	
+	<div class="modal-footer">
+		<a class="btn btn-danger" id="delete-href">Confirmer</a>
+		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+	</div>	
 </div>
 
 <?php $this->inlineScript()->captureStart();?>

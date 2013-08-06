@@ -41,7 +41,7 @@ class PredefinedCustomFieldValue {
 	protected $value;
 
 	public function setPredefinedEvent($predefinedevent){
-		$this->event = $event;
+		$this->predefinedevent = $predefinedevent;
 	}
 	
 	public function setCustomField($customfield){

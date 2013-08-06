@@ -31,6 +31,14 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 
 	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
 			$this->formCheckbox($this->form->get('searchable')));
+} else {
+	echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
+
+	echo $this->formHidden($this->form->get('listable')->setAttribute('value', false));
+
+	echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
+	
+	echo $this->formHidden($this->form->get('parent'));
 }
 ?>
 
@@ -47,23 +55,35 @@ if($this->form->has('custom_fields')){
 ?>
 </div>
 <?php if(!$this->action){ //action form cannot have actions?>
-<div><h4 style="display:inline;">Fiche réflexe</h4><a href="#action-container" id="new-action" data-toggle="modal" class="pull-right btn btn-mini">Nouvelle action</a></div>
-<?php 
-if($this->childs) {?>
+<?php if($this->form->get('id')->getValue()){?>
+<div>
+<h4 style="display:inline;">Fiche réflexe</h4>
 
-<table class="table">
-	<?php 
+<a href="#action-container" id="new-action" data-parent="<?php echo $this->form->get('id')->getValue()?>" data-toggle="modal" class="pull-right btn btn-mini">Nouvelle action</a>
+</div>
+<?php } else {?>
+<div class="well">Enregistrer l'évènement pour configurer la fiche réflexe.</div>
+<?php }?>
+<table class="table" id="actions-table">
+<?php 
+if($this->childs) {
 	foreach ($this->childs as $child){
 		echo '<tr id="'.$child->getId().'">';
 			echo '<td>'.$child->getName().'</td>';
 			echo '<td>'.$this->impact($child->getImpact()).'</td>';
 			echo '<td><span class="caret middle"></span> <span class="up-caret middle"></span></td>';
-			echo '<td><i class="icon-pencil"></i> <i class="icon-trash"></i></td>';
+			echo '<td><i class="icon-pencil"></i> 
+				<a 
+				title="Supprimer" 
+				href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$child->getId(), 'redirect'=>false))).'" 
+				class="action-delete" 
+				data-id='.$child->getId().' 
+				data-name='.$child->getName().' 
+				><i class="icon-trash"></i></a></td>';
 		echo '</tr>';
 	}
-	?>
+ }?>
 </table>
-<?php }?>
 <?php }?>
 </div>
 <div class="modal-footer">

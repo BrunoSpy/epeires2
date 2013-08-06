@@ -76,7 +76,7 @@ class PredefinedEvent {
 	 */
  	protected $searchable;
 	
- 	/** @ORM\Column(type="integer") */
+ 	/** @ORM\Column(type="integer", nullable=true) */
  	protected $place;
  	
  	/**
@@ -94,6 +94,18 @@ class PredefinedEvent {
  	
  	public function getId(){
  		return $this->id;
+ 	}
+ 	
+ 	public function setId($id){
+ 		$this->id = $id;
+ 	}
+ 	
+ 	public function getParent(){
+ 		return $this->parent;
+ 	}
+ 	
+ 	public function setParent($parent){
+ 		$this->parent = $parent;
  	}
  	
 	public function isPunctual() {
@@ -132,8 +144,24 @@ class PredefinedEvent {
 		return $this->listable;
 	}
 	
+	public function setListable($listable){
+		$this->listable = $listable;
+	}
+	
 	public function isSearchable(){
 		return $this->searchable;
+	}
+	
+	public function setSearchable($searchable){
+		$this->searchable = $searchable;
+	}
+	
+	public function getPlace(){
+		return $this->place;
+	}
+	
+	public function setPlace($place){
+		$this->place = $place;
 	}
 	
 	public function getArrayCopy() {

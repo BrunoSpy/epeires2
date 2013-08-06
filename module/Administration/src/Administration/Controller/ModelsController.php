@@ -11,7 +11,8 @@ use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\PredefinedEvent;
-use Application\Form\CustomFieldSet;
+use Application\Entity\PredefinedCustomFieldValue;
+use Application\Form\CustomFieldset;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
@@ -29,7 +30,100 @@ class ModelsController extends AbstractActionController
     	
     	$viewmodel->setVariable('models', $models);
     	
+    	$return = array();
+    	if($this->flashMessenger()->hasErrorMessages()){
+    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    	}
+    	 
+    	if($this->flashMessenger()->hasSuccessMessages()){
+    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    	}
+    	 
+    	$this->flashMessenger()->clearMessages();
+    	 
+    	$viewmodel->setVariables(array('messages'=>$return));
+    	
         return $viewmodel;
+    }
+    
+    public function deleteAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($id){
+    		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
+    		if($pevent){
+    			$objectManager->remove($pevent);
+    			$objectManager->flush();
+    		}
+    	}
+    	$redirect = $this->params()->fromQuery('redirect', true);
+    	if($redirect){
+    		return $this->redirect()->toRoute('administration', array('controller'=>'models'));
+    	} else {
+    		return new JsonModel();
+    	}
+    }
+    
+    public function upAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($id){
+    		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
+    		if($pevent){
+    			//get the field just before
+    			$qb = $objectManager->createQueryBuilder();
+    			$qb->select('f')
+    			->from('Application\Entity\PredefinedEvent', 'f')
+    			->andWhere('f.place < '.$pevent->getPlace())
+    			->orderBy('f.place','DESC')
+    			->setMaxResults(1);
+    			if($pevent->getParent()){ //action => order by parent
+    				$qb->andWhere('f.parent = '+$pevent->getParent()->getId());
+    			} else { //order by category
+    				$qb->andWhere('f.category = '+$pevent->getCategory()->getId());
+    			}
+    			$result = $qb->getQuery()->getSingleResult();
+    			//switch places
+    			$temp = $result->getPlace();
+    			$result->setPlace($pevent->getPlace());
+    			$pevent->setPlace($temp);
+    			$objectManager->persist($result);
+    			$objectManager->persist($pevent);
+    			$objectManager->flush();
+    		}
+    	}
+    	return new JsonModel();
+    }
+    
+    public function downAction(){
+    	$id = $this->params()->fromQuery('id', null);
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($id){
+    		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
+    		if($pevent){
+    			//get the field just before
+    			$qb = $objectManager->createQueryBuilder();
+    			$qb->select('f')
+    			->from('Application\Entity\PredefinedEvent', 'f')
+    			->andWhere('f.place > '.$pevent->getPlace())
+    			->orderBy('f.place','ASC')
+    			->setMaxResults(1);
+    			if($pevent->getParent()){ //action => order by parent
+    				$qb->andWhere('f.parent = '+$pevent->getParent()->getId());
+    			} else { //order by category
+    				$qb->andWhere('f.category = '+$pevent->getCategory()->getId());
+    			}
+    			$result = $qb->getQuery()->getSingleResult();
+    			//switch places
+    			$temp = $result->getPlace();
+    			$result->setPlace($pevent->getPlace());
+    			$pevent->setPlace($temp);
+    			$objectManager->persist($result);
+    			$objectManager->persist($pevent);
+    			$objectManager->flush();
+    		}
+    	}
+    	return new JsonModel();
     }
     
     public function saveAction(){
@@ -50,16 +144,44 @@ class ModelsController extends AbstractActionController
     			if($post['category']){
     				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
     			}
+    			//link to parent
+    			if(isset($post['parent'])){
+    				$pevent->setParent($objectManager->getRepository('Application\Entity\PredefinedEvent')->find($post['parent']));
+    				//calculate order (order by parent)
+    				$qb = $objectManager->createQueryBuilder ();
+    				$qb->select ( 'MAX(f.place)' )
+    				->from ( 'Application\Entity\PredefinedEvent', 'f' )
+    				->where ( 'f.parent = ' . $post ['parent'] );
+    				$result = $qb->getQuery()->getResult();
+    				if($result[0][1]){
+    					$pevent->setPlace($result[0][1]+1);
+    				} else {
+    					$pevent->setPlace(0);
+    				}
+    			} else {
+    				//no parent => model => order by category
+    				$qb = $objectManager->createQueryBuilder ();
+    				$qb->select ( 'MAX(f.place)' )
+    				->from ( 'Application\Entity\PredefinedEvent', 'f' )
+    				->where ( 'f.category = ' . $post ['category'] );
+    				$result = $qb->getQuery()->getResult();
+    				if($result[0][1]){
+    					$pevent->setPlace($result[0][1]+1);
+    				} else {
+    					$pevent->setPlace(0);
+    				}
+    			}
     			$pevent->setImpact($objectManager->getRepository('Application\Entity\Impact')->find($post['impact']));
+    			$objectManager->persist($pevent);
     			//predefined custom field values
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
     					if($customfield){
-    						$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
+    						$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'predefinedevent'=>$id));
     						if(!$customfieldvalue){
-    							$customfieldvalue = new CustomFieldValue();
-    							$customfieldvalue->setEvent($pevent);
+    							$customfieldvalue = new PredefinedCustomFieldValue();
+    							$customfieldvalue->setPredefinedEvent($pevent);
     							$customfieldvalue->setCustomField($customfield);
     						}
     						$customfieldvalue->setValue($value);
@@ -67,10 +189,8 @@ class ModelsController extends AbstractActionController
     					}
     				}
     			}
-    			$objectManager->persist($pevent);
     			$objectManager->flush();
     		} else {
-    			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide.");
     			$this->flashMessenger()->addErrorMessage("Impossible de sauver l'évènement.");
     			//traitement des erreurs de validation
     			$this->processFormMessages($form->getMessages());
@@ -78,7 +198,9 @@ class ModelsController extends AbstractActionController
     		
     	}
     	
-    	return new JsonModel();
+    	$json = array('id' => $pevent->getId(), 'name' => $pevent->getName(), 'impactstyle' => $pevent->getImpact()->getStyle(), 'impactname' => $pevent->getImpact()->getName());
+    	
+    	return new JsonModel($json);
     }
     
     public function formAction(){
@@ -91,13 +213,14 @@ class ModelsController extends AbstractActionController
     	 
     	$id = $this->params()->fromQuery('id', null);
     	$action = $this->params()->fromQuery('action', false);
+    	$parentid = $this->params()->fromQuery('parentid', null);
 
     	if($id){//fiche reflexe
     		$childs = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$id), array('place'=>'asc'));
     		$viewmodel->setVariables(array('childs' => $childs));
     	}
     	
-    	$form = $this->getForm($id)['form'];
+    	$form = $this->getForm($id, $parentid)['form'];
     	
     	$form->add(array(
     			'name' => 'submit',
@@ -113,7 +236,7 @@ class ModelsController extends AbstractActionController
     	
     }
     
-    private function getForm($id = null){
+    private function getForm($id = null, $parentid = null){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$pevent = new PredefinedEvent();
     	$builder = new AnnotationBuilder();
@@ -125,16 +248,16 @@ class ModelsController extends AbstractActionController
     	 
     	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray());
     	
+    	$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')->getRootsAsArray());
+    	
     	if($id){//modification d'un evt
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
     			$form->bind($pevent);
     			$form->setData($pevent->getArrayCopy());
-    			//category must not be modified
-    			$form->get('category')->setAttribute('disabled', true);
     			//custom field values
     			$customfields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$pevent->getCategory()->getId()));
-    			if(count($customfields) > 1 ){
+    			if(count($customfields) > 0 ){
     				$form->add(new CustomFieldset($objectManager, $pevent->getCategory()->getId()));
     				foreach ($customfields as $customfield){
     					$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')
@@ -145,6 +268,10 @@ class ModelsController extends AbstractActionController
     				}
     			}
     		}
+    	}
+    	
+    	if($parentid){//action reflexe
+    		$form->get('parent')->setAttribute('value', $parentid);
     	}
     	
     	return array('form'=>$form, 'pevent'=>$pevent);
