@@ -1,0 +1,75 @@
+
+
+<?php 
+$this->form->setAttribute('action', $this->url('administration', array('controller'=>'models', 'action'=>'save')));
+$this->form->setAttribute('class', 'form-horizontal');
+$this->form->prepare();
+
+echo $this->form()->openTag($this->form);
+?>
+<div class="modal-body">
+<?php
+
+
+echo $this->formHidden($this->form->get('id'));
+
+echo $this->controlGroup($this->formLabel($this->form->get('category')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('category')));
+
+echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
+						$this->formInput($this->form->get('name')));
+
+echo $this->controlGroup($this->formLabel($this->form->get('impact')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('impact')));
+
+if(!$this->action){// une action est ponctuelle, non listable et non recherchable -> on simplifie le formulaire
+	echo $this->controlGroup($this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('punctual')));
+
+	echo $this->controlGroup($this->formLabel($this->form->get('listable')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('listable')));
+
+	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('searchable')));
+}
+?>
+
+<div class="custom-fields">
+<?php 
+//champs spécifiques
+
+if($this->form->has('custom_fields')){
+	echo "<h4>Valeurs des champs spécifiques :</h4>";
+	foreach ($this->form->get('custom_fields')->getElements() as $element){
+		echo $this->customFieldGroup($element);
+	}
+}
+?>
+</div>
+<?php if(!$this->action){ //action form cannot have actions?>
+<div><h4 style="display:inline;">Fiche réflexe</h4><a href="#action-container" id="new-action" data-toggle="modal" class="pull-right btn btn-mini">Nouvelle action</a></div>
+<?php 
+if($this->childs) {?>
+
+<table class="table">
+	<?php 
+	foreach ($this->childs as $child){
+		echo '<tr id="'.$child->getId().'">';
+			echo '<td>'.$child->getName().'</td>';
+			echo '<td>'.$this->impact($child->getImpact()).'</td>';
+			echo '<td><span class="caret middle"></span> <span class="up-caret middle"></span></td>';
+			echo '<td><i class="icon-pencil"></i> <i class="icon-trash"></i></td>';
+		echo '</tr>';
+	}
+	?>
+</table>
+<?php }?>
+<?php }?>
+</div>
+<div class="modal-footer">
+<?php echo $this->formSubmit($this->form->get('submit')); ?>
+<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+</div>
+<?php 
+echo $this->form()->closeTag();
+?>

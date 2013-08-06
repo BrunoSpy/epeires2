@@ -1,4 +1,6 @@
-
+<?php 
+$this->headScript()->appendFile($this->basePath() . '/js/categories.js');
+?>
 <div class="warnings">
 <?php if (isset($this->messages['successMessages'])) { ?>
 	<?php foreach ($this->messages['successMessages'] as $message) { ?>
@@ -32,7 +34,7 @@
 						<th>Evts</th>
 						<th>Modèles</th>
 						<th>Champs</th>
-						<th><a href="#form-container" class="btn btn-mini" id="add-cat" data-toggle="modal">Ajouter</a></th>
+						<th><a href="#form-container" id="add-cat" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 					</tr>
 				</thead>
 				<tbody>

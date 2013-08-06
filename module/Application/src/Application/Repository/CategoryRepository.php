@@ -23,8 +23,12 @@ class CategoryRepository extends ExtendedRepository {
 		return $res;
 	}
 	
-	public function getChildsAsArray($parentId){
-		$criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $parentId));
+	public function getChildsAsArray($parentId = null){
+		if($parentId){
+			$criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $parentId));
+		} else {
+			$criteria = Criteria::create()->where(Criteria::expr()->gt('parent', 0));
+		}
 		
 		$list = parent::matching($criteria);
 		$res = array();

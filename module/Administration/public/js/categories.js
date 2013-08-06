@@ -95,8 +95,8 @@ var categories = function(url){
 	$('#fieldscontainer').on('click', '.up-field', function(event){
 		var me = $(this);
 		event.preventDefault();
-		var url = me.attr('href');
-		$.post(url, function(){
+		var href = me.attr('href');
+		$.post(href, function(){
 			var metr = me.closest('tr');
 			var prevtr = metr.prev();
 			metr.remove();
@@ -112,8 +112,8 @@ var categories = function(url){
 	$('#fieldscontainer').on('click', '.down-field', function(event){
 		var me = $(this);
 		event.preventDefault();
-		var url = me.attr('href');
-		$.post(url, function(){
+		var href = me.attr('href');
+		$.post(href, function(){
 			var metr = me.closest('tr');
 			var nexttr = metr.next();
 			metr.remove();
@@ -130,8 +130,8 @@ var categories = function(url){
 	$('#fieldscontainer').on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
 		var me = $(this);
-		url = $(this).closest('form').attr('action');
-		$.post(url, $("#CustomField").serialize(), function(data){
+		href = $(this).closest('form').attr('action');
+		$.post(href, $("#CustomField").serialize(), function(data){
 			var id = me.closest('tr').find('input[type=hidden]').val();
 			var tr = me.closest('tr');
 			if(id>0){

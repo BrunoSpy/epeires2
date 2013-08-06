@@ -1,0 +1,82 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/models.js')?>
+
+<table class="table table-striped sortable">
+<thead>
+	<tr>
+		<th>id</th>
+		<th data-sort="string">Nom</th>
+		<th data-sort="string">Catégorie</th>
+		<th>Impact</th>
+		<th>Ponctuel</th>
+		<th>Liste</th>
+		<th>Recherche</th>
+		<th><a class="btn btn-mini" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
+	</tr>
+</thead>
+
+<tbody>
+	<?php 
+	foreach ($this->models as $model){
+		echo '<tr>';
+		echo '<td>'.$model->getId().'</td>';
+		echo '<td>'.$model->getName().'</td>';
+		echo '<td>'.$model->getCategory()->getName().'</td>';
+		echo '<td>'.$this->impact($model->getImpact()).'</td>';
+		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>'.($model->isListable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>';
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#model-container\" 
+				class=\"mod\" 
+				data-id=\"".$model->getId()."\" 
+				data-name=\"".$model->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete\" 
+				data-href=\"\" 
+				class=\"delete\" 
+				data-id=\"".$model->getId()."\" 
+				data-name=\"".$model->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+		echo '</td>';
+		echo '</tr>';
+	}
+	?>
+</tbody>
+
+</table>
+
+<div class="modal hide fade large" id="model-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="model-title"></h3>
+	</div>
+	<div id="form"></div>
+</div>
+
+<div class="modal hide fade large" id="action-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="action-title">Nouvelle action</h3>
+	</div>
+	<div id="action-form"></div>
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-up\"></i>" : "<i class=\"icon-arrow-down\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+models('<?php echo $this->url('administration')?>');
+
+<?php $this->inlineScript()->captureEnd();?>

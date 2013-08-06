@@ -109,9 +109,6 @@ class FieldsController extends AbstractActionController
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$customfield = $datas['customfield'];
-    		
-    		
-    		
     		$form->setData($post);
     		
     		if($form->isValid()){
@@ -122,8 +119,11 @@ class FieldsController extends AbstractActionController
 				$qb->select ( 'MAX(f.place)' )
 					->from ( 'Application\Entity\CustomField', 'f' )
 					->where ( 'f.category = ' . $post ['category'] );
-				$order = $qb->getQuery ()->getSingleResult ()[1] + 1;    			
-    			$customfield->setPlace($order);
+				
+				if(!$id){ //new field : calculate last place
+					$order = $qb->getQuery ()->getSingleResult ()[1] + 1;    			
+    				$customfield->setPlace($order);
+				}
     			
     			$objectManager->persist($customfield);
     			$objectManager->flush();

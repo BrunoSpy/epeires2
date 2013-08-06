@@ -28,7 +28,8 @@ $(document).ready(function(){
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
    
    $("a[data-toggle=tooltip]").tooltip();
-   
+   $("th[data-toggle=tooltip]").tooltip();
+
 });
 
 

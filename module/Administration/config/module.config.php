@@ -49,6 +49,7 @@ return array(
             'Administration\Controller\Home' => 'Administration\Controller\HomeController',
             'Administration\Controller\Categories' => 'Administration\Controller\CategoriesController',
             'Administration\Controller\Fields' => 'Administration\Controller\FieldsController',
+            'Administration\Controller\Models' => 'Administration\Controller\ModelsController',
         ),
     ),
     'view_manager' => array(

@@ -45,6 +45,7 @@ var form = function(url){
 			$("#create-evt").slideUp('fast');
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
 		} else {
+			$("#create-evt").offset({top :$(".navbar").offset().top+$(".navbar").outerHeight(), left:3.5});
 			$("#event").html('<div id="loading">Chargement...</div>');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
