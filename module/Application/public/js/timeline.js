@@ -40,7 +40,7 @@ var tab = Array();
 			tab[2] = [4, debut, fin, "test_3", 2, "CA",["absolument épatant","bravo !","coupable","dessinateur industriel","etudes spécialisées"], "terminé"];
 			debut = new Date(2013,07,07,19,00,00,00);
 			fin = new Date(2013,07,07,22,30,00,00);
-			tab[3] = [7, debut, fin, "test_4", 3, "Attente",['a','b','c','d'], "à venir"];
+			tab[3] = [7, debut, fin, "test_4", 3, "Attente",['a','b','c','d'], "A confirmer"];
 			debut = new Date(2013,07,07,23,45,00,00);
 			fin = new Date(2013,07,07,23,53,00,00);
 			tab[4] = [12, debut, fin, "test_5", 1, "Attente",['a','b','c','d'], "en cours"];
@@ -51,7 +51,7 @@ var tab = Array();
 			tab[6] = [15, debut, debut, "test_7", 3, "Technique",['a','b','c','d'], "en cours"];
 			debut = new Date(2013,07,07,19,45,00,00);
 			fin = new Date(2013,07,07,20,53,00,00);
-			tab[7] = [42, debut, fin, "VOL CORONET", 2, "CA",['abracadabra','bravanida','carbonara','detresfa'], "à venir"];
+			tab[7] = [42, debut, fin, "VOL CORONET", 2, "CA",['abracadabra','bravanida','carbonara','detresfa'], "A confirmer"];
 			return tab;
 		}
 };*/
@@ -75,16 +75,27 @@ var timeline = {
 			$(element).append(timeline_other);
 			tab = Array();
 			var i = 0;
+			var dfin;
 			$.getJSON(url+"/getevents", function (data) {
 				$.each(data, function(key, value) {
-					tab[i] = [key,new Date(value.start_date.date), new Date(value.end_date.date), value.name, 2, value.category_short, 
-					          "", value.status_name];
-					var j = 0;
-					$.each(value.actions, function(k, val){
-						tab[i][j][0] = k;
-						tab[i][j][1] = val;
-						j ++;
-					});
+					if (value.start_date != "") {
+						if (value.punctual == true) {
+							dfin = new Date(value.start_date.date);
+						} else {
+							if (value.end_date == null) { 
+								dfin = -1;
+							} else {
+								dfin = new Date(value.end_date.date);
+							}
+						}
+						tab[i] = [key,new Date(value.start_date.date), dfin, value.punctual, value.name, 2, value.category_short,"", value.status_name];
+						var j = 0;
+						$.each(value.actions, function(k, val){
+							tab[i][j][0] = k;
+							tab[i][j][1] = val;
+							j ++;
+						});
+					}
 					i ++;
 			});
 				var res = timeline.create(timeline_content, tab);
@@ -271,7 +282,7 @@ var timeline = {
 				'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			var liste2 = $('<div class="liste_avenir">');
 			$(element).append(liste2);
-			// liste2.append($('<ul label="Evénements à venir :">'));
+			// liste2.append($('<ul label="Evénements A confirmer :">'));
 			for (var i=0; i<nb2; i++) {
 				// liste2.append($('<li>'+tab[liste_avenir[i]][3]+'</li></div>'));
 				liste2.append($('<div>'+tab[liste_avenir[i]][3]+'</div>'));
@@ -296,18 +307,18 @@ var timeline = {
 			for (var j = 0; j<nb; j++) {
 				cpt = 0;
 				for (var i = 0; i<len; i++) {
-					if (tableau[i][5] == categorie[j]) {
+					if (tableau[i][6] == categorie[j]) {
 						id = tableau[i][0];
 						debut = tableau[i][1];
 						fin = tableau[i][2];
-						etat = tableau[i][7];
+						etat = tableau[i][8];
 						if (fin < d_ref_deb && etat == "terminé") {
 							liste_passee.push(i);
 						} else if (debut > d_ref_fin) {
 							liste_avenir.push(i);
 						} else {
 							liste_affichee.push(i);
-							this.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7]);
+							this.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8]);
 							cpt ++;
 						}
 					}
@@ -351,7 +362,7 @@ var timeline = {
 						id = tableau[i][0];
 						debut = tableau[i][1];
 						fin = tableau[i][2];
-						etat = tableau[i][7];
+						etat = tableau[i][8];
 						if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
 							elmt = timeline_elmt.find('.ident'+id);
 							elmt.animate({'top':y_temp+'px'});
@@ -374,7 +385,7 @@ var timeline = {
 				id = tableau[i][0];
 				debut = tableau[i][1];
 				fin = tableau[i][2];
-				etat = tableau[i][7];
+				etat = tableau[i][8];
 				if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
 					y_temp += delt_ligne;
 					elmt = timeline_elmt.find('.ident'+tableau[i][0]);
@@ -671,19 +682,22 @@ var timeline = {
 			elmt_fin.css({'top':h2+'px'});
 		},
 		
-		type_elmt: function (id, d_debut, d_fin, etat) {
+		type_elmt: function (id, d_debut, d_fin, ponct, etat) {
 			var l_deb = 0; 
 			var l_fin = 0;
 			var warn;
 			// flèche gauche
-			if (d_debut < d_ref_deb) { l_deb = 1;}
-			// flèche droite
-			if (d_fin > d_ref_fin) { l_fin = 1;}
-			// pas de fin
-			if (d_fin == -1) { l_fin = -1; }
-			// ponctuel
-			if (d_debut == d_fin) { l_fin = 2;}
-			if ((d_debut < d_actuelle && etat == "à venir") || (d_fin < d_actuelle && etat == "en cours")) {
+			if (!ponct) {
+				if (d_debut < d_ref_deb) { l_deb = 1;}
+				// flèche droite
+				if (d_fin > d_ref_fin) { l_fin = 1;}
+				// pas de fin
+				if (d_fin == -1) { l_fin = -1; }
+				// ponctuel
+			} else { 
+				l_fin = 2;
+			}
+			if ((d_debut < d_actuelle && etat == "A confirmer") || (d_fin < d_actuelle && etat == "en cours")) {
 				warn = 1;
 			} else {
 				warn = 0;
@@ -691,7 +705,7 @@ var timeline = {
 			return [l_deb, l_fin, warn];
 		},
 
-		create_elmt: function (base_element, id, d_debut, d_fin, label, impt, cat, list, etat) {
+		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
@@ -702,7 +716,7 @@ var timeline = {
 			}
 			var x0 = coord[0];
 			var wid = coord[1];
-			var type = this.type_elmt(id, d_debut, d_fin, etat);
+			var type = this.type_elmt(id, d_debut, d_fin, ponct, etat);
 			this.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
 			this.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			this.position_ligne(base_element, id, type, x0, y_temp, wid);
@@ -779,12 +793,12 @@ var timeline = {
 				timeline_content.empty();
 				other.empty();
 				timeline.base(base);	
-				var res = timeline.create(timeline_content, exemple.tableau());
+				var res = timeline.create(timeline_content, tab);
 				if (tri_cat) { 
 					timeline_content.find('.categorie').show();
 					timeline_content.find('.separateur').show();
 				} else if (tri_hdeb) {
-					timeline.sort(timeline_content, exemple.tableau(),1);
+					timeline.sort(timeline_content, tab,1);
 				}
 				timeline.affiche_listes(other, res[0], res[1]);
 				timeline.timeBar(timeline_content);
