@@ -387,6 +387,7 @@ class EventsController extends AbstractActionController implements LoggerAware
      * 		'name' => evt_name,
      * 		'start_date' => evt_start_date,
      *		'end_date' => evt_end_date,
+     *		'punctual' => boolean
      *		'category' => evt_category_name,
      *		'category_short' => evt_category_short_name,
      *		'status_name' => evt_status_name,
@@ -415,6 +416,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     		$evt = array('name' => $event->getName(),
     					'start_date' => $event->getStartDate(),
     					'end_date' => $event->getEndDate(),
+    					'punctal' => $event->isPunctual(),
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'status_name' => $event->getStatus()->getName(),
