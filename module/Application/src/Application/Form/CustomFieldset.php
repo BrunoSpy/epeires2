@@ -41,7 +41,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 			$definition['name'] = $customfield->getName();
 			$this->names[] = $customfield->getName();
 			$definition['attributes'] = array('id' => $customfield->getName());
-			$options = array('label' => $customfield->getName());
+			$options = array('label' => $customfield->getName()." :");
 			switch ($customfield->getType()->getType()) {
 				case 'string':
 					$definition['type'] = 'Zend\Form\Element\Text';

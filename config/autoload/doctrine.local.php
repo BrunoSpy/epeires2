@@ -10,4 +10,5 @@ return array(
 					'user'     => 'root',
 					'password' => '',
 					'dbname'   => 'epeires2',
+					'charset' => 'utf8'
 )))));

@@ -72,6 +72,7 @@ return array(
     		'accordionGroup' => 'Application\View\Helper\AccordionGroup',
     		'controlGroup' => 'Application\View\Helper\ControlGroup',
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
+    		'impact' => 'Application\View\Helper\Impact',
     	),
     ),
     'view_manager' => array(

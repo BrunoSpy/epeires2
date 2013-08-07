@@ -1,0 +1,135 @@
+<?php 
+$this->headScript()->appendFile($this->basePath() . '/js/categories.js');
+?>
+<div class="warnings">
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+			<?php echo $message ?>
+		</div>
+	<?php }?>
+<?php } ?>
+</div>
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>Nom</th>
+						<th>Nom court</th>
+						<th>Couleur</th>
+						<th>Evts</th>
+						<th>Modèles</th>
+						<th>Champs</th>
+						<th><a href="#form-container" id="add-cat" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+					foreach ($this->categories as $category){
+					echo "<tr>";
+					echo "<td>".$category->getId()."</td>";		
+					echo "<td>".$category->getName()."</td>";
+					echo "<td>".$category->getShortName()."</td>";
+					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
+					echo "<td>".$this->events[$category->getId()]."</td>";
+					echo "<td>".$this->models[$category->getId()]."</td>";
+					echo "<td>".$this->fields[$category->getId()]."</td>";
+					echo "<td>";
+						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+					echo "</td>";
+					echo "</tr>";
+					
+						foreach ($this->subcategories[$category->getId()] as $subcategory){
+							echo "<tr>";
+							echo "<td>".$subcategory->getId()."</td>";
+							echo "<td>  <i class=\"icon-chevron-right\"></i> ".$subcategory->getName()."</td>";
+							echo "<td>".$subcategory->getShortName()."</td>";
+							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
+							echo "<td>".$this->events[$subcategory->getId()]."</td>";
+							echo "<td>".$this->models[$subcategory->getId()]."</td>";
+							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+							echo "<td>";
+								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+							echo "</td>";
+							echo "</tr>";
+						}			
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+	
+</div>
+
+<div class="modal hide fade" id="form-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="form-title"></h3>
+	</div>
+	<div id="form"></div>
+</div>
+
+<div class="modal hide fade" id="fieldscontainer" style="width:auto;">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="fields-title"></h3>
+	</div>
+	<form action="<?php echo $this->url('administration', array('controller' => 'fields', 'action'=>'save'));?>" method="POST" name="CustomField" id="CustomField">
+	<div id="fields-table">
+	</div>
+	</form>
+</div>
+
+<div class="modal hide fade" id="confirm-delete">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Confirmer la suppression ?</h3>
+	</div>
+	<div class="modal-body">
+		<p>Voulez-vous vraiment supprimer la catégorie <em><span id="cat_name"></span></em> ?</p>
+		<p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>
+	</div>	
+	<div class="modal-footer">
+		<a class="btn btn-danger" id="delete-href">Confirmer</a>
+		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+	</div>	
+</div>
+
+<div class="modal hide fade" id="confirm-delete-field">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Confirmer la suppression ?</h3>
+	</div>
+	<div class="modal-body">
+		<p>Voulez-vous vraiment supprimer le champ <em><span id="field_name"></span></em> ?</p>
+		<p>Toutes les valeurs associées à ce champ seront supprimées.</p>
+	</div>	
+	<div class="modal-footer">
+		<a class="btn btn-danger" id="delete-field-href">Confirmer</a>
+		<a id="cancel-delete-field" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+	</div>	
+</div>
+
+<?php $this->inlineScript()->captureStart(); ?>
+
+categories('<?php echo $this->url('administration')?>');
+
+<?php $this->inlineScript()->captureEnd(); ?>

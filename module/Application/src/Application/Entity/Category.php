@@ -10,6 +10,7 @@
 */
 namespace Application\Entity;
 
+use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="categories")
@@ -20,30 +21,64 @@ class Category {
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
+	 * @Annotation\Type("Zend\Form\Element\Hidden")
 	 */
 	protected $id;
 	
-	/** @ORM\ManyToOne(targetEntity="Category") */
+	/** 
+	 * @ORM\ManyToOne(targetEntity="Category")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Catégorie parente :", "empty_option":"Choisir la catégorie parente"})
+	 */
 	protected $parent;
 	
 	/**
+	 * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Nom court :"})
 	 * @ORM\Column(type="string")
 	 */
-	protected $short_name;
+	protected $shortname;
 	
 	/**
+	 * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Couleur :"})
 	 * @ORM\Column(type="string")
 	 * Color coded in hexa, ex: #FFFFFF
 	 */
 	protected $color;
 	
-	/** @ORM\Column(type="string") */
+	/** 
+	 * @ORM\Column(type="string")
+	 * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Nom complet :"})
+	 */
 	protected $name;
 	
-	//TODO : ajouter couleur et short_name
+	/**
+	* @ORM\OneToMany(targetEntity="Event", mappedBy="category", cascade={"remove"})
+	*/
+	protected $events;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"})
+	 */
+	protected $customfields;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="category", cascade={"remove"})
+	 */
+	protected $predefinedevents;
 	
 	public function getParent(){
 		return $this->parent;
+	}
+	
+	public function setParent($parent){
+		$this->parent = $parent;
 	}
 	
 	public function getId(){
@@ -59,11 +94,11 @@ class Category {
 	}
 	
 	public function getShortName(){
-		return $this->short_name;
+		return $this->shortname;
 	}
 	
-	public function setShortName($short_name){
-		$this->short_name = $short_name;
+	public function setShortName($shortname){
+		$this->shortname = $shortname;
 	}
 	
 	public function getColor(){
@@ -72,5 +107,9 @@ class Category {
 	
 	public function setColor($color){
 		$this->color = $color;
+	}
+	
+	public function getArrayCopy() {
+		return get_object_vars($this);
 	}
 }

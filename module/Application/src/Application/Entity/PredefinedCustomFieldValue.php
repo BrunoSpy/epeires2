@@ -9,6 +9,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Zend\Form\Annotation;
 /**
  * @ORM\Entity @ORM\Table(name="predefinedcustomfieldvalues")
  **/
@@ -17,24 +18,30 @@ class PredefinedCustomFieldValue {
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
+	 * @Annotation\Type("Zend\Form\Element\Hidden")
 	 */
 	protected $id;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="custom_fields_values")
 	 */
-	protected $event;
+	protected $predefinedevent;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="CustomField")
+	 * @ORM\ManyToOne(targetEntity="CustomField", inversedBy="predefinedvalues")
 	 */
 	protected $customfield;
 	
-	/** @ORM\Column(type="string") */
+	/** 
+	 * @ORM\Column(type="string")
+ 	 * @Annotation\Type("Zend\Form\Element\Text")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Valeur :"})
+	 */
 	protected $value;
 
-	public function setPredefinedEvent($event){
-		$this->event = $event;
+	public function setPredefinedEvent($predefinedevent){
+		$this->predefinedevent = $predefinedevent;
 	}
 	
 	public function setCustomField($customfield){

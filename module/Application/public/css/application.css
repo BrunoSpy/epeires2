@@ -13,9 +13,8 @@ body{
 }
 
 #clock {
-	position:absolute;
-	right:10px;
 	margin-top:0.25em;
+	margin-right:0.5em;
 	font-weight: bold;
 	font-size: 1.2em;
 }
@@ -72,7 +71,14 @@ body{
 	z-index: 3000 !important;
 }
 
-/* *** Tune Bootstrap css *** */
+/******************************/
+/*     Tune Bootstrap css     */
+/******************************/
+
+.icon-grey, .nav-pills > .active > a > [class^="icon-"], .nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"], .navbar-inverse .nav > .active > a > [class^="icon-"], .navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"], .dropdown-menu > li > a:focus > [class^="icon-"], .dropdown-menu > li > a:hover > [class*=" icon-"], .dropdown-menu > li > a:focus > [class*=" icon-"], .dropdown-menu > .active > a > [class^="icon-"], .dropdown-menu > .active > a > [class*=" icon-"], .dropdown-submenu:hover > a > [class^="icon-"], .dropdown-submenu:focus > a > [class^="icon-"], .dropdown-submenu:hover > a > [class*=" icon-"], .dropdown-submenu:focus > a > [class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings-grey.png");
+}
+
 .form-horizontal .control-group {
 	margin-bottom: 10px;
 }
@@ -93,12 +99,35 @@ input, textarea, .uneditable-input {
 .popover-title {
 	font-weight:bold;
 }
+
+.up-caret {
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    border-bottom: 4px solid #000000;
+    display: inline-block;
+    height: 0;
+    vertical-align: top;
+    width: 0;
+}
+
+.middle {
+	vertical-align: 25%;	
+}
+
+.modal.large{
+    min-width: 400px;
+    width:auto;
+}
 /* ************************** */
 
 a.disabled {
 	pointer-events: none;
 	cursor: default;
 	color: gray;
+}
+
+.unvisible{
+	display:none;
 }
 
 /* css for timepicker */

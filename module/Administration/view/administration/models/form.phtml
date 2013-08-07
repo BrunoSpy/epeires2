@@ -1,0 +1,112 @@
+
+
+<?php 
+$this->form->setAttribute('action', $this->url('administration', array('controller'=>'models', 'action'=>'save')));
+$this->form->setAttribute('class', 'form-horizontal');
+$this->form->prepare();
+
+echo $this->form()->openTag($this->form);
+?>
+<div class="modal-body">
+<?php
+
+
+echo $this->formHidden($this->form->get('id'));
+
+echo $this->controlGroup($this->formLabel($this->form->get('category')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('category')));
+
+echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
+						$this->formInput($this->form->get('name')));
+
+echo $this->controlGroup($this->formLabel($this->form->get('impact')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('impact')));
+
+if(!$this->action){// une action est ponctuelle, non listable et non recherchable -> on simplifie le formulaire
+	echo $this->controlGroup($this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('punctual')));
+
+	echo $this->controlGroup($this->formLabel($this->form->get('listable')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('listable')));
+
+	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('searchable')));
+} else {
+	echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
+
+	echo $this->formHidden($this->form->get('listable')->setAttribute('value', false));
+
+	echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
+	
+	echo $this->formHidden($this->form->get('parent'));
+}
+?>
+
+<div class="custom-fields">
+<?php 
+//champs spécifiques
+
+if($this->form->has('custom_fields')){
+	echo "<h4>Valeurs des champs spécifiques :</h4>";
+	foreach ($this->form->get('custom_fields')->getElements() as $element){
+		echo $this->customFieldGroup($element);
+	}
+}
+?>
+</div>
+<?php if(!$this->action){ //action form cannot have actions?>
+<?php if($this->form->get('id')->getValue()){?>
+<div>
+<h4 style="display:inline;">Fiche réflexe</h4>
+
+<a href="#action-container" id="new-action" data-parent="<?php echo $this->form->get('id')->getValue()?>" data-toggle="modal" class="pull-right btn btn-mini">Nouvelle action</a>
+</div>
+<?php } else {?>
+<div class="well">Enregistrer l'évènement pour configurer la fiche réflexe.</div>
+<?php }?>
+<table class="table" id="actions-table">
+<?php 
+if($this->childs) {
+	$i = 0;
+	$total = count($this->childs);
+	foreach ($this->childs as $child){
+		$i++;
+		echo '<tr id="'.$child->getId().'">';
+			echo '<td>'.$child->getName().'</td>';
+			echo '<td>'.$this->impact($child->getImpact()).'</td>';
+			echo '<td><a 
+						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'down'), array('query'=>array('id'=>$child->getId()))).'"'. 
+						'class="down'.($i == $total ? ' disabled':'').'">
+						<span class="caret middle"></span></a>
+					  <a 
+						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'up'), array('query'=>array('id'=>$child->getId()))).'"'.
+						'class="up'.($i == 1 ? ' disabled' : '').'">  <span class="up-caret middle"></span></a></td>';
+			echo '<td><a
+				title="Modifier" 
+				class="mod"
+				href="#action-container"
+				data-toggle="modal"
+				data-id='.$child->getId().'
+				data-name="'.$child->getName().'"
+				data-parent='.$this->form->get('id')->getValue().'
+				><i class="icon-pencil"></i></a> 
+				<a 
+				title="Supprimer" 
+				href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$child->getId(), 'redirect'=>false))).'" 
+				class="action-delete" 
+				data-id='.$child->getId().' 
+				data-name="'.$child->getName().'"> 
+				<i class="icon-trash"></i></a></td>';
+		echo '</tr>';
+	}
+ }?>
+</table>
+<?php }?>
+</div>
+<div class="modal-footer">
+<?php echo $this->formSubmit($this->form->get('submit')); ?>
+<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+</div>
+<?php 
+echo $this->form()->closeTag();
+?>

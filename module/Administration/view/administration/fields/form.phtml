@@ -1,0 +1,26 @@
+
+
+<?php 
+$this->form->setAttribute('action', $this->url('administration', array('controller'=>'fields', 'action'=>'save')));
+
+$this->form->prepare();
+
+?>
+<td>
+<?php if($this->id) {
+		echo $this->formHidden($this->form->get('id'));
+	} else {
+		echo $this->formInput($this->form->get('id')->setAttribute('disabled', true));
+	}?>
+	<?php echo $this->formSelect($this->form->get('category')->setAttribute('class', 'unvisible'));?>
+</td>
+<td><?php echo $this->formInput($this->form->get('name'));?></td>
+
+<td><?php echo $this->formSelect($this->form->get('type'));?></td>
+
+<td><?php echo $this->formSubmit($this->form->get('submit'));?></td>
+
+<td>
+	<a id="cancel-form-field" class="btn btn-small" href="#" <?php if($this->id){ echo "data-id=".$this->id;}?>>Annuler</a>
+</td>
+

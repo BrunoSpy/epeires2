@@ -7,11 +7,9 @@
  */
 namespace Application\Entity;
 
+use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\InputFilter\InputFilterAwareInterface;
-use Zend\InputFilter\InputFilterInterface;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\Factory as InputFactory;
+
 
 /**
  * @ORM\Entity
@@ -23,35 +21,66 @@ class PredefinedEvent {
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
+	 * @Annotation\Type("Zend\Form\Element\Hidden")
 	 */
 	protected $id;
 
-	/** @ORM\Column(type="string") */
+	/** @ORM\Column(type="string")
+	 * @Annotation\Type("Zend\Form\Element\Text")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Nom :"})
+	 */
 	protected $name;
 	
-	/** @ORM\Column(type="boolean") */
+	/** @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Ponctuel :"})
+	 */
 	protected $punctual;
 
- 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent") */
+ 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="childs")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Evènement parent :", "empty_option":"Choisir l'evt parent"})
+	 */
  	protected $parent;
 	
- 	/** @ORM\ManyToOne(targetEntity="Impact") */
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="parent", cascade={"remove"})
+ 	 */
+ 	protected $childs;
+ 	
+ 	/** @ORM\ManyToOne(targetEntity="Impact")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Impact :", "empty_option":"Choisir l'impact"})
+ 	 */
  	protected $impact;
 	
- 	/** @ORM\ManyToOne(targetEntity="Category") */
+ 	/** @ORM\ManyToOne(targetEntity="Category", inversedBy="predefinedevents")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
+ 	 */
  	protected $category;
  	
- 	/** @ORM\Column(type="boolean") */
+ 	/** @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Liste :"})
+	 */
  	protected $listable;
  	
- 	/** @ORM\Column(type="boolean") */
+ 	/** @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Recherche :"})
+	 */
  	protected $searchable;
 	
- 	/** @ORM\Column(type="integer") */
- 	protected $order;
+ 	/** @ORM\Column(type="integer", nullable=true) */
+ 	protected $place;
  	
  	/**
- 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="event")
+ 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="predefinedevent", cascade={"remove"})
  	 */
  	protected $custom_fields_values;
  	
@@ -65,6 +94,18 @@ class PredefinedEvent {
  	
  	public function getId(){
  		return $this->id;
+ 	}
+ 	
+ 	public function setId($id){
+ 		$this->id = $id;
+ 	}
+ 	
+ 	public function getParent(){
+ 		return $this->parent;
+ 	}
+ 	
+ 	public function setParent($parent){
+ 		$this->parent = $parent;
  	}
  	
 	public function isPunctual() {
@@ -99,4 +140,31 @@ class PredefinedEvent {
 		return $this->impact;
 	}
 	
+	public function isListable(){
+		return $this->listable;
+	}
+	
+	public function setListable($listable){
+		$this->listable = $listable;
+	}
+	
+	public function isSearchable(){
+		return $this->searchable;
+	}
+	
+	public function setSearchable($searchable){
+		$this->searchable = $searchable;
+	}
+	
+	public function getPlace(){
+		return $this->place;
+	}
+	
+	public function setPlace($place){
+		$this->place = $place;
+	}
+	
+	public function getArrayCopy() {
+		return get_object_vars($this);
+	}
 }

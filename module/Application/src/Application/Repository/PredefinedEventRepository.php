@@ -34,4 +34,17 @@ class PredefinedEventRepository extends EntityRepository {
 		return $res;
 	}
 	
+	public function getRootsAsArray($id = null){
+		$criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
+		if($id){
+			$criteria->andWhere(Criteria::expr()->neq('id', $id));
+		}
+		$list = parent::matching($criteria);
+		$res = array();
+		foreach ($list as $element) {
+			$res[$element->getId()]= $element->getName();
+		}
+		return $res;
+	}
+	
 }

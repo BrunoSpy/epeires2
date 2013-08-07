@@ -205,25 +205,111 @@ class EventsController extends AbstractActionController implements LoggerAware
     	return $form;
     }
 
+    public function subformAction(){
+    	$part = $this->params()->fromQuery('part', null);
+    	
+    	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	 
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	 
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	 
+    	$form = $this->getSkeletonForm();
+    	
+    	if($part){
+    		switch ($part) {
+    			case 'subcategories':
+    				$id = $this->params()->fromQuery('id');
+    				$viewmodel->setVariables(array(
+    						'part' => $part,
+    						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
+    				));
+    				break;
+    			case 'predefined_events':
+    				$id = $this->params()->fromQuery('id');
+    				$viewmodel->setVariables(array(
+    						'part' => $part,
+    						'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),
+    				));
+    				break;
+    			case 'custom_fields':
+    				$viewmodel->setVariables(array(
+    				'part' => $part,));
+    				$form->add(new CustomFieldset($em, $this->params()->fromQuery('id')));
+    				break;
+    			default:
+    				;
+    				break;
+    		}
+    	}
+    	$viewmodel->setVariables(array('form' => $form));
+    	return $viewmodel;
+    }
     
     /**
-     * Create a new form or a part of it
+     * Create a new form
      * @return \Zend\View\Model\ViewModel
      */
-    public function createformAction(){
-    	
-    	//query param to get a part of the form
-    	$subform = $this->params()->fromQuery('subform',null);
-    	
-    	//typ of the form : creation or modification
-    	$type = $this->params()->fromQuery('type', null);
+    public function formAction(){
     	
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();
     	
     	//disable layout if request by Ajax    	
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	  	
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
+    	//création du formulaire : identique en cas de modif ou création
+    	$form = $this->getSkeletonForm();
+    	 
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id){ //modification, prefill form
+    		try {
+    			$event = $em->getRepository('Application\Entity\Event')->find($id);
+    		}
+    		catch (\Exception $ex) {
+    			$viewmodel->setVariables(array('error' => "Impossible de modifier l'évènement."));
+    			return $viewmodel;
+    		}
+    		if(!$event){
+    			$viewmodel->setVariables(array('error' => "Impossible de trouver l'évènement demandé."));
+    			return $viewmodel;
+    		}
+    		$cat = $event->getCategory();
+    		if($cat && $cat->getParent()){
+    			$form->get('categories')->get('subcategories')->setValueOptions(
+    					$em->getRepository('Application\Entity\Category')->getChildsAsArray($cat->getParent()->getId()));
+    			$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getParent()->getId());
+    			$form->get('categories')->get('subcategories')->setAttribute('value', $cat->getId());
+    		} else {
+    			$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getId());
+    		}
+    		//custom fields
+    		$form->add(new CustomFieldset($em, $cat->getId()));
+    		//custom fields values
+    		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
+    			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
+    			$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
+    		}
+    		//status
+    		$form->get('status')->setAttribute('value', $event->getStatus()->getId());
+    		//impact
+    		$form->get('impact')->setAttribute('value', $event->getImpact()->getId());
+    		//other values
+    		$form->bind($event);
+    		 
+    		$viewmodel->setVariables(array('event'=>$event));
+    	}
+    	
+    	$viewmodel->setVariables(array('form' => $form));
+    	return $viewmodel;
+    	 
+    }
+    
+    private function getSkeletonForm(){
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	//création du formulaire : identique en cas de modif ou création
@@ -231,83 +317,10 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$em->getRepository('Application\Entity\Impact')->getAllAsArray());
     	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
-    	 
     	
-    	if($type){
-    		switch ($type) {
-    			case 'modification':
-    				$id = $this->params()->fromQuery('id', null);
-    				try {
-    					$event = $em->getRepository('Application\Entity\Event')->find($id);
-    				}
-    				catch (\Exception $ex) {
-    					$this->flashMessenger()->addErrorMessage("Impossible de modifier l'évènement.");
-    					return $this->redirect()->toRoute('application');
-    				}
-    				$cat = $event->getCategory();
-    				if($cat->getParent()){
-    					$form->get('categories')->get('subcategories')->setValueOptions(
-    							$em->getRepository('Application\Entity\Category')->getChildsAsArray($cat->getParent()->getId()));
-    					$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getParent()->getId());
-    					$form->get('categories')->get('subcategories')->setAttribute('value', $cat->getId());
-    				} else {
-    					$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getId());
-    				}
-    				//custom fields
-    				$form->add(new CustomFieldset($em, $cat->getId()));
-    				//custom fields values
-    				foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
-    					$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
-  						$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
-    				}
-    				//status
-    				$form->get('status')->setAttribute('value', $event->getStatus()->getId());
-    				//impact
-    				$form->get('impact')->setAttribute('value', $event->getImpact()->getId());
-    				$form->bind($event);
-    				$viewmodel->setVariables(array('event'=>$event));
-    				break;
-    			case 'creation':
-    			break;
-    			default:
-    				;
-    			break;
-    		}
-    		
-    	}
-    	
-    	
-    	if($subform){
-    		switch ($subform) {
-    			case 'subcategories':
-					$id = $this->params()->fromQuery('id');
-    				$viewmodel->setVariables(array(
-    						'subform' => $subform,
-    						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
-    				));
-    				break;
-    			case 'predefined_events':
-    				$id = $this->params()->fromQuery('id');
-    				$viewmodel->setVariables(array(
-    					'subform' => $subform,
-    					'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),	
-    				));
-    				break;
-    			case 'custom_fields':
-    				$viewmodel->setVariables(array(
-    						'subform' => $subform));
-    				$form->add(new CustomFieldset($em, $this->params()->fromQuery('id')));
-    				break;
-    			default:
-    				;
-    			break;
-    		}
-    	}
-    	$viewmodel->setVariables(array('form' => $form));
-    	return $viewmodel;
-    	 
+    	return $form;
     }
-
+    
     public function getpredefinedvaluesAction(){
     	$predefinedId = $this->params()->fromQuery('id',null);
     	$json = array();

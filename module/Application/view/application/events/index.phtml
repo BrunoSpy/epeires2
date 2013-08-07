@@ -19,33 +19,34 @@
 <?php } ?>
 </div>
 
-<div id="create-evt" class="popover fade bottom in" style="top: 70px; left: 3.5px;">
+<div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
 <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
-<?php 
-	echo $this->partial('events/form.phtml');
-?>
+<div id="event">
+<div id="loading">Chargement...</div>
+<!-- formulaire createform.phtml récupéré via ajax -->
+</div>
+</div>
+
+<div id="suggest-evt" class="popover fade right in">
+<div class="arrow"></div>
+<h3 class="popover-title">Suggestions :</h3>
+<div id="suggests">
+<div id="loading">Chargement...</div>
+<p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p>
+<!-- formulaire createform.phtml récupéré via ajax -->
+</div>
 </div>
 
 <div class="timeline"></div>
 
 <?php $this->inlineScript()->captureStart();?>
-//click sur modification d'un évènement
-$(document).on("click", "button.modify-evt", function(){
-	var me = $(this);	
-	$("#event").html('<div id="loading">Chargement...</div>');
-	$("#create-evt").slideDown('fast');
-	$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
-	
-	$("#event").load(
-		'<?php echo $this->url('application', array('controller'=>'events', 'action' =>'createform'))?>'+'?type=modification&id='+$(this).data('id'),
-		function(){
-			$("#form-title").html(me.data('name'));
-		}
-	);
-});
 
+//init form
+form('<?php echo $this->url('application', array('controller' => 'events'));?>');
+
+//init timeline
 timeline.conf($('.timeline'), 
-				'<?php echo $this->url('application', array('controller' => 'events', ''))?>');
+   			'<?php echo $this->url('application', array('controller' => 'events', ''))?>');
 				
 <?php $this->inlineScript()->captureEnd();?>

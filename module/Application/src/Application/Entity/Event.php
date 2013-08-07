@@ -14,7 +14,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="events")
  * @ORM\HasLifecycleCallbacks
  **/
@@ -38,7 +38,7 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="childs") */
  	protected $parent;
 	
- 	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent") */
+ 	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent", cascade={"remove"}) */
  	protected $childs;
  	
  	/** @ORM\ManyToOne(targetEntity="Impact") */
@@ -60,11 +60,11 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\Column(type="datetime") */
  	protected $last_modified_on;
 	
- 	/** @ORM\ManyToOne(targetEntity="Category") */
+ 	/** @ORM\ManyToOne(targetEntity="Category", inversedBy="events") */
  	protected $category;
 	
  	/**
- 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event")
+ 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
  	 */
  	protected $custom_fields_values;
  	
