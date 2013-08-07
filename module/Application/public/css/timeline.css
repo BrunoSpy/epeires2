@@ -2,8 +2,8 @@
 
 .timeline {
 	position: absolute;
-	margin-left: 25%;
- 	width: 70%;
+	margin-left: 2%;
+ 	width: 96%;
 	height: 100%;
 	border: 1px;
 	border-color:Black;
@@ -12,8 +12,8 @@
 
  .Base {
 	position: absolute;
-	margin-left: 30px;
-	margin-right: 30px;
+	margin-left: 50px;
+	margin-right: 50px;
 	margin-top: 30px;
 	margin-bottom: 0px;	
 	z-index:-1;
@@ -22,8 +22,8 @@
 
 .timeline_content {
 	position: absolute;
-	margin-left: 30px;
-	margin-right: 30px;
+	margin-left: 50px;
+	margin-right: 50px;
 	margin-top: 70px;
 	margin-bottom: 0px;
 }
@@ -43,7 +43,7 @@
 	display:none;
 }
 
-.elmt .elmt_deb, .elmt .elmt_fin {
+.elmt .elmt_deb, .elmt .elmt_fin, .timeline .categorie, .timeline .separateur {
 	display:none;
 }
 
