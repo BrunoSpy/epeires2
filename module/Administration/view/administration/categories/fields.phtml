@@ -26,7 +26,10 @@
 				echo "<a href=\"".$this->url('administration', array('controller'=>'fields', 'action'=>'fielddown'))."?id=".$field->getId()."\" class=\"down-field".($i==$total?" disabled\"":"\"")."><span class=\"caret middle\"></span></a>";
 			echo "</td>";
 			echo "<td>";
-			echo "<a href=\"#\" class=\"mod-field\" data-id=\"".$field->getId()."\" data-name=\"".$field->getName()."\"><i class=\"icon-pencil\"></i></a> ";
+			echo "<a href=\"#\"
+					class=\"mod-field\" 
+					data-id=\"".$field->getId()."\" 
+					data-name=\"".$field->getName()."\"><i class=\"icon-pencil\"></i></a> ";
 			echo "<a href=\"#confirm-delete-field\" 
 					data-href=\"".$this->url('administration', 
 											array('controller'=>'fields', 'action'=>'delete'),

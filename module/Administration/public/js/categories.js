@@ -70,7 +70,7 @@ var categories = function(url){
 		var me = $(this);	
 		$('#field_name').html(me.data('name'));
 		$('#delete-field-href').attr('href', me.data('href'));
-		closesttr = me.closest('tr')
+		closesttr = me.closest('tr');
 	});
 
 //	confirm delete field
@@ -80,6 +80,7 @@ var categories = function(url){
 			closesttr.remove();
 			closesttr = null;
 			reload = true;
+			updateCarets($("#fieldscontainer"));
 		});
 		$("#confirm-delete-field").modal('hide');
 	});
@@ -101,11 +102,7 @@ var categories = function(url){
 			var prevtr = metr.prev();
 			metr.remove();
 			metr.insertBefore(prevtr);
-			//update class disabled
-			metr.find('a').removeClass('disabled');
-			prevtr.find('a').removeClass('disabled');
-			metr.parent().find('tr:first a.up-field').addClass('disabled');
-			metr.parent().find('tr:last').prev().find('a.down-field').addClass('disabled');
+			updateCarets($('#fieldscontainer'));
 		});
 	});
 
@@ -118,14 +115,18 @@ var categories = function(url){
 			var nexttr = metr.next();
 			metr.remove();
 			metr.insertAfter(nexttr);
-			//update class disabled
-			metr.find('a').removeClass('disabled');
-			nexttr.find('a').removeClass('disabled');
-			metr.parent().find('tr:first a.up-field').addClass('disabled');
-			metr.parent().find('tr:last').prev().find('a.down-field').addClass('disabled');
+			updateCarets($('#fieldscontainer'));
 		});
 	});
 
+	var updateCarets = function(element){
+		var body = element.find('tbody');
+		body.find('td > a.up-field').removeClass('disabled');
+		body.find('td > a.down-field').removeClass('disabled');
+		body.find('tr:first a.up-field').addClass('disabled');
+		body.find('tr:last').prev().find('a.down-field').addClass('disabled');
+	};
+	
 //	ajaxify form field submit
 	$('#fieldscontainer').on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
@@ -141,8 +142,7 @@ var categories = function(url){
 				tr.find('td:eq(0)').html(data.id);
 				tr.find('td:eq(1)').html(data.name);
 				tr.find('td:eq(2)').html(data.type);
-				tr.find('td:eq(3)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up-field"><span class="up-caret middle"></span></a> '+
-						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down-field"><span class="caret middle"></span></a>');
+				//name can change
 				tr.find('td:eq(4)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
@@ -150,12 +150,7 @@ var categories = function(url){
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
 							'data-toggle="modal"><i class="icon-trash"></i> </a>');					
-				if(i == 0){
-					tr.find('td:eq(3) a.up-field').addClass('disabled');
-				}
-				if(i == (size-2)){
-					tr.find('td:eq(3) a.down-field').addClass('disabled');
-				}	
+				updateCarets($("#fieldscontainer"));
 			} else {
 				var tr = me.closest('tr');
 				var newhtml = $("<tr></tr>");
@@ -173,20 +168,8 @@ var categories = function(url){
 							'data-toggle="modal"><i class="icon-trash"></i> </a></td>');
 
 				newhtml.insertBefore(tr);
-				var newtr = tr.prev();
-				var i = newtr.parent().children().index(tr);
-				var size = newtr.parent().children().size();
-				if(i == 0){
-					newtr.find('td:eq(3) a.up-field').addClass('disabled');
-				}
-				if(i == (size-2)){
-					newtr.find('td:eq(3) a.down-field').addClass('disabled');
-				}
-				var prevtr = newtr.prev();
-				if(prevtr.is('tr')){
-					prevtr.find('a.down-field').removeClass('disabled');
-				}
 				tr.remove();
+				updateCarets($("#fieldscontainer"));
 			}
 			reload = true;
 		}, 'json');

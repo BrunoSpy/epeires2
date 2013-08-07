@@ -67,19 +67,36 @@ if($this->form->has('custom_fields')){
 <table class="table" id="actions-table">
 <?php 
 if($this->childs) {
+	$i = 0;
+	$total = count($this->childs);
 	foreach ($this->childs as $child){
+		$i++;
 		echo '<tr id="'.$child->getId().'">';
 			echo '<td>'.$child->getName().'</td>';
 			echo '<td>'.$this->impact($child->getImpact()).'</td>';
-			echo '<td><span class="caret middle"></span> <span class="up-caret middle"></span></td>';
-			echo '<td><i class="icon-pencil"></i> 
+			echo '<td><a 
+						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'down'), array('query'=>array('id'=>$child->getId()))).'"'. 
+						'class="down'.($i == $total ? ' disabled':'').'">
+						<span class="caret middle"></span></a>
+					  <a 
+						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'up'), array('query'=>array('id'=>$child->getId()))).'"'.
+						'class="up'.($i == 1 ? ' disabled' : '').'">  <span class="up-caret middle"></span></a></td>';
+			echo '<td><a
+				title="Modifier" 
+				class="mod"
+				href="#action-container"
+				data-toggle="modal"
+				data-id='.$child->getId().'
+				data-name="'.$child->getName().'"
+				data-parent='.$this->form->get('id')->getValue().'
+				><i class="icon-pencil"></i></a> 
 				<a 
 				title="Supprimer" 
 				href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$child->getId(), 'redirect'=>false))).'" 
 				class="action-delete" 
 				data-id='.$child->getId().' 
-				data-name='.$child->getName().' 
-				><i class="icon-trash"></i></a></td>';
+				data-name="'.$child->getName().'"> 
+				<i class="icon-trash"></i></a></td>';
 		echo '</tr>';
 	}
  }?>

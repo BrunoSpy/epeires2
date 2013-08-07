@@ -28,7 +28,13 @@ class ModelsController extends AbstractActionController
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
     	$models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
     	
-    	$viewmodel->setVariable('models', $models);
+    	$actions = array();
+    	foreach ($models as $model){
+    		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model->getId()));
+    		$actions[$model->getId()] = count($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria));
+    	}
+    	
+    	$viewmodel->setVariables(array('models'=> $models, 'actions'=>$actions));
     	
     	$return = array();
     	if($this->flashMessenger()->hasErrorMessages()){
@@ -73,15 +79,15 @@ class ModelsController extends AbstractActionController
     			//get the field just before
     			$qb = $objectManager->createQueryBuilder();
     			$qb->select('f')
-    			->from('Application\Entity\PredefinedEvent', 'f')
-    			->andWhere('f.place < '.$pevent->getPlace())
+    			->from('Application\Entity\PredefinedEvent', 'f');
+    			if($pevent->getParent()){ //action => order by parent
+    				$qb->andWhere('f.parent = '.$pevent->getParent()->getId());
+    			} else { //order by category
+    				$qb->andWhere('f.category = '.$pevent->getCategory()->getId());
+    			}
+    			$qb->andWhere('f.place < '.$pevent->getPlace())
     			->orderBy('f.place','DESC')
     			->setMaxResults(1);
-    			if($pevent->getParent()){ //action => order by parent
-    				$qb->andWhere('f.parent = '+$pevent->getParent()->getId());
-    			} else { //order by category
-    				$qb->andWhere('f.category = '+$pevent->getCategory()->getId());
-    			}
     			$result = $qb->getQuery()->getSingleResult();
     			//switch places
     			$temp = $result->getPlace();
@@ -104,15 +110,15 @@ class ModelsController extends AbstractActionController
     			//get the field just before
     			$qb = $objectManager->createQueryBuilder();
     			$qb->select('f')
-    			->from('Application\Entity\PredefinedEvent', 'f')
-    			->andWhere('f.place > '.$pevent->getPlace())
+    			->from('Application\Entity\PredefinedEvent', 'f');
+    			if($pevent->getParent()){ //action => order by parent
+    				$qb->andWhere('f.parent = '.$pevent->getParent()->getId());
+    			} else { //order by category
+    				$qb->andWhere('f.category = '.$pevent->getCategory()->getId());
+    			}
+    			$qb->andWhere('f.place > '.$pevent->getPlace())
     			->orderBy('f.place','ASC')
     			->setMaxResults(1);
-    			if($pevent->getParent()){ //action => order by parent
-    				$qb->andWhere('f.parent = '+$pevent->getParent()->getId());
-    			} else { //order by category
-    				$qb->andWhere('f.category = '+$pevent->getCategory()->getId());
-    			}
     			$result = $qb->getQuery()->getSingleResult();
     			//switch places
     			$temp = $result->getPlace();
