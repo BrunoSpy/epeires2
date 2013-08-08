@@ -372,7 +372,10 @@ class EventsController extends AbstractActionController implements LoggerAware
      * }
      * @return \Zend\View\Model\JsonModel
      */
-    public function geteventsAction(Date $lastmodified = null){
+    public function geteventsAction(){
+    	
+    	$lastmodified = $this->params()->fromQuery('lastmodified', null);
+    	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$criteria = Criteria::create();
@@ -397,9 +400,14 @@ class EventsController extends AbstractActionController implements LoggerAware
     					'start_date' => $event->getStartDate(),
     					'end_date' => $event->getEndDate(),
     					'punctual' => $event->isPunctual(),
+    					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory->getParent()->getName() : $event->getCategory()->getName()),
+    					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory->getParent()->getShortName() : $event->getCategory()->getShortName()),
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'status_name' => $event->getStatus()->getName(),
+    					'impact_value' => $event->getImpact()->getValue(),
+    					'impact_name' => $event->getImpact()->getName(),
+    					'impact_style' => $event->getImpact()->getStyle(),
     	);
     	
     	$actions = array();
@@ -409,6 +417,38 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$json['actions'] = $actions;
     	
     	return $json;
+    }
+    
+    /**
+     * Liste des catégories racines
+     */
+    public function getcategoriesAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$json = array();
+    	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
+    	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+    	foreach ($categories as $category){
+    		$json[$category->getId()] = array(
+    			'name' => $category->getName(),
+    			'short_name' => $category->getShortName(),
+    			'color' => $category->getColor(),
+    		);
+    	}
+    	return new JsonModel($json);
+    }
+    
+    public function getimpactsAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$json = array();
+    	$impacts = $objectManager->getRepository('Application\Entity\Impact')->findAll();
+    	foreach ($impacts as $impact){
+    		$json[$impact->getId()] = array(
+    				'name' => $impact->getName(),
+    				'style' => $impact->getStyle(),
+    				'value' => $impact->getValue(),
+    		);
+    	}
+    	return new JsonModel($json);
     }
     
     //Logger
