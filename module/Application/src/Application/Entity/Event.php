@@ -171,17 +171,17 @@ class Event implements InputFilterAwareInterface {
 	/*** Form Validation ****/
 	private $inputFilter;
 	
-	public function populate($data){
-		$this->id     = (isset($data['id']))     ? $data['id']     : null;
-		$this->name = (isset($data['name'])) ? $data['name'] : null;
-		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-		if(isset($data['start_date']) && !empty($data['start_date'])){
-			$this->start_date = new \DateTime($data['start_date']);
-		}
-		if(isset($data['end_date']) && !empty($data['end_date'])){
-			$this->end_date = new \DateTime($data['end_date']);
-		}
-	}
+// 	public function populate($data){
+// 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
+// 		$this->name = (isset($data['name'])) ? $data['name'] : null;
+// 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
+// 		if(isset($data['start_date']) && !empty($data['start_date'])){
+// 			$this->start_date = new \DateTime($data['start_date']);
+// 		}
+// 		if(isset($data['end_date']) && !empty($data['end_date'])){
+// 			$this->end_date = new \DateTime($data['end_date']);
+// 		}
+// 	}
 	
 	public function getArrayCopy() {
 		return get_object_vars($this);

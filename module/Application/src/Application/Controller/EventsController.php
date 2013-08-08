@@ -15,6 +15,7 @@ use Application\Form\CustomFieldset;
 use Application\Entity\CustomFieldValue;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
 class EventsController extends AbstractActionController implements LoggerAware
 {
@@ -52,47 +53,51 @@ class EventsController extends AbstractActionController implements LoggerAware
     	if($this->getRequest()->isPost()){
     		
     		$post = $this->getRequest()->getPost();
-
-    		if($post['id']){
-    			$id = $post['id'];
-    		}
+    		$id = $post['id'] ? $post['id'] : null;
     		
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		 
+
+    		$event = new Event();
     		if($id){
+    			error_log("id ".$id);
     			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
-    			$form = $this->prepareForm($event);
-    			$form->bind($event);
-    		} else {
-    			$event = new Event();
-    			$form = $this->prepareForm($event, $post['categories']['root_categories']);
-    		}
+    		} 
+    		$form = $this->prepareForm($event);
+    		$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Event'))
+    			->setObject($event);
     		
+    		$form->bind($event);
     		$form->setData($post);
     		 
     		if($form->isValid()){
+    			error_log("form valid");
     			//save new event
-    			$event->populate($form->getData());
-    			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
-    			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
-    			
-    			if(isset($form->getData()['categories']['subcategories'])
-    					&& !empty($form->getData()['categories']['subcategories'])
-    					&& $form->getData()['categories']['subcategories'] > 0){
-    				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['subcategories']));
-    			} else {
-    				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
+    			$event->setStartDate(new \DateTime($post['start_date']));
+    			if(isset($post['end_date']) && !empty($post['end_date'])){
+    				$event->setEndDate(new \DateTime($post['end_date']));
     			}
-    			
+    			error_log("test 1");
+    			$event->setStatus($objectManager->find('Application\Entity\Status', $post['status']));
+    			$event->setImpact($objectManager->find('Application\Entity\Impact', $post['impact']));
+    			error_log("test 2");
+    			if(!$id){//categories disabled when modification
+    				if(isset($post['categories']['subcategories'])
+    						&& !empty($post['categories']['subcategories'])
+    						&& $post['categories']['subcategories'] > 0){
+    					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['subcategories']));
+    				} else {
+    					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['root_categories']));
+    				}
+    			}
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
     					if($customfield){
-    						$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+    						$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
     															->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
-    						if(!$customfieldvalue){
+    						if(!$customvalue){
     							$customvalue = new CustomFieldValue();
     							$customvalue->setEvent($event);
     							$customvalue->setCustomField($customfield);
@@ -115,7 +120,6 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$objectManager->persist($child);
     				}
     			}
-    			 
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
@@ -400,8 +404,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     					'start_date' => $event->getStartDate(),
     					'end_date' => $event->getEndDate(),
     					'punctual' => $event->isPunctual(),
-    					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory->getParent()->getName() : $event->getCategory()->getName()),
-    					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory->getParent()->getShortName() : $event->getCategory()->getShortName()),
+    					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
+    					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'status_name' => $event->getStatus()->getName(),
@@ -437,6 +441,9 @@ class EventsController extends AbstractActionController implements LoggerAware
     	return new JsonModel($json);
     }
     
+    /**
+     * Liste des impacts
+     */
     public function getimpactsAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$json = array();
