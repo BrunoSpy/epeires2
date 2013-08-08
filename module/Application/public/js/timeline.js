@@ -25,7 +25,7 @@ var x_act;
 var tab = Array();
 
 /*var exemple = {
-		
+
 		tableau: function() {
 			var tab = new Array(); // données
 			var debut = new Date(2013,06,31,14,50,00,00);
@@ -57,7 +57,19 @@ var tab = Array();
 };*/
 
 var timeline = {
-
+		
+		set_cat: function (url) {
+			var i = 0;
+			$.getJSON(url+"/getcategories", function (data) {
+				$.each(data, function(key, value) {
+						categorie[i] = value.name;
+						cat_short[i] = value.short_name;
+						cat_coul[i] = value.color;
+						i ++;
+				});
+			});
+		},
+		
 		conf: function (element, url) {
 			timeline.init(element);
 			var base_elmt = $('<div class="Base"></div>');
@@ -72,6 +84,7 @@ var timeline = {
 			$(element).append('<button type="button" class="btn tri_deb">Tri par h_début</button>');
 			$(element).append('</div>');
 			var timeline_other = $('<div class="timeline_other"></div>');
+			timeline.set_cat(url);
 			$(element).append(timeline_other);
 			tab = Array();
 			var i = 0;
@@ -88,7 +101,7 @@ var timeline = {
 								dfin = new Date(value.end_date.date);
 							}
 						}
-						tab[i] = [key,new Date(value.start_date.date), dfin, value.punctual, value.name, 2, value.category_short,"", value.status_name];
+						tab[i] = [key,new Date(value.start_date.date), dfin, value.punctual, value.name, 2, value.category_root,"", value.status_name];
 						var j = 0;
 						$.each(value.actions, function(k, val){
 							tab[i][j][0] = k;
@@ -97,7 +110,7 @@ var timeline = {
 						});
 					}
 					i ++;
-			});
+				});
 				var res = timeline.create(timeline_content, tab);
 				tri_cat = 1;
 				timeline_content.find('.categorie').show();
@@ -127,18 +140,6 @@ var timeline = {
 			var delta;
 			if (d_ref_deb.getDate() != d_actuelle.getDate()) { delta = h_act + 24 - h_ref;  } else { delta = h_act - h_ref; }
 			x_act = lar_unit + 2*lar_unit*delta + m_act*(2*lar_unit)/60;
-			categorie[0] = "Zone militaire";
-			categorie[1] = "PHOTO";
-			categorie[2] = "Technique";
-			categorie[3] = "Attente";
-			cat_short[0] = "M<br>I<br>L";
-			cat_short[1] = "P<br>H";
-			cat_short[2] = "T<br>E<br>C<br>H";
-			cat_short[3] = "H<br>O<br>L<br>D";
-			cat_coul[0] = "Yellow";
-			cat_coul[1] = "Lightsalmon";
-			cat_coul[2] = "Greenyellow";
-			cat_coul[3] = "Orange";
 			vue = 0;
 		},
 
@@ -202,7 +203,7 @@ var timeline = {
 			detail1.css({'position':'absolute', 'top': 0+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 1, 
 				'background-color':'red'});
 		},
-		
+
 		maj_timeBar: function(element) {
 			var detail1 = $(element).find('.TimeBar');
 			detail1.css({'left': x_act+'px'});
@@ -220,12 +221,12 @@ var timeline = {
 			if (d_debut >= d_ref_deb) {
 				if (h_deb >= h_ref) { delta = h_deb - h_ref; } else { delta = 24 + h_deb - h_ref;}
 				x1 = lar_unit + delta*lar_unit*2 + m_deb*lar_unit*2/60;
-				
+
 				if (d_fin < 0) {	
-					if (x_act < x1) {
+					if (x_act < x1 + 50) {
 						wid = ((largeur-lar_unit)-x1)/2;
 					} else {
-						wid = x_act-x1;
+						wid = x_act-x1+50;
 					}
 				} else if (d_fin < d_ref_fin) {
 					if (h_fin >= h_ref) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
@@ -237,12 +238,12 @@ var timeline = {
 				}
 			} else {
 				x1 = lar_unit;
-				
+
 				if (d_fin < 0) {
-					if (x_act < x1) {
+					if (x_act < x1 + 50) {
 						wid = ((largeur-lar_unit)-x1)/2;
 					} else {
-						wid = x_act-x1;
+						wid = x_act-x1+50;
 					}
 				} else if (d_fin < d_ref_deb) {
 					// evmt non terminé
@@ -272,7 +273,7 @@ var timeline = {
 			var liste1 = $('<div class="liste_passee">');
 			$(element).append(liste1);
 			// liste1.append($('<ul label="Evénements passés :">'));
-	//		var tab = exemple.tableau();
+			//		var tab = exemple.tableau();
 			for (var i=0; i<nb1; i++) {
 				// liste1.append($('<li>'+tab[liste_passee[i]][3]+'</li></div>'));
 				liste1.append($('<div>'+tab[liste_passee[i]][3]+'</div>'));
@@ -323,7 +324,12 @@ var timeline = {
 						}
 					}
 				}
-				var categ = $('<div class="categorie '+j+'">'+cat_short[j]+'</div>');
+				var text_cat = "";
+				var len_cat = cat_short[j].length;
+				for (var k = 0; k<len_cat; k++) {
+					text_cat += cat_short[j][k]+'<br>';
+				}
+				var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
 				timeline_elmt.append(categ);
 				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
 					'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
@@ -344,11 +350,10 @@ var timeline = {
 		tri_cat: function(timeline_elmt, tableau) {
 			tri_cat = 1;
 			tri_hdeb = 0;
-			var len = tableau[0].length;
+			var len = tableau.length;
 			var nb = categorie.length;
 			var debut, fin, etat;
 			var id = 0;
-			var yy = 0;
 			var elmt;
 			var cat;
 			y_temp = delt_ligne;
@@ -358,7 +363,7 @@ var timeline = {
 					y_temp = $(value).position().top - delt_ligne/2;
 				});
 				for (var i = 0; i<len; i++) {
-					if (tableau[i][5] == categorie[j]) {
+					if (tableau[i][6] == categorie[j]) {
 						id = tableau[i][0];
 						debut = tableau[i][1];
 						fin = tableau[i][2];
@@ -373,10 +378,10 @@ var timeline = {
 			}
 		},
 
-		sort: function(timeline_elmt, tableau, speed) {
+		tri_hdeb: function(timeline_elmt, tableau, speed) {
 			tri_cat = 0;
 			tri_hdeb = 1;
-			var len = tableau[0].length;
+			var len = tableau.length;
 			var debut, fin, etat;
 			var elmt;
 			y_temp = 0;
@@ -388,7 +393,7 @@ var timeline = {
 				etat = tableau[i][8];
 				if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
 					y_temp += delt_ligne;
-					elmt = timeline_elmt.find('.ident'+tableau[i][0]);
+					elmt = timeline_elmt.find('.ident'+id);
 					if (speed) {
 						elmt.css({'top':y_temp+'px'});
 					} else {
@@ -466,7 +471,7 @@ var timeline = {
 			$(elmt).append(elmt_deb);
 			elmt_fin = $('<p class="elmt_fin"></p>');
 			$(elmt).append(elmt_fin);
-			
+
 			// css permanent
 			elmt.css({'position':'absolute', 'top': y0+'px', 'left':'0px', 'width': largeur, 'height':dy});
 			var l_deb = type[0];  
@@ -505,8 +510,8 @@ var timeline = {
 			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 		},
-		
-		position_ligne: function (base_element, id, type, x0, y0, wid) {
+
+		position_ligne: function (base_element, id, type, x0, wid) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
 			var warn = type[2];
@@ -532,14 +537,14 @@ var timeline = {
 			var ponctuel = 0;
 			var wid_boutons = elmt_b1.width() + elmt_b2.width() + inter_boutons*3;
 			var txt_wid = elmt_txt.width();
-			
+
 			if (warn) {
 				elmt_warn.show();
 				wid_boutons += elmt_warn.width() + inter_boutons;
 			} else {
 				elmt_warn.hide();
 			}
-			
+
 			switch (l_deb) {
 			case 0 :
 				elmt_fleche1.hide();
@@ -640,106 +645,11 @@ var timeline = {
 			elmt_deb.css({'left': x1-45+'px'});
 			// on place l'heure de fin à droite
 			elmt_fin.css({'left': x2+5+'px'});
-			
-		},
-		
-		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
-			var elmt = base_element.find('.ident'+id);
-			var elmt_txt = elmt.find('.label_elmt');
-			var elmt_deb = elmt.find('.elmt_deb');
-			var elmt_fin = elmt.find('.elmt_fin');
-			// positionnement des différents objets sur la ligne elmt
-			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
-			var h1, h2, hDeb, hFin;
-			// ajout de l'heure de début
-			if (d_debut != d_fin) {
-				var hDeb = d_debut.toLocaleTimeString().substr(0,5);						
-				if (d_debut < d_ref_deb && d_debut.getDate() != d_actuelle.getDate()){ 
-					var dDeb = d_debut.toLocaleDateString();
-					hDeb = dDeb.substr(0,dDeb.length-5)+" "+hDeb; 
-					var h1 = 0;
-				} else {
-					h1 = 4;
-				}
-			} else { hDeb = ""; }
-			elmt_deb.text(hDeb);
-			elmt_deb.css({'top':h1+'px'});
-			// ajout de l'heure de fin
-			if (d_fin > 0) {
-				var hFin = d_fin.toLocaleTimeString().substr(0,5);
-				if (d_fin.getDate() != d_actuelle.getDate()){
-					var dFin = d_fin.toLocaleDateString();
-					hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
-					h2 = 0;
-				} else {
-					h2 = 4;
-				}
-			} else { 
-				h2 = 4;
-				hFin = ""; 
-			}
-			elmt_fin.text(hFin);
-			elmt_fin.css({'top':h2+'px'});
-		},
-		
-		type_elmt: function (id, d_debut, d_fin, ponct, etat) {
-			var l_deb = 0; 
-			var l_fin = 0;
-			var warn;
-			// flèche gauche
-			if (!ponct) {
-				if (d_debut < d_ref_deb) { l_deb = 1;}
-				// flèche droite
-				if (d_fin > d_ref_fin) { l_fin = 1;}
-				// pas de fin
-				if (d_fin == -1) { l_fin = -1; }
-				// ponctuel
-			} else { 
-				l_fin = 2;
-			}
-			if ((d_debut < d_actuelle && etat == "A confirmer") || (d_fin < d_actuelle && etat == "en cours")) {
-				warn = 1;
-			} else {
-				warn = 0;
-			}
-			return [l_deb, l_fin, warn];
+
 		},
 
-		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
-			var ind = categorie.indexOf(cat);
-			var couleur = cat_coul[ind];
-			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
-			if (d_fin > 0) {
-				var coord = this.position(d_debut, d_fin);
-			} else {
-				coord = this.position(d_debut, -1); 
-			}
-			var x0 = coord[0];
-			var wid = coord[1];
-			var type = this.type_elmt(id, d_debut, d_fin, ponct, etat);
-			this.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
-			this.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			this.position_ligne(base_element, id, type, x0, y_temp, wid);
-			y_temp += dy + delt_ligne;
-		},
-		
-		update_elmt: function (base_element, id, d_debut, d_fin, impt, etat) {
-			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
-			if (d_fin > 0) {
-				var coord = this.position(d_debut, d_fin);
-			} else {
-				coord = this.position(d_debut, -1); 
-			}
-			var x0 = coord[0];
-			var wid = coord[1];
-			var type = this.type_elmt(id, d_debut, d_fin, etat);
-			this.position_ligne(base_element, id, type, x0, y_temp, wid);
-			y_temp += dy + delt_ligne;
-		},
-		
 		option_open: function(this_elmt, timeline_content, speed) {
 			var h = this_elmt.position().top;
-			//		$('.timeline').append($('<div>'+h+'</div>'));
 			this_elmt.find('.moins').show();
 			var elmt_opt = this_elmt.find('.elmt_opt');
 			var dh = elmt_opt.outerHeight();
@@ -780,6 +690,193 @@ var timeline = {
 			}
 		},
 
+		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
+			var elmt = base_element.find('.ident'+id);
+			var elmt_txt = elmt.find('.label_elmt');
+			var elmt_deb = elmt.find('.elmt_deb');
+			var elmt_fin = elmt.find('.elmt_fin');
+			// positionnement des différents objets sur la ligne elmt
+			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
+			var h1, h2, hDeb, hFin;
+			// ajout de l'heure de début
+			if (d_debut != d_fin) {
+				var hDeb = d_debut.toLocaleTimeString().substr(0,5);						
+				if (d_debut < d_ref_deb && d_debut.getDate() != d_actuelle.getDate()){ 
+					var dDeb = d_debut.toLocaleDateString();
+					hDeb = dDeb.substr(0,dDeb.length-5)+" "+hDeb; 
+					var h1 = 0;
+				} else {
+					h1 = 4;
+				}
+			} else { hDeb = ""; }
+			elmt_deb.text(hDeb);
+			elmt_deb.css({'top':h1+'px'});
+			// ajout de l'heure de fin
+			if (d_fin > 0) {
+				var hFin = d_fin.toLocaleTimeString().substr(0,5);
+				if (d_fin.getDate() != d_actuelle.getDate()){
+					var dFin = d_fin.toLocaleDateString();
+					hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
+					h2 = 0;
+				} else {
+					h2 = 4;
+				}
+			} else { 
+				h2 = 4;
+				hFin = ""; 
+			}
+			elmt_fin.text(hFin);
+			elmt_fin.css({'top':h2+'px'});
+		},
+
+		type_elmt: function (id, d_debut, d_fin, ponct, etat) {
+			var l_deb = 0; 
+			var l_fin = 0;
+			var warn;
+			// flèche gauche
+			if (!ponct) {
+				if (d_debut < d_ref_deb) { l_deb = 1;}
+				// flèche droite
+				if (d_fin > d_ref_fin) { l_fin = 1;}
+				// pas de fin
+				if (d_fin == -1) { l_fin = -1; }
+				// ponctuel
+			} else { 
+				l_fin = 2;
+			}
+			if ((d_debut < d_actuelle && etat == "A confirmer") || (d_fin < d_actuelle && etat == "en cours")) {
+				warn = 1;
+			} else {
+				warn = 0;
+			}
+			return [l_deb, l_fin, warn];
+		},
+
+		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+			var ind = categorie.indexOf(cat);
+			var couleur = cat_coul[ind];
+			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			if (d_fin > 0) {
+				var coord = this.position(d_debut, d_fin);
+			} else {
+				coord = this.position(d_debut, -1); 
+			}
+			var x0 = coord[0];
+			var wid = coord[1];
+			var type = this.type_elmt(id, d_debut, d_fin, ponct, etat);
+			this.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
+			this.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			this.position_ligne(base_element, id, type, x0, wid);
+			y_temp += dy + delt_ligne;
+		},
+
+		modify: function (data) {
+			var i = 0;
+			var d_debut, d_fin;
+			var j;
+			var id = -1;
+			var len = tab.length;
+			$.each(data, function(key, value) {
+				if (value.start_date != "") {
+					d_debut = new Date(value.start_date.date);
+					if (value.punctual == true) {
+						d_fin = d_debut;
+					} else {
+						if (value.end_date == null) { 
+							d_fin = -1;
+						} else {
+							d_fin = new Date(value.end_date.date);
+						}
+					}
+					j = 0;
+					while (j < len && id == -1) {
+						if (tab[j][0] == key) { id = j; }
+						j++;
+					}
+					alert(id);
+					var ponct = value.ponctual;
+					var label = value.name;
+					var etat = value.status_name;
+					tab[id] = [key, d_debut, d_fin, ponct, label, 2, value.category_short,"", etat];
+					var l = 0;
+					$.each(value.actions, function(k, val){
+						tab[id][l][0] = k;
+						tab[id][l][1] = val;
+						l ++;
+					});
+				}
+				i ++;
+				var base_element = $('.timeline_content'); 
+				if (d_fin > 0) {
+					var coord = timeline.position(d_debut, d_fin);
+				} else {
+					coord = timeline.position(d_debut, -1); 
+				}
+				var x0 = coord[0];
+				var wid = coord[1];
+				var type = timeline.type_elmt(key, d_debut, d_fin, ponct, etat);
+				timeline.enrichir_contenu(base_element, key, d_debut, d_fin, label);
+				timeline.position_ligne(base_element, key, type, x0, wid);
+			});
+
+		},
+
+		add: function (data) {
+			var i = 0;
+			var d_debut, d_fin;
+			var j;
+			var id = -1;
+			var len = tab.length;
+			$.each(data, function(key, value) {
+				if (value.start_date != "") {
+					d_debut = new Date(value.start_date.date);
+					if (value.punctual == true) {
+						d_fin = d_debut;
+					} else {
+						if (value.end_date == null) { 
+							d_fin = -1;
+						} else {
+							d_fin = new Date(value.end_date.date);
+						}
+					}
+					var ponct = value.ponctual;
+					var label = value.name;
+					var etat = value.status_name;
+					var cat = value.category_short;
+					tab[len] = [key, d_debut, dfin, ponct, label, 2, cat,"", etat];
+					var j = 0;
+					$.each(value.actions, function(k, val){
+						tab[id][j][0] = k;
+						tab[id][j][1] = val;
+						j ++;
+					});
+				}
+				i ++;
+				var ind = categorie.indexOf(cat);
+				var couleur = cat_coul[ind];
+				if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+				if (d_fin > 0) {
+					var coord = timeline.position(d_debut, d_fin);
+				} else {
+					coord = timeline.position(d_debut, -1); 
+				}
+				var x0 = coord[0];
+				var wid = coord[1];
+				var timeline_content = $('.timeline_content'); 
+				var type = timeline.type_elmt(key, d_debut, d_fin, ponct, etat);
+				timeline.creation_ligne(base_element, key, label, list, y_temp, dy, type, couleur);
+				timeline.enrichir_contenu(base_element, key, d_debut, d_fin, label);
+				timeline.position_ligne(base_element, key, type, x0, wid);
+				y_temp += dy + delt_ligne;
+				if (tri_cat) { 
+					timeline.tri_cat(timeline_content,tab);
+					timeline_content.find('.separateur').show();
+				} else if (tri_hdeb) {
+					timeline.tri_hdeb(timeline_content, tab,0);
+				}
+			});
+		},
+			
 		update: function(timel) {
 			var h_ref_old = h_ref;
 			if (vue) {timeline.init_journee(timel);} else {timeline.init(timel);}
@@ -798,7 +895,7 @@ var timeline = {
 					timeline_content.find('.categorie').show();
 					timeline_content.find('.separateur').show();
 				} else if (tri_hdeb) {
-					timeline.sort(timeline_content, tab,1);
+					timeline.tri_hdeb(timeline_content, tab,1);
 				}
 				timeline.affiche_listes(other, res[0], res[1]);
 				timeline.timeBar(timeline_content);
@@ -809,7 +906,7 @@ var timeline = {
 
 $(document).ready(function() {	
 
-setInterval("timeline.update($('.timeline'))", 60000);
+	setInterval("timeline.update($('.timeline'))", 60000);
 
 	$('.timeline').on('mouseenter','.elmt', function(){
 		$(this).css({'z-index':3});
@@ -893,7 +990,7 @@ setInterval("timeline.update($('.timeline'))", 60000);
 			timeline_content.find('.categorie').show();
 			timeline_content.find('.separateur').show();
 		} else if (tri_hdeb) {
-			timeline.sort(timeline_content, tab,1);
+			timeline.tri_hdeb(timeline_content, tab,1);
 		}
 		timeline.affiche_listes(other, res[0], res[1]);
 		timeline.timeBar(timeline_content);
@@ -915,7 +1012,7 @@ setInterval("timeline.update($('.timeline'))", 60000);
 			timeline_content.find('.categorie').show();
 			timeline_content.find('.separateur').show();
 		} else if (tri_hdeb) {
-			timeline.sort(timeline_content, tab,1);
+			timeline.tri_hdeb(timeline_content, tab,1);
 		}
 		timeline.affiche_listes(other, res[0], res[1]);
 		timeline.timeBar(timeline_content);
@@ -932,7 +1029,7 @@ setInterval("timeline.update($('.timeline'))", 60000);
 		var timel = $(this).closest('.timeline').find('.timeline_content');
 		timel.find('.categorie').hide();
 		timel.find('.separateur').hide();
-		timeline.sort(timel, tab, 0);
+		timeline.tri_hdeb(timel, tab, 0);
 	});
 	$('.timeline').on('click','.passee', function(){
 		var timel = $(this).closest('.timeline_other');
@@ -1236,3 +1333,20 @@ tableau.sort(function(a,b){return b[5]-a[5];});
 		lien.css({'position':'absolute', 'top': dy/2+'px', 'left': lar_unit+wid+'px','width':50+'px','height':'1px','background-color':'gray', 'z-index' : 1});
 	}
 },*/
+
+
+/*		update_elmt: function (base_element, id, d_debut, d_fin, impt, etat) {
+if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+if (d_fin > 0) {
+	var coord = this.position(d_debut, d_fin);
+} else {
+	coord = this.position(d_debut, -1); 
+}
+var x0 = coord[0];
+var wid = coord[1];
+var type = this.type_elmt(id, d_debut, d_fin, etat);
+this.position_ligne(base_element, id, type, x0, y_temp, wid);
+y_temp += dy + delt_ligne;
+},*/
+
+

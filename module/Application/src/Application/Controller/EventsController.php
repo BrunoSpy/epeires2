@@ -134,7 +134,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	if($return){
     		return $this->redirect()->toRoute('application');
     	} else {
-    		return new JsonModel($this->getEventJson($event));
+    		return new JsonModel(array($event->getId() => $this->getEventJson($event)));
     	}
     	
     }
