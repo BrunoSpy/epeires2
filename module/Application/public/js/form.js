@@ -23,6 +23,20 @@ var form = function(url){
 	
 	/**********************/
 	
+	//submit form
+	$("#event").on('click', 'input[type=submit]', function(event){
+		event.preventDefault();
+		$.post(url+'/save', $("#eventform").serialize(), function(){
+			//close form
+			$("#create-link").trigger("click");
+			var id = $("#eventform").find('input#id').val();
+			if(id>0){
+				//modification
+			} else {
+				//new event
+			}
+		});
+	});
 	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-link").trigger("click");

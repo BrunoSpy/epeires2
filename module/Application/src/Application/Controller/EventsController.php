@@ -40,25 +40,42 @@ class EventsController extends AbstractActionController implements LoggerAware
         return $viewmodel;
     }
     
-    /**
-     * Create a new event
-     * TODO: don't redirect but return JSON with event info
-     */
-    public function createAction(){    	 
+ 	/**
+ 	 * 
+ 	 * @return \Zend\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application. 
+ 	 */
+    public function saveAction(){   
+    	 	 
+    	
+    	$return = $this->params()->fromQuery('return', null);
+    	
     	if($this->getRequest()->isPost()){
     		
     		$post = $this->getRequest()->getPost();
 
+    		if($post['id']){
+    			$id = $post['id'];
+    		}
+    		
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     		 
-    		$event = new Event();
-    		$form = $this->prepareForm($event, $post['categories']['root_categories']);
+    		if($id){
+    			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    			$form = $this->prepareForm($event);
+    			$form->bind($event);
+    		} else {
+    			$event = new Event();
+    			$form = $this->prepareForm($event, $post['categories']['root_categories']);
+    		}
+    		
     		$form->setData($post);
     		 
     		if($form->isValid()){
     			//save new event
     			$event->populate($form->getData());
     			$event->setStatus($objectManager->find('Application\Entity\Status', $form->getData()['status']));
+    			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
+    			
     			if(isset($form->getData()['categories']['subcategories'])
     					&& !empty($form->getData()['categories']['subcategories'])
     					&& $form->getData()['categories']['subcategories'] > 0){
@@ -66,23 +83,27 @@ class EventsController extends AbstractActionController implements LoggerAware
     			} else {
     				$event->setCategory($objectManager->find('Application\Entity\Category', $form->getData()['categories']['root_categories']));
     			}
-    			$event->setImpact($objectManager->find('Application\Entity\Impact', $form->getData()['impact']));
-
+    			
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
     					if($customfield){
-    						$customvalue = new CustomFieldValue();
-    						$customvalue->setEvent($event);
-    						$customvalue->setCustomField($customfield);
+    						$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+    															->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
+    						if(!$customfieldvalue){
+    							$customvalue = new CustomFieldValue();
+    							$customvalue->setEvent($event);
+    							$customvalue->setCustomField($customfield);
+    						}
     						$customvalue->setValue($value);
     						$objectManager->persist($customvalue);
     					}
+    					//TODO : historique
     				}
     			}
-    			//create associated actions
+    			//create associated actions (only relevant if creation from a model
     			if(isset($post['modelid'])){
     				$parentID = $post['modelid'];
     				//get actions
@@ -106,62 +127,12 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$this->processFormMessages($form->getMessages());
     		}
     	}
-    	
-    	return $this->redirect()->toRoute('application');
-    	
-    }
-    
-
-    /**
-     * TODO: don't redirect but return JSON
-     */
-    public function modifyAction(){
-    	$id = $this->params()->fromRoute('id', 0);
-    	
-    	if($id && $this->getRequest()->isPost()){
-    		
-    		$post = $this->getRequest()->getPost();
-    	
-    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		
-    		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
-    		    		
-    		$form = $this->prepareForm($event);
-    		$form->bind($event);
-    		$form->setData($post);
-    		    		
-    		if($form->isValid()){
-    			//dates are changed via bind() and categories don't change
-    			$event->setStatus($objectManager->find('Application\Entity\Status', $post['status']));
-    			$event->setImpact($objectManager->find('Application\Entity\Impact', $post['impact']));
-    			//update custom field values if needed
-    			if(isset($post['custom_fields'])){
-    				foreach ($post['custom_fields'] as $key => $value){
-    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
-    					if($customfield){
-    						$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
-    						if($customfieldvalue){
-    							$customfieldvalue->setValue($value);
-    							$objectManager->persist($customfieldvalue);
-    						}
-    					}
-    					//TODO : historique
-    				}
-    			}
-    			$objectManager->persist($event);
-    			$objectManager->flush();
-    			$this->logger->log(\Zend\Log\Logger::INFO, "event modified");
-    			$this->flashMessenger()->addSuccessMessage("Evènement modifié");
-    		} else {
-    			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide, modification impossible");
-    			$this->flashMessenger()->addErrorMessage("Impossible de modifier l'évènement.");
-    			//traitement des erreurs de validation
-    			$this->processFormMessages($form->getMessages());
-    		}
-    		
+    	if($return){
+    		return $this->redirect()->toRoute('application');
+    	} else {
+    		return new JsonModel($this->getEventJson($event));
     	}
     	
-    	return $this->redirect()->toRoute('application');
     }
     
     private function processFormMessages($messages){
@@ -401,37 +372,43 @@ class EventsController extends AbstractActionController implements LoggerAware
      * }
      * @return \Zend\View\Model\JsonModel
      */
-    public function geteventsAction(){
-    	$now = new \DateTime('NOW');
-    	
+    public function geteventsAction(Date $lastmodified = null){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$criteria = Criteria::create();
-    	$criteria->andWhere(Criteria::expr()->gte('start_date', $now->sub(new \DateInterval('P3D'))));
-    	
+    	if($lastmodified){
+    		$criteria->andWhere(Criteria::expr()->gte('last_modified_on', $lastmodified));
+    	} else {
+    		$now = new \DateTime('NOW');
+    		$criteria->andWhere(Criteria::expr()->gte('start_date', $now->sub(new \DateInterval('P3D'))));
+    	}
     	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
     	
     	$json = array();
-    	foreach ($events as $event){
-    		$evt = array('name' => $event->getName(),
+    	foreach ($events as $event){ 		
+    		$json[$event->getId()] = $this->getEventJson($event);
+    	}
+    	
+    	return new JsonModel($json);
+    }
+    
+    private function getEventJson($event){
+    	$json = array('name' => $event->getName(),
     					'start_date' => $event->getStartDate(),
     					'end_date' => $event->getEndDate(),
     					'punctual' => $event->isPunctual(),
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'status_name' => $event->getStatus()->getName(),
-    		);
-    		
-    		$actions = array();
-    		foreach ($event->getChilds() as $child){
-    			$actions[$child->getName] = $child->getStatus()->isOpen();
-    		}
-    		$evt['actions'] = $actions;
-    		
-    		$json[$event->getId()] = $evt;
-    	}
+    	);
     	
-    	return new JsonModel($json);
+    	$actions = array();
+    	foreach ($event->getChilds() as $child){
+    		$actions[$child->getName()] = $child->getStatus()->isOpen();
+    	}
+    	$json['actions'] = $actions;
+    	
+    	return $json;
     }
     
     //Logger

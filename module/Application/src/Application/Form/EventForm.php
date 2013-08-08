@@ -13,7 +13,7 @@ use Zend\Form\Form;
 class EventForm extends Form {
 	
 	public function __construct($statusList = array(), $impact = array()){
-		parent::__construct('event');
+		parent::__construct('eventform');
 		
 		$this->setAttribute('method', 'post');
 		
