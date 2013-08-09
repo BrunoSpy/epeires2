@@ -308,7 +308,7 @@ var categories = function(url){
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
 							'data-toggle="modal"><i class="icon-trash"></i> </a>');					
-				updateCarets($("#fieldscontainer"));
+				updateCarets($("#fieldscontainer"), false);
 			} else {
 				var tr = me.closest('tr');
 				var newhtml = $("<tr></tr>");
@@ -328,7 +328,7 @@ var categories = function(url){
 
 				newhtml.insertBefore(tr);
 				tr.remove();
-				updateCarets($("#fieldscontainer"));
+				updateCarets($("#fieldscontainer"), false);
 			}
 			reload = true;
 		}, 'json');
