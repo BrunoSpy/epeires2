@@ -26,17 +26,19 @@ var form = function(url){
 	//submit form
 	$("#event").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
-		$.post(url+'/save', $("#eventform").serialize(), function(){
-			alert("save");
+		$.post(url+'/save', $("#eventform").serialize(), function(data){
 			//close form
 			$("#create-link").trigger("click");
 			var id = $("#eventform").find('input#id').val();
 			if(id>0){
 				//modification
+				timeline.modify(data);
 			} else {
 				//new event
+				timeline.add(data);
 			}
-		});
+		}, "json");
+		
 	});
 	
 	$("#event").on("click", "#cancel-form", function(){
