@@ -136,45 +136,52 @@ class ModelsController extends AbstractActionController
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
-    		
     		$id = $post['id'];
-    		
-    		$datas = $this->getForm($id);
+    		$catid = $this->params()->fromQuery('catid', null);
+    		$datas = $this->getForm($id, null, $catid);
     		
     		$form = $datas['form'];
     		$pevent = $datas['pevent'];
     		$form->setData($post);
-    		
+    
     		if($form->isValid()){
     			//category, may be disable
     			if($post['category']){
+    				$category = $post['category'];
     				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
+    			} else if($pevent->getCategory()){
+    				$category = $pevent->getCategory()->getId();
+    			} else { //last chance cat id passed by query
+    				$category = $catid;
+    				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($catid));
     			}
-    			//link to parent
-    			if(isset($post['parent'])){
-    				$pevent->setParent($objectManager->getRepository('Application\Entity\PredefinedEvent')->find($post['parent']));
-    				//calculate order (order by parent)
-    				$qb = $objectManager->createQueryBuilder ();
-    				$qb->select ( 'MAX(f.place)' )
-    				->from ( 'Application\Entity\PredefinedEvent', 'f' )
-    				->where ( 'f.parent = ' . $post ['parent'] );
-    				$result = $qb->getQuery()->getResult();
-    				if($result[0][1]){
-    					$pevent->setPlace($result[0][1]+1);
+    			if(!$id){//if modification : link to parent and calculate position
+    				//link to parent
+    				if(isset($post['parent'])){
+    					$pevent->setParent($objectManager->getRepository('Application\Entity\PredefinedEvent')->find($post['parent']));
+	    				//calculate order (order by parent)
+    					$qb = $objectManager->createQueryBuilder ();
+    					$qb->select ( 'MAX(f.place)' )
+    					->from ( 'Application\Entity\PredefinedEvent', 'f' )
+    					->where ( 'f.parent = ' . $post ['parent'] );
+    					$result = $qb->getQuery()->getResult();
+    					if($result[0][1]){
+    						$pevent->setPlace($result[0][1]+1);
+    					} else {
+    						$pevent->setPlace(1);
+    					}
     				} else {
-    					$pevent->setPlace(0);
-    				}
-    			} else {
-    				//no parent => model => order by category
-    				$qb = $objectManager->createQueryBuilder ();
-    				$qb->select ( 'MAX(f.place)' )
-    				->from ( 'Application\Entity\PredefinedEvent', 'f' )
-    				->where ( 'f.category = ' . $post ['category'] );
-    				$result = $qb->getQuery()->getResult();
-    				if($result[0][1]){
-    					$pevent->setPlace($result[0][1]+1);
-    				} else {
-    					$pevent->setPlace(0);
+	    				//no parent => model => order by category
+    					$qb = $objectManager->createQueryBuilder ();
+    					$qb->select ( 'MAX(f.place)' )
+    					->from ( 'Application\Entity\PredefinedEvent', 'f' )
+    					->where ( 'f.category = ' . $category );
+	    				$result = $qb->getQuery()->getResult();
+    					if($result[0][1]){
+	    					$pevent->setPlace($result[0][1]+1);
+    					} else {
+    						$pevent->setPlace(1);
+    					}
     				}
     			}
     			$pevent->setImpact($objectManager->getRepository('Application\Entity\Impact')->find($post['impact']));
@@ -220,13 +227,14 @@ class ModelsController extends AbstractActionController
     	$id = $this->params()->fromQuery('id', null);
     	$action = $this->params()->fromQuery('action', false);
     	$parentid = $this->params()->fromQuery('parentid', null);
+    	$catid = $this->params()->fromQuery('catid', null);
 
     	if($id){//fiche reflexe
     		$childs = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$id), array('place'=>'asc'));
     		$viewmodel->setVariables(array('childs' => $childs));
     	}
     	
-    	$form = $this->getForm($id, $parentid)['form'];
+    	$form = $this->getForm($id, $parentid, $catid)['form'];
     	
     	$form->add(array(
     			'name' => 'submit',
@@ -242,7 +250,7 @@ class ModelsController extends AbstractActionController
     	
     }
     
-    private function getForm($id = null, $parentid = null){
+    private function getForm($id = null, $parentid = null, $catid = null){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$pevent = new PredefinedEvent();
     	$builder = new AnnotationBuilder();
@@ -255,11 +263,26 @@ class ModelsController extends AbstractActionController
     	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray());
     	
     	$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')->getRootsAsArray());
+
+    	if($catid){
+    		//set category
+    		$form->get('category')->setAttribute('value', $catid);
+    		//disable category modification
+    		$form->get('category')->setAttribute('disabled', 'disabled');
+    		//and change validator
+    		$form->getInputFilter()->get('category')->setRequired(false);
+    		//add custom fields input
+    		$form->add(new CustomFieldset($objectManager, $catid));
+    	}
     	
     	if($id){//modification d'un evt
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
     			$form->bind($pevent);
+    			//disable category modification
+    			$form->get('category')->setAttribute('disabled', 'disabled');
+    			//and change validator
+    			$form->getInputFilter()->get('category')->setRequired(false);
     			$form->setData($pevent->getArrayCopy());
     			//custom field values
     			$customfields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$pevent->getCategory()->getId()));
@@ -281,6 +304,20 @@ class ModelsController extends AbstractActionController
     	}
     	
     	return array('form'=>$form, 'pevent'=>$pevent);
+    }
+    
+    public function listAction(){
+    	$request = $this->getRequest();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null); //categoryid
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	if($id){
+    		$models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('category'=>$id, 'parent' => null));
+    		$viewmodel->setVariables(array('models'=>$models, 'catid'=>$id));
+    	}
+    	return $viewmodel;
     }
     
     public function customfieldsAction(){

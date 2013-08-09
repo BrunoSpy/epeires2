@@ -1,0 +1,38 @@
+<table class="table table-stripped">
+<thead>
+	<tr>
+		<th>Nom</th>
+		<th><a 
+			class="btn btn-mini new"
+			href="#model-container"
+			data-catid="<?php echo $this->catid;?>"
+			data-toggle="modal">Ajouter</a>
+		</th>
+	</tr>
+</thead>
+<tbody>
+	<?php foreach ($this->models as $model){
+		//Warning : rows are also created with jquery
+		echo "<tr id=\"".$model->getId()."\">";
+			echo "<td>".$model->getName()."</td>";
+			echo '<td><a
+				title="Modifier" 
+				class="mod"
+				href="#model-container"
+				data-toggle="modal"
+				data-id='.$model->getId().'
+				data-name="'.$model->getName().'"
+				><i class="icon-pencil"></i></a> 
+				<a 
+				href="#confirm-delete-model"
+				data-toggle="modal"
+				title="Supprimer" 
+				data-href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId(), 'redirect'=>false))).'" 
+				class="delete" 
+				data-id='.$model->getId().' 
+				data-name="'.$model->getName().'"> 
+				<i class="icon-trash"></i></a></td>';
+		echo "</tr>";
+	}?>
+</tbody>
+</table>

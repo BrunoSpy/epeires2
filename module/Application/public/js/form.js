@@ -27,6 +27,7 @@ var form = function(url){
 	$("#event").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
 		$.post(url+'/save', $("#eventform").serialize(), function(){
+			alert("save");
 			//close form
 			$("#create-link").trigger("click");
 			var id = $("#eventform").find('input#id').val();

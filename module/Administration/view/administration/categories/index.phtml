@@ -46,7 +46,15 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 					echo "<td>".$category->getShortName()."</td>";
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
 					echo "<td>".$this->events[$category->getId()]."</td>";
-					echo "<td>".$this->models[$category->getId()]."</td>";
+					echo "<td>".$this->models[$category->getId()].
+						// Pas de modèle pour les catégories racines ?
+						//	" <a href=\"#models-container\"
+						//		 class=\"models-list\" 
+						//		 data-id=\"".$category->getId()."\"
+						//		 data-name=\"".$category->getName()."\"
+						//		 data-toggle=\"modal\"
+						//		 data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$category->getId())))."\"><i class=\"icon-list\"></i></a>".
+						 "</td>";
 					echo "<td>".$this->fields[$category->getId()]."</td>";
 					echo "<td>";
 						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
@@ -61,7 +69,14 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 							echo "<td>".$subcategory->getShortName()."</td>";
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
 							echo "<td>".$this->events[$subcategory->getId()]."</td>";
-							echo "<td>".$this->models[$subcategory->getId()]."</td>";
+							echo "<td>".$this->models[$subcategory->getId()].
+									" <a href=\"#models-container\"
+								 		class=\"models-list\" 
+								 		data-id=\"".$subcategory->getId()."\"
+										data-name=\"".$subcategory->getName()."\"
+								 		data-toggle=\"modal\"
+								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$subcategory->getId())))."\"><i class=\"icon-list\"></i></a>".
+						 		"</td>";
 							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
 							echo "<td>";
 								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
@@ -78,6 +93,10 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 	</div>
 	
 </div>
+
+<!-- -------------------- -->
+<!-- Les fenêtres modales -->
+<!-- -------------------- -->
 
 <div class="modal hide fade" id="form-container">
 	<div class="modal-header">
@@ -126,6 +145,50 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 		<a class="btn btn-danger" id="delete-field-href">Confirmer</a>
 		<a id="cancel-delete-field" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
 	</div>	
+</div>
+
+<div class="modal hide fade large" id="models-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="models-title"></h3>
+	</div>
+	<div class="modal-body">
+	<div id="models-table"></div>
+	</div>
+	<div class="modal-footer">
+		<a class="btn btn-primary" href="<?php echo $this->url('administration', array('controller'=>'categories'));?>">Terminer</a>
+	</div>
+</div>
+
+<div class="modal hide fade large" id="model-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="model-title"></h3>
+	</div>
+	<div id="model-form"></div>
+</div>
+
+<div class="modal hide fade" id="confirm-delete-model">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Confirmer la suppression ?</h3>
+	</div>
+	<div class="modal-body">
+		<p>Voulez-vous vraiment supprimer le modèle <em><span id="model_name"></span></em> ?</p>
+		<p>La fiche réflexe associée sera supprimée également.</p>
+	</div>	
+	<div class="modal-footer">
+		<a class="btn btn-danger" id="delete-model-href">Confirmer</a>
+		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+	</div>	
+</div>
+
+<div class="modal hide fade large" id="action-container">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3  id="action-title">Nouvelle action</h3>
+	</div>
+	<div id="action-form"></div>
 </div>
 
 <?php $this->inlineScript()->captureStart(); ?>

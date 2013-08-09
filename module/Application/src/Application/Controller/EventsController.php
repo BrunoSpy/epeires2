@@ -59,7 +59,6 @@ class EventsController extends AbstractActionController implements LoggerAware
 
     		$event = new Event();
     		if($id){
-    			error_log("id ".$id);
     			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
     		} 
     		$form = $this->prepareForm($event);
@@ -70,16 +69,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     		$form->setData($post);
     		 
     		if($form->isValid()){
-    			error_log("form valid");
     			//save new event
     			$event->setStartDate(new \DateTime($post['start_date']));
     			if(isset($post['end_date']) && !empty($post['end_date'])){
     				$event->setEndDate(new \DateTime($post['end_date']));
     			}
-    			error_log("test 1");
     			$event->setStatus($objectManager->find('Application\Entity\Status', $post['status']));
     			$event->setImpact($objectManager->find('Application\Entity\Impact', $post['impact']));
-    			error_log("test 2");
     			if(!$id){//categories disabled when modification
     				if(isset($post['categories']['subcategories'])
     						&& !empty($post['categories']['subcategories'])
