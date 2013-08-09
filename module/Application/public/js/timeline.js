@@ -23,38 +23,8 @@ var tri_hdeb;
 var open_list = new Array();
 var x_act;
 var tab = Array();
-
-/*var exemple = {
-
-		tableau: function() {
-			var tab = new Array(); // données
-			var debut = new Date(2013,06,31,14,50,00,00);
-			var fin = new Date(2013,06,31,21,15,00,00);
-			// id, heure de début, heure de fin, libellé, importance, catégorie, action list, état 
-			tab[0] = [5, debut, fin, "test_1 : où est-ce que j'apparais ?", 1, "Zone militaire",['a','b','c','d'], "en cours"];
-			debut = new Date(2013,07,07,15,45,00,00);
-			fin = new Date(2013,07,07,17,53,00,00);
-			tab[1] = [2, debut, fin, "test_2", 2, "Technique",['a','b','c','d'], "terminé"];
-			debut = new Date(2013,06,28,01,45,00,00);
-			fin = new Date(2013,07,07,13,53,00,00);
-			tab[2] = [4, debut, fin, "test_3", 2, "CA",["absolument épatant","bravo !","coupable","dessinateur industriel","etudes spécialisées"], "terminé"];
-			debut = new Date(2013,07,07,19,00,00,00);
-			fin = new Date(2013,07,07,22,30,00,00);
-			tab[3] = [7, debut, fin, "test_4", 3, "Attente",['a','b','c','d'], "A confirmer"];
-			debut = new Date(2013,07,07,23,45,00,00);
-			fin = new Date(2013,07,07,23,53,00,00);
-			tab[4] = [12, debut, fin, "test_5", 1, "Attente",['a','b','c','d'], "en cours"];
-			debut = new Date(2013,07,07,16,10,00,00);
-			fin = -1; // new Date(2013,06,24,21,10,00,00);
-			tab[5] = [19, debut, fin, "test_6", 3, "CA",['a','b','c','d'], "en cours"];
-			debut = new Date(2013,07,07,13,30,00,00);
-			tab[6] = [15, debut, debut, "test_7", 3, "Technique",['a','b','c','d'], "en cours"];
-			debut = new Date(2013,07,07,19,45,00,00);
-			fin = new Date(2013,07,07,20,53,00,00);
-			tab[7] = [42, debut, fin, "VOL CORONET", 2, "CA",['abracadabra','bravanida','carbonara','detresfa'], "A confirmer"];
-			return tab;
-		}
-};*/
+var t;
+var refreshIntervalId;
 
 var timeline = {
 		
@@ -88,12 +58,13 @@ var timeline = {
 			$(element).append(timeline_other);
 			tab = Array();
 			var i = 0;
-			var dfin;
+			var ddeb, dfin;
 			$.getJSON(url+"/getevents", function (data) {
 				$.each(data, function(key, value) {
 					if (value.start_date != "") {
+						ddeb = new Date(value.start_date.date);
 						if (value.punctual == true) {
-							dfin = new Date(value.start_date.date);
+							dfin = ddeb;
 						} else {
 							if (value.end_date == null) { 
 								dfin = -1;
@@ -101,11 +72,12 @@ var timeline = {
 								dfin = new Date(value.end_date.date);
 							}
 						}
-						tab[i] = [key,new Date(value.start_date.date), dfin, value.punctual, value.name, 2, value.category_root,"", value.status_name];
+						// alert(dfin);
+						tab[i] = [key,ddeb, dfin, value.punctual, value.name, 2, value.category_root,"", value.status_name];
 						var j = 0;
 						$.each(value.actions, function(k, val){
-							tab[i][j][0] = k;
-							tab[i][j][1] = val;
+							tab[i][7][j][0] = k;
+							tab[i][7][j][1] = val;
 							j ++;
 						});
 					}
@@ -313,7 +285,7 @@ var timeline = {
 						debut = tableau[i][1];
 						fin = tableau[i][2];
 						etat = tableau[i][8];
-						if (fin < d_ref_deb && etat == "terminé") {
+						if (fin < d_ref_deb ) { // && etat == "terminé"
 							liste_passee.push(i);
 						} else if (debut > d_ref_fin) {
 							liste_avenir.push(i);
@@ -347,7 +319,9 @@ var timeline = {
 			return [liste_passee, liste_avenir];
 		},
 
-		tri_cat: function(timeline_elmt, tableau) {
+		tri_cat: function(timeline_elmt, tableau, speed) {
+			timeline_elmt.find('.categorie').remove();
+			timeline_elmt.find('.separateur').remove();
 			tri_cat = 1;
 			tri_hdeb = 0;
 			var len = tableau.length;
@@ -355,13 +329,9 @@ var timeline = {
 			var debut, fin, etat;
 			var id = 0;
 			var elmt;
-			var cat;
+			var yy = 0;
 			y_temp = delt_ligne;
 			for (var j = 0; j<nb; j++) {
-				cat = timeline_elmt.find('categorie '+j);
-				cat.each(function(index, value){
-					y_temp = $(value).position().top - delt_ligne/2;
-				});
 				for (var i = 0; i<len; i++) {
 					if (tableau[i][6] == categorie[j]) {
 						id = tableau[i][0];
@@ -375,10 +345,31 @@ var timeline = {
 						}
 					}
 				}
+				var text_cat = "";
+				var len_cat = cat_short[j].length;
+				for (var k = 0; k<len_cat; k++) {
+					text_cat += cat_short[j][k]+'<br>';
+				}
+				var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
+				timeline_elmt.append(categ);
+				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
+					'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
+				var separateur = $('<div class="elmt separateur"></div>');
+				timeline_elmt.append(separateur);
+				h_current = y_temp-7-yy;
+				if (categ.height() > h_current) {
+					y_temp = yy + categ.height() + 7;
+				} else {
+					categ.css({'height':h_current+'px'});
+				}
+				separateur.css({'position':'absolute', 'top':y_temp-delt_ligne/2+'px', 'left':-15+'px', 'width':largeur+30+'px', 'height':'1px', 'background-color':'grey','z-index':1});
+				yy = y_temp-4;
 			}
 		},
 
 		tri_hdeb: function(timeline_elmt, tableau, speed) {
+			timeline_elmt.find('.categorie').remove();
+			timeline_elmt.find('.separateur').remove();
 			tri_cat = 0;
 			tri_hdeb = 1;
 			var len = tableau.length;
@@ -510,7 +501,7 @@ var timeline = {
 			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 		},
-
+		
 		position_ligne: function (base_element, id, type, x0, wid) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
@@ -537,14 +528,12 @@ var timeline = {
 			var ponctuel = 0;
 			var wid_boutons = elmt_b1.width() + elmt_b2.width() + inter_boutons*3;
 			var txt_wid = elmt_txt.width();
-
 			if (warn) {
 				elmt_warn.show();
 				wid_boutons += elmt_warn.width() + inter_boutons;
 			} else {
 				elmt_warn.hide();
 			}
-
 			switch (l_deb) {
 			case 0 :
 				elmt_fleche1.hide();
@@ -623,8 +612,17 @@ var timeline = {
 			} else { // on n'a pas la place d'écrire le txt dans le rectangle...
 				lien.addClass('lien');
 				lien.show();
-				if ((wid < 70 && !warn) || (wid <= 30 && warn) || ponctuel) { x1 = x1 - 90; } // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
-				else if (warn && wid > 30 && !ponctuel) { x1 = x1 - 60; }  // s'il y a un warning, on fait tout pour le mettre dedans
+				if ((wid < 70 && !warn) || (wid <= 30 && warn) || ponctuel) { 
+					x1 = x1 - 60+30*warn; 
+					var bout_in = 0;
+				} // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
+				else if (warn && wid > 30 && !ponctuel) { 
+					x1 = x1 - 60;
+					bout_in = 0;
+				}  // s'il y a un warning, on essaie de le mettre dedans
+				else {
+					bout_in = 1;
+				}
 				elmt_b1.css({'left': x1+2+'px'});
 				elmt_b2.css({'left': x1+32+'px'});
 				elmt_b2bis.css({'left': x1+32+'px'});
@@ -633,9 +631,10 @@ var timeline = {
 					elmt_txt.css({'left': x2+50+'px', 'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 					lien.css({'left': x2+'px','width':50+'px'});			
 				} else { // sinon on le met à gauche
+					if (ponctuel) { x1 += 40; }
 					elmt_txt.css({'left': x1-45-txt_wid-2+'px', 'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-					if (wid < wid_boutons) {
-						lien.css({'left': x1-45+'px','width':105+'px'});
+					if (bout_in == 0) {
+						lien.css({'left': x1-45+'px','width':75+30*warn+'px'});
 					} else {
 						lien.css({'left': x1-60+'px'});
 					}
@@ -734,7 +733,7 @@ var timeline = {
 			var l_fin = 0;
 			var warn;
 			// flèche gauche
-			if (!ponct) {
+			if (ponct == 0) {
 				if (d_debut < d_ref_deb) { l_deb = 1;}
 				// flèche droite
 				if (d_fin > d_ref_fin) { l_fin = 1;}
@@ -757,17 +756,62 @@ var timeline = {
 			var couleur = cat_coul[ind];
 			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
 			if (d_fin > 0) {
-				var coord = this.position(d_debut, d_fin);
+				var coord = timeline.position(d_debut, d_fin);
 			} else {
-				coord = this.position(d_debut, -1); 
+				coord = timeline.position(d_debut, -1); 
 			}
 			var x0 = coord[0];
 			var wid = coord[1];
-			var type = this.type_elmt(id, d_debut, d_fin, ponct, etat);
-			this.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
-			this.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			this.position_ligne(base_element, id, type, x0, wid);
+			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
+			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.position_ligne(base_element, id, type, x0, wid);
 			y_temp += dy + delt_ligne;
+		},
+		
+		add_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+			var ind = categorie.indexOf(cat);
+			var couleur = cat_coul[ind];
+			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			if (d_fin > 0) {
+				var coord = timeline.position(d_debut, d_fin);
+			} else {
+				coord = timeline.position(d_debut, -1); 
+			}
+			var x0 = coord[0];
+			var wid = coord[1];
+			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
+			var base_element = $('.timeline').find('.timeline_content');
+			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.position_ligne(base_element, id, type, x0, wid);
+		//	timeline.blink(id, couleur);
+			if (tri_cat) { 
+				timeline.tri_cat(base_element, tab,0);
+			} else if (tri_hdeb) {
+				timeline.tri_hdeb(base_element, tab,0);
+			}
+		},
+		
+		update_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+			var ind = categorie.indexOf(cat);
+			var couleur = cat_coul[ind];
+			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			if (d_fin > 0) {
+				var coord = timeline.position(d_debut, d_fin);
+			} else {
+				coord = timeline.position(d_debut, -1); 
+			}
+			var x0 = coord[0];
+			var wid = coord[1];
+			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
+			var base_element = $('.timeline').find('.timeline_content');
+			var elmt = base_element.find('.ident'+id);
+			var y = elmt.position().top;
+			elmt.remove();
+			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.position_ligne(base_element, id, type, x0, wid);
 		},
 
 		modify: function (data) {
@@ -777,46 +821,34 @@ var timeline = {
 			var id = -1;
 			var len = tab.length;
 			$.each(data, function(key, value) {
-				if (value.start_date != "") {
-					d_debut = new Date(value.start_date.date);
-					if (value.punctual == true) {
-						d_fin = d_debut;
-					} else {
-						if (value.end_date == null) { 
-							d_fin = -1;
-						} else {
-							d_fin = new Date(value.end_date.date);
-						}
-					}
-					j = 0;
-					while (j < len && id == -1) {
-						if (tab[j][0] == key) { id = j; }
-						j++;
-					}
-					alert(id);
-					var ponct = value.ponctual;
-					var label = value.name;
-					var etat = value.status_name;
-					tab[id] = [key, d_debut, d_fin, ponct, label, 2, value.category_short,"", etat];
-					var l = 0;
-					$.each(value.actions, function(k, val){
-						tab[id][l][0] = k;
-						tab[id][l][1] = val;
-						l ++;
-					});
-				}
-				i ++;
-				var base_element = $('.timeline_content'); 
-				if (d_fin > 0) {
-					var coord = timeline.position(d_debut, d_fin);
+				d_debut = new Date(value.start_date.date);
+				if (value.punctual == true) {
+					d_fin = d_debut;
 				} else {
-					coord = timeline.position(d_debut, -1); 
+					if (value.end_date == null) { 
+						d_fin = -1;
+					} else {
+						d_fin = new Date(value.end_date.date);
+					}
 				}
-				var x0 = coord[0];
-				var wid = coord[1];
-				var type = timeline.type_elmt(key, d_debut, d_fin, ponct, etat);
-				timeline.enrichir_contenu(base_element, key, d_debut, d_fin, label);
-				timeline.position_ligne(base_element, key, type, x0, wid);
+				j = 0;
+				while (j < len && id == -1) {
+					if (tab[j][0] == key) { id = j; }
+					j++;
+				}
+				var ponct = value.punctual;
+				var label = value.name;
+				var etat = value.status_name;
+				var cat = value.category_root;
+				tab[id] = [key, d_debut, d_fin, ponct, label, 2, cat,"", etat];
+				var l = 0;
+				$.each(value.actions, function(k, val){
+					tab[id][7][l][0] = k;
+					tab[id][7][l][1] = val;
+					l ++;
+				});
+				timeline.update_elmt(key, d_debut, d_fin, ponct, label, 2, cat, tab[id][7], etat);
+				i ++;
 			});
 
 		},
@@ -828,55 +860,51 @@ var timeline = {
 			var id = -1;
 			var len = tab.length;
 			$.each(data, function(key, value) {
-				if (value.start_date != "") {
-					d_debut = new Date(value.start_date.date);
-					if (value.punctual == true) {
-						d_fin = d_debut;
-					} else {
-						if (value.end_date == null) { 
-							d_fin = -1;
-						} else {
-							d_fin = new Date(value.end_date.date);
-						}
-					}
-					var ponct = value.ponctual;
-					var label = value.name;
-					var etat = value.status_name;
-					var cat = value.category_short;
-					tab[len] = [key, d_debut, dfin, ponct, label, 2, cat,"", etat];
-					var j = 0;
-					$.each(value.actions, function(k, val){
-						tab[id][j][0] = k;
-						tab[id][j][1] = val;
-						j ++;
-					});
-				}
-				i ++;
-				var ind = categorie.indexOf(cat);
-				var couleur = cat_coul[ind];
-				if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
-				if (d_fin > 0) {
-					var coord = timeline.position(d_debut, d_fin);
+				d_debut = new Date(value.start_date.date);
+				if (value.punctual == true) {
+					d_fin = d_debut;
 				} else {
-					coord = timeline.position(d_debut, -1); 
+					if (value.end_date == null) { 
+						d_fin = -1;
+					} else {
+						d_fin = new Date(value.end_date.date);
+					}
 				}
-				var x0 = coord[0];
-				var wid = coord[1];
-				var timeline_content = $('.timeline_content'); 
-				var type = timeline.type_elmt(key, d_debut, d_fin, ponct, etat);
-				timeline.creation_ligne(base_element, key, label, list, y_temp, dy, type, couleur);
-				timeline.enrichir_contenu(base_element, key, d_debut, d_fin, label);
-				timeline.position_ligne(base_element, key, type, x0, wid);
-				y_temp += dy + delt_ligne;
-				if (tri_cat) { 
-					timeline.tri_cat(timeline_content,tab);
-					timeline_content.find('.separateur').show();
-				} else if (tri_hdeb) {
-					timeline.tri_hdeb(timeline_content, tab,0);
-				}
+				j = 0;
+				var ponct = value.punctual;
+				var label = value.name;
+				var etat = value.status_name;
+				var cat = value.category_root;
+				tab[len] = [key, d_debut, d_fin, ponct, label, 2, cat,"", etat];
+				var l = 0;
+				$.each(value.actions, function(k, val){
+					tab[len][7][l][0] = k;
+					tab[len][7][l][1] = val;
+					l ++;
+				});
+				timeline.add_elmt(key, d_debut, d_fin, ponct, label, 2, cat, tab[len][7], etat);
+				i ++;
 			});
 		},
-			
+		
+		change_color: function (rect_elmt,color) {
+			if (t%2 == 0) {
+				rect_elmt.css({'background-color':'white'});
+			} else {
+				rect_elmt.css({'background-color':color});
+			}
+			t++;
+			if (t == 11) {
+				clearInterval(refreshIntervalId);
+			}
+		},
+		
+		blink: function (id, color) {
+			t = 0;
+			var rect_elmt = $('.timeline_content').find('.ident'+id).find('.rect_elmt');
+			refreshIntervalId = setInterval(timeline.change_color(rect_elmt,color), 5000);
+		},
+		
 		update: function(timel) {
 			var h_ref_old = h_ref;
 			if (vue) {timeline.init_journee(timel);} else {timeline.init(timel);}
@@ -987,8 +1015,7 @@ $(document).ready(function() {
 		timeline.base(base);	
 		var res = timeline.create(timeline_content, tab);
 		if (tri_cat) { 
-			timeline_content.find('.categorie').show();
-			timeline_content.find('.separateur').show();
+			timeline.tri_cat(timeline_content, tab,1);
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
@@ -1009,8 +1036,7 @@ $(document).ready(function() {
 		timeline.base(base);	
 		var res = timeline.create(timeline_content, tab);
 		if (tri_cat) { 
-			timeline_content.find('.categorie').show();
-			timeline_content.find('.separateur').show();
+			timeline.tri_cat(timeline_content, tab,1);
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
@@ -1021,14 +1047,10 @@ $(document).ready(function() {
 	$('.timeline').on('click','.tri_cat', function(){
 		var timel = $(this).closest('.timeline');
 		var timeline_content = timel.find('.timeline_content');
-		timeline_content.find('.categorie').show();
-		timeline_content.find('.separateur').show();
 		timeline.tri_cat(timeline_content, tab);
 	});
 	$('.timeline').on('click','.tri_deb', function(){
 		var timel = $(this).closest('.timeline').find('.timeline_content');
-		timel.find('.categorie').hide();
-		timel.find('.separateur').hide();
 		timeline.tri_hdeb(timel, tab, 0);
 	});
 	$('.timeline').on('click','.passee', function(){
@@ -1068,285 +1090,4 @@ $(document).ready(function() {
 		}
 	});
 });
-
-/*			create: function(timeline_elmt, tableau) {
-var len = tableau[0].length;
-var liste_passee = new Array();
-var liste_avenir = new Array();
-var debut, fin, etat;
-var id = 0;
-tableau.sort(function(a,b){return b[5]-a[5];});
-	for (var i = 0; i<len; i++) {
-
-			id = tableau[i][0];
-			debut = tableau[i][1];
-			fin = tableau[i][2];
-			etat = tableau[i][7];
-			if (fin < d_ref_deb && etat == "terminé") {
-				liste_passee.push(i);
-			} else if (debut > d_ref_fin) {
-				liste_avenir.push(i);
-			} else {
-				this.rectangle(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7]);
-			}
-		}
-	return [liste_passee, liste_avenir];
-},*/
-
-
-/*rectangle: function (base_element, id, d_debut, d_fin, label, impt, cat, list, etat) {
-	var ind = categorie.indexOf(cat);
-	var couleur = cat_coul[ind];
-	if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
-	if (d_fin > 0) {
-		var coord = this.position(d_debut, d_fin);
-	} else {
-		coord = this.position(d_debut, 0); 
-	}
-	var x1 = coord[0];
-	var y1 = coord[1];
-	var wid = coord[2];
-	var x2 = 0;
-	var elmt, elmt_ponct, elmt_rect , elmt_b1, elmt_b2, elmt_txt, elmt_deb, elmt_fin, elmt_opt, elmt_fleche1, elmt_fleche2, elmt_qm_txt, elmt_qm_fleche, elmt_qm_but;
-	if (x1 > 0) {
-		// création d'un élément
-		elmt = $('<div class="elmt id'+id+'" data-x1="'+x1+'"></div>');
-		$(base_element).append(elmt);
-		elmt.css({'position':'absolute', 'top': y1+'px', 'left': 0+'px', 'width': largeur, 'height':dy});
-		if (d_fin < 0) {
-			// ajout d'un rectangle "fin non-connue"
-			var xmax = lar_unit + h_aff*lar_unit*2;
-			if (x1 + 200 < xmax) { wid = 200; } else { wid = xmax - x1;}
-			elmt_rect = $('<div class="rect_elmt"></div>');
-			$(elmt).append(elmt_rect);
-			x2 = x1 + wid;
-			elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-				'background-color':couleur,'border-style':'solid', 'border-color':'transparent', 'border-width': '1px', 'border-radius': '5px'});
-			// ajout d'une flèche droite et d'un point d'interrogation (ainsi qu'un bouton en survol)
-			emt_fleche_droite = $('<div class="elmt_fleche_droite"></div>');
-			elmt_rect.after(emt_fleche_droite);
-			emt_fleche_droite.css({'position':'absolute','left':x1+wid-2+'px' , 'width':0, 'height':0, 'border-left':dy+'px solid '+couleur, 
-				'border-top':dy/2+1+'px solid transparent', 'border-bottom': dy/2+1+'px solid transparent' });
-			//	elmt_qm_fleche = $('<div class="elmt_qm_fleche"></div>');
-			//	elmt.append(elmt_qm_fleche);
-			//	elmt_qm_fleche.css({'position':'absolute', 'top': dy-22+'px', 'left': x2+'px'});
-			//	$(elmt_qm_fleche).append('<i class="icon-arrow-right"></i>');
-			elmt_qm_txt = $('<div class="elmt_qm_txt"></div>');
-			elmt.append(elmt_qm_txt);
-			elmt_qm_txt.css({'position':'absolute', 'top': dy/2-10+'px', 'left': x2+'px', 'z-index':2});
-			$(elmt_qm_txt).append('<i class="icon-question-sign"></i>');
-			elmt_qm_but = $('<button type="button" class="elmt_qm_but"></button>');
-			elmt.append(elmt_qm_but);
-			elmt_qm_but.addClass('btn btn-mini');
-			elmt_qm_but.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x2-8+'px', 'z-index':2});
-			$(elmt_qm_but).append('<i class="icon-question-sign"></i>');
-		} else if (d_debut == d_fin) {
-			// ajout du ponctuel
-			elmt_ponct = $('<div class="ponct_elmt"></div>');
-			$(elmt).append(elmt_ponct);
-			x2 = x1 + 10;
-			//	elmt_ponct.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': 10, 'height':dy ,'z-index' : 1, 
-			//		'background-color':couleur,'border-style':'solid', 'border-width': '1px', 'border-radius': '15px'});
-			var haut = dy*2/3;
-			var larg = haut*5/8;
-			elmt_ponct.css({'position':'absolute', 'left': x1-larg+'px', 'width':0, 'height':0, 'border-left':larg+'px solid transparent',
-				'border-right':larg+'px solid transparent', 'border-bottom':haut+'px solid '+couleur,'z-index' : 2});
-			var empt = $('<div></div>');
-			elmt_ponct.after(empt);
-			empt.css({'position':'absolute', 'left': x1+'px','width':0, 'height':0, 'border-left':larg+'px solid transparent',
-				'border-right':larg+'px solid transparent', 'border-top':haut+'px solid '+couleur, 'margin':haut*3/8+'px 0 0 -'+larg+'px','z-index' : 2});
-			wid = larg*2;
-			x1 -= larg;	
-			x2 = x1+wid;
-		} else {
-			// ajout du rectangle
-			elmt_rect = $('<div class="rect_elmt"></div>');
-			$(elmt).append(elmt_rect);
-			x2 = x1 + wid;
-			elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x1+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-				'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
-		}
-		// si l'événement a commencé avant la timeline, ajout d'une flèche gauche
-		if (d_debut < d_ref_deb) {
-			elmt_fleche1 = $('<div class="elmt_fleche1"></div>');
-			elmt.append(elmt_fleche1);
-			elmt_fleche1.css({'position':'absolute', 'top': dy-22+'px', 'left': x1-12+'px'});
-			$(elmt_fleche1).append('<i class="icon-arrow-left"></i>');
-		}
-		// si l'événement se poursuit au-delà de la timeline, ajout d'une flèche droite
-		if (d_fin > d_ref_fin) {
-			elmt_fleche2 = $('<div class="elmt_fleche2"></div>');
-			elmt.append(elmt_fleche2);
-			elmt_fleche2.css({'position':'absolute', 'top': dy-22+'px', 'left': x2+'px'});
-			$(elmt_fleche2).append('<i class="icon-arrow-right"></i>');
-		}
-		// création du cadre des infos optionnelles, accessible par le bouton +
-		elmt_opt = $('<div class="elmt_opt"></div>');
-		elmt_opt.css({'position':'absolute', 'top':dy+1+'px', 'left': x1+5+'px', 'width': 'auto', 'height':'auto' ,'z-index' : 1, 
-			'background-color':couleur,'border-style':'solid','border-color':'transparent', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
-		$(elmt).append(elmt_opt);
-		var list_tag = $('<ul >'); // class="nav nav-pills nav-stacked"
-		elmt_opt.append(list_tag);
-		var len = list.length;
-		for (var i = 0; i<len; i++) {
-			list_tag.append('<li>'+list[i]+'</li>');
-		}
-		elmt_opt.append('</ul>');
-		if (x1+5+elmt_opt.width() > largeur-lar_unit) {
-			elmt_opt.css({'left': x1+5-elmt_opt.width()+'px'});
-		}
-		// ajout du bouton modifications
-		elmt_b1 = $('<button type="button" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></button>');
-		$(elmt).append(elmt_b1);
-		elmt_b1.addClass('btn btn-mini');
-		$(elmt_b1).append('<i class="icon-pencil"></i>');
-		// ajout du bouton développé
-		elmt_b2 = $('<button type="button" class="plus"></button>');
-		$(elmt).append(elmt_b2);
-		elmt_b2.addClass('btn btn-mini');
-		$(elmt_b2).append('<i class="icon-plus"></i>');
-		// ajout du bouton minimisé
-		elmt_b2bis = $('<button type="button" class="moins"></button>');
-		$(elmt).append(elmt_b2bis);
-		elmt_b2bis.addClass('btn btn-mini');
-		$(elmt_b2bis).append('<i class="icon-minus"></i>');
-		// ajout du nom de l'événement
-		elmt_txt = $('<p>'+label+'</p>');
-		$(elmt).append(elmt_txt);
-		elmt_txt.addClass('label_elmt');
-		// ajout de l'heure de début
-		if (d_debut != d_fin) {
-			var hDeb = d_debut.toLocaleTimeString().substr(0,5);						
-			if (d_debut < d_ref_deb && d_debut.getDate() != d_ref_deb.getDate()){ 
-				var dDeb = d_debut.toLocaleDateString();
-				hDeb = dDeb.substr(0,dDeb.length-5)+" "+hDeb; 
-				var h1 = 0;
-			} else {
-				h1 = 4;
-			}
-		} else { hDeb = ""; }
-		elmt_deb = $('<p>'+hDeb+'</p>');
-		$(elmt).append(elmt_deb);
-		elmt_deb.addClass('elmt_deb');
-		// ajout de l'heure de fin
-		if (d_fin > 0) {
-			var hFin = d_fin.toLocaleTimeString().substr(0,5);
-			if (d_fin > d_ref_fin && d_fin.getDate() != d_ref_fin.getDate()){
-				var dFin = d_fin.toLocaleDateString();
-				hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
-				h2 = 0;
-			} else {
-				h2 = 4;
-			}
-		} else { 
-			h2 = 4;
-			hFin = ""; 
-		}
-		elmt_fin = $('<p>'+hFin+'</p>');
-		$(elmt).append(elmt_fin);
-		elmt_fin.addClass('elmt_fin');
-		// positionnement des différents objets sur la ligne elmt
-		elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
-		var txt_wid = elmt_txt.width();
-		var ponctuel = (d_debut == d_fin);
-		if (wid - txt_wid > 0 && !ponctuel) { // si on a la place d'écrire le txt dans le rectangle
-			if (wid - txt_wid < 70) { x1 = x1 - 60;} // si il n'y a pas la place de mettre les boutons en plus, on les met à gauche
-			elmt_b1.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+2+'px', 'z-index' : 1});
-			elmt_b2.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
-			elmt_b2bis.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
-			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+62+'px', 'font-weight':'normal', 'z-index' : 2});
-		} else { // on n'a pas la place d'écrire le txt dans le rectangle...
-			if (wid < 70 || ponctuel) { x1 = x1 - 60; } // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
-			elmt_b1.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+2+'px', 'z-index' : 1});
-			elmt_b2.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
-			elmt_b2bis.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1+32+'px', 'z-index' : 1});
-			if (x2+50+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-				elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x2+50+'px', 'font-weight':'normal', 'z-index' : 2,
-					'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-				var lien = $('<div class="lien"></div>');
-				$(elmt).append(lien);
-				lien.css({'position':'absolute', 'top': dy/2+'px', 'left': x2+'px','width':50+'px','height':'1px','background-color':'gray', 'z-index' : 1});
-			} else { // sinon on le met à gauche
-				elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': x1-45-txt_wid-2+'px', 'font-weight':'normal', 'z-index' : 2,
-					'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-				var lien = $('<div class="lien"></div>');
-				$(elmt).append(lien);
-				if (wid < 70) {
-					lien.css({'position':'absolute', 'top': dy/2+'px', 'left': x1-45+'px','width':105+'px','height':'1px',
-						'background-color':'gray', 'z-index' : 1});
-				} else {
-					lien.css({'position':'absolute', 'top': dy/2+'px', 'left': x1-60+'px','width':60+'px','height':'1px',
-						'background-color':'gray', 'z-index' : 1});
-				}
-			}
-		}
-		// on place l'heure de début à gauche
-		elmt_deb.css({'position':'absolute', 'top': h1+'px','left': x1-45+'px', 'width': '40px', 'text-align' : 'center', 
-			'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':1});
-		// on place l'heure de fin à droite
-		elmt_fin.css({'position':'absolute', 'top': h2+'px','left': x2+5+'px', 'width': '40px', 'text-align' : 'center', 
-			'font-style':'italic', 'background-color':'LemonChiffon', 'z-index':1});
-		y_temp += dy + delt_ligne;  
-	} else if (y1 > 0) { 
-		// ajout de l'élément warning
-		elmt = $('<div class="elmt id'+id+'"></div>');
-		$(base_element).append(elmt);
-		elmt.css({'position':'absolute', 'top': y1+'px', 'left': 0+'px', 'width': largeur, 'height':dy});
-		rect_elmt = $('<div class="rect_elmt"></div>');
-		elmt.append(rect_elmt);
-		rect_elmt.css({'position':'absolute', 'top': '0px', 'left': lar_unit+'px', 'width': wid, 'height':dy ,'z-index' : 1, 
-			'background-color':couleur,'border-style':'solid', 'border-color':'transparent', 'border-width': '1px','border-radius': '5px'});
-		// ajout du bouton warning
-		elmt_obj = $('<button type="button"></button>');
-		$(elmt).append(elmt_obj);
-		elmt_obj.addClass('btn btn-mini');
-		elmt_obj.css({'position':'absolute', 'top': 4+'px', 'left': lar_unit+2+'px', 'z-index' : 1});
-		$(elmt_obj).append('<i class="icon-warning-sign"></i>');
-		y_temp += dy + delt_ligne;
-		// ajout de l'heure de fin
-		if (d_fin > 0) {
-			var hFin = d_fin.toLocaleTimeString().substr(0,5);
-			if (d_fin.getDate() != d_ref_deb.getDate()){
-				var dFin = d_fin.toLocaleDateString();
-				hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
-				h2 = 0;
-			} else {
-				h2 = 4;
-			}	
-		} else { 
-			h2 = 4;
-			hFin = "??:??"; 
-		}
-		elmt_fin = $('<p>'+hFin+'</p>');
-		$(elmt).append(elmt_fin);
-		elmt_fin.addClass('elmt_fin');
-		elmt_fin.css({'position':'absolute', 'top': h2+'px','left': lar_unit+wid+2+'px', 'width': '40px', 'text-align' : 'center', 
-			'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
-		// ajout du nom de l'événement
-		elmt_txt = $('<p>'+label+'</p>');
-		$(elmt).append(elmt_txt);
-		elmt_txt.addClass('label_elmt');
-		elmt_txt.css({'position':'absolute', 'top': 4+'px', 'left': lar_unit+wid+50+'px', 'font-weight':'normal', 'z-index' : 1,
-			'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-		var lien = $('<div class="lien"></div>');
-		$(elmt).append(lien);
-		lien.css({'position':'absolute', 'top': dy/2+'px', 'left': lar_unit+wid+'px','width':50+'px','height':'1px','background-color':'gray', 'z-index' : 1});
-	}
-},*/
-
-
-/*		update_elmt: function (base_element, id, d_debut, d_fin, impt, etat) {
-if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
-if (d_fin > 0) {
-	var coord = this.position(d_debut, d_fin);
-} else {
-	coord = this.position(d_debut, -1); 
-}
-var x0 = coord[0];
-var wid = coord[1];
-var type = this.type_elmt(id, d_debut, d_fin, etat);
-this.position_ligne(base_element, id, type, x0, y_temp, wid);
-y_temp += dy + delt_ligne;
-},*/
-
 

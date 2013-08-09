@@ -43,7 +43,7 @@
 	display:none;
 }
 
-.elmt .elmt_deb, .elmt .elmt_fin, .timeline .categorie, .timeline .separateur {
+.elmt .elmt_deb, .elmt .elmt_fin {
 	display:none;
 }
 
