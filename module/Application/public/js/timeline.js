@@ -2,10 +2,13 @@
 var categorie = new Array();
 var cat_coul = new Array();
 var cat_short = new Array();
+var impt_name = new Array();
+var impt_style = new Array();
+var impt_value = new Array();
 var largeur;
 var hauteur;
 var h_aff;
-var dy_ligne = [60,40,30];
+var dy_max = 80;
 var delt_ligne = 10;
 var y_temp;
 var decoup;
@@ -27,19 +30,35 @@ var t;
 var refreshIntervalId;
 
 var timeline = {
-		
+
+		set_impacts: function (url) {
+			var i = 0;
+			$.getJSON(url+"/getimpacts", function (data) {
+				$.each(data, function(key, value) {
+					impt_name[i] = value.name;
+					impt_style[i] = value.short_name;
+					impt_value[i] = value.color;
+					i ++;
+				});
+			});
+		},
+
 		set_cat: function (url) {
 			var i = 0;
 			$.getJSON(url+"/getcategories", function (data) {
 				$.each(data, function(key, value) {
-						categorie[i] = value.name;
-						cat_short[i] = value.short_name;
-						cat_coul[i] = value.color;
-						i ++;
+					categorie[i] = value.name;
+					cat_short[i] = value.short_name;
+					cat_coul[i] = value.color;
+					i ++;
 				});
 			});
 		},
-		
+
+		compute_impact: function (name, value) {
+			return dy_max*value/100;
+		},
+
 		conf: function (element, url) {
 			timeline.init(element);
 			var base_elmt = $('<div class="Base"></div>');
@@ -49,38 +68,36 @@ var timeline = {
 			$(element).append(timeline_content);
 			$(element).append('<div class="btn-group">');
 			$(element).append('<button type="button" class="btn journee">Vue Journée</button>');
-			$(element).append('<button type="button" class="btn courante">Vue courante</button>');
-			$(element).append('<button type="button" class="btn tri_cat">Tri par catégorie</button>');
+			$(element).append('<button type="button" class="btn courante btn-info">Vue courante</button>');
+			$(element).append('<button type="button" class="btn tri_cat btn-info">Tri par catégorie</button>');
 			$(element).append('<button type="button" class="btn tri_deb">Tri par h_début</button>');
 			$(element).append('</div>');
 			var timeline_other = $('<div class="timeline_other"></div>');
 			timeline.set_cat(url);
+			timeline.set_impacts(url);
 			$(element).append(timeline_other);
 			tab = Array();
 			var i = 0;
 			var ddeb, dfin;
 			$.getJSON(url+"/getevents", function (data) {
 				$.each(data, function(key, value) {
-					if (value.start_date != "") {
-						ddeb = new Date(value.start_date.date);
-						if (value.punctual == true) {
-							dfin = ddeb;
+					ddeb = new Date(value.start_date.date);
+					if (value.punctual == true) {
+						dfin = ddeb;
+					} else {
+						if (value.end_date == null) { 
+							dfin = -1;
 						} else {
-							if (value.end_date == null) { 
-								dfin = -1;
-							} else {
-								dfin = new Date(value.end_date.date);
-							}
+							dfin = new Date(value.end_date.date);
 						}
-						// alert(dfin);
-						tab[i] = [key,ddeb, dfin, value.punctual, value.name, 2, value.category_root,"", value.status_name];
-						var j = 0;
-						$.each(value.actions, function(k, val){
-							tab[i][7][j][0] = k;
-							tab[i][7][j][1] = val;
-							j ++;
-						});
 					}
+					tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
+					var j = 0;
+					$.each(value.actions, function(k, val){
+						tab[i][7][j][0] = k;
+						tab[i][7][j][1] = val;
+						j ++;
+					});
 					i ++;
 				});
 				var res = timeline.create(timeline_content, tab);
@@ -285,7 +302,7 @@ var timeline = {
 						debut = tableau[i][1];
 						fin = tableau[i][2];
 						etat = tableau[i][8];
-						if (fin < d_ref_deb ) { // && etat == "terminé"
+						if (fin >0 && fin < d_ref_deb && etat == "terminé") { 
 							liste_passee.push(i);
 						} else if (debut > d_ref_fin) {
 							liste_avenir.push(i);
@@ -429,13 +446,13 @@ var timeline = {
 			// création du cadre des infos optionnelles, accessible par le bouton +
 			elmt_opt = $('<div class="elmt_opt"></div>');
 			$(elmt).append(elmt_opt);
-			var list_tag = $('<ul >'); // class="nav nav-pills nav-stacked"
+			var list_tag = $('<form>'); // class="nav nav-pills nav-stacked"
 			elmt_opt.append(list_tag);
 			var len = list.length;
 			for (var i = 0; i<len; i++) {
-				list_tag.append('<li>'+list[i][0]+'</li>');
+				list_tag.append('<label class="checkbox"><input type="checkbox" value='+list[i][0]+'>'+list[i][1]+'</label><li></li>');
 			}
-			elmt_opt.append('</ul>');
+			elmt_opt.append('</form>');
 			// ajout du bouton modifications
 			elmt_b1 = $('<button type="button" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></button>');
 			$(elmt).append(elmt_b1);
@@ -501,7 +518,7 @@ var timeline = {
 			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 		},
-		
+
 		position_ligne: function (base_element, id, type, x0, wid) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
@@ -527,7 +544,7 @@ var timeline = {
 			var inter_boutons = 2;
 			var ponctuel = 0;
 			var wid_boutons = elmt_b1.width() + elmt_b2.width() + inter_boutons*3;
-			var txt_wid = elmt_txt.width();
+			var txt_wid = elmt_txt.outerWidth();
 			if (warn) {
 				elmt_warn.show();
 				wid_boutons += elmt_warn.width() + inter_boutons;
@@ -597,53 +614,124 @@ var timeline = {
 			} else {
 				elmt_opt.css({'left': x1+5+'px'});
 			}
-			if (wid - (txt_wid + warn*30) > 0 && !ponctuel) { // si on a la place d'écrire le txt dans le rectangle
-				if (wid - txt_wid < 70) { x1 = x1 - 60;} // si il n'y a pas la place de mettre les boutons en plus, on les met à gauche
-				elmt_b1.css({'left': x1+2+'px'});
-				elmt_b2.css({'left': x1+32+'px'});
-				elmt_b2bis.css({'left': x1+32+'px'});
-				elmt_warn.css({'left': x1+32+'px'});
-				if (warn) {
-					elmt_warn.css({'left': x1+62+'px'});
-					elmt_txt.css({'left': x1+92+'px'});
-				} else {
-					elmt_txt.css({'left': x1+62+'px'});
-				}
-			} else { // on n'a pas la place d'écrire le txt dans le rectangle...
+			if (ponctuel) {
 				lien.addClass('lien');
 				lien.show();
-				if ((wid < 70 && !warn) || (wid <= 30 && warn) || ponctuel) { 
-					x1 = x1 - 60+30*warn; 
-					var bout_in = 0;
-				} // si on n'a pas non plus la place de mettre les boutons, on les met à gauche, sinon on les place dedans
-				else if (warn && wid > 30 && !ponctuel) { 
-					x1 = x1 - 60;
-					bout_in = 0;
-				}  // s'il y a un warning, on essaie de le mettre dedans
-				else {
-					bout_in = 1;
+				x1 -= 30;
+				if (warn) { 
+					elmt_warn.css({'left': x1+2+'px'});
+					x1 -= 30; 
 				}
+				elmt_b2.css({'left': x1+2+'px'});
+				elmt_b2bis.css({'left': x1+2+'px'});
+				x1 -= 30;
 				elmt_b1.css({'left': x1+2+'px'});
-				elmt_b2.css({'left': x1+32+'px'});
-				elmt_b2bis.css({'left': x1+32+'px'});
-				elmt_warn.css({'left': x1+62+'px'});
-				if (x2+50+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-					elmt_txt.css({'left': x2+50+'px', 'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-					lien.css({'left': x2+'px','width':50+'px'});			
+				// on place l'heure à droite
+				elmt_fin.css({'left': x2+5+'px'});
+				elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
+				txt_wid = elmt_txt.outerWidth();
+				x2 += 50;
+				if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+					elmt_txt.css({'left': x2+'px'});
+					lien.css({'left': x2-50+'px','width':50+'px'});	
+					x2 += txt_wid;
 				} else { // sinon on le met à gauche
-					if (ponctuel) { x1 += 40; }
-					elmt_txt.css({'left': x1-45-txt_wid-2+'px', 'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-					if (bout_in == 0) {
-						lien.css({'left': x1-45+'px','width':75+30*warn+'px'});
-					} else {
-						lien.css({'left': x1-60+'px'});
-					}
+					x1 -= txt_wid+2;
+					elmt_txt.css({'left': x1+'px'});
+					lien.css({'left': x1+'px','width':x0-x1+'px'});
 				}
+			} else {
+				var lar_nec = 30*2+30*warn+txt_wid+10;
+				var x_left = x1;
+				if (wid > lar_nec) {
+					elmt_b1.css({'left': x_left+2+'px'});
+					x_left += 30;
+					elmt_b2.css({'left': x_left+2+'px'});
+					elmt_b2bis.css({'left': x_left+2+'px'});
+					x_left += 30;
+					if (warn) { 
+						elmt_warn.css({'left': x_left+2+'px'});
+						x_left += 30; 
+					}
+					elmt_txt.css({'left': x_left+2+'px'});
+					// on place l'heure de début à gauche
+					x1 -= 50;
+					elmt_deb.css({'left': x1+'px'});
+					// on place l'heure de fin à droite
+					elmt_fin.css({'left': x2+5+'px'});
+					x2 += 50;
+				} else {
+					lar_nec = txt_wid+10;
+					if (wid > lar_nec) {
+						if (warn && wid-lar_nec > 30) {
+							elmt_warn.css({'left': x0+2+'px'});
+							x0 += 30;
+						} else  {
+							x1 -= 30;
+							if (warn) { 
+								elmt_warn.css({'left': x1+2+'px'});
+								x1 -= 30; 
+							}
+						}
+						elmt_b2.css({'left': x1+2+'px'});
+						elmt_b2bis.css({'left': x1+2+'px'});
+						x1 -= 30;
+						elmt_b1.css({'left': x1+2+'px'});
+						// on place l'heure de début à gauche
+						x1 -= 50;
+						elmt_deb.css({'left': x1+'px'});
+						// on place l'heure à droite
+						elmt_fin.css({'left': x2+5+'px'});
+						x2 += 50;
+						elmt_txt.css({'left': x0+2+'px'});
+					} else {
+						if (wid > 30*(2 + warn)) {
+							elmt_b1.css({'left': x0+2+'px'});
+							x0 += 30;
+							elmt_b2.css({'left': x0+2+'px'});
+							elmt_b2bis.css({'left': x0+2+'px'});
+							x0 += 30;
+							if (warn) { 
+								elmt_warn.css({'left': x0+2+'px'}); 
+							} 
+						}	else {
+								if (warn && wid > 30) {
+									elmt_warn.css({'left': x0+2+'px'});
+								} else {
+									x1 -= 30;
+									elmt_warn.css({'left': x1+2+'px'});
+								}
+							x1 -= 30;
+							elmt_b2.css({'left': x1+2+'px'});
+							elmt_b2bis.css({'left': x1+2+'px'});
+							x1 -= 30;
+							elmt_b1.css({'left': x1+2+'px'});
+						}
+						lien.addClass('lien');
+						lien.show();
+						elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
+						txt_wid = elmt_txt.outerWidth();
+						// on place l'heure de début à gauche
+						x1 -= 50;
+						elmt_deb.css({'left': x1+'px'});
+						// on place l'heure de fin à droite
+						elmt_fin.css({'left': x2+5+'px'});
+						x2 += 50;
+						if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+							elmt_txt.css({'left': x2+'px'});
+							lien.css({'left': x2-50+'px','width':50+'px'});	
+							x2 += txt_wid;
+						} else { // sinon on le met à gauche
+							lien.css({'left': x1-2+'px','width':52+'px'});
+							x1 -= txt_wid+2;
+							elmt_txt.css({'left': x1+'px'});
+						}
+					}
+				} 
 			}
-			// on place l'heure de début à gauche
-			elmt_deb.css({'left': x1-45+'px'});
-			// on place l'heure de fin à droite
-			elmt_fin.css({'left': x2+5+'px'});
+
+			
+	
 
 		},
 
@@ -743,7 +831,7 @@ var timeline = {
 			} else { 
 				l_fin = 2;
 			}
-			if ((d_debut < d_actuelle && etat == "A confirmer") || (d_fin < d_actuelle && etat == "en cours")) {
+			if ((d_debut < d_actuelle && etat == "A confirmer") || (d_fin < d_actuelle && etat == "confirmé")) {
 				warn = 1;
 			} else {
 				warn = 0;
@@ -754,7 +842,7 @@ var timeline = {
 		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
-			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			dy = impt;
 			if (d_fin > 0) {
 				var coord = timeline.position(d_debut, d_fin);
 			} else {
@@ -768,11 +856,11 @@ var timeline = {
 			timeline.position_ligne(base_element, id, type, x0, wid);
 			y_temp += dy + delt_ligne;
 		},
-		
+
 		add_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
-			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			dy = impt;
 			if (d_fin > 0) {
 				var coord = timeline.position(d_debut, d_fin);
 			} else {
@@ -785,18 +873,19 @@ var timeline = {
 			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid);
-		//	timeline.blink(id, couleur);
 			if (tri_cat) { 
-				timeline.tri_cat(base_element, tab,0);
+				timeline.tri_cat(base_element, tab,1);
 			} else if (tri_hdeb) {
-				timeline.tri_hdeb(base_element, tab,0);
+				timeline.tri_hdeb(base_element, tab,1);
 			}
+			var elmt = base_element.find('.ident'+id);
+			elmt.effect( "highlight",4000);
 		},
-		
+
 		update_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
-			if (impt <= 3 && impt > 0) { var dy = dy_ligne[impt-1];} else { dy = dy_ligne[2];}
+			dy = impt;
 			if (d_fin > 0) {
 				var coord = timeline.position(d_debut, d_fin);
 			} else {
@@ -807,11 +896,19 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			var base_element = $('.timeline').find('.timeline_content');
 			var elmt = base_element.find('.ident'+id);
+			elmt.toggle(400);
 			var y = elmt.position().top;
 			elmt.remove();
 			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid);
+			if (tri_cat) { 
+				timeline.tri_cat(base_element, tab,1);
+			} else if (tri_hdeb) {
+				timeline.tri_hdeb(base_element, tab,1);
+			}
+			elmt = base_element.find('.ident'+id);
+			elmt.effect( "highlight", 2000);
 		},
 
 		modify: function (data) {
@@ -840,14 +937,15 @@ var timeline = {
 				var label = value.name;
 				var etat = value.status_name;
 				var cat = value.category_root;
-				tab[id] = [key, d_debut, d_fin, ponct, label, 2, cat,"", etat];
+				var impt = timeline.compute_impact("",value.impact_value);
+				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				var l = 0;
 				$.each(value.actions, function(k, val){
 					tab[id][7][l][0] = k;
 					tab[id][7][l][1] = val;
 					l ++;
 				});
-				timeline.update_elmt(key, d_debut, d_fin, ponct, label, 2, cat, tab[id][7], etat);
+				timeline.update_elmt(key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
 				i ++;
 			});
 
@@ -856,8 +954,6 @@ var timeline = {
 		add: function (data) {
 			var i = 0;
 			var d_debut, d_fin;
-			var j;
-			var id = -1;
 			var len = tab.length;
 			$.each(data, function(key, value) {
 				d_debut = new Date(value.start_date.date);
@@ -875,7 +971,8 @@ var timeline = {
 				var label = value.name;
 				var etat = value.status_name;
 				var cat = value.category_root;
-				tab[len] = [key, d_debut, d_fin, ponct, label, 2, cat,"", etat];
+				var impt = timeline.compute_impact("",value.impact_value)
+				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				var l = 0;
 				$.each(value.actions, function(k, val){
 					tab[len][7][l][0] = k;
@@ -886,25 +983,7 @@ var timeline = {
 				i ++;
 			});
 		},
-		
-		change_color: function (rect_elmt,color) {
-			if (t%2 == 0) {
-				rect_elmt.css({'background-color':'white'});
-			} else {
-				rect_elmt.css({'background-color':color});
-			}
-			t++;
-			if (t == 11) {
-				clearInterval(refreshIntervalId);
-			}
-		},
-		
-		blink: function (id, color) {
-			t = 0;
-			var rect_elmt = $('.timeline_content').find('.ident'+id).find('.rect_elmt');
-			refreshIntervalId = setInterval(timeline.change_color(rect_elmt,color), 5000);
-		},
-		
+
 		update: function(timel) {
 			var h_ref_old = h_ref;
 			if (vue) {timeline.init_journee(timel);} else {timeline.init(timel);}
@@ -1004,6 +1083,8 @@ $(document).ready(function() {
 	});
 	$('.timeline').on('click','.journee', function(){
 		var timel = $(this).closest('.timeline');
+		$(this).addClass('btn-info');
+		timel.find('.courante').removeClass('btn-info');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');
@@ -1025,6 +1106,8 @@ $(document).ready(function() {
 	});
 	$('.timeline').on('click','.courante', function(){
 		var timel = $(this).closest('.timeline');
+		$(this).addClass('btn-info');
+		timel.find('.journee').removeClass('btn-info');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');
@@ -1046,12 +1129,17 @@ $(document).ready(function() {
 	});
 	$('.timeline').on('click','.tri_cat', function(){
 		var timel = $(this).closest('.timeline');
+		$(this).addClass('btn-info');
+		timel.find('.tri_deb').removeClass('btn-info');
 		var timeline_content = timel.find('.timeline_content');
 		timeline.tri_cat(timeline_content, tab);
 	});
 	$('.timeline').on('click','.tri_deb', function(){
-		var timel = $(this).closest('.timeline').find('.timeline_content');
-		timeline.tri_hdeb(timel, tab, 0);
+		var timel = $(this).closest('.timeline');
+		$(this).addClass('btn-info');
+		timel.find('.tri_cat').removeClass('btn-info');
+		var timeline_content = timel.find('.timeline_content');
+		timeline.tri_hdeb(timeline_content, tab, 0);
 	});
 	$('.timeline').on('click','.passee', function(){
 		var timel = $(this).closest('.timeline_other');
