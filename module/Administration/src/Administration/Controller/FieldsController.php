@@ -105,9 +105,10 @@ class FieldsController extends AbstractActionController
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
-    	
     		$id = $post['id'];
  		
+    		error_log(print_r($post, true));
+    		
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$customfield = $datas['customfield'];
@@ -126,9 +127,10 @@ class FieldsController extends AbstractActionController
 					$order = $qb->getQuery ()->getSingleResult ()[1] + 1;    			
     				$customfield->setPlace($order);
 				}
-    			
-    			$objectManager->persist($customfield);
+				
+				$objectManager->persist($customfield);
     			$objectManager->flush();
+    			error_log('test '+$customfield->getDefaultValue());
     			$this->flashMessenger()->addSuccessMessage("Champ modifié");
     		} else {
     			$this->flashMessenger()->addErrorMessage("Impossible de modifier le champ.");
@@ -139,7 +141,10 @@ class FieldsController extends AbstractActionController
     	if($returnRoute){
     		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
     	} else {
-    		return new JsonModel(array('id'=>$customfield->getId(), 'name' => $customfield->getName(), 'type' => $customfield->getType()->getName()));
+    		return new JsonModel(array('id'=>$customfield->getId(), 
+    									'name' => $customfield->getName(), 
+    									'type' => $customfield->getType()->getName(), 
+    									'defaut'=>$customfield->getDefaultValue()));
     	}
     }
     

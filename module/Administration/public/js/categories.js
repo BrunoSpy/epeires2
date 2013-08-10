@@ -1,13 +1,18 @@
 var categories = function(url){
 	var reload = false;
 	var closesttr;
-	
-	var updateCarets = function(element){
+	//by default last = true
+	var updateCarets = function(element, last){
 		var tbody = element.find('tbody');
 		tbody.find('a.up').removeClass('disabled');
 		tbody.find('a.down').removeClass('disabled');
 		tbody.find('tr:first a.up').addClass('disabled');
-		tbody.find('tr:last a.down').addClass('disabled');
+		if((typeof last !== 'undefined') && !last){
+			tbody.find('tr:last').prev().find('a.down').addClass('disabled');
+		} else {
+			tbody.find('tr:last a.down').addClass('disabled');
+		}
+		
 	};
 	
 	/* ************************************ */
@@ -289,29 +294,30 @@ var categories = function(url){
 			var id = me.closest('tr').find('input[type=hidden]').val();
 			var tr = me.closest('tr');
 			if(id>0){
-				var i = tr.parent().children().index(tr);
-				var size = tr.parent().children().size();
 				//modify
 				tr.find('td:eq(0)').html(data.id);
 				tr.find('td:eq(1)').html(data.name);
 				tr.find('td:eq(2)').html(data.type);
-				//name can change
-				tr.find('td:eq(4)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
+				tr.find('td:eq(3)').html(data.defaut);
+				tr.find('td:eq(4)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
+						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
+				tr.find('td:eq(5)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
 							' class="delete-field" '+ 
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
 							'data-toggle="modal"><i class="icon-trash"></i> </a>');					
-				updateCarets($("#fieldscontainer"));
+				updateCarets($("#fieldscontainer"), false);
 			} else {
 				var tr = me.closest('tr');
 				var newhtml = $("<tr></tr>");
 				newhtml.append('<td>'+data.id+'</td>');
 				newhtml.append('<td>'+data.name+'</td>');
 				newhtml.append('<td>'+data.type+'</td>');
+				newhtml.append('<td>'+data.defaut+'</td>');
 				newhtml.append('<td>'+'<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
-						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
+						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a></td>');
 				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
@@ -322,7 +328,7 @@ var categories = function(url){
 
 				newhtml.insertBefore(tr);
 				tr.remove();
-				updateCarets($("#fieldscontainer"));
+				updateCarets($("#fieldscontainer"), false);
 			}
 			reload = true;
 		}, 'json');

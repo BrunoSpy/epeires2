@@ -57,6 +57,9 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 					$definition['type'] = 'Zend\Form\Element\Select';
 					$options['value_options'] = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();					
 				break;
+				case 'select':
+					$definition['type'] = 'Zend\Form\Element\Select';
+					$options['value_options'] = explode(PHP_EOL, $customfield->getDefaultValue());
 				default:
 					;
 				break;

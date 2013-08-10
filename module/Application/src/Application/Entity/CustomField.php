@@ -52,6 +52,15 @@ class CustomField {
 	protected $place;
 	
 	/**
+	 * @ORM\Column(type="text")
+	 * @Annotation\Type("Zend\Form\Element\Textarea")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Valeur par défaut :"})
+	 * Stores default value, for example for select customtype
+	 */
+	protected $defaultvalue;
+	
+	/**
 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
 	 */
 	protected $values;
@@ -96,6 +105,14 @@ class CustomField {
 	
 	public function setPlace($place){
 		$this->place = $place;
+	}
+	
+	public function getDefaultValue(){
+		return $this->defaultvalue;
+	}
+	
+	public function setDefaultValue($defaultvalue){
+		$this->defaultvalue = $defaultvalue;
 	}
 	
 	public function getArrayCopy() {

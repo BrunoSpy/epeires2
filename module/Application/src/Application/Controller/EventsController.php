@@ -263,7 +263,9 @@ class EventsController extends AbstractActionController implements LoggerAware
     		//custom fields values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
-    			$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
+    			if($customfieldvalue){
+    				$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
+    			}
     		}
     		//status
     		$form->get('status')->setAttribute('value', $event->getStatus()->getId());
