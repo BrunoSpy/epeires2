@@ -971,7 +971,7 @@ var timeline = {
 				var label = value.name;
 				var etat = value.status_name;
 				var cat = value.category_root;
-				var impt = timeline.compute_impact("",value.impact_value)
+				var impt = timeline.compute_impact("",value.impact_value);
 				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				var l = 0;
 				$.each(value.actions, function(k, val){
@@ -979,7 +979,7 @@ var timeline = {
 					tab[len][7][l][1] = val;
 					l ++;
 				});
-				timeline.add_elmt(key, d_debut, d_fin, ponct, label, 2, cat, tab[len][7], etat);
+				timeline.add_elmt(key, d_debut, d_fin, ponct, label, impt, cat, tab[len][7], etat);
 				i ++;
 			});
 		},
