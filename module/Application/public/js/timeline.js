@@ -2,6 +2,8 @@
 var categorie = new Array();
 var cat_coul = new Array();
 var cat_short = new Array();
+var cat_regroup = new Array();
+var cat_display = new Array();
 var impt_name = new Array();
 var impt_style = new Array();
 var impt_value = new Array();
@@ -50,6 +52,8 @@ var timeline = {
 					categorie[i] = value.name;
 					cat_short[i] = value.short_name;
 					cat_coul[i] = value.color;
+					cat_regroup[i] = 0;
+					cat_display[i] = 1;
 					i ++;
 				});
 			});
@@ -101,7 +105,7 @@ var timeline = {
 					i ++;
 				});
 				timeline.create(timeline_content, tab);
-				tri_cat = 1;
+				timeline.tri_cat(timeline_content, tab, 1);
 				timeline_content.find('.categorie').show();
 				timeline_content.find('.separateur').show();
 				timeline.affiche_listes(timeline_other);
@@ -342,54 +346,90 @@ var timeline = {
 			}
 		},
 
+		regroupement: function(timeline_elmt, id_list, y1) {
+			var z, lbl_temp, id_temp, y_temp, dy_temp;
+			id_list.sort(function(a,b){return a[1]-b[1];});
+			var len = id_list.length;
+			var elmt;
+			y_temp = y1;
+			for (var i = 0; i<len; i++) {
+				id_temp = id_list[i][0];
+				lbl_temp = id_list[i][1];
+				elmt = timeline_elmt.find('.ident'+id_temp);
+				elmt.css({'top':y_temp});
+				dy_temp = elmt.height();
+				z = 1;
+				while (i+1<len && id_list[i+1][1] == lbl_temp){
+					i++;
+					z++;
+					id_temp = id_list[i][0];
+					elmt = timeline_elmt.find('.ident'+id_temp);
+					elmt.css({'top':y_temp+'px','z-index':z});
+					dy_temp = Math.max(dy_temp, elmt.height());
+				}
+				y_temp += dy_temp + delt_ligne;
+			}
+			return y_temp;
+		},
+		
 		tri_cat: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
 			tri_cat = 1;
 			tri_hdeb = 0;
+			var id_list = new Array();
 			var len = tableau.length;
 			var nb = categorie.length;
 			var debut, fin, etat;
 			var id = 0;
 			var elmt;
 			var yy = 0;
+			var y1;
 			y_temp = delt_ligne;
 			for (var j = 0; j<nb; j++) {
-				for (var i = 0; i<len; i++) {
-					if (tableau[i][6] == categorie[j]) {
-						id = tableau[i][0];
-						debut = tableau[i][1];
-						fin = tableau[i][2];
-						etat = tableau[i][8];
-						if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
-							elmt = timeline_elmt.find('.ident'+id);
-							elmt.animate({'top':y_temp+'px'});
-							y_temp = y_temp + elmt.height() + delt_ligne;
+				if (cat_display[j] == 1) {
+					id_list = new Array();
+					y1 = y_temp;
+					for (var i = 0; i<len; i++) {
+						if (tableau[i][6] == categorie[j]) {
+							id = tableau[i][0];
+							debut = tableau[i][1];
+							fin = tableau[i][2];
+							etat = tableau[i][8];
+							if (!(fin < d_ref_deb && etat == "terminé") && debut <= d_ref_fin) {
+								elmt = timeline_elmt.find('.ident'+id);
+								id_list.push([id, tableau[i][4]]);
+								elmt.animate({'top':y_temp+'px'});
+								y_temp = y_temp + elmt.height() + delt_ligne;
+							}
 						}
 					}
+					if (cat_regroup[j] == 1 && id_list != null) { 
+						y_temp = timeline.regroupement(timeline_elmt,id_list, y1); 
+					}
+					var text_cat = "";
+					var len_cat = cat_short[j].length;
+					for (var k = 0; k<len_cat; k++) {
+						text_cat += cat_short[j][k]+'<br>';
+					}
+					var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
+					timeline_elmt.append(categ);
+					categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
+						'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
+					var separateur = $('<div class="elmt separateur"></div>');
+					timeline_elmt.append(separateur);
+					h_current = y_temp-7-yy;
+					if (categ.height() > h_current) {
+						y_temp = yy + categ.height() + 7;
+					} else {
+						categ.css({'height':h_current+'px'});
+					}
+					separateur.css({'position':'absolute', 'top':y_temp-delt_ligne/2+'px', 'left':-15+'px', 'width':largeur+30+'px', 'height':'1px', 'background-color':'grey','z-index':1});
+					yy = y_temp-4;
 				}
-				var text_cat = "";
-				var len_cat = cat_short[j].length;
-				for (var k = 0; k<len_cat; k++) {
-					text_cat += cat_short[j][k]+'<br>';
-				}
-				var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
-				timeline_elmt.append(categ);
-				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
-					'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
-				var separateur = $('<div class="elmt separateur"></div>');
-				timeline_elmt.append(separateur);
-				h_current = y_temp-7-yy;
-				if (categ.height() > h_current) {
-					y_temp = yy + categ.height() + 7;
-				} else {
-					categ.css({'height':h_current+'px'});
-				}
-				separateur.css({'position':'absolute', 'top':y_temp-delt_ligne/2+'px', 'left':-15+'px', 'width':largeur+30+'px', 'height':'1px', 'background-color':'grey','z-index':1});
-				yy = y_temp-4;
 			}
 		},
-
+	
 		tri_hdeb: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
@@ -735,10 +775,8 @@ var timeline = {
 					}
 				} 
 			}
-
-			
-	
-
+			elmt.css({'left':x1+'px', 'width': x2-x1});
+			elmt.children().css({'left':'-='+x1+'px'});
 		},
 
 		option_open: function(this_elmt, timeline_content, speed) {
@@ -883,7 +921,7 @@ var timeline = {
 			} else if (tri_hdeb) {
 				timeline.tri_hdeb(base_element, tab,1);
 			}
-			var elmt = base_element.find('.ident'+id);
+			elmt = timeline_content.find('.ident'+key);
 			elmt.effect( "highlight",4000);
 		},
 
@@ -1049,26 +1087,28 @@ $(document).ready(function() {
 	setInterval("timeline.update($('.timeline'))", 60000);
 
 	$('.timeline').on('mouseenter','.elmt', function(){
-		$(this).css({'z-index':11});
-		$(this).find('.modify-evt').show();
-		$(this).find('.plus').show();
-		$(this).find('.elmt_deb').show();
-		$(this).find('.elmt_fin').show();
-		$(this).find('.elmt_qm_but').show();
-		$(this).find('.elmt_qm_txt').hide();
-		$(this).find('.elmt_qm_fleche').hide();
-		$(this).find('.lien').hide();
+		var elmt = $(this);
+		elmt.css({'z-index':11});
+		elmt.find('.modify-evt').show();
+		elmt.find('.plus').show();
+		elmt.find('.elmt_deb').show();
+		elmt.find('.elmt_fin').show();
+		elmt.find('.elmt_qm_but').show();
+		elmt.find('.elmt_qm_txt').hide();
+		elmt.find('.elmt_qm_fleche').hide();
+		elmt.find('.lien').hide();
 	});
 	$('.timeline').on('mouseleave','.elmt',function(){
-		$(this).css({'z-index':1});
-		$(this).find('.modify-evt').hide();
-		$(this).find('.plus').hide();
-		$(this).find('.elmt_deb').hide();
-		$(this).find('.elmt_fin').hide();
-		$(this).find('.elmt_qm_but').hide();
-		$(this).find('.elmt_qm_txt').show();
-		$(this).find('.elmt_qm_fleche').show();
-		$(this).find('.lien').show();
+		var elmt = $(this);
+		elmt.css({'z-index':1});
+		elmt.find('.modify-evt').hide();
+		elmt.find('.plus').hide();
+		elmt.find('.elmt_deb').hide();
+		elmt.find('.elmt_fin').hide();
+		elmt.find('.elmt_qm_but').hide();
+		elmt.find('.elmt_qm_txt').show();
+		elmt.find('.elmt_qm_fleche').show();
+		elmt.find('.lien').show();
 	});
 	$('.timeline').on('mouseenter','.warn_elmt', function(){
 		$(this).css({'z-index':3});
