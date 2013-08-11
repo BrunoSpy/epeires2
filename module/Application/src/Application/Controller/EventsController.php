@@ -50,6 +50,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$return = $this->params()->fromQuery('return', null);
     	
+    	$messages = array();
+    	
     	if($this->getRequest()->isPost()){
     		
     		$post = $this->getRequest()->getPost();
@@ -119,33 +121,57 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$objectManager->persist($event);
     			$objectManager->flush();
     			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
-    			$this->flashMessenger()->addSuccessMessage("Evènement enregistré");
+    			if($return){
+    				$this->flashMessenger()->addSuccessMessage("Evènement enregistré");
+    			} else {
+    				$messages['success'][0] = "Evènement enregistré";
+    			}
+    			if($return){
+    				return $this->redirect()->toRoute('application');
+    			} else {
+    				return new JsonModel(array('events' => array($event->getId() => $this->getEventJson($event)), 'messages'=>$messages));
+    			}
     		} else {
     			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
-    			$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
+    			if($return){
+    				$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
+    			} else {
+    				$messages['error'][0] = "Impossible d'enregistrer l'évènement.";
+    			}
     			//traitement des erreurs de validation
-    			$this->processFormMessages($form->getMessages());
+    			$this->processFormMessages($form->getMessages(), $messages);
+    			if($return){
+    				return $this->redirect()->toRoute('application');
+    			} else {
+    				return new JsonModel(array('messages'=>$messages));
+    			}
     		}
     	}
-    	if($return){
-    		return $this->redirect()->toRoute('application');
-    	} else {
-    		return new JsonModel(array($event->getId() => $this->getEventJson($event)));
-    	}
+    	
     	
     }
     
-    private function processFormMessages($messages){
+    private function processFormMessages($messages, &$json = null){
     	foreach($messages as $key => $message){
     		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
     			if(is_array($mvalue)){
     				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
-    					$this->flashMessenger()->addErrorMessage(
+    					if($json){
+    						$n = isset($json['error']) ? count($json['error']) : 0;
+    						$json['error'][$n] = "Champ ".$mkey." incorrect : ".$nvalue;
+    					} else {
+    						$this->flashMessenger()->addErrorMessage(
     							"Champ ".$mkey." incorrect : ".$nvalue);
+    					}
     				}
     			} else {
-    				$this->flashMessenger()->addErrorMessage(
+    				if($json){
+    					$n = isset($json['error']) ? count($json['error']) : 0;
+    					$json['error'][$n] = "Champ ".$key." incorrect : ".$mvalue;
+    				} else {
+    					$this->flashMessenger()->addErrorMessage(
     						"Champ ".$key." incorrect : ".$mvalue);
+    				}
     			}
     		}
     	}

@@ -32,10 +32,38 @@ var form = function(url){
 			var id = $("#eventform").find('input#id').val();
 			if(id>0){
 				//modification
-				timeline.modify(data);
+				timeline.modify(data.events);
+				$.each(data.messages.success, function(key, value){
+					var n = noty({text:value, 
+						type:'success',
+						layout: 'bottomRight',});
+				});
+				$.each(data.messages.error, function(key, value){
+					var n = noty({text:value, 
+						type:'error',
+						layout: 'bottomRight',});
+				});
 			} else {
 				//new event
-				timeline.add(data);
+				if(data['events']){
+					timeline.add(data.events);
+				}
+				$.each(data.messages, function(key, value){
+					if(data.messages['success']){
+						$.each(data.messages.success, function(key, value){
+							var n = noty({text:value, 
+								type:'success',
+								layout: 'bottomRight',});
+						});
+					}
+					if(data.messages['error']){
+						$.each(data.messages.error, function(key, value){
+							var n = noty({text:value, 
+								type:'error',
+								layout: 'bottomRight',});
+						});
+					}
+				});
 			}
 		}, "json");
 		

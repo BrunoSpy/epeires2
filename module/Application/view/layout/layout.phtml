@@ -23,6 +23,11 @@
         							  ->prependFile($this->basePath() . '/js/jquery-datetimepicker.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+                                      ->prependFile($this->basePath() . '/js/noty/themes/default.js')
+                                      ->prependFile($this->basePath() . '/js/noty/layouts/bottomRight.js')
+                                      ->prependFile($this->basePath() . '/js/noty/layouts/bottom.js')
+                                      ->prependFile($this->basePath() . '/js/noty/layouts/inline.js')
+                                      ->prependFile($this->basePath() . '/js/noty/jquery.noty.js')
                                       ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery.min.js')
         							   ?>
@@ -41,10 +46,19 @@
     			</ul>
 	        	<ul class="nav-centered nav">
 	            	<li class="dropdown active">  <!-- lien par défaut, classe "active" supprimée par jquery si besoin -->
-	            		<a class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>"><i class="icon-home"></i> Filtres <b class="caret"></b></a>
+	            		<a id="home" class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>"><i class="icon-home"></i> Évènements <b class="caret"></b></a>
 	            		<ul class="dropdown-menu">
-	            			<li><a href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>">Tous</a></li>
-	            			<li><a href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index', 'filter'=>'important'))?>">Importants</a></li>
+	            			<li class="nav-header">Zoom</li>
+	            			<li><a>Journée entière<i class="icon icon-ok pull-right"></i></a></li>
+	            			<li><a>6 heures</a></li>
+	            			<li class="divider"></li>
+	            			<li class="nav-header">Tri</a></li>
+	            			<li><a>Par heure de début<i class="icon icon-ok pull-right"></i></a></li>
+	            			<li><a>Par catégorie</a></li>
+	            			<li class="divider"></li>
+	            			<li class="nav-header">Filtre</li>
+	            			<li><a>Tous les évènements<i class="icon icon-ok pull-right"></i></a></li>
+	            			<li><a>Évènements importants uniquement</a></li>
 	            		</ul>
 	            		
 	            	</li>
