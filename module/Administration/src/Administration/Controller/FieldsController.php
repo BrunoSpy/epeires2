@@ -106,9 +106,7 @@ class FieldsController extends AbstractActionController
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
- 		
-    		error_log(print_r($post, true));
-    		
+ 		    		
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$customfield = $datas['customfield'];
@@ -130,7 +128,6 @@ class FieldsController extends AbstractActionController
 				
 				$objectManager->persist($customfield);
     			$objectManager->flush();
-    			error_log('test '+$customfield->getDefaultValue());
     			$this->flashMessenger()->addSuccessMessage("Champ modifié");
     		} else {
     			$this->flashMessenger()->addErrorMessage("Impossible de modifier le champ.");

@@ -81,14 +81,14 @@ var timeline = {
 			var ddeb, dfin;
 			$.getJSON(url+"/getevents", function (data) {
 				$.each(data, function(key, value) {
-					ddeb = new Date(value.start_date.date);
+					ddeb = new Date(value.start_date);
 					if (value.punctual == true) {
 						dfin = ddeb;
 					} else {
 						if (value.end_date == null) { 
 							dfin = -1;
 						} else {
-							dfin = new Date(value.end_date.date);
+							dfin = new Date(value.end_date);
 						}
 					}
 					tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
@@ -915,14 +915,14 @@ var timeline = {
 			var id = -1;
 			var len = tab.length;
 			$.each(data, function(key, value) {
-				d_debut = new Date(value.start_date.date);
+				d_debut = new Date(value.start_date);
 				if (value.punctual == true) {
 					d_fin = d_debut;
 				} else {
 					if (value.end_date == null) { 
 						d_fin = -1;
 					} else {
-						d_fin = new Date(value.end_date.date);
+						d_fin = new Date(value.end_date);
 					}
 				}
 				j = 0;
@@ -976,14 +976,14 @@ var timeline = {
 			var d_debut, d_fin;
 			var len = tab.length;
 			$.each(data, function(key, value) {
-				d_debut = new Date(value.start_date.date);
+				d_debut = new Date(value.start_date);
 				if (value.punctual == true) {
 					d_fin = d_debut;
 				} else {
 					if (value.end_date == null) { 
 						d_fin = -1;
 					} else {
-						d_fin = new Date(value.end_date.date);
+						d_fin = new Date(value.end_date);
 					}
 				}
 				j = 0;
