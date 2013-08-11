@@ -67,7 +67,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     		
     		$form->bind($event);
     		$form->setData($post);
-    		 
+    		     		
     		if($form->isValid()){
     			//save new event
     			$event->setStartDate(new \DateTime($post['start_date']));
@@ -399,8 +399,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     
     private function getEventJson($event){
     	$json = array('name' => $event->getName(),
-    					'start_date' => $event->getStartDate(),
-    					'end_date' => $event->getEndDate(),
+    					'start_date' => $event->getStartDate()->format(DATE_RFC2822),
+    					'end_date' => ($event->getEndDate() ? $event->getEndDate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),
     					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
     					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
