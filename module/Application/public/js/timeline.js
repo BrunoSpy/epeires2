@@ -21,13 +21,13 @@ var h_ref;
 var m_act;
 var vue;
 var liste_affichee = new Array();
+var liste_passee = new Array();
+var liste_avenir = new Array();
 var tri_cat;
 var tri_hdeb;
 var open_list = new Array();
 var x_act;
 var tab = Array();
-var t;
-var refreshIntervalId;
 
 var timeline = {
 
@@ -100,11 +100,11 @@ var timeline = {
 					});
 					i ++;
 				});
-				var res = timeline.create(timeline_content, tab);
+				timeline.create(timeline_content, tab);
 				tri_cat = 1;
 				timeline_content.find('.categorie').show();
 				timeline_content.find('.separateur').show();
-				timeline.affiche_listes(timeline_other, res[0], res[1]);
+				timeline.affiche_listes(timeline_other);
 				timeline.timeBar(timeline_content);
 			});
 
@@ -189,7 +189,7 @@ var timeline = {
 		timeBar: function(element) {
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
-			detail1.css({'position':'absolute', 'top': 0+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 1, 
+			detail1.css({'position':'absolute', 'top': 0+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
 				'background-color':'red'});
 		},
 
@@ -248,52 +248,59 @@ var timeline = {
 			return [x1, wid];
 		},
 
-		affiche_listes: function (element, liste_passee, liste_avenir) {
+		affiche_listes: function (element) {
+			$(element).empty();
 			var nb1 = liste_passee.length;
 			var nb2 = liste_avenir.length;
-			var button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
-			$(element).append(button1);
-			button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
-			button1.append('<i class="icon-chevron-right"></i>');
-			var button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
-			$(element).append(button2);
-			button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
-			button2.append('<i class="icon-chevron-left"></i>');
-			var liste1 = $('<div class="liste_passee">');
-			$(element).append(liste1);
-			// liste1.append($('<ul label="Evénements passés :">'));
-			//		var tab = exemple.tableau();
-			for (var i=0; i<nb1; i++) {
-				// liste1.append($('<li>'+tab[liste_passee[i]][3]+'</li></div>'));
-				liste1.append($('<div>'+tab[liste_passee[i]][3]+'</div>'));
+			var button1;
+			if (nb1 == 0) {
+				button1 = $('<button type="button" class="passee" disabled><strong>'+nb1+'</strong></button>');
+				button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				$(element).append(button1);
+			} else {
+				button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
+				$(element).append(button1);
+				button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button1.append('<i class="icon-chevron-right"></i>');
+				var liste1 = $('<div class="liste_passee">');
+				$(element).append(liste1);
+				for (var i=0; i<nb1; i++) {
+					liste1.append($('<div>'+tab[liste_passee[i]][4]+'</div>'));
+				}
+				liste1.css({'display':'none','position':'absolute','top':'70px','left':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
+					'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			}
-			// $(element).append($('</ul>'));
-			liste1.css({'display':'none','position':'absolute','top':'70px','left':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
-				'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
-			var liste2 = $('<div class="liste_avenir">');
-			$(element).append(liste2);
-			// liste2.append($('<ul label="Evénements A confirmer :">'));
-			for (var i=0; i<nb2; i++) {
-				// liste2.append($('<li>'+tab[liste_avenir[i]][3]+'</li></div>'));
-				liste2.append($('<div>'+tab[liste_avenir[i]][3]+'</div>'));
+			var button2;
+			if (nb2 == 0) {
+				button2 = $('<button type="button" class="avenir" disabled><strong>'+nb2+'</strong></button>');
+				button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				$(element).append(button2);
+			} else {
+				button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
+				$(element).append(button2);
+				button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button2.append('<i class="icon-chevron-left"></i>');
+				var liste2 = $('<div class="liste_avenir">');
+				$(element).append(liste2);
+				for (var i=0; i<nb2; i++) {
+					liste2.append($('<div>'+tab[liste_avenir[i]][4]+'</div>'));
+				}
+				liste2.css({'display':'none','position':'absolute','top':'70px','right':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
+					'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			}
-			// $(element).append($('</ul>'));
-			liste2.css({'display':'none','position':'absolute','top':'70px','right':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
-				'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 		},			
 
 		create: function(timeline_elmt, tableau) {
 			var len = tableau.length;
 			var nb = categorie.length;
-			var liste_passee = new Array();
-			var liste_avenir = new Array();
+			liste_passee = new Array();
+			liste_avenir = new Array();
 			liste_affichee = new Array();
 			var debut, fin, etat;
 			var id = 0;
 			var yy = 0;
 			var cpt = 0;
 			var h_current;
-//			tableau.sort(function(a,b){return b[5]-a[5];});
 			for (var j = 0; j<nb; j++) {
 				cpt = 0;
 				for (var i = 0; i<len; i++) {
@@ -333,7 +340,6 @@ var timeline = {
 				separateur.css({'position':'absolute', 'top':y_temp-delt_ligne/2+'px', 'left':-15+'px', 'width':largeur+30+'px', 'height':'1px', 'background-color':'grey','z-index':1});
 				yy = y_temp-4;
 			}
-			return [liste_passee, liste_avenir];
 		},
 
 		tri_cat: function(timeline_elmt, tableau, speed) {
@@ -857,7 +863,7 @@ var timeline = {
 			y_temp += dy + delt_ligne;
 		},
 
-		add_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 			dy = impt;
@@ -869,8 +875,7 @@ var timeline = {
 			var x0 = coord[0];
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-			var base_element = $('.timeline').find('.timeline_content');
-			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
+			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid);
 			if (tri_cat) { 
@@ -882,7 +887,7 @@ var timeline = {
 			elmt.effect( "highlight",4000);
 		},
 
-		update_elmt: function (id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 			dy = impt;
@@ -894,7 +899,6 @@ var timeline = {
 			var x0 = coord[0];
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-			var base_element = $('.timeline').find('.timeline_content');
 			var elmt = base_element.find('.ident'+id);
 			elmt.toggle(400);
 			var y = elmt.position().top;
@@ -902,13 +906,6 @@ var timeline = {
 			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid);
-			if (tri_cat) { 
-				timeline.tri_cat(base_element, tab,1);
-			} else if (tri_hdeb) {
-				timeline.tri_hdeb(base_element, tab,1);
-			}
-			elmt = base_element.find('.ident'+id);
-			elmt.effect( "highlight", 2000);
 		},
 
 		modify: function (data) {
@@ -945,7 +942,30 @@ var timeline = {
 					tab[id][7][l][1] = val;
 					l ++;
 				});
-				timeline.update_elmt(key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
+				var timel = $('.timeline');
+				var base = timel.find('.Base');
+				var timeline_content = timel.find('.timeline_content');
+				var other = timel.find('.timeline_other');
+				var elmt = timeline_content.find('.ident'+key);
+				if (d_fin >0 && d_fin < d_ref_deb && etat == "terminé") { 
+					liste_passee.push(id);
+					timeline.affiche_listes(other);
+					elmt.remove();
+				} else if (d_debut > d_ref_fin) {
+					liste_avenir.push(id);
+					timeline.affiche_listes(other);
+					elmt.remove();
+				} else {
+					liste_affichee.push(id);
+					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
+				}
+				if (tri_cat) { 
+					timeline.tri_cat(timeline_content, tab,1);
+				} else if (tri_hdeb) {
+					timeline.tri_hdeb(timeline_content, tab,1);
+				}
+				elmt = timeline_content.find('.ident'+key);
+				elmt.effect( "highlight", 4000);
 				i ++;
 			});
 
@@ -979,7 +999,20 @@ var timeline = {
 					tab[len][7][l][1] = val;
 					l ++;
 				});
-				timeline.add_elmt(key, d_debut, d_fin, ponct, label, impt, cat, tab[len][7], etat);
+				var timel = $('.timeline');
+				var base = timel.find('.Base');
+				var timeline_content = timel.find('.timeline_content');
+				var other = timel.find('.timeline_other');
+				if (d_fin >0 && d_fin < d_ref_deb && etat == "terminé") { 
+					liste_passee.push(len);
+					timeline.affiche_listes(other);
+				} else if (d_debut > d_ref_fin) {
+					liste_avenir.push(len);
+					timeline.affiche_listes(other);
+				} else {
+					liste_affichee.push(len);
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[len][7], etat);
+				}
 				i ++;
 			});
 		},
@@ -1004,7 +1037,7 @@ var timeline = {
 				} else if (tri_hdeb) {
 					timeline.tri_hdeb(timeline_content, tab,1);
 				}
-				timeline.affiche_listes(other, res[0], res[1]);
+				timeline.affiche_listes(other);
 				timeline.timeBar(timeline_content);
 				$.holdReady(false);
 			}	
@@ -1016,7 +1049,7 @@ $(document).ready(function() {
 	setInterval("timeline.update($('.timeline'))", 60000);
 
 	$('.timeline').on('mouseenter','.elmt', function(){
-		$(this).css({'z-index':3});
+		$(this).css({'z-index':11});
 		$(this).find('.modify-evt').show();
 		$(this).find('.plus').show();
 		$(this).find('.elmt_deb').show();
@@ -1100,7 +1133,7 @@ $(document).ready(function() {
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
-		timeline.affiche_listes(other, res[0], res[1]);
+		timeline.affiche_listes(other);
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
@@ -1123,7 +1156,7 @@ $(document).ready(function() {
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
-		timeline.affiche_listes(other, res[0], res[1]);
+		timeline.affiche_listes(other);
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
