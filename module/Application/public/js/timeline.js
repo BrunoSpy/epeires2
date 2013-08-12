@@ -214,12 +214,11 @@ var timeline = {
 			if (d_debut >= d_ref_deb) {
 				if (h_deb >= h_ref) { delta = h_deb - h_ref; } else { delta = 24 + h_deb - h_ref;}
 				x1 = lar_unit + delta*lar_unit*2 + m_deb*lar_unit*2/60;
-
 				if (d_fin < 0) {	
 					if (x_act < x1 + 50) {
 						wid = ((largeur-lar_unit)-x1)/2;
 					} else {
-						wid = x_act-x1+50;
+						wid = Math.min(x_act-x1+lar_unit*4,largeur-lar_unit-x1);
 					}
 				} else if (d_fin < d_ref_fin) {
 					if (h_fin >= h_ref) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
@@ -259,37 +258,37 @@ var timeline = {
 			var button1;
 			if (nb1 == 0) {
 				button1 = $('<button type="button" class="passee" disabled><strong>'+nb1+'</strong></button>');
-				button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
 				$(element).append(button1);
 			} else {
 				button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
 				$(element).append(button1);
-				button1.css({'position':'absolute', 'top': '70px', 'left':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
 				button1.append('<i class="icon-chevron-right"></i>');
 				var liste1 = $('<div class="liste_passee">');
 				$(element).append(liste1);
 				for (var i=0; i<nb1; i++) {
 					liste1.append($('<div>'+tab[liste_passee[i]][4]+'</div>'));
 				}
-				liste1.css({'display':'none','position':'absolute','top':'70px','left':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
+				liste1.css({'display':'none','position':'absolute','top':'0px','left':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
 					'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			}
 			var button2;
 			if (nb2 == 0) {
 				button2 = $('<button type="button" class="avenir" disabled><strong>'+nb2+'</strong></button>');
-				button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
 				$(element).append(button2);
 			} else {
 				button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
 				$(element).append(button2);
-				button2.css({'position':'absolute', 'top': '70px', 'right':'0px', 'width':'30px','height':'150px', 'text-align':'center', 'z-index':5});
+				button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
 				button2.append('<i class="icon-chevron-left"></i>');
 				var liste2 = $('<div class="liste_avenir">');
 				$(element).append(liste2);
 				for (var i=0; i<nb2; i++) {
 					liste2.append($('<div>'+tab[liste_avenir[i]][4]+'</div>'));
 				}
-				liste2.css({'display':'none','position':'absolute','top':'70px','right':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
+				liste2.css({'display':'none','position':'absolute','top':'0px','right':'0px','width':'auto','height':'auto','text-align':'left','z-index':5,
 					'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			}
 		},			
@@ -474,12 +473,12 @@ var timeline = {
 			$(elmt_qm_txt).append('<i class="icon-question-sign"></i>');
 			elmt_qm_but = $('<button type="button" class="no_elmt_qm_but"></button>');
 			elmt.append(elmt_qm_but);
-			elmt_qm_but.addClass('btn btn-mini');
+			elmt_qm_but.addClass('btn btn-link btn-mini');
 			$(elmt_qm_but).append('<i class="icon-question-sign"></i>');
 			// ajout du bouton warning
 			elmt_obj = $('<button type="button" class="elmt_warn"></button>');
 			$(elmt).append(elmt_obj);
-			elmt_obj.addClass('btn btn-mini');
+			elmt_obj.addClass('btn btn-link btn-mini');
 			$(elmt_obj).append('<i class="icon-warning-sign"></i>');
 			// si l'événement a commencé avant la timeline, ajout d'une flèche gauche
 			elmt_fleche1 = $('<div class="elmt_fleche1"></div>');
@@ -502,17 +501,17 @@ var timeline = {
 			// ajout du bouton modifications
 			elmt_b1 = $('<button type="button" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></button>');
 			$(elmt).append(elmt_b1);
-			elmt_b1.addClass('btn btn-mini');
+			elmt_b1.addClass('btn btn-link btn-mini');
 			$(elmt_b1).append('<i class="icon-pencil"></i>');
 			// ajout du bouton développé
 			elmt_b2 = $('<button type="button" class="plus"></button>');
 			$(elmt).append(elmt_b2);
-			elmt_b2.addClass('btn btn-mini');
+			elmt_b2.addClass('btn btn-link btn-mini show');
 			$(elmt_b2).append('<i class="icon-plus"></i>');
 			// ajout du bouton minimisé
 			elmt_b2bis = $('<button type="button" class="moins"></button>');
 			$(elmt).append(elmt_b2bis);
-			elmt_b2bis.addClass('btn btn-mini');
+			elmt_b2bis.addClass('btn btn-link btn-mini');
 			$(elmt_b2bis).append('<i class="icon-minus"></i>');
 			// ajout du nom de l'événement
 			elmt_txt = $('<p class="label_elmt">'+label+'</p>');
@@ -593,8 +592,12 @@ var timeline = {
 			var txt_wid = elmt_txt.outerWidth();
 			if (warn) {
 				elmt_warn.show();
+				elmt_txt.css({'color':'red'});
+		//		jQuery.fx.interval = 10000;
+		//		elmt_warn.effect( "highlight",2000);
 				wid_boutons += elmt_warn.width() + inter_boutons;
 			} else {
+				elmt_txt.css({'color':'black'});
 				elmt_warn.hide();
 			}
 			switch (l_deb) {
@@ -781,7 +784,9 @@ var timeline = {
 
 		option_open: function(this_elmt, timeline_content, speed) {
 			var h = this_elmt.position().top;
-			this_elmt.find('.moins').show();
+			var min = this_elmt.find('.moins');
+			min.show();
+			min.addClass('show');
 			var elmt_opt = this_elmt.find('.elmt_opt');
 			var dh = elmt_opt.outerHeight();
 			this_elmt.css({'height':'+='+dh});
@@ -1090,7 +1095,7 @@ $(document).ready(function() {
 		var elmt = $(this);
 		elmt.css({'z-index':11});
 		elmt.find('.modify-evt').show();
-		elmt.find('.plus').show();
+		elmt.find('.show').show();
 		elmt.find('.elmt_deb').show();
 		elmt.find('.elmt_fin').show();
 		elmt.find('.elmt_qm_but').show();
@@ -1102,7 +1107,7 @@ $(document).ready(function() {
 		var elmt = $(this);
 		elmt.css({'z-index':1});
 		elmt.find('.modify-evt').hide();
-		elmt.find('.plus').hide();
+		elmt.find('.show').hide();
 		elmt.find('.elmt_deb').hide();
 		elmt.find('.elmt_fin').hide();
 		elmt.find('.elmt_qm_but').hide();
@@ -1120,6 +1125,7 @@ $(document).ready(function() {
 	});
 	$('.timeline').on('click','.plus', function(){
 		$(this).hide();
+		$(this).removeClass('show');
 		var timeline_content = $(this).closest('.timeline_content');
 		var this_elmt = $(this).closest('.elmt');
 		$(this).addClass('.opt_open');
@@ -1127,11 +1133,13 @@ $(document).ready(function() {
 	});
 	$('.timeline').on('click','.moins', function(){
 		$(this).hide();
+		$(this).removeClass('show');
 		var timeline_content = $(this).closest('.timeline_content');
 		var this_elmt = $(this).closest('.elmt');
 		var h = this_elmt.position().top;
 		var plus = this_elmt.find('.plus');
 		plus.show();
+		plus.addClass('show');
 		plus.removeClass('.opt_open');
 		var elmt_opt = this_elmt.find('.elmt_opt');
 		var dh = elmt_opt.outerHeight();
