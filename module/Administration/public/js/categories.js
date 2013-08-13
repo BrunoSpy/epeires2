@@ -54,7 +54,7 @@ var categories = function(url){
 	$("#model-container").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
 		var catid = $("#PredefinedEvent select[name=category] option:selected").val();
-		$.post($("#PredefinedEvent").attr('action')+'?catid='+catid, $("#PredefinedEvent").serialize(), function(data){
+		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $("#model-form #PredefinedEvent").serialize(), function(data){
 			var id = $("#PredefinedEvent input[type=hidden]").val();
 			if(id > 0){
 				var tr = $("#models-container tr#"+data.id);
