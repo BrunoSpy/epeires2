@@ -350,7 +350,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$json = array();
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
-    	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('order' => 'DESC')) as $action){
+    	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
     		$json[$action->getId()] = array('name' => $action->getName(),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
