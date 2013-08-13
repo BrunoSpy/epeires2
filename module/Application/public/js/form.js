@@ -107,24 +107,28 @@ var form = function(url){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(hourplusone(input, 1));
+		input.trigger('change');
 	});
 	
 	$('#event').on('click', '.timepicker-form .minute .next', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(minuteplusone(input, 1));
+		input.trigger('change');
 	});
 	
 	$('#event').on('click', '.timepicker-form .hour .previous', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(hourplusone(input, -1));
+		input.trigger('change');
 	});
 	
 	$('#event').on('click', '.timepicker-form .minute .previous', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(minuteplusone(input, -1));
+		input.trigger('change');
 	});
 	
 	$('#event').on('mousewheel', 'td.hour input', function(event, delta){
@@ -225,14 +229,8 @@ var form = function(url){
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-link").trigger("click");
 	});
-
-	$("#event").on("focus", 'input[type=datetime]', function(){
-		$(this).datetimepicker({
-			dateFormat: "dd-mm-yy",
-		});
-	});
 	
-	$("#event").on("focus", 'input[type=date]', function(){
+	$("#event").on("focus", 'input[type=text].date', function(){
 		$(this).datepicker({
 			dateFormat: "dd-mm-yy",
 		});

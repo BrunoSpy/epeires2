@@ -19,7 +19,7 @@ class FormDateTimeEnhanced extends AbstractHelper {
 				'<td class="day">'.
 				"<div class=\"input-prepend\">".
 				"<span class=\"add-on\"><i class=\"icon-calendar\"></i></span>".
-				'<input type="date"></input>'.
+				'<input type="text" class="date"></input>'.
 				"</div>".
 				'</td>'.
 				'<td class="hour">'.
