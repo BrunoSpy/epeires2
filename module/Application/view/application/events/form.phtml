@@ -49,12 +49,10 @@
 			
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formCheckbox($this->form->get('punctual')));
-		$html .= $this->controlGroup(
-					$this->formLabel($this->form->get('start_date')->setLabelAttributes(array('class'=>'control-label'))),
-					"<div class=\"input-prepend\">".
-					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($this->form->get('start_date')).
-					"</div>");
+					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
+		$html .= $this->controlGroup("", $this->formHidden($this->form->get('start_date')));
+		
+		$html .= $this->controlGroup('<label class="control-label time-middle">Début</label>', $this->formDateTimeEnhanced("start"), array('class'=>'compact'));
 		
 		$formEndDate = $this->form->get('end_date');
 		if($this->event){
@@ -62,10 +60,9 @@
 				$formEndDate->setAttribute('disabled', true);
 			}
 		}
-		$html .= $this->controlGroup(
-					$this->formLabel($this->form->get('end_date')->setLabelAttributes(array('class'=>'control-label'))),
-					"<div class=\"input-prepend\">".
-					"<span class=\"add-on\"><i class=\"icon-time\"></i></span>".$this->formDateTime($formEndDate)."</div>");
+		$html .= $this->controlGroup("",$this->formHidden($formEndDate));
+		
+		$html .= $this->controlGroup('<label class="control-label time-middle">Fin</label>',$this->formDateTimeEnhanced("end"), array('class'=>'compact'));
 		
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		

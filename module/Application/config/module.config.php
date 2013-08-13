@@ -73,6 +73,7 @@ return array(
     		'controlGroup' => 'Application\View\Helper\ControlGroup',
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     		'impact' => 'Application\View\Helper\Impact',
+    		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
     	),
     ),
     'view_manager' => array(

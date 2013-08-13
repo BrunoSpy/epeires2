@@ -23,6 +23,159 @@ var form = function(url){
 	
 	/**********************/
 	
+	
+	/*********************/
+	/***** Time Picker ***/
+	/*********************/
+	
+	var hourplusone = function(input, delta){
+		if(input.val()){
+			var hour = parseInt(input.val())+delta;
+			if(hour>23)
+				hour = 23;
+			if(hour >0 && hour <= 9)
+				hour = "0"+hour;
+			if(hour<=0)
+				hour = "00";
+		} else {
+			var d = new Date();
+			hour = d.getHours();
+			if(hour >=0 && hour <= 9){
+				hour = "0"+hour;
+			}
+		}
+		return hour;
+	};
+	
+	var minuteplusone = function(input, delta){
+		if(input.val()){
+			var minutes = parseInt(input.val())+delta;
+			if(minutes>59)
+				minutes = 59;
+			if(minutes>0 && minutes <= 9)
+				minutes = "0"+minutes;
+			if(minutes<=0)
+				minutes = "00";
+		} else {
+			var d = new Date();
+			minutes = d.getMinutes();
+			if(minutes >=0 && minutes <= 9){
+				minutes = "0"+minutes;
+			}
+		}
+		return minutes;
+	};
+	
+	var fillInputs = function(timepickerform){
+		var day = "";
+		if(!timepickerform.find('.day input').val()){
+			var d = new Date();
+			day = d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
+			timepickerform.find('.day input').val(day);
+		}
+		if(!timepickerform.find('.hour input').val()){
+			var d = new Date();
+			hour = d.getHours();
+			if(hour >=0 && hour <= 9){
+				hour = "0"+hour;
+			}
+			timepickerform.find('.hour input').val(hour);
+		}
+		if(!timepickerform.find('.minute input').val()){
+			var d = new Date();
+			minutes = d.getMinutes();
+			if(minutes >=0 && minutes <= 9){
+				minutes = "0"+minutes;
+			}
+			timepickerform.find('.minute input').val(minutes);
+		}
+	};
+	
+	$('#event').on('change', '.timepicker-form#start input', function(){
+		var me = $(this).closest('.timepicker-form');
+		fillInputs(me);
+		$("#dateDeb").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+	});
+	
+	$('#event').on('change', '.timepicker-form#end input', function(){
+		var me = $(this).closest('.timepicker-form');
+		fillInputs(me);
+		$("#dateFin").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+	});
+	
+	$('#event').on('click', '.timepicker-form .hour .next', function(event){
+		event.preventDefault();
+		var input = $(this).closest('td').find('input');
+		input.val(hourplusone(input, 1));
+	});
+	
+	$('#event').on('click', '.timepicker-form .minute .next', function(event){
+		event.preventDefault();
+		var input = $(this).closest('td').find('input');
+		input.val(minuteplusone(input, 1));
+	});
+	
+	$('#event').on('click', '.timepicker-form .hour .previous', function(event){
+		event.preventDefault();
+		var input = $(this).closest('td').find('input');
+		input.val(hourplusone(input, -1));
+	});
+	
+	$('#event').on('click', '.timepicker-form .minute .previous', function(event){
+		event.preventDefault();
+		var input = $(this).closest('td').find('input');
+		input.val(minuteplusone(input, -1));
+	});
+	
+	$('#event').on('mousewheel', 'td.hour input', function(event, delta){
+		event.preventDefault();
+		$(this).val(hourplusone($(this), delta));
+		$(this).trigger('change');
+	});
+	
+	$('#event').on('mousewheel', 'td.minute input', function(event, delta){
+		event.preventDefault();
+		$(this).val(minuteplusone($(this), delta));;
+		$(this).trigger('change');
+	});
+	
+	var updateHours = function(){
+		//initialize datetime pickers
+		//start date
+		var start = $("#dateDeb").val();
+		if(start){
+			var daysplit = start.split(' ');
+			var hoursplit = daysplit[1].split(':');
+			$("#start .day input").val(daysplit[0]);
+			$("#start .hour input").val(hoursplit[0]);
+			$("#start .minute input").val(hoursplit[1]);
+		} else {
+			var d = new Date();
+			$("#start .day input").val(d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear());
+			var hour = ""+d.getHours();
+			if(d.getHours() >= 0 && d.getHours() <= 9){
+				hour = "0"+d.getHours();
+			}
+			$("#start .hour input").val(hour);
+			var minute = ""+d.getMinutes();
+			if(d.getMinutes()>=0 && d.getMinutes()<=9){
+				minute = "0"+d.getMinutes();
+			}
+			$("#start .minute input").val(minute);
+			$("#start .minute input").trigger('change');
+		}
+		var end = $("#dateFin").val();
+		if(end){
+			var daysplit = end.split(' ');
+			var hoursplit = daysplit[1].split(':');
+			$("#end .day input").val(daysplit[0]);
+			$("#end .hour input").val(hoursplit[0]);
+			$("#end .minute input").val(hoursplit[1]);
+		} 
+	};
+	
+	/************************/
+	
 	//submit form
 	$("#event").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
@@ -78,12 +231,17 @@ var form = function(url){
 			dateFormat: "dd-mm-yy",
 		});
 	});
+	
+	$("#event").on("focus", 'input[type=date]', function(){
+		$(this).datepicker({
+			dateFormat: "dd-mm-yy",
+		});
+	});
 
 	$("#loading").ajaxStart(function(){
 		$(this).show();})
 		.ajaxStop(function(){
 			$(this).hide();});
-
 
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
@@ -99,6 +257,7 @@ var form = function(url){
 					function(){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
+						updateHours();
 					}
 			);
 			$("#create-evt").slideDown('fast');
@@ -106,6 +265,8 @@ var form = function(url){
 		}
 	});
 
+	
+	
 	//click sur modification d'un évènement
 	$(".timeline").on("click", "button.modify-evt", function(){
 		var me = $(this);	
@@ -114,7 +275,9 @@ var form = function(url){
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 
-		$("#event").load(url+'/form?id='+me.data('id'));
+		$("#event").load(url+'/form?id='+me.data('id'), function(){
+			updateHours();
+		});
 	});
 
 	//click sur une fiche reflexe
@@ -241,6 +404,7 @@ var form = function(url){
 
 	$("#event").on("change", "#punctual", function(){
 		$("#dateFin").prop('disabled',$(this).is(':checked')); 
+		$("#end input").prop('disabled', $(this).is(':checked'));
 	});
 
 };

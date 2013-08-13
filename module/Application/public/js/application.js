@@ -18,6 +18,8 @@ function updateClock ( )
  };
  
 $(document).ready(function(){
+	
+	
    setInterval('updateClock()', 1000);
    
    //higlight tabs
@@ -31,10 +33,6 @@ $(document).ready(function(){
 	   return this.href == url; 
    }).parent().addClass('active') //on ajoute la classe active
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
-   
-   $("#home").on('click', function(event){
-
-   });
    
    $("a[data-toggle=tooltip]").tooltip();
    $("th[data-toggle=tooltip]").tooltip();
