@@ -70,12 +70,12 @@ var timeline = {
 			timeline.base(base_elmt);
 			var timeline_content = $('<div class="timeline_content"></div>');
 			$(element).append(timeline_content);
-			$(element).append('<div class="btn-group">');
-			$(element).append('<button type="button" class="btn journee">Vue Journée</button>');
-			$(element).append('<button type="button" class="btn courante btn-info">Vue courante</button>');
-			$(element).append('<button type="button" class="btn tri_cat btn-info">Tri par catégorie</button>');
-			$(element).append('<button type="button" class="btn tri_deb">Tri par h_début</button>');
-			$(element).append('</div>');
+//			$(element).append('<div class="btn-group">');
+//			$(element).append('<button type="button" class="btn journee">Vue Journée</button>');
+//			$(element).append('<button type="button" class="btn courante btn-info">Vue courante</button>');
+//			$(element).append('<button type="button" class="btn tri_cat btn-info">Tri par catégorie</button>');
+//			$(element).append('<button type="button" class="btn tri_deb">Tri par h_début</button>');
+//			$(element).append('</div>');
 			var timeline_other = $('<div class="timeline_other"></div>');
 			timeline.set_cat(url);
 			timeline.set_impacts(url);
@@ -1162,10 +1162,10 @@ $(document).ready(function() {
 		});
 		elmt_opt.slideUp();	
 	});
-	$('.timeline').on('click','.journee', function(){
-		var timel = $(this).closest('.timeline');
-		$(this).addClass('btn-info');
-		timel.find('.courante').removeClass('btn-info');
+	
+	$('#zoom').on('switch-change', function(e, data){
+		//data.value = true => vue journée
+		var timel = $('.timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');
@@ -1173,7 +1173,11 @@ $(document).ready(function() {
 		base.empty();
 		timeline_content.empty();
 		other.empty();
-		timeline.init_journee(timel);
+		if(data.value){
+			timeline.init_journee(timel);
+		} else {
+			timeline.init(timel);
+		}
 		timeline.base(base);	
 		var res = timeline.create(timeline_content, tab);
 		if (tri_cat) { 
@@ -1185,40 +1189,66 @@ $(document).ready(function() {
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
-	$('.timeline').on('click','.courante', function(){
-		var timel = $(this).closest('.timeline');
-		$(this).addClass('btn-info');
-		timel.find('.journee').removeClass('btn-info');
-		var base = timel.find('.Base');
-		var timeline_content = timel.find('.timeline_content');
-		var other = timel.find('.timeline_other');
-		$.holdReady(true);
-		base.empty();
-		timeline_content.empty();
-		other.empty();
-		timeline.init(timel);
-		timeline.base(base);	
-		var res = timeline.create(timeline_content, tab);
-		if (tri_cat) { 
-			timeline.tri_cat(timeline_content, tab,1);
-		} else if (tri_hdeb) {
-			timeline.tri_hdeb(timeline_content, tab,1);
-		}
-		timeline.affiche_listes(other);
-		timeline.timeBar(timeline_content);
-		$.holdReady(false);
-	});
-	$('.timeline').on('click','.tri_cat', function(){
-		var timel = $(this).closest('.timeline');
-		$(this).addClass('btn-info');
-		timel.find('.tri_deb').removeClass('btn-info');
+	
+//	$('.timeline').on('click','.journee', function(){
+//		var timel = $(this).closest('.timeline');
+//		$(this).addClass('btn-info');
+//		timel.find('.courante').removeClass('btn-info');
+//		var base = timel.find('.Base');
+//		var timeline_content = timel.find('.timeline_content');
+//		var other = timel.find('.timeline_other');
+//		$.holdReady(true);
+//		base.empty();
+//		timeline_content.empty();
+//		other.empty();
+//		timeline.init_journee(timel);
+//		timeline.base(base);	
+//		var res = timeline.create(timeline_content, tab);
+//		if (tri_cat) { 
+//			timeline.tri_cat(timeline_content, tab,1);
+//		} else if (tri_hdeb) {
+//			timeline.tri_hdeb(timeline_content, tab,1);
+//		}
+//		timeline.affiche_listes(other);
+//		timeline.timeBar(timeline_content);
+//		$.holdReady(false);
+//	});
+//	$('.timeline').on('click','.courante', function(){
+//		var timel = $(this).closest('.timeline');
+//		var timel = $('.timeline');
+//		$(this).addClass('btn-info');
+//		timel.find('.journee').removeClass('btn-info');
+//		var base = timel.find('.Base');
+//		var timeline_content = timel.find('.timeline_content');
+//		var other = timel.find('.timeline_other');
+//		$.holdReady(true);
+//		base.empty();
+//		timeline_content.empty();
+//		other.empty();
+//		timeline.init(timel);
+//		timeline.base(base);	
+//		var res = timeline.create(timeline_content, tab);
+//		if (tri_cat) { 
+//			timeline.tri_cat(timeline_content, tab,1);
+//		} else if (tri_hdeb) {
+//			timeline.tri_hdeb(timeline_content, tab,1);
+//		}
+//		timeline.affiche_listes(other);
+//		timeline.timeBar(timeline_content);
+//		$.holdReady(false);
+//	});
+	
+	$('#tri_cat').on('click',function(){
+		var timel = $('.timeline');
+		$(this).parent().addClass('active');
+		$('#tri_deb').parent().removeClass('active');
 		var timeline_content = timel.find('.timeline_content');
 		timeline.tri_cat(timeline_content, tab);
 	});
-	$('.timeline').on('click','.tri_deb', function(){
-		var timel = $(this).closest('.timeline');
-		$(this).addClass('btn-info');
-		timel.find('.tri_cat').removeClass('btn-info');
+	$('#tri_deb').on('click', function(){
+		var timel = $('.timeline');
+		$(this).parent().addClass('active');
+		$('#tri_cat').parent().removeClass('active');
 		var timeline_content = timel.find('.timeline_content');
 		timeline.tri_hdeb(timeline_content, tab, 0);
 	});
