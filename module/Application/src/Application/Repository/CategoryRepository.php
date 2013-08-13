@@ -10,8 +10,11 @@ class CategoryRepository extends ExtendedRepository {
 	/**
 	 * @return array
 	 */
-	public function getRootsAsArray($id = null){
+	public function getRootsAsArray($id = null, $timeline = null){
 		$criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
+		if($timeline){
+			$criteria->andWhere(Criteria::expr()->eq('timeline', true));
+		}
 		if($id){
 			$criteria->andWhere(Criteria::expr()->neq('id', $id));
 		}

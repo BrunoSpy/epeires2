@@ -91,7 +91,7 @@ var categories = function(url){
 		var me = $(this);
 		$("#confirm-delete-model").modal('hide');
 		$.post($("#delete-model-href").attr('href'), function(){
-			me.closest('tr').remove();
+			$('#models-table').find('tr#'+me.data('id')).remove();
 		});
 	});
 	
@@ -162,6 +162,7 @@ var categories = function(url){
 	$("#models-table").on('click', '.delete', function(event){
 		$("#model_name").html($(this).data('name'));
 		$("#delete-model-href").attr('href', $(this).data('href'));
+		$("#delete-model-href").data('id', $(this).closest('tr').attr('id'));
 	});
 	
 	$(".models-list").on('click', function(){
@@ -327,7 +328,7 @@ var categories = function(url){
 							'data-toggle="modal"><i class="icon-trash"></i> </a></td>');
 
 				newhtml.insertBefore(tr);
-				tr.remove();
+				tr.html('');
 				updateCarets($("#fieldscontainer"), false);
 			}
 			reload = true;

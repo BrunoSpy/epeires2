@@ -56,6 +56,12 @@ class Category {
 	 */
 	protected $compactmode;
 	
+	/** @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Timeline :"})
+	 */
+	protected $timeline;
+	
 	/** 
 	 * @ORM\Column(type="string")
 	 * @Annotation\Type("Zend\Form\Element\Text")
@@ -113,6 +119,14 @@ class Category {
 	
 	public function setColor($color){
 		$this->color = $color;
+	}
+	
+	public function isTimeline(){
+		return $this->timeline;
+	}
+	
+	public function setTimeline($timeline){
+		$this->timeline = $timeline;
 	}
 	
 	public function isCompactMode(){

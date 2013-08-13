@@ -10,8 +10,11 @@ use Doctrine\Common\Collections\Criteria;
  * Types available :
  * 		- int
  * 		- text
- * 		- boolean
- * 		- 
+ * 		- longtext
+ * 		- list
+ * 		- antennas
+ * 		- sectors
+ * 		- stacks
  * @author Bruno Spyckerelle
  *
  */
@@ -38,9 +41,8 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 		
 		foreach($customfields as $customfield){
 			$definition = array();
-			$definition['name'] = $customfield->getName();
+			$definition['name'] = $customfield->getId();
 			$this->names[] = $customfield->getName();
-			$definition['attributes'] = array('id' => $customfield->getName());
 			$options = array('label' => $customfield->getName()." :");
 			switch ($customfield->getType()->getType()) {
 				case 'string':
@@ -60,6 +62,14 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 				case 'select':
 					$definition['type'] = 'Zend\Form\Element\Select';
 					$options['value_options'] = explode(PHP_EOL, $customfield->getDefaultValue());
+				break;
+				case 'stack':
+					$definition['type'] = 'Zend\Form\Element\Select';
+					$options['value_options'] = $om->getRepository('Application\Entity\Stack')->getAllAsArray();
+				break;
+				case 'boolean':
+					$definition['type'] = 'Zend\Form\Element\Checkbox';
+					break;
 				default:
 					;
 				break;

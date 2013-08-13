@@ -189,7 +189,7 @@ class ModelsController extends AbstractActionController
     			//predefined custom field values
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
-    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
+    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     					if($customfield){
     						$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'predefinedevent'=>$id));
     						if(!$customfieldvalue){
@@ -292,7 +292,7 @@ class ModelsController extends AbstractActionController
     					$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')
     					->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
     					if($customfieldvalue){
-    						$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
+    						$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     					}
     				}
     			}

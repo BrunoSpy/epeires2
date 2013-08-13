@@ -87,11 +87,12 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['root_categories']));
     				}
     			}
+    			error_log(print_r($post, true));
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
-    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('name'=>$key));
+    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     					if($customfield){
     						$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
     															->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
@@ -290,7 +291,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
     			if($customfieldvalue){
-    				$form->get('custom_fields')->get($customfield->getName())->setAttribute('value', $customfieldvalue->getValue());
+    				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     			}
     		}
     		//status
@@ -315,7 +316,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray(),
     			$em->getRepository('Application\Entity\Impact')->getAllAsArray());
     	//add default fieldsets
-    	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray()));
+    	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray(null, true)));
     	
     	return $form;
     }
@@ -449,12 +450,13 @@ class EventsController extends AbstractActionController implements LoggerAware
     }
     
     /**
-     * Liste des catégories racines
+     * Liste des catégories racines visibles timeline
      */
     public function getcategoriesAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$json = array();
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
+    	$criteria->andWhere(Criteria::expr()->eq('timeline', true));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	foreach ($categories as $category){
     		$json[$category->getId()] = array(

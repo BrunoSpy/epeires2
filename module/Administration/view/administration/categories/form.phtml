@@ -22,6 +22,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabe
 echo $this->controlGroup($this->formLabel($this->form->get('compactmode')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formCheckbox($this->form->get('compactmode')));
 
+echo $this->controlGroup($this->formLabel($this->form->get('timeline')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formCheckbox($this->form->get('timeline')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('parent')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('parent')));
 

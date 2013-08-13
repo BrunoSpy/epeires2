@@ -23,7 +23,7 @@ class CustomField {
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="string", unique=true)
+	/** @ORM\Column(type="string")
  	 * @Annotation\Type("Zend\Form\Element\Text")
 	 * @Annotation\Required({"required":"true"})
 	 * @Annotation\Options({"label":"Nom :"})

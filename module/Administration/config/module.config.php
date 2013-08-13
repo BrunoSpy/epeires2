@@ -50,6 +50,7 @@ return array(
             'Administration\Controller\Categories' => 'Administration\Controller\CategoriesController',
             'Administration\Controller\Fields' => 'Administration\Controller\FieldsController',
             'Administration\Controller\Models' => 'Administration\Controller\ModelsController',
+            'Administration\Controller\Config' => 'Administration\Controller\ConfigController',
         ),
     ),
     'view_manager' => array(

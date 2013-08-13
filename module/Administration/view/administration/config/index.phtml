@@ -1,0 +1,106 @@
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span4">
+			<div class="block">
+				<div class="navbar navbar-inner block-header">
+					<div class="muted pull-left">Statuts</div>
+				</div>
+				<div class="block-content collapse in">
+					<div class="span12">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Nom</th>
+								<th>Ouvert</th>
+								<th>Affiché</th>
+								<th>Default</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							foreach ($this->status as $statut){
+								echo '<tr>';
+									echo '<td>'.$statut->getId().'</td>';
+									echo '<td>'.$statut->getName().'</td>';
+									echo '<td>'.($statut->isOpen() ? '<i class="icon-ok icon-grey"></i>':'<i class="icon-remove icon-grey"></i>').'</td>';
+									echo '<td>'.($statut->isDisplay() ? '<i class="icon-ok icon-grey"></i>':'<i class="icon-remove icon-grey"></i>').'</td>';
+									echo '<td>'.($statut->isDefault() ? '<i class="icon-ok icon-grey"></i>':'<i class="icon-remove icon-grey"></i>').'</td>';
+								echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="span4">
+			<div class="block">
+				<div class="navbar navbar-inner block-header">
+					<div class="muted pull-left">Impacts</div>
+				</div>
+				<div class="block-content collapse in">
+					<div class="span12">
+						<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Nom</th>
+								<th>Valeur</th>
+								<th>Style</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							foreach ($this->impacts as $impact){
+								echo '<tr>';
+									echo '<td>'.$impact->getId().'</td>';
+									echo '<td>'.$impact->getName().'</td>';
+									echo '<td>'.$impact->getValue().'</td>';
+									echo '<td><span class="label label-'.$impact->getStyle().'">'.$impact->getName().'</span></td>';
+								echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="span4">
+			<div class="block">
+				<div class="navbar navbar-inner block-header">
+					<div class="muted pull-left">Champs types disponibles</div>
+				</div>
+				<div class="block-content collapse in">
+					<div class="span12">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Nom</th>
+								<th>Type</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							foreach ($this->fields as $field){
+								echo '<tr>';
+									echo '<td>'.$field->getId().'</td>';
+									echo '<td>'.$field->getName().'</td>';
+									echo '<td>'.$field->getType().'</td>';
+								echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
