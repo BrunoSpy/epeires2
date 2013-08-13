@@ -82,6 +82,9 @@ class CategoriesController extends AbstractActionController{
     	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Category'))
     		->setObject($category);
     	
+    	error_log(print_r($form->get('compactmode'), true));
+    	error_log(print_r($form->get('parent'), true));
+    	
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($id));
         
     	if($id){

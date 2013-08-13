@@ -50,6 +50,12 @@ class Category {
 	 */
 	protected $color;
 	
+	/** @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Mode compact :"})
+	 */
+	protected $compactmode;
+	
 	/** 
 	 * @ORM\Column(type="string")
 	 * @Annotation\Type("Zend\Form\Element\Text")
@@ -107,6 +113,14 @@ class Category {
 	
 	public function setColor($color){
 		$this->color = $color;
+	}
+	
+	public function isCompactMode(){
+		return $this->compactmode;
+	}
+	
+	public function setCompactMode($compactmode){
+		$this->compactmode = $compactmode;
 	}
 	
 	public function getArrayCopy() {

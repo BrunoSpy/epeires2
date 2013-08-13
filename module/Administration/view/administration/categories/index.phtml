@@ -31,6 +31,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 						<th>Nom</th>
 						<th>Nom court</th>
 						<th>Couleur</th>
+						<th>Compact</th>
 						<th>Evts</th>
 						<th>Modèles</th>
 						<th>Champs</th>
@@ -45,6 +46,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 					echo "<td>".$category->getName()."</td>";
 					echo "<td>".$category->getShortName()."</td>";
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
+					echo '<td>'.($category->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 					echo "<td>".$this->events[$category->getId()]."</td>";
 					echo "<td>".$this->models[$category->getId()].
 						// Pas de modèle pour les catégories racines ?
@@ -68,6 +70,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 							echo "<td>  <i class=\"icon-chevron-right\"></i> ".$subcategory->getName()."</td>";
 							echo "<td>".$subcategory->getShortName()."</td>";
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
+							echo '<td>'.($subcategory->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 							echo "<td>".$this->events[$subcategory->getId()]."</td>";
 							echo "<td>".$this->models[$subcategory->getId()].
 									" <a href=\"#models-container\"

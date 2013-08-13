@@ -432,6 +432,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
+    					'category_compact' => $event->getCategory()->isCompactMode(),
     					'status_name' => $event->getStatus()->getName(),
     					'impact_value' => $event->getImpact()->getValue(),
     					'impact_name' => $event->getImpact()->getName(),
