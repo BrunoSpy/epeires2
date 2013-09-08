@@ -485,6 +485,38 @@ class EventsController extends AbstractActionController implements LoggerAware
     	return new JsonModel($json);
     }
     
+    /**
+     * Usage :
+     * $this->url('application', array('controller' => 'events'))+'/changefield?id=<id>&field=<field>&value=<newvalue>'
+     * @return JSon with messages
+     */
+    public function changefieldAction(){
+    	$id = $this->params()->fromQuery('id', 0);
+    	$field = $this->params()->fromQuery('field', 0);
+    	$value = $this->params()->fromQuery('value', 0);
+    	$messages = array();
+    	if($id){
+    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    		if ($event) {
+				switch ($field) {
+					case 'enddate' :
+						$event->setEndDate(new DateTime($value));
+						$objectManager->flush();
+						$objectManager->persist($event);
+						$messages['success'][0] = "Date et heure de fin modifiées.";
+						break;	
+					default :
+						;
+						break;
+				}
+    		}
+    	} else {
+    		$messages['error'][0] = "Impossible de modifier l'évènement.";
+    	}
+    	return new JsonModel($messages);
+    }
+    
     //Logger
     private $logger;
     
