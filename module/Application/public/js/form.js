@@ -31,11 +31,11 @@ var form = function(url){
 	var hourplusone = function(input, delta){
 		if(input.val()){
 			var hour = parseInt(input.val())+delta;
-			if(hour>23)
-				hour = 23;
 			if(hour >0 && hour <= 9)
 				hour = "0"+hour;
 			if(hour<=0)
+				hour = 23;
+			if(hour>23)
 				hour = "00";
 		} else {
 			var d = new Date();
@@ -50,11 +50,11 @@ var form = function(url){
 	var minuteplusone = function(input, delta){
 		if(input.val()){
 			var minutes = parseInt(input.val())+delta;
-			if(minutes>59)
-				minutes = 59;
 			if(minutes>0 && minutes <= 9)
 				minutes = "0"+minutes;
 			if(minutes<=0)
+				minutes = 59;
+			if(minutes>59)
 				minutes = "00";
 		} else {
 			var d = new Date();
