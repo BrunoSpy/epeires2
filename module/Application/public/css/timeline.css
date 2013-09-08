@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-.timeline {
+#timeline {
 	position: absolute;
 	margin-left: 0%;
  	width: 100%;
@@ -11,7 +11,7 @@
 	position: absolute;
 	margin-left: 50px;
 	margin-right: 50px;
-	margin-top: 30px;
+	margin-top: 10px;
 	margin-bottom: 0px;	
 	z-index:-1;
 	background-color:white;
@@ -21,7 +21,7 @@
 	position: absolute;
 	margin-left: 50px;
 	margin-right: 50px;
-	margin-top: 70px;
+	margin-top: 50px;
 	margin-bottom: 0px;
 }
 
@@ -34,11 +34,17 @@
 }
 
 
-.elmt .plus, .elmt .moins, .elmt .modify-evt, .elmt .elmt_qm_but {
+.elmt .plus, .elmt .moins, .elmt .modify-evt, .elmt .elmt_star {
 	height : 22px;
 	width : 27px;
 	display:none;
 }
+
+.elmt_qm_but {
+	height : 22px;
+	width : 27px;
+}
+
 
 .elmt .elmt_deb, .elmt .elmt_fin {
 	display:none;

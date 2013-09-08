@@ -135,6 +135,10 @@ body{
     background-image: url("../img/glyphicons-halflings-grey.png");
 }
 
+.icon-red, .nav-pills > .active > a > [class^="icon-"], .nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"], .navbar-inverse .nav > .active > a > [class^="icon-"], .navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"], .dropdown-menu > li > a:focus > [class^="icon-"], .dropdown-menu > li > a:hover > [class*=" icon-"], .dropdown-menu > li > a:focus > [class*=" icon-"], .dropdown-menu > .active > a > [class^="icon-"], .dropdown-menu > .active > a > [class*=" icon-"], .dropdown-submenu:hover > a > [class^="icon-"], .dropdown-submenu:focus > a > [class^="icon-"], .dropdown-submenu:hover > a > [class*=" icon-"], .dropdown-submenu:focus > a > [class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings-red.png");
+}
+
 .form-horizontal .control-group {
 	margin-bottom: 10px;
 }
@@ -198,4 +202,17 @@ a.disabled {
 .ui-timepicker-rtl dl { text-align: right; }
 .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
 
-
+#cpt_evts {
+	text-align:center;
+	color:white;
+	z-index: 10;
+	position: 'absolute';
+	left: 0px;
+	top: 0px;
+	width: 20px;
+	height: 20px;
+	background: red;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+}

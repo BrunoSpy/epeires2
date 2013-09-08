@@ -53,8 +53,8 @@
 	            			<li><a id="tri_deb" href="#">Par heure de début</a></li>
 	            			<li class="divider"></li>
 	            			<li class="nav-header">Filtre</li>
-	            			<li class="active"><a>Tous les évènements</a></li>
-	            			<li><a>Évènements importants uniquement</a></li>
+	            			<li class="active"><a href="#" id="tri_std">Tous les évènements</a></li>
+	            			<li><a id="tri_impt" href="#">Évènements importants uniquement</a></li>
 	            		</ul>
 	            		
 	            	</li>
@@ -63,15 +63,22 @@
 	            	<li><a href="<?php echo $this->url('application', array('controller'=>'frequencies', 'action'=>'index')) ?>" class="disabled">Fréquences</a></li>
 	        	</ul>
 	        	<ul class="nav pull-right">
-	        	<li>
-	        	<form class="navbar-form">
-	        		<input class="search-query span2" type="text" placeholder="Search"></input>
-	        	</form>
-	        	<li>
-	        	<div id="zoom" class="make-switch switch-small nav-in" data-on-label="Jour" data-off-label="6h" data-off="success" data-on="info" data-text-label="Zoom">
-						<input type="checkbox">
-				</div>
-				</li>
+	        		<li>
+	        			<form class="navbar-form">
+	        				<input class="search-query span2" type="text" placeholder="Search"></input>
+	        			</form>
+	        		</li>
+	        		<li>
+	        			<div id="zoom" class="make-switch switch-small nav-in" data-on-label="Jour" data-off-label="6h" data-off="success" data-on="info" data-text-label="Zoom">
+							<input type="checkbox">
+						</div>
+						<div id="cpt_evts">0</div>
+					</li>
+	        		<li>
+						<div id="infos" class="make-switch switch-small nav-in" data-on-label="+" data-off-label="-" data-off="success" data-on="info" data-text-label="Infos">
+							<input type="checkbox">
+						</div>
+	        		</li>
 	        	</ul>
         	</div>
         </div>

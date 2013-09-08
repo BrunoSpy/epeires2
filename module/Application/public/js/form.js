@@ -189,7 +189,7 @@ var form = function(url){
 			var id = $("#eventform").find('input#id').val();
 			if(id>0){
 				//modification
-				timeline.modify(data.events);
+				timeline.modify(data.events, 0);
 				$.each(data.messages.success, function(key, value){
 					var n = noty({text:value, 
 						type:'success',
@@ -266,7 +266,7 @@ var form = function(url){
 	
 	
 	//click sur modification d'un évènement
-	$(".timeline").on("click", "button.modify-evt", function(){
+	$("#timeline").on("click", "button.modify-evt", function(){
 		var me = $(this);	
 		$("#event").html('<div id="loading">Chargement...</div>');
 		$("#form-title").html(me.data('name'));
