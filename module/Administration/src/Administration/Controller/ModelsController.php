@@ -30,7 +30,7 @@ class ModelsController extends AbstractActionController
     	
     	$actions = array();
     	foreach ($models as $model){
-    		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model->getId()));
+    		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model));
     		$actions[$model->getId()] = count($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria));
     	}
     	
