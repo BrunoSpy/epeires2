@@ -10,8 +10,8 @@ class PredefinedEventRepository extends EntityRepository {
 	/**
 	 * @return array
 	 */
-	public function getEventsWithCategoryAsArray($id){	
-		$criteria = Criteria::create()->where(Criteria::expr()->eq('category', $id));
+	public function getEventsWithCategoryAsArray($category){	
+		$criteria = Criteria::create()->where(Criteria::expr()->eq('category', $category));
 		$criteria->andWhere(Criteria::expr()->isNull('parent'));
 		$criteria->andWhere(Criteria::expr()->eq('listable', true));
 		$list = parent::matching($criteria);

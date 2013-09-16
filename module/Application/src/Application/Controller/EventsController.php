@@ -227,9 +227,11 @@ class EventsController extends AbstractActionController implements LoggerAware
     				break;
     			case 'predefined_events':
     				$id = $this->params()->fromQuery('id');
+    				$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    				$category = $em->getRepository('Application\Entity\Category')->find($id);
     				$viewmodel->setVariables(array(
     						'part' => $part,
-    						'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($id),
+    						'values' => $em->getRepository('Application\Entity\PredefinedEvent')->getEventsWithCategoryAsArray($category),
     				));
     				break;
     			case 'custom_fields':

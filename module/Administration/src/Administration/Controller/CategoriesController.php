@@ -41,7 +41,7 @@ class CategoriesController extends AbstractActionController{
     	
     	$subcategories = array();
     	foreach ($rootcategories as $category){
-    		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $category->getId()));
+    		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $category));
     		$subcategories[$category->getId()] = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	}
     	
