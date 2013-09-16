@@ -451,6 +451,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     
     /**
      * Liste des catégories racines visibles timeline
+     * Au format JSON
      */
     public function getcategoriesAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -469,7 +470,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     }
     
     /**
-     * Liste des impacts
+     * Liste des impacts au format JSON
      */
     public function getimpactsAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
