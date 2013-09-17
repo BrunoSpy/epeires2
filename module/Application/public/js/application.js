@@ -1,9 +1,9 @@
 function updateClock ( )
     {
     var currentTime = new Date ( );
-    var currentHours = currentTime.getHours ( );
-    var currentMinutes = currentTime.getMinutes ( );
-    var currentSeconds = currentTime.getSeconds ( );
+    var currentHours = currentTime.getUTCHours ( );
+    var currentMinutes = currentTime.getUTCMinutes ( );
+    var currentSeconds = currentTime.getUTCSeconds ( );
 
     // Pad the minutes and seconds with leading zeros, if required
     currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;

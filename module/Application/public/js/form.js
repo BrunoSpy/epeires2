@@ -39,7 +39,7 @@ var form = function(url){
 				hour = "00";
 		} else {
 			var d = new Date();
-			hour = d.getHours();
+			hour = d.getUTCHours();
 			if(hour >=0 && hour <= 9){
 				hour = "0"+hour;
 			}
@@ -58,7 +58,7 @@ var form = function(url){
 				minutes = "00";
 		} else {
 			var d = new Date();
-			minutes = d.getMinutes();
+			minutes = d.getUTCMinutes();
 			if(minutes >=0 && minutes <= 9){
 				minutes = "0"+minutes;
 			}
@@ -70,12 +70,12 @@ var form = function(url){
 		var day = "";
 		if(!timepickerform.find('.day input').val()){
 			var d = new Date();
-			day = d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
+			day = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
 			timepickerform.find('.day input').val(day);
 		}
 		if(!timepickerform.find('.hour input').val()){
 			var d = new Date();
-			hour = d.getHours();
+			hour = d.getUTCHours();
 			if(hour >=0 && hour <= 9){
 				hour = "0"+hour;
 			}
@@ -83,7 +83,7 @@ var form = function(url){
 		}
 		if(!timepickerform.find('.minute input').val()){
 			var d = new Date();
-			minutes = d.getMinutes();
+			minutes = d.getUTCMinutes();
 			if(minutes >=0 && minutes <= 9){
 				minutes = "0"+minutes;
 			}
@@ -95,12 +95,14 @@ var form = function(url){
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
 		$("#dateDeb").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+		//TODO check if start_date > end_date
 	});
 	
 	$('#event').on('change', '.timepicker-form#end input', function(){
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
 		$("#dateFin").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+		//TODO check if end_date < start_date		
 	});
 	
 	$('#event').on('click', '.timepicker-form .hour .next', function(event){
@@ -155,15 +157,15 @@ var form = function(url){
 			$("#start .minute input").val(hoursplit[1]);
 		} else {
 			var d = new Date();
-			$("#start .day input").val(d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear());
-			var hour = ""+d.getHours();
-			if(d.getHours() >= 0 && d.getHours() <= 9){
-				hour = "0"+d.getHours();
+			$("#start .day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
+			var hour = ""+d.getUTCHours();
+			if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
+				hour = "0"+d.getUTCHours();
 			}
 			$("#start .hour input").val(hour);
-			var minute = ""+d.getMinutes();
-			if(d.getMinutes()>=0 && d.getMinutes()<=9){
-				minute = "0"+d.getMinutes();
+			var minute = ""+d.getUTCMinutes();
+			if(d.getUTCMinutes()>=0 && d.getUTCMinutes()<=9){
+				minute = "0"+d.getUTCMinutes();
 			}
 			$("#start .minute input").val(minute);
 			$("#start .minute input").trigger('change');

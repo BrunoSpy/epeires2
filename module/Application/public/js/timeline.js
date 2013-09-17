@@ -116,13 +116,13 @@ var timeline = {
 		},
 		init: function(element) {
 			d_actuelle = new Date();
-			h_act = d_actuelle.getHours();
-			m_act = d_actuelle.getMinutes();
+			h_act = d_actuelle.getUTCHours();
+			m_act = d_actuelle.getUTCMinutes();
 			d_ref_deb = new Date();
 			d_ref_deb.setHours(d_ref_deb.getHours()-1,0,0);
 			h_aff = 6;
 			y_temp = 10;
-			h_ref = d_ref_deb.getHours(); 
+			h_ref = d_ref_deb.getUTCHours(); 
 			d_ref_fin = new Date();
 			d_ref_fin.setDate(d_ref_deb.getDate());
 			d_ref_fin.setHours(d_ref_deb.getHours()+h_aff, 0, 0);
@@ -143,13 +143,13 @@ var timeline = {
 		},
 		init_journee: function(element) {
 			d_actuelle = new Date();
-			h_act = d_actuelle.getHours();
-			m_act = d_actuelle.getMinutes();
+			h_act = d_actuelle.getUTCHours();
+			m_act = d_actuelle.getUTCMinutes();
 			d_ref_deb = new Date();
 			d_ref_deb.setHours(0,0,0);
 			h_aff = 24;
 			y_temp = 10;
-			h_ref = d_ref_deb.getHours(); 
+			h_ref = d_ref_deb.getUTCHours(); 
 			d_ref_fin = new Date();
 			d_ref_fin.setDate(d_ref_deb.getDate());
 			d_ref_fin.setHours(d_ref_deb.getHours()+h_aff, 0, 0);
