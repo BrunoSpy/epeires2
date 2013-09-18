@@ -91,6 +91,7 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
+		$this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
 	
 	/** 
@@ -99,6 +100,7 @@ class Event implements InputFilterAwareInterface {
 	 */
 	public function setLastModifiedOn(){
 		$this->last_modified_on = new \DateTime('NOW');
+		$this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
 	
 	public function setName($name){
@@ -150,6 +152,12 @@ class Event implements InputFilterAwareInterface {
   	}
 	
  	public function getStartDate(){
+ 		if($this->start_date){
+ 			//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
+ 			//mais à la création php les crée en temps local, il faut donc les corriger
+ 			$offset = date("Z");
+ 			$this->start_date->add(new \DateInterval("PT".$offset."S"));
+ 		}
  		return $this->start_date;
  	}
 	
@@ -158,6 +166,11 @@ class Event implements InputFilterAwareInterface {
 	}
 	
 	public function getEndDate(){
+		if($this->end_date){//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
+ 			//mais à la création php les crée en temps local, il faut donc les corriger
+ 			$offset = date("Z");
+ 			$this->end_date->add(new \DateInterval("PT".$offset."S"));
+		}
 		return $this->end_date;
 	}
 	
