@@ -95,14 +95,36 @@ var form = function(url){
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
 		$("#dateDeb").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
-		//TODO check if start_date > end_date
+		//check if start_date > end_date, if end_date is set
+		if($("#dateFin").val()){
+			var daysplit = me.find('.day input').val().split('-');
+			var endsplit = $("#dateFin").val().split(' ');
+			var enddaysplit = endsplit[0].split('-');
+			var hoursplit = endsplit[1].split(':');
+			var deb = new Date(daysplit[0], daysplit[1]-1, daysplit[2], me.find('.hour input').val(),me.find('.minute input').val());
+			var end = new Date(enddaysplit[0], enddaysplit[1]-1, enddaysplit[2], hoursplit[0], hoursplit[1]);
+			if(deb > end){
+				$("#dateFin").val($("#dateDeb").val());
+				updateHours();
+			}
+		}
 	});
 	
 	$('#event').on('change', '.timepicker-form#end input', function(){
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
 		$("#dateFin").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
-		//TODO check if end_date < start_date		
+		//check if end_date < start_date	
+		var daysplit = me.find('.day input').val().split('-');
+		var startsplit = $("#dateDeb").val().split(' ');
+		var startdaysplit = startsplit[0].split('-');
+		var hoursplit = startsplit[1].split(':');
+		var end = new Date(daysplit[0], daysplit[1]-1, daysplit[2], me.find('.hour input').val(),me.find('.minute input').val());
+		var deb = new Date(startdaysplit[0], startdaysplit[1]-1, startdaysplit[2], hoursplit[0], hoursplit[1]);
+		if(deb > end){
+			$("#dateDeb").val($("#dateFin").val());
+			updateHours();
+		}
 	});
 	
 	$('#event').on('click', '.timepicker-form .hour .next', function(event){
