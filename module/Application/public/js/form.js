@@ -327,13 +327,13 @@ var form = function(url){
 		$.getJSON(
 				url+'/getpredefinedvalues?id='+me.data('id'),
 				function(data){
-					$("#name").val(data.defaultvalues.name);
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
 					$.each(data.customvalues, function(key, value){
-						var elt = $("#"+key);
+						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
+						alert(elt.val());
 						if(elt.is("select")){
-							$("#"+key+" option[value="+value+"]").prop('selected', true);
+							$("#custom_fields [name='custom_fields["+key+"]'] option[value="+value+"]").prop('selected', true);
 						} else if(elt.is('textarea')){
 							elt.html(value);
 						} else if(elt.is('input')){

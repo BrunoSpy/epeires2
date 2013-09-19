@@ -334,13 +334,12 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$predefinedEvt = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($predefinedId);
     	
-    	$defaultvalues['name'] = $entityService->getName($predefinedEvt);
     	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
-
+		//TODO Impact
     	$json['defaultvalues'] = $defaultvalues;
     	
     	foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue){
-    		$customvalues[$customfieldvalue->getCustomField()->getName()] = $customfieldvalue->getValue();
+    		$customvalues[$customfieldvalue->getCustomField()->getId()] = $customfieldvalue->getValue();
     	}
     	
     	$json['customvalues'] = $customvalues;
