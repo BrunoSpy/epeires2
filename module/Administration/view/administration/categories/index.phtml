@@ -36,6 +36,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 						<th>Evts</th>
 						<th>Modèles</th>
 						<th>Champs</th>
+						<th>Champ titre</th>
 						<th><a href="#form-container" id="add-cat" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 					</tr>
 				</thead>
@@ -59,7 +60,8 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 						//		 data-toggle=\"modal\"
 						//		 data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$category->getId())))."\"><i class=\"icon-list\"></i></a>".
 						 "</td>";
-					echo "<td>".$this->fields[$category->getId()]."</td>";
+					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
 					echo "<td>";
 						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
 						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
@@ -84,6 +86,8 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$subcategory->getId())))."\"><i class=\"icon-list\"></i></a>".
 						 		"</td>";
 							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+							echo "<td>".($subcategory->getFieldName()?$subcategory->getFieldName()->getName():"Non spécifié")."</td>";
+								
 							echo "<td>";
 								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
 								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";

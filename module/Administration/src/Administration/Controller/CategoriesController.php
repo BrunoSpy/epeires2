@@ -82,14 +82,24 @@ class CategoriesController extends AbstractActionController{
     	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Category'))
     		->setObject($category);
     	
-    	error_log(print_r($form->get('compactmode'), true));
-    	error_log(print_r($form->get('parent'), true));
-    	
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($id));
-        
+                
     	if($id){
+    		//bind to the category
     		$category = $objectManager->getRepository('Application\Entity\Category')->find($id);
     		if($category){
+    			//select parent
+    			if($category->getParent()){
+    				$form->get('parent')->setAttribute('value', $category->getParent()->getId());
+    			}
+    			//fill title fields available
+    			$customfields = array();
+    			foreach($category->getCustomfields() as $field){
+    				$customfields[$field->getId()] = $field->getName();
+    			}
+    			
+    			$form->get('fieldname')->setValueOptions($customfields);
+    			
     			$form->bind($category);
     			$form->setData($category->getArrayCopy());
     		}
@@ -153,6 +163,10 @@ class CategoriesController extends AbstractActionController{
     			$child->setParent(null);
     			$objectManager->persist($child);
     		}
+    		//delete fieldname to avoid loop
+    		$category->setFieldname(null);
+    		$objectManager->persist($category);
+    		$objectManager->flush();
     		//suppression des evts associés par cascade
     		$objectManager->remove($category);
     		$objectManager->flush();

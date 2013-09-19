@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="customfields")
  **/
 class CustomField {
-	/**
+	/** 
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
@@ -23,14 +23,16 @@ class CustomField {
 	 */
 	protected $id;
 	
-	/** @ORM\Column(type="string")
+	/** 
+	 * @ORM\Column(type="string")
  	 * @Annotation\Type("Zend\Form\Element\Text")
 	 * @Annotation\Required({"required":"true"})
 	 * @Annotation\Options({"label":"Nom :"})
 	 */
 	protected $name;
 	
-	/**
+	/** 
+	 * Bidirectional - owning side
 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="customfields")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required({"required":"true"})
@@ -38,7 +40,7 @@ class CustomField {
 	 */
 	protected $category;
 	
-	/**
+	/** 
 	 * @ORM\ManyToOne(targetEntity="CustomFieldType")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required({"required":"true"})
@@ -51,7 +53,7 @@ class CustomField {
 	 */
 	protected $place;
 	
-	/**
+	/** 
 	 * @ORM\Column(type="text")
 	 * @Annotation\Type("Zend\Form\Element\Textarea")
 	 * @Annotation\Required(false)

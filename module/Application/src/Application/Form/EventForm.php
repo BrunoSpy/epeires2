@@ -26,17 +26,6 @@ class EventForm extends Form {
 		));
 		
 		$this->add(array(
-				'name' => 'name',
-				'attributes' => array(
-					'type' => 'text',
-					'id' => 'name'
-				),
-				'options' => array(
-					'label' => 'Titre'
-				)
-		));
-		
-		$this->add(array(
 				'name' => 'punctual',
 				'type' => 'Zend\Form\Element\Checkbox',
 				'attributes' => array(

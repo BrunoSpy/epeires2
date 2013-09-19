@@ -56,7 +56,8 @@ class Category {
 	 */
 	protected $compactmode;
 	
-	/** @ORM\Column(type="boolean")
+	/** 
+	 * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Timeline :"})
 	 */
@@ -75,7 +76,8 @@ class Category {
 	*/
 	protected $events;
 	
-	/**
+	/** 
+	 * Bidirectional - inverse side
 	 * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"})
 	 */
 	protected $customfields;
@@ -84,6 +86,18 @@ class Category {
 	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="category", cascade={"remove"})
 	 */
 	protected $predefinedevents;
+	
+	/** 
+	 * @ORM\OneToOne(targetEntity="CustomField")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Champ titre :", "empty_option":"Choisir le champ titre"})
+	 */
+	protected $fieldname;
+	
+	public function getCustomfields(){
+		return $this->customfields;
+	}
 	
 	public function getParent(){
 		return $this->parent;
@@ -137,7 +151,18 @@ class Category {
 		$this->compactmode = $compactmode;
 	}
 	
+	public function getFieldname(){
+		return $this->fieldname;
+	}
+	
+	public function setFieldname($fieldname){
+		$this->fieldname = $fieldname;
+	}
+	
 	public function getArrayCopy() {
-		return get_object_vars($this);
+		$object_vars = get_object_vars($this);
+		$object_vars["parent"] = ($this->parent ? $this->parent->getId() : null);
+		$object_vars["fieldname"] = ($this->fieldname ? $this->fieldname->getId() : null);
+		return $object_vars;
 	}
 }

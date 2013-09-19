@@ -378,6 +378,13 @@ var form = function(url){
 			$("#subcategories").html(data);
 			if($("#root_categories option:selected").val() > 0) {
 				$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+				$("#custom_fields").html("");
+				$.post(
+						url+'/subform?part=custom_fields&id='+$("#root_categories option:selected").val(),
+						function(data){
+							$("#custom_fields").html(data);
+						}			
+				);
 				$("#Horairesid").removeClass("disabled");
 				$("#Descriptionid").removeClass("disabled");	
 				$('#subcategories').trigger("change");
@@ -400,6 +407,7 @@ var form = function(url){
 					if($("#subcategories option:selected").val() > 0) {
 						$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
 						$("#Modèlesid").removeClass("disabled");
+						$("#custom_fields").html("");
 						$.post(
 								url+'/subform?part=custom_fields&id='+$("#subcategories option:selected").val(),
 								function(data){

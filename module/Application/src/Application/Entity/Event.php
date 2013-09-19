@@ -26,9 +26,6 @@ class Event implements InputFilterAwareInterface {
 	 */
 	protected $id;
 
-	/** @ORM\Column(type="string") */
-	protected $name;
-	
 	/** @ORM\Column(type="boolean") */
 	protected $punctual;
 
@@ -68,6 +65,11 @@ class Event implements InputFilterAwareInterface {
  	 */
  	protected $custom_fields_values;
  	
+ 	/**
+ 	 * @ORM\ManyToOne(targetEntity="File")
+ 	 */
+ 	protected $files;
+ 	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
@@ -81,6 +83,10 @@ class Event implements InputFilterAwareInterface {
  		return $this->custom_fields_values;
  	}
  	
+ 	public function addCustomFieldValue($customfieldvalue){
+ 		$this->custom_fields_values->add($customfieldvalue);
+ 	}
+ 	
 	public function isPunctual() {
 		return $this->punctual;
 	}
@@ -91,7 +97,7 @@ class Event implements InputFilterAwareInterface {
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
-		$this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
+		$this->created_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
 	
 	/** 
@@ -102,15 +108,7 @@ class Event implements InputFilterAwareInterface {
 		$this->last_modified_on = new \DateTime('NOW');
 		$this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
-	
-	public function setName($name){
-		$this->name = $name;
-	}
-	
-	public function getName(){
-		return $this->name;
-	}
-	
+
 	public function setStatus($status){
 		$this->status = $status;
 	}
@@ -184,18 +182,6 @@ class Event implements InputFilterAwareInterface {
 	/*** Form Validation ****/
 	private $inputFilter;
 	
-// 	public function populate($data){
-// 		$this->id     = (isset($data['id']))     ? $data['id']     : null;
-// 		$this->name = (isset($data['name'])) ? $data['name'] : null;
-// 		$this->punctual = (isset($data['punctual'])) ? $data['punctual'] : null;
-// 		if(isset($data['start_date']) && !empty($data['start_date'])){
-// 			$this->start_date = new \DateTime($data['start_date']);
-// 		}
-// 		if(isset($data['end_date']) && !empty($data['end_date'])){
-// 			$this->end_date = new \DateTime($data['end_date']);
-// 		}
-// 	}
-	
 	public function getArrayCopy() {
 		return get_object_vars($this);
 	}
@@ -220,25 +206,6 @@ class Event implements InputFilterAwareInterface {
 			$inputFilter->add($factory->createInput(array(
 					'name'     => 'punctual',
 					'required' => true,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'name',
-					'required' => true,
-					'filters'  => array(
-							array('name' => 'StripTags'),
-							array('name' => 'StringTrim'),
-					),
-					'validators' => array(
-							array(
-									'name'    => 'StringLength',
-									'options' => array(
-											'encoding' => 'UTF-8',
-											'min'      => 1,
-											'max'      => 100,
-									),
-							),
-					),
 			)));
 	
 			$inputFilter->add($factory->createInput(array(

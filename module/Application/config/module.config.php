@@ -41,7 +41,12 @@ return array(
         		$logger->addWriter('FirePhp');
         		$logger->addWriter('ChromePhp');
         		return $logger;
-        	}
+        	},
+        	'eventservice' => function($sm){
+        		$eventservice = new \Application\Services\EventService();
+        		$eventservice->setEntityManager($sm->get('Doctrine\ORM\EntityManager'));
+        		return $eventservice;
+        	},
         ),
     ),
     'translator' => array(

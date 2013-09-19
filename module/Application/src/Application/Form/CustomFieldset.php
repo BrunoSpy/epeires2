@@ -29,7 +29,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 		$this->names = array();
 		
 		$category = $om->getRepository('Application\Entity\Category')->find($categoryid);
-		$customfields = $om->getRepository('Application\Entity\CustomField')->matching(Criteria::create()->where(Criteria::expr()->eq('category', $category)));
+		$customfields = $om->getRepository('Application\Entity\CustomField')
+						->matching(Criteria::create()
+									->where(Criteria::expr()->eq('category', $category))
+									->orderBy(array("place" => Criteria::ASC))
+								);
 				
 		//add category id to regenerate fieldset during creation process
 		$this->add(array(

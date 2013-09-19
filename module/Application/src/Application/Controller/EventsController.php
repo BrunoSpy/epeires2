@@ -87,7 +87,6 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['root_categories']));
     				}
     			}
-    			error_log(print_r($post, true));
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
@@ -100,6 +99,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     							$customvalue = new CustomFieldValue();
     							$customvalue->setEvent($event);
     							$customvalue->setCustomField($customfield);
+    							$event->addCustomFieldValue($customvalue);
     						}
     						$customvalue->setValue($value);
     						$objectManager->persist($customvalue);
@@ -330,10 +330,11 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$customvalues = array();
     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$entityService = $this->getServiceLocator()->get('EventService');
     	
     	$predefinedEvt = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($predefinedId);
     	
-    	$defaultvalues['name'] = $predefinedEvt->getName();
+    	$defaultvalues['name'] = $entityService->getName($predefinedEvt);
     	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
 
     	$json['defaultvalues'] = $defaultvalues;
@@ -353,7 +354,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
-    		$json[$action->getId()] = array('name' => $action->getName(),
+    		$json[$action->getId()] = array('name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
     	}
@@ -427,7 +428,8 @@ class EventsController extends AbstractActionController implements LoggerAware
     }
     
     private function getEventJson($event){
-    	$json = array('name' => $event->getName(),
+    	$eventservice = $this->getServiceLocator()->get('EventService');
+    	$json = array('name' => $eventservice->getName($event),
     					'start_date' => $event->getStartDate()->format(DATE_RFC2822),
     					'end_date' => ($event->getEndDate() ? $event->getEndDate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),

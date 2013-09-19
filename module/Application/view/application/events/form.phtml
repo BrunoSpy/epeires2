@@ -67,9 +67,6 @@
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
 		$html = $this->controlGroup(
-					$this->formLabel($this->form->get('name')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formInput($this->form->get('name')));
-		$html .= $this->controlGroup(
 				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
 				$this->formSelect($this->form->get('impact')));
 		
@@ -96,6 +93,8 @@
 			$html .= '</table>';
 			$html .= '</tbody>';
 		}
+		
+		echo $this->accordionGroup("Fichiers", '');
 		
 		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		

@@ -33,8 +33,16 @@ class CustomFieldValue {
 	/** @ORM\Column(type="string") */
 	protected $value;
 
+	public function getId(){
+		return $this->id;
+	}
+	
 	public function setEvent($event){
 		$this->event = $event;
+	}
+	
+	public function getCustomField(){
+		return $this->customfield;
 	}
 	
 	public function setCustomField($customfield){
