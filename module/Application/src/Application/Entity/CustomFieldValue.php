@@ -9,8 +9,12 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 /**
- * @ORM\Entity @ORM\Table(name="customfieldvalues")
+ * @ORM\Entity
+ * @ORM\Table(name="customfieldvalues")
+ * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
 class CustomFieldValue {
 	/**
@@ -30,7 +34,10 @@ class CustomFieldValue {
 	 */
 	protected $customfield;
 	
-	/** @ORM\Column(type="string") */
+	/** 
+	 * @ORM\Column(type="string")
+	 * @Gedmo\Versioned
+	 */
 	protected $value;
 
 	public function getId(){

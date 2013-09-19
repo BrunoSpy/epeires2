@@ -8,6 +8,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\InputFilter;
@@ -17,6 +18,7 @@ use Zend\InputFilter\Factory as InputFactory;
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="events")
  * @ORM\HasLifecycleCallbacks
+ * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
 class Event implements InputFilterAwareInterface {
 	/**
@@ -26,10 +28,16 @@ class Event implements InputFilterAwareInterface {
 	 */
 	protected $id;
 
-	/** @ORM\Column(type="boolean") */
+	/** 
+	 * @ORM\Column(type="boolean")
+	 * @Gedmo\Versioned
+	 */
 	protected $punctual;
 
- 	/** @ORM\ManyToOne(targetEntity="Status") */
+ 	/** 
+ 	 * @ORM\ManyToOne(targetEntity="Status")
+ 	 * @Gedmo\Versioned
+ 	 */
  	protected $status;
 	
  	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="childs") */
@@ -38,16 +46,21 @@ class Event implements InputFilterAwareInterface {
  	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent", cascade={"remove"}) */
  	protected $childs;
  	
- 	/** @ORM\ManyToOne(targetEntity="Impact") */
+ 	/** 
+ 	 * @ORM\ManyToOne(targetEntity="Impact")
+ 	 * @Gedmo\Versioned
+ 	 */
  	protected $impact;
 	
  	/** 
  	 * @ORM\Column(type="datetime", nullable=true)
+ 	 * @Gedmo\Versioned
  	 */
- 	protected $start_date;
+  	protected $start_date;
 	
  	/** 
  	 * @ORM\Column(type="datetime", nullable=true)
+ 	 * @Gedmo\Versioned
  	 */
  	protected $end_date;
 	
@@ -64,11 +77,6 @@ class Event implements InputFilterAwareInterface {
  	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
  	 */
  	protected $custom_fields_values;
- 	
- 	/**
- 	 * @ORM\ManyToOne(targetEntity="File")
- 	 */
- 	protected $files;
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();

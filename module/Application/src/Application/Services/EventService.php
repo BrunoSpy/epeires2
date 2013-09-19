@@ -28,10 +28,6 @@ class EventService{
 				
 		$titlefield = $category->getFieldname();
 		
-		if(!$titlefield){
-			//TODO try to get titlefield from root category ?
-		}
-		
 		if($titlefield){
 			foreach($event->getCustomFieldsValues() as $fieldvalue){
 				if($fieldvalue->getCustomField()->getId() == $titlefield->getId()){
@@ -82,5 +78,5 @@ class EventService{
 		}
 		return $name;
 	}
-	
+		
 }
