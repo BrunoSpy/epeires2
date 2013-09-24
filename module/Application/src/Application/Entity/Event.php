@@ -181,7 +181,6 @@ class Event implements InputFilterAwareInterface {
 	}
 	
 	public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined){
-		$this->setName($predefined->getName());
 		$this->setCategory($predefined->getCategory());
 		$this->setImpact($predefined->getImpact());
 		$this->setPunctual($predefined->isPunctual());
