@@ -331,7 +331,6 @@ var form = function(url){
 					$("#punctual").trigger("change");
 					$.each(data.customvalues, function(key, value){
 						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
-						alert(elt.val());
 						if(elt.is("select")){
 							$("#custom_fields [name='custom_fields["+key+"]'] option[value="+value+"]").prop('selected', true);
 						} else if(elt.is('textarea')){

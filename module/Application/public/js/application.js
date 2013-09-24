@@ -16,10 +16,9 @@ function updateClock ( )
     $("#clock").html(currentTimeString);
         
  };
- 
+
 $(document).ready(function(){
-	
-	
+
    setInterval('updateClock()', 1000);
    
    //higlight tabs
@@ -36,6 +35,22 @@ $(document).ready(function(){
    
    $("a[data-toggle=tooltip]").tooltip();
    $("th[data-toggle=tooltip]").tooltip();
+   
+   //toggle panel
+   $("#toggle-panel").on('click', function(){
+	   var panel = $("#panel");
+	   $("#timeline").width('auto');
+	   $('#timeline').css({position:'relative'});
+	   if(panel.width() > 0 ) {
+		   $("#panel").animate({width:'0%'}, function(){
+			   $("#panel").hide();
+		   });
+	   } else {
+		   $("#panel").show();
+		   $("#panel").animate({width:'20%'});
+	   }
+	   
+   });
    
    $.noty.defaults = {
 		    layout: 'bottomRight',
