@@ -14,6 +14,7 @@
         "zendframework/zendframework": ">=2.2.0",
         "doctrine/common": "2.4.*",
         "doctrine/doctrine-orm-module": ">=0.7.0",
+        "gedmo/doctrine-extensions": "2.3.*",
         "zendframework/zend-developer-tools": "dev-master",
         "rwoverdijk/assetmanager": "1.*",
         "firephp/firephp-core": "dev-master",

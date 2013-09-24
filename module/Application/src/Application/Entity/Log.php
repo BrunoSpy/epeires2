@@ -10,4 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Log extends AbstractLogEntry{
 
+	/**
+	 * UTC
+	 */
+	public function setLoggedAt()
+	{
+		$this->loggedAt = new \DateTime();
+		$this->loggedAt->setTimezone(new \DateTimeZone("UTC"));
+	}
+	
 }
