@@ -1,4 +1,5 @@
 <?php
+use Application\View\Helper\EventNameHelper;
 /**
  * Epeires 2
  * Application module configuration
@@ -69,7 +70,7 @@ return array(
         		if($instance instanceof \Application\Controller\LoggerAware){
         			$instance->setLogger($serviceManager->getServiceLocator()->get('logger'));
         		}
-        				}
+        	}
         ),
     ),
     'view_helpers' => array(
@@ -79,6 +80,14 @@ return array(
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     		'impact' => 'Application\View\Helper\Impact',
     		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
+    	),
+    	'factories' => array(
+    		'eventName' => function($helperPluginManager){
+    			$sm = $helperPluginManager->getServiceLocator();
+    			$eventnameHelper = new \Application\View\Helper\EventNameHelper();
+    			$eventnameHelper->setServiceManager($sm);
+    			return $eventnameHelper;
+    		},
     	),
     ),
     'view_manager' => array(

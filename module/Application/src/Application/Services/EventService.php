@@ -92,7 +92,7 @@ class EventService{
 		
 		$prev = null;
 		foreach (array_reverse($logentries) as $logentry){
-			if(!prev){ //first elt = ref => action must be "create"
+			if(!$prev){ //first elt = ref => action must be "create"
 				if($logentry->getAction() == "create"){
 					$prev = $logentry;
 				} else {
