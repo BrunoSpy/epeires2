@@ -445,7 +445,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	
     	$actions = array();
     	foreach ($event->getChilds() as $child){
-    		$actions[$child->getName()] = $child->getStatus()->isOpen();
+    		$actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
     	}
     	$json['actions'] = $actions;
     	

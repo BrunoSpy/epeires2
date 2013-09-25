@@ -1662,35 +1662,7 @@ $(document).ready(function() {
 			timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
 		}
 	});
-	$('#infos').on('switch-change', function(e, data){
-		//data.value = true => vue dépliée
-		var timeline_content = $('.timeline_content');
-		var all_elmt = timeline_content.find('.elmt');
-		all_elmt.each(function(index, elmt){
-			var plus = $(elmt).find('.plus');
-			var moins = $(elmt).find('.moins');
-			var elmt_opt = $(elmt).find('.elmt_opt');
-			var dh = elmt_opt.outerHeight();
-			if(data.value){
-				if (!plus.hasClass('opt_open')){ 
-					plus_info = 1;
-					plus.removeClass('show');
-					plus.addClass('opt_open');
-					$(elmt).css({'height':'+='+dh});
-					elmt_opt.show();
-				}
-			} else {
-				if (plus.hasClass('opt_open')){
-					plus_info = 0;
-					plus.addClass('show');
-					plus.removeClass('opt_open');
-					$(elmt).css({'height':'-='+dh});
-					elmt_opt.hide();
-				}
-			}
-		});
-		timeline.tri_cat(timeline_content, tab, 1);
-	});
+
 	
 	$(window).resize(function () {
 		var timel = $('#timeline');
