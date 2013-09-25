@@ -86,7 +86,7 @@
 			foreach ($this->event->getChilds() as $child){
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
-					$html .= "<td>".$child->getName()."</td>";
+					$html .= "<td>".$this->eventName($child)."</td>";
 					$html .= "<td><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
 					$html .= '</tr>';
 			}

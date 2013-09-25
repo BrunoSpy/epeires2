@@ -116,6 +116,14 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$child->setParent($event);
     					$child->createFromPredefinedEvent($action);
     					$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true, 'open'=> true)));
+    					//customfields
+    					foreach($action->getCustomFieldsValues() as $customvalue){
+    						$newcustomvalue = new CustomFieldValue();
+    						$newcustomvalue->setEvent($child);
+    						$newcustomvalue->setCustomField($customvalue->getCustomField());
+    						$newcustomvalue->setValue($customvalue->getValue());
+    						$objectManager->persist($newcustomvalue);
+    					}
     					$objectManager->persist($child);
     				}
     			}
@@ -486,6 +494,22 @@ class EventsController extends AbstractActionController implements LoggerAware
     				'value' => $impact->getValue(),
     		);
     	}
+    	return new JsonModel($json);
+    }
+    
+    public function gethistoryAction(){
+    	$json = array();
+    	$evtId = $this->params()->fromQuery('id', null);
+    	
+    	$eventservice = $this->getServiceLocator()->get('EventService');
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
+    	if($event){
+    		$history = $eventservice->getHistory($event);
+    	}
+    	
+    	
     	return new JsonModel($json);
     }
     
