@@ -89,25 +89,15 @@ class EventService{
 
 		$repo = $this->em->getRepository('Application\Entity\Log');
 		$logentries = $repo->getLogEntries($event);
-		
-		$prev = null;
-		foreach (array_reverse($logentries) as $logentry){
-			if(!$prev){ //first elt = ref => action must be "create"
-				if($logentry->getAction() == "create"){
-					$prev = $logentry;
-				} else {
-					//pas de référence => impossible de créer un histo fiable
-					return false;
-				}
-			} else {
-				$current = $logentry;
-				for($i=0; $i< count($current->getData());$i++){
-					if($prev->getData()[i] != $current->getData()[i]){
-						error_log(print_r($current->getData()[i], true));
-					}
+				
+		if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
+			foreach (array_reverse($logentries) as $logentry){
+				foreach($logentry as $key => $value){
+					
 				}
 			}
 		}
 		
 	}
+	
 }

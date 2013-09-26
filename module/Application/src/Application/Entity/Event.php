@@ -78,6 +78,16 @@ class Event implements InputFilterAwareInterface {
  	 */
  	protected $custom_fields_values;
  	
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="EventUpdate", mappedBy="event", cascade={"remove"})
+ 	 */
+ 	protected $updates;
+ 	
+ 	/**
+ 	 * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
+ 	 */
+ 	protected $files;
+ 	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
