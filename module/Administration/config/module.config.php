@@ -51,6 +51,7 @@ return array(
             'Administration\Controller\Fields' => 'Administration\Controller\FieldsController',
             'Administration\Controller\Models' => 'Administration\Controller\ModelsController',
             'Administration\Controller\Config' => 'Administration\Controller\ConfigController',
+            'Administration\Controller\Centre' => 'Administration\Controller\CentreController',
         ),
     ),
     'view_manager' => array(

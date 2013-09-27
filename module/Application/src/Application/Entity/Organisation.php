@@ -29,6 +29,27 @@ class Organisation {
 	/**
 	 * @ORM\Column(type="string")
 	 */
+	protected $shortname;
+	
+	/**
+	 * @ORM\Column(type="string")
+	 */
 	protected $address;
+	
+	public function getId(){
+		return $this->id;
+	}
+	
+	public function getName(){
+		return $this->name;
+	}
+	
+	public function getShortname(){
+		return $this->shortname;
+	}
+	
+	public function getAdress(){
+		return $this->address;
+	}
 	
 }

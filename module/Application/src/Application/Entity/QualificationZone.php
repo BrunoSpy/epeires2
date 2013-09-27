@@ -24,9 +24,30 @@ class QualificationZone {
 	 * @ORM\Column(type="string")
 	 */
 	protected $name;
+
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $shortname;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="Organisation")
 	 */
 	protected $organisation;
+	
+	public function getId(){
+		return $this->id;
+	}
+	
+	public function getName(){
+		return $this->name;
+	}
+	
+	public function getShortname(){
+		return $this->shortname;
+	}
+	
+	public function getOrganisation(){
+		return $this->organisation;
+	}
 }

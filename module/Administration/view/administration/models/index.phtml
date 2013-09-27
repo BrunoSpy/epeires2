@@ -111,7 +111,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-up\"></i>" : "<i class=\"icon-arrow-down\"></i>";
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 
