@@ -3,7 +3,8 @@
 	<tr>
 		<th>Nom</th>
 		<th><a 
-			class="btn btn-mini new"
+			id="add-model"
+			class="btn btn-mini"
 			href="#model-container"
 			data-catid="<?php echo $this->catid;?>"
 			data-toggle="modal">Ajouter</a>
@@ -17,7 +18,7 @@
 			echo "<td>".$model->getName()."</td>";
 			echo '<td><a
 				title="Modifier" 
-				class="mod"
+				class="mod-model"
 				href="#model-container"
 				data-toggle="modal"
 				data-id='.$model->getId().'
@@ -28,7 +29,7 @@
 				data-toggle="modal"
 				title="Supprimer" 
 				data-href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId(), 'redirect'=>false))).'" 
-				class="delete" 
+				class="delete-model" 
 				data-id='.$model->getId().' 
 				data-name="'.$model->getName().'"> 
 				<i class="icon-trash"></i></a></td>';

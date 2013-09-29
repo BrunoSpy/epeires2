@@ -95,6 +95,12 @@ class Category {
 	 */
 	protected $fieldname;
 	
+	public function __construct(){
+		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->predefinedevents = new \Doctrine\Common\Collections\ArrayCollection();
+	}
+	
 	public function getCustomfields(){
 		return $this->customfields;
 	}

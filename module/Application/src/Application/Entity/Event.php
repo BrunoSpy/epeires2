@@ -91,6 +91,7 @@ class Event implements InputFilterAwareInterface {
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
+ 		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
  	public function getId(){

@@ -52,7 +52,13 @@ return array(
             'Administration\Controller\Models' => 'Administration\Controller\ModelsController',
             'Administration\Controller\Config' => 'Administration\Controller\ConfigController',
             'Administration\Controller\Centre' => 'Administration\Controller\CentreController',
-        ),
+            'Administration\Controller\Maintenance' => 'Administration\Controller\MaintenanceController',
+    	),
+    ),
+    'view_helpers' => array(
+    	'invokables' => array(
+    		'modalwindow' => 'Administration\View\Helper\ModalWindow',
+    	),
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,

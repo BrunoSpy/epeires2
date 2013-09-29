@@ -29,7 +29,7 @@ class Status {
 	protected $name;
 	
 	/** @ORM\Column(type="boolean") */
-	protected $default;
+	protected $defaut;
 	
 	public function getId(){
 		return $this->id;
@@ -44,11 +44,11 @@ class Status {
 	}
 	
 	public function isDefault(){
-		return $this->default;
+		return $this->defaut;
 	}
 	
 	public function setDefault($default){
-		$this->default = $default;
+		$this->defaut = $default;
 	}
 	
 	public function isDisplay(){

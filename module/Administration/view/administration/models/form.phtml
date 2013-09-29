@@ -16,9 +16,11 @@ echo $this->formHidden($this->form->get('id'));
 echo $this->controlGroup($this->formLabel($this->form->get('category')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('category')));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
+//name only usefull for a model, not for actions
+if(!$this->action){
+	echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('name')));
-
+}
 echo $this->controlGroup($this->formLabel($this->form->get('impact')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('impact')));
 
@@ -72,7 +74,7 @@ if($this->childs) {
 	foreach ($this->childs as $child){
 		$i++;
 		echo '<tr id="'.$child->getId().'">';
-			echo '<td>'.$child->getName().'</td>';
+			echo '<td>'.$this->eventName($child).'</td>';
 			echo '<td>'.$this->impact($child->getImpact()).'</td>';
 			echo '<td><a 
 						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'down'), array('query'=>array('id'=>$child->getId()))).'"'. 
@@ -83,11 +85,11 @@ if($this->childs) {
 						'class="up'.($i == 1 ? ' disabled' : '').'">  <span class="up-caret middle"></span></a></td>';
 			echo '<td><a
 				title="Modifier" 
-				class="mod"
+				class="mod-action"
 				href="#action-container"
 				data-toggle="modal"
 				data-id='.$child->getId().'
-				data-name="'.$child->getName().'"
+				data-name="'.$this->eventName($child).'"
 				data-parent='.$this->form->get('id')->getValue().'
 				><i class="icon-pencil"></i></a> 
 				<a 
@@ -95,7 +97,7 @@ if($this->childs) {
 				href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$child->getId(), 'redirect'=>false))).'" 
 				class="action-delete" 
 				data-id='.$child->getId().' 
-				data-name="'.$child->getName().'"> 
+				data-name="'.$this->eventName($child).'"> 
 				<i class="icon-trash"></i></a></td>';
 		echo '</tr>';
 	}
@@ -104,8 +106,13 @@ if($this->childs) {
 <?php }?>
 </div>
 <div class="modal-footer">
-<?php echo $this->formSubmit($this->form->get('submit')); ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<?php 
+if($action){
+	echo $this->formSubmit($this->form->get('submit')->setAttribute('id', 'save-action'));
+} else {
+	echo $this->formSubmit($this->form->get('submit')->setAttribute('id', 'save-model')); 
+}?>
+<a id="cancel-form-<?php echo ($action ? "action" : "model") ?>" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
 </div>
 <?php 
 echo $this->form()->closeTag();

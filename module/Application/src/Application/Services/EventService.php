@@ -21,13 +21,19 @@ class EventService{
 	 * If no title field is set, returns the event's id
 	 * @param $event
 	 */
-	public function getName($event){		
+	public function getName($event){	
+
+		if($event instanceof \Application\Entity\PredefinedEvent){
+			if($event->getParent() == null && $event->getName()){
+				return $event->getName();
+			}
+		}
+		
 		$name = $event->getId();
 		
 		$category = $event->getCategory();
-				
-		$titlefield = $category->getFieldname();
 		
+		$titlefield = $category->getFieldname();
 		if($titlefield){
 			foreach($event->getCustomFieldsValues() as $fieldvalue){
 				if($fieldvalue->getCustomField()->getId() == $titlefield->getId()){

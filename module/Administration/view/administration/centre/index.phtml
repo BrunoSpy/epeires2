@@ -1,10 +1,12 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/centre.js')?>
+
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span7">
 			<div class="block">
 				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Organisations </div>
+					<div class="muted pull-left">1. Organisations </div>
 				</div>
 				<div class="block-content collapse in">
 					<div class="span12">
@@ -15,6 +17,7 @@
 								<th data-sort="string">Nom</th>
 								<th data-sort="string">Nom abrégé</th>
 								<th>Adresse</th>
+								<th><a href="#organisation-container" id="add-organisation" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -24,7 +27,22 @@
 									echo '<td>'.$centre->getId().'</td>';
 									echo '<td>'.$centre->getName().'</td>';
 									echo '<td>'.$centre->getShortname().'</td>';
-									echo '<td>'.$centre->getAdress().'</td>';
+									echo '<td>'.$centre->getAddress().'</td>';
+									echo "<td>";
+										echo "<a 
+												title=\"Modifier\"
+												href=\"#organisation-container\"
+												class=\"mod-organisation\"
+												data-id=\"".$centre->getId()."\"
+												data-name=\"".$centre->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+										echo "<a 
+												title=\"Supprimer\"
+												href=\"#confirm-delete-organisation\"
+												data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deleteorganisation'))."?id=".$centre->getId()."\"
+												class=\"delete-organisation\"
+												data-id=\"".$centre->getId()."\"
+												data-name=\"".$centre->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+									echo "</td>";
 								echo '</tr>';
 							}							
 							?>
@@ -38,7 +56,7 @@
 		<div class="span5">
 			<div class="block">
 				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Zones de qualifications</div>
+					<div class="muted pull-left">2. Zones de qualifications</div>
 				</div>
 				<div class="block-content collapse in">
 					<div class="span12">
@@ -49,6 +67,7 @@
 								<th data-sort="string">Organisation</th>
 								<th data-sort="string">Nom</th>
 								<th>Nom abrégé</th>
+								<th><a href="#qualif-container" id="add-qualif" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -59,6 +78,21 @@
 									echo '<td>'.$zone->getOrganisation()->getName().'</td>';
 									echo '<td>'.$zone->getName().'</td>';
 									echo '<td>'.$zone->getShortname().'</td>';
+									echo "<td>";
+										echo "<a
+												title=\"Modifier\"
+												href=\"#qualif-container\"
+												class=\"mod-qualif\"
+												data-id=\"".$zone->getId()."\"
+												data-name=\"".$zone->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+										echo "<a
+												title=\"Supprimer\"
+												href=\"#confirm-delete-qualif\"
+												data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletequalif'))."?id=".$zone->getId()."\"
+												class=\"delete-qualif\"
+												data-id=\"".$zone->getId()."\"
+												data-name=\"".$zone->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+									echo "</td>";
 								echo '</tr>';
 							}							
 							?>
@@ -73,25 +107,153 @@
 		<div class="span6">
 			<div class="block">
 				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Secteurs</div>
+					<div class="muted pull-left">3. Regroupements de secteurs</div>
 				</div>
 				<div class="block-content collapse in">
-					<div class="span12">En construction</div>
+					<div class="span12">
+					<table class="table table-striped sortable">
+						<thead>
+							<tr>
+								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Zone</th>
+								<th data-sort="string">Nom</th>
+								<th>Secteurs</th>
+								<th><a href="#group-container" id="add-group" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							foreach ($this->groups as $group){
+								echo '<tr>';
+									echo '<td>'.$group->getId().'</td>';
+									echo '<td>'.$group->getZone()->getName().'</td>';
+									echo '<td>'.$group->getName().'</td>';
+									echo '<td>';
+									foreach ($group->getSectors() as $sector){
+										echo $sector->getName()." ";
+									}
+									echo '</td>';
+									echo "<td>";
+										echo "<a
+												title=\"Modifier\"
+												href=\"#group-container\"
+												class=\"mod-group\"
+												data-id=\"".$group->getId()."\"
+												data-name=\"".$group->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+										echo "<a
+												title=\"Supprimer\"
+												href=\"#confirm-delete-group\"
+												data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletegroup'))."?id=".$group->getId()."\"
+												class=\"delete-group\"
+												data-id=\"".$group->getId()."\"
+												data-name=\"".$group->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+									echo "</td>";
+								echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="span6">
 			<div class="block">
 				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Regroupements de secteurs</div>
+					<div class="muted pull-left">4. Secteurs</div>
 				</div>
 				<div class="block-content collapse in">
-					<div class="span12">En construction</div>
+					<div class="span12">
+					<table class="table table-striped sortable">
+						<thead>
+							<tr>
+								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Zone</th>
+								<th data-sort="string">Nom</th>
+								<th>Regroupements</th>
+								<th><a href="#sector-container" id="add-sector" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							foreach ($this->sectors as $sector){
+								echo '<tr>';
+									echo '<td>'.$sector->getId().'</td>';
+									echo '<td>'.$sector->getZone()->getName().'</td>';
+									echo '<td>'.$sector->getName().'</td>';
+									echo '<td>';
+									foreach ($sector->getSectorsgroups() as $group){
+										echo $group->getName()." ";
+									}
+									echo '</td>';
+									echo "<td>";
+										echo "<a
+												title=\"Modifier\"
+												href=\"#sector-container\"
+												class=\"mod-sector\"
+												data-id=\"".$sector->getId()."\"
+												data-name=\"".$sector->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+										echo "<a
+												title=\"Supprimer\"
+												href=\"#confirm-delete-sector\"
+												data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletesector'))."?id=".$sector->getId()."\"
+												class=\"delete-sector\"
+												data-id=\"".$sector->getId()."\"
+												data-name=\"".$sector->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+									echo "</td>";
+								echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<?php echo $this->modalwindow("organisation-container", "<h3 id=\"organisation-title\"></h3>", "", "<div id=\"organisation-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-organisation",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'organisation <em><span id=\"organisation-name\"></span></em> ?</p>
+						<p>Tous les éléments associés seront supprimés également (zones, secteurs, ...).</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-organisation-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+						
+<?php echo $this->modalwindow("qualif-container", "<h3 id=\"qualif-title\"></h3>", "", "<div id=\"qualif-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-qualif",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer la zone de qualification <em><span id=\"qualif-name\"></span></em> ?</p>
+						<p>Tous les éléments associés seront supprimés également (secteurs, ...).</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-qualif-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>				
+
+<?php echo $this->modalwindow("group-container", "<h3 id=\"group-title\"></h3>", "", "<div id=\"group-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-group",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer le regroupement de secteurs <em><span id=\"group-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-group-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+<?php echo $this->modalwindow("sector-container", "<h3 id=\"sector-title\"></h3>", "", "<div id=\"sector-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-sector",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer le secteurs <em><span id=\"group-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-sector-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
 
 <?php $this->inlineScript()->captureStart();?>
 
@@ -103,5 +265,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
     var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
+
+centre('<?php echo $this->url('administration'); ?>');
 
 <?php $this->inlineScript()->captureEnd();?>

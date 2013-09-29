@@ -1,6 +1,4 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/js/models.js')?>
-
 
 <div class="warnings">
 <?php if (isset($this->messages['successMessages'])) { ?>
@@ -53,15 +51,15 @@
 		echo "<a 
 				title=\"Modifier\" 
 				href=\"#model-container\" 
-				class=\"mod\" 
+				class=\"mod-model\" 
 				data-id=\"".$model->getId()."\" 
 				data-name=\"".$model->getName()."\" 
 				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
 		echo "<a 
 				title=\"Supprimer\" 
-				href=\"#confirm-delete\" 
+				href=\"#confirm-delete-model\" 
 				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
-				class=\"delete\" 
+				class=\"delete-model\" 
 				data-id=\"".$model->getId()."\" 
 				data-name=\"".$model->getName()."\" 
 				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
@@ -73,36 +71,7 @@
 
 </table>
 
-<div class="modal hide fade large" id="model-container">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3  id="model-title"></h3>
-	</div>
-	<div id="form"></div>
-</div>
-
-<div class="modal hide fade large" id="action-container">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3  id="action-title">Nouvelle action</h3>
-	</div>
-	<div id="action-form"></div>
-</div>
-
-<div class="modal hide fade" id="confirm-delete">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Confirmer la suppression ?</h3>
-	</div>
-	<div class="modal-body">
-		<p>Voulez-vous vraiment supprimer le modèle <em><span id="model_name"></span></em> ?</p>
-		<p>La fiche réflexe associée sera supprimée également.</p>
-	</div>	
-	<div class="modal-footer">
-		<a class="btn btn-danger" id="delete-href">Confirmer</a>
-		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
-	</div>	
-</div>
+<?php echo $this->partial('models/modals.phtml') ?>
 
 <?php $this->inlineScript()->captureStart();?>
 
@@ -114,7 +83,5 @@ $(".sortable").bind('aftertablesort', function(event, data){
     var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
-
-models('<?php echo $this->url('administration')?>');
 
 <?php $this->inlineScript()->captureEnd();?>

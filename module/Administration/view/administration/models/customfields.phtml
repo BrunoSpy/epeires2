@@ -1,4 +1,6 @@
-<?php if($this->form->has('custom_fields') && count($this->form->get('custom_fields')->getElements()) > 1){
+<?php 
+$this->form->prepare();
+if($this->form->has('custom_fields') && count($this->form->get('custom_fields')->getElements()) > 1){
 	echo "<h4>Valeurs des champs spécifiques :</h4>";
 	foreach ($this->form->get('custom_fields')->getElements() as $element){
 		echo $this->customFieldGroup($element);
