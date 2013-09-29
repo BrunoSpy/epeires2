@@ -25,9 +25,9 @@ class PredefinedEvent {
 	 */
 	protected $id;
 
-	/** @ORM\Column(type="string")
+	/** @ORM\Column(type="string", nullable=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
-	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Nom :"})
 	 */
 	protected $name;
@@ -86,6 +86,10 @@ class PredefinedEvent {
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function addCustomFieldValue($customfieldvalue){
+ 		$this->custom_fields_values->add($customfieldvalue);
  	}
  	
  	public function getCustomFieldsValues(){

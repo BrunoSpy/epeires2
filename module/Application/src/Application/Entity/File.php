@@ -28,4 +28,9 @@ class File {
 	 */
 	protected $path;
 
+	/**
+	 * @ORM\ManyToMany(targetEntity="Event", inversedBy="files")
+	 */
+	protected $events;
+	
 }

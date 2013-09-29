@@ -1,0 +1,38 @@
+<div class="warnings">
+	<div class="alert alert-error">
+		<div class="text-center">
+		<i class="icon-warning-sign"></i> Certaines actions peuvent supprimer l'ensemble des données du PV. <i class="icon-warning-sign"></i>
+		</div>
+	</div>
+</div>
+
+<table class="table table-striped">
+<thead>
+	<tr>
+		<th>Nom</th>
+		<th>Description</th>
+		<th></th>
+	</tr>
+</thead>
+<tbody>
+<tr>
+	<td>Initialiser la base de données</td>
+	<td>Initialise les tables avec les données par défaut.<br />
+		La structure de la base de données doit déjà être en place et aucune donnée ne doit être présente.
+	</td>
+	<td><a class="btn btn-small" href="<?php echo $this->url('administration', array('controller'=>'maintenance', 'action'=>'initdb'))?>">Initialiser</a></td>
+</tr>
+<tr>
+	<td>Créer la base de données</td>
+	<td>Crée la structure de la base de données et initialise les tables.<br />
+		Nécessite une base de données vide.
+	</td>
+	<td><a class="btn btn-small disabled" href="<?php echo $this->url('administration', array('controller'=>'maintenance', 'action'=>'createdb'))?>">Créer</a></td>
+</tr>
+<tr>
+	<td>Supprimer la base de données</td>
+	<td>Supprime la structure de la base de données ainsi que toutes les données.</td>
+	<td><a class="btn btn-small disabled" href="<?php echo $this->url('administration', array('controller'=>'maintenance', 'action'=>'dropdb'))?>">Supprimer</a></td>
+</tr>
+</tbody>
+</table>

@@ -10,6 +10,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\Category;
+use Application\Entity\CustomField;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
@@ -139,6 +140,18 @@ class CategoriesController extends AbstractActionController{
 			
 			if($form->isValid()){
 				$category->setParent($objectManager->getRepository('Application\Entity\Category')->find($post['parent']));
+				
+				//if new category, create a default field for fieldname
+				if(!$post['id']){
+					$fieldname = new CustomField();
+					$fieldname->setCategory($category);
+					$fieldname->setName('Nom');
+					$fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+					$fieldname->setPlace(1);
+					$fieldname->setDefaultvalue("");
+					$objectManager->persist($fieldname);
+					$category->setFieldname($fieldname);
+				}
 				$objectManager->persist($category);
 				$objectManager->flush();
 				$this->flashMessenger()->addSuccessMessage("Evènement modifié");

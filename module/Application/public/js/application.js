@@ -16,7 +16,7 @@ function updateClock ( )
     $("#clock").html(currentTimeString);
         
  };
-
+ 
 $(document).ready(function(){
 
    setInterval('updateClock()', 1000);
@@ -48,6 +48,7 @@ $(document).ready(function(){
 	   } else {
 		   $("#panel").show();
 		   $("#panel").animate({width:'20%'});
+		   $("#panel").load('http://127.0.0.1/epeires2/events/gethistory?id=161');
 	   }
 	   
    });

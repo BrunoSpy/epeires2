@@ -1,0 +1,34 @@
+<div id="model-windows">
+<?php 
+
+$this->headScript()->appendFile($this->basePath() . '/js/models.js');
+
+//models list window
+
+echo $this->modalwindow("models-container",
+		"<h3 id=\"models-title\"></h3>",
+		"",
+		null,
+		"<div id=\"models-table\"></div>",
+		"<a class=\"btn btn-primary\" href=\"".$this->url('administration', array('controller'=>'categories'))."\">Terminer</a>");
+
+echo $this->modalwindow("model-container", "<h3  id=\"model-title\"></h3>", "", "<div id=\"model-form\"></div>");
+
+echo $this->modalwindow("action-container", "<h3  id=\"action-title\">Nouvelle action</h3>", "", "<div id=\"action-form\"></div>");
+
+echo $this->modalwindow("confirm-delete-model", 
+						"<h3>Confirmer la suppression ?</h3>",
+						"",
+						null,
+						"<p>Voulez-vous vraiment supprimer le modèle <em><span id=\"model_name\"></span></em> ?</p>
+						<p>La fiche réflexe associée sera supprimée également.</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-model-href\">Confirmer</a>
+						<a id=\"cancel-form\" class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+models('<?php echo $this->url('administration')?>');
+
+<?php $this->inlineScript()->captureEnd();?>

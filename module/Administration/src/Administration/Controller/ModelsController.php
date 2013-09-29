@@ -196,6 +196,7 @@ class ModelsController extends AbstractActionController
     							$customfieldvalue = new PredefinedCustomFieldValue();
     							$customfieldvalue->setPredefinedEvent($pevent);
     							$customfieldvalue->setCustomField($customfield);
+    							$pevent->addCustomFieldValue($customfieldvalue);
     						}
     						$customfieldvalue->setValue($value);
     						$objectManager->persist($customfieldvalue);
@@ -211,7 +212,7 @@ class ModelsController extends AbstractActionController
     		
     	}
     	
-    	$json = array('id' => $pevent->getId(), 'name' => $pevent->getName(), 'impactstyle' => $pevent->getImpact()->getStyle(), 'impactname' => $pevent->getImpact()->getName());
+    	$json = array('id' => $pevent->getId(), 'name' => $this->getServiceLocator()->get('EventService')->getName($pevent), 'impactstyle' => $pevent->getImpact()->getStyle(), 'impactname' => $pevent->getImpact()->getName());
     	
     	return new JsonModel($json);
     }

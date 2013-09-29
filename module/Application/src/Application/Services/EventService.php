@@ -21,13 +21,19 @@ class EventService{
 	 * If no title field is set, returns the event's id
 	 * @param $event
 	 */
-	public function getName($event){		
+	public function getName($event){	
+
+		if($event instanceof \Application\Entity\PredefinedEvent){
+			if($event->getParent() == null && $event->getName()){
+				return $event->getName();
+			}
+		}
+		
 		$name = $event->getId();
 		
 		$category = $event->getCategory();
-				
-		$titlefield = $category->getFieldname();
 		
+		$titlefield = $category->getFieldname();
 		if($titlefield){
 			foreach($event->getCustomFieldsValues() as $fieldvalue){
 				if($fieldvalue->getCustomField()->getId() == $titlefield->getId()){
@@ -89,25 +95,15 @@ class EventService{
 
 		$repo = $this->em->getRepository('Application\Entity\Log');
 		$logentries = $repo->getLogEntries($event);
-		
-		$prev = null;
-		foreach (array_reverse($logentries) as $logentry){
-			if(!$prev){ //first elt = ref => action must be "create"
-				if($logentry->getAction() == "create"){
-					$prev = $logentry;
-				} else {
-					//pas de référence => impossible de créer un histo fiable
-					return false;
-				}
-			} else {
-				$current = $logentry;
-				for($i=0; $i< count($current->getData());$i++){
-					if($prev->getData()[i] != $current->getData()[i]){
-						error_log(print_r($current->getData()[i], true));
-					}
+				
+		if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
+			foreach (array_reverse($logentries) as $logentry){
+				foreach($logentry as $key => $value){
+					
 				}
 			}
 		}
 		
 	}
+	
 }
