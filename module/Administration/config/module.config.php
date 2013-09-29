@@ -53,6 +53,7 @@ return array(
             'Administration\Controller\Config' => 'Administration\Controller\ConfigController',
             'Administration\Controller\Centre' => 'Administration\Controller\CentreController',
             'Administration\Controller\Maintenance' => 'Administration\Controller\MaintenanceController',
+            'Administration\Controller\Radio' => 'Administration\Controller\RadioController',
     	),
     ),
     'view_helpers' => array(

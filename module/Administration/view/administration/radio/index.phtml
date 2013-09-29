@@ -1,0 +1,145 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/radio.js')?>
+
+<div class="container-fluid">
+	<div class="span12">
+		<div class="block">
+			<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">1. Antennes </div>
+			</div>
+			<div class="block-content collapse in">
+				<div class="span12">
+				<table class="table table-striped sortable">
+					<thead>
+						<tr>
+							<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+							<th data-sort="string">Nom</th>
+							<th data-sort="string">Nom abrégé</th>
+							<th data-sort="string">Organisation</th>
+							<th>Localisation</th>
+							<th><a href="#antenna-container" id="add-antenna" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						foreach ($this->antennas as $antenna){
+							echo '<tr>';
+								echo '<td>'.$antenna->getId().'</td>';
+								echo '<td>'.$antenna->getName().'</td>';
+								echo '<td>'.$antenna->getShortname().'</td>';
+								echo '<td>'.$antenna->getOrganisation()->getName().'</td>';
+								echo '<td>'.$antenna->getLocation().'</td>';
+								echo "<td>";
+									echo "<a 
+											title=\"Modifier\"
+											href=\"#antenna-container\"
+											class=\"mod-antenna\"
+											data-id=\"".$antenna->getId()."\"
+											data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+									echo "<a 
+											title=\"Supprimer\"
+											href=\"#confirm-delete-antenna\"
+											data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deleteantenna'))."?id=".$antenna->getId()."\"
+											class=\"delete-antenna\"
+											data-id=\"".$antenna->getId()."\"
+											data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+								echo "</td>";
+							echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div class="span12">
+			<div class="block">
+			<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">2. Fréquences</div>
+			</div>
+			<div class="block-content collapse in">
+				<div class="span12">
+				<table class="table table-striped sortable">
+					<thead>
+						<tr>
+							<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+							<th data-sort="string">Valeur</th>
+							<th data-sort="string">Secteur par défaut</th>
+							<th>Antenne principale</th>
+							<th>Antenne secours</th>
+							<th><a href="#frequency-container" id="add-frequency" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						foreach ($this->frequencies as $frequency){
+							echo '<tr>';
+								echo '<td>'.$frequency->getId().'</td>';
+								echo '<td>'.$frequency->getValue().'</td>';
+								echo '<td>'.$frequency->getDefaultsector().'</td>';
+								echo '<td>'.$frequency->getMainantenna().'</td>';
+								echo '<td>'.$frequency->getBackupantenna().'</td>';
+								echo "<td>";
+									echo "<a
+											title=\"Modifier\"
+											href=\"#frequency-container\"
+											class=\"mod-frequency\"
+											data-id=\"".$frequency->getId()."\"
+											data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+									echo "<a
+											title=\"Supprimer\"
+											href=\"#confirm-delete-frequency\"
+											data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deletefrequency'))."?id=".$frequency->getId()."\"
+											class=\"delete-frequency\"
+											data-id=\"".$frequency->getId()."\"
+											data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+								echo "</td>";
+							echo '</tr>';
+						}							
+						?>
+					</tbody>
+				</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php echo $this->modalwindow("antenna-container", "<h3 id=\"antenna-title\"></h3>", "", "<div id=\"antenna-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-antenna",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'antenne <em><span id=\"antenna-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-antenna-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+						
+<?php echo $this->modalwindow("frequency-container", "<h3 id=\"frequency-title\"></h3>", "", "<div id=\"frequency-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-frequency",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer la fréquence <em><span id=\"frequency-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-frequency-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>				
+
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+radio('<?php echo $this->url('administration'); ?>');
+
+<?php $this->inlineScript()->captureEnd();?>

@@ -26,7 +26,7 @@ var centre = function(url){
 	
 	$(".delete-organisation").on('click', function(event){
 		$('a#delete-organisation-href').attr('href', $(this).data('href'));
-		$('#orgnisation-name').html($(this).data('name'));
+		$('#organisation-name').html($(this).data('name'));
 		$("#delete-organisation-href").data('id', $(this).data('id'));
 	});
 	
