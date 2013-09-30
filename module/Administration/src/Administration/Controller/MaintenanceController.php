@@ -37,9 +37,9 @@ class MaintenanceController extends AbstractActionController
 		array('name' => 'Texte long','type' => 'text'),
 		array('name' => 'Secteur','type' => 'sector'),
 		array('name' => 'Antenne','type' => 'antenna'),
-		array('name' => 'Liste choix simple','type' => 'select'),
+		array('name' => 'Liste','type' => 'select'),
 		array('name' => 'Attente','type' => 'stack'),
-		array('name' => 'Booléen','type' => 'boolean')
+		array('name' => 'Vrai/Faux','type' => 'boolean')
 	);
 	
     public function indexAction()
