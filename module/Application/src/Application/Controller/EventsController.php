@@ -115,7 +115,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     					$child = new Event();
     					$child->setParent($event);
     					$child->createFromPredefinedEvent($action);
-    					$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true, 'open'=> true)));
+    					$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
     					//customfields
     					foreach($action->getCustomFieldsValues() as $customvalue){
     						$newcustomvalue = new CustomFieldValue();
