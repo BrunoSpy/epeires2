@@ -381,7 +381,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	$event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
     	
     	if($event){
-    		$event->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('default'=>true, 
+    		$event->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 
     																									'open' => !$event->getStatus()->isOpen())));
     		$objectManager->persist($event);
     		$objectManager->flush();
