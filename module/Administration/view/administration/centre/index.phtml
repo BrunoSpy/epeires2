@@ -170,6 +170,7 @@
 								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
 								<th data-sort="string">Zone</th>
 								<th data-sort="string">Nom</th>
+								<th>Fréquence</th>
 								<th>Regroupements</th>
 								<th><a href="#sector-container" id="add-sector" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 							</tr>
@@ -181,6 +182,7 @@
 									echo '<td>'.$sector->getId().'</td>';
 									echo '<td>'.$sector->getZone()->getName().'</td>';
 									echo '<td>'.$sector->getName().'</td>';
+									echo '<td>'.($sector->getFrequency() ? $sector->getFrequency()->getValue() : "").'</td>';
 									echo '<td>';
 									foreach ($sector->getSectorsgroups() as $group){
 										echo $group->getName()." ";

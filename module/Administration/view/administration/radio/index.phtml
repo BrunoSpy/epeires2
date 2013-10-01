@@ -78,9 +78,9 @@
 							echo '<tr>';
 								echo '<td>'.$frequency->getId().'</td>';
 								echo '<td>'.$frequency->getValue().'</td>';
-								echo '<td>'.$frequency->getDefaultsector().'</td>';
-								echo '<td>'.$frequency->getMainantenna().'</td>';
-								echo '<td>'.$frequency->getBackupantenna().'</td>';
+								echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): "").'</td>';
+								echo '<td>'.$frequency->getMainantenna()->getName().'</td>';
+								echo '<td>'.$frequency->getBackupantenna()->getName().'</td>';
 								echo "<td>";
 									echo "<a
 											title=\"Modifier\"

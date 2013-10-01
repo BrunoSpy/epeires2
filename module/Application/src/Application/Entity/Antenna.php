@@ -53,12 +53,12 @@ class Antenna {
 	protected $location;
 	
 	/** 
-	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="mainantenna")
+	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="mainantenna", cascade={"detach"})
 	 */
 	protected $mainfrequencies;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="backupantenna")
+	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="backupantenna", cascade={"detach"})
 	 */
 	protected $backupfrequencies;
 	

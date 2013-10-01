@@ -398,6 +398,10 @@ class CentreController extends AbstractActionController
     	if($id){
     		$sector = $objectManager->getRepository('Application\Entity\Sector')->find($id);
     		if($sector){
+    			//TODO use cascading instead
+    			if($sector->getFrequency()){
+    				$sector->getFrequency()->setDefaultsector(null);
+    			}
     			$objectManager->remove($sector);
     			$objectManager->flush();
     		}

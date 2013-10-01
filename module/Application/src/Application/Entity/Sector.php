@@ -54,6 +54,11 @@ class Sector {
 	 */
 	protected $zone;
 	
+	/** 
+	 * @ORM\OneToOne(targetEntity="Frequency", mappedBy="defaultsector", cascade={"detach"})
+	 */
+	protected $frequency;
+	
 	public function __construct(){
 		$this->sectorsgroups = new \Doctrine\Common\Collections\ArrayCollection();
 	}
@@ -98,6 +103,14 @@ class Sector {
 		}
 	}
 	
+	public function getFrequency(){
+		return $this->frequency;
+	}
+	
+	public function setFrequency($frequency){
+		$this->frequency = $frequency;
+	}
+	
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$sectorsgroups = array();
@@ -105,6 +118,7 @@ class Sector {
 			$sectorsgroups[] = $sectorsgroup->getId();
 		}
 		$object_vars['sectorsgroups'] = $sectorsgroups;
+		$object_vars['frequency'] = ($this->frequency ? $this->frequency->getId() : null);
 		return $object_vars;
 	}
 }

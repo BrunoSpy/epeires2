@@ -12,6 +12,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Antenna;
+use Application\Entity\Frequency;
 
 class RadioController extends AbstractActionController
 {
@@ -109,11 +110,6 @@ class RadioController extends AbstractActionController
     	if($id){
     		$antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($id);
     		if($antenna){
-    		//	$groups = array();
-    		//	foreach ($objectManager->getRepository('Application\Entity\SectorGroup')->findBy(array('zone'=>$sector->getZone()->getId())) as $group){
-    		//		$groups[$group->getId()] = $group->getName();
-    		//	}
-    		//	$form->get('sectorsgroups')->setValueOptions($groups);
     			 
     			$form->bind($antenna);
     			$form->setData($antenna->getArrayCopy());
@@ -121,4 +117,95 @@ class RadioController extends AbstractActionController
     	}
     	return array('form'=>$form, 'antenna'=>$antenna);
     }
+
+    /* **************************** */
+    /*           Fréquences         */
+    /* **************************** */
+     
+    public function formfrequencyAction(){
+    	$request = $this->getRequest();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    
+    	$id = $this->params()->fromQuery('id', null);
+    
+    
+    	$form = $this->getFormFrequency($id)['form'];
+    
+    	$form->add(array(
+    			'name' => 'submit',
+    			'attributes' => array(
+    					'type' => 'submit',
+    					'value' => 'Enregistrer',
+    					'class' => 'btn btn-primary',
+    			),
+    	));
+    
+    	$viewmodel->setVariables(array('form' =>$form));
+    	return $viewmodel;
+    }
+    
+    public function savefrequencyAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$id = $post['id'];
+    		 
+    		$datas = $this->getFormFrequency($id);
+    		$form = $datas['form'];
+    		$form->setData($post);
+    
+    		$frequency = $datas['frequency'];
+    
+    		if($form->isValid()){
+    			//$antenna->setOrganisation($objectManager->getRepository('Application\Entity\Organisation')->find($post['organisation']));
+    
+    			$objectManager->persist($frequency);
+    			$objectManager->flush();
+    		}
+    	}
+    
+    	$json = array('id' => $frequency->getId(), 'name' => $frequency->getValue());
+    
+    	return new JsonModel($json);
+    }
+    
+    public function deletefrequencyAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id){
+    		$frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
+    		if($frequency){
+    			$objectManager->remove($frequency);
+    			$objectManager->flush();
+    		}
+    	}
+    	return new JsonModel();
+    }
+    
+    private function getFormFrequency($id){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$frequency = new Frequency();
+    	$builder = new AnnotationBuilder();
+    	$form = $builder->createForm($frequency);
+    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Frequency'))
+    	->setObject($frequency);
+    
+    	$form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
+    	$form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
+    	$form->get('defaultsector')->setValueOptions($objectManager->getRepository('Application\Entity\Sector')->getAllAsArray());
+    	
+    	if($id){
+    		$frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
+    		if($frequency){
+    
+    			$form->bind($frequency);
+    			$form->setData($frequency->getArrayCopy());
+    		}
+    	}
+    	return array('form'=>$form, 'frequency'=>$frequency);
+    }
+
 }
