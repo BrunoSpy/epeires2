@@ -273,7 +273,7 @@ class ModelsController extends AbstractActionController
     		//and change validator
     		$form->getInputFilter()->get('category')->setRequired(false);
     		//add custom fields input
-    		$form->add(new CustomFieldset($objectManager, $catid));
+    		$form->add(new CustomFieldset($this->getServiceLocator(), $catid));
     	}
     	
     	if($id){//modification d'un evt
@@ -288,7 +288,7 @@ class ModelsController extends AbstractActionController
     			//custom field values
     			$customfields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$pevent->getCategory()->getId()));
     			if(count($customfields) > 0 ){
-    				$form->add(new CustomFieldset($objectManager, $pevent->getCategory()->getId()));
+    				$form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()->getId()));
     				foreach ($customfields as $customfield){
     					$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')
     					->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
@@ -336,7 +336,7 @@ class ModelsController extends AbstractActionController
      	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\PredefinedEvent'))
      	->setObject($pevent);
      	
-     	$form->add(new CustomFieldset($objectManager, $id));
+     	$form->add(new CustomFieldset($this->getServiceLocator(), $id));
      	
      	$viewmodel->setVariables(array('form' =>$form));
      	return $viewmodel;

@@ -1,0 +1,32 @@
+<?php
+
+if($this->get('history')){
+	
+	$history = $this->get('history');
+	
+	echo '<dl>';
+	foreach ($history as $key => $value){
+		echo '<dt>'.$value['date']->format("d M Y, H:i T").'</dt>';
+		echo '<dd>';
+		echo '<ul>';
+		foreach($value['changes'] as $change){
+			echo '<li>';
+			if($change['fieldname'] == 'note'){
+				echo $change['newvalue'];
+			} else {
+				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
+				if(empty($change['oldvalue'])){
+					echo ' enregistré à <em>'.$change['newvalue'].'</em>';
+				} else {
+					echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
+				}
+			}
+			echo '</li>';
+		}
+		echo '</ul>';
+		echo '</dd>';
+	}
+	echo '</dl>';
+}
+
+
