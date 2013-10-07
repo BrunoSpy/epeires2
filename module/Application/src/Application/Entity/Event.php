@@ -173,12 +173,6 @@ class Event implements InputFilterAwareInterface {
   	}
 	
  	public function getStartDate(){
- 		if($this->start_date){
- 			//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
- 			//mais à la création php les crée en temps local, il faut donc les corriger
- 			$offset = date("Z");
- 			$this->start_date->add(new \DateInterval("PT".$offset."S"));
- 		}
  		return $this->start_date;
  	}
 	

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="log")
  * @ORM\Entity(repositoryClass="Gedmo\Loggable\Entity\Repository\LogEntryRepository")
- * @ORM\HasLifeCycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 class Log extends AbstractLogEntry{
 
