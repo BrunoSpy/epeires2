@@ -64,8 +64,8 @@ class CentreController extends AbstractActionController
     	
     	$id = $this->params()->fromQuery('id', null);
     	
-    	 
-    	$form = $this->getFormOrganisation($id)['form'];
+    	$getform = $this->getFormOrganisation($id);
+    	$form = $getform['form'];
     	 
     	$form->add(array(
     			'name' => 'submit',
@@ -146,8 +146,8 @@ class CentreController extends AbstractActionController
     	 
     	$id = $this->params()->fromQuery('id', null);
     	 
-    
-    	$form = $this->getFormQualif($id)['form'];
+    	$getform = $this->getFormQualif($id);
+    	$form = $getform['form'];
     
     	$form->add(array(
     			'name' => 'submit',
@@ -246,8 +246,8 @@ class CentreController extends AbstractActionController
     
     	$id = $this->params()->fromQuery('id', null);
     
-    
-    	$form = $this->getFormGroup($id)['form'];
+    	$getform = $this->getFormGroup($id);
+    	$form = $getform['form'];
     
     	$form->add(array(
     			'name' => 'submit',
@@ -351,8 +351,8 @@ class CentreController extends AbstractActionController
     
     	$id = $this->params()->fromQuery('id', null);
     
-    
-    	$form = $this->getFormSector($id)['form'];
+    	$getform = $this->getFormSector($id);
+    	$form = $getform['form'];
     
     	$form->add(array(
     			'name' => 'submit',

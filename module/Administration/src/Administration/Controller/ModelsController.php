@@ -235,7 +235,8 @@ class ModelsController extends AbstractActionController
     		$viewmodel->setVariables(array('childs' => $childs));
     	}
     	
-    	$form = $this->getForm($id, $parentid, $catid)['form'];
+    	$getform = $this->getForm($id, $parentid, $catid);
+    	$form = $getform['form'];
     	
     	$form->add(array(
     			'name' => 'submit',
