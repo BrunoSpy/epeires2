@@ -42,4 +42,27 @@ class EventUpdate {
 		$this->created_on = new \DateTime('NOW');
 		$this->created_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
+	
+	public function getCreatedOn(){
+		return $this->created_on;
+	}
+	
+	/**
+	 * @ORM\PostLoad
+	 */
+	public function doCorrectUTC(){
+		if($this->created_on){
+			$this->created_on->setTimezone(new \DateTimeZone("UTC"));
+			$offset = date("Z");
+			$this->created_on->add(new \DateInterval("PT".$offset."S"));
+		}
+	}
+	
+	public function setText($text){
+		$this->text = $text;
+	}
+	
+	public function getText(){
+		return $this->text;
+	}
 }

@@ -48,7 +48,7 @@ $(document).ready(function(){
 	   } else {
 		   $("#panel").show();
 		   $("#panel").animate({width:'20%'});
-		   $("#panel").load('http://127.0.0.1/epeires2/events/gethistory?id=161');
+		   $("#panel").load('http://127.0.0.1/epeires2/events/gethistory?id=172');
 	   }
 	   
    });

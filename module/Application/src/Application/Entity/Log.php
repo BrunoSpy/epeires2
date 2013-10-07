@@ -7,9 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="log")
  * @ORM\Entity(repositoryClass="Gedmo\Loggable\Entity\Repository\LogEntryRepository")
+ * @ORM\HasLifeCycleCallbacks
  */
 class Log extends AbstractLogEntry{
 
+	
+	
 	/**
 	 * UTC
 	 */
@@ -17,6 +20,17 @@ class Log extends AbstractLogEntry{
 	{
 		$this->loggedAt = new \DateTime();
 		$this->loggedAt->setTimezone(new \DateTimeZone("UTC"));
+	}
+	
+	/** 
+	 * @ORM\PostLoad
+	 */
+	public function doCorrectUTC(){
+		if($this->loggedAt){
+			$this->loggedAt->setTimezone(new \DateTimeZone("UTC"));
+			$offset = date("Z");
+			$this->loggedAt->add(new \DateInterval("PT".$offset."S"));
+		}
 	}
 	
 }

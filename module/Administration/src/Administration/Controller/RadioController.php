@@ -43,8 +43,8 @@ class RadioController extends AbstractActionController
     
     	$id = $this->params()->fromQuery('id', null);
     
-    
-    	$form = $this->getFormAntenna($id)['form'];
+    	$getform = $this->getFormAntenna($id);
+    	$form = $getform['form'];
     
     	$form->add(array(
     			'name' => 'submit',
@@ -131,8 +131,8 @@ class RadioController extends AbstractActionController
     
     	$id = $this->params()->fromQuery('id', null);
     
-    
-    	$form = $this->getFormFrequency($id)['form'];
+    	$getform = $this->getFormFrequency($id);
+    	$form = $getform['form'];
     
     	$form->add(array(
     			'name' => 'submit',

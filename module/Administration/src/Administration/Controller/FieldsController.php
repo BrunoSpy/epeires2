@@ -122,7 +122,8 @@ class FieldsController extends AbstractActionController
 					->where ( 'f.category = ' . $post ['category'] );
 				
 				if(!$id){ //new field : calculate last place
-					$order = $qb->getQuery ()->getSingleResult ()[1] + 1;    			
+					$result = $qb->getQuery ()->getSingleResult ();
+					$order = $result[1] + 1;    			
     				$customfield->setPlace($order);
 				}
 				
@@ -156,7 +157,9 @@ class FieldsController extends AbstractActionController
     //	$return = $this->params()->fromQuery('return', null);
     	$categoryid = $this->params()->fromQuery('categoryid', null);
      	
-    	$viewmodel->setVariables(array('form' => $this->getForm($id, $categoryid)['form'],'id'=>$id));
+    	$getform = $this->getForm($id, $categoryid);
+    	
+    	$viewmodel->setVariables(array('form' => $getform['form'],'id'=>$id));
     	return $viewmodel;
     }
     

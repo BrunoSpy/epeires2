@@ -98,6 +98,10 @@ class Event implements InputFilterAwareInterface {
  		return $this->id;
  	}
  	
+ 	public function getUpdates(){
+ 		return $this->updates;
+ 	}
+ 	
  	public function getCustomFieldsValues(){
  		return $this->custom_fields_values;
  	}
@@ -183,13 +187,34 @@ class Event implements InputFilterAwareInterface {
 	}
 	
 	public function getEndDate(){
-		if($this->end_date){//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
- 			//mais à la création php les crée en temps local, il faut donc les corriger
- 			$offset = date("Z");
- 			$this->end_date->add(new \DateInterval("PT".$offset."S"));
-		}
 		return $this->end_date;
 	}
+	
+	/** 
+	 * @ORM\PostLoad
+	 */
+	public function doCorrectUTC(){
+		//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
+		//mais à la création php les crée en temps local, il faut donc les corriger
+		$offset = date("Z");
+		if($this->end_date){
+			$this->end_date->setTimezone(new \DateTimeZone("UTC"));
+			$this->end_date->add(new \DateInterval("PT".$offset."S"));
+		}
+		if($this->start_date){
+			$this->start_date->setTimezone(new \DateTimeZone("UTC"));
+			$this->start_date->add(new \DateInterval("PT".$offset."S"));
+		}
+		if($this->created_on){
+			$this->created_on->setTimezone(new \DateTimeZone("UTC"));
+			$this->created_on->add(new \DateInterval("PT".$offset."S"));
+		}
+		if($this->last_modified_on){
+			$this->last_modified_on->setTimezone(new \DateTimeZone("UTC"));
+			$this->last_modified_on->add(new \DateInterval("PT".$offset."S"));
+		}
+	}
+	
 	
 	public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined){
 		$this->setCategory($predefined->getCategory());

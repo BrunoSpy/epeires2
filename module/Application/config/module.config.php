@@ -48,6 +48,11 @@ return array(
         		$eventservice->setEntityManager($sm->get('Doctrine\ORM\EntityManager'));
         		return $eventservice;
         	},
+        	'customfieldservice' => function($sm){
+        		$customfield = new \Application\Services\CustomFieldService();
+        		$customfield->setEntityManager($sm->get('Doctrine\ORM\EntityManager'));
+        		return $customfield;
+        	},
         ),
     ),
     'translator' => array(
@@ -80,6 +85,8 @@ return array(
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     		'impact' => 'Application\View\Helper\Impact',
     		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
+    		'customfieldvalue' => 'Application\View\Helper\CustomFieldValue',
+    		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     	),
     	'factories' => array(
     		'eventName' => function($helperPluginManager){

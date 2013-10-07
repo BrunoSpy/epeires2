@@ -4,29 +4,34 @@ namespace Application\Form;
 use Zend\Form\Fieldset;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Collections\Criteria;
+use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Zend\ServiceManager\ServiceManager;
 	
 /**
  * Fieldset for custom fields
- * Types available :
- * 		- int
- * 		- text
- * 		- longtext
- * 		- list
- * 		- antennas
- * 		- sectors
- * 		- stacks
  * @author Bruno Spyckerelle
  *
  */
-class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
+class CustomFieldset extends Fieldset implements InputFilterProviderInterface, ServiceManagerAwareInterface {
 	
 	private $names; 
 	
-	public function __construct(\Doctrine\ORM\EntityManager $om, $categoryid){
+	private $sm;
+	
+	public function setServiceManager(ServiceManager $serviceManager){
+		$this->sm = $serviceManager;
+	}
+	
+	public function __construct(ServiceManager $sm, $categoryid){
 		
 		parent::__construct('custom_fields');
 		
+		$this->setServiceManager($sm);
+		$om = $sm->get('Doctrine\ORM\EntityManager');
+		
 		$this->names = array();
+		
+		
 		
 		$category = $om->getRepository('Application\Entity\Category')->find($categoryid);
 		$customfields = $om->getRepository('Application\Entity\CustomField')
@@ -49,36 +54,15 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface {
 			$definition['name'] = $customfield->getId();
 			$this->names[] = $customfield->getName();
 			$options = array('label' => $customfield->getName()." :");
-			switch ($customfield->getType()->getType()) {
-				case 'string':
-					$definition['type'] = 'Zend\Form\Element\Text';
-					break;
-				case 'text':
-					$definition['type'] = 'Zend\Form\Element\Textarea';
-					break;
-				case 'sector':
-					$definition['type'] = 'Zend\Form\Element\Select';
-					$options['value_options'] = $om->getRepository('Application\Entity\Sector')->getAllAsArray();
-				break;
-				case 'antenna':
-					$definition['type'] = 'Zend\Form\Element\Select';
-					$options['value_options'] = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();					
-				break;
-				case 'select':
-					$definition['type'] = 'Zend\Form\Element\Select';
-					$options['value_options'] = explode(PHP_EOL, $customfield->getDefaultValue());
-				break;
-				case 'stack':
-					$definition['type'] = 'Zend\Form\Element\Select';
-					$options['value_options'] = $om->getRepository('Application\Entity\Stack')->getAllAsArray();
-				break;
-				case 'boolean':
-					$definition['type'] = 'Zend\Form\Element\Checkbox';
-					break;
-				default:
-					;
-				break;
+			
+			$customfieldservice = $sm->get('CustomFieldService');
+			
+			$value_options = $customfieldservice->getFormValueOptions($customfield);
+			if($value_options){
+				$options['value_options'] = $value_options;
 			}
+			$definition['type'] = $customfieldservice->getZendType($customfield->getType());
+			
 			$definition['options'] = $options;
 			$this->add($definition);
 		}

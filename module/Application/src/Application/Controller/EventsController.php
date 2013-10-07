@@ -205,7 +205,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     	}
     	//fill optional form fieldsets
     	if(isset($post['custom_fields'])){
-    		$form->add(new CustomFieldset($objectManager, $post['custom_fields']['category_id']));
+    		$form->add(new CustomFieldset($this->getServiceLocator(), $post['custom_fields']['category_id']));
     	}
     	
     	return $form;
@@ -245,7 +245,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     			case 'custom_fields':
     				$viewmodel->setVariables(array(
     				'part' => $part,));
-    				$form->add(new CustomFieldset($em, $this->params()->fromQuery('id')));
+    				$form->add(new CustomFieldset($this->getServiceLocator(), $this->params()->fromQuery('id')));
     				break;
     			default:
     				;
@@ -296,7 +296,7 @@ class EventsController extends AbstractActionController implements LoggerAware
     			$form->get('categories')->get('root_categories')->setAttribute('value', $cat->getId());
     		}
     		//custom fields
-    		$form->add(new CustomFieldset($em, $cat->getId()));
+    		$form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
     		//custom fields values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
@@ -498,19 +498,27 @@ class EventsController extends AbstractActionController implements LoggerAware
     }
     
     public function gethistoryAction(){
-    	$json = array();
+
+    	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	 
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
     	$evtId = $this->params()->fromQuery('id', null);
     	
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
+    	
     	if($event){
     		$history = $eventservice->getHistory($event);
     	}
     	
+    	$viewmodel->setVariable('history', $history);
     	
-    	return new JsonModel($json);
+    	return $viewmodel;
     }
     
     /**
