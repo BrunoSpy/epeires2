@@ -17,8 +17,7 @@ use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
-class EventsController extends AbstractActionController implements LoggerAware
-{
+class EventsController extends FormController {
 	
     public function indexAction(){    	
     	
@@ -129,7 +128,6 @@ class EventsController extends AbstractActionController implements LoggerAware
     			}
     			$objectManager->persist($event);
     			$objectManager->flush();
-    			$this->logger->log(\Zend\Log\Logger::INFO, "event saved");
     			if($return){
     				$this->flashMessenger()->addSuccessMessage("Evènement enregistré");
     			} else {
@@ -141,7 +139,6 @@ class EventsController extends AbstractActionController implements LoggerAware
     				return new JsonModel(array('events' => array($event->getId() => $this->getEventJson($event)), 'messages'=>$messages));
     			}
     		} else {
-    			$this->logger->log(\Zend\Log\Logger::ALERT, "Formulaire non valide");
     			if($return){
     				$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
     			} else {
@@ -158,32 +155,6 @@ class EventsController extends AbstractActionController implements LoggerAware
     	}
     	
     	
-    }
-    
-    private function processFormMessages($messages, &$json = null){
-    	foreach($messages as $key => $message){
-    		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
-    			if(is_array($mvalue)){
-    				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
-    					if($json){
-    						$n = isset($json['error']) ? count($json['error']) : 0;
-    						$json['error'][$n] = "Champ ".$mkey." incorrect : ".$nvalue;
-    					} else {
-    						$this->flashMessenger()->addErrorMessage(
-    							"Champ ".$mkey." incorrect : ".$nvalue);
-    					}
-    				}
-    			} else {
-    				if($json){
-    					$n = isset($json['error']) ? count($json['error']) : 0;
-    					$json['error'][$n] = "Champ ".$key." incorrect : ".$mvalue;
-    				} else {
-    					$this->flashMessenger()->addErrorMessage(
-    						"Champ ".$key." incorrect : ".$mvalue);
-    				}
-    			}
-    		}
-    	}
     }
     
     private function prepareForm($event, $root_category = 0){
@@ -553,14 +524,4 @@ class EventsController extends AbstractActionController implements LoggerAware
     	return new JsonModel($messages);
     }
     
-    //Logger
-    private $logger;
-    
-    public function setLogger(\Zend\Log\Logger $logger){
-    	$this->logger = $logger;
-    }
-    
-    public function getLogger(){
-    	return $logger;
-    }
 }
