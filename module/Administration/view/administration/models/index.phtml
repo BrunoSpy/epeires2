@@ -1,25 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 
-<div class="warnings">
-<?php if (isset($this->messages['successMessages'])) { ?>
-	<?php foreach ($this->messages['successMessages'] as $message) { ?>
-		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['errorMessages'])) { ?>
-	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
-		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-</div>
-
 <table class="table table-striped sortable">
 <thead>
 	<tr>
@@ -83,5 +63,23 @@ $(".sortable").bind('aftertablesort', function(event, data){
     var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
+
+
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
 
 <?php $this->inlineScript()->captureEnd();?>

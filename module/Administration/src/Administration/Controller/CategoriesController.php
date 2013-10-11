@@ -13,8 +13,9 @@ use Application\Entity\Category;
 use Application\Entity\CustomField;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Application\Controller\FormController;
 
-class CategoriesController extends AbstractActionController{
+class CategoriesController extends FormController{
     
 	public function indexAction(){
    		

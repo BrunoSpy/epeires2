@@ -22,6 +22,9 @@
         							  ->prependFile($this->basePath() . '/js/spectrum.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+                                      ->prependFile($this->basePath() . '/js/noty/themes/default.js')
+                                      ->prependFile($this->basePath() . '/js/noty/layouts/bottomRight.js')
+                                      ->prependFile($this->basePath() . '/js/noty/jquery.noty.js')
                                       ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery.min.js')
         							   ?>
@@ -95,10 +98,32 @@
 			</ul>
 		</div>
 	</div>
+	
 	<div class="content">
-            <?php echo $this->content; ?>
-        </div> <!-- /container -->
+		<div class="warnings">
+		<?php if (isset($this->messages['successMessages'])) { ?>
+			<?php foreach ($this->messages['successMessages'] as $message) { ?>
+				<div class="alert alert-success">
+					<a class="close" data-dismiss="alert" href="#">&times;</a>
+					<?php echo $message ?>
+				</div>
+			<?php }?>
+		<?php } ?>
+
+		<?php if (isset($this->messages['errorMessages'])) { ?>
+			<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+				<div class="alert alert-error">
+					<a class="close" data-dismiss="alert" href="#">&times;</a>
+					<?php echo $message ?>
+				</div>
+			<?php }?>
+		<?php } ?>
+		</div>
+	
+        <?php echo $this->content; ?>
+    
+    </div> <!-- /container -->
         
-        <?php echo $this->inlineScript() ?>
+    <?php echo $this->inlineScript() ?>
     </body>
 </html>

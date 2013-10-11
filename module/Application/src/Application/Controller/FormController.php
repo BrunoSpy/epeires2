@@ -7,7 +7,7 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractController;
+use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * 
@@ -15,7 +15,7 @@ use Zend\Mvc\Controller\AbstractController;
  *
  */
 abstract class FormController extends AbstractActionController {
-	
+
 	protected function processFormMessages($messages, &$json = null){
 		foreach($messages as $key => $message){
 			foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'

@@ -15,8 +15,9 @@ use Application\Entity\PredefinedCustomFieldValue;
 use Application\Form\CustomFieldset;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Application\Controller\FormController;
 
-class ModelsController extends AbstractActionController
+class ModelsController extends FormController
 {
     public function indexAction()
     {
@@ -134,6 +135,8 @@ class ModelsController extends AbstractActionController
     
     public function saveAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$messages = array();
+    	
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
@@ -204,15 +207,20 @@ class ModelsController extends AbstractActionController
     				}
     			}
     			$objectManager->flush();
+    			$this->flashMessenger()->addSuccessMessage("Modèle ".$pevent->getName()." enregistré.");
+    			$this->processFormMessages($form->getMessages());
     		} else {
-    			$this->flashMessenger()->addErrorMessage("Impossible de sauver l'évènement.");
     			//traitement des erreurs de validation
     			$this->processFormMessages($form->getMessages());
     		}
     		
     	}
     	
-    	$json = array('id' => $pevent->getId(), 'name' => $this->getServiceLocator()->get('EventService')->getName($pevent), 'impactstyle' => $pevent->getImpact()->getStyle(), 'impactname' => $pevent->getImpact()->getName());
+    	$json = array('id' => $pevent->getId(),
+    			'name' => $this->getServiceLocator()->get('EventService')->getName($pevent),
+    			'impactstyle' => $pevent->getImpact()->getStyle(),
+    			'impactname' => $pevent->getImpact()->getName(),
+    			'messages' => $messages);
     	
     	return new JsonModel($json);
     }
@@ -344,19 +352,4 @@ class ModelsController extends AbstractActionController
      	
      }
      
-     private function processFormMessages($messages){
-     	foreach($messages as $key => $message){
-     		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
-     			if(is_array($mvalue)){
-     				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
-     					$this->flashMessenger()->addErrorMessage(
-     							"Champ ".$mkey." incorrect : ".$nvalue);
-     				}
-     			} else {
-     				$this->flashMessenger()->addErrorMessage(
-     						"Champ ".$key." incorrect : ".$mvalue);
-     			}
-     		}
-     	}
-     }
 }

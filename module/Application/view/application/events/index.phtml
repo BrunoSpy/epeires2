@@ -1,24 +1,4 @@
 
-<div class="warnings">
-<?php if (isset($this->messages['successMessages'])) { ?>
-	<?php foreach ($this->messages['successMessages'] as $message) { ?>
-		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['errorMessages'])) { ?>
-	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
-		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-</div>
-
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
 <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
