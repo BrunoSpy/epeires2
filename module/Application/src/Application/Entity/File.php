@@ -8,6 +8,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Zend\Form\Annotation;
 
 /**
  * @ORM\Entity
@@ -29,8 +30,20 @@ class File {
 	protected $path;
 
 	/**
+	 * @ORM\Column(name="mime_type", type="string")
+	 * @Gedmo\UploadableFileMimeType
+	 */
+	protected $mimetype;
+	
+	/**
 	 * @ORM\ManyToMany(targetEntity="Event", inversedBy="files")
+	 * @ORM\JoinTable(name="file_event")
 	 */
 	protected $events;
+	
+	
+	public function __construct(){
+		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
+	}
 	
 }

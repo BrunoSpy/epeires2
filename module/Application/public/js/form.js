@@ -183,10 +183,10 @@ var form = function(url){
 	//submit form
 	$("#event").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
-		$.post(url+'/save', $("#eventform").serialize(), function(data){
+		$.post(url+'/save', $("#Event").serialize(), function(data){
 			//close form
 			$("#create-link").trigger("click");
-			var id = $("#eventform").find('input#id').val();
+			var id = $("#Event").find('input#id').val();
 			if(id>0){
 				//modification
 				timeline.modify(data.events, 0);
@@ -410,6 +410,11 @@ var form = function(url){
 	$("#event").on("change", "#punctual", function(){
 		$("#dateFin").prop('disabled',$(this).is(':checked')); 
 		$("#end input").prop('disabled', $(this).is(':checked'));
+		if($(this).is(':checked')){
+			$("#end a").addClass("disabled");
+		} else {
+			$("#end a").removeClass("disabled");
+		}
 	});
 
 };

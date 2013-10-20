@@ -16,6 +16,7 @@ use Application\Entity\CustomFieldValue;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Zend\Form\Annotation\AnnotationBuilder;
 
 class EventsController extends FormController {
 	
@@ -62,21 +63,17 @@ class EventsController extends FormController {
     		if($id){
     			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
     		} 
-    		$form = $this->prepareForm($event);
-    		$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Event'))
-    			->setObject($event);
+    		$form = $this->getSkeletonForm($event);  		
     		
-    		$form->bind($event);
     		$form->setData($post);
-    		     		
+    		     		  		
     		if($form->isValid()){
-    			//save new event
-    			$event->setStartDate(new \DateTime($post['start_date']));
-    			if(isset($post['end_date']) && !empty($post['end_date'])){
-    				$event->setEndDate(new \DateTime($post['end_date']));
+   			 
+    			//TODO find why hydrator can't set a null value to a datetime
+    			if(isset($post['enddate']) && empty($post['enddate'])){
+    				$event->setEndDate(null);
     			}
-    			$event->setStatus($objectManager->find('Application\Entity\Status', $post['status']));
-    			$event->setImpact($objectManager->find('Application\Entity\Impact', $post['impact']));
+    			
     			if(!$id){//categories disabled when modification
     				if(isset($post['categories']['subcategories'])
     						&& !empty($post['categories']['subcategories'])
@@ -103,7 +100,6 @@ class EventsController extends FormController {
     						$customvalue->setValue($value);
     						$objectManager->persist($customvalue);
     					}
-    					//TODO : historique
     				}
     			}
     			//create associated actions (only relevant if creation from a model
@@ -157,31 +153,6 @@ class EventsController extends FormController {
     	
     }
     
-    private function prepareForm($event, $root_category = 0){
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	
-    	$form = new EventForm($objectManager->getRepository('Application\Entity\Status')->getAllAsArray(),
-    			$objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
-    	$form->setInputFilter($event->getInputFilter());
-    	 
-    	if($root_category){ //pas de catégories pour la modification d'un evt
-    		$categoryfieldset = new CategoryFormFieldset($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray());
-    		$form->add($categoryfieldset);
-    		//fill form subcategories
-    		$valueoptions = $objectManager->getRepository('Application\Entity\Category')->getChildsAsArray($root_category);
-    		$valueoptions[-1] = "";
-    		$form->get('categories')
-    		->get('subcategories')
-    		->setValueOptions($valueoptions);
-    	}
-    	//fill optional form fieldsets
-    	if(isset($post['custom_fields'])){
-    		$form->add(new CustomFieldset($this->getServiceLocator(), $post['custom_fields']['category_id']));
-    	}
-    	
-    	return $form;
-    }
-
     public function subformAction(){
     	$part = $this->params()->fromQuery('part', null);
     	
@@ -275,13 +246,9 @@ class EventsController extends FormController {
     				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     			}
     		}
-    		//status
-    		$form->get('status')->setAttribute('value', $event->getStatus()->getId());
-    		//impact
-    		$form->get('impact')->setAttribute('value', $event->getImpact()->getId());
     		//other values
     		$form->bind($event);
-    		 
+    		$form->setData($event->getArrayCopy());
     		$viewmodel->setVariables(array('event'=>$event));
     	}
     	
@@ -290,14 +257,38 @@ class EventsController extends FormController {
     	 
     }
     
-    private function getSkeletonForm(){
+    private function getSkeletonForm($event = null){
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
-    	//création du formulaire : identique en cas de modif ou création
-    	$form = new EventForm($em->getRepository('Application\Entity\Status')->getAllAsArray(),
-    			$em->getRepository('Application\Entity\Impact')->getAllAsArray());
+    	if(!$event){
+    		$event = new Event();
+    	}
+    	
+    	$builder = new AnnotationBuilder();
+    	$form = $builder->createForm($event);
+    	$form->setHydrator(new DoctrineObject($em, 'Application\Entity\Event'))
+    		->setObject($event);    	
+    	
+    	$form->get('status')
+    		->setValueOptions($em->getRepository('Application\Entity\Status')->getAllAsArray());
+    	
+    	$form->get('impact')
+    		->setValueOptions($em->getRepository('Application\Entity\Impact')->getAllAsArray());
+
     	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray(null, true)));
+ 	
+    	$form->bind($event);
+    	$form->setData($event->getArrayCopy());
+    	
+    	$form->add(array(
+    			'name' => 'submit',
+    			'attributes' => array(
+    					'type' => 'submit',
+    					'value' => 'Ajouter',
+    					'class' => 'btn btn-primary',
+    			),
+    	));
     	
     	return $form;
     }
@@ -393,7 +384,7 @@ class EventsController extends FormController {
     		$criteria->andWhere(Criteria::expr()->gte('last_modified_on', $lastmodified));
     	} else {
     		$now = new \DateTime('NOW');
-    		$criteria->andWhere(Criteria::expr()->gte('start_date', $now->sub(new \DateInterval('P3D'))));
+    		$criteria->andWhere(Criteria::expr()->gte('startdate', $now->sub(new \DateInterval('P3D'))));
     	}
     	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
     	
@@ -408,8 +399,8 @@ class EventsController extends FormController {
     private function getEventJson($event){
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$json = array('name' => $eventservice->getName($event),
-    					'start_date' => $event->getStartDate()->format(DATE_RFC2822),
-    					'end_date' => ($event->getEndDate() ? $event->getEndDate()->format(DATE_RFC2822) : null),
+    					'start_date' => $event->getStartdate()->format(DATE_RFC2822),
+    					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),
     					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
     					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
@@ -483,6 +474,7 @@ class EventsController extends FormController {
     	
     	$event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
     	
+    	$history = null;
     	if($event){
     		$history = $eventservice->getHistory($event);
     	}

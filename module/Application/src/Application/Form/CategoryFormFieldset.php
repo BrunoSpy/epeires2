@@ -39,7 +39,7 @@ class CategoryFormFieldset extends Fieldset implements InputFilterProviderInterf
 	
 	public function getInputFilterSpecification(){
 		return array(
-				'root_categories'=>array('required'=>true),
+				'root_categories'=>array('required'=>false),
 				'subcategories' => array('required'=>false),
 				
 		);

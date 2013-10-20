@@ -50,11 +50,13 @@
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
-		$html .= $this->controlGroup("", $this->formHidden($this->form->get('start_date')));
+		$html .= $this->controlGroup("", $this->formHidden($this->form->get('startdate')));
 		
-		$html .= $this->controlGroup('<label class="control-label time-middle">Début</label>', $this->formDateTimeEnhanced("start"), array('class'=>'compact'));
+		$html .= $this->controlGroup(
+				$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
+				$this->formDateTimeEnhanced("start"), array('class'=>'compact'));
 		
-		$formEndDate = $this->form->get('end_date');
+		$formEndDate = $this->form->get('enddate');
 		if($this->event){
 			if($this->event->isPunctual()){
 				$formEndDate->setAttribute('disabled', true);
@@ -62,7 +64,9 @@
 		}
 		$html .= $this->controlGroup("",$this->formHidden($formEndDate));
 		
-		$html .= $this->controlGroup('<label class="control-label time-middle">Fin</label>',$this->formDateTimeEnhanced("end"), array('class'=>'compact'));
+		$html .= $this->controlGroup(
+				$this->formLabel($this->form->get('enddate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
+				$this->formDateTimeEnhanced("end"), array('class'=>'compact'));
 		
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		

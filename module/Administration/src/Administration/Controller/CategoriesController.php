@@ -204,21 +204,4 @@ class CategoriesController extends FormController{
     	return $viewmodel;
     }
     
-    //TODO factoriser
-    private function processFormMessages($messages){
-    	foreach($messages as $key => $message){
-    		foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
-    			if(is_array($mvalue)){
-    				foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
-    					$this->flashMessenger()->addErrorMessage(
-    							"Champ ".$mkey." incorrect : ".$nvalue);
-    				}
-    			} else {
-    				$this->flashMessenger()->addErrorMessage(
-    						"Champ ".$key." incorrect : ".$mvalue);
-    			}
-    		}
-    	}
-    }
-    
 }

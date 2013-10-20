@@ -9,10 +9,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\InputFilter\InputFilterAwareInterface;
-use Zend\InputFilter\InputFilterInterface;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\Factory as InputFactory;
+use Zend\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -20,22 +17,29 @@ use Zend\InputFilter\Factory as InputFactory;
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
-class Event implements InputFilterAwareInterface {
+class Event {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Column(type="integer")
+	 * @Annotation\Type("Zend\Form\Element\Hidden")
 	 */
 	protected $id;
 
 	/** 
 	 * @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Ponctuel :"})
+	 * @Annotation\Attributes({"id":"punctual"})
 	 * @Gedmo\Versioned
 	 */
 	protected $punctual;
 
  	/** 
  	 * @ORM\ManyToOne(targetEntity="Status")
+ 	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(true)
+	 * @Annotation\Options({"label":"Status :"})
  	 * @Gedmo\Versioned
  	 */
  	protected $status;
@@ -48,21 +52,32 @@ class Event implements InputFilterAwareInterface {
  	
  	/** 
  	 * @ORM\ManyToOne(targetEntity="Impact")
+  	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(true)
+	 * @Annotation\Options({"label":"Impact :"})
  	 * @Gedmo\Versioned
  	 */
  	protected $impact;
 	
  	/** 
- 	 * @ORM\Column(type="datetime", nullable=true)
+ 	 * @ORM\Column(type="datetime")
+   	 * @Annotation\Type("Zend\Form\Element\DateTime")
+	 * @Annotation\Required(true)
+	 * @Annotation\Options({"label":"Début :", "format" : "d-m-Y H:i"})
+	 * @Annotation\Attributes({"class":"datetime", "id":"dateDeb"})
  	 * @Gedmo\Versioned
  	 */
-  	protected $start_date;
+  	protected $startdate;
 	
  	/** 
  	 * @ORM\Column(type="datetime", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\DateTime")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Fin :", "format" : "d-m-Y H:i"})
+	 * @Annotation\Attributes({"class":"datetime", "id":"dateFin"})
  	 * @Gedmo\Versioned
  	 */
- 	protected $end_date;
+ 	protected $enddate = null;
 	
 	/** @ORM\Column(type="datetime") */
 	protected $created_on;
@@ -92,6 +107,7 @@ class Event implements InputFilterAwareInterface {
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
+ 		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
  	public function getId(){
@@ -168,20 +184,20 @@ class Event implements InputFilterAwareInterface {
 		return $this->childs;
 	}
 	
-  	public function setStartDate($startdate = null){
-  		$this->start_date = $startdate;
+  	public function setStartdate($startdate = null){
+  		$this->startdate = $startdate;
   	}
 	
- 	public function getStartDate(){
- 		return $this->start_date;
+ 	public function getStartdate(){
+ 		return $this->startdate;
  	}
 	
-	public function setEndDate($enddate = null){
-		$this->end_date = $enddate;
+	public function setEnddate($enddate = null){
+		$this->enddate = $enddate;
 	}
 	
-	public function getEndDate(){
-		return $this->end_date;
+	public function getEnddate(){
+		return $this->enddate;
 	}
 	
 	/** 
@@ -191,13 +207,13 @@ class Event implements InputFilterAwareInterface {
 		//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
 		//mais à la création php les crée en temps local, il faut donc les corriger
 		$offset = date("Z");
-		if($this->end_date){
-			$this->end_date->setTimezone(new \DateTimeZone("UTC"));
-			$this->end_date->add(new \DateInterval("PT".$offset."S"));
+		if($this->enddate){
+			$this->enddate->setTimezone(new \DateTimeZone("UTC"));
+			$this->enddate->add(new \DateInterval("PT".$offset."S"));
 		}
-		if($this->start_date){
-			$this->start_date->setTimezone(new \DateTimeZone("UTC"));
-			$this->start_date->add(new \DateInterval("PT".$offset."S"));
+		if($this->startdate){
+			$this->startdate->setTimezone(new \DateTimeZone("UTC"));
+			$this->startdate->add(new \DateInterval("PT".$offset."S"));
 		}
 		if($this->created_on){
 			$this->created_on->setTimezone(new \DateTimeZone("UTC"));
@@ -216,63 +232,12 @@ class Event implements InputFilterAwareInterface {
 		$this->setPunctual($predefined->isPunctual());
 	}
 	
-	/*** Form Validation ****/
-	private $inputFilter;
 	
 	public function getArrayCopy() {
-		return get_object_vars($this);
-	}
-	
-	public function setInputFilter(InputFilterInterface $inputFilter){
-		throw new \Exception("Not used");
-	}
-	
-	public function getInputFilter(){
-		if (!$this->inputFilter) {
-			$inputFilter = new InputFilter();
-			$factory     = new InputFactory();
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'id',
-					'required' => false,
-					'filters'  => array(
-							array('name' => 'Int'),
-					),
-			)));
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'punctual',
-					'required' => true,
-			)));
-	
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'impact',
-					'required' => true,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'parent',
-					'required' => false,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'start_date',
-					'required' => true,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'end_date',
-					'required' => false,
-			)));
-			
-			$inputFilter->add($factory->createInput(array(
-					'name'     => 'status',
-					'required' => true,
-			)));
-			
-			$this->inputFilter = $inputFilter;
-		}
-	
-		return $this->inputFilter;
+		$object_vars = get_object_vars($this);
+		$object_vars['status'] = ($this->status ? $this->status->getId() : null);
+		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
+		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
+		return $object_vars;
 	}
 }
