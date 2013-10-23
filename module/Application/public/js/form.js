@@ -236,10 +236,13 @@ var form = function(url){
 		});
 	});
 
-	$("#loading").ajaxStart(function(){
-		$(this).show();})
+	$(document).ajaxStart(function(){
+			$("#loading").show();
+		})
 		.ajaxStop(function(){
-			$(this).hide();});
+			$("#loading").hide();
+		}
+	);
 
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
@@ -248,7 +251,7 @@ var form = function(url){
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
 		} else {
 			$("#create-evt").offset({top: $(".navbar").offset().top+$(".navbar").outerHeight(), left:3.5});
-			$("#event").html('<div id="loading">Chargement...</div>');
+			$("#event").html('<div>Chargement...</div>');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
 					url+'/form',
@@ -268,7 +271,7 @@ var form = function(url){
 	//click sur modification d'un évènement
 	$("#timeline").on("click", "button.modify-evt", function(){
 		var me = $(this);	
-		$("#event").html('<div id="loading">Chargement...</div>');
+		$("#event").html('<div>Chargement...</div>');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
