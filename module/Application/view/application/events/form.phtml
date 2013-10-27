@@ -84,6 +84,31 @@
 		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
 		
 		$html = "";
+		
+		if($this->event){
+			//accéder aux fichiers
+			
+		} else {
+			//ajouter des fichiers
+			$file = $this->form->get('fichiers')->get('file1');
+			
+			$name = $this->form->get('fichiers')->get('name1');
+			$html .= $this->controlGroup(
+					$this->formLabel($name->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formInput($name)
+			);
+			$html .= $this->controlGroup(
+						$this->formLabel($file->setLabelAttributes(array('class'=>'control-label'))),
+						$this->formFile($file)
+			);
+		}
+		
+		$html .= "<a href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
+		
+		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle'));
+		
+		
+		$html = "";
 		if($this->event) {
 			$html .= '<table class="table table-hover" >';
 			$html .= '<tbody>';
@@ -97,9 +122,6 @@
 			$html .= '</table>';
 			$html .= '</tbody>';
 		}
-		
-		echo $this->accordionGroup("Fichiers", '');
-		
 		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
 		
 		?>

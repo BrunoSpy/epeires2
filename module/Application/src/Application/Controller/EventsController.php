@@ -17,6 +17,11 @@ use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Form\Fieldset;
+use Zend\Form\Element\File;
+use Gedmo\Uploadable\UploadableListener;
+use Gedmo\Uploadable\FileInfo\FileInfoArray;
+use Zend\Form\Element\Text;
 
 class EventsController extends FormController {
 	
@@ -54,7 +59,8 @@ class EventsController extends FormController {
     	
     	if($this->getRequest()->isPost()){
     		
-    		$post = $this->getRequest()->getPost();
+    		$post = array_merge_recursive($this->getRequest()->getPost()->toArray(),
+    									$this->getRequest()->getFiles()->toArray());
     		$id = $post['id'] ? $post['id'] : null;
     		
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -122,6 +128,18 @@ class EventsController extends FormController {
     					$objectManager->persist($child);
     				}
     			}
+    			
+    			//fichiers
+    			if(isset($post['fichiers']) && is_array($post['fichiers'])){
+    				foreach ($post['fichiers'] as $f){
+    					$file = new \Application\Entity\File($f);
+    					$file->addEvent($event);
+    					$objectManager->persist($file);
+    				}
+    			}
+    			
+    			
+    			
     			$objectManager->persist($event);
     			$objectManager->flush();
     			if($return){
@@ -246,6 +264,7 @@ class EventsController extends FormController {
     				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     			}
     		}
+    		
     		//other values
     		$form->bind($event);
     		$form->setData($event->getArrayCopy());
@@ -277,7 +296,21 @@ class EventsController extends FormController {
 
     	//add default fieldsets
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray(null, true)));
- 	
+ 	    	
+    	//files
+    	$filesFieldset = new Fieldset('fichiers');
+    	$file = new File('file1');
+    	$file->setLabel(' ')
+    	->setAttribute('id', 'file1');
+    	
+    	$name = new Text('name1');
+    	$name->setLabel('Fichier 1 :')->setAttribute('id', 'name1');
+    	$name->setAttribute('placeholder', 'Nom du fichier');
+    	$filesFieldset->add($name);
+    	
+    	$form->add($filesFieldset);
+    	$filesFieldset->add($file);
+    	
     	$form->bind($event);
     	$form->setData($event->getArrayCopy());
     	

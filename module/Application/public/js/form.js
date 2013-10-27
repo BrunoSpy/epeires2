@@ -183,7 +183,68 @@ var form = function(url){
 	//submit form
 	$("#event").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
-		$.post(url+'/save', $("#Event").serialize(), function(data){
+		var formData = new FormData($("#Event")[0]);
+		$.ajax({
+			type: "POST",
+			url: url+'/save',
+			xhr: function() {  // Custom XMLHttpRequest
+	            var myXhr = $.ajaxSettings.xhr();
+	            if(myXhr.upload){ // Check if upload property exists
+	            //    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+	            }
+	            return myXhr;
+	        },
+	        // Form data
+	        data: formData,
+	        //Options to tell jQuery not to process data or worry about content-type.
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function(data){
+				//close form
+				$("#create-link").trigger("click");
+				var id = $("#Event").find('input#id').val();
+				if(id>0){
+					//modification
+					timeline.modify(data.events, 0);
+					$.each(data.messages.success, function(key, value){
+						var n = noty({text:value, 
+							type:'success',
+							layout: 'bottomRight',});
+					});
+					$.each(data.messages.error, function(key, value){
+						var n = noty({text:value, 
+							type:'error',
+							layout: 'bottomRight',});
+					});
+				} else {
+					//new event
+					if(data['events']){
+						timeline.add(data.events);
+					}
+					$.each(data.messages, function(key, value){
+						if(data.messages['success']){
+							$.each(data.messages.success, function(key, value){
+								var n = noty({text:value, 
+									type:'success',
+									layout: 'bottomRight',});
+							});
+						}
+						if(data.messages['error']){
+							$.each(data.messages.error, function(key, value){
+								var n = noty({text:value, 
+									type:'error',
+									layout: 'bottomRight',});
+							});
+						}
+					});
+				}
+			},
+			dataType: "json"
+		});
+		
+		
+		/*$.post(url+'/save', $("#Event").serialize(), function(data){
 			//close form
 			$("#create-link").trigger("click");
 			var id = $("#Event").find('input#id').val();
@@ -222,7 +283,7 @@ var form = function(url){
 					}
 				});
 			}
-		}, "json");
+		}, "json");*/
 		
 	});
 	
@@ -364,12 +425,14 @@ var form = function(url){
 						}			
 				);
 				$("#Horairesid").removeClass("disabled");
-				$("#Descriptionid").removeClass("disabled");	
+				$("#Descriptionid").removeClass("disabled");
+				$("#filesTitle").removeClass("disabled");
 				$('#subcategories').trigger("change");
 			} else {
 				$("#category_title").html('Catégories');
 				$("#Horairesid").addClass("disabled");
 				$("#Descriptionid").addClass("disabled");
+				$("#filesTitle").addClass("disabled");
 				$('#subcategories').trigger("change");
 			}
 		});
@@ -420,4 +483,6 @@ var form = function(url){
 		}
 	});
 
+	//ajout formulaire fichier
+	
 };
