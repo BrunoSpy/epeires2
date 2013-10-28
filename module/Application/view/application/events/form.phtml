@@ -83,7 +83,7 @@
 		}	
 		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
 		
-		$html = "";
+		$html = "<div id=\"file_list\">";
 		
 		if($this->event){
 			//accéder aux fichiers
@@ -102,8 +102,8 @@
 						$this->formFile($file)
 			);
 		}
-		
-		$html .= "<a href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
+		$html .= "</div>";
+		$html .= "<a id=\"addfile\" href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		
 		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle'));
 		

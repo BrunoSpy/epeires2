@@ -19,9 +19,8 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Form\Fieldset;
 use Zend\Form\Element\File;
-use Gedmo\Uploadable\UploadableListener;
-use Gedmo\Uploadable\FileInfo\FileInfoArray;
 use Zend\Form\Element\Text;
+use Application\Form\FileFieldset;
 
 class EventsController extends FormController {
 	
@@ -207,6 +206,14 @@ class EventsController extends FormController {
     				'part' => $part,));
     				$form->add(new CustomFieldset($this->getServiceLocator(), $this->params()->fromQuery('id')));
     				break;
+    			case 'file_field':
+    				$count = $this->params()->fromQuery('count', 1);
+    				$viewmodel->setVariables(array(
+    					'part' => $part,
+    					'count' => $count,
+    				));
+    				$form->get('fichiers')->addFile($count);
+    				break;
     			default:
     				;
     				break;
@@ -298,19 +305,10 @@ class EventsController extends FormController {
     	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray(null, true)));
  	    	
     	//files
-    	$filesFieldset = new Fieldset('fichiers');
-    	$file = new File('file1');
-    	$file->setLabel(' ')
-    	->setAttribute('id', 'file1');
-    	
-    	$name = new Text('name1');
-    	$name->setLabel('Fichier 1 :')->setAttribute('id', 'name1');
-    	$name->setAttribute('placeholder', 'Nom du fichier');
-    	$filesFieldset->add($name);
+    	$filesFieldset = new FileFieldset('fichiers');
+    	$filesFieldset->addFile();
     	
     	$form->add($filesFieldset);
-    	$filesFieldset->add($file);
-    	
     	$form->bind($event);
     	$form->setData($event->getArrayCopy());
     	

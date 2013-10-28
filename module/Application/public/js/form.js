@@ -484,5 +484,9 @@ var form = function(url){
 	});
 
 	//ajout formulaire fichier
-	
+	$("#event").on('click', "#addfile", function(){
+		var lastinput = $("#file_list input:last").attr('id');
+		var count = parseInt(lastinput[lastinput.length -1]) +1;
+		$("#file_list").append($("<div>").load(url+'/subform?part=file_field&count='+count));
+	});
 };

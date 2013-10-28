@@ -30,6 +30,19 @@ switch ($this->part) {
 			echo $this->customFieldGroup($element);
 		}
 		break;
-		;
+	case 'file_field':
+		$file = $this->form->get('fichiers')->get('file'.$this->count);
+			
+		$name = $this->form->get('fichiers')->get('name'.$this->count);
+		echo $this->controlGroup(
+				$this->formLabel($name->setLabelAttributes(array('class'=>'control-label'))),
+				$this->formInput($name)
+		);
+		echo $this->controlGroup(
+				$this->formLabel($file->setLabelAttributes(array('class'=>'control-label'))),
+				$this->formFile($file)
+		);
+		break;
+	default:
 		break;
 }
