@@ -200,6 +200,10 @@ class Event {
 		return $this->enddate;
 	}
 	
+	public function getFiles(){
+		return $this->files;
+	}
+	
 	/** 
 	 * @ORM\PostLoad
 	 */

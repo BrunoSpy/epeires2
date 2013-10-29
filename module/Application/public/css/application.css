@@ -145,6 +145,10 @@ body{
 	margin: -1px;	
 }
 
+.removefile {
+	margin-top:5px;
+}
+
 /******************************/
 /*     Tune Bootstrap css     */
 /******************************/

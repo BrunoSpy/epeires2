@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
 use Doctrine\Common\Collections\Collection;
+use Zend\Filter\File\RenameUpload;
 
 /**
  * @ORM\Entity
@@ -39,12 +40,12 @@ class File {
 	protected $size;
 	
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $name;
 	
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $reference;
 	
@@ -65,8 +66,10 @@ class File {
 		$this->setFilename($fileinfo['name']);
 		$this->setSize($fileinfo['size']);
 		$this->setMimetype($fileinfo['type']);
-		move_uploaded_file($fileinfo['tmp_name'], getcwd().'/data/files/'.$fileinfo['name']);
-		$this->setPath('./data/files/'.$fileinfo['name']);
+		$filter = new RenameUpload("./public/files/");
+		$filter->setUseUploadName(true);
+		$targetname = $filter->filter($fileinfo);
+		$this->setPath('/files/'.$targetname['name']);
 	}
 	
 	public function getEvents(){

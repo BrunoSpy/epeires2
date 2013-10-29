@@ -489,4 +489,8 @@ var form = function(url){
 		var count = parseInt(lastinput[lastinput.length -1]) +1;
 		$("#file_list").append($("<div>").load(url+'/subform?part=file_field&count='+count));
 	});
+	$("#event").on('click', ".removefile", function(){
+		var count = $(this).data('count');
+		$("#filefield_"+count).remove();		
+	});
 };

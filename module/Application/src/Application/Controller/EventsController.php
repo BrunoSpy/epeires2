@@ -131,13 +131,18 @@ class EventsController extends FormController {
     			//fichiers
     			if(isset($post['fichiers']) && is_array($post['fichiers'])){
     				foreach ($post['fichiers'] as $f){
-    					$file = new \Application\Entity\File($f);
+    					
+    					$file = new \Application\Entity\File($f['file']);
+    					if(isset($f['name']) && !empty($f['name'])){
+    						$file->setName($f['name']);
+    					}
+    					if(isset($f['reference']) && !empty($f['reference'])){
+    						$file->setReference($f['reference']);
+    					}
     					$file->addEvent($event);
     					$objectManager->persist($file);
     				}
-    			}
-    			
-    			
+    			}    			
     			
     			$objectManager->persist($event);
     			$objectManager->flush();

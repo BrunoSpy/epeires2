@@ -9,15 +9,19 @@ class FileFieldset extends Fieldset {
 	
 	
 	public function addFile($count = 1){
-		$file = new File('file'.$count);
-		$file->setLabel(' ')
-		->setAttribute('id', 'file'.$count);
+		
+		$fieldset = new Fieldset('fichier'.$count);
+		
+		$file = new File('file');
+		$file->setLabel(' ');
 		 
-		$name = new Text('name'.$count);
-		$name->setLabel('Fichier '.$count.' :')->setAttribute('id', 'name'.$count);
+		$name = new Text('name');
+		$name->setLabel('Fichier '.$count.' :');
 		$name->setAttribute('placeholder', 'Titre (facultatif)');
-		$this->add($name);
-		$this->add($file);
+		$fieldset->add($name);
+		$fieldset->add($file);
+		
+		$this->add($fieldset);
 	}
 	
 }

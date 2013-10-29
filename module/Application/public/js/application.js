@@ -53,6 +53,12 @@ $(document).ready(function(){
 	   
    });
    
+   //open links in new window
+   $(document).on('click', 'a[rel="external"]',function(){
+	   window.open($(this).attr('href'));
+	   return false;
+   });
+   
    $.noty.defaults = {
 		    layout: 'bottomRight',
 		    theme: 'defaultTheme',

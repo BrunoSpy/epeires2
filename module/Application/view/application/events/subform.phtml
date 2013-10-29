@@ -31,17 +31,20 @@ switch ($this->part) {
 		}
 		break;
 	case 'file_field':
-		$file = $this->form->get('fichiers')->get('file'.$this->count);
+		echo "<div id=\"filefield_".$this->count."\">";
+		$file = $this->form->get('fichiers')->get('fichier'.$this->count)->get('file'.$this->count);
 			
-		$name = $this->form->get('fichiers')->get('name'.$this->count);
+		$name = $this->form->get('fichiers')->get('fichier'.$this->count)->get('name'.$this->count);
 		echo $this->controlGroup(
 				$this->formLabel($name->setLabelAttributes(array('class'=>'control-label'))),
-				$this->formInput($name)
+				$this->formInput($name).
+				"<a data-count=".$this->count." href=\"#\" class=\"removefile pull-right\"><i class=\"icon-trash\"></i></a>"
 		);
 		echo $this->controlGroup(
 				$this->formLabel($file->setLabelAttributes(array('class'=>'control-label'))),
 				$this->formFile($file)
 		);
+		echo "</div>";
 		break;
 	default:
 		break;
