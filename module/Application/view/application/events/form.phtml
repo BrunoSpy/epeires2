@@ -85,7 +85,7 @@
 				
 		if($this->event){
 			//accéder aux fichiers
-			$html .= '<table class="table table-hover" >';
+			$html = '<table class="table table-hover" >';
 			$html .= '<tbody>';
 			$files = $this->event->getFiles();
 			foreach ($files as $file){
@@ -95,8 +95,9 @@
 				$html .= "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a></td>";
 				$html .= "</tr>";
 			}
-			$html .= '</table>';
 			$html .= '</tbody>';
+			$html .= '</table>';
+		
 			//TODO permettre la modif des fichiers si droits OK
 		} else {
 			$html = "<div id=\"file_list\">";
