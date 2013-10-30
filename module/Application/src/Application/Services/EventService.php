@@ -88,9 +88,15 @@ class EventService implements ServiceManagerAwareInterface{
 								$entry['changes'] = array();
 								$history[$logentry->getLoggedAt()->format(DATE_RFC2822)] = $entry;
 							}
+							error_log((is_object($value) ? get_class($value): gettype($value)));
 							$historyentry = array();
 							$historyentry['fieldname'] = $key;
-							if($key == 'end_date' || $key == 'start_date'){
+							if($value instanceof \DateTime ){
+								if($key == 'enddate') {
+									$historyentry['fieldname'] = "Fin";
+								} else if($key == 'startdate') {
+									$historyentry['fieldname'] = "Début";
+								}
 								//do it in UTC
 								$offset = date("Z");
 								
@@ -168,9 +174,7 @@ class EventService implements ServiceManagerAwareInterface{
 			$historyentry['newvalue'] = $update->getText();
 			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
 		}
-		
 		uksort($history, array($this, "sortbydate"));
-		
 		return $history;
 	}
 	

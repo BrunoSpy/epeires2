@@ -61,15 +61,15 @@ class EventsController extends FormController {
     		$post = array_merge_recursive($this->getRequest()->getPost()->toArray(),
     									$this->getRequest()->getFiles()->toArray());
     		$id = $post['id'] ? $post['id'] : null;
-    		
+    		  		
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
     		$event = new Event();
     		if($id){
     			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
     		} 
-    		$form = $this->getSkeletonForm($event);  		
-    		
+    		$form = $this->getSkeletonForm($event);  	
+    			  		
     		$form->setData($post);
     		     		  		
     		if($form->isValid()){
@@ -132,15 +132,19 @@ class EventsController extends FormController {
     			if(isset($post['fichiers']) && is_array($post['fichiers'])){
     				foreach ($post['fichiers'] as $f){
     					
-    					$file = new \Application\Entity\File($f['file']);
-    					if(isset($f['name']) && !empty($f['name'])){
-    						$file->setName($f['name']);
+    					if(!empty($f['file']['name'])){
+    					  						
+    						$file = new \Application\Entity\File($f['file'], 
+    								$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file']['name'])));
+    						if(isset($f['name']) && !empty($f['name'])){
+	    						$file->setName($f['name']);
+    						}
+    						if(isset($f['reference']) && !empty($f['reference'])){
+	    						$file->setReference($f['reference']);
+    						}
+    						$file->addEvent($event);
+    						$objectManager->persist($file);
     					}
-    					if(isset($f['reference']) && !empty($f['reference'])){
-    						$file->setReference($f['reference']);
-    					}
-    					$file->addEvent($event);
-    					$objectManager->persist($file);
     				}
     			}    			
     			

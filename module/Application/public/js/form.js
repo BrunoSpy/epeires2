@@ -243,50 +243,8 @@ var form = function(url){
 			dataType: "json"
 		});
 		
-		
-		/*$.post(url+'/save', $("#Event").serialize(), function(data){
-			//close form
-			$("#create-link").trigger("click");
-			var id = $("#Event").find('input#id').val();
-			if(id>0){
-				//modification
-				timeline.modify(data.events, 0);
-				$.each(data.messages.success, function(key, value){
-					var n = noty({text:value, 
-						type:'success',
-						layout: 'bottomRight',});
-				});
-				$.each(data.messages.error, function(key, value){
-					var n = noty({text:value, 
-						type:'error',
-						layout: 'bottomRight',});
-				});
-			} else {
-				//new event
-				if(data['events']){
-					timeline.add(data.events);
-				}
-				$.each(data.messages, function(key, value){
-					if(data.messages['success']){
-						$.each(data.messages.success, function(key, value){
-							var n = noty({text:value, 
-								type:'success',
-								layout: 'bottomRight',});
-						});
-					}
-					if(data.messages['error']){
-						$.each(data.messages.error, function(key, value){
-							var n = noty({text:value, 
-								type:'error',
-								layout: 'bottomRight',});
-						});
-					}
-				});
-			}
-		}, "json");*/
-		
 	});
-	
+
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-link").trigger("click");
 	});
@@ -485,12 +443,16 @@ var form = function(url){
 
 	//ajout formulaire fichier
 	$("#event").on('click', "#addfile", function(){
-		var lastinput = $("#file_list input:last").attr('id');
+		var lastinput = $("#file_list > div:last").attr('id');
 		var count = parseInt(lastinput[lastinput.length -1]) +1;
-		$("#file_list").append($("<div>").load(url+'/subform?part=file_field&count='+count));
+		$("<div>").load(url+'/subform?part=file_field&count='+count, function(){
+			$("#file_list").append($(this).html());
+		});
 	});
+	
 	$("#event").on('click', ".removefile", function(){
 		var count = $(this).data('count');
 		$("#filefield_"+count).remove();		
 	});
+	
 };

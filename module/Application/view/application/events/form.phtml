@@ -101,13 +101,17 @@
 			//TODO permettre la modif des fichiers si droits OK
 		} else {
 			$html = "<div id=\"file_list\">";
+					
 			$html .= "<div id=\"filefield_1\">";
 			//ajouter des fichiers
 			$file = $this->form->get('fichiers')->get('fichier1')->get('file');
-			
+			$ref = $this->form->get('fichiers')->get('fichier1')->get('reference');
 			$name = $this->form->get('fichiers')->get('fichier1')->get('name');
 			$html .= $this->controlGroup(
-					$this->formLabel($name->setLabelAttributes(array('class'=>'control-label'))),
+					"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\"><i class=\"icon-trash\"></i></a>".
+					$this->formLabel($name).
+					"</div>",
+					$this->formInput($ref).
 					$this->formInput($name)
 			);
 			$html .= $this->controlGroup(
@@ -115,6 +119,7 @@
 						$this->formFile($file)
 			);
 			$html .= "</div>";
+			
 			$html .= "</div>";
 			$html .= "<a id=\"addfile\" href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
@@ -163,6 +168,5 @@
 		</div>
 	</div>	
 	<?php echo $this->form()->closeTag(); ?>
-
 
 

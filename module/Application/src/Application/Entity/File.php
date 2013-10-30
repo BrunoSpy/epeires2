@@ -61,15 +61,17 @@ class File {
 	protected $events;
 	
 	
-	public function __construct($fileinfo){
+	public function __construct($fileinfo, $already_exist){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->setFilename($fileinfo['name']);
 		$this->setSize($fileinfo['size']);
 		$this->setMimetype($fileinfo['type']);
 		$filter = new RenameUpload("./public/files/");
 		$filter->setUseUploadName(true);
+		$filter->setRandomize($already_exist);
 		$targetname = $filter->filter($fileinfo);
-		$this->setPath('/files/'.$targetname['name']);
+		$name = substr($targetname['tmp_name'], 15);
+		$this->setFilename($name);
+		$this->setPath('/files/'.$name);
 	}
 	
 	public function getEvents(){

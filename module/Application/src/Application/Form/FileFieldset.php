@@ -17,7 +17,14 @@ class FileFieldset extends Fieldset {
 		 
 		$name = new Text('name');
 		$name->setLabel('Fichier '.$count.' :');
-		$name->setAttribute('placeholder', 'Titre (facultatif)');
+		$name->setAttribute('placeholder', 'Titre');
+		$name->setAttribute('class', 'input-medium');
+		
+		$ref = new Text('reference');
+		$ref->setAttribute('placeholder', 'Ref.');
+		$ref->setAttribute('class', 'input-mini');
+		
+		$fieldset->add($ref);
 		$fieldset->add($name);
 		$fieldset->add($file);
 		
