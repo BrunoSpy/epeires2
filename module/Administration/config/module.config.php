@@ -56,11 +56,6 @@ return array(
             'Administration\Controller\Radio' => 'Administration\Controller\RadioController',
     	),
     ),
-    'view_helpers' => array(
-    	'invokables' => array(
-    		'modalwindow' => 'Administration\View\Helper\ModalWindow',
-    	),
-    ),
     'view_manager' => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
@@ -86,5 +81,8 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
+    ),
+    'permissions' => array(
+    		'admin' => 'admin',
     ),
 );

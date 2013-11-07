@@ -3,6 +3,7 @@ namespace Application\Services;
 
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\FactoryInterface;
 
 class EventService implements ServiceManagerAwareInterface{
 	/**

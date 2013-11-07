@@ -14,6 +14,10 @@ class HomeController extends AbstractActionController
     public function indexAction()
     {
    	
+    	$config = $this->getServiceLocator()->get('Config');
+    	
+    	error_log(print_r($config['permissions'], true));
+    	
         return array();
     }
     

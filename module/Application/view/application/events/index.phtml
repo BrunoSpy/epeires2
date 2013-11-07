@@ -1,4 +1,11 @@
 
+<?php 
+if(!$this->zfcuserIdentity()){
+	echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('application'))));
+} 
+	
+?>
+
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
 <div id="loading"></div>
@@ -25,6 +32,15 @@
 	<div id="timeline"></div>
 </div>
 <?php $this->inlineScript()->captureStart();?>
+
+//activate login window
+<?php 
+if(!$this->zfcuserIdentity()){
+?>
+$("#loginwindow").modal('show');
+<?php 
+}
+?>
 
 //init form
 form('<?php echo $this->url('application', array('controller' => 'events'));?>');

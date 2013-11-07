@@ -40,6 +40,10 @@ class EventsController extends FormController {
     	
     	$this->flashMessenger()->clearMessages();
     	
+    	$this->layout()->cds = "Nom chef de salle";
+    	$this->layout()->ipo = "Nom IPO (téléphone)";
+    	
+    	
      	$viewmodel->setVariables(array('messages'=>$return));
     	 
         return $viewmodel;
@@ -130,17 +134,19 @@ class EventsController extends FormController {
     			
     			//fichiers
     			if(isset($post['fichiers']) && is_array($post['fichiers'])){
-    				foreach ($post['fichiers'] as $f){
+    				foreach ($post['fichiers'] as $key => $f){
     					
-    					if(!empty($f['file']['name'])){
+    					$count = substr($key, strlen($key) -1);
+    					
+    					if(!empty($f['file'.$count]['name'])){
     					  						
-    						$file = new \Application\Entity\File($f['file'], 
-    								$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file']['name'])));
-    						if(isset($f['name']) && !empty($f['name'])){
-	    						$file->setName($f['name']);
+    						$file = new \Application\Entity\File($f['file'.$count], 
+    								$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
+    						if(isset($f['name'.$count]) && !empty($f['name'.$count])){
+	    						$file->setName($f['name'.$count]);
     						}
-    						if(isset($f['reference']) && !empty($f['reference'])){
-	    						$file->setReference($f['reference']);
+    						if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
+	    						$file->setReference($f['reference'.$count]);
     						}
     						$file->addEvent($event);
     						$objectManager->persist($file);

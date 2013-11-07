@@ -3,7 +3,7 @@
  * @author Bruno Spyckerelle
  *
  */
-namespace Administration\View\Helper;
+namespace Core\View\Helper;
 
 use Zend\Form\View\Helper\AbstractHelper;
 

@@ -35,7 +35,32 @@
     </head>
     <body>
     	<div class="header">
-    		<span id="clock" class="pull-right"></span>
+    		<ul class="inline">
+    				<li class="dropdown">
+    					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+    					<i class="icon-user"></i>
+    					<?php if($this->zfcUserIdentity()) {
+    							echo $this->zfcUserIdentity()->getUserName();
+    					} else {
+								echo "Non connecté";
+						}		
+    					?>
+    					 	<b class="caret"></b>
+    					</a>
+    					<ul class="dropdown-menu">
+    					<?php if($this->zfcUserIdentity()) {
+    						echo "<li><a href=\"".$this->url('zfcuser/logout')."?redirect=".$this->url('application')."\">Se déconnecter</a></li>";
+    					} else {
+    						echo "<li><a href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
+    					}
+    					?>
+    					</ul>
+    				</li>
+    				<li><i class="icon-eye-open"></i><b> Chef de salle : </b>Prénom Nom</li>
+    				<li><i class="icon-warning-sign"></i><b> IPO : </b>Prénom Nom (06 12 23 45 65)</li>
+    				<li id="clock" class="pull-right"></li>
+    		</ul>
+    		
     	</div>
     	<div class="navbar navbar-after-top">
     		<div class="navbar-inner">

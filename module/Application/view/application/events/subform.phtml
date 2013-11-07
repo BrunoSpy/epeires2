@@ -32,9 +32,9 @@ switch ($this->part) {
 		break;
 	case 'file_field':
 		echo "<div id=\"filefield_".$this->count."\">";
-		$file = $this->form->get('fichiers')->get('fichier'.$this->count)->get('file');
-		$ref = $this->form->get('fichiers')->get('fichier'.$this->count)->get('reference');
-		$name = $this->form->get('fichiers')->get('fichier'.$this->count)->get('name');
+		$file = $this->form->get('fichiers')->get('fichier'.$this->count)->get('file'.$this->count);
+		$ref = $this->form->get('fichiers')->get('fichier'.$this->count)->get('reference'.$this->count);
+		$name = $this->form->get('fichiers')->get('fichier'.$this->count)->get('name'.$this->count);
 		echo $this->controlGroup(
 				"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\"><i class=\"icon-trash\"></i></a>".
 				$this->formLabel($name).

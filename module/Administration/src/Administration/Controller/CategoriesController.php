@@ -19,6 +19,9 @@ class CategoriesController extends FormController{
     
 	public function indexAction(){
    		
+		error_log(print_r($this->getServiceLocator()->get('Configuration'), true));
+		
+		
     	$viewmodel = new ViewModel();
     	 
     	$return = array();

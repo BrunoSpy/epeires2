@@ -12,6 +12,7 @@ namespace Application\Entity;
 
 use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @ORM\Table(name="categories")
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
@@ -95,10 +96,17 @@ class Category {
 	 */
 	protected $fieldname;
 	
+	/** 
+	 * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readcategories")
+	 * @ORM\JoinTable(name="roles_categories_read")
+	 */
+	protected $readroles;
+	
 	public function __construct(){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->predefinedevents = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->readroles = new ArrayCollection();
 	}
 	
 	public function getCustomfields(){

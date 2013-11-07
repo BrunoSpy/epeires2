@@ -104,11 +104,11 @@
 					
 			$html .= "<div id=\"filefield_1\">";
 			//ajouter des fichiers
-			$file = $this->form->get('fichiers')->get('fichier1')->get('file');
-			$ref = $this->form->get('fichiers')->get('fichier1')->get('reference');
-			$name = $this->form->get('fichiers')->get('fichier1')->get('name');
+			$file = $this->form->get('fichiers')->get('fichier1')->get('file1');
+			$ref = $this->form->get('fichiers')->get('fichier1')->get('reference1');
+			$name = $this->form->get('fichiers')->get('fichier1')->get('name1');
 			$html .= $this->controlGroup(
-					"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\"><i class=\"icon-trash\"></i></a>".
+					"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\">&nbsp;</a>".
 					$this->formLabel($name).
 					"</div>",
 					$this->formInput($ref).

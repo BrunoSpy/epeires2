@@ -1,5 +1,4 @@
 <?php
-use Application\View\Helper\EventNameHelper;
 /**
  * Epeires 2
  * Application module configuration
@@ -37,16 +36,8 @@ return array(
             'translator' => 'MvcTranslator',
         ),
         'factories' => array(
-        	'eventservice' => function($sm){
-        		$eventservice = new \Application\Services\EventService();
-        		$eventservice->setEntityManager($sm->get('Doctrine\ORM\EntityManager'));
-        		return $eventservice;
-        	},
-        	'customfieldservice' => function($sm){
-        		$customfield = new \Application\Services\CustomFieldService();
-        		$customfield->setEntityManager($sm->get('Doctrine\ORM\EntityManager'));
-        		return $customfield;
-        	},
+        	'eventservice' => 'Application\Factories\EventServiceFactory',
+        	'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
         ),
     ),
     'translator' => array(
@@ -76,12 +67,7 @@ return array(
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     	),
     	'factories' => array(
-    		'eventName' => function($helperPluginManager){
-    			$sm = $helperPluginManager->getServiceLocator();
-    			$eventnameHelper = new \Application\View\Helper\EventNameHelper();
-    			$eventnameHelper->setServiceManager($sm);
-    			return $eventnameHelper;
-    		},
+    		'eventName' => 'Application\Factories\EventNameFactory'
     	),
     ),
     'view_manager' => array(
@@ -142,5 +128,8 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
+    ),
+    'permissions' => array(
+    		'test4' => 'test',
     ),
 );
