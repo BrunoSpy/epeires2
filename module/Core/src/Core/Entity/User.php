@@ -1,17 +1,11 @@
 <?php
-/**
- * BjyAuthorize Module (https://github.com/bjyoungblood/BjyAuthorize)
- *
- * @link https://github.com/bjyoungblood/BjyAuthorize for the canonical source repository
- * @license http://framework.zend.com/license/new-bsd New BSD License
- */
  
 namespace Core\Entity;
 
-use BjyAuthorize\Provider\Role\ProviderInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
+use ZfcRbac\Identity\IdentityInterface;
 
 /**
  * An example of how to implement a role aware user entity.
@@ -19,9 +13,8 @@ use ZfcUser\Entity\UserInterface;
  * @ORM\Entity
  * @ORM\Table(name="users")
  *
- * @author Tom Oram <tom@scl.co.uk>
  */
-class User implements UserInterface, ProviderInterface
+class User implements UserInterface, IdentityInterface
 {
     /**
      * @var int
@@ -62,7 +55,7 @@ class User implements UserInterface, ProviderInterface
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     * @ORM\ManyToMany(targetEntity="Core\Entity\Role")
+     * @ORM\ManyToMany(targetEntity="Role")
      * @ORM\JoinTable(name="users_roles",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
@@ -230,5 +223,15 @@ class User implements UserInterface, ProviderInterface
     public function addRole($role)
     {
         $this->roles[] = $role;
+    }
+    
+    /**
+     * @param PersistentCollection $roles
+     * @return self
+     */
+    public function setRoles(PersistentCollection $roles)
+    {
+    	$this->roles = $roles;
+    	return $this;
     }
 }

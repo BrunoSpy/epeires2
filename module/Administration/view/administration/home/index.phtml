@@ -6,7 +6,25 @@
 					<div class="muted pull-left">Graphique des évènements</div>
 				</div>
 				<div class="block-content collapse in">
-					<div class="span12">En construction</div>
+					<div class="span12">
+						<?php 
+							foreach ($this->zfcUserIdentity()->getRoles() as $role){
+								echo $role->getName();
+								echo $role->hasPermission('admin');
+							}
+						?>
+						<?php if($this->isGranted('admin')){
+							echo "granted";
+						} else {
+							echo "not granted";	
+						}	?>		
+						
+							<?php if($this->hasRole('admin')){
+							echo "granted";
+						} else {
+							echo "not granted";	
+						}	?>			
+					</div>
 				</div>
 			</div>
 		</div>

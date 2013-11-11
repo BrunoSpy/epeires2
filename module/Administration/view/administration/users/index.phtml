@@ -1,0 +1,85 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+
+<table class="table table-striped sortable">
+<thead>
+	<tr>
+		<th>id</th>
+		<th data-sort="string">Nom</th>
+		<th data-sort="string">Catégorie</th>
+		<th>Impact</th>
+		<th>Fiche réflexe</th>
+		<th>Ponctuel</th>
+		<th>Liste</th>
+		<th>Recherche</th>
+		<th><a class="btn btn-mini" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
+	</tr>
+</thead>
+
+<tbody>
+	<?php 
+	foreach ($this->models as $model){
+		echo '<tr>';
+		echo '<td>'.$model->getId().'</td>';
+		echo '<td>'.$model->getName().'</td>';
+		echo '<td>'.$model->getCategory()->getName().'</td>';
+		echo '<td>'.$this->impact($model->getImpact()).'</td>';
+		echo '<td>'.$this->actions[$model->getId()].'</td>';
+		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>'.($model->isListable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>';
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#model-container\" 
+				class=\"mod-model\" 
+				data-id=\"".$model->getId()."\" 
+				data-name=\"".$model->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-model\" 
+				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
+				class=\"delete-model\" 
+				data-id=\"".$model->getId()."\" 
+				data-name=\"".$model->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+		echo '</td>';
+		echo '</tr>';
+	}
+	?>
+</tbody>
+
+</table>
+
+<?php echo $this->partial('models/modals.phtml') ?>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+
+<?php $this->inlineScript()->captureEnd();?>

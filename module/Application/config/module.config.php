@@ -130,6 +130,12 @@ return array(
     	),
     ),
     'permissions' => array(
-    		'test4' => 'test',
+    	'events' => array(
+    		'events.read' => 'lecture',
+    		'events.write' => 'écriture',
+    	),
+    	'frequencies' => array(
+    		'frequencies.read' => 'lecture',
+    	),	
     ),
 );

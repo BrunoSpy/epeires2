@@ -9,12 +9,15 @@ namespace Administration\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class HomeController extends AbstractActionController
+class RolesController extends AbstractActionController
 {
     public function indexAction()
     {
+    	$this->layout()->title = "Utilisateurs > Roles";
+    	 
+    	$config = $this->serviceLocator->get('config');
     	
-        return array();
+        return array('config'=>$config['permissions']);
     }
     
     

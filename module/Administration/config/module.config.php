@@ -54,6 +54,8 @@ return array(
             'Administration\Controller\Centre' => 'Administration\Controller\CentreController',
             'Administration\Controller\Maintenance' => 'Administration\Controller\MaintenanceController',
             'Administration\Controller\Radio' => 'Administration\Controller\RadioController',
+            'Administration\Controller\Users' => 'Administration\Controller\UsersController',
+            'Administration\Controller\Roles' => 'Administration\Controller\RolesController',
     	),
     ),
     'view_manager' => array(
@@ -83,6 +85,8 @@ return array(
     	),
     ),
     'permissions' => array(
-    		'admin' => 'admin',
+    	'centre' => array(
+    		'centre.modify' => 'Modification',
+    	),
     ),
 );
