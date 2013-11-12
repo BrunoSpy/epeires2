@@ -3,6 +3,8 @@
 namespace Core\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * 
@@ -19,10 +21,19 @@ class Permission {
     protected $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
      */
     protected $name;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Role", mappedBy="permissions")
+     */
+    protected $roles;
+    
+    public function __construct() {
+    	$this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * @param int $id
      * @return self
@@ -59,6 +70,24 @@ class Permission {
         return $this->name;
     }
 
+    public function addRoles(Collection $roles){
+    	$collection = new ArrayCollection();
+    	$collection->add($this);
+    	foreach ($roles as $role){
+    		$role->addPermissions($collection);
+    		$this->roles->add($role);
+    	}
+    }
+    
+    public function removeRoles(Collection $roles){
+    	$collection = new ArrayCollection();
+    	$collection->add($this);
+    	foreach ($roles as $role){
+    		$role->removePermissions($collection);
+    		$this->roles->removeElement($role);
+    	}
+    }
+    
     public function __toString()
     {
         return $this->name;

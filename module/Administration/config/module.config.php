@@ -85,7 +85,7 @@ return array(
     	),
     ),
     'permissions' => array(
-    	'centre' => array(
+    	'Centre' => array(
     		'centre.modify' => 'Modification',
     	),
     ),

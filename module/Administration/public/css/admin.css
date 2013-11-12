@@ -24,3 +24,7 @@
 .block-header div {
 	padding-top: 10px;
 }
+
+th.no-border, td.no-border {
+	border: none;
+}

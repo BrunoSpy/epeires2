@@ -1,3 +1,63 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/roles.js')?>
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+<table class="table table-bordered table-condensed">
+
+<!-- Permission titles -->
+<thead>
+<tr>
+<th class="no-border"></th>
 <?php 
-	echo print_r($this->config, true);
+
+foreach ($this->config as $key => $value){
+	echo "<th colspan=\"".count($value)."\">".$key."</th>";
+}
 ?>
+</tr>
+</thead>
+
+<!-- Permissions -->
+<tr>
+<td class="no-border"></td>
+<?php 
+
+$permissions = array();
+
+foreach($this->config as $key => $value){
+	foreach ($value as $code => $name){
+		echo "<td>".$name."</td>";
+		$permissions[] = $code;
+	}
+}?>
+</tr>
+
+<!-- Roles -->
+<?php foreach($this->roles as $role){
+	echo "<tr><td>".$role->getName()."</td>";
+	foreach ($permissions as $permission){
+		echo "<td>";
+			echo "<input class=\"permission\" 
+					data-roleid=\"".$role->getId()."\"
+					data-permission=\"".$permission."\"  
+					type=\"checkbox\" ";
+			if($role->hasPermission($permission)){
+				echo "checked=\"checked\"";
+			}
+			echo ">";
+		echo "</td>";
+	}
+	echo "</tr>";	
+}?>
+
+</table>
+</div>
+</div>
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+roles('<?php echo $this->url('administration'); ?>');
+
+<?php $this->inlineScript()->captureEnd();?>

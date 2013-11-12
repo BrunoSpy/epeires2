@@ -8,6 +8,8 @@ use RecursiveIterator;
 use IteratorIterator;
 use Zend\Permissions\Rbac\RoleInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity
@@ -43,7 +45,7 @@ class Role implements RoleInterface{
 
     /**
      * @var PersistentCollection
-     * @ORM\ManyToMany(targetEntity="Permission")
+     * @ORM\ManyToMany(targetEntity="Permission", inversedBy="roles")
      * @ORM\JoinTable(name="roles_permissions",
      *      joinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="permission_id", referencedColumnName="id")}
@@ -61,6 +63,10 @@ class Role implements RoleInterface{
      * @ORM\ManyToMany(targetEntity="Application\Entity\Category", mappedBy="readroles")
      */
     protected $readcategories;
+    
+    public function __construct(){
+    	$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
     
     /**
      * @param int $id
@@ -234,6 +240,18 @@ class Role implements RoleInterface{
         return $this;
     }
 
+    public function addPermissions(Collection $permissions){
+    	foreach ($permissions as $permission){
+    		$this->permissions->add($permission); 		
+    	}
+    }
+    
+    public function removePermissions(Collection $permissions){
+    	foreach ($permissions as $permission){
+    		$this->permissions->removeElement($permission);
+    	}
+    }
+    
     /**
      * Checks if a permission exists for this role or any child roles.
      *

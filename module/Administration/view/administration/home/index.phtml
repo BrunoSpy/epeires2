@@ -8,18 +8,22 @@
 				<div class="block-content collapse in">
 					<div class="span12">
 						<?php 
+						if($this->zfcUserIdentity()){
 							foreach ($this->zfcUserIdentity()->getRoles() as $role){
 								echo $role->getName();
 								echo $role->hasPermission('admin');
 							}
+						} else {
+							echo "no id";
+						}
 						?>
-						<?php if($this->isGranted('admin')){
+						<?php if($this->isGranted('events')){
 							echo "granted";
 						} else {
 							echo "not granted";	
 						}	?>		
 						
-							<?php if($this->hasRole('admin')){
+							<?php if($this->hasRole('cds')){
 							echo "granted";
 						} else {
 							echo "not granted";	
