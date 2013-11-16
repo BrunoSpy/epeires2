@@ -116,10 +116,11 @@ var timeline = {
 		},
 		init: function(element) {
 			d_actuelle = new Date();
+			d_actuelle.setHours(d_actuelle.getUTCHours());
 			h_act = d_actuelle.getHours();
 			m_act = d_actuelle.getMinutes();
 			d_ref_deb = new Date();
-			d_ref_deb.setHours(d_ref_deb.getHours()-1,0,0);
+			d_ref_deb.setHours(d_ref_deb.getUTCHours()-1,0,0);
 			h_aff = 6;
 			y_temp = 10;
 			h_ref = d_ref_deb.getHours(); 
@@ -143,6 +144,7 @@ var timeline = {
 		},
 		init_journee: function(element) {
 			d_actuelle = new Date();
+			d_actuelle.setHours(d_actuelle.getUTCHours());
 			h_act = d_actuelle.getHours();
 			m_act = d_actuelle.getMinutes();
 			d_ref_deb = new Date();
@@ -210,10 +212,10 @@ var timeline = {
 			detail1.css({'left': x_act+'px'});
 		},
 		position: function (d_debut, d_fin) {
-			h_deb = d_debut.getHours();
+			h_deb = d_debut.getUTCHours();
 			m_deb = d_debut.getMinutes();
 			if (d_fin > 0) {
-				h_fin = d_fin.getHours();
+				h_fin = d_fin.getUTCHours();
 				m_fin = d_fin.getMinutes();
 			}
 			var x1, wid = 0;
@@ -518,16 +520,24 @@ var timeline = {
 				if (!(fin < d_ref_deb && etat == "Terminé") && (debut <= d_ref_fin)) {
 					elmt = timeline_elmt.find('.ident'+id);
 					var elmt_rect = elmt.find('.rect_elmt');
+					var elmt_compt = elmt.find('.complement');
+					var elmt_b1 = elmt.find('.modify-evt');
+					var elmt_b2 = elmt.find('.plus');
 					elmt_text = elmt.find('.label_elmt');
 					if (impt == 0) {
 						elmt_rect.css({'opacity':'0.4'});
 						elmt_rect.children().css({'opacity':'0.4'});
+						elmt_compt.css({'opacity':'0.4'});
+						elmt_b1.css({'opacity':'0.4'});
+						elmt_b2.css({'opacity':'0.4'});
 						elmt_text.css({'color':'DarkGray'});
 					} else {
 						elmt_rect.css({'opacity':'1'});
 						elmt_rect.children().css({'opacity':'1'});
+						elmt_compt.css({'opacity':'1'});
+						elmt_b1.css({'opacity':'1'});
+						elmt_b2.css({'opacity':'1'});
 						elmt_text.css({'color':'black'});
-						
 					}
 				}
 			}
@@ -784,7 +794,7 @@ var timeline = {
 				elmt_qm_but.show();
 				elmt_qm_but.addClass('elmt_qm_but');
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
-				elmt_compl.css({'left':x0+wid-2+'px'});
+				elmt_compl.css({'left':x0+wid+1+'px'});
 				elmt_qm_but.css({'left': x2-8+'px'});
 				elmt_star.css({'left': x0+wid-30+'px'});
 				break;
@@ -1004,7 +1014,9 @@ var timeline = {
 			var h1, h2, hDeb, hFin;
 			// ajout de l'heure de début
 			if (d_debut != d_fin) {
-				var hDeb = d_debut.toLocaleTimeString().substr(0,5);						
+				var deb_min = d_debut.getMinutes();
+				if (d_debut.getMinutes() < 10) {deb_min = "0"+d_debut.getMinutes();} 
+				var hDeb = d_debut.getUTCHours()+":"+deb_min;						
 				if (d_debut < d_ref_deb && d_debut.getDate() != d_actuelle.getDate()){ 
 					var dDeb = d_debut.toLocaleDateString();
 					hDeb = dDeb.substr(0,dDeb.length-5)+" "+hDeb; 
@@ -1017,7 +1029,9 @@ var timeline = {
 			elmt_deb.css({'top':h1+'px'});
 			// ajout de l'heure de fin
 			if (d_fin > 0) {
-				var hFin = d_fin.toLocaleTimeString().substr(0,5);
+				var fin_min = d_fin.getMinutes();
+				if (d_fin.getMinutes() < 10) { fin_min = "0"+d_fin.getMinutes(); }
+				var hFin = d_fin.getUTCHours()+":"+fin_min;
 				if (d_fin.getDate() != d_actuelle.getDate()){
 					var dFin = d_fin.toLocaleDateString();
 					hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
@@ -1388,6 +1402,9 @@ var timeline = {
 					timeline.tri_cat(timeline_content, tab,1);
 				} else if (tri_hdeb) {
 					timeline.tri_hdeb(timeline_content, tab,1);
+				}
+				if (impt_on) {
+					impt_on(timeline_content, tab);
 				}
 				timeline.affiche_listes(other);
 				timeline.timeBar(timeline_content);
