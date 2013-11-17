@@ -449,10 +449,37 @@ class EventsController extends FormController {
     		$now = new \DateTime('NOW');
     		$criteria->andWhere(Criteria::expr()->gte('startdate', $now->sub(new \DateInterval('P3D'))));
     	}
+
     	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
     	
+    	$readableEvents = array();
+    	
+    	if($this->zfcUserAuthentication()->hasIdentity()){
+    		$roles = $this->zfcUserAuthentication()->getIdentity()->getRoles();
+    		foreach ($events as $event){
+    			$eventroles = $event->getCategory()->getReadroles();
+    			foreach ($roles as $role){
+    				if($eventroles->contains($role)){
+    					$readableEvents[] = $event;
+    					break;
+    				}
+    			}
+    		}
+    	} else {
+    		$role = $this->getServiceLocator()->get('Core\Service\Rbac')->getOptions()->getAnonymousRole();
+    		$roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array('name'=>$role));
+    		if($roleentity){
+    			foreach ($events as $event){
+    				$eventroles = $event->getCategory()->getReadroles();
+    				if($eventroles->contains($roleentity)){
+    					$readableEvents[] = $event;
+    				}
+    			}
+    		}
+    	}
+    	
     	$json = array();
-    	foreach ($events as $event){ 		
+    	foreach ($readableEvents as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
     	
@@ -495,13 +522,35 @@ class EventsController extends FormController {
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
     	$criteria->andWhere(Criteria::expr()->eq('timeline', true));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+    	$readablecat = array();
     	foreach ($categories as $category){
+    		if($this->zfcUserAuthentication()->hasIdentity()){
+    			$roles = $this->zfcUserAuthentication()->getIdentity()->getRoles();
+    			foreach ($roles as $role){
+    				if($category->getReadroles(true)->contains($role)){
+    					$readablecat[] = $category;
+    					break;
+    				}
+    			}
+    		} else {
+    			$role = $this->getServiceLocator()->get('Core\Service\Rbac')->getOptions()->getAnonymousRole();
+    			$roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array('name'=>$role));
+    			if($roleentity){
+    				if($category->getReadroles(true)->contains($roleentity)){
+    					$readablecat[] = $category;
+    				}
+    			}
+    		}
+    		
+    	}
+    	foreach ($readablecat as $category){
     		$json[$category->getId()] = array(
     			'name' => $category->getName(),
     			'short_name' => $category->getShortName(),
     			'color' => $category->getColor(),
     		);
     	}
+    	
     	return new JsonModel($json);
     }
     

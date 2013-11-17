@@ -2,10 +2,12 @@
  
 namespace Core\Entity;
 
+use Zend\Form\Annotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
 use ZfcRbac\Identity\IdentityInterface;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * An example of how to implement a role aware user entity.
@@ -21,30 +23,42 @@ class User implements UserInterface, IdentityInterface
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Annotation\Type("Zend\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Utilisateur :"})
      */
     protected $username;
 
     /**
      * @var string
      * @ORM\Column(type="string", unique=true,  length=255)
+     * @Annotation\Type("Zend\Form\Element\Email")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Email :"})
      */
     protected $email;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"false"})
+     * @Annotation\Options({"label":"Nom complet :"})
      */
     protected $displayName;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=128)
+     * @Annotation\Type("Zend\Form\Element\Password")
+     * @Annotation\Options({"label":"Mot de passe :"})
      */
     protected $password;
 
@@ -60,15 +74,19 @@ class User implements UserInterface, IdentityInterface
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
      * )
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+	 * @Annotation\Attributes({"multiple":true})
+	 * @Annotation\Options({"label":"Rôles :"})
      */
-    protected $roles;
+    protected $userroles;
 
     /**
      * Initialies the roles variable.
      */
     public function __construct()
     {
-        $this->roles = new ArrayCollection();
+        $this->userroles = new ArrayCollection();
     }
 
     /**
@@ -210,7 +228,7 @@ class User implements UserInterface, IdentityInterface
      */
     public function getRoles()
     {
-        return $this->roles->getValues();
+        return $this->userroles->getValues();
     }
 
     /**
@@ -222,16 +240,48 @@ class User implements UserInterface, IdentityInterface
      */
     public function addRole($role)
     {
-        $this->roles[] = $role;
+        $this->userroles[] = $role;
     }
-    
+        
     /**
      * @param PersistentCollection $roles
      * @return self
      */
     public function setRoles(PersistentCollection $roles)
     {
-    	$this->roles = $roles;
+    	$this->userroles = $roles;
+    	
     	return $this;
+    }
+    
+    public function addUserroles($roles){
+    	foreach ($roles as $role){
+    		$this->userroles->add($role);
+    	}
+    }
+    
+    public function removeUserroles($roles){
+    	foreach ($roles as $role){
+    		$this->userroles->removeElement($role);
+    	}
+    }
+    
+    public function setUserroles($roles){
+    	$this->userroles = $roles;
+    }
+    
+    public function getUserroles()
+    {
+    	return $this->userroles;
+    }
+
+    public function getArrayCopy(){
+    	$object_vars = get_object_vars($this);
+    	$roles = array();
+    	foreach ($this->userroles as $role){
+    		$roles[] = $role->getId();
+    	}
+    	$object_vars['userroles'] = $roles;
+    	return $object_vars;
     }
 }

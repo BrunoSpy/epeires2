@@ -13,6 +13,7 @@ namespace Application\Entity;
 use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 /**
  * @ORM\Table(name="categories")
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
@@ -27,12 +28,18 @@ class Category {
 	protected $id;
 	
 	/** 
-	 * @ORM\ManyToOne(targetEntity="Category")
+	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="childs")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Catégorie parente :", "empty_option":"Choisir la catégorie parente"})
 	 */
 	protected $parent;
+	
+
+	/**
+	 * @ORM\OneToMany(targetEntity="Category", mappedBy="parent")
+	 */
+	protected $childs;
 	
 	/**
 	 * @Annotation\Type("Zend\Form\Element\Text")
@@ -99,6 +106,10 @@ class Category {
 	/** 
 	 * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readcategories")
 	 * @ORM\JoinTable(name="roles_categories_read")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(true)
+	 * @Annotation\Attributes({"multiple":true})
+	 * @Annotation\Options({"label":"Affichée pour :"})
 	 */
 	protected $readroles;
 	
@@ -173,10 +184,48 @@ class Category {
 		$this->fieldname = $fieldname;
 	}
 	
+	public function getReadroles($recursive = false){
+		if($recursive){
+			$readroles = new ArrayCollection();
+			foreach ($this->readroles as $readrole){
+				$readroles->add($readrole);
+			}
+			foreach ($this->childs as $child){
+				foreach ($child->getReadroles(true) as $readrole){
+					$readroles->add($readrole);
+				}
+			}
+			return $readroles;
+		} else {
+			return $this->readroles;
+		}
+	}
+	
+	public function setReadroles($readroles){
+		$this->readroles = $readroles;
+	}
+	
+	public function addReadroles(Collection $roles){
+		foreach ($roles as $role){
+			$this->readroles->add($role);
+		}
+	}
+	
+	public function removeReadroles(Collection $roles){
+		foreach ($roles as $role){
+			$this->readroles->removeElement($role);
+		}	
+	}
+	
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$object_vars["parent"] = ($this->parent ? $this->parent->getId() : null);
 		$object_vars["fieldname"] = ($this->fieldname ? $this->fieldname->getId() : null);
+		$roles = array();
+		foreach ($this->readroles as $role){
+			$roles[] = $role->getId();
+		}
+		$object_vars['readroles'] = $roles;
 		return $object_vars;
 	}
 }

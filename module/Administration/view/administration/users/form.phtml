@@ -1,0 +1,48 @@
+<?php
+
+
+use Zend\Form\Element\Select;
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url('administration', array('controller'=>'users', 'action'=>'saveuser')));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+
+?>
+
+<?php echo $this->form()->openTag($form) ?>
+
+<div class="modal-body">
+
+<?php 
+
+echo $this->formInput($form->get('id'));
+
+echo $this->controlGroup($this->formLabel($form->get('username')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formInput($form->get('username')) . $this->formElementErrors($form->get('username')));
+
+echo $this->controlGroup($this->formLabel($form->get('displayName')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formInput($form->get('displayName')) . $this->formElementErrors($form->get('displayName')));
+
+echo $this->controlGroup($this->formLabel($form->get('email')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formInput($form->get('email')) . $this->formElementErrors($form->get('email')));
+if(!$this->userid){
+	echo $this->controlGroup($this->formLabel($form->get('password')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formPassword($form->get('password')) . $this->formElementErrors($form->get('password')));
+}
+echo $this->controlGroup($this->formLabel($form->get('userroles')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($form->get('userroles')) . $this->formElementErrors($form->get('userroles')))
+
+?>
+
+</div>
+
+<div class="modal-footer">
+<?php
+echo $this->formSubmit($this->form->get('submit'));
+?>
+</div>
+
+    
+<?php echo $this->form()->closeTag() ?>

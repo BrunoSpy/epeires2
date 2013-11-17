@@ -33,6 +33,10 @@ echo $this->controlGroup($this->formLabel($this->form->get('fieldname')->setLabe
 
 echo $this->controlGroup($this->formLabel($this->form->get('color')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('color')->setAttribute('class', 'colorpicker')));
+
+echo $this->controlGroup($this->formLabel($this->form->get('readroles')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('readroles')));
+
 ?>
 </div>
 <div class="modal-footer">

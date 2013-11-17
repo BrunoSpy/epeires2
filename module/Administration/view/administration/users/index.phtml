@@ -1,47 +1,44 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/users.js')?>
 
 <table class="table table-striped sortable">
 <thead>
 	<tr>
 		<th>id</th>
 		<th data-sort="string">Nom</th>
-		<th data-sort="string">Catégorie</th>
-		<th>Impact</th>
-		<th>Fiche réflexe</th>
-		<th>Ponctuel</th>
-		<th>Liste</th>
-		<th>Recherche</th>
-		<th><a class="btn btn-mini" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
+		<th data-sort="string">Email</th>
+		<th>Roles</th>
+		<th><a class="btn btn-mini" href="#user-container" data-toggle="modal" id="add-user">Ajouter</a></th>
 	</tr>
 </thead>
 
 <tbody>
 	<?php 
-	foreach ($this->models as $model){
+	foreach ($this->users as $user){
 		echo '<tr>';
-		echo '<td>'.$model->getId().'</td>';
-		echo '<td>'.$model->getName().'</td>';
-		echo '<td>'.$model->getCategory()->getName().'</td>';
-		echo '<td>'.$this->impact($model->getImpact()).'</td>';
-		echo '<td>'.$this->actions[$model->getId()].'</td>';
-		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-		echo '<td>'.($model->isListable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>'.$user->getId().'</td>';
+		echo '<td>'.$user->getUsername().'</td>';
+		echo '<td>'.$user->getEmail().'</td>';
+		echo '<td>';
+			foreach($user->getRoles() as $role){
+				echo $role->getName()." ";
+			}
+		echo '</td>';
 		echo '<td>';
 		echo "<a 
 				title=\"Modifier\" 
-				href=\"#model-container\" 
-				class=\"mod-model\" 
-				data-id=\"".$model->getId()."\" 
-				data-name=\"".$model->getName()."\" 
+				href=\"#user-container\" 
+				class=\"mod-user\" 
+				data-id=\"".$user->getId()."\" 
+				data-name=\"".$user->getUsername()."\" 
 				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
 		echo "<a 
 				title=\"Supprimer\" 
-				href=\"#confirm-delete-model\" 
-				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
-				class=\"delete-model\" 
-				data-id=\"".$model->getId()."\" 
-				data-name=\"".$model->getName()."\" 
+				href=\"#confirm-delete-user\" 
+				data-href=\"".$this->url('administration', array('controller'=>'users', 'action'=>'deleteuser'), array('query'=>array('id'=>$user->getId())))."\" 
+				class=\"delete-user\" 
+				data-id=\"".$user->getId()."\" 
+				data-name=\"".$user->getUsername()."\" 
 				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
 		echo '</td>';
 		echo '</tr>';
@@ -51,9 +48,20 @@
 
 </table>
 
-<?php echo $this->partial('models/modals.phtml') ?>
+<?php echo $this->modalWindow("user-container", "<h3>Nouvel utilisateur</h3>", "", "<div id=\"user-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-user",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
 
 <?php $this->inlineScript()->captureStart();?>
+
+users('<?php echo $this->url('administration')?>');
 
 $(".sortable").stupidtable();
 

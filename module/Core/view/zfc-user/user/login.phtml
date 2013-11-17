@@ -31,6 +31,3 @@ echo $this->controlGroup($this->formLabel($form->get('credential')->setLabelAttr
 </div>
 <?php echo $this->form()->closeTag() ?>
 
-<?php if ($this->enableRegistration) : ?>
-<?php echo $this->translate('Not registered?'); ?> <a href="<?php echo $this->url('zfcuser/register') . ($this->redirect ? '?redirect='.$this->redirect : '') ?>"><?php echo $this->translate('Sign up!'); ?></a>
-<?php endif; ?>

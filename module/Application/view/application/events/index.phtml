@@ -5,7 +5,7 @@ if(!$this->zfcuserIdentity()){
 } 
 	
 ?>
-
+<?php if($this->isGranted('events.create')):?>
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
 <div id="loading"></div>
@@ -15,6 +15,7 @@ if(!$this->zfcuserIdentity()){
 <!-- formulaire createform.phtml récupéré via ajax -->
 </div>
 </div>
+<?php endif; ?>
 
 <div id="suggest-evt" class="popover fade right in">
 <div class="arrow"></div>

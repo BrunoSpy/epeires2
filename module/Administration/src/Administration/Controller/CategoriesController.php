@@ -19,9 +19,6 @@ class CategoriesController extends FormController{
     
 	public function indexAction(){
    		
-		error_log(print_r($this->getServiceLocator()->get('Configuration'), true));
-		
-		
     	$viewmodel = new ViewModel();
     	 
     	$return = array();
@@ -88,7 +85,9 @@ class CategoriesController extends FormController{
     		->setObject($category);
     	
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($id));
-                
+        
+        $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());
+        
     	if($id){
     		//bind to the category
     		$category = $objectManager->getRepository('Application\Entity\Category')->find($id);

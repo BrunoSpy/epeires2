@@ -20,62 +20,6 @@ use Core\Entity\Role;
 
 class Rbac extends \ZfcRbac\Service\Rbac
 {
-    
-
-    /**
-     * Returns true if the user has the role (can pass an array).
-     *
-     * @param string|array $roles
-     * @return bool
-     */
-    public function hasRole($roles)
-    {
-    	error_log('hasrole');
-    	
-        if (!$this->getIdentity()) {
-            return false;
-        }
-
-        if (!is_array($roles) && !($roles instanceof \Traversable)) {
-            $roles = array($roles);
-        }
-
-        $rbac = $this->getRbac();
-
-        // Have to iterate and load roles to verify that parents are loaded.
-        // If it wasn't for inheritance we could just check the getIdentity()->getRoles() method.
-        $userRoles = $this->getIdentity()->getRoles();
-        if (is_string($userRoles)) {
-            $userRoles = array($userRoles);
-        }
-        foreach($roles as $role) {
-            foreach($userRoles as $userRole) {
-                $event = new Event;
-                $event->setRole($userRole)
-                      ->setRbac($rbac);
-
-                $this->getEventManager()->trigger(Event::EVENT_HAS_ROLE, $event);
-
-                if (!$this->getRbac()->hasRole($role)) {
-                    continue;
-                }
-
-                // Fastest - do they match directly?
-                if ($userRole == $role) {
-                    return true;
-                }
-
-                // Last resort - check children from rbac.
-                $it = new RecursiveIteratorIterator($rbac->getRole($userRole), RecursiveIteratorIterator::CHILD_FIRST);
-                foreach($it as $leaf) {
-                    if ($leaf->getName() == $role) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * Returns true if the user has the permission.
@@ -86,9 +30,7 @@ class Rbac extends \ZfcRbac\Service\Rbac
      * @return bool
      */
     public function isGranted($permission, $assert = null)
-    {
-    	error_log('isgranted');
-    	 
+    { 
     	
         if (!is_string($permission)) {
             throw new InvalidArgumentException('isGranted() expects a string for permission');
@@ -117,13 +59,20 @@ class Rbac extends \ZfcRbac\Service\Rbac
                 continue;
             }
 
+            $rolename = "";
+            if($role instanceof Role){
+            	$rolename = $role->getName();
+            } else {
+            	$rolename = $role;
+            }
+            
             $event = new Event;
-            $event->setRole($role->getName())
+            $event->setRole($rolename)
                   ->setPermission($permission)
                   ->setRbac($rbac);
 
             $this->getEventManager()->trigger(Event::EVENT_IS_GRANTED, $event);
-            if ($rbac->isGranted($role->getName(), $permission)) {
+            if ($rbac->isGranted($rolename, $permission)) {
                 return true;
             }
         }

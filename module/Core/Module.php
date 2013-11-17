@@ -1,7 +1,16 @@
 <?php
 namespace Core;
 
-class Module
+use Zend\ModuleManager\ModuleManager;
+use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
+use Zend\Stdlib\Hydrator\ClassMethods;
+
+class Module implements
+    AutoloaderProviderInterface,
+    ConfigProviderInterface,
+    ServiceProviderInterface
 {
     public function getConfig()
     {
@@ -29,8 +38,25 @@ class Module
     					'ZfcRbac\Collector\RbacCollector' => function($sm) {
     						return new \ZfcRbac\Collector\RbacCollector($sm->get('Core\Service\Rbac'));
     					},
-    					'Core\Service\Rbac' => 'Core\Service\RbacFactory'
-    							)
+    					'Core\Service\Rbac' => 'Core\Service\RbacFactory',
+    					'zfcuser_register_form' => function($sm) {
+    						$options = $sm->get('zfcuser_module_options');
+    						$form = new Form\Register(null, $options, $sm->get('Doctrine\ORM\EntityManager'));
+    						//$form->setCaptchaElement($sm->get('zfcuser_captcha_element'));
+    						$form->setInputFilter(new \ZfcUser\Form\RegisterFilter(
+    								new \ZfcUser\Validator\NoRecordExists(array(
+    										'mapper' => $sm->get('zfcuser_user_mapper'),
+    										'key'    => 'email'
+    								)),
+    								new \ZfcUser\Validator\NoRecordExists(array(
+    										'mapper' => $sm->get('zfcuser_user_mapper'),
+    										'key'    => 'username'
+    								)),
+    								$options
+    						));
+    						return $form;
+    					}
+    			)
     	);
     }
     
@@ -48,6 +74,13 @@ class Module
     					'hasRole' => function($sm) {
     						$sl = $sm->getServiceLocator();
     						return new \ZfcRbac\View\Helper\HasRole($sl->get('Core\Service\Rbac'));
+    					},
+    					'zfcUserRegisterWidget' => function ($sm) {
+    						$locator = $sm->getServiceLocator();
+    						$viewHelper = new View\Helper\ZfcUserRegisterWidget;
+    						$viewHelper->setViewTemplate('zfc-user/user/register.phtml');
+    						$viewHelper->setRegisterForm($locator->get('zfcuser_register_form'));
+    						return $viewHelper;
     					},
     			),
     	);

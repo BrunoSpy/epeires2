@@ -26,22 +26,9 @@ return array(
 				)
 		),
 		'zfcrbac' => array(
-				'providers' => array(
-						'RbacUserDoctrineOrm\Provider\AdjacencyList\Role\DoctrineORM' => array(),
-				),
-				'firewalls' => array(
-						'ZfcRbac\Firewall\Controller' => array(
-	//							array('controller' => 'index', 'actions' => 'index', 'roles' => 'guest')
-						),
-						'ZfcRbac\Firewall\Route' => array(
-	//							array('route' => 'profiles/add', 'roles' => 'member'),
-	//							array('route' => 'admin/*', 'roles' => 'administrator')
-						),
-				),
-				/**
-				 * have identities provided by zfc-user module
-				*/
-				'identity_provider' => 'zfcuser_auth_service'
+				'firewallRoute' => false,
+				'firewallController' => false,
+				'anonymousRole' => 'anonymous',
 		),
 		'zfcuser' => array(
 				// telling ZfcUser to use our own class
@@ -51,6 +38,8 @@ return array(
 				'enable_username' => true,
 				'enable_display_name' =>true,
 				'enable_registration' => true,
+				'login_after_registration' => false,
+				'use_redirect_parameter_if_present' => true,
 				'auth_identity_fields' => array('username', 'email'),
 		),
 		'view_manager' => array(

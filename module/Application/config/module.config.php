@@ -133,6 +133,7 @@ return array(
     	'Evènements' => array(
     		'events.read' => 'Lecture',
     		'events.write' => 'Ecriture',
+    		'events.create' => 'Création',
     	),
     	'Fréquences' => array(
     		'frequencies.read' => 'Lecture',
