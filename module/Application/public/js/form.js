@@ -370,65 +370,62 @@ var form = function(url){
 		//disable subcategories select form before getting datas
 		$('#subcategories option[value=-1]').prop('selected', true);
 		$('#subcategories').prop('disabled',true);
-		$.post(url+'/subform?part=subcategories&id='+$(this).val(),
+		//suppression des champs liés à une sous-catégorie
+		$("#Modèlesid").html('Modèles').addClass("disabled");
+		$("#actionsTitle").addClass("disabled");
+		$("#inner-Ficheréflexe").html("");
+		$("#custom_fields").html("");
+		
+		if($("#root_categories option:selected").val() > 0) {
+			
+			$.post(url+'/subform?part=subcategories&id='+$(this).val(),
 				function(data){
-			$("#subcategories").html(data);
-			if($("#root_categories option:selected").val() > 0) {
-				$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
-				$("#custom_fields").html("");
-				$.post(
+					$('#subcategories').prop('disabled',false);
+					$("#subcategories").html(data);
+					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
+					$.post(
 						url+'/subform?part=custom_fields&id='+$("#root_categories option:selected").val(),
 						function(data){
 							$("#custom_fields").html(data);
 						}			
-				);
-				$("#Horairesid").removeClass("disabled");
-				$("#Descriptionid").removeClass("disabled");
-				$("#filesTitle").removeClass("disabled");
-				$('#subcategories').trigger("change");
-			} else {
-				$("#category_title").html('Catégories');
-				$("#Horairesid").addClass("disabled");
-				$("#Descriptionid").addClass("disabled");
-				$("#filesTitle").addClass("disabled");
-				$('#subcategories').trigger("change");
-			}
-		});
+					);
+					
+					$("#Horairesid").removeClass("disabled");
+					$("#Descriptionid").removeClass("disabled");
+					$("#filesTitle").removeClass("disabled");
+					
+			});
+		} else {
+			$("#category_title").html('Catégories');
+			$("#Horairesid").addClass("disabled");
+			$("#Descriptionid").addClass("disabled");
+			$("#filesTitle").addClass("disabled");
+		}
 	});
 
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
-		$.post(
+		if($("#subcategories option:selected").val() > 0) {
+			$.post(
 				url+'/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
-					$('#subcategories').prop('disabled',false);
 					$("#predefined_events").html(data);
-					if($("#subcategories option:selected").val() > 0) {
-						$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
-						$("#Modèlesid").removeClass("disabled");
-						$("#custom_fields").html("");
-						$.post(
-								url+'/subform?part=custom_fields&id='+$("#subcategories option:selected").val(),
-								function(data){
-									$("#custom_fields").html(data);
-								}			
-						);
-						$('#Modèlesid').trigger('click');
-
-					} else {
-						//pas de sous-catégorie choisie, on supprime les champs spécifiques
-						if($("#root_categories").val() > 0) {
-							$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
-						}
-
-						$("#Modèlesid").html('Modèles').addClass("disabled");
-						$("#actionsTitle").addClass("disabled");
-						$("#custom_fields").html("");
-						$("#inner-Ficheréflexe").html("");
-					}
+					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
+					$("#Modèlesid").removeClass("disabled");
+					$("#custom_fields").html("");
+					$.post(
+						url+'/subform?part=custom_fields&id='+$("#subcategories option:selected").val(),
+						function(data){
+							$("#custom_fields").html(data);
+						}			
+					);
+					$('#Modèlesid').trigger('click');
 				}
-		);
-
+			);
+		} else {
+			//réinit en fonction de la cat racine
+			$("#root_categories").trigger('change');
+		}
 	});
 
 	$("#event").on("change", "#punctual", function(){

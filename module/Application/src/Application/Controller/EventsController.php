@@ -83,6 +83,23 @@ class EventsController extends FormController {
     				$event->setEndDate(null);
     			}
     			
+    			//hydrator can't guess timezone, force UTC of end and start dates
+    			if(isset($post['startdate']) && !empty($post['startdate'])){
+    				$offset = date("Z");
+    				$startdate = new \DateTime($post['startdate']);
+    				$startdate->setTimezone(new \DateTimeZone("UTC"));
+    				$startdate->add(new \DateInterval("PT".$offset."S"));
+    				$event->setStartdate($startdate);
+    			}
+    			if(isset($post['enddate']) && !empty($post['enddate'])){
+    				$offset = date("Z");
+    				$enddate = new \DateTime($post['enddate']);
+    				$enddate->setTimezone(new \DateTimeZone("UTC"));
+    				$enddate->add(new \DateInterval("PT".$offset."S"));
+    				$event->setEnddate($enddate);
+    			}
+    			
+    			
     			if(!$id){//categories disabled when modification
     				if(isset($post['categories']['subcategories'])
     						&& !empty($post['categories']['subcategories'])
