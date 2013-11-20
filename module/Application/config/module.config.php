@@ -94,18 +94,6 @@ return array(
      * Doctrine 2 Configuration
      */
     'doctrine' => array(
-    	'eventmanager' => array(
-    		'orm_default' => array(
-    			'subscribers' => array(
-    				//'Gedmo\Tree\TreeListener',
-    				//'Gedmo\Timestampable\TimestampableListener',
-    				//'Gedmo\Sluggable\SluggableListener',
-    				//'Gedmo\Sortable\SortableListener',
-    				'Gedmo\Loggable\LoggableListener',
-    				//'Gedmo\Uploadable\UploadableListener'
-    			),
-    		),
-    	),
     	'driver' => array(
     		'application_entities' => array(
 				'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
@@ -131,7 +119,6 @@ return array(
     ),
     'permissions' => array(
     	'Evènements' => array(
-    		'events.read' => 'Lecture',
     		'events.write' => 'Ecriture',
     		'events.create' => 'Création',
     	),

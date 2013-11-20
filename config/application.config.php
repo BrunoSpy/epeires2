@@ -12,10 +12,10 @@ $modules = array(
         'ZfcUserDoctrineORM',
 		'RbacUserDoctrineOrm',
         'AssetManager',
+		'Core',
         'Application',
         'Administration',
         'IPO',
-        'Core'
 );
 
 if($env == 'development') {

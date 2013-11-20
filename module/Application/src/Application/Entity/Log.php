@@ -32,5 +32,5 @@ class Log extends AbstractLogEntry{
 			$this->loggedAt->add(new \DateInterval("PT".$offset."S"));
 		}
 	}
-	
+
 }

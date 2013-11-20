@@ -12,6 +12,7 @@ use Zend\View\Model\JsonModel;
 use Application\Entity\Status;
 use Application\Entity\Impact;
 use Application\Entity\CustomFieldType;
+use Core\Entity\Role;
 
 class MaintenanceController extends AbstractActionController
 {

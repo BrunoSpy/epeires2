@@ -53,8 +53,6 @@
     					?>
     					</ul>
     				</li>
-    				<li><i class="icon-eye-open"></i><b> Chef de salle : </b>Prénom Nom</li>
-    				<li><i class="icon-warning-sign"></i><b> IPO : </b>Prénom Nom (06 12 23 45 65)</li>
     				<li id="clock" class="pull-right"></li>
     		</ul>
     	</div>
@@ -158,6 +156,11 @@
         <?php echo $this->content; ?>
     
     </div> <!-- /container -->
+        
+    <?php 
+	if(!$this->zfcuserIdentity()){
+			echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('administration'))));
+	} ?>
         
     <?php echo $this->inlineScript() ?>
     </body>

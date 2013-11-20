@@ -1,10 +1,5 @@
 
-<?php 
-if(!$this->zfcuserIdentity()){
-	echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('application'))));
-} 
-	
-?>
+
 <?php if($this->isGranted('events.create')):?>
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>

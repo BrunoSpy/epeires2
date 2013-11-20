@@ -6,6 +6,7 @@ namespace Core\Entity;
 use Doctrine\ORM\PersistentCollection;
 use RecursiveIterator;
 use IteratorIterator;
+use Zend\Form\Annotation;
 use Zend\Permissions\Rbac\RoleInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,12 +23,17 @@ class Role implements RoleInterface{
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Annotation\Type("Zend\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @var Role
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="children")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+	 * @Annotation\Attributes({"multiple":false})
+	 * @Annotation\Options({"label":"Parent :", "empty_option":"Rôle parent (facultatif)"})
      */
     protected $parent;
 
@@ -40,6 +46,9 @@ class Role implements RoleInterface{
     /**
      * @var string
      * @ORM\Column(type="string", length=32)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Nom :"})
      */
     protected $name;
 
@@ -63,6 +72,11 @@ class Role implements RoleInterface{
      * @ORM\ManyToMany(targetEntity="Application\Entity\Category", mappedBy="readroles")
      */
     protected $readcategories;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="userroles", cascade={"detach"})
+     */
+    protected $users;
     
     public function __construct(){
     	$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
@@ -137,8 +151,9 @@ class Role implements RoleInterface{
      */
     public function getChildren()
     {
-        $children = $this->children->getValues();
-        return $children[$this->childrenPosition];
+     //   $children = $this->children->getValues();
+     //   return $children[$this->childrenPosition];
+     	return $this->children;
     }
 
     /**
@@ -296,5 +311,13 @@ class Role implements RoleInterface{
     public function __toString()
     {
         return $this->name;
+    }
+    
+    public function getArrayCopy(){
+    	$object_vars = get_object_vars($this);
+    	if($this->parent){
+    		$object_vars['parent'] = $this->parent->getId();
+    	}
+    	return $object_vars;
     }
 }

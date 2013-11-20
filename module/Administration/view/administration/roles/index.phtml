@@ -8,7 +8,7 @@
 <!-- Permission titles -->
 <thead>
 <tr>
-<th class="no-border"></th>
+<th class="no-border" colspan="3"></th>
 <?php 
 
 foreach ($this->config as $key => $value){
@@ -20,7 +20,9 @@ foreach ($this->config as $key => $value){
 
 <!-- Permissions -->
 <tr>
-<td class="no-border"></td>
+<td><a class="btn btn-mini" href="#role-container" data-toggle="modal" id="add-role">Ajouter</a></td>
+<td><b>Nom</b></td>
+<td><b>Parent</b></td>
 <?php 
 
 $permissions = array();
@@ -35,7 +37,26 @@ foreach($this->config as $key => $value){
 
 <!-- Roles -->
 <?php foreach($this->roles as $role){
-	echo "<tr><td>".$role->getName()."</td>";
+	echo "<tr>";
+	echo "<td>";
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#role-container\" 
+				class=\"mod-role\" 
+				data-id=\"".$role->getId()."\" 
+				data-name=\"".$role->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-role\" 
+				data-href=\"".$this->url('administration', array('controller'=>'roles', 'action'=>'deleterole'), array('query'=>array('id'=>$role->getId())))."\" 
+				class=\"delete-role\" 
+				data-id=\"".$role->getId()."\" 
+				data-name=\"".$role->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+	echo '</td>';
+	echo "<td>".$role->getName()."</td>";
+	echo "<td>".($role->getParent() ? $role->getParent()->getName() : "<em>Aucun</em>")."</td>";
 	foreach ($permissions as $permission){
 		echo "<td>";
 			echo "<input class=\"permission\" 
@@ -55,6 +76,18 @@ foreach($this->config as $key => $value){
 </div>
 </div>
 </div>
+
+<?php echo $this->modalWindow("role-container", "<h3>Nouveau rôle</h3>", "", "<div id=\"role-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-role",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer le rôle <em><span id=\"role-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-role-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+
 
 <?php $this->inlineScript()->captureStart();?>
 

@@ -1,12 +1,9 @@
 /**
- * JS for centre modal windows
+ * JS for user modal windows
  */
 
 var users = function(url){
 	
-	/* **************************** */
-	/*         Organisations        */
-	/* **************************** */
 	$("#add-user").on('click', function(){
 		$("#user-title").html("Nouvel utilisateur");
 		$("#user-form").load(url+'/users/form');

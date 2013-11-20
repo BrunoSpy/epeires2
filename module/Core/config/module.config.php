@@ -1,6 +1,13 @@
 <?php
 return array(
 		'doctrine' => array(
+				'eventmanager' => array(
+						'orm_default' => array(
+								'subscribers' => array(
+									'doctrine.loggable',
+								),
+						),
+				),
 				'driver' => array(
 						// overriding zfc-user-doctrine-orm's config
 						'zfcuser_entity' => array(
@@ -18,6 +25,11 @@ return array(
 						),
 				),
 		),
+		'service_manager' => array(
+				'factories' => array(
+						'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
+				),
+		),
 		'rbac-user-doctrine-orm' => array(
 				'mapper' => array(
 						'role' => array(
@@ -26,7 +38,7 @@ return array(
 				)
 		),
 		'zfcrbac' => array(
-				'firewallRoute' => false,
+				'firewallRoute' => true,
 				'firewallController' => false,
 				'anonymousRole' => 'anonymous',
 		),
