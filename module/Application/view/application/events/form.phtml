@@ -82,22 +82,25 @@
 			$html .= "<div id=\"custom_fields\"></div>";
 		}	
 		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
-				
+		$titleclass="";		
 		if($this->event){
-			//accéder aux fichiers
-			$html = '<table class="table table-hover" >';
-			$html .= '<tbody>';
 			$files = $this->event->getFiles();
-			foreach ($files as $file){
-				$html .= "<tr>";
-				$html .= "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
-				$html .= "<td>".($file->getName() ? $file->getname() : $file->getFilename())."</td>";
-				$html .= "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a></td>";
-				$html .= "</tr>";
+			if(count($files) > 0){
+			//accéder aux fichiers
+				$html = '<table class="table table-hover" >';
+				$html .= '<tbody>';
+				foreach ($files as $file){
+					$html .= "<tr>";
+					$html .= "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
+					$html .= "<td>".($file->getName() ? $file->getname() : $file->getFilename())."</td>";
+					$html .= "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a></td>";
+					$html .= "</tr>";
+				}
+				$html .= '</tbody>';
+				$html .= '</table>';
+			} else {
+				$titleclass = "disabled";
 			}
-			$html .= '</tbody>';
-			$html .= '</table>';
-		
 			//TODO permettre la modif des fichiers si droits OK
 		} else {
 			$html = "<div id=\"file_list\">";
@@ -124,24 +127,30 @@
 			$html .= "<a id=\"addfile\" href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		
-		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle'));
+		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle', 'title_class'=>$titleclass));
 		
 		
 		$html = "";
+		$actionsClass = "";
 		if($this->event) {
-			$html .= '<table class="table table-hover" >';
-			$html .= '<tbody>';
-			foreach ($this->event->getChilds() as $child){
+			$childs = $this->event->getChilds();
+			if(count($childs) > 0){
+				$html .= '<table class="table table-hover" >';
+				$html .= '<tbody>';
+				foreach ($childs as $child){
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
 					$html .= "<td><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
 					$html .= '</tr>';
+				}
+				$html .= '</table>';
+				$html .= '</tbody>';
+			} else {
+				$actionsClass="disabled";
 			}
-			$html .= '</table>';
-			$html .= '</tbody>';
 		}
-		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle'));
+		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
 		
 		?>
 

@@ -219,9 +219,14 @@ class EventsController extends FormController {
     		switch ($part) {
     			case 'subcategories':
     				$id = $this->params()->fromQuery('id');
+    				$subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getChilds($id));
+    				$subcatarray = array();
+    				foreach ($subcat as $cat){
+    					$subcatarray[$cat->getId()] = $cat->getName();
+    				}
     				$viewmodel->setVariables(array(
     						'part' => $part,
-    						'values' => $em->getRepository('Application\Entity\Category')->getChildsAsArray($id),
+    						'values' => $subcatarray,
     				));
     				break;
     			case 'predefined_events':
@@ -334,7 +339,13 @@ class EventsController extends FormController {
     		->setValueOptions($em->getRepository('Application\Entity\Impact')->getAllAsArray());
 
     	//add default fieldsets
-    	$form->add(new CategoryFormFieldset($em->getRepository('Application\Entity\Category')->getRootsAsArray(null, true)));
+    	$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
+    	$rootarray = array();
+    	foreach ($rootCategories as $cat){
+    		$rootarray[$cat->getId()] = $cat->getName();
+    	}
+    	
+    	$form->add(new CategoryFormFieldset($rootarray));
  	    	
     	//files
     	$filesFieldset = new FileFieldset('fichiers');
@@ -522,6 +533,19 @@ class EventsController extends FormController {
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
     	$criteria->andWhere(Criteria::expr()->eq('timeline', true));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+    	$readablecat = $this->filterReadableCategories($categories);
+    	foreach ($readablecat as $category){
+    		$json[$category->getId()] = array(
+    			'name' => $category->getName(),
+    			'short_name' => $category->getShortName(),
+    			'color' => $category->getColor(),
+    		);
+    	}
+    	
+    	return new JsonModel($json);
+    }
+    
+    private function filterReadableCategories($categories){
     	$readablecat = array();
     	foreach ($categories as $category){
     		if($this->zfcUserAuthentication()->hasIdentity()){
@@ -541,17 +565,9 @@ class EventsController extends FormController {
     				}
     			}
     		}
-    		
-    	}
-    	foreach ($readablecat as $category){
-    		$json[$category->getId()] = array(
-    			'name' => $category->getName(),
-    			'short_name' => $category->getShortName(),
-    			'color' => $category->getColor(),
-    		);
-    	}
     	
-    	return new JsonModel($json);
+    	}
+    	return $readablecat;
     }
     
     /**
