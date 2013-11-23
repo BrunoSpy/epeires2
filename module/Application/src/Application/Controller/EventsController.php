@@ -112,7 +112,6 @@ class EventsController extends FormController {
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
-    					error_log($value);
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     					if($customfield){
@@ -630,17 +629,39 @@ class EventsController extends FormController {
 				switch ($field) {
 					case 'enddate' :
 						$event->setEnddate(new \DateTime($value));
-						$objectManager->flush();
 						$objectManager->persist($event);
+						$objectManager->flush();
 						$messages['success'][0] = "Date et heure de fin modifiées.";
 						break;	
 					case 'startdate' :
 						$event->setStartdate(new \DateTime($value));
-						$objectManager->flush();
 						$objectManager->persist($event);
+						$objectManager->flush();
 						$messages['success'][0] = "Date et heure de début modifiées.";
 						break;
-					
+					case 'impact' :
+						$impact = $objectManager->getRepository('Application\Entity\Impact')->findOneBy(array('value'=>$value));
+						if($impact){
+							$event->setImpact($impact);
+							$objectManager->persist($event);
+							$objectManager->flush();
+							$messages['success'][0] = "Impact modifié.";
+						}
+						break;
+					case 'star' :
+						$event->setStar($value);
+						$objectManager->persist($event);
+						$objectManager->flush();
+						$messages['success'][0] = "Evènement modifié.";
+						break;
+					case "status" :
+						$status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name'=>$value));
+						if($status){
+							$event->setStatus($status);
+							$objectManager->persist($event);
+							$objectManager->flush();
+							$messages['success'][0] = "Statut de l'évènement modifié.";
+						}
 					default :
 						;
 						break;

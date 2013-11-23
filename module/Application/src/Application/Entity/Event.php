@@ -94,6 +94,11 @@ class Event {
  	protected $custom_fields_values;
  	
  	/**
+ 	 * @ORM\Column(type="boolean")
+ 	 */
+ 	protected $star;
+ 	
+ 	/**
  	 * @ORM\OneToMany(targetEntity="EventUpdate", mappedBy="event", cascade={"remove"})
  	 */
  	protected $updates;
@@ -133,6 +138,15 @@ class Event {
 	public function setPunctual($punctual){
 		$this->punctual = $punctual;
 	}
+	
+	public function isStar(){
+		return $this->star;
+	}
+	
+	public function setStar($star){
+		$this->star = $star;
+	}
+	
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');

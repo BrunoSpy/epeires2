@@ -25,7 +25,7 @@ class Status {
 	/** @ORM\Column(type="boolean") */
 	protected $display;
 	
-	/** @ORM\Column(type="string") */
+	/** @ORM\Column(type="string", unique=true) */
 	protected $name;
 	
 	/** @ORM\Column(type="boolean") */
