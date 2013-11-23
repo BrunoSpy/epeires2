@@ -112,6 +112,7 @@ class EventsController extends FormController {
     			//save optional datas
     			if(isset($post['custom_fields'])){
     				foreach ($post['custom_fields'] as $key => $value){
+    					error_log($value);
     					//génération des customvalues si un customfield dont le nom est $key est trouvé
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     					if($customfield){
@@ -628,11 +629,18 @@ class EventsController extends FormController {
     		if ($event) {
 				switch ($field) {
 					case 'enddate' :
-						$event->setEndDate(new DateTime($value));
+						$event->setEnddate(new \DateTime($value));
 						$objectManager->flush();
 						$objectManager->persist($event);
 						$messages['success'][0] = "Date et heure de fin modifiées.";
 						break;	
+					case 'startdate' :
+						$event->setStartdate(new \DateTime($value));
+						$objectManager->flush();
+						$objectManager->persist($event);
+						$messages['success'][0] = "Date et heure de début modifiées.";
+						break;
+					
 					default :
 						;
 						break;
