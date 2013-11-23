@@ -29,7 +29,7 @@ class Role implements RoleInterface{
 
     /**
      * @var Role
-     * @ORM\ManyToOne(targetEntity="Role", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="Role", inversedBy="childrenroles")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
 	 * @Annotation\Attributes({"multiple":false})
@@ -38,10 +38,9 @@ class Role implements RoleInterface{
     protected $parent;
 
     /**
-     * @var PersistentCollection|Role[]
      * @ORM\OneToMany(targetEntity="Role", mappedBy="parent")
      */
-    protected $children;
+    protected $childrenroles;
 
     /**
      * @var string
@@ -80,6 +79,7 @@ class Role implements RoleInterface{
     
     public function __construct(){
     	$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
+    	$this->childrenroles = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -136,26 +136,112 @@ class Role implements RoleInterface{
         return $this->parent;
     }
 
+    /* ***** Implements RecursiveIterator ***** */
+    
     /**
-     * @param PersistentCollection $children
-     * @return $this
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Returns if an iterator can be created for the current entry.
+     * @link http://php.net/manual/en/recursiveiterator.haschildren.php
+     * @return bool true if the current entry can be iterated over, otherwise returns false.
      */
-    public function setChildren($children)
+    public function hasChildren()
     {
-        $this->children = $children;
-        return $this;
+    	return ($this->childrenroles->count() > 0);
     }
-
+    
     /**
      * @return Role[]|RecursiveIterator[]
      */
     public function getChildren()
     {
-     //   $children = $this->children->getValues();
-     //   return $children[$this->childrenPosition];
-     	return $this->children;
+        $children = $this->childrenroles->getValues();
+        return $children[$this->childrenPosition];
     }
 
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Return the current element
+     * @link http://php.net/manual/en/iterator.current.php
+     * @return mixed Can return any type.
+     */
+    public function current()
+    {
+    	$children = $this->childrenroles->getValues();
+    	return $children[$this->childrenPosition];
+    }
+    
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Move forward to next element
+     * @link http://php.net/manual/en/iterator.next.php
+     * @return void Any returned value is ignored.
+     */
+    public function next()
+    {
+    	$this->childrenPosition++;
+    }
+    
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Return the key of the current element
+     * @link http://php.net/manual/en/iterator.key.php
+     * @return mixed scalar on success, or null on failure.
+     */
+    public function key()
+    {
+    	return $this->childrenPosition;
+    }
+    
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Checks if current position is valid
+     * @link http://php.net/manual/en/iterator.valid.php
+     * @return boolean The return value will be casted to boolean and then evaluated.
+     *       Returns true on success or false on failure.
+     */
+    public function valid()
+    {
+    	$children = $this->childrenroles->getValues();
+    	return isset($children[$this->childrenPosition]);
+    }
+    
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Rewind the Iterator to the first element
+     * @link http://php.net/manual/en/iterator.rewind.php
+     * @return void Any returned value is ignored.
+     */
+    public function rewind()
+    {
+    	$this->childrenPosition=0;
+    }
+    
+    
+    
+    /* ******** End RecursiveIterator ******** */
+    
+    
+    public function getChildrenroles()
+    {
+    	return $this->childrenroles;
+    }
+    
+    public function setChildrenroles($children){
+    	$this->childrenroles = $children;
+    }
+    
+    public function addChildrenroles($roles){
+    	foreach ($roles as $role){
+    		$this->childrenroles->add($role);
+    	}
+    }
+    
+    public function removeChildrenroles($roles){
+    	foreach ($roles as $role){
+    		$this->childrenroles->removeElement($role);
+    	}
+    }
+    
     /**
      * @param PersistentCollection $permissions
      * @return self
@@ -183,64 +269,7 @@ class Role implements RoleInterface{
         return $permissions;
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the current element
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
-     */
-    public function current()
-    {
-        $children = $this->children->getValues();
-        return $children[$this->childrenPosition];
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Move forward to next element
-     * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
-     */
-    public function next()
-    {
-        $this->childrenPosition++;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the key of the current element
-     * @link http://php.net/manual/en/iterator.key.php
-     * @return mixed scalar on success, or null on failure.
-     */
-    public function key()
-    {
-        return $this->childrenPosition;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Checks if current position is valid
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     *       Returns true on success or false on failure.
-     */
-    public function valid()
-    {
-        $children = $this->children->getValues();
-        return isset($children[$this->childrenPosition]);
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Rewind the Iterator to the first element
-     * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
-     */
-    public function rewind()
-    {
-        $this->childrenPosition=0;
-    }
-
+    
     /**
      * Add permission to the role.
      *
@@ -273,9 +302,9 @@ class Role implements RoleInterface{
      * @param  string $name
      * @return bool
      */
-    public function hasPermission($name)
+    public function hasPermission($name, $recursive = true)
     {
-        foreach ($this->getPermissions(true) as $permission) {
+        foreach ($this->getPermissions($recursive) as $permission) {
             if ($permission->getName() == $name) {
                 return true;
             }
@@ -293,19 +322,8 @@ class Role implements RoleInterface{
      */
     public function addChild($child)
     {
-        $this->children->add($child);
+        $this->childrenroles->add($child);
         return $this;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Returns if an iterator can be created for the current entry.
-     * @link http://php.net/manual/en/recursiveiterator.haschildren.php
-     * @return bool true if the current entry can be iterated over, otherwise returns false.
-     */
-    public function hasChildren()
-    {
-        return ($this->children->count() > 0);
     }
     
     public function __toString()
