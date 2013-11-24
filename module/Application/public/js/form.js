@@ -222,7 +222,7 @@ var form = function(url){
 	});
 
 	$("#event").on("click", "#cancel-form", function(){
-		$("#create-link").trigger("click");
+		$("#create-evt").slideUp('fast');
 	});
 	
 	$("#event").on("focus", 'input[type=text].date', function(){

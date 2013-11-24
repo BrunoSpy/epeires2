@@ -83,6 +83,7 @@ class EventsController extends FormController {
     				//création
     				if($this->isGranted('events.create')){
     					$event = new Event();
+    					$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
     					$credentials = true;
     				}
     			}
@@ -178,6 +179,7 @@ class EventsController extends FormController {
     						}
     					}
     					 
+    					
     					$objectManager->persist($event);
     					$objectManager->flush();
     					
