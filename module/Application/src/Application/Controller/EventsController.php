@@ -21,6 +21,7 @@ use Zend\Form\Fieldset;
 use Zend\Form\Element\File;
 use Zend\Form\Element\Text;
 use Application\Form\FileFieldset;
+use Application\Services\EventService;
 
 class EventsController extends FormController {
 	
@@ -54,151 +55,169 @@ class EventsController extends FormController {
  	 * @return \Zend\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application. 
  	 */
     public function saveAction(){   
-    	 	 
     	
-    	$return = $this->params()->fromQuery('return', null);
-    	
-    	$messages = array();
-    	
-    	if($this->getRequest()->isPost()){
+		$messages = array();
+		$event = null;
+		$return = $this->params()->fromQuery('return', null);
+		
+    	if($this->zfcUserAuthentication()->hasIdentity()){
     		
-    		$post = array_merge_recursive($this->getRequest()->getPost()->toArray(),
+    		if($this->getRequest()->isPost()){
+    			$post = array_merge_recursive($this->getRequest()->getPost()->toArray(),
     									$this->getRequest()->getFiles()->toArray());
-    		$id = $post['id'] ? $post['id'] : null;
+    			$id = $post['id'] ? $post['id'] : null;
     		  		
-    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
-    		$event = new Event();
-    		if($id){
-    			$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
-    		} 
-    		$form = $this->getSkeletonForm($event);  	
-    			  		
-    		$form->setData($post);
-    		     		  		
-    		if($form->isValid()){
-   			 
-    			//TODO find why hydrator can't set a null value to a datetime
-    			if(isset($post['enddate']) && empty($post['enddate'])){
-    				$event->setEndDate(null);
+    			$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    			
+    			$credentials = false;
+    			
+    			if($id){
+    				//modification
+    				$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    				if($event){
+    					if($this->isGranted('events.write') || $event->getAuthor()->getId() === $this->zfcUserAuthentication()->getIdentity()->getId()){
+							$credentials = true;
+    					}
+    				}
+    			} else {
+    				//création
+    				if($this->isGranted('events.create')){
+    					$event = new Event();
+    					$credentials = true;
+    				}
     			}
     			
-    			//hydrator can't guess timezone, force UTC of end and start dates
-    			if(isset($post['startdate']) && !empty($post['startdate'])){
-    				$offset = date("Z");
-    				$startdate = new \DateTime($post['startdate']);
-    				$startdate->setTimezone(new \DateTimeZone("UTC"));
-    				$startdate->add(new \DateInterval("PT".$offset."S"));
-    				$event->setStartdate($startdate);
-    			}
-    			if(isset($post['enddate']) && !empty($post['enddate'])){
-    				$offset = date("Z");
-    				$enddate = new \DateTime($post['enddate']);
-    				$enddate->setTimezone(new \DateTimeZone("UTC"));
-    				$enddate->add(new \DateInterval("PT".$offset."S"));
-    				$event->setEnddate($enddate);
-    			}
-    			
-    			
-    			if(!$id){//categories disabled when modification
-    				if(isset($post['categories']['subcategories'])
-    						&& !empty($post['categories']['subcategories'])
-    						&& $post['categories']['subcategories'] > 0){
-    					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['subcategories']));
+    			if($credentials){
+    				
+    				$form = $this->getSkeletonForm($event);
+    					
+    				$form->setData($post);
+    				 
+    				if($form->isValid()){
+    						
+    					//TODO find why hydrator can't set a null value to a datetime
+    					if(isset($post['enddate']) && empty($post['enddate'])){
+    						$event->setEndDate(null);
+    					}
+    					 
+    					//hydrator can't guess timezone, force UTC of end and start dates
+    					if(isset($post['startdate']) && !empty($post['startdate'])){
+    						$offset = date("Z");
+    						$startdate = new \DateTime($post['startdate']);
+    						$startdate->setTimezone(new \DateTimeZone("UTC"));
+    						$startdate->add(new \DateInterval("PT".$offset."S"));
+    						$event->setStartdate($startdate);
+    					}
+    					if(isset($post['enddate']) && !empty($post['enddate'])){
+    						$offset = date("Z");
+    						$enddate = new \DateTime($post['enddate']);
+    						$enddate->setTimezone(new \DateTimeZone("UTC"));
+    						$enddate->add(new \DateInterval("PT".$offset."S"));
+    						$event->setEnddate($enddate);
+    					}
+    					 
+    					//save optional datas
+    					if(isset($post['custom_fields'])){
+    						foreach ($post['custom_fields'] as $key => $value){
+    							//génération des customvalues si un customfield dont le nom est $key est trouvé
+    							$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
+    							if($customfield){
+    								$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+    								->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
+    								if(!$customvalue){
+    									$customvalue = new CustomFieldValue();
+    									$customvalue->setEvent($event);
+    									$customvalue->setCustomField($customfield);
+    									$event->addCustomFieldValue($customvalue);
+    								}
+    								$customvalue->setValue($value);
+    								$objectManager->persist($customvalue);
+    							}
+    						}
+    					}
+    					//create associated actions (only relevant if creation from a model
+    					if(isset($post['modelid'])){
+    						$parentID = $post['modelid'];
+    						//get actions
+    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+    							$child = new Event();
+    							$child->setParent($event);
+    							$child->createFromPredefinedEvent($action);
+    							$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
+    							//customfields
+    							foreach($action->getCustomFieldsValues() as $customvalue){
+    								$newcustomvalue = new CustomFieldValue();
+    								$newcustomvalue->setEvent($child);
+    								$newcustomvalue->setCustomField($customvalue->getCustomField());
+    								$newcustomvalue->setValue($customvalue->getValue());
+    								$objectManager->persist($newcustomvalue);
+    							}
+    							$objectManager->persist($child);
+    						}
+    					}
+    					 
+    					//fichiers
+    					if(isset($post['fichiers']) && is_array($post['fichiers'])){
+    						foreach ($post['fichiers'] as $key => $f){
+    								
+    							$count = substr($key, strlen($key) -1);
+    								
+    							if(!empty($f['file'.$count]['name'])){
+    									
+    								$file = new \Application\Entity\File($f['file'.$count],
+    										$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
+    								if(isset($f['name'.$count]) && !empty($f['name'.$count])){
+    									$file->setName($f['name'.$count]);
+    								}
+    								if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
+    									$file->setReference($f['reference'.$count]);
+    								}
+    								$file->addEvent($event);
+    								$objectManager->persist($file);
+    							}
+    						}
+    					}
+    					 
+    					$objectManager->persist($event);
+    					$objectManager->flush();
+    					
+    					$messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+    					
     				} else {
-    					$event->setCategory($objectManager->find('Application\Entity\Category', $post['categories']['root_categories']));
+    					//formulaire invalide
+    					$messages['error'][] = "Impossible d'enregistrer l'évènement.";
+    					//traitement des erreurs de validation
+    					$this->processFormMessages($form->getMessages(), $messages);
     				}
-    			}
-    			//save optional datas
-    			if(isset($post['custom_fields'])){
-    				foreach ($post['custom_fields'] as $key => $value){
-    					//génération des customvalues si un customfield dont le nom est $key est trouvé
-    					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
-    					if($customfield){
-    						$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
-    															->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
-    						if(!$customvalue){
-    							$customvalue = new CustomFieldValue();
-    							$customvalue->setEvent($event);
-    							$customvalue->setCustomField($customfield);
-    							$event->addCustomFieldValue($customvalue);
-    						}
-    						$customvalue->setValue($value);
-    						$objectManager->persist($customvalue);
-    					}
-    				}
-    			}
-    			//create associated actions (only relevant if creation from a model
-    			if(isset($post['modelid'])){
-    				$parentID = $post['modelid'];
-    				//get actions
-    				foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
-    					$child = new Event();
-    					$child->setParent($event);
-    					$child->createFromPredefinedEvent($action);
-    					$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
-    					//customfields
-    					foreach($action->getCustomFieldsValues() as $customvalue){
-    						$newcustomvalue = new CustomFieldValue();
-    						$newcustomvalue->setEvent($child);
-    						$newcustomvalue->setCustomField($customvalue->getCustomField());
-    						$newcustomvalue->setValue($customvalue->getValue());
-    						$objectManager->persist($newcustomvalue);
-    					}
-    					$objectManager->persist($child);
-    				}
+    					
+    			} else {
+    				$messages['error'][] = "Création ou modification impossible, droits insuffisants.";
     			}
     			
-    			//fichiers
-    			if(isset($post['fichiers']) && is_array($post['fichiers'])){
-    				foreach ($post['fichiers'] as $key => $f){
-    					
-    					$count = substr($key, strlen($key) -1);
-    					
-    					if(!empty($f['file'.$count]['name'])){
-    					  						
-    						$file = new \Application\Entity\File($f['file'.$count], 
-    								$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
-    						if(isset($f['name'.$count]) && !empty($f['name'.$count])){
-	    						$file->setName($f['name'.$count]);
-    						}
-    						if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
-	    						$file->setReference($f['reference'.$count]);
-    						}
-    						$file->addEvent($event);
-    						$objectManager->persist($file);
-    					}
-    				}
-    			}    			
-    			
-    			$objectManager->persist($event);
-    			$objectManager->flush();
-    			if($return){
-    				$this->flashMessenger()->addSuccessMessage("Evènement enregistré");
-    			} else {
-    				$messages['success'][0] = "Evènement enregistré";
-    			}
-    			if($return){
-    				return $this->redirect()->toRoute('application');
-    			} else {
-    				return new JsonModel(array('events' => array($event->getId() => $this->getEventJson($event)), 'messages'=>$messages));
-    			}
     		} else {
-    			if($return){
-    				$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer l'évènement.");
-    			} else {
-    				$messages['error'][0] = "Impossible d'enregistrer l'évènement.";
-    			}
-    			//traitement des erreurs de validation
-    			$this->processFormMessages($form->getMessages(), $messages);
-    			if($return){
-    				return $this->redirect()->toRoute('application');
-    			} else {
-    				return new JsonModel(array('messages'=>$messages));
-    			}
+    			$messages['error'][] = "Requête illégale.";
     		}
+    		
+    	} else {
+    		$messages['error'][] = "Utilisateur non authentifié, action impossible.";
     	}
     	
+    	if($return){
+    		foreach ($messages['success'] as $message){
+    			$this->flashMessenger()->addSuccessMessage($message);
+    		}
+    		foreach ($messages['error'] as $message){
+    			$this->flashMessenger()->addErrorMessage($message);
+    		}
+    		return $this->redirect()->toRoute('application');
+    	} else {
+    		$json = array();
+    		$json['messages'] = $messages;
+    		if($event){
+    			$json['events'] = array($event->getId() => $this->getEventJson($event));
+    		}
+    		return new JsonModel($json);
+    	}
     	
     }
     
@@ -431,9 +450,10 @@ class EventsController extends FormController {
     /**
      * {'evt_id_0' => {
      * 		'name' => evt_name,
+     * 		'modifiable' => boolean,
      * 		'start_date' => evt_start_date,
      *		'end_date' => evt_end_date,
-     *		'punctual' => boolean
+     *		'punctual' => boolean,
      *		'category' => evt_category_name,
      *		'category_short' => evt_category_short_name,
      *		'status_name' => evt_status_name,
@@ -457,8 +477,10 @@ class EventsController extends FormController {
     	if($lastmodified){
     		$criteria->andWhere(Criteria::expr()->gte('last_modified_on', $lastmodified));
     	} else {
+    		//every open events and all events of the last 3 days
     		$now = new \DateTime('NOW');
     		$criteria->andWhere(Criteria::expr()->gte('startdate', $now->sub(new \DateInterval('P3D'))));
+    		$criteria->orWhere(Criteria::expr()->in('status', array(1,2)));
     	}
 
     	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
@@ -500,6 +522,7 @@ class EventsController extends FormController {
     private function getEventJson($event){
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$json = array('name' => $eventservice->getName($event),
+    					'modifiable' => $eventservice->isModifiable($event),
     					'start_date' => $event->getStartdate()->format(DATE_RFC2822),
     					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),

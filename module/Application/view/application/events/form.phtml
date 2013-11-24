@@ -20,6 +20,7 @@
 	$this->form->prepare();
 	echo $this->form()->openTag($this->form);
 	echo $this->formHidden($this->form->get('id'));
+	echo $this->formHidden($this->form->get('category'));
 	?>
 	
 	<div class="accordion" id="form">
@@ -172,7 +173,7 @@
 			if($this->event){
 				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', "Modifier"));
 			} else {
-				echo $this->formSubmit($this->form->get('submit'));
+				echo $this->formSubmit($this->form->get('submit')->setAttribute('disabled', 'disabled'));
 			}?>
 			<a class="btn" id="cancel-form">Annuler</a>
 		</div>

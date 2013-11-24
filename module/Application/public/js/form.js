@@ -352,7 +352,9 @@ var form = function(url){
 		$("#inner-Ficheréflexe").html("");
 		$("#custom_fields").html("");
 		
-		if($("#root_categories option:selected").val() > 0) {
+		var root_value = $("#root_categories option:selected").val();
+		
+		if(root_value > 0) {
 			
 			$.post(url+'/subform?part=subcategories&id='+$(this).val(),
 				function(data){
@@ -360,7 +362,7 @@ var form = function(url){
 					$("#subcategories").html(data);
 					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
 					$.post(
-						url+'/subform?part=custom_fields&id='+$("#root_categories option:selected").val(),
+						url+'/subform?part=custom_fields&id='+root_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -370,18 +372,24 @@ var form = function(url){
 					$("#Descriptionid").removeClass("disabled");
 					$("#filesTitle").removeClass("disabled");
 					
+					$("input[name='submit']").prop('disabled', false);
+					
 			});
+			$("input[name='category']").val(root_value);
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
 			$("#Descriptionid").addClass("disabled");
 			$("#filesTitle").addClass("disabled");
+			$("input[name='submit']").prop('disabled', true);
+			$("input[name='category']").val('');
 		}
 	});
 
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
-		if($("#subcategories option:selected").val() > 0) {
+		var subcat_value = $("#subcategories option:selected").val();
+		if(subcat_value > 0) {
 			$.post(
 				url+'/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
@@ -390,7 +398,7 @@ var form = function(url){
 					$("#Modèlesid").removeClass("disabled");
 					$("#custom_fields").html("");
 					$.post(
-						url+'/subform?part=custom_fields&id='+$("#subcategories option:selected").val(),
+						url+'/subform?part=custom_fields&id='+subcat_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -398,6 +406,7 @@ var form = function(url){
 					$('#Modèlesid').trigger('click');
 				}
 			);
+			$("input[name='category']").val(subcat_value);
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');

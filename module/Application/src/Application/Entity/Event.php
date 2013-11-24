@@ -85,7 +85,11 @@ class Event {
  	/** @ORM\Column(type="datetime") */
  	protected $last_modified_on;
 	
- 	/** @ORM\ManyToOne(targetEntity="Category", inversedBy="events") */
+ 	/** 
+ 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
+ 	 * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+ 	 * @Annotation\Required(true)
+ 	 */
  	protected $category;
 	
  	/**
@@ -96,7 +100,12 @@ class Event {
  	/**
  	 * @ORM\Column(type="boolean")
  	 */
- 	protected $star;
+ 	protected $star = false;
+ 	
+ 	/**
+ 	 * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
+ 	 */
+ 	protected $author;
  	
  	/**
  	 * @ORM\OneToMany(targetEntity="EventUpdate", mappedBy="event", cascade={"remove"})
@@ -117,6 +126,14 @@ class Event {
  	
  	public function getId(){
  		return $this->id;
+ 	}
+ 	
+ 	public function getAuthor(){
+ 		return $this->author;
+ 	}
+ 	
+ 	public function setAuthor($author){
+ 		$this->author = $author;
  	}
  	
  	public function getUpdates(){
@@ -256,6 +273,7 @@ class Event {
 		$object_vars['status'] = ($this->status ? $this->status->getId() : null);
 		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
 		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
+		$object_vars['author'] = ($this->author ? $this->author->getId() : null);
 		return $object_vars;
 	}
 }
