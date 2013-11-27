@@ -50,18 +50,28 @@ var form = function(url){
 			timepickerform.find('.day input').val(day);
 		}
 		if(!timepickerform.find('.hour input').val()){
-			var d = new Date();
-			hour = d.getUTCHours();
-			if(hour >=0 && hour <= 9){
-				hour = "0"+hour;
+			var hour = "00";
+			if($(this).attr('end')){
+				hour = $("#start .hour input").val();
+			} else {
+				var d = new Date();
+				hour = d.getUTCHours();
+				if(hour >=0 && hour <= 9){
+					hour = "0"+hour;
+				}
 			}
 			timepickerform.find('.hour input').val(hour);
 		}
 		if(!timepickerform.find('.minute input').val()){
-			var d = new Date();
-			minutes = d.getUTCMinutes();
-			if(minutes >=0 && minutes <= 9){
-				minutes = "0"+minutes;
+			var minutes = "00";
+			if($(this).attr('end')){
+				minutes = $("#start .minute input").val();
+			} else {
+				var d = new Date();
+				minutes = d.getUTCMinutes();
+				if(minutes >=0 && minutes <= 9){
+					minutes = "0"+minutes;
+				}
 			}
 			timepickerform.find('.minute input').val(minutes);
 		}
