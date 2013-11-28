@@ -9,11 +9,11 @@ var roles = function(url){
 		var state = me.is(':checked');
 		if(!state){
 			$.post(url + '/roles/removepermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(){
-				me.attr('checked', true);
+				location.reload();
 			});
 		} else {
 			$.post(url + '/roles/addpermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(){
-				me.attr('checked', true);
+				location.reload();
 			});
 		}
 	});

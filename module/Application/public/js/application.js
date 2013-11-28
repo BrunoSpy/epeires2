@@ -17,6 +17,25 @@ function updateClock ( )
         
  };
  
+var displayMessages = function(messages){
+	$.each(messages, function(key, value){
+		if(messages['success']){
+			$.each(messages.success, function(key, value){
+				var n = noty({text:value, 
+					type:'success',
+					layout: 'bottomRight',});
+			});
+		}
+		if(messages['error']){
+			$.each(messages.error, function(key, value){
+				var n = noty({text:value, 
+					type:'error',
+					layout: 'bottomRight',});
+			});
+		}
+	});
+}
+ 
 $(document).ready(function(){
 
    setInterval('updateClock()', 1000);
@@ -50,6 +69,11 @@ $(document).ready(function(){
 		   $("#panel").animate({width:'20%'});
 		   $("#panel").load('http://127.0.0.1/epeires2/events/gethistory?id=100');
 	   }
+/*	  var status = "Confirmé";
+	  $.post('http://127.0.0.1/epeires2/events/changefield?id=5&field=status&value='+status, function(data){
+		  displayMessages(data);
+	  }, 'json');*/
+
 	   
    });
    

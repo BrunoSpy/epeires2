@@ -82,6 +82,11 @@ class User implements UserInterface, IdentityInterface
     protected $userroles;
 
     /**
+     * @ORM\OneToMany(targetEntity="Application\Entity\Event", mappedBy="author", cascade={"detach"})
+     */
+    protected $events;
+    
+    /**
      * Initialies the roles variable.
      */
     public function __construct()

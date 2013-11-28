@@ -50,18 +50,28 @@ var form = function(url){
 			timepickerform.find('.day input').val(day);
 		}
 		if(!timepickerform.find('.hour input').val()){
-			var d = new Date();
-			hour = d.getUTCHours();
-			if(hour >=0 && hour <= 9){
-				hour = "0"+hour;
+			var hour = "00";
+			if($(this).attr('end')){
+				hour = $("#start .hour input").val();
+			} else {
+				var d = new Date();
+				hour = d.getUTCHours();
+				if(hour >=0 && hour <= 9){
+					hour = "0"+hour;
+				}
 			}
 			timepickerform.find('.hour input').val(hour);
 		}
 		if(!timepickerform.find('.minute input').val()){
-			var d = new Date();
-			minutes = d.getUTCMinutes();
-			if(minutes >=0 && minutes <= 9){
-				minutes = "0"+minutes;
+			var minutes = "00";
+			if($(this).attr('end')){
+				minutes = $("#start .minute input").val();
+			} else {
+				var d = new Date();
+				minutes = d.getUTCMinutes();
+				if(minutes >=0 && minutes <= 9){
+					minutes = "0"+minutes;
+				}
 			}
 			timepickerform.find('.minute input').val(minutes);
 		}
@@ -207,37 +217,13 @@ var form = function(url){
 				if(id>0){
 					//modification
 					timeline.modify(data.events, 0);
-					$.each(data.messages.success, function(key, value){
-						var n = noty({text:value, 
-							type:'success',
-							layout: 'bottomRight',});
-					});
-					$.each(data.messages.error, function(key, value){
-						var n = noty({text:value, 
-							type:'error',
-							layout: 'bottomRight',});
-					});
+					displayMessages(data.messages);
 				} else {
 					//new event
 					if(data['events']){
 						timeline.add(data.events);
 					}
-					$.each(data.messages, function(key, value){
-						if(data.messages['success']){
-							$.each(data.messages.success, function(key, value){
-								var n = noty({text:value, 
-									type:'success',
-									layout: 'bottomRight',});
-							});
-						}
-						if(data.messages['error']){
-							$.each(data.messages.error, function(key, value){
-								var n = noty({text:value, 
-									type:'error',
-									layout: 'bottomRight',});
-							});
-						}
-					});
+					displayMessages(data.messages);
 				}
 			},
 			dataType: "json"
@@ -246,7 +232,7 @@ var form = function(url){
 	});
 
 	$("#event").on("click", "#cancel-form", function(){
-		$("#create-link").trigger("click");
+		$("#create-evt").slideUp('fast');
 	});
 	
 	$("#event").on("focus", 'input[type=text].date', function(){
@@ -376,7 +362,9 @@ var form = function(url){
 		$("#inner-Ficheréflexe").html("");
 		$("#custom_fields").html("");
 		
-		if($("#root_categories option:selected").val() > 0) {
+		var root_value = $("#root_categories option:selected").val();
+		
+		if(root_value > 0) {
 			
 			$.post(url+'/subform?part=subcategories&id='+$(this).val(),
 				function(data){
@@ -384,7 +372,7 @@ var form = function(url){
 					$("#subcategories").html(data);
 					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
 					$.post(
-						url+'/subform?part=custom_fields&id='+$("#root_categories option:selected").val(),
+						url+'/subform?part=custom_fields&id='+root_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -394,18 +382,24 @@ var form = function(url){
 					$("#Descriptionid").removeClass("disabled");
 					$("#filesTitle").removeClass("disabled");
 					
+					$("input[name='submit']").prop('disabled', false);
+					
 			});
+			$("input[name='category']").val(root_value);
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
 			$("#Descriptionid").addClass("disabled");
 			$("#filesTitle").addClass("disabled");
+			$("input[name='submit']").prop('disabled', true);
+			$("input[name='category']").val('');
 		}
 	});
 
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
-		if($("#subcategories option:selected").val() > 0) {
+		var subcat_value = $("#subcategories option:selected").val();
+		if(subcat_value > 0) {
 			$.post(
 				url+'/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
@@ -414,7 +408,7 @@ var form = function(url){
 					$("#Modèlesid").removeClass("disabled");
 					$("#custom_fields").html("");
 					$.post(
-						url+'/subform?part=custom_fields&id='+$("#subcategories option:selected").val(),
+						url+'/subform?part=custom_fields&id='+subcat_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -422,6 +416,7 @@ var form = function(url){
 					$('#Modèlesid').trigger('click');
 				}
 			);
+			$("input[name='category']").val(subcat_value);
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');

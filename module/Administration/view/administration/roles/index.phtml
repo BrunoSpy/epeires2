@@ -59,14 +59,23 @@ foreach($this->config as $key => $value){
 	echo "<td>".($role->getParent() ? $role->getParent()->getName() : "<em>Aucun</em>")."</td>";
 	foreach ($permissions as $permission){
 		echo "<td>";
+			$inherited = false;
 			echo "<input class=\"permission\" 
 					data-roleid=\"".$role->getId()."\"
 					data-permission=\"".$permission."\"  
 					type=\"checkbox\" ";
 			if($role->hasPermission($permission)){
+				if(!$role->hasPermission($permission, false)){
+					//inherited -> can't be modified
+					$inherited = true;
+					echo "disabled=\"disabled\" ";
+				}
 				echo "checked=\"checked\"";
 			}
 			echo ">";
+		if($inherited){
+			echo " (hérité)";
+		}
 		echo "</td>";
 	}
 	echo "</tr>";	

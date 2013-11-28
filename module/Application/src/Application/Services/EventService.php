@@ -4,6 +4,8 @@ namespace Application\Services;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\FactoryInterface;
+use Application\Entity\Event;
+use ZfcRbac\Service\Rbac;
 
 class EventService implements ServiceManagerAwareInterface{
 	/**
@@ -16,6 +18,15 @@ class EventService implements ServiceManagerAwareInterface{
 	 */
 	private $em;
 	
+	private $rbac;
+	
+	public function getRbac(){
+		if(!$this->rbac){
+			$this->rbac = $this->sm->get('service.security');
+		}
+		return $this->rbac;
+	}
+	
 	public function setEntityManager(\Doctrine\ORM\EntityManager $em){
 		$this->em = $em;
 	}
@@ -23,6 +34,22 @@ class EventService implements ServiceManagerAwareInterface{
 	public function setServiceManager(ServiceManager $serviceManager){
 		$this->sm = $serviceManager;
 	}
+	
+	/**
+	 * An event is modifiable if the current user is the author of the event or if he has the 'events.modify' permission
+	 * @return boolean
+	 */
+	public function isModifiable(Event $event){
+		$auth = $this->sm->get('zfcuser_auth_service');
+		if($auth->hasIdentity()){
+			if($this->getRbac()->isGranted('events.write') ||
+				($event->getAuthor() && $event->getAuthor()->getId() === $auth->getIdentity()->getId() )){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Get the name of an event depending on the title field of the category.

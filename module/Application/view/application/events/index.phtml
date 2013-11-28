@@ -1,6 +1,6 @@
 
 
-<?php if($this->isGranted('events.create')):?>
+<?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
 <div id="loading"></div>
