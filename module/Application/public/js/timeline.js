@@ -39,6 +39,7 @@ var plus_info = 0;
 var warn = new Array();
 var temp_fin;
 var cpt_journee;
+var ini_url;
 
 var timeline = {
 
@@ -70,6 +71,7 @@ var timeline = {
 			return dy_max*value/100;
 		},
 		conf: function (element, url) {
+			ini_url = url;
 			timeline.init(element);
 			var base_elmt = $('<div class="Base"></div>');
 			$(element).append(base_elmt);
@@ -558,9 +560,13 @@ var timeline = {
 				if (!(fin < d_ref_deb && etat == "Terminé") && (debut <= d_ref_fin) && (impt == 0)) {
 					elmt = timeline_elmt.find('.ident'+id);
 					var elmt_rect = elmt.find('.rect_elmt');
+					var elmt_compt = elmt.find('.complement');
 					elmt_text = elmt.find('.label_elmt');
 					elmt_rect.css({'opacity':'1'});
 					elmt_rect.children().css({'opacity':'1'});
+					elmt_compt.css({'opacity':'1'});
+					elmt_b1.css({'opacity':'1'});
+					elmt_b2.css({'opacity':'1'});
 					elmt_text.css({'color':'black'});
 				}
 			}
@@ -649,7 +655,7 @@ var timeline = {
 			$(elmt_b1).append('<i class="icon-pencil"></i>');
 			// ajout du bouton développé
 			elmt_b2 = $('<button type="button" class="plus"></button>');
-			$(elmt).append(elmt_b2);
+//			$(elmt).append(elmt_b2);
 			elmt_b2.addClass('btn btn-link btn-mini show');
 			$(elmt_b2).append('<i class="icon-plus"></i>');
 			// ajout du bouton minimisé
@@ -1619,12 +1625,15 @@ $(document).ready(function() {
 			star_style.removeClass('icon-red');
 			star_style.addClass('icon-star-empty');
 			tab[n][5] = 0;
+			var star = false;
 		} else if (tab[n][5] == 0) {
 			star_style.removeClass('icon-star-empty');
 			star_style.addClass('icon-red');
 			star_style.addClass('icon-star');
 			tab[n][5] = 1;
+			star = true;
 		}
+		$.post(ini_url+'/changefield?id='+id+'&field=star&value='+star);
 		if (impt_on == 1) {
 			var timel = $('#timeline');
 			var timeline_content = timel.find('.timeline_content');
@@ -1677,6 +1686,7 @@ $(document).ready(function() {
 			var n = corresp[id];
 			tab[n][2] = temp_fin;
 			timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
+			$.post(ini_url+'/changefield?id='+id+'&field=enddate&value='+temp_fin.toUTCString());
 		}
 	});
 
