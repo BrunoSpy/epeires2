@@ -5,13 +5,14 @@ namespace Core\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ZfcRbac\Permission\PermissionInterface;
 
 /**
  * 
  * @ORM\Entity
  * @ORM\Table(name="permissions")
  */
-class Permission {
+class Permission implements PermissionInterface {
 
     /** 
      * @ORM\Id
@@ -86,6 +87,10 @@ class Permission {
     		$role->removePermissions($collection);
     		$this->roles->removeElement($role);
     	}
+    }
+    
+    public function getRoles(){
+    	return $this->roles;
     }
     
     public function __toString()

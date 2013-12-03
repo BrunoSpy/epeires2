@@ -501,7 +501,8 @@ class EventsController extends FormController {
     			}
     		}
     	} else {
-    		$role = $this->getServiceLocator()->get('Core\Service\Rbac')->getOptions()->getAnonymousRole();
+    		//TODO use value from config
+    		$role = 'anonymous';
     		$roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array('name'=>$role));
     		if($roleentity){
     			foreach ($events as $event){
