@@ -10,7 +10,6 @@ $modules = array(
 		'ZfcRbac',
 		'ZfcUser',
         'ZfcUserDoctrineORM',
-		'RbacUserDoctrineOrm',
         'AssetManager',
 		'Core',
         'Application',

@@ -30,17 +30,14 @@ return array(
 						'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
 				),
 		),
-		'rbac-user-doctrine-orm' => array(
-				'mapper' => array(
-						'role' => array(
-								'entityClass' => 'Core\Entity\Role'
-						)
-				)
-		),
-		'zfcrbac' => array(
-				'firewallRoute' => true,
-				'firewallController' => false,
-				'anonymousRole' => 'anonymous',
+		'zfc_rbac' => array(
+				'identity_provider' => 'zfcuser_auth_service',
+				'role_providers' => array(
+				 		'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
+				 			'object_manager' => 'doctrine.entitymanager.orm_default',
+				 			'class_name'     => 'Core\Entity\Role',
+				 		),
+				 ),
 		),
 		'zfcuser' => array(
 				// telling ZfcUser to use our own class
