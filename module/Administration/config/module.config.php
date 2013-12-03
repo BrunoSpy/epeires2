@@ -89,11 +89,11 @@ return array(
     		'centre.modify' => 'Modification',
     	),
     ),
-    'zfcrbac' => array(
-    	'firewalls' => array(
-   			'ZfcRbac\Firewall\Route' => array(
-    			array('route' => 'admin/*', 'roles' => 'admin'),
+    'zfc_rbac' => array(
+    	'guards' => array(
+   			'ZfcRbac\Guard\RouteGuard' => array(
+    			'administration' => array('admin'),
     		),
-    	)
+    	),
     ),
 );

@@ -4,13 +4,12 @@ $env = getenv('APP_ENV') ?: 'production';
 
 // Production modules
 $modules = array(
-	'DoctrineModule',
+		'DoctrineModule',
         'DoctrineORMModule',
         'ZfcBase',
 		'ZfcRbac',
 		'ZfcUser',
         'ZfcUserDoctrineORM',
-		'RbacUserDoctrineOrm',
         'AssetManager',
 		'Core',
         'Application',

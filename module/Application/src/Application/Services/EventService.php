@@ -22,7 +22,7 @@ class EventService implements ServiceManagerAwareInterface{
 	
 	public function getRbac(){
 		if(!$this->rbac){
-			$this->rbac = $this->sm->get('service.security');
+			$this->rbac = $this->sm->get('ZfcRbac\Service\AuthorizationService');
 		}
 		return $this->rbac;
 	}

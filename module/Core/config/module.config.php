@@ -1,4 +1,5 @@
 <?php
+use ZfcRbac\Guard\GuardInterface;
 return array(
 		'doctrine' => array(
 				'eventmanager' => array(
@@ -29,18 +30,25 @@ return array(
 				'factories' => array(
 						'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
 				),
+				'aliases' => array(
+						'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service',
+				),
 		),
-		'rbac-user-doctrine-orm' => array(
-				'mapper' => array(
-						'role' => array(
-								'entityClass' => 'Core\Entity\Role'
-						)
-				)
-		),
-		'zfcrbac' => array(
-				'firewallRoute' => true,
-				'firewallController' => false,
-				'anonymousRole' => 'anonymous',
+		'zfc_rbac' => array(
+				'protection_policy' => GuardInterface::POLICY_ALLOW,
+				'guest_role' => 'anonymous',
+				'role_providers' => array(
+				 		'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
+				 			'object_manager' => 'doctrine.entitymanager.orm_default',
+				 			'class_name'     => 'Core\Entity\Role',
+				 		),
+				 ),
+				'permission_providers' => array(
+						'ZfcRbac\Permission\ObjectRepositoryPermissionProvider' => array(
+								'object_manager' => 'doctrine.entitymanager.orm_default',
+								'class_name'     => 'Core\Entity\Permission',
+						),
+				),
 		),
 		'zfcuser' => array(
 				// telling ZfcUser to use our own class

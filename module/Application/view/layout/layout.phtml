@@ -18,9 +18,9 @@
         				?>
 
         <!-- Scripts -->
-        <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
+        <?php echo $this->headScript()->prependFile($this->basePath() . '/js/timeline.js')
         							  ->prependFile($this->basePath() . '/js/form.js')
-        							  ->prependFile($this->basePath() . '/js/timeline.js')
+        							  ->prependFile($this->basePath() . '/js/application.js')
         							  ->prependFile($this->basePath() . '/js/jquery.mousewheel.js')
         							  ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
@@ -70,7 +70,6 @@
     					<a href="#" id="create-link"><i class="icon-pencil"></i> <i class="icon-chevron-down"></i></a>
     				</li>
     				<?php endif;?>
-    				<li><a href="#" id="toggle-panel">test</a></li>
     			</ul>
 	        	<ul class="nav-centered nav">
 	            	<li class="dropdown active">  <!-- lien par défaut, classe "active" supprimée par jquery si besoin -->

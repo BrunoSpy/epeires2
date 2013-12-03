@@ -55,28 +55,6 @@ $(document).ready(function(){
    $("a[data-toggle=tooltip]").tooltip();
    $("th[data-toggle=tooltip]").tooltip();
    
-   //toggle panel
-   $("#toggle-panel").on('click', function(){
-	   var panel = $("#panel");
-	   $("#timeline").width('auto');
-	   $('#timeline').css({position:'relative'});
-	   if(panel.width() > 0 ) {
-		   $("#panel").animate({width:'0%'}, function(){
-			   $("#panel").hide();
-		   });
-	   } else {
-		   $("#panel").show();
-		   $("#panel").animate({width:'20%'});
-		   $("#panel").load('http://127.0.0.1/epeires2/events/gethistory?id=100');
-	   }
-/*	  var status = "Confirmé";
-	  $.post('http://127.0.0.1/epeires2/events/changefield?id=5&field=status&value='+status, function(data){
-		  displayMessages(data);
-	  }, 'json');*/
-
-	   
-   });
-   
    //open links in new window
    $(document).on('click', 'a[rel="external"]',function(){
 	   window.open($(this).attr('href'));
