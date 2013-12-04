@@ -270,17 +270,20 @@ class Role implements RoleInterface{
     }
 
     
+    protected $permissionstring = array();
     /**
      * Add permission to the role.
      *
      * @param $name
      * @return RoleInterface
      */
-    public function addPermission($name)
+    public function addPermission($permission)
     {
-        $permission = new Permission();
-        $permission->setName($name);
-        $this->getPermissions()->add($permission);
+    	if(is_string($permission)){
+    		$this->permissionstring[] = $permission;
+    	} else {
+    		$this->getPermissions()->add($permission);
+    	}
         return $this;
     }
 
@@ -304,11 +307,24 @@ class Role implements RoleInterface{
      */
     public function hasPermission($name, $recursive = true)
     {
-        foreach ($this->getPermissions($recursive) as $permission) {
-            if ($permission->getName() == $name) {
-                return true;
-            }
-        }
+    	if(in_array($name,$this->permissionstring)){
+    		return true;
+    	}
+
+    	foreach ($this->permissions as $permission){
+    		if($permission->getName() == $name){
+    			return true;
+    		}
+    	}
+    	
+    	if($recursive){
+    		$it = new IteratorIterator($this);
+    		foreach ($it as $leaf) {
+    			if($leaf->hasPermission($name)){
+    				return true;
+    			}
+    		}
+    	}
 
         return false;
     }
