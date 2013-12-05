@@ -102,12 +102,10 @@ class Role implements RoleInterface{
 
     /**
      * @param string $name
-     * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
     }
 
     /**
@@ -120,12 +118,10 @@ class Role implements RoleInterface{
 
     /**
      * @param Role $parent
-     * @return self
      */
     public function setParent($parent)
     {
         $this->parent = $parent;
-        return $this;
     }
 
     /**
@@ -252,23 +248,6 @@ class Role implements RoleInterface{
         return $this;
     }
 
-    /**
-     * @param bool $recursive when true child permissions of a role are returned as well
-     * @return PersistentCollection|Permission[]
-     */
-    public function getPermissions($recursive=false)
-    {
-        if (!$recursive) {
-            return $this->permissions;
-        }
-        $permissions =  $this->permissions->getValues();
-        $it = new IteratorIterator($this);
-        foreach ($it as $leaf) {
-            $permissions = array_merge($permissions, $leaf->getPermissions(true));
-        }
-        return $permissions;
-    }
-
     
     protected $permissionstring = array();
     /**
@@ -282,7 +261,7 @@ class Role implements RoleInterface{
     	if(is_string($permission)){
     		$this->permissionstring[] = $permission;
     	} else {
-    		$this->getPermissions()->add($permission);
+    		$this->permissions->add($permission);
     	}
         return $this;
     }

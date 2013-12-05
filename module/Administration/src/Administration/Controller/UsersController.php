@@ -44,7 +44,6 @@ class UsersController extends AbstractActionController
     		
     		if($form->isValid()){
     			if(isset($post['password'])){
-    				error_log('password');
     				$bcrypt = new Bcrypt();
     				$bcrypt->setCost($this->getServiceLocator()->get('zfcuser_module_options')->getPasswordCost());
     				$user->setPassword($bcrypt->create($user->getPassword()));

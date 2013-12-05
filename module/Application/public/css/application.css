@@ -134,7 +134,7 @@ body{
 }
 
 /* Loading in event */
-#loading {
+.loading {
 	opacity:0.6;
 	position:absolute;
 	width:100%;

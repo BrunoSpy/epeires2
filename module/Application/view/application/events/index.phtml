@@ -1,9 +1,8 @@
 
-
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
 <div id="create-evt" class="popover fade bottom in">
 <div class="arrow"></div>
-<div id="loading"></div>
+<div class="loading"></div>
 <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
 <div id="event">
 <div>Chargement...</div>
@@ -11,6 +10,15 @@
 </div>
 </div>
 <?php endif; ?>
+
+<div id="search-results" class="popover fade bottom in">
+<div class="arrow"></div>
+<div class="loading"></div>
+<div id="results">
+<div>Chargement...</div>
+</div>
+</div>
+
 
 <div id="suggest-evt" class="popover fade right in">
 <div class="arrow"></div>
@@ -23,9 +31,9 @@
 
 <div class="row-fluid">
 	<div id="panel">
-
 	</div>
-	<div id="timeline"></div>
+	<div id="timeline">
+	</div>
 </div>
 <?php $this->inlineScript()->captureStart();?>
 
@@ -37,6 +45,9 @@ $("#loginwindow").modal('show');
 <?php 
 }
 ?>
+
+//search
+search('<?php echo $this->url('application', array('controller'=>'events'));?>');
 
 //init form
 form('<?php echo $this->url('application', array('controller' => 'events'));?>');

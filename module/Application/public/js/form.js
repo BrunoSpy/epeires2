@@ -241,14 +241,6 @@ var form = function(url){
 		});
 	});
 
-	$(document).ajaxStart(function(){
-			$("#loading").show();
-		})
-		.ajaxStop(function(){
-			$("#loading").hide();
-		}
-	);
-
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
 			$("#create-evt").slideUp('fast');

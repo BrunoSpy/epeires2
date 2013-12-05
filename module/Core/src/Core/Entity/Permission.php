@@ -27,7 +27,7 @@ class Permission implements PermissionInterface {
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Role", mappedBy="permissions")
+     * @ORM\ManyToMany(targetEntity="Role", mappedBy="permissions", cascade={"persist"})
      */
     protected $roles;
     
@@ -37,12 +37,10 @@ class Permission implements PermissionInterface {
     
     /**
      * @param int $id
-     * @return self
      */
     public function setId($id)
     {
         $this->id = $id;
-        return $this;
     }
 
     /**
@@ -55,12 +53,10 @@ class Permission implements PermissionInterface {
 
     /**
      * @param string $name
-     * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
     }
 
     /**
@@ -71,6 +67,10 @@ class Permission implements PermissionInterface {
         return $this->name;
     }
 
+    public function addRole($role){
+    	$this->roles->add($role);
+    }
+    
     public function addRoles(Collection $roles){
     	$collection = new ArrayCollection();
     	$collection->add($this);

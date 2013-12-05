@@ -19,6 +19,7 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/timeline.js')
+        							  ->prependFile($this->basePath() . '/js/search.js')
         							  ->prependFile($this->basePath() . '/js/form.js')
         							  ->prependFile($this->basePath() . '/js/application.js')
         							  ->prependFile($this->basePath() . '/js/jquery.mousewheel.js')
@@ -91,8 +92,8 @@
 	        	</ul>
 	        	<ul class="nav pull-right">
 	        		<li>
-	        			<form class="navbar-form">
-	        				<input class="search-query span2" type="text" placeholder="Search"></input>
+	        			<form class="navbar-form" id="search">
+	        				<input name="search" class="search-query span2" type="text" placeholder="Search"></input>
 	        			</form>
 	        		</li>
 	        		<li>

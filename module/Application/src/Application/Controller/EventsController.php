@@ -22,6 +22,9 @@ use Zend\Form\Element\File;
 use Zend\Form\Element\Text;
 use Application\Form\FileFieldset;
 use Application\Services\EventService;
+use Zend\Crypt\Password\Bcrypt;
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\EntityManager;
 
 class EventsController extends FormController {
 	
@@ -44,10 +47,47 @@ class EventsController extends FormController {
     	$this->layout()->cds = "Nom chef de salle";
     	$this->layout()->ipo = "Nom IPO (téléphone)";
     	
-    	
      	$viewmodel->setVariables(array('messages'=>$return));
     	 
         return $viewmodel;
+    }
+    
+    /**
+     * Returns a Json with all relevant events and models
+     */
+    public function searchAction(){
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$results = array();
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$search = $post['search'];
+    		if(strlen($search) > 2){
+    			//search events
+    			$results['events'] = array();
+    			$qb = $em->createQueryBuilder();
+    			$qb->select(array('e', 'v', 'c', 'cat'))
+    			->from('Application\Entity\Event', 'e')
+    			->innerJoin('e.custom_fields_values', 'v')
+    			->innerJoin('v.customfield', 'c')
+    			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
+    			->andWhere($qb->expr()->like('v.value', $qb->expr()->literal('%'.$search.'%')));
+    			$query = $qb->getQuery();
+    			$events = $query->getResult();
+    			foreach ($events as $event){
+    				$results['events'][$event->getId()] = $this->getEventJson($event);
+    			}
+    			//search models
+    			$results['models'] = array();
+    			$qb->select(array('m', 'v'))
+    			->from('Application\Entity\PredefinedEvent')
+    			->innerJoin('m.custom_fields_values', 'v')
+    			
+    			->andWhere($qb->expr()->like('m.name', $qb->expr()->literal('%'.$search.'%')))
+    			->andWhere($qb->expr()->eq('m.searchable', true));
+    			
+    		}
+    	}
+    	return new JsonModel($results);
     }
     
  	/**
@@ -522,7 +562,7 @@ class EventsController extends FormController {
     	return new JsonModel($json);
     }
     
-    private function getEventJson($event){
+    private function getEventJson(Event $event){
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$json = array('name' => $eventservice->getName($event),
     					'modifiable' => $eventservice->isModifiable($event),
@@ -538,6 +578,7 @@ class EventsController extends FormController {
     					'impact_value' => $event->getImpact()->getValue(),
     					'impact_name' => $event->getImpact()->getName(),
     					'impact_style' => $event->getImpact()->getStyle(),
+    					'star' => $event->isStar(),
     	);
     	
     	$actions = array();

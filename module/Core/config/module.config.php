@@ -15,10 +15,6 @@ return array(
 								'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
 								'paths' => __DIR__ . '/../src/Core/Entity',
 						),
-						'RbacUserDoctrineEntity' => array(
-								'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-								'paths' => __DIR__ . '/../src/Core/Entity',
-						),
 						'orm_default' => array(
 								'drivers' => array(
 										'Core\Entity' => 'zfcuser_entity',

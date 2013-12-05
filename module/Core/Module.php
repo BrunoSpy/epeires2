@@ -26,5 +26,5 @@ class Module implements
             ),
         );
     }
-   
+
 }

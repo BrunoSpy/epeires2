@@ -61,6 +61,15 @@ $(document).ready(function(){
 	   return false;
    });
    
+   
+	$(document).ajaxStart(function(){
+		$(".loading").show();
+		})
+	.ajaxStop(function(){
+		$(".loading").hide();
+		}
+	);
+   
    $.noty.defaults = {
 		    layout: 'bottomRight',
 		    theme: 'defaultTheme',
