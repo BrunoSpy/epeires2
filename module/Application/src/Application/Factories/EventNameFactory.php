@@ -8,7 +8,7 @@ class EventNameFactory implements FactoryInterface{
 		
 	public function createService(ServiceLocatorInterface $serviceLocator){
     	$eventnameHelper = new \Application\View\Helper\EventNameHelper();
-    	$eventnameHelper->setServiceManager($serviceLocator);
+    	$eventnameHelper->setEventService($serviceLocator->getServiceLocator()->get('eventservice'));
     	return $eventnameHelper;
 	}
 	

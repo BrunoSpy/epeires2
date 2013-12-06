@@ -262,8 +262,28 @@ var form = function(url){
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 		}
 	});
-
 	
+	//clic sur utiliser un modèle
+	$("#search-results").on("click", ".use-model", function(){
+		var me = $(this);
+	});
+	
+	//clic sur copie d'un évènement
+	$("#search-results").on("click", ".copy-event", function(){
+		var me = $(this);
+		
+		$("#search-results").slideUp('fast');
+		$("#search-results").offset({top:0, left:0});
+		
+		$("#event").html('<div>Chargement...</div>');
+		$("#form-title").html(me.data('name'));
+		$("#create-evt").slideDown('fast');
+		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+		$("#event").load(url+'/form?id='+me.data('id')+'&copy=1', function(){
+			updateHours();
+			$("#Horairesid").trigger('click');
+		});
+	});
 	
 	//click sur modification d'un évènement
 	$("#timeline").on("click", "button.modify-evt", function(){

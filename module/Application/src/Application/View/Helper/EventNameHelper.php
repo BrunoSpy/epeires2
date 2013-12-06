@@ -7,19 +7,21 @@ namespace Application\View\Helper;
 
 use Zend\Form\View\Helper\AbstractHelper;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class EventNameHelper extends AbstractHelper implements ServiceManagerAwareInterface {
+class EventNameHelper extends AbstractHelper {
 	
-	private $servicemanager;
+	private $eventservice;
 	
 	public function __invoke($event){
-
-		return $this->servicemanager->get('EventService')->getName($event);
+		
+		return $this->eventservice->getName($event);
 		
 	}
 	
-	public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator){
-		$this->servicemanager = $serviceLocator;
-	}
+    public function setEventService($service){
+    	$this->eventservice = $service;
+    }
 	
 }

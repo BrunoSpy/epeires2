@@ -25,6 +25,8 @@ use Application\Services\EventService;
 use Zend\Crypt\Password\Bcrypt;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\EntityManager;
+use Application\Entity\PredefinedEvent;
+use Doctrine\ORM\QueryBuilder;
 
 class EventsController extends FormController {
 	
@@ -61,33 +63,93 @@ class EventsController extends FormController {
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$search = $post['search'];
-    		if(strlen($search) > 2){
+    		if(strlen($search) >= 2){  			
+    			
     			//search events
     			$results['events'] = array();
-    			$qb = $em->createQueryBuilder();
-    			$qb->select(array('e', 'v', 'c', 'cat'))
+    			$qbEvents = $em->createQueryBuilder();;
+    			$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
     			->from('Application\Entity\Event', 'e')
     			->innerJoin('e.custom_fields_values', 'v')
     			->innerJoin('v.customfield', 'c')
+    			->innerJoin('c.type', 't')		
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
-    			->andWhere($qb->expr()->like('v.value', $qb->expr()->literal('%'.$search.'%')));
-    			$query = $qb->getQuery();
+    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal('%'.$search.'%')));
+    			//TODO order ben start date, limit 10 ?
+    			
+    			//search models
+    			$results['models'] = array();
+    			$qbModels = $em->createQueryBuilder();
+    			$qbModels->select(array('m', 'v', 'c', 't'))
+    			->from('Application\Entity\PredefinedEvent', 'm')
+    			->innerJoin('m.custom_fields_values', 'v')
+    			->innerJoin('v.customfield', 'c')
+    			->innerJoin('c.type', 't')
+    			->andWhere($qbModels->expr()->like('m.name', $qbModels->expr()->literal('%'.$search.'%')))
+    			->andWhere($qbModels->expr()->eq('m.searchable', true));
+    			
+    			$this->addCustomFieldsSearch($qbEvents, $qbModels, $search);
+    			
+    			$query = $qbEvents->getQuery();
     			$events = $query->getResult();
     			foreach ($events as $event){
     				$results['events'][$event->getId()] = $this->getEventJson($event);
     			}
-    			//search models
-    			$results['models'] = array();
-    			$qb->select(array('m', 'v'))
-    			->from('Application\Entity\PredefinedEvent')
-    			->innerJoin('m.custom_fields_values', 'v')
     			
-    			->andWhere($qb->expr()->like('m.name', $qb->expr()->literal('%'.$search.'%')))
-    			->andWhere($qb->expr()->eq('m.searchable', true));
-    			
+    			$query = $qbModels->getQuery();
+    			$models = $query->getResult();
+    			foreach ($models as $model){
+    				$results['models'][$model->getId()] = $this->getModelJson($model);
+    			}
     		}
     	}
     	return new JsonModel($results);
+    }
+    
+    private function addCustomFieldsSearch(QueryBuilder &$qbEvents, QueryBuilder &$qbModels, $search){
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	//search relevant customfields
+    	$qb = $em->createQueryBuilder();
+    	$qb->select(array('s'))
+    	->from('Application\Entity\Sector', 's')
+    	->andWhere($qb->expr()->like('s.name', $qb->expr()->literal('%'.$search.'%')));
+    	$sectors = $qb->getQuery()->getResult();
+    	 
+    	$qb = $em->createQueryBuilder();;
+    	$qb->select(array('a'))
+    	->from('Application\Entity\Antenna', 'a')
+    	->andWhere($qb->expr()->like('a.name', $qb->expr()->literal('%'.$search.'%')))
+    	->orWhere($qb->expr()->like('a.shortname', $qb->expr()->literal('%'.$search.'%')));
+    	$query = $qb->getQuery();
+    	$antennas = $query->getResult();
+    	
+    	foreach ($antennas as $antenna){
+    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?1'),
+    				$qbEvents->expr()->eq('v.value',$antenna->getId())
+    		));
+    		$qbEvents->setParameter('1', 'antenna');
+    		
+    		$qbModels->orWhere($qbModels->expr()->andX(
+    				$qbModels->expr()->eq('t.type', '?1'),
+    				$qbModels->expr()->eq('v.value',$antenna->getId())
+    		));
+    		$qbModels->setParameter('1', 'antenna');
+    	}
+    	
+    	foreach ($sectors as $sector){
+    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?2'),
+    				$qbEvents->expr()->eq('v.value',$sector->getId())
+    		));
+    		$qbEvents->setParameter('2', 'sector');
+    		
+    		$qbModels->orWhere($qbModels->expr()->andX(
+    				$qbModels->expr()->eq('t.type', '?2'),
+    				$qbModels->expr()->eq('v.value',$sector->getId())
+    		));
+    		$qbModels->setParameter('2', 'sector');
+    	}
     }
     
  	/**
@@ -140,7 +202,7 @@ class EventsController extends FormController {
     					if(isset($post['enddate']) && empty($post['enddate'])){
     						$event->setEndDate(null);
     					}
-    					 
+    					    					
     					//hydrator can't guess timezone, force UTC of end and start dates
     					if(isset($post['startdate']) && !empty($post['startdate'])){
     						$offset = date("Z");
@@ -176,7 +238,7 @@ class EventsController extends FormController {
     							}
     						}
     					}
-    					//create associated actions (only relevant if creation from a model
+    					//create associated actions (only relevant if creation from a model)
     					if(isset($post['modelid'])){
     						$parentID = $post['modelid'];
     						//get actions
@@ -196,7 +258,27 @@ class EventsController extends FormController {
     							$objectManager->persist($child);
     						}
     					}
-    					 
+    					//associated actions to be copied
+    					if(isset($post['fromeventid'])){
+    						$parentID = $post['fromeventid'];
+    						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
+    							$child = new Event();
+    							$child->setParent($event);
+    							$child->setCategory($action->getCategory());
+    							$child->setImpact($action->getImpact());
+    							$child->setPunctual($action->isPunctual());
+    							$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));   								
+    							foreach ($action->getCustomFieldsValues() as $customvalue){
+    								$newcustomvalue = new CustomFieldValue();
+    								$newcustomvalue->setEvent($child);
+    								$newcustomvalue->setCustomField($customvalue->getCustomField());
+    								$newcustomvalue->setValue($customvalue->getValue());
+    								$objectManager->persist($newcustomvalue);
+    							}
+    							$objectManager->persist($child);
+    						}
+    					}
+    					
     					//fichiers
     					if(isset($post['fichiers']) && is_array($post['fichiers'])){
     						foreach ($post['fichiers'] as $key => $f){
@@ -339,6 +421,9 @@ class EventsController extends FormController {
     	$form = $this->getSkeletonForm();
     	 
     	$id = $this->params()->fromQuery('id', null);
+    	
+    	$copy = $this->params()->fromQuery('copy', null);
+    	
     	if($id){ //modification, prefill form
     		try {
     			$event = $em->getRepository('Application\Entity\Event')->find($id);
@@ -373,7 +458,15 @@ class EventsController extends FormController {
     		//other values
     		$form->bind($event);
     		$form->setData($event->getArrayCopy());
-    		$viewmodel->setVariables(array('event'=>$event));
+    		if($copy){
+    			$form->get('id')->setValue('');
+    			$form->get('startdate')->setValue('');
+    			$form->get('enddate')->setValue('');
+    			$form->get('status')->setAttribute('value', 1);
+    			$viewmodel->setVariables(array('event'=>$event, 'copy'=>$id));
+    		} else {
+    			$viewmodel->setVariables(array('event'=>$event));
+    		}
     	}
     	
     	$viewmodel->setVariables(array('form' => $form));
@@ -587,6 +680,15 @@ class EventsController extends FormController {
     	}
     	$json['actions'] = $actions;
     	
+    	return $json;
+    }
+    
+    private function getModelJson(PredefinedEvent $model){
+    	$json = array(
+    		'name' => $model->getName(),
+    		'category_root' => ($model->getCategory()->getParent() ? $model->getCategory()->getParent()->getName() : $model->getCategory()->getName()),
+    		'category' => $model->getCategory()->getName(), 
+    	);
     	return $json;
     }
     

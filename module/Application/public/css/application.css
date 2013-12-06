@@ -148,6 +148,10 @@ body{
 	margin: -1px;	
 }
 
+#search-results{
+	width: 280px;
+}
+
 /******************************/
 /*     Tune Bootstrap css     */
 /******************************/
