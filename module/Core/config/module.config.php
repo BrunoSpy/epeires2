@@ -22,6 +22,26 @@ return array(
 						),
 				),
 		),
+		'console' => array(
+				'router' => array(
+						'routes' => array(
+								'initdb' => array(
+										'options' => array(
+												'route' => 'initdb [--verbose|-v]',
+												'defaults' => array(
+														'controller' => 'Core\Controller\Admin',
+														'action' => 'initdb',
+												),
+										),
+								),
+						),
+				),							
+		),
+		'controllers' => array(
+			'invokables' => array(
+				'Core\Controller\Admin' => 'Core\Controller\AdminController',
+			),											
+		),
 		'service_manager' => array(
 				'factories' => array(
 						'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
