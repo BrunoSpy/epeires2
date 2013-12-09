@@ -214,7 +214,6 @@ var form = function(url){
 				//close form
 				$("#create-link").trigger("click");
 				var id = $("#Event").find('input[name="id"]').val();
-				alert(id);
 				if(id>0){
 					//modification
 					timeline.modify(data.events, 0);
