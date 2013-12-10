@@ -38,11 +38,13 @@ var corresp = Array();
 var plus_info = 0;
 var warn = new Array();
 var temp_fin;
+var aff_fin;
 var cpt_journee;
 var ini_url;
 
 var timeline = {
 
+		// chargement de la liste des impacts
 		set_impacts: function (url) {
 			var i = 0;
 			$.getJSON(url+"/getimpacts", function (data) {
@@ -54,6 +56,7 @@ var timeline = {
 				});
 			});
 		},
+		// chargement des catégories
 		set_cat: function (url) {
 			var i = 0;
 			$.getJSON(url+"/getcategories", function (data) {
@@ -67,9 +70,11 @@ var timeline = {
 				});
 			});
 		},
+		// calcul de la hauteur de rectangle fonction de l'impact
 		compute_impact: function (name, value) {
 			return dy_max*value/100;
 		},
+		// config initiale : chargement des évènements
 		conf: function (element, url) {
 			ini_url = url;
 			timeline.init(element);
@@ -100,7 +105,7 @@ var timeline = {
 //					tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
 					var impt = 0;
 					if (value.impact_value == 100) {impt = 1;}
-					tab[i] = [key, ddeb, dfin, value.punctual, value.name, impt, value.category_root,"", value.status_name];
+					tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.star, value.category_root,"", value.status_name];
 					corresp[key] = i;
 					var j = 0;
 					/*					tab[i][7] = new Array();
@@ -116,13 +121,14 @@ var timeline = {
 				timeline.timeBar(timeline_content);
 			});
 		},
+		// initialisation de la timeline 6h
 		init: function(element) {
 			d_actuelle = new Date();
 			d_actuelle.setHours(d_actuelle.getUTCHours());
 			h_act = d_actuelle.getHours();
 			m_act = d_actuelle.getMinutes();
 			d_ref_deb = new Date();
-			d_ref_deb.setHours(d_ref_deb.getUTCHours()-1,0,0);
+			d_ref_deb.setHours(d_ref_deb.getHours()-1,0,0);
 			h_aff = 6;
 			y_temp = 10;
 			h_ref = d_ref_deb.getHours(); 
@@ -144,6 +150,7 @@ var timeline = {
 			x_act = lar_unit + 2*lar_unit*delta + m_act*(2*lar_unit)/60;
 			vue = 0;
 		},
+		// initialisation de la timeline journée
 		init_journee: function(element) {
 			d_actuelle = new Date();
 			d_actuelle.setHours(d_actuelle.getUTCHours());
@@ -172,6 +179,7 @@ var timeline = {
 			x_act = lar_unit + 2*lar_unit*delta + m_act*(2*lar_unit)/60;
 			vue = 1;
 		},
+		// création des éléments de base
 		base: function(base_elmt) {
 			var h_temp = h_ref;
 			var time_obj = $('<div class="Time_obj"></div>');
@@ -203,16 +211,19 @@ var timeline = {
 
 
 		},
+		// création de la timeBar
 		timeBar: function(element) {
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
 			detail1.css({'position':'absolute', 'top': 0+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
 				'background-color':'red'});
 		},
+		// mise à jour de la timeBar
 		maj_timeBar: function(element) {
 			var detail1 = $(element).find('.TimeBar');
 			detail1.css({'left': x_act+'px'});
 		},
+		// conversion des heures de début et de fin en positionnement sur la timeline
 		position: function (d_debut, d_fin) {
 			h_deb = d_debut.getUTCHours();
 			m_deb = d_debut.getMinutes();
@@ -261,6 +272,7 @@ var timeline = {
 			}
 			return [x1, wid];
 		},
+		// affichage / desaffichage des éléments passés ou futurs via les boutons latéraux
 		affiche_listes: function (element) {
 			$('#cpt_evts').text(cpt_journee.length);
 			$(element).empty();
@@ -302,7 +314,8 @@ var timeline = {
 				liste2.css({'display':'none','position':'absolute','top':'0px','right':'0px','width':'auto','height':hauteur,'text-align':'left','z-index':5,
 					'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
 			}
-		},			
+		},
+		// création du squelette des évènements affichés sur la timeline 
 		create: function(timeline_elmt, tableau) {
 			var len = tableau.length;
 			var nb = categorie.length;
@@ -360,6 +373,7 @@ var timeline = {
 				yy = y_temp-4;
 			}
 		},
+		// compression des évènements affichés et qui ont le même nom
 		regroupement: function(timeline_elmt, id_list, y1) {
 			var z, lbl_temp, id_temp, y_t, dy_temp;
 			id_list.sort(function(a,b){return a[1]-b[1];});
@@ -385,6 +399,7 @@ var timeline = {
 			}
 			return y_t;
 		},
+		// tri des évènements par catégorie
 		tri_cat: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
@@ -419,7 +434,7 @@ var timeline = {
 						}
 					}
 					if (cat_regroup[j] == 1 && id_list != null) { 
-						y_temp = timeline.regroupement(timeline_elmt,id_list, y1); 
+					//	y_temp = timeline.regroupement(timeline_elmt,id_list, y1); 
 					}
 					var text_cat = "";
 					var len_cat = cat_short[j].length;
@@ -443,6 +458,7 @@ var timeline = {
 				}
 			}
 		},
+		// tri des évènements par heure de début
 		tri_hdeb: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
@@ -472,6 +488,7 @@ var timeline = {
 				}
 			}
 		},
+		// filtre des évènements par étoile (transparance) 
 		tri_impt: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
@@ -506,6 +523,7 @@ var timeline = {
 				}
 			}
 		},
+		// passage d'un évènement au statut d'étoile vrai (star pleine)
 		impt_on: function(timeline_elmt, tableau) {
 			impt_on = 1;
 			var len = tableau.length;
@@ -544,6 +562,7 @@ var timeline = {
 				}
 			}
 		},
+		// passage d'un évènement au statut d'étoile fausse (star vide)
 		impt_off: function(timeline_elmt, tableau) {
 			impt_on = 0;
 			var len = tableau.length;
@@ -571,6 +590,7 @@ var timeline = {
 				}
 			}
 		},
+		// création des éléments d'une ligne d'un évènement affiché
 		creation_ligne: function (base_element, id, label, list, y0, dy, type, couleur){
 			// création d'un élément
 			var elmt = $('<div class="elmt"></div>');
@@ -606,13 +626,6 @@ var timeline = {
 			$(elmt).append(elmt_opt);
 			var elmt_write = $('<textarea class="elmt_write">'+label+'</textarea>');
 			elmt_opt.append(elmt_write);
-			var elmt_warn_det = $('<div class="elmt_warn_det"></div>');
-			$(elmt).append(elmt_warn_det);
-			var warn_content = $('<p class="warn_content"></p>');
-			elmt_warn_det.append(warn_content);
-			var warn_buttons = $('<div class="warn_buttons"><button type="submit" class="btn btn-success valid_status">Valider</button>'+
-			'<button type="submit" class="btn btn-danger cancel_status">Annuler</button></div>');
-			elmt_warn_det.append(warn_buttons);
 			// +
 			/*					'<table class="table">'+
 					'<tbody>'+
@@ -648,7 +661,7 @@ var timeline = {
 			// ajout du bouton modifications
 			elmt_status = $('<button type="button" class="elmt_status" data-id="'+id+'"data-name="'+label+'"></button>');
 			elmt_status.addClass('btn btn-mini');
-			$(elmt).append(elmt_status);
+			// $(elmt).append(elmt_status);
 			elmt_b1 = $('<button type="button" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></button>');
 			$(elmt).append(elmt_b1);
 			elmt_b1.addClass('btn btn-link btn-mini');
@@ -713,9 +726,6 @@ var timeline = {
 			elmt_status.css({'position':'absolute', 'bottom': 0+'px', 'left': '0px', 'width':'56px', 'z-index' : 1});
 			elmt_status.hide();
 			elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
-			elmt_warn_det.hide();
-			elmt_warn_det.css({'position':'absolute', 'top': dy+'px', 'background-color':'white', 'border-style':'solid', 'border-color':'gray','border-width': '1px',
-				'border-radius': '5px', 'padding':'5px'});
 			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
 			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
 			elmt_deb.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
@@ -725,9 +735,11 @@ var timeline = {
 			move_fin.css({'position':'absolute', 'top': '0px', 'height':dy, 'z_index':2});
 			move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
 		},
+		// animation pour identifier un évènement
 		warn_animate:function(elmt_warn) {
 			elmt_warn.toggle(200);
 		},
+		// positionnement des éléments d'un évènement sur la ligne dédiée
 		position_ligne: function (base_element, id, type, x0, wid, impt) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
@@ -741,9 +753,6 @@ var timeline = {
 			var elmt_fleche1 = elmt.find('.elmt_fleche1');
 			var elmt_fleche2 = elmt.find('.elmt_fleche2');
 			var elmt_opt = elmt.find('.elmt_opt');
-			var elmt_warn_det = elmt.find('.elmt_warn_det');
-			var warn_content = elmt_warn_det.find('.warn_content');
-			var warn_buttons = elmt_warn_det.find('.warn_buttons');
 			var elmt_write = elmt_opt.find('.elmt_write');
 			var elmt_status = elmt.find('.elmt_status');
 			var elmt_b1 = elmt.find('.modify-evt');
@@ -952,7 +961,6 @@ var timeline = {
 			}
 			elmt_status.css({'left': b1_pos+'px'});
 			timeline.set_status(base_element, id, type);
-			elmt_warn_det.css({'left':x0, 'width':400,'height':70,'z-index':6});
 			if (warn == 1) {
 				warn_content.text("Confirmer l'événement ? (début à xx:xx)");
 				warn_content.css({'font-size':'18px', 'margin':'auto'});
@@ -967,6 +975,7 @@ var timeline = {
 			elmt.css({'left':x1+'px', 'width': x2-x1});
 			elmt.children().css({'left':'-='+x1+'px'});
 		},
+		// texte supplémentaire déplié. Option pas utilisée pour le moment.
 		option_open: function(this_elmt, timeline_content, speed) {
 			var h = this_elmt.position().top;
 			var min = this_elmt.find('.moins');
@@ -1010,6 +1019,7 @@ var timeline = {
 				elmt_opt.slideDown();
 			}
 		},
+		// saisie du texte des champs heure et du champ label
 		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
 			var elmt = base_element.find('.ident'+id);
 			var elmt_txt = elmt.find('.label_elmt');
@@ -1054,6 +1064,7 @@ var timeline = {
 			var data_fin = elmt_fin[0];
 			jQuery.data(data_fin,"d_fin",d_fin);
 		},
+		// affichage en fonction du statut (à modifier)
 		set_status: function (base_element, id, type) {
 			var sts = type[3];
 			var elmt = base_element.find('.ident'+id);
@@ -1097,6 +1108,7 @@ var timeline = {
 				break;
 			}
 		},
+		// association d'une valeur de status en fonction du statut de l'évènement et de l'heure
 		type_elmt: function (id, d_debut, d_fin, ponct, etat) {
 			var l_deb = 0; 
 			var l_fin = 0;
@@ -1182,6 +1194,7 @@ var timeline = {
 			warn = 0;
 			return [l_deb, l_fin, warn, sts];
 		},
+		// création d'un évènement timeline supplémentaire
 		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
@@ -1200,6 +1213,7 @@ var timeline = {
 			timeline.position_ligne(base_element, id, type, x0, wid, impt);
 			y_temp += dy + delt_ligne;
 		},
+		// création d'un évènement timeline supplémentaire
 		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
@@ -1224,6 +1238,7 @@ var timeline = {
 			elmt = base_element.find('.ident'+id);
 			elmt.effect( "highlight",4000);
 		},
+		// mise à jour d'un évènement sur la timeline
 		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
@@ -1245,6 +1260,7 @@ var timeline = {
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt);
 		},
+		// informations d'un eévènement modifié
 		modify: function (data, loc) {
 			var i = 0;
 			var d_debut, d_fin;
@@ -1273,8 +1289,7 @@ var timeline = {
 				var etat = value.status_name;
 				var cat = value.category_root;
 //				var impt = timeline.compute_impact("",value.impact_value);
-				var impt = 0;
-				if (value.impact_value == 100) {impt = 1;} 
+				var impt = value.star;
 				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				/*				var l = 0;
 				tab[id][7] = new Array();
@@ -1331,7 +1346,9 @@ var timeline = {
 			});
 
 		},
+		// informations d'un évènement ajouté
 		add: function (data) {
+			alert("ok");
 			var i = 0;
 			var d_debut, d_fin;
 			var len = tab.length;
@@ -1353,8 +1370,7 @@ var timeline = {
 				var etat = value.status_name;
 				var cat = value.category_root;
 	//			var impt = timeline.compute_impact("",value.impact_value);
-				var impt = 0;
-				if (value.impact_value == 100) {impt = 1;} 
+				var impt = value.star;
 				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				corresp[key] = len;
 				/*				var l = 0;
@@ -1390,6 +1406,7 @@ var timeline = {
 				i ++;
 			});
 		},
+		// mise à jour de la timeline (déplacement de la timeBar uniquement ou réaffichage complet toutes les heures).
 		update: function(timel) {
 			var h_ref_old = h_ref;
 			if (vue) {timeline.init_journee(timel);} else {timeline.init(timel);}
@@ -1428,8 +1445,10 @@ var timeline = {
 
 $(document).ready(function() {	
 
+	// mise à jour toutes les minutes 
 	setInterval("timeline.update($('#timeline'))", 60000);
 
+	// affichage enrichi d'un évènement survolé
 	$('#timeline').on('mouseenter','.elmt', function(){
 		var elmt = $(this);
 		if (elmt.hasClass('changed')) {
@@ -1446,6 +1465,7 @@ $(document).ready(function() {
 		elmt.find('.elmt_qm_fleche').hide();
 		elmt.find('.lien').hide();
 	});
+	// affichage normal en sortie d'évènement
 	$('#timeline').on('mouseleave','.elmt',function(){
 		var elmt = $(this);
 		elmt.css({'z-index':1});
@@ -1459,25 +1479,16 @@ $(document).ready(function() {
 		elmt.find('.elmt_qm_fleche').show();
 		elmt.find('.lien').show();
 	});
-	$('#timeline').on('mouseenter','.warn_elmt', function(){
-		$(this).css({'z-index':3});
-		$(this).find('.label_elmt').css({'font-weight':'bold'});
-	});
-	$('#timeline').on('mouseleave','.warn_elmt',function(){
-		$(this).css({'z-index':1});
-		$(this).find('.label_elmt').css({'font-weight':'normal'});
-	});
+
+	// clic sur un statut... à coder
 	$('#timeline').on('click','.elmt_status', function(){
 		var this_elmt = $(this).closest('.elmt');
-		var elmt_warn_det = this_elmt.find('.elmt_warn_det');
-		elmt_warn_det.show();
-
 	});
 	$('#timeline').on('click','.cancel_status', function(){
 		var this_elmt = $(this).closest('.elmt');
-		var elmt_warn_det = this_elmt.find('.elmt_warn_det');
-		elmt_warn_det.hide();
 	});
+	
+	// ouverture des éléments enrichis après clic sur "+". Désactivé pour le moment
 	$('#timeline').on('click','.plus', function(){
 		$(this).hide();
 		$(this).removeClass('show');
@@ -1518,6 +1529,8 @@ $(document).ready(function() {
 		elmt_opt.slideUp();	
 	});
 
+	
+	// changement de zoom sur la timeline
 	$('#zoom').on('switch-change', function(e, data){
 		//data.value = true => vue journée
 		var timel = $('#timeline');
@@ -1544,7 +1557,9 @@ $(document).ready(function() {
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
-
+	
+	
+	// activation / désactivation du tri par catégories
 	$('#tri_cat').on('click',function(){
 		var timel = $('#timeline');
 		$(this).parent().addClass('active');
@@ -1553,6 +1568,7 @@ $(document).ready(function() {
 		timeline.tri_cat(timeline_content, tab);
 	});
 
+	// activation / désactivation du tri par heure
 	$('#tri_deb').on('click', function(){
 		var timel = $('#timeline');
 		$(this).parent().addClass('active');
@@ -1561,6 +1577,7 @@ $(document).ready(function() {
 		timeline.tri_hdeb(timeline_content, tab, 0);
 	});
 
+	// activation / désactivation du tri par statut
 	$('#tri_impt').on('click', function(){
 		$(this).parent().addClass('active');
 		$('#tri_std').parent().removeClass('active');
@@ -1568,6 +1585,7 @@ $(document).ready(function() {
 		var timeline_content = timel.find('.timeline_content');
 		timeline.impt_on(timeline_content, tab);
 	});
+	
 	$('#tri_std').on('click', function(){
 		var timel = $('#timeline');
 		$(this).parent().addClass('active');
@@ -1575,6 +1593,8 @@ $(document).ready(function() {
 		var timeline_content = timel.find('.timeline_content');
 		timeline.impt_off(timeline_content, tab);
 	});
+	
+	// ouverture des évènement passés et à venir dans les bandeaux gauche et droit
 	$('#timeline').on('click','.passee', function(){
 		var timel = $(this).closest('.timeline_other');
 		var liste_passee = timel.find('.liste_passee');
@@ -1611,10 +1631,13 @@ $(document).ready(function() {
 			liste_avenir.show();
 		}
 	});
+	
+	// sauvegarde du texte enrichi. Pas utilisé
 	$('#timeline').on('mouseleave','.elmt_write', function(){
 		$(this).val(); // valeur à sauvegarder
-
 	});
+	
+	// effet de clic sur l'étoile ("importance").
 	$('#timeline').on('click','.elmt_star', function(){
 		var star_style = $(this).find('.star_style');
 		var ss_elmt = $(this).closest('.elmt')[0];
@@ -1633,7 +1656,7 @@ $(document).ready(function() {
 			tab[n][5] = 1;
 			star = true;
 		}
-		$.post(ini_url+'/changefield?id='+id+'&field=star&value='+star);
+		$.post(ini_url+'/changefield?id='+id+'&field=star&value='+star, function(data){displayMessages(data);});
 		if (impt_on == 1) {
 			var timel = $('#timeline');
 			var timeline_content = timel.find('.timeline_content');
@@ -1645,6 +1668,8 @@ $(document).ready(function() {
 			timeline.tri_impt(timeline_content, tab, 0);
 		}*/
 	});
+	
+	// Déplacement de l'heure de fin
 	$('#timeline').on('mousedown','.move_fin', function(e1){
 			var x_ref = e1.clientX;
 			var x_temp = x_ref;
@@ -1661,11 +1686,15 @@ $(document).ready(function() {
 			var d_fin = jQuery.data(data_fin,"d_fin");
 			temp_fin = new Date();
 			temp_fin.setTime(d_fin.getTime());
+			aff_fin = new Date();
+			aff_fin.setTime(d_fin.getTime());
 			$('#timeline').mousemove(function(e2) {
 				delt = e2.clientX-x_temp;
 				delt2 = e2.clientX-x_ref;
 				temp_fin.setTime(d_fin.getTime()+delt2*pix_time);
-				elmt_fin.text(temp_fin.toLocaleTimeString().substr(0,5));
+				aff_fin.setTime(d_fin.getTime()+delt2*pix_time);
+				aff_fin.setHours(aff_fin.getUTCHours());
+				elmt_fin.text(aff_fin.toLocaleTimeString().substr(0,5));
 				x_temp = e2.clientX;
 				elmt.css({'width':'+='+delt});
 				rect_elmt.css({'width':'+='+delt});
@@ -1674,6 +1703,7 @@ $(document).ready(function() {
 				move_fin.css({'left':'+='+delt});
 			});
 	});
+	// enregistrement de l'heure de fin
 	$('#timeline').on('mouseup', function(){
 		$('#timeline').unbind('mousemove');
 		var timeline_content = $('#timeline').find('.timeline_content');
@@ -1690,7 +1720,7 @@ $(document).ready(function() {
 		}
 	});
 
-	
+	// retracé de la timeline si taille fenêtre modifiée
 	$(window).resize(function () {
 		var timel = $('#timeline');
 		var base = timel.find('.Base');
@@ -1717,5 +1747,14 @@ $(document).ready(function() {
 		$.holdReady(false);
 	});
 	
+
+/*	$('#timeline').on('mouseenter','.warn_elmt', function(){
+		$(this).css({'z-index':3});
+		$(this).find('.label_elmt').css({'font-weight':'bold'});
+	});
+	$('#timeline').on('mouseleave','.warn_elmt',function(){
+		$(this).css({'z-index':1});
+		$(this).find('.label_elmt').css({'font-weight':'normal'});
+	});*/
 			
 });
