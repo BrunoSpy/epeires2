@@ -659,7 +659,7 @@ class EventsController extends FormController {
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$json = array('name' => $eventservice->getName($event),
     					'modifiable' => $eventservice->isModifiable($event),
-    					'start_date' => $event->getStartdate()->format(DATE_RFC2822),
+    					'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
     					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),
     					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
