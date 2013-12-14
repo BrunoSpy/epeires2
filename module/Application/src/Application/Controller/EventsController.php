@@ -634,8 +634,7 @@ class EventsController extends FormController {
     			}
     		}
     	} else {
-    		//TODO use value from config
-    		$role = 'anonymous';
+    		$role = $this->getServiceLocator()->get('ZfcRbac\Options\ModuleOptions')->getGuestRole();
     		$roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array('name'=>$role));
     		if($roleentity){
     			foreach ($events as $event){
@@ -715,6 +714,7 @@ class EventsController extends FormController {
     }
     
     private function filterReadableCategories($categories){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$readablecat = array();
     	foreach ($categories as $category){
     		if($this->zfcUserAuthentication()->hasIdentity()){
@@ -726,7 +726,7 @@ class EventsController extends FormController {
     				}
     			}
     		} else {
-    			$role = $this->getServiceLocator()->get('Core\Service\Rbac')->getOptions()->getAnonymousRole();
+    			$role = $this->getServiceLocator()->get('ZfcRbac\Options\ModuleOptions')->getGuestRole();
     			$roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array('name'=>$role));
     			if($roleentity){
     				if($category->getReadroles(true)->contains($roleentity)){
