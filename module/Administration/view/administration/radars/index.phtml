@@ -1,0 +1,89 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/radars.js')?>
+
+<table class="table table-striped sortable">
+<thead>
+	<tr>
+		<th>id</th>
+		<th data-sort="string">Nom</th>
+		<th data-sort="string">Nom court</th>
+		<th>Organisation</th>
+		<th><a class="btn btn-mini" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
+	</tr>
+</thead>
+
+<tbody>
+	<?php 
+	foreach ($this->radars as $radar){
+		echo '<tr>';
+		echo '<td>'.$radar->getId().'</td>';
+		echo '<td>'.$radar->getName().'</td>';
+		echo '<td>'.$radar->getShortname().'</td>';
+		echo '<td>'.$radar->getOrganisation()->getName().'</td>';
+		echo '<td>';
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#radar-container\" 
+				class=\"mod-radar\" 
+				data-id=\"".$radar->getId()."\" 
+				data-name=\"".$radar->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-radar\" 
+				data-href=\"".$this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId())))."\" 
+				class=\"delete-radar\" 
+				data-id=\"".$radar->getId()."\" 
+				data-name=\"".$radar->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+		echo '</td>';
+		echo '</tr>';
+	}
+	?>
+</tbody>
+
+</table>
+
+<?php echo $this->modalWindow("radar-container", "<h3>Nouveau radar</h3>", "", "<div id=\"radar-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-radar",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer le radar <em><span id=\"radar-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-radar-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+radars('<?php echo $this->url('administration')?>');
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+
+<?php $this->inlineScript()->captureEnd();?>
