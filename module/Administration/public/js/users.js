@@ -36,5 +36,16 @@ var users = function(url){
 		});
 	});
 	
-
+	$("#user-container").on('change', 'select[name=organisation]', function(){
+		$.getJSON(url+'/users/getqualifzone?id='+$(this).val(), function(data){
+			var select = $("#user-container select[name=zone]");
+			var options = select.prop('options');
+			$('option', select).remove();
+			options[options.length] = new Option("Facultatif", "");
+			$.each(data, function(key, value){
+				options[options.length] = new Option(value, key);
+			});
+		});
+	});
+	
 };

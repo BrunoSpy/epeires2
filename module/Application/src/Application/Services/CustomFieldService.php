@@ -48,6 +48,12 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 					$name = $antenna->getName();
 				}
 				break;
+			case 'radar':
+				$radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
+				if($radar){
+					$name = $radar->getName();
+				}
+				break;
 			case 'select':
 				$defaultvalue = $customfield->getDefaultValue();
 				if($defaultvalue && $fieldvalue) {
@@ -89,15 +95,10 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$type = 'Zend\Form\Element\Textarea';
 				break;
 			case 'sector':
-				$type = 'Zend\Form\Element\Select';
-				break;
 			case 'antenna':
-				$type = 'Zend\Form\Element\Select';
-				break;
 			case 'select':
-				$type = 'Zend\Form\Element\Select';
-				break;
 			case 'stack':
+			case 'radar':
 				$type = 'Zend\Form\Element\Select';
 				break;
 			case 'boolean':
@@ -128,6 +129,9 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				break;
 			case 'antenna':
 				$value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();
+				break;
+			case 'radar':
+				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray();
 				break;
 			case 'select':
 				$value_options = explode(PHP_EOL, $customfield->getDefaultValue());

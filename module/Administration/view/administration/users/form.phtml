@@ -32,7 +32,13 @@ if(!$this->userid){
 		$this->formPassword($form->get('password')) . $this->formElementErrors($form->get('password')));
 }
 echo $this->controlGroup($this->formLabel($form->get('userroles')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('userroles')) . $this->formElementErrors($form->get('userroles')))
+		$this->formSelect($form->get('userroles')) . $this->formElementErrors($form->get('userroles')));
+
+echo $this->controlGroup($this->formLabel($form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($form->get('organisation')) . $this->formElementErrors($form->get('organisation')));
+
+echo $this->controlGroup($this->formLabel($form->get('zone')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($form->get('zone')) . $this->formElementErrors($form->get('zone')));
 
 ?>
 

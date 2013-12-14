@@ -1,25 +1,6 @@
 <?php 
 $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 ?>
-<div class="warnings">
-<?php if (isset($this->messages['successMessages'])) { ?>
-	<?php foreach ($this->messages['successMessages'] as $message) { ?>
-		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['errorMessages'])) { ?>
-	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
-		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert" href="#">&times;</a>
-			<?php echo $message ?>
-		</div>
-	<?php }?>
-<?php } ?>
-</div>
 
 <div class="container-fluid">
 	<div class="row-fluid">
@@ -165,5 +146,21 @@ $this->headScript()->appendFile($this->basePath() . '/js/categories.js');
 <?php $this->inlineScript()->captureStart(); ?>
 
 categories('<?php echo $this->url('administration')?>');
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
 
 <?php $this->inlineScript()->captureEnd(); ?>

@@ -13,6 +13,7 @@ use Core\Entity\User;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Crypt\Password\Bcrypt;
+use Doctrine\Common\Collections\Criteria;
 
 class UsersController extends AbstractActionController
 {
@@ -80,6 +81,22 @@ class UsersController extends AbstractActionController
     	return $viewmodel;
     }
     
+    public function getqualifzoneAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$orgid = $this->params()->fromQuery('id', null);
+    	$json = array();
+    	if($orgid){
+    		$organisation = $objectManager->getRepository('Application\Entity\Organisation')->find($orgid);
+    		if($organisation){
+    			$criteria = Criteria::create()->where(Criteria::expr()->eq('organisation', $organisation));
+    			foreach ($objectManager->getRepository('Application\Entity\QualificationZone')->matching($criteria) as $zone){
+    				$json[$zone->getId()] = $zone->getName();
+    			}
+    		}
+    	}
+    	return new JsonModel($json);
+    }
+    
     private function getForm($userid = null){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$user = new User();
@@ -90,9 +107,13 @@ class UsersController extends AbstractActionController
     
     	$form->get('userroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());
     	 
+    	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
+    	
     	if($userid){
     		$user = $objectManager->getRepository('Core\Entity\User')->find($userid);
     		if($user){
+    			$form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray($user->getOrganisation()));
+    			
     			$form->remove('password');
     			$form->bind($user);
     			$form->setData($user->getArrayCopy());

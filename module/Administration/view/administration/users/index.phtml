@@ -7,6 +7,8 @@
 		<th>id</th>
 		<th data-sort="string">Nom</th>
 		<th data-sort="string">Email</th>
+		<th>Organisation</th>
+		<th>Zone de qualification</th>
 		<th>Roles</th>
 		<th><a class="btn btn-mini" href="#user-container" data-toggle="modal" id="add-user">Ajouter</a></th>
 	</tr>
@@ -19,6 +21,8 @@
 		echo '<td>'.$user->getId().'</td>';
 		echo '<td>'.$user->getUsername().'</td>';
 		echo '<td>'.$user->getEmail().'</td>';
+		echo '<td>'.$user->getOrganisation()->getName().'</td>';
+		echo '<td>'.($user->getZone() ? $user->getZone()->getName() : "").'</td>';
 		echo '<td>';
 			foreach($user->getRoles() as $role){
 				echo $role->getName()." ";
@@ -73,16 +77,16 @@ $(".sortable").bind('aftertablesort', function(event, data){
 });
 
 
-<?php if (isset($this->messages['successMessages'])) { ?>
-	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
 		var n = noty({text:'<?php echo $message ?>', 
 					type:'success',
 					layout: 'bottomRight',});
 	<?php }?>
 <?php } ?>
 
-<?php if (isset($this->messages['errorMessages'])) { ?>
-	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
 		var n = noty({text:'<?php echo $message ?>', 
 					type:'error',
 					layout: 'bottomRight',});

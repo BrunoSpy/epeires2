@@ -56,6 +56,7 @@ return array(
             'Administration\Controller\Radio' => 'Administration\Controller\RadioController',
             'Administration\Controller\Users' => 'Administration\Controller\UsersController',
             'Administration\Controller\Roles' => 'Administration\Controller\RolesController',
+            'Administration\Controller\Radars' => 'Administration\Controller\RadarsController',
     	),
     ),
     'view_manager' => array(

@@ -308,6 +308,17 @@ class Role implements RoleInterface{
         return false;
     }
 
+    public function containsRole($rolename){
+    	if($this->getName() == $rolename){
+    		return true;
+    	}
+    	foreach ($this->childrenroles as $child){
+    		if($child->containsRole($rolename)){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * Add a child.

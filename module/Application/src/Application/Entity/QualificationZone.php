@@ -11,7 +11,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\QualificationZoneRepository")
  * @ORM\Table(name="qualifzones")
  **/
 class QualificationZone {
@@ -55,7 +55,7 @@ class QualificationZone {
 	 * @ORM\OneToMany(targetEntity="Sector", mappedBy="zone", cascade={"remove"})
 	 */
 	protected $sectors;
-	
+		
 	public function __construct(){
 		$this->sectorsgroups = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->sectors = new \Doctrine\Common\Collections\ArrayCollection();

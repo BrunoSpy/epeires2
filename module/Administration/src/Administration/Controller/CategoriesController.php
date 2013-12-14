@@ -24,11 +24,11 @@ class CategoriesController extends FormController{
     	$return = array();
     	 
     	if($this->flashMessenger()->hasErrorMessages()){
-    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    		$return['error'] =  $this->flashMessenger()->getErrorMessages();
     	}
     	 
     	if($this->flashMessenger()->hasSuccessMessages()){
-    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    		$return['success'] =  $this->flashMessenger()->getSuccessMessages();
     	}
     	 
     	$this->flashMessenger()->clearMessages();
@@ -157,9 +157,9 @@ class CategoriesController extends FormController{
 				}
 				$objectManager->persist($category);
 				$objectManager->flush();
-				$this->flashMessenger()->addSuccessMessage("Evènement modifié");
+				$this->flashMessenger()->addSuccessMessage("Catégorie modifiée");
 			} else {
-				$this->flashMessenger()->addErrorMessage("Impossible de modifier l'évènement.");
+				$this->flashMessenger()->addErrorMessage("Impossible de modifier la catégorie.");
 				//traitement des erreurs de validation
 				$this->processFormMessages($form->getMessages());
 			}

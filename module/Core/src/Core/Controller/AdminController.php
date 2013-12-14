@@ -37,6 +37,7 @@ class AdminController extends AbstractActionController {
 			array('name' => 'Texte long','type' => 'text'),
 			array('name' => 'Secteur','type' => 'sector'),
 			array('name' => 'Antenne','type' => 'antenna'),
+			array('name' => 'Radar','type' => 'radar'),
 			array('name' => 'Liste','type' => 'select'),
 			array('name' => 'Attente','type' => 'stack'),
 			array('name' => 'Vrai/Faux','type' => 'boolean')

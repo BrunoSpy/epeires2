@@ -39,7 +39,7 @@ class Event {
  	 * @ORM\ManyToOne(targetEntity="Status")
  	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(true)
-	 * @Annotation\Options({"label":"Status :"})
+	 * @Annotation\Options({"label":"Statut :"})
  	 * @Gedmo\Versioned
  	 */
  	protected $status;

@@ -15,8 +15,9 @@ use Application\Entity\Organisation;
 use Application\Entity\QualificationZone;
 use Application\Entity\SectorGroup;
 use Application\Entity\Sector;
+use Application\Controller\FormController;
 
-class CentreController extends AbstractActionController
+class CentreController extends FormController
 {
     public function indexAction()
     {
@@ -38,11 +39,11 @@ class CentreController extends AbstractActionController
     	
     	$return = array();
     	if($this->flashMessenger()->hasErrorMessages()){
-    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    		$return['error'] =  $this->flashMessenger()->getErrorMessages();
     	}
     	 
     	if($this->flashMessenger()->hasSuccessMessages()){
-    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    		$return['success'] =  $this->flashMessenger()->getSuccessMessages();
     	}
     	 
     	$this->flashMessenger()->clearMessages();
@@ -95,6 +96,10 @@ class CentreController extends AbstractActionController
     		if($form->isValid()){
     			$objectManager->persist($organisation);	
     			$objectManager->flush();
+    			$this->flashMessenger()->addSuccessMessage("Organisation enregistrée.");
+    		} else {
+    			$this->processFormMessages($form->getMessages());
+    			$this->flashMessenger()->addErrorMessage("Impossible d\'enregistrer l'organisation.");
     		}
     	}
     	 
@@ -179,6 +184,10 @@ class CentreController extends AbstractActionController
     			
     			$objectManager->persist($qualif);
     			$objectManager->flush();
+    			$this->flashMessenger()->addSuccessMessage("Zone de qualification enregistrée.");
+    		} else {
+    			$this->processFormMessages($form->getMessages());
+    			$this->flashMessenger()->addErrorMessage("Impossible d\'enregistrer la zone de qualification.");
     		}
     	}
     

@@ -23,19 +23,19 @@ abstract class FormController extends AbstractActionController {
 					foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
 						if($json){
 							$n = isset($json['error']) ? count($json['error']) : 0;
-							$json['error'][$n] = "Champ ".$mkey." incorrect : ".$nvalue;
+							$json['error'][$n] = "Champ ".addslashes($mkey)." incorrect : ".addslashes($nvalue);
 						} else {
 							$this->flashMessenger()->addErrorMessage(
-									"Champ ".$mkey." incorrect : ".$nvalue);
+									"Champ ".addslashes($mkey)." incorrect : ".addslashes($nvalue));
 						}
 					}
 				} else {
 					if($json){
 						$n = isset($json['error']) ? count($json['error']) : 0;
-						$json['error'][$n] = "Champ ".$key." incorrect : ".$mvalue;
+						$json['error'][$n] = "Champ ".addslashes($key)." incorrect : ".addslashes($mvalue);
 					} else {
 						$this->flashMessenger()->addErrorMessage(
-								"Champ ".$key." incorrect : ".$mvalue);
+								"Champ ".addslashes($key)." incorrect : ".addslashes($mvalue));
 					}
 				}
 			}

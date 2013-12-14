@@ -99,11 +99,17 @@ var categories = function(url){
 //	confirm delete field
 	$('#delete-field-href').on('click', function(event){
 		event.preventDefault();
-		$.post($(this).attr('href'), function(){
-			closesttr.remove();
-			closesttr = null;
-			reload = true;
-			updateCarets($("#fieldscontainer"));
+		$.post($(this).attr('href'), function(data){
+			if(data['success']){
+				closesttr.remove();
+				closesttr = null;
+				reload = true;
+				updateCarets($("#fieldscontainer"));
+			} 
+			displayMessages(data);
+		}, "json").fail(function(){
+			var messages = '({error: ["Impossible de supprimer le champ."]})';
+			displayMessages(eval(messages));
 		});
 		$("#confirm-delete-field").modal('hide');
 	});

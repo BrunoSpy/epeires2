@@ -74,7 +74,7 @@ class EventsController extends FormController {
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')		
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
-    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal('%'.$search.'%')));
+    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
     			//TODO order ben start date, limit 10 ?
     			
     			//search models
@@ -85,7 +85,7 @@ class EventsController extends FormController {
     			->innerJoin('m.custom_fields_values', 'v')
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')
-    			->andWhere($qbModels->expr()->like('m.name', $qbModels->expr()->literal('%'.$search.'%')))
+    			->andWhere($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')))
     			->andWhere($qbModels->expr()->eq('m.searchable', true));
     			
     			$this->addCustomFieldsSearch($qbEvents, $qbModels, $search);
@@ -112,14 +112,14 @@ class EventsController extends FormController {
     	$qb = $em->createQueryBuilder();
     	$qb->select(array('s'))
     	->from('Application\Entity\Sector', 's')
-    	->andWhere($qb->expr()->like('s.name', $qb->expr()->literal('%'.$search.'%')));
+    	->andWhere($qb->expr()->like('s.name', $qb->expr()->literal($search.'%')));
     	$sectors = $qb->getQuery()->getResult();
     	 
     	$qb = $em->createQueryBuilder();;
     	$qb->select(array('a'))
     	->from('Application\Entity\Antenna', 'a')
-    	->andWhere($qb->expr()->like('a.name', $qb->expr()->literal('%'.$search.'%')))
-    	->orWhere($qb->expr()->like('a.shortname', $qb->expr()->literal('%'.$search.'%')));
+    	->andWhere($qb->expr()->like('a.name', $qb->expr()->literal($search.'%')))
+    	->orWhere($qb->expr()->like('a.shortname', $qb->expr()->literal($search.'%')));
     	$query = $qb->getQuery();
     	$antennas = $query->getResult();
     	

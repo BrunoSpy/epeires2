@@ -52,8 +52,14 @@ class Organisation {
 	 */
 	protected $zones;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="Core\Entity\User", mappedBy="organisation")
+	 */
+	protected $users;
+	
 	public function __construct(){
 		$this->zones = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
 	public function getId(){

@@ -87,15 +87,23 @@ class FieldsController extends AbstractActionController
     	 
     	$customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
     	
+    	$messages = array();
+    	
     	if($customfield){
     		$objectManager->remove($customfield);
-    		$objectManager->flush();
+    		try {
+    			$objectManager->flush();
+    			$messages['success'][] = "Champ correctement supprimé";
+    		} catch (\Exception $e) {
+				$messages['error'][] = "Impossible de supprimer le champ.";
+				$messages['error'][] = $e->getMessage();    			
+    		}	
     	}
     	
     	if($returnRoute){
     		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
     	} else {
-    		return new JsonModel();
+    		return new JsonModel($messages);
     	}
     }
     

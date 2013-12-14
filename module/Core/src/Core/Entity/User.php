@@ -86,6 +86,23 @@ class User implements UserInterface, IdentityInterface
      */
     protected $events;
     
+    /** 
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation", inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(true)
+     * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
+     */
+    protected $organisation;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Application\Entity\QualificationZone")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Facultatif"})
+     */
+    protected $zone;
+    
     /**
      * Initialies the roles variable.
      */
@@ -226,6 +243,22 @@ class User implements UserInterface, IdentityInterface
         $this->state = $state;
     }
 
+    public function getOrganisation(){
+    	return $this->organisation;
+    }
+    
+    public function setOrganisation($organisation){
+    	$this->organisation = $organisation;
+    }
+    
+    public function getZone(){
+    	return $this->zone;
+    }
+    
+    public function setZone($zone){
+    	$this->zone = $zone;
+    }
+    
     /**
      * Get role.
      *
@@ -280,6 +313,15 @@ class User implements UserInterface, IdentityInterface
     	return $this->userroles;
     }
 
+    public function hasRole($rolename){
+    	foreach ($this->userroles as $role){
+    		if($role->containsRole($rolename)){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public function getArrayCopy(){
     	$object_vars = get_object_vars($this);
     	$roles = array();
@@ -287,6 +329,8 @@ class User implements UserInterface, IdentityInterface
     		$roles[] = $role->getId();
     	}
     	$object_vars['userroles'] = $roles;
+    	$object_vars['organisation'] = $this->organisation->getId();
+    	$object_vars['zone'] = ($this->zone ? $this->zone->getId() : null);
     	return $object_vars;
     }
 }

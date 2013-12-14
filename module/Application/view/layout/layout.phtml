@@ -50,6 +50,9 @@
     					</a>
     					<ul class="dropdown-menu">
     					<?php if($this->zfcUserIdentity()) {
+    						if($this->zfcUserIdentity()->hasRole('admin')){
+								echo "<li><a href=\"".$this->url('administration', array('controller'=>'home', 'action'=>'index'))."\">Administration</a></li>";
+							}
     						echo "<li><a href=\"".$this->url('zfcuser/logout')."?redirect=".$this->url('application')."\">Se déconnecter</a></li>";
     					} else {
     						echo "<li><a href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
