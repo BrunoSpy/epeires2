@@ -52,7 +52,7 @@ return array(
 		),
 		'zfc_rbac' => array(
 				'protection_policy' => GuardInterface::POLICY_ALLOW,
-				'guest_role' => 'anonymous',
+				'guest_role' => 'guest',
 				'role_providers' => array(
 				 		'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
 				 			'object_manager' => 'doctrine.entitymanager.orm_default',

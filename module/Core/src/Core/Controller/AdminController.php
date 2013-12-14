@@ -111,7 +111,7 @@ class AdminController extends AbstractActionController {
 
    		
    		$anon = new Role();
-   		$anon->setName("anonymous");
+   		$anon->setName("guest");
    		$anon->setParent($admin);
    		$em->persist($admin);
    		$em->persist($anon);    		
