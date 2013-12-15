@@ -90,7 +90,7 @@
 	            		
 	            	</li>
 	            	<li class="divider-vertical"></li>
-	            	<li><a href="<?php echo $this->url('application', array('controller'=>'sar', 'action'=>'index')) ?>" class="disabled">SAR</a></li>
+	            	<li><a href="<?php echo $this->url('application', array('controller'=>'radars', 'action'=>'index')) ?>">Radars</a></li>
 	            	<li><a href="<?php echo $this->url('application', array('controller'=>'frequencies', 'action'=>'index')) ?>" class="disabled">Fréquences</a></li>
 	        	</ul>
 	        	<ul class="nav pull-right">
@@ -111,6 +111,36 @@
         	</div>
         </div>
         
+        <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
+		<div id="create-evt" class="popover fade bottom in">
+			<div class="arrow"></div>
+			<div class="loading"></div>
+			<h3 class="popover-title" id="form-title">Nouvel évènement</h3>
+			<div id="event">
+				<div>Chargement...</div>
+				<!-- formulaire createform.phtml récupéré via ajax -->
+			</div>
+		</div>
+		<?php endif; ?>
+
+		<div id="search-results" class="popover fade bottom in">
+			<div class="arrow"></div>
+			<div class="loading"></div>
+			<div id="results">
+				<div>Chargement...</div>
+			</div>
+		</div>
+
+
+		<div id="suggest-evt" class="popover fade right in">
+			<div class="arrow"></div>
+			<h3 class="popover-title">Suggestions :</h3>
+			<div id="suggests">
+				<div>Chargement...</div>
+				<p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p>
+			</div>
+		</div>
+        
         <div class="content">
             <?php echo $this->content; ?>
         </div> <!-- /container -->
@@ -119,6 +149,18 @@
 		if(!$this->zfcuserIdentity()){
 				echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('application'))));
 		} ?>
+        
+        <?php $this->inlineScript()->captureStart();?>
+
+
+		//search
+		search('<?php echo $this->url('application', array('controller'=>'events'));?>');
+	
+		//init form
+		form('<?php echo $this->url('application', array('controller' => 'events'));?>');
+		
+		<?php $this->inlineScript()->captureEnd();?>
+        
         
         <?php echo $this->inlineScript() ?>
     </body>

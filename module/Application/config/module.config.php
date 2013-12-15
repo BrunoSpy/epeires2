@@ -54,7 +54,8 @@ return array(
         'invokables' => array(
             'Application\Controller\Events' => 'Application\Controller\EventsController',
             'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
-        ),
+            'Application\Controller\Radars' => 'Application\Controller\RadarsController',
+    	),
     ),
     'view_helpers' => array(
     	'invokables' => array(
