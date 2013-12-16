@@ -12,6 +12,7 @@ use Application\Entity\Status;
 use Application\Entity\CustomFieldType;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Application\Entity\Organisation;
 
 class AdminController extends AbstractActionController {
 	
@@ -120,9 +121,15 @@ class AdminController extends AbstractActionController {
    			$result .= "Ajout utilisateur admin.\n";
    		}
    		
+   		$organisation = new Organisation();
+   		$organisation->setName("CRNA-X");
+   		$organisation->setShortname("LFXX");
+   		$em->persist($organisation);
+   		
    		$adminuser = new User();
     	$adminuser->setUsername("Admin");
     	$adminuser->setDisplayName("Admin");
+    	$adminuser->setOrganisation($organisation);
     	$adminuser->addRole($admin);
     	$adminuser->setEmail("change@email");
     	$bcrypt = new Bcrypt();
