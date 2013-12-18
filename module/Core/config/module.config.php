@@ -53,18 +53,19 @@ return array(
 		'zfc_rbac' => array(
 				'protection_policy' => GuardInterface::POLICY_ALLOW,
 				'guest_role' => 'guest',
-				'role_providers' => array(
+				'role_provider' => array(
 				 		'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
 				 			'object_manager' => 'doctrine.entitymanager.orm_default',
 				 			'class_name'     => 'Core\Entity\Role',
+				 			'role_name_property' => 'name',
 				 		),
 				 ),
-				'permission_providers' => array(
-						'ZfcRbac\Permission\ObjectRepositoryPermissionProvider' => array(
-								'object_manager' => 'doctrine.entitymanager.orm_default',
-								'class_name'     => 'Core\Entity\Permission',
-						),
-				),
+//				'permission_providers' => array(
+//						'ZfcRbac\Permission\ObjectRepositoryPermissionProvider' => array(
+//								'object_manager' => 'doctrine.entitymanager.orm_default',
+//								'class_name'     => 'Core\Entity\Permission',
+//						),
+//				),
 		),
 		'zfcuser' => array(
 				// telling ZfcUser to use our own class

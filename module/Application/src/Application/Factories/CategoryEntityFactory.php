@@ -34,7 +34,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$radarfield->setDefaultValue("");
 		$statusfield = new CustomField();
 		$statusfield->setCategory($radarcat);
-		$statusfield->setName('Etat');
+		$statusfield->setName('Indisponible');
 		$statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'boolean')));
 		$statusfield->setPlace(2);
 		$statusfield->setDefaultValue("");

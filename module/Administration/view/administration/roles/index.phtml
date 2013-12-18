@@ -64,7 +64,7 @@ foreach($this->config as $key => $value){
 					data-roleid=\"".$role->getId()."\"
 					data-permission=\"".$permission."\"  
 					type=\"checkbox\" ";
-			if($role->hasPermission($permission)){
+			if($role->hasPermission($permission, true)){
 				if(!$role->hasPermission($permission, false)){
 					//inherited -> can't be modified
 					$inherited = true;

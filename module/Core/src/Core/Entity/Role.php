@@ -7,16 +7,17 @@ use Doctrine\ORM\PersistentCollection;
 use RecursiveIterator;
 use IteratorIterator;
 use Zend\Form\Annotation;
-use Zend\Permissions\Rbac\RoleInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Rbac\Role\RoleInterface;
+use Rbac\Role\HierarchicalRoleInterface;
 
 /** 
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="roles")
  */
-class Role implements RoleInterface{
+class Role implements HierarchicalRoleInterface{
 
     /**
      * @var int
@@ -142,7 +143,7 @@ class Role implements RoleInterface{
      */
     public function hasChildren()
     {
-    	return ($this->childrenroles->count() > 0);
+    	return $this->valid() && $this->current() instanceof RecursiveIterator;
     }
     
     /**
@@ -249,7 +250,6 @@ class Role implements RoleInterface{
     }
 
     
-    protected $permissionstring = array();
     /**
      * Add permission to the role.
      *
@@ -259,7 +259,7 @@ class Role implements RoleInterface{
     public function addPermission($permission)
     {
     	if(is_string($permission)){
-    		$this->permissionstring[] = $permission;
+    		$permission = new Permission($permission);
     	} else {
     		$this->permissions->add($permission);
     	}
@@ -284,12 +284,7 @@ class Role implements RoleInterface{
      * @param  string $name
      * @return bool
      */
-    public function hasPermission($name, $recursive = true)
-    {
-    	if(in_array($name,$this->permissionstring)){
-    		return true;
-    	}
-
+    public function hasPermission($name, $recursive = false) {
     	foreach ($this->permissions as $permission){
     		if($permission->getName() == $name){
     			return true;
@@ -304,7 +299,6 @@ class Role implements RoleInterface{
     			}
     		}
     	}
-
         return false;
     }
 
@@ -324,12 +318,10 @@ class Role implements RoleInterface{
      * Add a child.
      *
      * @param  RoleInterface|string $child
-     * @return RoleInterface
      */
-    public function addChild($child)
+    public function addChild(RoleInterface $child)
     {
         $this->childrenroles->add($child);
-        return $this;
     }
     
     public function __toString()
