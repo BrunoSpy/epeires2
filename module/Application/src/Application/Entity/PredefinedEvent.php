@@ -38,7 +38,7 @@ class PredefinedEvent {
 	 */
 	protected $punctual;
 
- 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="childs")
+ 	/** @ORM\ManyToOne(targetEntity="PredefinedEvent", inversedBy="children")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Evènement parent :", "empty_option":"Choisir l'evt parent"})
