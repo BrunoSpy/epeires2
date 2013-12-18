@@ -75,8 +75,10 @@ class EventsController extends FormController {
     			->innerJoin('c.type', 't')		
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
     			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
-    			//TODO order ben start date, limit 10 ?
-    			
+//    			->add('orderBy', 'e.startdate DESC')
+//    			->setFirstResult( 0 )
+//    			->setMaxResults( 10 );
+    			    			
     			//search models
     			$results['models'] = array();
     			$qbModels = $em->createQueryBuilder();
@@ -115,13 +117,21 @@ class EventsController extends FormController {
     	->andWhere($qb->expr()->like('s.name', $qb->expr()->literal($search.'%')));
     	$sectors = $qb->getQuery()->getResult();
     	 
-    	$qb = $em->createQueryBuilder();;
+    	$qb = $em->createQueryBuilder();
     	$qb->select(array('a'))
     	->from('Application\Entity\Antenna', 'a')
     	->andWhere($qb->expr()->like('a.name', $qb->expr()->literal($search.'%')))
     	->orWhere($qb->expr()->like('a.shortname', $qb->expr()->literal($search.'%')));
     	$query = $qb->getQuery();
     	$antennas = $query->getResult();
+    	
+    	$qb = $em->createQueryBuilder();
+    	$qb->select(array('r'))
+    	->from('Application\Entity\Radar', 'r')
+    	->andWhere($qb->expr()->like('r.name', $qb->expr()->literal($search.'%')))
+    	->orWhere($qb->expr()->like('r.shortname', $qb->expr()->literal($search.'%')));
+    	$query = $qb->getQuery();
+    	$radars = $query->getResult();
     	
     	foreach ($antennas as $antenna){
     		$qbEvents->orWhere($qbEvents->expr()->andX(
@@ -149,6 +159,20 @@ class EventsController extends FormController {
     				$qbModels->expr()->eq('v.value',$sector->getId())
     		));
     		$qbModels->setParameter('2', 'sector');
+    	}
+    	
+    	foreach ($radars as $radar) {
+    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    			$qbEvents->expr()->eq('t.type', '?3'),
+    			$qbEvents->expr()->eq('v.value', $radar->getId())
+    		));
+    		$qbEvents->setParameter('3', 'radar');
+    		
+    		$qbModels->orWhere($qbModels->expr()->andX(
+    				$qbModels->expr()->eq('t.type', '?3'),
+    				$qbModels->expr()->eq('v.value', $radar->getId())
+    		));
+    		$qbModels->setParameter('3', 'radar');
     	}
     }
     
@@ -382,8 +406,7 @@ class EventsController extends FormController {
     				));
     				break;
     			case 'custom_fields':
-    				$viewmodel->setVariables(array(
-    				'part' => $part,));
+    				$viewmodel->setVariables(array('part' => $part,));
     				$form->add(new CustomFieldset($this->getServiceLocator(), $this->params()->fromQuery('id')));
     				break;
     			case 'file_field':
@@ -424,19 +447,26 @@ class EventsController extends FormController {
     	
     	$copy = $this->params()->fromQuery('copy', null);
     	
-    	if($id){ //modification, prefill form
-    		try {
+    	$model = $this->params()->fromQuery('model', null);
+    	
+    	$event = null;
+    	
+    	$pevent = null;
+    	
+    	if($id || $model){
+    		$cat = null;
+    		if($id && $model){
+    			$pevent = $em->getRepository('Application\Entity\PredefinedEvent')->find($id);
+    			if($pevent){
+    				$cat = $pevent->getCategory();
+    				$viewmodel->setVariable('model', $pevent);
+    			}
+    		} else if($id) {
     			$event = $em->getRepository('Application\Entity\Event')->find($id);
-    		}
-    		catch (\Exception $ex) {
-    			$viewmodel->setVariables(array('error' => "Impossible de modifier l'évènement."));
-    			return $viewmodel;
-    		}
-    		if(!$event){
-    			$viewmodel->setVariables(array('error' => "Impossible de trouver l'évènement demandé."));
-    			return $viewmodel;
-    		}
-    		$cat = $event->getCategory();
+    			if($event){
+    				$cat = $event->getCategory();
+    			}
+    		}    		
     		if($cat && $cat->getParent()){
     			$form->get('categories')->get('subcategories')->setValueOptions(
     					$em->getRepository('Application\Entity\Category')->getChildsAsArray($cat->getParent()->getId()));
@@ -447,6 +477,20 @@ class EventsController extends FormController {
     		}
     		//custom fields
     		$form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
+    	}
+    	
+    	if($id && $pevent){
+    		//prefill customfields with predefined values
+    		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
+    			$customfieldvalue = $em->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
+    			if($customfieldvalue){
+    				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
+    			}
+    		}
+    	}
+    	
+    	if($id  && $event){ //modification, prefill form
+    		
     		//custom fields values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
@@ -674,7 +718,7 @@ class EventsController extends FormController {
     	);
     	
     	$actions = array();
-    	foreach ($event->getChilds() as $child){
+    	foreach ($event->getChildren() as $child){
     		$actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
     	}
     	$json['actions'] = $actions;

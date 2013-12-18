@@ -14,6 +14,8 @@ use Application\Entity\CustomField;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
+use Zend\Form\Element\Select;
+use Application\Entity\RadarCategory;
 
 class CategoriesController extends FormController{
     
@@ -88,10 +90,21 @@ class CategoriesController extends FormController{
         
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());
         
+        $type = new Select('type');
+        $type->setValueOptions(Category::getTypeValueOptions());
+        $type->setLabel('Type : ');
+        $form->add($type);
+        
     	if($id){
     		//bind to the category
     		$category = $objectManager->getRepository('Application\Entity\Category')->find($id);
     		if($category){
+    			if($category instanceof RadarCategory){
+    				$form->get('type')->setValue('radar');
+    			}
+    			
+    			$form->get('type')->setAttribute('disabled', true);
+    			
     			//select parent
     			if($category->getParent()){
     				$form->get('parent')->setAttribute('value', $category->getParent()->getId());
@@ -126,11 +139,25 @@ class CategoriesController extends FormController{
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
-    		
+    		$fieldname = null; 		
 			if($post['id']){
 				$category = $objectManager->getRepository('Application\Entity\Category')->find($post['id']);
 			} else {
-				$category = new Category();
+				if($post['type'] == 'radar'){
+					$category = $this->getServiceLocator()->get('categoryfactory')->createRadarCategory();
+				} else {
+					$category = new Category();
+					$fieldname = new CustomField();
+					$fieldname->setCategory($category);
+					$fieldname->setName('Nom');
+					$fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+					$fieldname->setPlace(1);
+					$fieldname->setDefaultvalue("");
+					$objectManager->persist($fieldname);
+					$category->setFieldname($fieldname);
+				}
+				//force fieldname value
+				$fieldname = $category->getFieldname();
 			}
     		
 			$builder = new AnnotationBuilder();
@@ -142,17 +169,8 @@ class CategoriesController extends FormController{
 			$form->setData($post);
 			
 			if($form->isValid()){
-				$category->setParent($objectManager->getRepository('Application\Entity\Category')->find($post['parent']));
-				
-				//if new category, create a default field for fieldname
 				if(!$post['id']){
-					$fieldname = new CustomField();
-					$fieldname->setCategory($category);
-					$fieldname->setName('Nom');
-					$fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
-					$fieldname->setPlace(1);
-					$fieldname->setDefaultvalue("");
-					$objectManager->persist($fieldname);
+					//if new cat, force fieldname
 					$category->setFieldname($fieldname);
 				}
 				$objectManager->persist($category);
@@ -181,6 +199,10 @@ class CategoriesController extends FormController{
     		}
     		//delete fieldname to avoid loop
     		$category->setFieldname(null);
+    		if($category instanceof RadarCategory){
+    			$category->setRadarfield(null);
+    			$category->setStatefield(null);
+    		}
     		$objectManager->persist($category);
     		$objectManager->flush();
     		//suppression des evts associés par cascade

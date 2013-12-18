@@ -59,6 +59,6 @@ var createModelEntry = function(id, model){
 	html += "<dt>Modèle : "+model.name+"</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+model.category+'</small>';
-	html += '<a data-id='+id+' class="btn btn-mini pull-right">Utiliser</a></dd>';
+	html += '<a data-id='+id+' class="btn btn-mini pull-right use-model">Utiliser</a></dd>';
 	return html;
 };

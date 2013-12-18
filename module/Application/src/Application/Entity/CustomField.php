@@ -118,6 +118,8 @@ class CustomField {
 	}
 	
 	public function getArrayCopy() {
-		return get_object_vars($this);
+		$object_vars = get_object_vars($this);
+		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
+		return $object_vars;
 	}
 }

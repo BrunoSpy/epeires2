@@ -62,7 +62,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 				$options['value_options'] = $value_options;
 			}
 			$definition['type'] = $customfieldservice->getZendType($customfield->getType());
-			
+						
 			$definition['options'] = $options;
 			$this->add($definition);
 		}

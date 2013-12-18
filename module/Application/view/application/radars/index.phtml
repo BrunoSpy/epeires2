@@ -16,7 +16,7 @@
 					echo '<tr>';
 					echo '<td>'.$radar['name'].'</td>';
 					echo '<td>';
-					if($radar['status'] > 0) {
+					if(!$radar['status']) {
 						echo '<span class="label label-important">Indisponible</span>';
 					} else {
 						echo '<span class="label label-success">Opérationnel</span>';

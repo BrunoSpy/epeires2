@@ -9,6 +9,7 @@ namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Doctrine\ORM\Query\Expr\Join;
 
 class RadarsController extends AbstractActionController {
 	
@@ -37,33 +38,45 @@ class RadarsController extends AbstractActionController {
 		
 		$now = new \DateTime('NOW');
 		$now->setTimezone(new \DateTimeZone("UTC"));
-		
+				
 		foreach ($em->getRepository('Application\Entity\Radar')->findAll() as $radar){
-			$qbEvents = $em->createQueryBuilder();
-			$qbEvents->select(array('e', 'v', 'c', 't'))
-			->from('Application\Entity\Event', 'e')
-			->innerJoin('e.custom_fields_values', 'v')
-			->innerJoin('v.customfield', 'c')
-			->innerJoin('c.type', 't')
-			->andWhere($qbEvents->expr()->eq('t.type', '?4'))
-			->andWhere($qbEvents->expr()->eq('v.value', '?1'))
-			->andWhere($qbEvents->expr()->lte('e.startdate', '?2'))
-			->andWhere($qbEvents->expr()->orX(
-					$qbEvents->expr()->isNull('e.enddate'),
-					$qbEvents->expr()->gte('e.enddate', '?3')))
-			->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
-			->setParameters(array(1 => $radar->getId(),
-								2 => $now->format('Y-m-d H:i:s'),
-								3 => $now->format('Y-m-d H:i:s'),
-								4 => 'radar'));
-			
-			$query = $qbEvents->getQuery();
-						
-			$results = $query->getResult();
-			
-			$radars[] = array('name' => $radar->getName(), 'status' => count($results));
-			
+			//avalaible by default
+			$radars[$radar->getId()] = array();
+			$radars[$radar->getId()]['name'] = $radar->getName();
+			$radars[$radar->getId()]['status'] = true;
 		}
+			
+		$qbEvents = $em->createQueryBuilder();
+		$qbEvents->select(array('e', 'cat'))
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
+		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
+		->andWhere($qbEvents->expr()->orX(
+				$qbEvents->expr()->isNull('e.enddate'),
+				$qbEvents->expr()->gte('e.enddate', '?2')))
+		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
+		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+							2 => $now->format('Y-m-d H:i:s')));
+			
+		$query = $qbEvents->getQuery();
+			
+		$results = $query->getResult();
+			
+		foreach ($results as $result){
+			$statefield = $result->getCategory()->getStatefield()->getId();
+			$radarfield = $result->getCategory()->getRadarfield()->getId();
+			$radarid = 0;
+			$available = true;
+			foreach ($result->getCustomFieldsValues() as $customvalue){
+				if($customvalue->getCustomField()->getId() == $statefield){
+					$available = !$customvalue->getValue();
+				} else if($customvalue->getCustomField()->getId() == $radarfield){
+					$radarid = $customvalue->getValue();
+				}
+			}
+			$radars[$radarid]['status'] *= $available;				
+		}		
 		
 		$viewmodel->setVariable('radars', $radars);
 		

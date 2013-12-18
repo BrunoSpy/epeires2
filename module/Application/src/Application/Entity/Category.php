@@ -17,6 +17,9 @@ use Doctrine\Common\Collections\Collection;
 /**
  * @ORM\Table(name="categories")
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"generic" = "Category", "radar" = "RadarCategory"})
  **/
 class Category {
 	/**
@@ -118,6 +121,13 @@ class Category {
 		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->predefinedevents = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->readroles = new ArrayCollection();
+	}
+	
+	public static function getTypeValueOptions(){
+		$type = array();
+		$type['generic'] = "Générique";
+		$type['radar'] = "Radar";
+		return $type;
 	}
 	
 	public function getCustomfields(){

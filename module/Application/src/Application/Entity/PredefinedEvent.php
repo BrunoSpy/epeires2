@@ -48,7 +48,7 @@ class PredefinedEvent {
  	/**
  	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="parent", cascade={"remove"})
  	 */
- 	protected $childs;
+ 	protected $children;
  	
  	/** @ORM\ManyToOne(targetEntity="Impact")
 	 * @Annotation\Type("Zend\Form\Element\Select")
@@ -94,6 +94,10 @@ class PredefinedEvent {
  	
  	public function getCustomFieldsValues(){
  		return $this->custom_fields_values;
+ 	}
+ 	
+ 	public function getChildren(){
+ 		return $this->children;
  	}
  	
  	public function getId(){

@@ -12,6 +12,10 @@ echo $this->form()->openTag($this->form);
 
 
 echo $this->formHidden($this->form->get('id'));
+
+echo $this->controlGroup($this->formLabel($this->form->get('type')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('type')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('name')));
 

@@ -18,6 +18,7 @@ class CustomFieldGroup extends AbstractHelper {
 						$view->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
 						$view->formSelect($element));
 		} elseif ($element instanceof \Zend\Form\Element\Checkbox){
+			$element->setUseHiddenElement(false);
 			$html =  $view->controlGroup(
 						$view->formLabel($element->setLabelAttributes(array('class'=>'control-label'))),
 						$view->formCheckbox($element));

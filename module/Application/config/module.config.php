@@ -38,6 +38,7 @@ return array(
         'factories' => array(
         	'eventservice' => 'Application\Factories\EventServiceFactory',
         	'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
+        	'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory',
         ),
     ),
     'translator' => array(

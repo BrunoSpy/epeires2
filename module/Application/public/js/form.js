@@ -266,15 +266,22 @@ var form = function(url){
 	//clic sur utiliser un modèle
 	$("#search-results").on("click", ".use-model", function(){
 		var me = $(this);
+		$("#search-results").slideUp('fast');
+		$("#event").html('<div>Chargement...</div>');
+		$("#form-title").html(me.data('name'));
+		$("#create-evt").slideDown('fast');
+		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+		$("#event").load(url+'/form?id='+me.data('id')+'&model=1', function(){
+			updateHours();
+			$("#Horairesid").trigger('click');
+		});
+		$("#search-results").offset({top:0, left:0});
 	});
 	
 	//clic sur copie d'un évènement
 	$("#search-results").on("click", ".copy-event", function(){
 		var me = $(this);
-		
 		$("#search-results").slideUp('fast');
-		$("#search-results").offset({top:0, left:0});
-		
 		$("#event").html('<div>Chargement...</div>');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").slideDown('fast');
@@ -283,6 +290,7 @@ var form = function(url){
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
+		$("#search-results").offset({top:0, left:0});
 	});
 	
 	//click sur modification d'un évènement
@@ -297,7 +305,7 @@ var form = function(url){
 			updateHours();
 		});
 	});
-
+	
 	//click sur une fiche reflexe
 	$("#event").on("click", "a.fiche", function(){
 		var id = $(this).data('id');
@@ -331,9 +339,13 @@ var form = function(url){
 							$("#custom_fields [name='custom_fields["+key+"]'] option[value="+value+"]").prop('selected', true);
 						} else if(elt.is('textarea')){
 							elt.html(value);
+						} else if(elt.is(':hidden')){
+							//do nothing
+						} else if (elt.is(':checkbox')){
+							elt.attr('checked', (value == 1));
 						} else if(elt.is('input')){
 							elt.prop('value', value);
-						}
+						} 
 						//TODO les autres types de champs : 
 					});
 					//open hour accordion

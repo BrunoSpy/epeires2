@@ -44,11 +44,11 @@ class Event {
  	 */
  	protected $status;
 	
- 	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="childs") */
+ 	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="children") */
  	protected $parent;
 	
  	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent", cascade={"remove"}) */
- 	protected $childs;
+ 	protected $children;
  	
  	/** 
  	 * @ORM\ManyToOne(targetEntity="Impact")
@@ -120,7 +120,7 @@ class Event {
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
- 		$this->childs = new \Doctrine\Common\Collections\ArrayCollection();
+ 		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
  	}
@@ -212,8 +212,8 @@ class Event {
 		return $this->parent;
 	}
 	
-	public function getChilds(){
-		return $this->childs;
+	public function getChildren(){
+		return $this->children;
 	}
 	
   	public function setStartdate($startdate = null){

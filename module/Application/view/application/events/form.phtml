@@ -38,13 +38,13 @@
 					$this->formSelect($formSelectCat));
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($formSelectSubCat->setAttribute('disabled',true)),
+					$this->formSelect($formSelectSubCat->setAttribute('disabled',(!$this->event && !$this->model))),
 					array('control_id'=>'form_categories'));		
 		
 		echo $this->accordionGroup("Catégories", $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
  
 		//Modèles uniquement si création
-		if(!$this->event){
+		if(!$this->event && !$this->model){
 			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
 		}
 			
@@ -63,6 +63,11 @@
 				$formEndDate->setAttribute('disabled', true);
 			}
 		}
+		if($this->model){
+			if($this->model->isPunctual()){
+				$formEndDate->setAttribute('disabled', true);
+			}
+		}
 		$html .= $this->controlGroup("",$this->formHidden($formEndDate));
 		
 		$html .= $this->controlGroup(
@@ -75,13 +80,14 @@
 				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
 				$this->formSelect($this->form->get('impact')));
 		
-		if($this->event){
+		$html .= "<div id=\"custom_fields\">";
+		if($this->event || $this->model){
 			foreach ($this->form->get('custom_fields')->getElements() as $element){
 				$html .= $this->customFieldGroup($element);
 			}
-		} else {
-			$html .= "<div id=\"custom_fields\"></div>";
-		}	
+		} 
+		$html .= "</div>";
+		
 		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
 		$titleclass="";		
 		if($this->event){
@@ -134,19 +140,24 @@
 		
 		$html = "";
 		$actionsClass = "";
-		if($this->event) {
+		if($this->event || $this->model) {
 			if($this->copy){
 				echo "<input type=\"hidden\" name=\"fromeventid\" value=\"".$this->copy."\">";
 			}
-			$childs = $this->event->getChilds();
-			if(count($childs) > 0){
+			$children = null;
+			if($this->event){
+				$children = $this->event->getChildren();
+			} else if ($this->model){
+				$children = $this->model->getChildren();
+			}
+			if(count($children) > 0){
 				$html .= '<table class="table table-hover" >';
 				$html .= '<tbody>';
-				foreach ($childs as $child){
+				foreach ($children as $child){
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
-					if(!$this->copy){ //copie d'un évènement -> pas de modif de la ficher réflexe
+					if(!$this->copy && !$this->model){ //copie d'un évènement -> pas de modif de la ficher réflexe
 						$html .= "<td><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
 					}
 					$html .= '</tr>';
