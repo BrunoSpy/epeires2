@@ -119,6 +119,7 @@ return array(
     		),
     	),
     ),
+    
     'permissions' => array(
     	'Evènements' => array(
     		'events.write' => 'Ecriture',

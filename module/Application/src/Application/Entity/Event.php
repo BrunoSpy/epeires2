@@ -13,28 +13,11 @@ use Zend\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="events")
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
-class Event {
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\Column(type="integer")
-	 * @Annotation\Type("Zend\Form\Element\Hidden")
-	 */
-	protected $id;
-
-	/** 
-	 * @ORM\Column(type="boolean")
-	 * @Annotation\Type("Zend\Form\Element\Checkbox")
-	 * @Annotation\Options({"label":"Ponctuel :"})
-	 * @Annotation\Attributes({"id":"punctual"})
-	 * @Gedmo\Versioned
-	 */
-	protected $punctual;
-
+class Event extends AbstractEvent{
+	
  	/** 
  	 * @ORM\ManyToOne(targetEntity="Status")
  	 * @Annotation\Type("Zend\Form\Element\Select")
@@ -43,21 +26,6 @@ class Event {
  	 * @Gedmo\Versioned
  	 */
  	protected $status;
-	
- 	/** @ORM\ManyToOne(targetEntity="Event", inversedBy="children") */
- 	protected $parent;
-	
- 	/** @ORM\OneToMany(targetEntity="Event", mappedBy="parent", cascade={"remove"}) */
- 	protected $children;
- 	
- 	/** 
- 	 * @ORM\ManyToOne(targetEntity="Impact")
-  	 * @Annotation\Type("Zend\Form\Element\Select")
-	 * @Annotation\Required(true)
-	 * @Annotation\Options({"label":"Impact :"})
- 	 * @Gedmo\Versioned
- 	 */
- 	protected $impact;
 	
  	/** 
  	 * Actions need an empty start date at creation
@@ -86,12 +54,6 @@ class Event {
  	/** @ORM\Column(type="datetime") */
  	protected $last_modified_on;
 	
- 	/** 
- 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
- 	 * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
- 	 * @Annotation\Required(true)
- 	 */
- 	protected $category;
 	
  	/**
  	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
@@ -114,19 +76,30 @@ class Event {
  	protected $updates;
  	
  	/**
+ 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
+ 	 * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+ 	 * @Annotation\Required(true)
+ 	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
+ 	 */
+ 	protected $category;
+ 	
+ 	/**
  	 * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
  	 */
  	protected $files;
  	
  	public function __construct(){
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
- 		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
  	}
+
+ 	public function getCategory(){
+ 		return $this->category;
+ 	}
  	
- 	public function getId(){
- 		return $this->id;
+ 	public function setCategory($category){
+ 		$this->category = $category;
  	}
  	
  	public function getAuthor(){
@@ -148,14 +121,7 @@ class Event {
  	public function addCustomFieldValue($customfieldvalue){
  		$this->custom_fields_values->add($customfieldvalue);
  	}
- 	
-	public function isPunctual() {
-		return $this->punctual;
-	}
-	
-	public function setPunctual($punctual){
-		$this->punctual = $punctual;
-	}
+
 	
 	public function isStar(){
 		return $this->star;
@@ -186,34 +152,6 @@ class Event {
 	
 	public function getStatus(){
 		return $this->status;
-	}
-	
-	public function getCategory(){
-		return $this->category;
-	}
-	
-	public function setCategory($category){
-		$this->category = $category;
-	}
-	
-	public function setImpact($impact){
-		$this->impact = $impact;
-	}
-	
-	public function getImpact(){
-		return $this->impact;
-	}
-	
-	public function setParent($parent){
-		$this->parent = $parent;
-	}
-	
-	public function getParent(){
-		return $this->parent;
-	}
-	
-	public function getChildren(){
-		return $this->children;
 	}
 	
   	public function setStartdate($startdate = null){
