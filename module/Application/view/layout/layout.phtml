@@ -60,6 +60,17 @@
     					?>
     					</ul>
     				</li>
+    				<li><i class="icon-filter"></i><b> Zone : </b>
+    					<?php 
+    						$form = $this->zoneform;
+    						$form->setAttributes(array('action' => $this->url('application', array('controller'=>'events', 'action'=>'savezone')),
+												'class'=>'form-inline navbar-form'));
+    						$form->prepare();
+    						echo $this->form()->openTag($form);
+    						echo $this->formSelect($form->get('zone'));
+    						echo $this->form()->closeTag();
+    					?>
+    				</li>
     				<li><i class="icon-eye-open"></i><b> Chef de salle : </b>Prénom Nom</li>
     				<li><i class="icon-warning-sign"></i><b> IPO : </b>Prénom Nom (06 12 23 45 65)</li>
     				<li id="clock" class="pull-right"></li>

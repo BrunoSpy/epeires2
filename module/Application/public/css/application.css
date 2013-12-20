@@ -68,7 +68,14 @@ body{
 	padding-left:5px;
 }
 
+.header form{
+	float: right;
+}
 
+.header select{
+	margin-top: -4px;
+	margin-left: 5px;
+}
 
 #clock {
 	margin-right:0.5em;

@@ -18,7 +18,8 @@
         "gedmo/doctrine-extensions": ">=2.3.0",
         "zf-commons/zfc-user": "dev-master",
         "zf-commons/zfc-rbac": "dev-master",
-        "zf-commons/zfc-user-doctrine-orm": "dev-master"
+        "zf-commons/zfc-user-doctrine-orm": "dev-master",
+        "zfr/rbac": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",

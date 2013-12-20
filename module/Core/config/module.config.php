@@ -92,4 +92,17 @@ return array(
 						'modalwindow' => 'Core\View\Helper\ModalWindow',
 				),
 		),
+		'session' => array(
+				'config' => array(
+						'class' => 'Zend\Session\Config\SessionConfig',
+						'options' => array(
+								'name' => 'epeires2',
+						),
+				),
+				'storage' => 'Zend\Session\Storage\SessionArrayStorage',
+				'validators' => array(
+						'Zend\Session\Validator\RemoteAddr',
+						'Zend\Session\Validator\HttpUserAgent',
+				),
+		),
 );

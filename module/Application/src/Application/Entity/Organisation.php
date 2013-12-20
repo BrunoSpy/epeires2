@@ -24,7 +24,7 @@ class Organisation {
 	protected $id;
 	
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", unique=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
@@ -32,7 +32,7 @@ class Organisation {
 	protected $name;
 	
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", unique=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})
@@ -94,6 +94,9 @@ class Organisation {
 		$this->address = $adress;
 	}
 	
+	public function getZones(){
+		return $this->zones;
+	}
 	public function getArrayCopy() {
 		return get_object_vars($this);
 	}

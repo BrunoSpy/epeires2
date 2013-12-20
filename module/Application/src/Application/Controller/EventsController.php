@@ -27,6 +27,9 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\EntityManager;
 use Application\Entity\PredefinedEvent;
 use Doctrine\ORM\QueryBuilder;
+use Zend\Form\Element\Select;
+use Zend\Form\Form;
+use Zend\Session\Container;
 
 class EventsController extends FormController {
 	
@@ -46,12 +49,68 @@ class EventsController extends FormController {
     	
     	$this->flashMessenger()->clearMessages();
     	
+    	$form = $this->getZoneForm();
+    	
+    	if($this->zfcUserAuthentication()->hasIdentity()){
+    		$user = $this->zfcUserAuthentication()->getIdentity();
+    		$org = $user->getOrganisation();
+    		$zone = $user->getZone();
+    		
+    		$session = new Container('zone');
+    		$zonesession = $session->zoneshortname;
+    		  		
+    		if($zonesession){
+    			$values = $form->get('zone')->getValueOptions();
+    			if(array_key_exists($zonesession, $values)){
+    				$form->get('zone')->setValue($zonesession);
+    			}
+    		} else {
+    			if($zone){
+	    			$form->get('zone')->setValue($zone->getShortname());
+    			} else {
+	    			$form->get('zone')->setValue($org->getShortname());
+    			}
+    		}
+    	} else {
+    		$form->get('zone')->setValue('0');
+    	}
+    	
+    	$this->layout()->zoneform = $form;
+    	
     	$this->layout()->cds = "Nom chef de salle";
     	$this->layout()->ipo = "Nom IPO (téléphone)";
     	
      	$viewmodel->setVariables(array('messages'=>$return));
     	 
         return $viewmodel;
+    }
+    
+    public function savezoneAction(){
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$zone = $post['zone'];
+    		$session = new Container('zone');
+    		$session->zoneshortname = $zone;
+    	}
+    	return new JsonModel();
+    }
+    
+    private function getZoneForm(){
+    	$zoneElement = new Select('zone');
+    	$values = array();
+    	$values['0'] = "Tout";
+    	if($this->zfcUserAuthentication()->hasIdentity()){
+    		$user = $this->zfcUserAuthentication()->getIdentity();
+    		$values[$user->getOrganisation()->getShortname()] = $user->getOrganisation()->getName();
+    		foreach ($user->getOrganisation()->getZones() as $zone){
+    			$values[$zone->getShortname()] = $zone->getName();
+    		}
+    	}
+    	$zoneElement->setValueOptions($values);
+    	$form = new Form('zoneform');
+    	$form->add($zoneElement);
+    	
+    	return $form;
     }
     
     /**
@@ -74,10 +133,10 @@ class EventsController extends FormController {
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')		
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
-    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
-//    			->add('orderBy', 'e.startdate DESC')
-//    			->setFirstResult( 0 )
-//    			->setMaxResults( 10 );
+    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')))
+    			->add('orderBy', 'e.startdate DESC')
+    			->setFirstResult( 0 )
+    			->setMaxResults( 10 );
     			    			
     			//search models
     			$results['models'] = array();

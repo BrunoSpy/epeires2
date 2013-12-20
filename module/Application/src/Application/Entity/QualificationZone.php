@@ -23,7 +23,7 @@ class QualificationZone {
 	protected $id;
 
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", unique=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
@@ -31,7 +31,7 @@ class QualificationZone {
 	protected $name;
 
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", unique=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})

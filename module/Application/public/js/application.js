@@ -61,6 +61,13 @@ $(document).ready(function(){
 	   return false;
    });
    
+   $("select[name=zone]").on("change", function(event){
+	   event.preventDefault();
+	   $.post(url+'events/savezone', $("#zoneform").serialize(), function(){
+		  //refresh timeline instead of entire window
+		  location.reload();
+	   });
+   } );
    
 	$(document).ajaxStart(function(){
 		$(".loading").show();
