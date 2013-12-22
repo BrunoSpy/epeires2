@@ -53,12 +53,6 @@ class Event extends AbstractEvent{
 	
  	/** @ORM\Column(type="datetime") */
  	protected $last_modified_on;
-	
-	
- 	/**
- 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
- 	 */
- 	protected $custom_fields_values;
  	
  	/**
  	 * @ORM\Column(type="boolean")
@@ -76,30 +70,14 @@ class Event extends AbstractEvent{
  	protected $updates;
  	
  	/**
- 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
- 	 * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
- 	 * @Annotation\Required(true)
- 	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
- 	 */
- 	protected $category;
- 	
- 	/**
  	 * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
  	 */
  	protected $files;
  	
  	public function __construct(){
- 		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 		parent::__construct();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
- 	}
-
- 	public function getCategory(){
- 		return $this->category;
- 	}
- 	
- 	public function setCategory($category){
- 		$this->category = $category;
  	}
  	
  	public function getAuthor(){
@@ -113,15 +91,6 @@ class Event extends AbstractEvent{
  	public function getUpdates(){
  		return $this->updates;
  	}
- 	
- 	public function getCustomFieldsValues(){
- 		return $this->custom_fields_values;
- 	}
- 	
- 	public function addCustomFieldValue($customfieldvalue){
- 		$this->custom_fields_values->add($customfieldvalue);
- 	}
-
 	
 	public function isStar(){
 		return $this->star;
@@ -210,8 +179,6 @@ class Event extends AbstractEvent{
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$object_vars['status'] = ($this->status ? $this->status->getId() : null);
-		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
-		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
 		$object_vars['author'] = ($this->author ? $this->author->getId() : null);
 		return $object_vars;
 	}

@@ -58,6 +58,20 @@ class AbstractEvent {
  	 */
  	protected $impact;
  	
+ 	/** 
+ 	 * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
+ 	 * @ORM\JoinColumn(nullable=false)
+ 	 * @Annotation\Type("Zend\Form\Element\Select")
+ 	 * @Annotation\Required(true)
+ 	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
+ 	 */
+ 	protected $category;
+ 	
+ 	/**
+ 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
+ 	 */
+ 	protected $custom_fields_values;
+ 	
  	/**
  	 * @ORM\ManyToOne(targetEntity="Organisation")
  	 */
@@ -71,6 +85,23 @@ class AbstractEvent {
  	public function __construct(){
  		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->zonefilters = new \Doctrine\Common\Collections\ArrayCollection();
+ 		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function getCategory(){
+ 		return $this->category;
+ 	}
+ 	
+ 	public function setCategory($category){
+ 		$this->category = $category;
+ 	}
+ 	
+ 	public function getCustomFieldsValues(){
+ 		return $this->custom_fields_values;
+ 	}
+ 	
+ 	public function addCustomFieldValue($customfieldvalue){
+ 		$this->custom_fields_values->add($customfieldvalue);
  	}
  	
  	public function getId(){
@@ -83,15 +114,6 @@ class AbstractEvent {
 	
 	public function setPunctual($punctual){
 		$this->punctual = $punctual;
-	}
-	
-	
-	public function getCategory(){
-		return $this->category;
-	}
-	
-	public function setCategory($category){
-		$this->category = $category;
 	}
 	
 	public function setImpact($impact){
@@ -117,8 +139,8 @@ class AbstractEvent {
 	
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
-		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
 		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
+		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
 		return $object_vars;
 	}
 }

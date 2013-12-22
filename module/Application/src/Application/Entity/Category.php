@@ -83,7 +83,7 @@ class Category {
 	protected $name;
 	
 	/**
-	* @ORM\OneToMany(targetEntity="Event", mappedBy="category", cascade={"remove"})
+	* @ORM\OneToMany(targetEntity="AbstractEvent", mappedBy="category", cascade={"remove"})
 	*/
 	protected $events;
 	
@@ -92,11 +92,6 @@ class Category {
 	 * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"})
 	 */
 	protected $customfields;
-	
-	/**
-	 * @ORM\OneToMany(targetEntity="PredefinedEvent", mappedBy="category", cascade={"remove"})
-	 */
-	protected $predefinedevents;
 	
 	/** 
 	 * @ORM\OneToOne(targetEntity="CustomField")
@@ -119,7 +114,6 @@ class Category {
 	public function __construct(){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->predefinedevents = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->readroles = new ArrayCollection();
 	}
 	

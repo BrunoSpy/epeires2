@@ -60,6 +60,7 @@
     					?>
     					</ul>
     				</li>
+    				<?php if($this->zoneform) :?>
     				<li><i class="icon-filter"></i><b> Zone : </b>
     					<?php 
     						$form = $this->zoneform;
@@ -71,6 +72,7 @@
     						echo $this->form()->closeTag();
     					?>
     				</li>
+    				<?php  endif;?>
     				<li><i class="icon-eye-open"></i><b> Chef de salle : </b>Prénom Nom</li>
     				<li><i class="icon-warning-sign"></i><b> IPO : </b>Prénom Nom (06 12 23 45 65)</li>
     				<li id="clock" class="pull-right"></li>

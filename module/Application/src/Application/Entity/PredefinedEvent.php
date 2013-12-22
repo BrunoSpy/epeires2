@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity
-**/
+ * @ORM\Entity(repositoryClass="Application\Repository\PredefinedEventRepository")
+ **/
 class PredefinedEvent extends AbstractEvent{
 
 	/** @ORM\Column(type="string", nullable=true)
@@ -38,37 +38,9 @@ class PredefinedEvent extends AbstractEvent{
 	
  	/** @ORM\Column(type="integer", nullable=true) */
  	protected $place;
- 	
- 	/** @ORM\ManyToOne(targetEntity="Category", inversedBy="predefinedevents")
- 	 * @Annotation\Type("Zend\Form\Element\Select")
- 	 * @Annotation\Required({"required":"true"})
- 	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
- 	 */
- 	protected $category;
- 	
- 	/**
- 	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="predefinedevent", cascade={"remove"})
- 	 */
- 	protected $custom_fields_values;
- 	
+ 		 	
  	public function __construct(){
- 		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
- 	}
- 	
- 	public function setCategory($category){
- 		$this->category = $category;
- 	}
- 	
- 	public function getCategory(){
- 		return $this->category;
- 	}
- 	
- 	public function addCustomFieldValue($customfieldvalue){
- 		$this->custom_fields_values->add($customfieldvalue);
- 	}
- 	
- 	public function getCustomFieldsValues(){
- 		return $this->custom_fields_values;
+ 		parent::__construct();
  	}
  	
 	public function setName($name){
@@ -102,8 +74,5 @@ class PredefinedEvent extends AbstractEvent{
 	public function setPlace($place){
 		$this->place = $place;
 	}
-	
-	public function getArrayCopy() {
-		return get_object_vars($this);
-	}
+
 }

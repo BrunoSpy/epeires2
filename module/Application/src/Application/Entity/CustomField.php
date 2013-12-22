@@ -67,11 +67,6 @@ class CustomField {
 	 */
 	protected $values;
 	
-	/**
-	 * @ORM\OneToMany(targetEntity="PredefinedCustomFieldValue", mappedBy="customfield", cascade={"remove"})
-	 */
-	protected $predefinedvalues;
-	
 	public function getId(){
 		return $this->id;
 	}

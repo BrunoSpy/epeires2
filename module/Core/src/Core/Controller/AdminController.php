@@ -124,6 +124,7 @@ class AdminController extends AbstractActionController {
    		$organisation = new Organisation();
    		$organisation->setName("CRNA-X");
    		$organisation->setShortname("LFXX");
+   		$organisation->setAddress("");
    		$em->persist($organisation);
    		
    		$adminuser = new User();

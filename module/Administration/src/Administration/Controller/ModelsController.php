@@ -11,7 +11,7 @@ use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\PredefinedEvent;
-use Application\Entity\PredefinedCustomFieldValue;
+use Application\Entity\CustomFieldValue;
 use Application\Form\CustomFieldset;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
@@ -194,10 +194,10 @@ class ModelsController extends FormController
     				foreach ($post['custom_fields'] as $key => $value){
     					$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     					if($customfield){
-    						$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'predefinedevent'=>$id));
+    						$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
     						if(!$customfieldvalue){
-    							$customfieldvalue = new PredefinedCustomFieldValue();
-    							$customfieldvalue->setPredefinedEvent($pevent);
+    							$customfieldvalue = new CustomFieldValue();
+    							$customfieldvalue->setEvent($pevent);
     							$customfieldvalue->setCustomField($customfield);
     							$pevent->addCustomFieldValue($customfieldvalue);
     						}
@@ -299,8 +299,8 @@ class ModelsController extends FormController
     			if(count($customfields) > 0 ){
     				$form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()->getId()));
     				foreach ($customfields as $customfield){
-    					$customfieldvalue = $objectManager->getRepository('Application\Entity\PredefinedCustomFieldValue')
-    					->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
+    					$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+    					->findOneBy(array('event'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
     					if($customfieldvalue){
     						$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     					}
