@@ -333,6 +333,7 @@ var form = function(url){
 				function(data){
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
+					$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
 					$.each(data.customvalues, function(key, value){
 						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
 						if(elt.is("select")){

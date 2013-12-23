@@ -228,7 +228,7 @@ a.disabled {
 }
 
 .unvisible{
-	display:none;
+	display:none !important;
 }
 
 /* css for timepicker */

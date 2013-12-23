@@ -30,6 +30,7 @@ use Doctrine\ORM\QueryBuilder;
 use Zend\Form\Element\Select;
 use Zend\Form\Form;
 use Zend\Session\Container;
+use Zend\Form\Element;
 
 class EventsController extends FormController {
 	
@@ -391,6 +392,8 @@ class EventsController extends FormController {
     					$messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
     					
     				} else {
+    					//erase event
+    					$event = null;
     					//formulaire invalide
     					$messages['error'][] = "Impossible d'enregistrer l'évènement.";
     					//traitement des erreurs de validation
@@ -595,6 +598,11 @@ class EventsController extends FormController {
     	$form->get('impact')
     		->setValueOptions($em->getRepository('Application\Entity\Impact')->getAllAsArray());
 
+    	//replace default category element
+    	$form->remove('category');
+    	$category = new Element\Hidden('category');
+    	$form->add($category);
+    	
     	//add default fieldsets
     	$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
     	$rootarray = array();
@@ -636,7 +644,9 @@ class EventsController extends FormController {
     	$predefinedEvt = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($predefinedId);
     	
     	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
-		//TODO Impact
+		
+    	$defaultvalues['impact'] = $predefinedEvt->getImpact()->getId();
+    	
     	$json['defaultvalues'] = $defaultvalues;
     	
     	foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue){
