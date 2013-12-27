@@ -10,6 +10,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -72,13 +73,22 @@ class AbstractEvent {
  	 */
  	protected $custom_fields_values;
  	
- 	/**
+ 	/** 
  	 * @ORM\ManyToOne(targetEntity="Organisation")
+ 	 * @ORM\JoinColumn(nullable=false)
+ 	 * @Annotation\Type("Zend\Form\Element\Select")
+ 	 * @Annotation\Required(true)
+ 	 * @Annotation\Options({"label":"Organisation :"})
  	 */
  	protected $organisation;
  	
- 	/**
+ 	/** 
  	 * @ORM\ManyToMany(targetEntity="QualificationZone")
+ 	 * @ORM\JoinTable(name="events_qualificationzones")
+ 	 * @Annotation\Type("Zend\Form\Element\Select")
+ 	 * @Annotation\Required(false)
+ 	 * @Annotation\Attributes({"multiple":true})
+ 	 * @Annotation\Options({"label":"Visibilité :"})
  	 */
  	protected $zonefilters;
  	
@@ -86,6 +96,34 @@ class AbstractEvent {
  		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->zonefilters = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+ 	}
+ 	
+ 	public function getOrganisation(){
+ 		return $this->organisation;
+ 	}
+ 	
+ 	public function setOrganisation($organisation){
+ 		$this->organisation = $organisation;
+ 	}
+ 	
+ 	public function setZonefilters($zonefilters){
+ 		$this->zonefilters = $zonefilters;
+ 	}
+ 	
+ 	public function getZonefilters(){
+ 		return $this->zonefilters;
+ 	}
+ 	
+ 	public function addZonefilters(Collection $zonefilters){
+ 		foreach ($zonefilters as $zonefilter){
+ 			$this->zonefilters->add($zonefilter);
+ 		}
+ 	}
+ 	
+ 	public function removeZonefilters(Collection $zonefilters){
+ 		foreach ($zonefilters as $zonefilter){
+ 			$this->zonefilters->removeElement($zonefilter);
+ 		}
  	}
  	
  	public function getCategory(){
@@ -141,6 +179,12 @@ class AbstractEvent {
 		$object_vars = get_object_vars($this);
 		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
 		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
+		$object_vars['organisation'] = ($this->organisation ? $this->organisation->getId() : null);
+		$zonefilters = array();
+		foreach ($this->zonefilters as $zonefilter){
+			$zonefilters[] = $zonefilter->getId();
+		}
+		$object_vars['zonefilters'] = $zonefilters;
 		return $object_vars;
 	}
 }

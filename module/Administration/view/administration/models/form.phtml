@@ -33,12 +33,21 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 
 	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
 			$this->formCheckbox($this->form->get('searchable')));
+	
+	echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formSelect($this->form->get('organisation')));
+	
+	echo $this->controlGroup($this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formSelect($this->form->get('zonefilters')));
+	
 } else {
 	echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
 
 	echo $this->formHidden($this->form->get('listable')->setAttribute('value', false));
 
 	echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
+	
+	echo $this->formHidden($this->form->get('organisation'));
 	
 	echo $this->formHidden($this->form->get('parent'));
 }

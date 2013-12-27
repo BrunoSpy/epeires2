@@ -164,27 +164,30 @@ var models = function(url){
 		event.preventDefault();
 		var id = $("#action-form").find('input[name=id]').val();
 		$.post(url+'/models/save', $(this).closest("#PredefinedEvent").serialize(), function(data){
-			if(id > 0){ //modification d'une action existante
-				var tr = $("tr#"+id);
-				tr.find('td:eq(0)').html(data.name);
-				tr.find('td:eq(1)').html('<span class="label label-'+data.impactstyle+'">'+data.impactname+'</span>');
-				tr.find('td:eq(3) > a').data('name', data.name);
-			} else { //nouvelle action
-				var newtr = $('<tr id="'+data.id+'"></tr>');
-				newtr.append('<td>'+data.name+'</td>');
-				newtr.append('<td><span class="label label-'+data.impactstyle+'">'+data.impactname+'</span></td>');
-				newtr.append('<td><a class="down" href="'+url+'/models/down?id='+data.id+'">'+
+			if(data.hasOwnProperty('name')){
+				if(id > 0){ //modification d'une action existante
+					var tr = $("tr#"+id);
+					tr.find('td:eq(0)').html(data.name);
+					tr.find('td:eq(1)').html('<span class="label label-'+data.impactstyle+'">'+data.impactname+'</span>');
+					tr.find('td:eq(3) > a').data('name', data.name);
+				} else { //nouvelle action
+					var newtr = $('<tr id="'+data.id+'"></tr>');
+					newtr.append('<td>'+data.name+'</td>');
+					newtr.append('<td><span class="label label-'+data.impactstyle+'">'+data.impactname+'</span></td>');
+					newtr.append('<td><a class="down" href="'+url+'/models/down?id='+data.id+'">'+
 							'<span class="caret middle"></span></a> '+
 							'<a class="up" href="'+url+'/models/up?id='+data.id+'"><span class="up-caret middle"></span></a>');
-				newtr.append('<td><i class="icon-pencil"></i> <a title="Supprimer"'+ 
+					newtr.append('<td><i class="icon-pencil"></i> <a title="Supprimer"'+ 
 						'href="'+url+'/models/delete?id='+data.id+'&redirect=0 '+ 
 						'class="action-delete" '+ 
 						'data-id='+data.id +' '+ 
 						'data-name="'+data.name+'" '+ 
-				'><i class="icon-trash"></i></td>');
-				$("#actions-table").append(newtr);
-				updateCarets($("#model-container"));
+						'><i class="icon-trash"></i></td>');
+					$("#actions-table").append(newtr);
+					updateCarets($("#model-container"));
+				}
 			}
+			displayMessages(data.messages);
 			$("#action-container").modal('hide');
 		}, 'json');
 	});

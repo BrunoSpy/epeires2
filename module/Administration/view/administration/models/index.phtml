@@ -6,6 +6,7 @@
 		<th>id</th>
 		<th data-sort="string">Nom</th>
 		<th data-sort="string">Catégorie</th>
+		<th data-sort="string">Organisation</th>
 		<th>Impact</th>
 		<th>Fiche réflexe</th>
 		<th>Ponctuel</th>
@@ -22,6 +23,7 @@
 		echo '<td>'.$model->getId().'</td>';
 		echo '<td>'.$model->getName().'</td>';
 		echo '<td>'.$model->getCategory()->getName().'</td>';
+		echo '<td>'.$model->getOrganisation()->getName().'</td>';
 		echo '<td>'.$this->impact($model->getImpact()).'</td>';
 		echo '<td>'.$this->actions[$model->getId()].'</td>';
 		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';

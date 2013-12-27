@@ -76,10 +76,16 @@
 		
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
+		echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
+		
 		$html = $this->controlGroup(
 				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
 				$this->formSelect($this->form->get('impact')));
-		
+		if($this->form->has('zonefilters')){
+			$html .= $this->controlGroup(
+					$this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formSelect($this->form->get('zonefilters')));
+		}
 		$html .= "<div id=\"custom_fields\">";
 		if($this->event || $this->model){
 			foreach ($this->form->get('custom_fields')->getElements() as $element){

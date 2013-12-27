@@ -61,11 +61,11 @@
     					</ul>
     				</li>
     				<?php if($this->zoneform) :?>
-    				<li><i class="icon-filter"></i><b> Zone : </b>
-    					<?php 
+    				<li><i class="icon-filter"></i><b> Zone : </b></li>
+    				<li><?php 
     						$form = $this->zoneform;
     						$form->setAttributes(array('action' => $this->url('application', array('controller'=>'events', 'action'=>'savezone')),
-												'class'=>'form-inline navbar-form'));
+												'class'=>''));
     						$form->prepare();
     						echo $this->form()->openTag($form);
     						echo $this->formSelect($form->get('zone'));

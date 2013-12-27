@@ -6,6 +6,7 @@ use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\FactoryInterface;
 use Application\Entity\Event;
 use ZfcRbac\Service\Rbac;
+use Application\Entity\AbstractEvent;
 
 class EventService implements ServiceManagerAwareInterface{
 	/**
@@ -56,8 +57,8 @@ class EventService implements ServiceManagerAwareInterface{
 	 * If no title field is set, returns the event's id
 	 * @param $event
 	 */
-	public function getName($event){	
-
+	public function getName(AbstractEvent $event){	
+		
 		if($event instanceof \Application\Entity\PredefinedEvent){
 			if($event->getParent() == null && $event->getName()){
 				return $event->getName();

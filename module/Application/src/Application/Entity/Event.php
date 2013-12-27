@@ -177,7 +177,7 @@ class Event extends AbstractEvent{
 	
 	
 	public function getArrayCopy() {
-		$object_vars = get_object_vars($this);
+		$object_vars = array_merge(get_object_vars($this), parent::getArrayCopy());
 		$object_vars['status'] = ($this->status ? $this->status->getId() : null);
 		$object_vars['author'] = ($this->author ? $this->author->getId() : null);
 		return $object_vars;

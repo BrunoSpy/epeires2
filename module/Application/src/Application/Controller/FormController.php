@@ -17,6 +17,9 @@ use Zend\Mvc\Controller\AbstractActionController;
 abstract class FormController extends AbstractActionController {
 
 	protected function processFormMessages($messages, &$json = null){
+		if(!isset($json['error'])){
+			$json['error'] = array();
+		}
 		foreach($messages as $key => $message){
 			foreach($message as $mkey => $mvalue){//les messages sont de la forme 'type_message' => 'message'
 				if(is_array($mvalue)){

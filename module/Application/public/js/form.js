@@ -94,6 +94,7 @@ var form = function(url){
 				updateHours();
 			}
 		}
+		updateHourTitle();
 	});
 	
 	$('#event').on('change', '.timepicker-form#end input', function(){
@@ -111,6 +112,7 @@ var form = function(url){
 			$("#dateDeb").val($("#dateFin").val());
 			updateHours();
 		}
+		updateHourTitle();
 	});
 	
 	$('#event').on('click', '.timepicker-form .hour .next', function(event){
@@ -188,6 +190,26 @@ var form = function(url){
 		} 
 	};
 	
+	var updateHourTitle = function(){
+		var start = $("#dateDeb").val();
+		var split = start.split(' ');
+		var daysplit = split[0].split('-');
+		var text = "Horaires : "+daysplit[0]+"/"+daysplit[1]+" "+split[1];
+		var punctual = $("#punctual").is(':checked');
+		if(!punctual){
+			text += " > ";
+			var end = $("#dateFin").val();
+			if(end){
+				var split = end.split(' ');
+				var daysplit = split[0].split('-');
+				text += daysplit[0]+"/"+daysplit[1]+" "+split[1];
+			} else {
+				text += "?";
+			}
+		}
+		$("#Horairesid").html(text);
+	};
+	
 	/************************/
 	
 	//submit form
@@ -256,6 +278,7 @@ var form = function(url){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
 						updateHours();
+						updateHourTitle();
 					}
 			);
 			$("#create-evt").slideDown('fast');
@@ -334,6 +357,9 @@ var form = function(url){
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
 					$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
+					$.each(data.defaultvalues.zonefilters, function(key, value){
+						$("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
+					});
 					$.each(data.customvalues, function(key, value){
 						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
 						if(elt.is("select")){
@@ -456,6 +482,7 @@ var form = function(url){
 		} else {
 			$("#end a").removeClass("disabled");
 		}
+		updateHourTitle();
 	});
 
 	//ajout formulaire fichier

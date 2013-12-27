@@ -211,16 +211,18 @@ class ModelsController extends FormController
     			$this->processFormMessages($form->getMessages());
     		} else {
     			//traitement des erreurs de validation
-    			$this->processFormMessages($form->getMessages());
+    			$pevent = null;
+    			$this->processFormMessages($form->getMessages(),$messages);
     		}
     		
     	}
-    	
-    	$json = array('id' => $pevent->getId(),
-    			'name' => $this->getServiceLocator()->get('EventService')->getName($pevent),
-    			'impactstyle' => $pevent->getImpact()->getStyle(),
-    			'impactname' => $pevent->getImpact()->getName(),
-    			'messages' => $messages);
+    	$json = array('messages' => $messages);
+    	if($pevent){
+    		$json['id'] = $pevent->getId();
+    		$json['name'] = $this->getServiceLocator()->get('EventService')->getName($pevent);
+    		$json['impactstyle'] = $pevent->getImpact()->getStyle();
+    		$json['impactname'] = $pevent->getImpact()->getName();  			
+    	}
     	
     	return new JsonModel($json);
     }
@@ -243,7 +245,7 @@ class ModelsController extends FormController
     		$viewmodel->setVariables(array('childs' => $childs));
     	}
     	
-    	$getform = $this->getForm($id, $parentid, $catid);
+    	$getform = $this->getForm($id, $parentid, $catid, $action);
     	$form = $getform['form'];
     	
     	$form->add(array(
@@ -260,7 +262,7 @@ class ModelsController extends FormController
     	
     }
     
-    private function getForm($id = null, $parentid = null, $catid = null){
+    private function getForm($id = null, $parentid = null, $catid = null, $action = false){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$pevent = new PredefinedEvent();
     	$builder = new AnnotationBuilder();
@@ -274,6 +276,8 @@ class ModelsController extends FormController
     	
     	$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')->getRootsAsArray());
 
+    	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
+    	
     	if($catid){
     		//set category
     		$form->get('category')->setAttribute('value', $catid);
@@ -288,6 +292,8 @@ class ModelsController extends FormController
     	if($id){//modification d'un evt
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
+    			$form->get('zonefilters')->setValueOptions(
+    					$objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray($pevent->getOrganisation()));
     			$form->bind($pevent);
     			//disable category modification
     			$form->get('category')->setAttribute('disabled', 'disabled');
@@ -311,6 +317,12 @@ class ModelsController extends FormController
     	
     	if($parentid){//action reflexe
     		$form->get('parent')->setAttribute('value', $parentid);
+    		$parent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($parentid);
+    		if($parent){
+    			$form->get('organisation')->setAttribute('value', $parent->getOrganisation()->getId());
+    		} else {
+    			//TODO throw exception
+    		}
     	}
     	
     	return array('form'=>$form, 'pevent'=>$pevent);

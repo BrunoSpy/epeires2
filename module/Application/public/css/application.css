@@ -61,7 +61,7 @@ body{
 }
 
 .header {
-	height:2em;
+/*	height:2em;*/
 	width:100%;
 	background-color:#aaa;
 	padding-top:5px;
@@ -69,18 +69,26 @@ body{
 }
 
 .header form{
-	float: right;
+	margin-bottom: 0px;
 }
 
 .header select{
-	margin-top: -4px;
-	margin-left: 5px;
+	display: inline-block;
+	vertical-align: baseline;
+	margin-bottom: 5px;
 }
+
+.header ul{
+	margin-bottom: 0px;
+}
+
+
 
 #clock {
 	margin-right:0.5em;
 	font-weight: bold;
 	font-size: 1.4em;
+	margin-top: 0.3em;
 }
 
 /* Barre de nav */ 

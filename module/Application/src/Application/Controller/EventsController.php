@@ -59,8 +59,8 @@ class EventsController extends FormController {
     		
     		$session = new Container('zone');
     		$zonesession = $session->zoneshortname;
-    		  		
-    		if($zonesession){
+  		
+    		if($zonesession != null){ //warning: "all" == 0
     			$values = $form->get('zone')->getValueOptions();
     			if(array_key_exists($zonesession, $values)){
     				$form->get('zone')->setValue($zonesession);
@@ -515,19 +515,24 @@ class EventsController extends FormController {
     	
     	$pevent = null;
     	
+    	$zonefilters = null;
+    	
     	if($id || $model){
     		$cat = null;
-    		if($id && $model){
+    		if($id && $model){ //copie d'un modèle
     			$pevent = $em->getRepository('Application\Entity\PredefinedEvent')->find($id);
     			if($pevent){
     				$cat = $pevent->getCategory();
     				$viewmodel->setVariable('model', $pevent);
+    				$zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($pevent->getOrganisation());
     			}
-    		} else if($id) {
+    		} else if($id) { //modification d'un evt
     			$event = $em->getRepository('Application\Entity\Event')->find($id);
     			if($event){
     				$cat = $event->getCategory();
-    			}
+    				$zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($event->getOrganisation());
+       			}
+    			
     		}    		
     		if($cat && $cat->getParent()){
     			$form->get('categories')->get('subcategories')->setValueOptions(
@@ -540,8 +545,24 @@ class EventsController extends FormController {
     		//custom fields
     		$form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
     	}
+    	if(!$zonefilters) { //si aucun filtre => cas d'un nouvel evt
+    		if($this->zfcUserAuthentication()->hasIdentity()){
+    			$org = $this->zfcUserAuthentication()->getIdentity()->getOrganisation();
+    			$form->get('organisation')->setValue($org->getId());
+    			$zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($org);
+    		} else {
+    			//aucun utilisateur connecté ??? --> possible si deconnexion déans l'intervalle
+    			//throw something !!
+    		}
+    	}
     	
-    	if($id && $pevent){
+    	if(!$zonefilters || count($zonefilters) == 0){//pas de zone => cacher l'élément
+    		$form->remove('zonefilters');
+    	} else {
+    		$form->get('zonefilters')->setValueOptions($zonefilters);
+    	}
+    	
+    	if($id && $pevent){ //copie d'un modèle
     		//prefill customfields with predefined values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
@@ -551,7 +572,7 @@ class EventsController extends FormController {
     		}
     	}
     	
-    	if($id  && $event){ //modification, prefill form
+    	if($id && $event){ //modification d'un evt, prefill form
     		
     		//custom fields values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
@@ -574,7 +595,7 @@ class EventsController extends FormController {
     			$viewmodel->setVariables(array('event'=>$event));
     		}
     	}
-    	
+    	    	
     	$viewmodel->setVariables(array('form' => $form));
     	return $viewmodel;
     	 
@@ -597,11 +618,8 @@ class EventsController extends FormController {
     	
     	$form->get('impact')
     		->setValueOptions($em->getRepository('Application\Entity\Impact')->getAllAsArray());
-
-    	//replace default category element
-    	$form->remove('category');
-    	$category = new Element\Hidden('category');
-    	$form->add($category);
+    	
+    	$form->get('organisation')->setValueOptions($em->getRepository('Application\Entity\Organisation')->getAllAsArray());
     	
     	//add default fieldsets
     	$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
@@ -620,6 +638,11 @@ class EventsController extends FormController {
     	$form->bind($event);
     	$form->setData($event->getArrayCopy());
     	
+    	//replace default category element
+    	$form->remove('category');
+    	$category = new Element\Hidden('category');
+    	$form->add($category);
+    	
     	$form->add(array(
     			'name' => 'submit',
     			'attributes' => array(
@@ -628,7 +651,7 @@ class EventsController extends FormController {
     					'class' => 'btn btn-primary',
     			),
     	));
-    	
+    	    	
     	return $form;
     }
     
@@ -646,6 +669,10 @@ class EventsController extends FormController {
     	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
 		
     	$defaultvalues['impact'] = $predefinedEvt->getImpact()->getId();
+    	
+    	foreach ($predefinedEvt->getZonefilters() as $filter){
+    		$defaultvalues['zonefilters'][] = $filter->getId();
+    	}
     	
     	$json['defaultvalues'] = $defaultvalues;
     	
