@@ -104,7 +104,7 @@ class EventsController extends FormController {
     		$user = $this->zfcUserAuthentication()->getIdentity();
     		$values[$user->getOrganisation()->getShortname()] = $user->getOrganisation()->getName();
     		foreach ($user->getOrganisation()->getZones() as $zone){
-    			$values[$zone->getShortname()] = $zone->getName();
+    			$values[$zone->getShortname()] = " > ".$zone->getName();
     		}
     	}
     	$zoneElement->setValueOptions($values);
@@ -748,17 +748,63 @@ class EventsController extends FormController {
     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
-    	$criteria = Criteria::create();
+    	$qb = $objectManager->createQueryBuilder();
+    	$qb->select(array('e', 'f'))
+    	->from('Application\Entity\Event', 'e')
+    	->innerJoin('e.zonefilters', 'f');
+    	
     	if($lastmodified){
-    		$criteria->andWhere(Criteria::expr()->gte('last_modified_on', $lastmodified));
+    		$qb->andWhere($qb->expr()->gte('last_modified_on', $lastmodified));
     	} else {
     		//every open events and all events of the last 3 days
     		$now = new \DateTime('NOW');
-    		$criteria->andWhere(Criteria::expr()->gte('startdate', $now->sub(new \DateInterval('P3D'))));
-    		$criteria->orWhere(Criteria::expr()->in('status', array(1,2)));
+    		$qb->andWhere($qb->expr()->orX(
+    				$qb->expr()->gte('e.startdate', '?1'),
+    				$qb->expr()->in('e.status', '?2')
+    		));
     	}
 
-    	$events = $objectManager->getRepository('Application\Entity\Event')->matching($criteria);
+    	//filtre par zone
+    	$session = new Container('zone');
+    	$zonesession = $session->zoneshortname;
+    	if($this->zfcUserAuthentication()->hasIdentity()){
+    		//on filtre soit par la valeur en session soit par l'organisation de l'utilisateur
+    		//TODO gérer les evts partagés
+    		if($zonesession != null){ //application d'un filtre géographique
+    			if($zonesession != '0'){
+    				//la variable de session peut contenir soit une orga soit une zone
+    				$orga = $objectManager->getRepository('Application\Entity\Organisation')->findOneBy(array('shortname'=>$zonesession));
+    				if($orga){
+    					$qb->andWhere($qb->expr()->eq('e.organisation', $orga->getId()));
+    				} else {
+    					$zone = $objectManager->getRepository('Application\Entity\QualificationZone')->findOneBy(array('shortname'=>$zonesession));
+    					if($zone){
+    						$qb->andWhere($qb->expr()->andX(
+    							$qb->expr()->eq('e.organisation', $zone->getOrganisation()->getId()),
+    							$qb->expr()->eq('f', $zone->getId())
+    						));
+    					} else {
+    						//throw error
+    					}
+    				}
+    			} else {
+    				//tous les evts de l'org de l'utilisateur connecté
+    				$orga = $this->zfcUserAuthentication()->getIdentity()->getOrganisation();
+    				$qb->andWhere($qb->expr()->eq('e.organisation', $orga->getId()));
+    			}
+    		} else {
+    			//tous les evts de l'org de l'utilisateur connecté
+    			$orga = $this->zfcUserAuthentication()->getIdentity()->getOrganisation();
+    			$qb->andWhere($qb->expr()->eq('e.organisation', $orga->getId()));
+    		}
+    	} else {
+    		//aucun filtre autre que les rôles
+    	}
+    	
+    	$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
+    							2 => array(1,2)));
+    	
+    	$events = $qb->getQuery()->getResult();
     	
     	$readableEvents = array();
     	

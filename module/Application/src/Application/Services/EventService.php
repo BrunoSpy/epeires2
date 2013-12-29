@@ -117,7 +117,6 @@ class EventService implements ServiceManagerAwareInterface{
 								$entry['changes'] = array();
 								$history[$logentry->getLoggedAt()->format(DATE_RFC2822)] = $entry;
 							}
-							error_log((is_object($value) ? get_class($value): gettype($value)));
 							$historyentry = array();
 							$historyentry['fieldname'] = $key;
 							if($value instanceof \DateTime ){
