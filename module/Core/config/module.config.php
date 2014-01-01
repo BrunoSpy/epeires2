@@ -60,12 +60,9 @@ return array(
 				 			'role_name_property' => 'name',
 				 		),
 				 ),
-//				'permission_providers' => array(
-//						'ZfcRbac\Permission\ObjectRepositoryPermissionProvider' => array(
-//								'object_manager' => 'doctrine.entitymanager.orm_default',
-//								'class_name'     => 'Core\Entity\Permission',
-//						),
-//				),
+				'unauthorized_strategy' => array(
+					'template' => 'error/custom-403'
+				),
 		),
 		'zfcuser' => array(
 				// telling ZfcUser to use our own class

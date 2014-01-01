@@ -61,7 +61,7 @@ body{
 }
 
 .header {
-/*	height:2em;*/
+	min-height:2em;
 	width:100%;
 	background-color:#aaa;
 	padding-top:5px;
