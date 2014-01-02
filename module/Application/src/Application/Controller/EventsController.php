@@ -746,15 +746,39 @@ class EventsController extends FormController {
     	
     	$lastmodified = $this->params()->fromQuery('lastmodified', null);
     	
+    	$day = $this->params()->fromQuery('day', null);
+    	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$qb = $objectManager->createQueryBuilder();
     	$qb->select(array('e', 'f'))
     	->from('Application\Entity\Event', 'e')
-    	->innerJoin('e.zonefilters', 'f');
+    	->leftJoin('e.zonefilters', 'f');
     	
     	if($lastmodified){
     		$qb->andWhere($qb->expr()->gte('last_modified_on', $lastmodified));
+    	} else if($day) {
+    		$daystart = new \DateTime($day);
+    		$daystart->setTime(0, 0, 0);
+    		$dayend = new \DateTime($day);
+    		$dayend->setTime(23, 59, 59);
+    		$daystart = $daystart->format("Y-m-d H:i:s");
+    		$dayend = $dayend->format("Y-m-d H:i:s");
+    		//tous les évènements ayant une intersection non nulle avec $day
+    		$qb->andWhere($qb->expr()->orX(
+    				$qb->expr()->andX(
+    					$qb->expr()->lt('e.startdate', '?1'),
+    					$qb->expr()->orX(
+    						$qb->expr()->isNull('e.enddate'),
+    						$qb->expr()->gte('e.enddate', '?1')
+    					)
+    				),
+    				$qb->expr()->andX(
+    					$qb->expr()->gte('e.startdate', '?1'),
+    					$qb->expr()->lte('e.startdate', '?2')
+    				)
+    		));
+    		$qb->setParameters(array(1 => $daystart, 2 => $dayend));    		
     	} else {
     		//every open events and all events of the last 3 days
     		$now = new \DateTime('NOW');
@@ -762,8 +786,11 @@ class EventsController extends FormController {
     				$qb->expr()->gte('e.startdate', '?1'),
     				$qb->expr()->in('e.status', '?2')
     		));
+    		$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
+    				2 => array(1,2)));
     	}
 
+    
     	//filtre par zone
     	$session = new Container('zone');
     	$zonesession = $session->zoneshortname;
@@ -800,9 +827,6 @@ class EventsController extends FormController {
     	} else {
     		//aucun filtre autre que les rôles
     	}
-    	
-    	$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
-    							2 => array(1,2)));
     	
     	$events = $qb->getQuery()->getResult();
     	
