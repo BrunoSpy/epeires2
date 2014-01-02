@@ -66,7 +66,7 @@ return array(
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_map' => array(
-            'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
+        	'admin/layout'			  => __DIR__ . '/../view/layout/adminlayout.phtml',
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
         ),
@@ -83,11 +83,6 @@ return array(
     		'paths' => array(
     			__DIR__ . '/../public',
     		),
-    	),
-    ),
-    'permissions' => array(
-    	'Centre' => array(
-    		'centre.modify' => 'Modification',
     	),
     ),
     'zfc_rbac' => array(

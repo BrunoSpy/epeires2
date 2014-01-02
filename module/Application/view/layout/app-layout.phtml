@@ -37,29 +37,7 @@
     <body>
     	<div class="header">
     		<ul class="inline">
-    				<li class="dropdown">
-    					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-    					<i class="icon-user"></i>
-    					<?php if($this->zfcUserIdentity()) {
-    							echo $this->zfcUserIdentity()->getUserName();
-    					} else {
-								echo "Non connecté";
-						}		
-    					?>
-    					 	<b class="caret"></b>
-    					</a>
-    					<ul class="dropdown-menu">
-    					<?php if($this->zfcUserIdentity()) {
-    						if($this->zfcUserIdentity()->hasRole('admin')){
-								echo "<li><a href=\"".$this->url('administration', array('controller'=>'home', 'action'=>'index'))."\">Administration</a></li>";
-							}
-    						echo "<li><a href=\"".$this->url('zfcuser/logout')."?redirect=".$this->url('application')."\">Se déconnecter</a></li>";
-    					} else {
-    						echo "<li><a href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
-    					}
-    					?>
-    					</ul>
-    				</li>
+    				<?php echo $this->userMenu(); ?>
     				<?php if($this->zoneform) :?>
     				<li><i class="icon-filter"></i><b> Zone : </b></li>
     				<li><?php 
@@ -160,7 +138,7 @@
         
         <?php 
 		if(!$this->zfcuserIdentity()){
-				echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('application'))));
+				echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->serverUrl(true))));
 		} ?>
         
         <?php $this->inlineScript()->captureStart();?>

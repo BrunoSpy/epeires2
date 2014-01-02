@@ -11,6 +11,7 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
+use Zend\ModuleManager\ModuleManager;
 
 class Module
 {
@@ -100,6 +101,19 @@ class Module
                 ),
             ),
         );
+    }
+    
+    public function init(ModuleManager $moduleManager) {
+    	$sharedEvents = $moduleManager->getEventManager()->getSharedManager();
+    	$sharedEvents->attach(
+    			__NAMESPACE__,
+    			'dispatch',
+    			function($e) {
+    				$controller = $e->getTarget();
+    				$controller->layout('layout/app-layout');
+    			},
+    			100
+    	);
     }
     
 }

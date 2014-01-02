@@ -25,6 +25,7 @@ class Module implements
 		$t->getEventManager()->attach(
 				$t->getServiceManager()->get('ZfcRbac\View\Strategy\UnauthorizedStrategy')
 		);
+
 	}
 	
     public function getConfig()

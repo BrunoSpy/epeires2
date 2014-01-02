@@ -80,6 +80,9 @@ return array(
 				'display_not_found_reason' => true,
 				'display_exceptions'       => true,
 				'doctype'                  => 'HTML5',
+				'template_map' => array(
+						'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
+				),
 				'template_path_stack' => array(
 						__DIR__ . '/../view',
 				),
@@ -87,6 +90,9 @@ return array(
 		'view_helpers' => array(
 				'invokables' => array(
 						'modalwindow' => 'Core\View\Helper\ModalWindow',
+				),
+				'factories' => array(
+						'userMenu' => 'Core\Factory\UserMenuFactory',
 				),
 		),
 		'session' => array(
