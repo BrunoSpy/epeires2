@@ -60,7 +60,12 @@ class File {
 	 */
 	protected $events;
 	
-	
+	/**
+	 * 
+	 * @param unknown $fileinfo
+	 * @param unknown $already_exist
+	 * @throws Exception
+	 */
 	public function __construct($fileinfo, $already_exist){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->setSize($fileinfo['size']);
@@ -68,10 +73,18 @@ class File {
 		$filter = new RenameUpload("./public/files/");
 		$filter->setUseUploadName(true);
 		$filter->setRandomize($already_exist);
-		$targetname = $filter->filter($fileinfo);
+		try {
+			$targetname = $filter->filter($fileinfo);
+		} catch (\Exception $e) {
+			throw $e;
+		}
 		$name = substr($targetname['tmp_name'], 15);
 		$this->setFilename($name);
 		$this->setPath('/files/'.$name);
+	}
+	
+	public function getId(){
+		return $this->id;
 	}
 	
 	public function getEvents(){

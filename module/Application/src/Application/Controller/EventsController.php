@@ -31,6 +31,7 @@ use Zend\Form\Element\Select;
 use Zend\Form\Form;
 use Zend\Session\Container;
 use Zend\Form\Element;
+use ZfcRbac\Exception\UnauthorizedException;
 
 class EventsController extends FormController {
 	
@@ -366,21 +367,24 @@ class EventsController extends FormController {
     					//fichiers
     					if(isset($post['fichiers']) && is_array($post['fichiers'])){
     						foreach ($post['fichiers'] as $key => $f){
-    								
+    							
     							$count = substr($key, strlen($key) -1);
-    								
     							if(!empty($f['file'.$count]['name'])){
-    									
-    								$file = new \Application\Entity\File($f['file'.$count],
-    										$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
-    								if(isset($f['name'.$count]) && !empty($f['name'.$count])){
-    									$file->setName($f['name'.$count]);
+    								try {
+    									$file = new \Application\Entity\File($f['file'.$count],
+    									$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
+    									if(isset($f['name'.$count]) && !empty($f['name'.$count])){
+	    									$file->setName($f['name'.$count]);
+    									}
+    									if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
+    										$file->setReference($f['reference'.$count]);
+    									}
+    									$file->addEvent($event);
+    									$objectManager->persist($file);
+    								} catch (\Exception $e) {
+    									$messages['error'][] = "Impossible d'ajouter le fichier ".$f['file'.$count]['name']." : ".$e->getMessage();
     								}
-    								if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
-    									$file->setReference($f['reference'.$count]);
-    								}
-    								$file->addEvent($event);
-    								$objectManager->persist($file);
+
     							}
     						}
     					}
@@ -552,7 +556,7 @@ class EventsController extends FormController {
     			$zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($org);
     		} else {
     			//aucun utilisateur connecté ??? --> possible si deconnexion déans l'intervalle
-    			//throw something !!
+    			throw new UnauthorizedException('Aucun utilisateur connecté.');
     		}
     	}
     	
@@ -720,6 +724,27 @@ class EventsController extends FormController {
     	$json['open'] = $event->getStatus()->isOpen();
     	    	
     	return new JsonModel($json);
+    }
+    
+    public function deletefileAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	 
+    	$fileid = $this->params()->fromQuery('id', null);
+    	
+    	$messages = array();
+    	
+    	if($fileid){
+    		$file = $objectManager->getRepository('Application\Entity\File')->find($fileid);
+    		if($file){
+    			$objectManager->remove($file);
+    			$objectManager->flush();
+    		} else {
+    			$messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
+    		}
+    	} else {
+    		$messages['error'][] = "Impossible de supprimer le fichier : aucun paramètre trouvé.";
+    	}
+    	return new JsonModel($messages);
     }
     
     /**

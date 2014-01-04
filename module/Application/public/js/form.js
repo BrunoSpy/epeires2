@@ -494,6 +494,22 @@ var form = function(url){
 		});
 	});
 	
+	$("#event").on('click', '.delete-file', function(){
+		$("a#delete-file-href").attr('href', $(this).data("href"));
+		$("#file_name").html($(this).data('name'));
+		$("#delete-file-href").data('id', $(this).data('id'));
+	});
+	
+	$(".content").on('click', "#delete-file-href", function(event){
+		event.preventDefault();
+		var me = $(this);
+		$('#confirm-delete-file').modal('hide');
+		$.post($("#delete-file-href").attr('href'), function(data){
+			$("#file-table").find('tr#file_'+me.data('id')).remove();
+			displayMessages(data);
+		}, 'json');
+	});
+	
 	$("#event").on('click', ".removefile", function(){
 		var count = $(this).data('count');
 		$("#filefield_"+count).remove();		

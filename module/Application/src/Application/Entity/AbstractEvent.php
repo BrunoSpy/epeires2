@@ -54,7 +54,7 @@ class AbstractEvent {
  	 * @ORM\ManyToOne(targetEntity="Impact")
   	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(true)
-	 * @Annotation\Options({"label":"Impact :", "empty_option":"Choisir l'impact"})
+	 * @Annotation\Options({"label":"Impact :"})
  	 * @Gedmo\Versioned
  	 */
  	protected $impact;

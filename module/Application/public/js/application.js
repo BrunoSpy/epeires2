@@ -18,23 +18,21 @@ function updateClock ( )
  };
  
 var displayMessages = function(messages){
-	$.each(messages, function(key, value){
-		if(messages['success']){
-			$.each(messages.success, function(key, value){
-				var n = noty({text:value, 
-					type:'success',
-					layout: 'bottomRight',});
-			});
-		}
-		if(messages['error']){
-			$.each(messages.error, function(key, value){
-				var n = noty({text:value, 
-					type:'error',
-					layout: 'bottomRight',});
-			});
-		}
-	});
-}
+	if(messages['success']){
+		$.each(messages.success, function(key, value){
+			var n = noty({text:value, 
+				type:'success',
+				layout: 'bottomRight',});
+		});
+	}
+	if(messages['error']){
+		$.each(messages.error, function(key, value){
+			var n = noty({text:value, 
+				type:'error',
+				layout: 'bottomRight',});
+		});
+	}
+};
  
 $(document).ready(function(){
 

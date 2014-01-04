@@ -40,5 +40,6 @@ return array(
     	'module_map_cache_key' => 'module_map',
     	'cache_dir' => 'data/cache/',
     		
-        )
+        ),
+		
     );
