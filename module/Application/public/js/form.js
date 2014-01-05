@@ -238,7 +238,9 @@ var form = function(url){
 				var id = $("#Event").find('input[name="id"]').val();
 				if(id>0){
 					//modification
-					timeline.modify(data.events, 0);
+					if(data['events']){
+						timeline.modify(data.events, 0);
+					}
 					displayMessages(data.messages);
 				} else {
 					//new event

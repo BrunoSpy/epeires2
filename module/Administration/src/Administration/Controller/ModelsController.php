@@ -364,4 +364,16 @@ class ModelsController extends FormController
      	
      }
      
+     public function getzonefiltersAction(){
+     	$orgid = $this->params()->fromQuery('id', null);
+     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+     	$org = $objectManager->getRepository('Application\Entity\Organisation')->find($orgid);
+     	$zonefilters = null;
+     	if($org) {
+     		$zonefilters = $objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray($org);
+     	} else {
+     		//TODO
+     	}
+     	return new JsonModel($zonefilters);
+     }
 }

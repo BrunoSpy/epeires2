@@ -121,8 +121,10 @@ return array(
     
     'permissions' => array(
     	'Evènements' => array(
-    		'events.write' => 'Ecriture',
     		'events.create' => 'Création',
+    		'events.write' => 'Modification',
+    		'events.status' => 'Modification statut',
+    		'events.mod-files' => 'Ajouter/Modifier fichiers',
     	),
     	'Fréquences' => array(
     		'frequencies.read' => 'Lecture',

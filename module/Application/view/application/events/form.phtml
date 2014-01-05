@@ -210,7 +210,11 @@
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">
 			<?php 
-				echo $this->formSelect($this->form->get('status')); 
+			if($this->isGranted('events.status')) {
+				echo $this->formSelect($this->form->get('status'));
+			} else {
+				echo $this->formSelect($this->form->get('status')->setAttribute('disabled', 'disabled'));
+			} 
 			?>
 		</div>
 	</div>

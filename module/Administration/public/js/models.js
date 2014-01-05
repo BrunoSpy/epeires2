@@ -23,9 +23,13 @@ var models = function(url){
 		$("#model-title").html("Nouveau modèle");
 		var catid = $(this).data('catid');
 		if(typeof catid === 'undefined'){
-			$("#model-form").load(url+'/models/form');	
+			$("#model-form").load(url+'/models/form', function(){
+				fillZoneFilters($("#model-container select[name=organisation]").val());
+			});	
 		} else {
-			$("#model-form").load(url+'/models/form?catid='+catid);
+			$("#model-form").load(url+'/models/form?catid='+catid, function(){
+				fillZoneFilters($("#model-container select[name=organisation]").val());
+			});
 		}
 	});
 	
@@ -59,7 +63,9 @@ var models = function(url){
 	});
 	$(document).on('click',".mod-model", function(){
 		$("#model-title").html("Modification de <em>"+$(this).data('name')+"</em>");
-		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'));	
+		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'), function(){
+			fillZoneFilters($("#model-container select[name=organisation]").val());
+		});	
 	});
 		
 	$("#model-container").on('click', 'input[type=submit]', function(event){
@@ -193,4 +199,22 @@ var models = function(url){
 	});
 	
 
+	/* Remplissage du champ visi en fonction de l'organisation */
+	
+	$("#model-container").on('change', 'select[name=organisation]', function(){
+		fillZoneFilters($(this).val());
+	});
+	
+	var fillZoneFilters = function(orgid){
+		var select = $("#model-container select[name=zonefilters\\[\\]]");
+		var options = select.prop('options');
+		$('option', select).remove();
+		$.post(url+'/models/getzonefilters?id='+orgid, function(data){
+			$.each(data, function(key, value){
+				options[options.length] = new Option(value, key);
+			});
+		}, 'json');
+	};
+	
+	
 };

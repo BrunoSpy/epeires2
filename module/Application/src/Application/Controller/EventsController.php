@@ -264,13 +264,21 @@ class EventsController extends FormController {
     				if($event){
     					if($this->isGranted('events.write') || $event->getAuthor()->getId() === $this->zfcUserAuthentication()->getIdentity()->getId()){
 							$credentials = true;
+							//si utilisateur n'a pas les droits events.status, le champ est désactivé et aucune valeur n'est envoyée
+							if(!isset($post['status'])){
+								$post['status'] = $event->getStatus()->getId();
+							}			
     					}
-    				}
+    				}    				
     			} else {
     				//création
     				if($this->isGranted('events.create')){
     					$event = new Event();
     					$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+    					//si utilisateur n'a pas les droits events.status, le champ est désactivé et aucune valeur n'est envoyée
+    					if(!isset($post['status'])){
+    						$post['status'] = 1;
+    					}
     					$credentials = true;
     				}
     			}
@@ -576,6 +584,15 @@ class EventsController extends FormController {
     		}
     	}
     	
+    	if(!$id || ($id && $copy)){//nouvel évènement
+    		if($this->isGranted('events.status')){
+    			//utilisateur opérationnel => statut confirmé dès le départ
+    			$form->get('status')->setAttribute('value', 2);
+    		} else {
+    			$form->get('status')->setAttribute('value', 1);
+    		}
+    	}
+    	
     	if($id && $event){ //modification d'un evt, prefill form
     		
     		//custom fields values
@@ -593,7 +610,6 @@ class EventsController extends FormController {
     			$form->get('id')->setValue('');
     			$form->get('startdate')->setValue('');
     			$form->get('enddate')->setValue('');
-    			$form->get('status')->setAttribute('value', 1);
     			$viewmodel->setVariables(array('event'=>$event, 'copy'=>$id));
     		} else {
     			$viewmodel->setVariables(array('event'=>$event));
