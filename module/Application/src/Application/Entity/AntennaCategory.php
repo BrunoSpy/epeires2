@@ -42,7 +42,7 @@ class AntennaCategory extends Category{
 		return $this->antennafield;
 	}
 	
-	public function setAntennafield($radarfield){
+	public function setAntennafield($antennafield){
 		$this->antennafield = $antennafield;
 	}
 	
