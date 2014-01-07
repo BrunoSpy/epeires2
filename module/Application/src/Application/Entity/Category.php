@@ -19,7 +19,7 @@ use Doctrine\Common\Collections\Collection;
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"generic" = "Category", "radar" = "RadarCategory"})
+ * @ORM\DiscriminatorMap({"generic" = "Category", "radar" = "RadarCategory", "antenna" = "AntennaCategory"})
  **/
 class Category {
 	/**
@@ -121,6 +121,7 @@ class Category {
 		$type = array();
 		$type['generic'] = "Générique";
 		$type['radar'] = "Radar";
+		$type['antenna'] = "Antenne";
 		return $type;
 	}
 	

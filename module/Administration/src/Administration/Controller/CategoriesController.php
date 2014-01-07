@@ -16,6 +16,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 use Zend\Form\Element\Select;
 use Application\Entity\RadarCategory;
+use Application\Entity\AntennaCategory;
 
 class CategoriesController extends FormController{
     
@@ -101,6 +102,8 @@ class CategoriesController extends FormController{
     		if($category){
     			if($category instanceof RadarCategory){
     				$form->get('type')->setValue('radar');
+    			} else if($category instanceof AntennaCategory){
+    				$form->get('type')->setValue('antenna');
     			}
     			
     			$form->get('type')->setAttribute('disabled', true);
@@ -145,6 +148,8 @@ class CategoriesController extends FormController{
 			} else {
 				if($post['type'] == 'radar'){
 					$category = $this->getServiceLocator()->get('categoryfactory')->createRadarCategory();
+				} else if($post['type'] == 'antenna') {
+					$category = $this->getServiceLocator()->get('categoryfactory')->createAntennaCategory();
 				} else {
 					$category = new Category();
 					$fieldname = new CustomField();
