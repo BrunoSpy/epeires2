@@ -20,8 +20,16 @@ var centre = function(url){
 	$("#organisation-container").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/saveorganisation', $("#Organisation").serialize(), function(data){
-			location.reload();
-		}, 'json');
+			if(data['messages']){
+				displayMessages(data.messages);
+			}
+			if(data['success']){
+				location.reload();
+			}
+		}, 'json').fail(function(){
+			var messages = '({error: ["Impossible d\'enregistrer l\'organisation."]})';
+			displayMessages(eval(messages));
+		});
 	});
 	
 	$(".delete-organisation").on('click', function(event){
@@ -36,6 +44,9 @@ var centre = function(url){
 		$("#confirm-delete-organisation").modal('hide');
 		$.post(me.attr('href'), function(){
 			location.reload();
+		}).fail(function(){
+			var messages = '({error: ["Impossible de supprimer l\'organisation."]})';
+			displayMessages(eval(messages));
 		});
 	});
 	
@@ -56,7 +67,10 @@ var centre = function(url){
 		event.preventDefault();
 		$.post(url+'/centre/savequalif', $("#QualificationZone").serialize(), function(data){
 			location.reload();
-		}, 'json');
+		}, 'json').fail(function(){
+			var messages = '({error: ["Impossible d\'enregistrer la zone de qualification."]})';
+			displayMessages(eval(messages));
+		});
 	});
 	
 	$(".delete-qualif").on('click', function(event){
@@ -71,6 +85,9 @@ var centre = function(url){
 		$("#confirm-delete-qualif").modal('hide');
 		$.post(me.attr('href'), function(){
 			location.reload();
+		}).fail(function(){
+			var messages = '({error: ["Impossible de supprimer la zone de qualification."]})';
+			displayMessages(eval(messages));
 		});
 	});
 	

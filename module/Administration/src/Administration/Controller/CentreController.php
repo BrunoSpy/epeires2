@@ -83,6 +83,8 @@ class CentreController extends FormController
     
     public function saveorganisationAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$messages = array();
+    	$json = array();
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
@@ -95,16 +97,22 @@ class CentreController extends FormController
     		
     		if($form->isValid()){
     			$objectManager->persist($organisation);	
-    			$objectManager->flush();
-    			$this->flashMessenger()->addSuccessMessage("Organisation enregistrée.");
+    			try {
+    				$objectManager->flush();
+    				$this->flashMessenger()->addSuccessMessage("Organisation enregistrée.");
+    				$org = array('id' => $organisation->getId(), 'name' => $organisation->getName());
+    				$json['org'] = $org;
+    				$json['success'] = true;
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    			
     		} else {
     			$this->processFormMessages($form->getMessages());
     			$this->flashMessenger()->addErrorMessage("Impossible d\'enregistrer l'organisation.");
     		}
     	}
-    	 
-    	$json = array('id' => $organisation->getId(), 'name' => $organisation->getName());
-    	 
+       	$json['messages'] = $messages;
     	return new JsonModel($json);
     }
     
