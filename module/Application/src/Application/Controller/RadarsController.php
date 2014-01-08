@@ -12,6 +12,7 @@ use Zend\View\Model\ViewModel;
 use Doctrine\ORM\Query\Expr\Join;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
 
 class RadarsController extends AbstractActionController {
 	
@@ -148,32 +149,43 @@ class RadarsController extends AbstractActionController {
 					if(count($radarevents) > 0){
 						$messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
 					} else {
-						$messages['error'][] = "Création d'un nouvel évènement non implémenté : utilisez la page Evènements.";
-// 						$event = new Event();
-// 						$status = $em->getRepository('Application\Entity\Status')->find('2');
-// 						$impact = $em->getRepository('Application\Entity\Impact')->find('3');
-// 						$event->setStatus($status);
-// 						$event->setStartdate($now);
-// 						$event->setImpact($impact);
-// 						$event->setPunctual(false);
-// 						$radar = $em->getRepository('Application\Entity\Radar')->find($radarid);
-// 						$event->setOrganisation($radar->getOrganisation());
-// 						$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-// 						$categories = $em->getRepository('Application\Entity\RadarCategory')->findAll();
-// 						if($categories){
-// 							$cat = $categories[0];
-							
-// 							$event->setCategory($categories[0]);
-// 							$em->persist($event);
-// 							try {
-// 								$em->flush();
-// 								$messages['success'][] = "Nouvel évènement radar créé.";
-// 							} catch (\Exception $e) {
-// 								$messages['error'][] = $e->getMessage();
-// 							}
-//						} else {
-//							$messages['error'][] = "Impossible de créer un nouvel évènement.";
-//						}
+						//$messages['error'][] = "Création d'un nouvel évènement non implémenté : utilisez la page Evènements.";
+						$event = new Event();
+						$status = $em->getRepository('Application\Entity\Status')->find('2');
+						$impact = $em->getRepository('Application\Entity\Impact')->find('3');
+						$event->setStatus($status);
+						$event->setStartdate($now);
+						$event->setImpact($impact);
+						$event->setPunctual(false);
+						$radar = $em->getRepository('Application\Entity\Radar')->find($radarid);
+						$event->setOrganisation($radar->getOrganisation());
+						$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+						$categories = $em->getRepository('Application\Entity\RadarCategory')->findAll();
+						if($categories){
+							$cat = $categories[0];
+							$radarfieldvalue = new CustomFieldValue();
+							$radarfieldvalue->setCustomField($cat->getRadarfield());
+							$radarfieldvalue->setValue($radarid);
+							$radarfieldvalue->setEvent($event);
+							$event->addCustomFieldValue($radarfieldvalue);
+							$statusvalue = new CustomFieldValue();
+							$statusvalue->setCustomField($cat->getStatefield());
+							$statusvalue->setValue(true);
+							$statusvalue->setEvent($event);
+							$event->addCustomFieldValue($statusvalue);
+							$event->setCategory($categories[0]);
+							$em->persist($radarfieldvalue);
+							$em->persist($statusvalue);
+							$em->persist($event);
+							try {
+								$em->flush();
+								$messages['success'][] = "Nouvel évènement radar créé.";
+							} catch (\Exception $e) {
+								$messages['error'][] = $e->getMessage();
+							}
+						} else {
+							$messages['error'][] = "Impossible de créer un nouvel évènement.";
+						}
 					}
 				}
 			} else {
