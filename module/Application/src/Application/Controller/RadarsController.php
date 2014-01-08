@@ -10,6 +10,8 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\ORM\Query\Expr\Join;
+use Zend\View\Model\JsonModel;
+use Application\Entity\Event;
 
 class RadarsController extends AbstractActionController {
 	
@@ -83,4 +85,104 @@ class RadarsController extends AbstractActionController {
 		return $viewmodel;
 		
 	}
+	
+	public function switchradarAction(){
+		if($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+			$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+			$state = $this->params()->fromQuery('state', null);
+			$radarid = $this->params()->fromQuery('radarid', null);
+			$messages = array();
+			
+			$now = new \DateTime('NOW');
+			$now->setTimezone(new \DateTimeZone("UTC"));
+					
+			if($state != null && $radarid){
+			
+				//évènements radars en cours
+				$qb = $em->createQueryBuilder();
+				$qb->select('e', 'cat')
+				->from('Application\Entity\Event', 'e')
+				->innerJoin('e.category', 'cat')
+				->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
+				->andWhere($qb->expr()->lte('e.startdate', '?1'))
+				->andWhere($qb->expr()->orX(
+					$qb->expr()->isNull('e.enddate'),
+					$qb->expr()->gte('e.enddate', '?2')))
+					->andWhere($qb->expr()->in('e.status', array(2,3)))
+					->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+							2 => $now->format('Y-m-d H:i:s')));
+			
+				$query = $qb->getQuery();
+				$events = $query->getResult();
+				$radarevents = array();
+				foreach ($events as $event){
+					$radarfield = $event->getCategory()->getRadarfield();
+					foreach ($event->getCustomFieldsValues() as $value){
+						if($value->getCustomField()->getId() == $radarfield->getId()){
+							if($value->getValue() == $radarid) {
+								$radarevents[] = $event;
+							}
+						}
+					}
+				}
+			
+				if($state == 'true'){
+					//passage d'un radar à l'état OPE -> recherche de l'evt à fermer
+					if(count($radarevents) == 1) {
+						$event = $radarevents[0];
+						$endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+						$event->setStatus($endstatus);
+						$event->setEnddate($now);
+						$em->persist($event);
+						try {
+							$em->flush();
+							$messages['success'][] = "Evènement radar correctement terminé.";
+						} catch (\Exception $e) {
+							$messages['error'][] = $e->getMessage();
+						}
+					} else {
+						$messages['error'][] = "Impossible de déterminer l'évènement à terminer.";
+					}
+				} else {
+					//passage d'un radar à l'état HS -> on vérifie qu'il n'y a pas d'evt en cours
+					if(count($radarevents) > 0){
+						$messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
+					} else {
+						$messages['error'][] = "Création d'un nouvel évènement non implémenté : utilisez la page Evènements.";
+// 						$event = new Event();
+// 						$status = $em->getRepository('Application\Entity\Status')->find('2');
+// 						$impact = $em->getRepository('Application\Entity\Impact')->find('3');
+// 						$event->setStatus($status);
+// 						$event->setStartdate($now);
+// 						$event->setImpact($impact);
+// 						$event->setPunctual(false);
+// 						$radar = $em->getRepository('Application\Entity\Radar')->find($radarid);
+// 						$event->setOrganisation($radar->getOrganisation());
+// 						$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+// 						$categories = $em->getRepository('Application\Entity\RadarCategory')->findAll();
+// 						if($categories){
+// 							$cat = $categories[0];
+							
+// 							$event->setCategory($categories[0]);
+// 							$em->persist($event);
+// 							try {
+// 								$em->flush();
+// 								$messages['success'][] = "Nouvel évènement radar créé.";
+// 							} catch (\Exception $e) {
+// 								$messages['error'][] = $e->getMessage();
+// 							}
+//						} else {
+//							$messages['error'][] = "Impossible de créer un nouvel évènement.";
+//						}
+					}
+				}
+			} else {
+				$messages['error'][] = "Requête incorrecte, impossible de trouver le radar correspondant.";
+			}
+		} else {
+			$messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
+		}
+		return new JsonModel($messages);
+	}
+
 }

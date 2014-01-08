@@ -103,9 +103,6 @@ class User implements UserInterface, IdentityInterface
      */
     protected $zone;
     
-    /**
-     * Initialies the roles variable.
-     */
     public function __construct()
     {
         $this->userroles = new ArrayCollection();
