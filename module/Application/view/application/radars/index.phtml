@@ -74,6 +74,6 @@ $(".sortable").bind('aftertablesort', function(event, data){
 //sort the table by name
 $("table th:first").trigger('click');
 	
-radar(<?php echo $this->url('application'); ?>);
+radar('<?php echo $this->url('application'); ?>');
 		  
 <?php $this->inlineScript()->captureEnd();?>
