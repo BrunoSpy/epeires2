@@ -6,10 +6,13 @@
 namespace Core\View\Helper;
 
 use Zend\Form\View\Helper\AbstractHelper;
+use Zend\ServiceManager\ServiceManagerAwareInterface;
 
-class UserMenu extends AbstractHelper {
+class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 	
 	private $auth;
+	
+	private $servicemanager;
 	
 	public function __invoke(){
 
@@ -27,8 +30,14 @@ class UserMenu extends AbstractHelper {
 		$html .= '</a>';
 		$html .= '<ul class="dropdown-menu">';
 		if($this->auth->hasIdentity()) {
-			if($this->auth->getIdentity()->hasRole('admin')){
-				$html .= "<li><a href=\"".$urlHelper('administration', array('controller'=>'home', 'action'=>'index'))."\">Administration</a></li>";
+			$router = $this->servicemanager->get('router');
+			$request = $this->servicemanager->get('request');
+			if($router->match($request)->getMatchedRouteName() == 'administration'){
+				$html .= "<li><a href=\"".$urlHelper('application')."\">Application</a></li>";
+			} else {
+				if($this->auth->getIdentity()->hasRole('admin')){
+					$html .= "<li><a href=\"".$urlHelper('administration', array('controller'=>'home', 'action'=>'index'))."\">Administration</a></li>";
+				}
 			}
 		    $html .= "<li><a href=\"".$urlHelper('zfcuser/logout')."?redirect=".$urlHelper('application')."\">Se déconnecter</a></li>";
 		} else {
@@ -43,6 +52,10 @@ class UserMenu extends AbstractHelper {
 	
 	public function setAuthService($auth){
 		$this->auth = $auth;
+	}
+
+	public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator){
+		$this->servicemanager = $serviceLocator;
 	}
 	
 }
