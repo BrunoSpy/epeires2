@@ -14,8 +14,11 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Crypt\Password\Bcrypt;
 use Doctrine\Common\Collections\Criteria;
+use Administration\Form\ChangePassword;
+use Administration\Form\ChangePasswordFilter;
+use Application\Controller\FormController;
 
-class UsersController extends AbstractActionController
+class UsersController extends FormController
 {
 	private $options;
 	
@@ -28,7 +31,23 @@ class UsersController extends AbstractActionController
     	
     	$users = $objectManager->getRepository('Core\Entity\User')->findAll();
     	    	
-        return array('users'=>$users);
+    	$return = array();
+    	
+    	if($this->flashMessenger()->hasErrorMessages()){
+    		$return['error'] =  $this->flashMessenger()->getErrorMessages();
+    	}
+    	
+    	if($this->flashMessenger()->hasSuccessMessages()){
+    		$return['success'] =  $this->flashMessenger()->getSuccessMessages();
+    	}
+    	
+    	$this->flashMessenger()->clearMessages();
+    	
+    	$viewmodel = new ViewModel();
+    	
+    	$viewmodel->setVariables(array('messages'=>$return, 'users'=>$users));
+    	
+        return $viewmodel;
     }
     
 
@@ -50,8 +69,15 @@ class UsersController extends AbstractActionController
     				$user->setPassword($bcrypt->create($user->getPassword()));
     			}
     			$objectManager->persist($user);
-    			$objectManager->flush();
-    		}
+    			try {
+    				$objectManager->flush();
+    				$this->flashMessenger()->addSuccessMessage('Utilisateur enregistré.');
+    			} catch (\Exception $e){
+    				$this->flashMessenger()->addErrorMessage($e->getMessage());
+    			}
+    		} else {
+    			$this->processFormMessages($form->getMessages());
+    		} 
     	}
     	return new JsonModel();
     }
@@ -78,6 +104,50 @@ class UsersController extends AbstractActionController
     	$getform = $this->getForm($userid);
     	 
     	$viewmodel->setVariables(array('form' => $getform['form'],'userid'=>$userid));
+    	return $viewmodel;
+    }
+    
+    public function changepasswordAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+
+    		$form = new ChangePassword('changepassword');
+    		$form->setInputFilter(new ChangePasswordFilter());
+    		
+    		$form->setData($post);
+    	
+    		if($form->isValid()){
+    			$user = $objectManager->getRepository('Core\Entity\User')->find($post['id']);
+    			if($user && isset($post['newCredential'])){
+    				$bcrypt = new Bcrypt();
+    				$bcrypt->setCost($this->getServiceLocator()->get('zfcuser_module_options')->getPasswordCost());
+    				$user->setPassword($bcrypt->create($post['newCredential']));
+    			}
+    			$objectManager->persist($user);
+    			try {
+    				$objectManager->flush();
+    				$this->flashMessenger()->addSuccessMessage('Mot de passe correctement modifié');
+    			} catch (\Exception $e) {
+    				$this->flashMessenger()->addErrorMessage($e->getMessage());
+    			}
+    		} else {
+    			$this->processFormMessages($form->getMessages());
+    		}
+    	}
+    	return new JsonModel();
+    }
+    
+    public function changepasswordformAction(){
+    	$request = $this->getRequest();
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
+    	$form = new ChangePassword('changepassword');
+    	$form->setInputFilter(new ChangePasswordFilter());
+    	
+    	$viewmodel->setVariables(array('form' => $form));
     	return $viewmodel;
     }
     

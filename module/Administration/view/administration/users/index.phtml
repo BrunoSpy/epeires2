@@ -30,6 +30,13 @@
 		echo '</td>';
 		echo '<td>';
 		echo "<a 
+				title=\"Changer mot de passe\"
+				href=\"#user-container\"
+				class=\"change-password\"
+				data-id=\"".$user->getId()."\" 
+				data-name=\"".$user->getUsername()."\"
+				data-toggle=\"modal\"><i class=\"icon-exclamation-sign\"></i></a>  ";
+		echo "<a 
 				title=\"Modifier\" 
 				href=\"#user-container\" 
 				class=\"mod-user\" 
@@ -52,7 +59,7 @@
 
 </table>
 
-<?php echo $this->modalWindow("user-container", "<h3>Nouvel utilisateur</h3>", "", "<div id=\"user-form\"></div>")?>
+<?php echo $this->modalWindow("user-container", "<h3 id=\"user-title\">Nouvel utilisateur</h3>", "", "<div id=\"user-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-user",
 						"<h3>Confirmer la suppression ?</h3>",
