@@ -1,0 +1,87 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/ipos.js')?>
+
+<table class="table table-striped sortable">
+<thead>
+	<tr>
+		<th>id</th>
+		<th data-sort="string">Nom</th>
+		<th>Organisation</th>
+		<th><a class="btn btn-mini" href="#ipo-container" data-toggle="modal" id="add-ipo">Ajouter</a></th>
+	</tr>
+</thead>
+
+<tbody>
+	<?php 
+	foreach ($this->ipos as $ipo){
+		echo '<tr>';
+		echo '<td>'.$ipo->getId().'</td>';
+		echo '<td>'.$ipo->getName().'</td>';
+		echo '<td>'.$ipo->getOrganisation()->getName().'</td>';
+		echo '<td>';
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#ipo-container\" 
+				class=\"mod-ipo\" 
+				data-id=\"".$ipo->getId()."\" 
+				data-name=\"".$ipo->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-ipo\" 
+				data-href=\"".$this->url('administration', array('controller'=>'ipos', 'action'=>'deleteipo'), array('query'=>array('id'=>$ipo->getId())))."\" 
+				class=\"delete-ipo\" 
+				data-id=\"".$ipo->getId()."\" 
+				data-name=\"".$ipo->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+		echo '</td>';
+		echo '</tr>';
+	}
+	?>
+</tbody>
+
+</table>
+
+<?php echo $this->modalWindow("ipo-container", "<h3 id=\"ipo-title\">Nouvel IPO</h3>", "", "<div id=\"ipo-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-ipo",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'IPO <em><span id=\"ipo-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-ipo-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+ipos('<?php echo $this->url('administration')?>');
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+
+<?php $this->inlineScript()->captureEnd();?>

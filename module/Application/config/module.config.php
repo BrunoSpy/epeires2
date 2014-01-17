@@ -69,7 +69,8 @@ return array(
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     	),
     	'factories' => array(
-    		'eventName' => 'Application\Factories\EventNameFactory'
+    		'eventName' => 'Application\Factories\EventNameFactory',
+    		'ipo' => 'Application\Factories\IPOFactory',
     	),
     ),
     'view_manager' => array(
@@ -125,6 +126,7 @@ return array(
     		'events.write' => 'Modification',
     		'events.status' => 'Modification statut',
     		'events.mod-files' => 'Ajouter/Modifier fichiers',
+    		'events.mod-ipo' => 'Modifier IPO',
     	),
     	'Fréquences' => array(
     		'frequencies.read' => 'Lecture',

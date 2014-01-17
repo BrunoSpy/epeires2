@@ -19,6 +19,7 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/timeline.js')
+        							  ->prependFile($this->basePath() . '/js/headerbar.js')
         							  ->prependFile($this->basePath() . '/js/search.js')
         							  ->prependFile($this->basePath() . '/js/form.js')
         							  ->prependFile($this->basePath() . '/js/application.js')
@@ -52,7 +53,7 @@
     				</li>
     				<?php  endif;?>
     				<li><i class="icon-eye-open"></i><b> Chef de salle : </b>Prénom Nom</li>
-    				<li><i class="icon-warning-sign"></i><b> IPO : </b>Prénom Nom (06 12 23 45 65)</li>
+    				<li><i class="icon-warning-sign"></i><b> IPO : </b><?php echo $this->ipo();?></li>
     				<li id="clock" class="pull-right"></li>
     		</ul>
     		
@@ -148,6 +149,9 @@
 	
 		//init form
 		form('<?php echo $this->url('application', array('controller' => 'events'));?>');
+		
+		//init header bar
+		headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
 		
 		<?php $this->inlineScript()->captureEnd();?>
         

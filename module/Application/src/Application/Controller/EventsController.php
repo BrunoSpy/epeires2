@@ -87,6 +87,35 @@ class EventsController extends FormController {
         return $viewmodel;
     }
     
+    public function saveipoAction(){
+    	$messages = array();
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$ipoid = $post['nameipo'];
+    		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		$ipo = $em->getRepository('Application\Entity\IPO')->find($ipoid);
+    		if($ipo) {
+    			//un seul IPO par organisation
+    			$ipos = $em->getRepository('Application\Entity\IPO')->findBy(array('organisation' => $ipo->getOrganisation()->getId()));
+    			foreach ($ipos as $i){
+    				$i->setCurrent(false);
+    				$em->persist($i);
+    			}
+    			$ipo->setCurrent(true);
+    			$em->persist($ipo);
+    			try {
+    				$em->flush();
+    				$messages['success'][] = "IPO en fonction modifié";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de modifier l'IPO";
+    		}
+    	}
+    	return new JsonModel($messages);
+    }
+    
     public function savezoneAction(){
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
