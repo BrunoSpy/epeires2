@@ -19,7 +19,7 @@
         "zf-commons/zfc-user": "dev-master",
         "zf-commons/zfc-rbac": "dev-master",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
-        "zfr/rbac": "dev-master"
+        "zfr/rbac": ">=1.0.0"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
