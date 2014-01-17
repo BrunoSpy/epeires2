@@ -45,6 +45,8 @@ class IPOHelper extends AbstractHelper {
 				
 				$selectIPO->setValueOptions($ipoArray);
 				
+				$selectIPO->setAttribute('value', $currentipo->getId());
+				
 				$form->add($selectIPO);
 				
 				$formView = $this->view->form();
