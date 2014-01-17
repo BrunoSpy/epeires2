@@ -30,7 +30,7 @@ class Role implements HierarchicalRoleInterface{
 
     /**
      * @var Role
-     * @ORM\ManyToOne(targetEntity="Role", inversedBy="childrenroles")
+     * @ORM\ManyToOne(targetEntity="Role", inversedBy="children")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
 	 * @Annotation\Attributes({"multiple":false})
@@ -219,7 +219,7 @@ class Role implements HierarchicalRoleInterface{
     	if($this->getName() == $rolename){
     		return true;
     	}
-    	foreach ($this->childrenroles as $child){
+    	foreach ($this->children as $child){
     		if($child->containsRole($rolename)){
     			return true;
     		}
