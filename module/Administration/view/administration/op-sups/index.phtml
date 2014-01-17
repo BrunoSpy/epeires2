@@ -1,0 +1,89 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/opsups.js')?>
+
+<table class="table table-striped sortable">
+<thead>
+	<tr>
+		<th>id</th>
+		<th data-sort="string">Nom</th>
+		<th>Organisation</th>
+		<th>Zone de qualification</th>
+		<th><a class="btn btn-mini" href="#opsup-container" data-toggle="modal" id="add-opsup">Ajouter</a></th>
+	</tr>
+</thead>
+
+<tbody>
+	<?php 
+	foreach ($this->opsups as $opsup){
+		echo '<tr>';
+		echo '<td>'.$opsup->getId().'</td>';
+		echo '<td>'.$opsup->getName().'</td>';
+		echo '<td>'.$opsup->getOrganisation()->getName().'</td>';
+		echo '<td>'.$opsup->getZone()->getName().'</td>';
+		echo '<td>';
+		echo "<a 
+				title=\"Modifier\" 
+				href=\"#opsup-container\" 
+				class=\"mod-opsup\" 
+				data-id=\"".$opsup->getId()."\" 
+				data-name=\"".$opsup->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+		echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-opsup\" 
+				data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'deleteopsup'), array('query'=>array('id'=>$opsup->getId())))."\" 
+				class=\"delete-ipo\" 
+				data-id=\"".$opsup->getId()."\" 
+				data-name=\"".$opsup->getName()."\" 
+				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+		echo '</td>';
+		echo '</tr>';
+	}
+	?>
+</tbody>
+
+</table>
+
+<?php echo $this->modalWindow("opsup-container", "<h3 id=\"opsup-title\">Nouveau Chef OP</h3>", "", "<div id=\"opsup-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-opsup",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer le chef OP <em><span id=\"opsup-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-opsup-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+opsups('<?php echo $this->url('administration')?>');
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+
+<?php $this->inlineScript()->captureEnd();?>

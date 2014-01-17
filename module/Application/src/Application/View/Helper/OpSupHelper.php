@@ -12,7 +12,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Form\Form;
 use Zend\Form\Element\Select;
 
-class IPOHelper extends AbstractHelper {
+class OpSupHelper extends AbstractHelper {
 	
 	private $sm;
 	
@@ -28,41 +28,42 @@ class IPOHelper extends AbstractHelper {
 		
 		if($zfcuserauth->hasIdentity()) {
 		
-			$ipos = $objectmanager->getRepository('Application\Entity\IPO')->findBy(array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId()));
+			$opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy(array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId()));
 		
-			$currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(
+			$currentopsup = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(
 									array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId(),
+											'zone' => $zfcuserauth->getIdentity()->getZone()->getId(),
 											'current' => true));
-			if($auth->isGranted('events.mod-ipo')) {
+			if($auth->isGranted('events.mod-opsup')) {
 				
-				$form = new Form('ipo');
-				$selectIPO = new Select('nameipo');
-				$ipoArray = array();
-				$ipoArray['-1'] = "Choisir IPO";
-				foreach ($ipos as $ipo) {
-					$ipoArray[$ipo->getId()] = $ipo->getName();
+				$form = new Form('opsup');
+				$selectOpSup = new Select('nameopsup');
+				$opsupArray = array();
+				$opsupArray['-1'] = "Choisir Op Sup";
+				foreach ($opsups as $opsup) {
+					$opsupArray[$opsup->getId()] = $opsup->getName();
 				}
 				
-				$selectIPO->setValueOptions($ipoArray);
-				if($currentipo){
-					$selectIPO->setAttribute('value', $currentipo->getId());
+				$selectOpSup->setValueOptions($opsupArray);
+				if($currentopsup){
+					$selectOpSup->setAttribute('value', $currentopsup->getId());
 				}
 				
-				$form->add($selectIPO);
+				$form->add($selectOpSup);
 				
 				$formView = $this->view->form();
 				
 				$html .= "<li>";
 				
 				$html .= $formView->openTag($form);
-				$html .= $this->view->formSelect($form->get('nameipo'));
+				$html .= $this->view->formSelect($form->get('nameopsup'));
 				$html .= $formView->closeTag();
 				$html .= "</li>";
 			} else {
-				if($currentipo) {
-					$html .= $currentipo->getName();
+				if($currentopsup) {
+					$html .= $currentopsup->getName();
 				} else {
-					$html .= "<em>Aucun IPO configuré</em>";
+					$html .= "<em>Aucun Op Sup configuré</em>";
 				}
 			}
 		} else {

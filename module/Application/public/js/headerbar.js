@@ -7,6 +7,13 @@ var headerbar = function(url){
 		   });
 	   } );
 	   
+	   $("select[name=nameopsup]").on("change", function(event){
+		   event.preventDefault();
+		   $.post(url+'/saveopsup', $("#opsup").serialize(), function(data){
+			   displayMessages(data);
+		   }, 'json');
+	   });
+	   
 	   $("select[name=nameipo]").on("change", function(event){
 		   event.preventDefault();
 		   $.post(url+'/saveipo', $("#ipo").serialize(), function(data){

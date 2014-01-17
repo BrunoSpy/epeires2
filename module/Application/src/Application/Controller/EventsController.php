@@ -116,6 +116,36 @@ class EventsController extends FormController {
     	return new JsonModel($messages);
     }
     
+    public function saveopsupAction(){
+    	$messages = array();
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$opsupid = $post['nameopsup'];
+    		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		$opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
+    		if($opsup) {
+    			//un seul IPO par organisation et par zone
+    			$opsups = $em->getRepository('Application\Entity\OperationalSupervisor')->findBy(array('organisation' => $opsup->getOrganisation()->getId(), 
+    																									'zone' => $opsup->getZone()->getId()));
+    			foreach ($opsups as $i){
+    				$i->setCurrent(false);
+    				$em->persist($i);
+    			}
+    			$opsup->setCurrent(true);
+    			$em->persist($opsup);
+    			try {
+    				$em->flush();
+    				$messages['success'][] = "Op Sup en fonction modifié";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de modifier le chef OP";
+    		}
+    	}
+    	return new JsonModel($messages);
+    }
+    
     public function savezoneAction(){
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();

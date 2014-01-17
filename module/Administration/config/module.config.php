@@ -57,7 +57,8 @@ return array(
             'Administration\Controller\Users' => 'Administration\Controller\UsersController',
             'Administration\Controller\Roles' => 'Administration\Controller\RolesController',
             'Administration\Controller\Radars' => 'Administration\Controller\RadarsController',
-            'Administration\Controller\IPOS' => 'Administration\Controller\IPOSController'
+            'Administration\Controller\IPOS' => 'Administration\Controller\IPOSController',
+            'Administration\Controller\OpSups' => 'Administration\Controller\OpSupsController'
     	),
     ),
     'view_manager' => array(

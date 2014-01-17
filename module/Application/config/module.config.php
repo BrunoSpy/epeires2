@@ -71,6 +71,7 @@ return array(
     	'factories' => array(
     		'eventName' => 'Application\Factories\EventNameFactory',
     		'ipo' => 'Application\Factories\IPOFactory',
+    		'opsup' => 'Application\Factories\OpSupFactory'
     	),
     ),
     'view_manager' => array(
@@ -127,6 +128,7 @@ return array(
     		'events.status' => 'Modification statut',
     		'events.mod-files' => 'Ajouter/Modifier fichiers',
     		'events.mod-ipo' => 'Modifier IPO',
+    		'events.mod-opsup' => 'Modifier Chef Op',
     	),
     	'Fréquences' => array(
     		'frequencies.read' => 'Lecture',
