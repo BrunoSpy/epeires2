@@ -13,7 +13,7 @@ var radar = function(url){
 	   $('.radar-switch').on('switch-change', function(e, data){
 		   $('a#end-radar-href').attr('href', $(this).data('href')+"&state="+data.value);
 		   $('#radar_name').html($(this).data('radar'));
-		   $("#cancel-radar").data('radar', $(this).data('radar')) ;
+		   $("#cancel-radar").data('radar', $(this).data('radarid')) ;
 		   if(!data.value){
 			   $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
 						"<p>L'heure actuelle sera utilisée comme heure de début.</p>");
@@ -49,4 +49,15 @@ var radar = function(url){
 			   }
 		   }, 'json');
 	   });
+	   
+	   //refresh page every 30s
+	   (function doPoll(){
+		   $.post(url+'radars/getradarstate')
+	   			.done(function(data) {
+	   				$.each(data, function(key, value){
+	   					$('#switch_'+key).bootstrapSwitch('setState', value, true);
+	   				});
+	   			})
+	   			.always(function() { setTimeout(doPoll, 30000);});
+	   })();
 };

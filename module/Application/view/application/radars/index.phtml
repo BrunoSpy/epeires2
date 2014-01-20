@@ -19,7 +19,8 @@
 					echo '<td>'.$radar['name'].'</td>';
 					echo '<td>';
 					
-					echo	'<div id="switch_'.$radar['name'].'" 
+					echo	'<div id="switch_'.$radarid.'" 
+								data-radarid="'.$radarid.'"
 								data-radar="'.$radar['name'].'" 
 								data-href="'.$this->url('application', 
 													array('controller'=>'radars', 'action' => 'switchradar'), 

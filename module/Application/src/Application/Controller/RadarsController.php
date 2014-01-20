@@ -13,6 +13,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
+use Application\Entity\Radar;
 
 class RadarsController extends AbstractActionController {
 	
@@ -34,54 +35,8 @@ class RadarsController extends AbstractActionController {
 		$this->flashMessenger()->clearMessages();
 		 
 		$viewmodel->setVariables(array('messages'=>$return));
-		
-		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		
-		$radars = array();
-		
-		$now = new \DateTime('NOW');
-		$now->setTimezone(new \DateTimeZone("UTC"));
 				
-		foreach ($em->getRepository('Application\Entity\Radar')->findAll() as $radar){
-			//avalaible by default
-			$radars[$radar->getId()] = array();
-			$radars[$radar->getId()]['name'] = $radar->getName();
-			$radars[$radar->getId()]['status'] = true;
-		}
-			
-		$qbEvents = $em->createQueryBuilder();
-		$qbEvents->select(array('e', 'cat'))
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
-		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
-		->andWhere($qbEvents->expr()->orX(
-				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')))
-		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
-		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-							2 => $now->format('Y-m-d H:i:s')));
-			
-		$query = $qbEvents->getQuery();
-			
-		$results = $query->getResult();
-			
-		foreach ($results as $result){
-			$statefield = $result->getCategory()->getStatefield()->getId();
-			$radarfield = $result->getCategory()->getRadarfield()->getId();
-			$radarid = 0;
-			$available = true;
-			foreach ($result->getCustomFieldsValues() as $customvalue){
-				if($customvalue->getCustomField()->getId() == $statefield){
-					$available = !$customvalue->getValue();
-				} else if($customvalue->getCustomField()->getId() == $radarfield){
-					$radarid = $customvalue->getValue();
-				}
-			}
-			$radars[$radarid]['status'] *= $available;				
-		}		
-		
-		$viewmodel->setVariable('radars', $radars);
+		$viewmodel->setVariable('radars', $this->getRadars());
 		
 		return $viewmodel;
 		
@@ -195,6 +150,69 @@ class RadarsController extends AbstractActionController {
 			$messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
 		}
 		return new JsonModel($messages);
+	}
+	
+	public function getRadarStateAction(){
+		return new JsonModel($this->getRadars(false));
+	}
+	
+	private function getRadars($full = true){
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		
+		$radars = array();
+		
+		$now = new \DateTime('NOW');
+		$now->setTimezone(new \DateTimeZone("UTC"));
+		
+		foreach ($em->getRepository('Application\Entity\Radar')->findAll() as $radar){
+			//avalaible by default
+			if($full){
+				$radars[$radar->getId()] = array();
+				$radars[$radar->getId()]['name'] = $radar->getName();
+				$radars[$radar->getId()]['status'] = true;
+			} else {
+				$radars[$radar->getId()] = true;
+			}
+		}
+			
+		$qbEvents = $em->createQueryBuilder();
+		$qbEvents->select(array('e', 'cat'))
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
+		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
+		->andWhere($qbEvents->expr()->orX(
+				$qbEvents->expr()->isNull('e.enddate'),
+				$qbEvents->expr()->gte('e.enddate', '?2')))
+				->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
+				->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+						2 => $now->format('Y-m-d H:i:s')));
+					
+				$query = $qbEvents->getQuery();
+					
+				$results = $query->getResult();
+					
+				foreach ($results as $result){
+					$statefield = $result->getCategory()->getStatefield()->getId();
+					$radarfield = $result->getCategory()->getRadarfield()->getId();
+					$radarid = 0;
+					$available = true;
+					foreach ($result->getCustomFieldsValues() as $customvalue){
+						if($customvalue->getCustomField()->getId() == $statefield){
+							$available = !$customvalue->getValue();
+						} else if($customvalue->getCustomField()->getId() == $radarfield){
+							$radarid = $customvalue->getValue();
+						}
+					}
+					if($full){
+						$radars[$radarid]['status'] *= $available;
+					} else {
+						$radars[$radarid] *= $available;
+					}
+				}
+				
+		return $radars;
+		
 	}
 
 }
