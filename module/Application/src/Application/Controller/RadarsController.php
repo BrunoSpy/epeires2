@@ -43,33 +43,18 @@ class RadarsController extends AbstractActionController {
 	}
 	
 	public function switchradarAction(){
+		$messages = array();
 		if($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
 			$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 			$state = $this->params()->fromQuery('state', null);
 			$radarid = $this->params()->fromQuery('radarid', null);
-			$messages = array();
 			
 			$now = new \DateTime('NOW');
 			$now->setTimezone(new \DateTimeZone("UTC"));
 					
 			if($state != null && $radarid){
-			
-				//évènements radars en cours
-				$qb = $em->createQueryBuilder();
-				$qb->select('e', 'cat')
-				->from('Application\Entity\Event', 'e')
-				->innerJoin('e.category', 'cat')
-				->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
-				->andWhere($qb->expr()->lte('e.startdate', '?1'))
-				->andWhere($qb->expr()->orX(
-					$qb->expr()->isNull('e.enddate'),
-					$qb->expr()->gte('e.enddate', '?2')))
-					->andWhere($qb->expr()->in('e.status', array(2,3)))
-					->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-							2 => $now->format('Y-m-d H:i:s')));
-			
-				$query = $qb->getQuery();
-				$events = $query->getResult();
+				$events = $this->getCurrentRadarEvents();			
+
 				$radarevents = array();
 				foreach ($events as $event){
 					$radarfield = $event->getCategory()->getRadarfield();
@@ -161,9 +146,6 @@ class RadarsController extends AbstractActionController {
 		
 		$radars = array();
 		
-		$now = new \DateTime('NOW');
-		$now->setTimezone(new \DateTimeZone("UTC"));
-		
 		foreach ($em->getRepository('Application\Entity\Radar')->findAll() as $radar){
 			//avalaible by default
 			if($full){
@@ -174,45 +156,52 @@ class RadarsController extends AbstractActionController {
 				$radars[$radar->getId()] = true;
 			}
 		}
-			
-		$qbEvents = $em->createQueryBuilder();
-		$qbEvents->select(array('e', 'cat'))
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
-		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
-		->andWhere($qbEvents->expr()->orX(
-				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')))
-				->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
-				->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-						2 => $now->format('Y-m-d H:i:s')));
 					
-				$query = $qbEvents->getQuery();
+		$results = $this->getCurrentRadarEvents();
 					
-				$results = $query->getResult();
-					
-				foreach ($results as $result){
-					$statefield = $result->getCategory()->getStatefield()->getId();
-					$radarfield = $result->getCategory()->getRadarfield()->getId();
-					$radarid = 0;
-					$available = true;
-					foreach ($result->getCustomFieldsValues() as $customvalue){
-						if($customvalue->getCustomField()->getId() == $statefield){
-							$available = !$customvalue->getValue();
-						} else if($customvalue->getCustomField()->getId() == $radarfield){
-							$radarid = $customvalue->getValue();
-						}
-					}
-					if($full){
-						$radars[$radarid]['status'] *= $available;
-					} else {
-						$radars[$radarid] *= $available;
-					}
+		foreach ($results as $result){
+			$statefield = $result->getCategory()->getStatefield()->getId();
+			$radarfield = $result->getCategory()->getRadarfield()->getId();
+			$radarid = 0;
+			$available = true;
+			foreach ($result->getCustomFieldsValues() as $customvalue){
+				if($customvalue->getCustomField()->getId() == $statefield){
+					$available = !$customvalue->getValue();
+				} else if($customvalue->getCustomField()->getId() == $radarfield){
+					$radarid = $customvalue->getValue();
 				}
+			}
+			if($full){
+				$radars[$radarid]['status'] *= $available;
+			} else {
+				$radars[$radarid] *= $available;
+			}
+		}
 				
 		return $radars;
 		
 	}
 
+	private function getCurrentRadarEvents(){
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$now = new \DateTime('NOW');
+		$now->setTimezone(new \DateTimeZone("UTC"));
+		//évènements radars en cours
+		$qb = $em->createQueryBuilder();
+		$qb->select('e', 'cat')
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
+		->andWhere($qb->expr()->lte('e.startdate', '?1'))
+		->andWhere($qb->expr()->orX(
+				$qb->expr()->isNull('e.enddate'),
+				$qb->expr()->gte('e.enddate', '?2')))
+				->andWhere($qb->expr()->in('e.status', array(2,3)))
+				->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+						2 => $now->format('Y-m-d H:i:s')));
+					
+		$query = $qb->getQuery();
+		return $query->getResult();
+	}
+	
 }

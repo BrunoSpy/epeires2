@@ -10,6 +10,9 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\ORM\Query\Expr\Join;
+use Zend\View\Model\JsonModel;
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
 
 class FrequenciesController extends AbstractActionController {
 	
@@ -30,40 +33,130 @@ class FrequenciesController extends AbstractActionController {
 		
 		$this->flashMessenger()->clearMessages();
 		 
-		$viewmodel->setVariables(array('messages'=>$return));
+		$viewmodel->setVariables(array('messages'=>$return));		
 		
+		$viewmodel->setVariable('antennas', $this->getAntennas());
+		
+		return $viewmodel;
+		
+	}
+	
+	public function switchantennaAction(){
+		$messages = array();
+		if($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()){
+			$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+			$state = $this->params()->fromQuery('state', null);
+			$antennaid = $this->params()->fromQuery('antennaid', null);
+			
+			$now = new \DateTime('NOW');
+			$now->setTimezone(new \DateTimeZone("UTC"));
+			
+			if($state != null && $antennaid){
+				$events = $this->getCurrentAntennaEvents();
+				//on récupère les évènemets de l'antenne
+				$antennaEvents = array();
+				foreach ($events as $event){
+					$antennafield = $event->getCategory()->getAntennafield();
+					foreach ($event->getCustomFieldsValues() as $value){
+						if($value->getCustomField()->getId() == $antennafield->getId()){
+							if($value->getValue() == $antennaid){
+								$antennaEvents[] = $event;
+							}
+						}
+					}
+				}
+				
+				if($state == 'true'){
+					//recherche de l'evt à fermer
+					if(count($antennaEvents) == 1){
+						$event = $antennaEvents[0];
+						$endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+						$event->setStatus($endstatus);
+						$event->setEnddate($now);
+						$em->persist($event);
+						try {
+							$em->flush();
+							$messages['success'][] = "Evènement antenne correctement terminé.";
+						} catch (\Exception $e) {
+							$messages['error'][] = $e->getMessage();
+						}
+					} else {
+						$messages['error'] = 'Impossible de déterminer l\'évènement à terminer';
+					}
+				} else {
+					if(count($antennaEvents) > 0){
+						$messages['error'][] = "Un évènement est déjà en cours, impossible d'en créer un nouveau.";
+					} else {
+						$event = new Event();
+						$status = $em->getRepository('Application\Entity\Status')->find('2');
+						$impact = $em->getRepository('Application\Entity\Impact')->find('3');
+						$event->setStatus($status);
+						$event->setStartdate($now);
+						$event->setImpact($impact);
+						$event->setPunctual(false);
+						$antenna = $em->getRepository('Application\Entity\Antenna')->find($antennaid);
+						$event->setOrganisation($antenna->getOrganisation()); //TODO et si une antenne appartient à plusieurs orga ?
+						$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+						$categories = $em->getRepository('Application\Entity\AntennaCategory')->findAll();
+						if($categories){
+							$cat = $categories[0];
+							$antennafieldvalue = new CustomFieldValue();
+							$antennafieldvalue->setCustomField($cat->getAntennaField());
+							$antennafieldvalue->setValue($antennaid);
+							$antennafieldvalue->setEvent($event);
+							$event->addCustomFieldValue($antennafieldvalue);
+							$statusvalue = new CustomFieldValue();
+							$statusvalue->setCustomField($cat->getStatefield());
+							$statusvalue->setValue(true);
+							$statusvalue->setEvent($event);
+							$event->addCustomFieldValue($statusvalue);
+							$event->setCategory($categories[0]);
+							$em->persist($antennafieldvalue);
+							$em->persist($statusvalue);
+							$em->persist($event);
+							try {
+								$em->flush();
+								$messages['success'][] = "Nouvel évènement antenne créé.";
+							} catch (\Exception $e) {
+								$messages['error'][] = $e->getMessage();
+							}
+						} else {
+							$messages['error'][] = "Impossible de créer un nouvel évènement. Contactez l'administrateur.";
+						}
+					}
+				}
+				
+			} else {
+				$messages['error'][] = "Requête incorrecte, impossible de trouver l'antenne correspondante.";
+			}
+			
+		} else {
+			$messages['error'] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
+		}
+		return new JsonModel($messages);
+	}
+	
+	public function getAntennaStateAction(){
+		return new JsonModel($this->getAntennas(false));
+	}
+	
+	private function getAntennas($full = true){
 		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		
 		$antennas = array();
 		
-		$now = new \DateTime('NOW');
-		$now->setTimezone(new \DateTimeZone("UTC"));
-				
 		foreach ($em->getRepository('Application\Entity\Antenna')->findAll() as $antenna){
 			//avalaible by default
-			$antennas[$antenna->getId()] = array();
-			$antennas[$antenna->getId()]['name'] = $antenna->getName();
-			$antennas[$antenna->getId()]['status'] = true;
+			if($full) {
+				$antennas[$antenna->getId()] = array();
+				$antennas[$antenna->getId()]['name'] = $antenna->getName();
+				$antennas[$antenna->getId()]['status'] = true;
+			} else {
+				$antennas[$antenna->getId()] = true;
+			}
 		}
 			
-		$qbEvents = $em->createQueryBuilder();
-		$qbEvents->select(array('e', 'cat'))
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\AntennaCategory')
-		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
-		->andWhere($qbEvents->expr()->orX(
-				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')))
-		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
-		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-							2 => $now->format('Y-m-d H:i:s')));
-			
-		$query = $qbEvents->getQuery();
-			
-		$results = $query->getResult();
-			
-		foreach ($results as $result){
+		foreach ($this->getCurrentAntennaEvents() as $result){
 			$statefield = $result->getCategory()->getStatefield()->getId();
 			$antennafield = $result->getCategory()->getAntennafield()->getId();
 			$antennaid = 0;
@@ -75,12 +168,39 @@ class FrequenciesController extends AbstractActionController {
 					$antennaid = $customvalue->getValue();
 				}
 			}
-			$antennas[$antennaid]['status'] *= $available;				
-		}		
+			if($full){
+				$antennas[$antennaid]['status'] *= $available;
+			} else {
+				$antennas[$antennaid] *= $available;
+			}
+		}
 		
-		$viewmodel->setVariable('antennas', $antennas);
-		
-		return $viewmodel;
-		
+		return $antennas;
+	}
+	
+	private function getCurrentAntennaEvents(){
+		//tous les évènements antenne dont à la fois :
+		// * la date début et antèrieure à maintenant
+		// * la date de fin est nulle ou postèrieure à maintenant
+		// * le status est soit confirmé soit terminé
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$now = new \DateTime('NOW');
+		$now->setTimezone(new \DateTimeZone("UTC"));
+		$qbEvents = $em->createQueryBuilder();
+		$qbEvents->select(array('e', 'cat'))
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF Application\Entity\AntennaCategory')
+		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
+		->andWhere($qbEvents->expr()->orX(
+				$qbEvents->expr()->isNull('e.enddate'),
+				$qbEvents->expr()->gte('e.enddate', '?2')))
+		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
+		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+						2 => $now->format('Y-m-d H:i:s')));
+					
+		$query = $qbEvents->getQuery();
+					
+		return $query->getResult();
 	}
 }

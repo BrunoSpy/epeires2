@@ -67,6 +67,7 @@ return array(
     		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
     		'customfieldvalue' => 'Application\View\Helper\CustomFieldValue',
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
+    		'block' => 'Application\View\Helper\Block',
     	),
     	'factories' => array(
     		'eventName' => 'Application\Factories\EventNameFactory',
