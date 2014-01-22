@@ -120,14 +120,6 @@ return array(
     			__DIR__ . '/../public',
     		),
     	),
-    	'caching' => array(
-    			'default' => array(
-    					'cache'     => 'FilePath',
-                		'options' => array(
-                    			'dir' => 'public',
-                		),
-    			),
-    	),
     ),
     
     'permissions' => array(
