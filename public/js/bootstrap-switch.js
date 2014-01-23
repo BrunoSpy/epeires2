@@ -1,7 +1,7 @@
 /*! ============================================================
- * bootstrapSwitch v1.8 by Larentis Mattia @SpiritualGuru
+ * bootstrap-switch v1.9.0 by Larentis Mattia @SpiritualGuru
  * http://www.larentis.eu/
- * 
+ *
  * Enhanced for radiobuttons by Stein, Peter @BdMdesigN
  * http://www.bdmdesign.org/
  *
@@ -11,4 +11,410 @@
  * Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  * ============================================================ */
-!function(e){"use strict";e.fn["bootstrapSwitch"]=function(t){var n='input[type!="hidden"]';var r={init:function(){return this.each(function(){var t=e(this),r,i,s,o,u=t.closest("form"),a="",f=t.attr("class"),l,c,h="ON",p="OFF",d=false,v=false;e.each(["switch-mini","switch-small","switch-large"],function(e,t){if(f.indexOf(t)>=0)a=t});t.addClass("has-switch");if(t.data("on")!==undefined)l="switch-"+t.data("on");if(t.data("on-label")!==undefined)h=t.data("on-label");if(t.data("off-label")!==undefined)p=t.data("off-label");if(t.data("label-icon")!==undefined)d=t.data("label-icon");if(t.data("text-label")!==undefined)v=t.data("text-label");i=e("<span>").addClass("switch-left").addClass(a).addClass(l).html(h);l="";if(t.data("off")!==undefined)l="switch-"+t.data("off");s=e("<span>").addClass("switch-right").addClass(a).addClass(l).html(p);o=e("<label>").html(" ").addClass(a).attr("for",t.find(n).attr("id"));if(d){o.html('<i class="icon '+d+'"></i>')}if(v){o.html(""+v+"")}r=t.find(n).wrap(e("<div>")).parent().data("animated",false);if(t.data("animated")!==false)r.addClass("switch-animate").data("animated",true);r.append(i).append(o).append(s);t.find(">div").addClass(t.find(n).is(":checked")?"switch-on":"switch-off");if(t.find(n).is(":disabled"))e(this).addClass("deactivate");var m=function(e){if(t.parent("label").is(".label-change-switch")){}else{e.siblings("label").trigger("mousedown").trigger("mouseup").trigger("click")}};t.on("keydown",function(t){if(t.keyCode===32){t.stopImmediatePropagation();t.preventDefault();m(e(t.target).find("span:first"))}});i.on("click",function(t){m(e(this))});s.on("click",function(t){m(e(this))});t.find(n).on("change",function(t,n){var r=e(this),i=r.parent(),s=r.is(":checked"),o=i.is(".switch-off");t.preventDefault();i.css("left","");if(o===s){if(s)i.removeClass("switch-off").addClass("switch-on");else i.removeClass("switch-on").addClass("switch-off");if(i.data("animated")!==false)i.addClass("switch-animate");if(typeof n==="boolean"&&n)return;i.parent().trigger("switch-change",{el:r,value:s})}});t.find("label").on("mousedown touchstart",function(t){var n=e(this);c=false;t.preventDefault();t.stopImmediatePropagation();n.closest("div").removeClass("switch-animate");if(n.closest(".has-switch").is(".deactivate")){n.unbind("click")}else if(n.closest(".switch-on").parent().is(".radio-no-uncheck")){n.unbind("click")}else{n.on("mousemove touchmove",function(t){var n=e(this).closest(".make-switch"),r=(t.pageX||t.originalEvent.targetTouches[0].pageX)-n.offset().left,i=r/n.width()*100,s=25,o=75;c=true;if(i<s)i=s;else if(i>o)i=o;n.find(">div").css("left",i-o+"%")});n.on("click touchend",function(t){var n=e(this),r=e(t.target),i=r.siblings("input");t.stopImmediatePropagation();t.preventDefault();n.unbind("mouseleave");if(c)i.prop("checked",!(parseInt(n.parent().css("left"))<-25));else i.prop("checked",!i.is(":checked"));c=false;i.trigger("change")});n.on("mouseleave",function(t){var n=e(this),r=n.siblings("input");t.preventDefault();t.stopImmediatePropagation();n.unbind("mouseleave");n.trigger("mouseup");r.prop("checked",!(parseInt(n.parent().css("left"))<-25)).trigger("change")});n.on("mouseup",function(t){t.stopImmediatePropagation();t.preventDefault();e(this).unbind("mousemove")})}});if(u.data("bootstrapSwitch")!=="injected"){u.bind("reset",function(){setTimeout(function(){u.find(".make-switch").each(function(){var t=e(this).find(n);t.prop("checked",t.is(":checked")).trigger("change")})},1)});u.data("bootstrapSwitch","injected")}})},toggleActivation:function(){var t=e(this);t.toggleClass("deactivate");t.find(n).prop("disabled",t.is(".deactivate"))},isActive:function(){return!e(this).hasClass("deactivate")},setActive:function(t){var r=e(this);if(t){r.removeClass("deactivate");r.find(n).removeAttr("disabled")}else{r.addClass("deactivate");r.find(n).attr("disabled","disabled")}},toggleState:function(t){var n=e(this).find(":checkbox");n.prop("checked",!n.is(":checked")).trigger("change",t)},toggleRadioState:function(t){var n=e(this).find(":radio");n.not(":checked").prop("checked",!n.is(":checked")).trigger("change",t)},toggleRadioStateAllowUncheck:function(t,n){var r=e(this).find(":radio");if(t){r.not(":checked").trigger("change",n)}else{r.not(":checked").prop("checked",!r.is(":checked")).trigger("change",n)}},setState:function(t,r){e(this).find(n).prop("checked",t).trigger("change",r)},setOnLabel:function(t){var n=e(this).find(".switch-left");n.html(t)},setOffLabel:function(t){var n=e(this).find(".switch-right");n.html(t)},setOnClass:function(t){var n=e(this).find(".switch-left");var r="";if(t!==undefined){if(e(this).attr("data-on")!==undefined){r="switch-"+e(this).attr("data-on")}n.removeClass(r);r="switch-"+t;n.addClass(r)}},setOffClass:function(t){var n=e(this).find(".switch-right");var r="";if(t!==undefined){if(e(this).attr("data-off")!==undefined){r="switch-"+e(this).attr("data-off")}n.removeClass(r);r="switch-"+t;n.addClass(r)}},setAnimated:function(t){var r=e(this).find(n).parent();if(t===undefined)t=false;r.data("animated",t);r.attr("data-animated",t);if(r.data("animated")!==false){r.addClass("switch-animate")}else{r.removeClass("switch-animate")}},setSizeClass:function(t){var n=e(this);var r=n.find(".switch-left");var i=n.find(".switch-right");var s=n.find("label");e.each(["switch-mini","switch-small","switch-large"],function(e,n){if(n!==t){r.removeClass(n);i.removeClass(n);s.removeClass(n)}else{r.addClass(n);i.addClass(n);s.addClass(n)}})},status:function(){return e(this).find(n).is(":checked")},destroy:function(){var t=e(this),n=t.find("div"),r=t.closest("form"),i;n.find(":not(input)").remove();i=n.children();i.unwrap().unwrap();i.unbind("change");if(r){r.unbind("reset");r.removeData("bootstrapSwitch")}return i}};if(r[t])return r[t].apply(this,Array.prototype.slice.call(arguments,1));else if(typeof t==="object"||!t)return r.init.apply(this,arguments);else e.error("Method "+t+" does not exist!")}}(jQuery);(function(e){e(function(){e(".make-switch")["bootstrapSwitch"]()})})(jQuery)
+
+!function ($) {
+  "use strict";
+
+  $.fn.bootstrapSwitch = function (method) {
+    var inputSelector = 'input[type!="hidden"]';
+    var methods = {
+
+      init: function () {
+        return this.each(function () {
+            var $element = $(this),
+                $div,
+                $switchLeft,
+                $switchRight,
+                $label,
+                $form = $element.closest('form'),
+                myClasses = "",
+                classes = $element.attr('class'),
+                color,
+                moving,
+                onLabel = "ON",
+                offLabel = "OFF",
+                icon = false,
+                textLabel = false;
+
+            $.each(['switch-mini', 'switch-small', 'switch-large'], function (i, el) {
+              if (classes.indexOf(el) >= 0) {
+                myClasses = el;
+              }
+            });
+
+            $element.addClass('has-switch');
+
+            if ($element.data('on') !== undefined) {
+              color = "switch-" + $element.data('on');
+            }
+
+            if ($element.data('on-label') !== undefined) {
+              onLabel = $element.data('on-label');
+            }
+
+            if ($element.data('off-label') !== undefined) {
+              offLabel = $element.data('off-label');
+            }
+
+            if ($element.data('label-icon') !== undefined) {
+              icon = $element.data('label-icon');
+            }
+
+            if ($element.data('text-label') !== undefined) {
+              textLabel = $element.data('text-label');
+            }
+
+            $switchLeft = $('<span>')
+            .addClass("switch-left")
+            .addClass(myClasses)
+            .addClass(color)
+            .html('' + onLabel + '');
+
+            color = '';
+            if ($element.data('off') !== undefined) {
+              color = "switch-" + $element.data('off');
+            }
+
+            $switchRight = $('<span>')
+            .addClass("switch-right")
+            .addClass(myClasses)
+            .addClass(color)
+            .html('' + offLabel + '');
+
+            $label = $('<label>')
+            .html("&nbsp;")
+            .addClass(myClasses)
+            .attr('for', $element.find(inputSelector).attr('id'));
+
+            if (icon) {
+              $label.html('<i class="icon ' + icon + '"></i>');
+            }
+
+            if (textLabel) {
+              $label.html('' + textLabel + '');
+            }
+
+            $div = $element.find(inputSelector).wrap($('<div>')).parent().data('animated', false);
+
+            if ($element.data('animated') !== false) {
+              $div.addClass('switch-animate').data('animated', true);
+            }
+
+            $div
+            .append($switchLeft)
+            .append($label)
+            .append($switchRight);
+
+            $element.find('> div').addClass($element.find(inputSelector).is(':checked') ? 'switch-on' : 'switch-off');
+
+            if ($element.find(inputSelector).is(':disabled')) {
+              $(this).addClass('deactivate');
+            }
+
+            var changeStatus = function ($this) {
+              if ($element.parent('label').is('.label-change-switch')) {
+
+              } else {
+                $this.siblings('label').trigger('mousedown').trigger('mouseup').trigger('click');
+              }
+            };
+
+            $element.on('keydown', function (e) {
+              if (e.keyCode === 32) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                changeStatus($(e.target).find('span:first'));
+              }
+            });
+
+            $switchLeft.on('click', function () {
+              changeStatus($(this));
+            });
+
+            $switchRight.on('click', function () {
+              changeStatus($(this));
+            });
+
+            $element.find(inputSelector).on('change', function (e, skipOnChange) {
+              var $this = $(this),
+                  $element = $this.parent(),
+                  thisState = $this.is(':checked'),
+                  state = $element.is('.switch-off');
+
+              e.preventDefault();
+
+              $element.css('left', '');
+
+              if (state === thisState) {
+                if (thisState) {
+                  $element.removeClass('switch-off').addClass('switch-on');
+                }
+                else {
+                  $element.removeClass('switch-on').addClass('switch-off');
+                }
+
+                if ($element.data('animated') !== false) {
+                  $element.addClass("switch-animate");
+                }
+
+                if (typeof skipOnChange === 'boolean' && skipOnChange) {
+                  return;
+                }
+
+                $element.parent().trigger('switch-change', {
+                  el: $this,
+                  value: thisState
+                });
+              }
+            });
+
+            $element.find('label').on('mousedown touchstart', function (e) {
+              var $this = $(this);
+              moving = false;
+
+              e.preventDefault();
+              e.stopImmediatePropagation();
+
+              $this.closest('div').removeClass('switch-animate');
+
+              if ($this.closest('.has-switch').is('.deactivate')) {
+                $this.unbind('click');
+              } else if ($this.closest('.switch-on').parent().is('.radio-no-uncheck')) {
+                $this.unbind('click');
+              } else {
+                $this.on('mousemove touchmove', function (e) {
+                  var $element = $(this).closest('.make-switch'),
+                      relativeX = (e.pageX || e.originalEvent.targetTouches[0].pageX) - $element.offset().left,
+                      percent = (relativeX / $element.width()) * 100,
+                      left = 25,
+                      right = 75;
+
+                  moving = true;
+
+                  if (percent < left) {
+                    percent = left;
+                  }
+                  else if (percent > right) {
+                    percent = right;
+                  }
+
+                  $element.find('>div').css('left', (percent - right) + "%");
+                });
+
+                $this.on('click touchend', function (e) {
+                  var $this = $(this),
+                      $myInputBox = $this.siblings('input');
+
+                  e.stopImmediatePropagation();
+                  e.preventDefault();
+
+                  $this.unbind('mouseleave');
+
+                  if (moving) {
+                    $myInputBox.prop('checked', !(parseInt($this.parent().css('left'), 10) < -25));
+                  }
+                  else {
+                    $myInputBox.prop("checked", !$myInputBox.is(":checked"));
+                  }
+
+                  moving = false;
+                  $myInputBox.trigger('change');
+                });
+
+                $this.on('mouseleave', function (e) {
+                  var $this = $(this),
+                      $myInputBox = $this.siblings('input');
+
+                  e.preventDefault();
+                  e.stopImmediatePropagation();
+
+                  $this.unbind('mouseleave mousemove');
+                  $this.trigger('mouseup');
+
+                  $myInputBox.prop('checked', ! (parseInt($this.parent().css('left'), 10) < -25)).trigger('change');
+                });
+
+                $this.on('mouseup', function (e) {
+                  e.stopImmediatePropagation();
+                  e.preventDefault();
+
+                  $(this).trigger('mouseleave');
+                });
+              }
+            });
+
+            if ($form.data('bootstrapSwitch') !== 'injected') {
+              $form.bind('reset', function () {
+                setTimeout(function () {
+                  $form.find('.make-switch').each(function () {
+                    var $input = $(this).find(inputSelector);
+
+                    $input.prop('checked', $input.is(':checked')).trigger('change');
+                  });
+                }, 1);
+              });
+              $form.data('bootstrapSwitch', 'injected');
+            }
+          }
+        );
+      },
+
+      toggleActivation: function () {
+        var $this = $(this);
+
+        $this.toggleClass('deactivate');
+        $this.find(inputSelector).prop('disabled', $this.is('.deactivate'));
+      },
+
+      isActive: function () {
+        return !$(this).hasClass('deactivate');
+      },
+
+      setActive: function (active) {
+        var $this = $(this);
+
+        if (active) {
+          $this.removeClass('deactivate');
+          $this.find(inputSelector).removeAttr('disabled');
+        }
+        else {
+          $this.addClass('deactivate');
+          $this.find(inputSelector).attr('disabled', 'disabled');
+        }
+      },
+
+      toggleState: function (skipOnChange) {
+        var $input = $(this).find(':checkbox');
+        $input.prop('checked', !$input.is(':checked')).trigger('change', skipOnChange);
+      },
+
+      toggleRadioState: function (skipOnChange) {
+        var $radioinput = $(this).find(':radio');
+        $radioinput.not(':checked').prop('checked', !$radioinput.is(':checked')).trigger('change', skipOnChange);
+      },
+
+      toggleRadioStateAllowUncheck: function (uncheck, skipOnChange) {
+        var $radioinput = $(this).find(':radio');
+
+        if (uncheck) {
+          $radioinput.not(':checked').trigger('change', skipOnChange);
+        }
+        else {
+          $radioinput.not(':checked').prop('checked', ! $radioinput.is(':checked')).trigger('change', skipOnChange);
+        }
+      },
+
+      setState: function (value, skipOnChange) {
+        $(this).find(inputSelector).prop('checked', value).trigger('change', skipOnChange);
+      },
+
+      setOnLabel: function (value) {
+        var $switchLeft = $(this).find(".switch-left");
+
+        $switchLeft.html(value);
+      },
+
+      setOffLabel: function (value) {
+        var $switchRight = $(this).find(".switch-right");
+
+        $switchRight.html(value);
+      },
+
+      setOnClass: function (value) {
+        var $switchLeft = $(this).find(".switch-left"),
+            color = '';
+
+        if (value !== undefined) {
+          if ($(this).attr('data-on') !== undefined) {
+            color = "switch-" + $(this).attr('data-on');
+          }
+          $switchLeft.removeClass(color);
+          color = "switch-" + value;
+          $switchLeft.addClass(color);
+        }
+      },
+
+      setOffClass: function (value) {
+        var $switchRight = $(this).find(".switch-right"),
+            color = '';
+
+        if (value !== undefined) {
+          if ($(this).attr('data-off') !== undefined) {
+            color = "switch-" + $(this).attr('data-off');
+          }
+          $switchRight.removeClass(color);
+          color = "switch-" + value;
+          $switchRight.addClass(color);
+        }
+      },
+
+      setAnimated: function (value) {
+        var $element = $(this).find(inputSelector).parent();
+
+        if (value === undefined) {
+          value = false;
+        }
+
+        $element.data('animated', value);
+        $element.attr('data-animated', value);
+        $element[$element.data('animated') !== false ? 'addClass' : 'removeClass']("switch-animate");
+      },
+
+      setSizeClass: function (value) {
+        var $element = $(this);
+        var $switchLeft = $element.find(".switch-left");
+        var $switchRight = $element.find(".switch-right");
+        var $label = $element.find("label");
+        $.each(['switch-mini', 'switch-small', 'switch-large'], function (i, el) {
+          if (el !== value) {
+            $switchLeft.removeClass(el);
+            $switchRight.removeClass(el);
+            $label.removeClass(el);
+          } else {
+            $switchLeft.addClass(el);
+            $switchRight.addClass(el);
+            $label.addClass(el);
+          }
+        });
+      },
+
+      status: function () {
+        return $(this).find(inputSelector).is(':checked');
+      },
+
+      destroy: function () {
+        var $element = $(this),
+            $div = $element.find('div'),
+            $form = $element.closest('form'),
+            $inputbox;
+
+        $div.find(':not(input)').remove();
+        $inputbox = $div.children();
+        $inputbox.unwrap().unwrap();
+        $inputbox.unbind('change');
+
+        if ($form) {
+          $form.unbind('reset');
+          $form.removeData('bootstrapSwitch');
+        }
+
+        return $inputbox;
+      }
+    };
+
+    if (methods[method]) {
+      return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+    }
+    if (typeof method === 'object' || ! method) {
+      return methods.init.apply(this, arguments);
+    }
+
+    $.error('Method ' + method + ' does not exist!');
+  };
+}(jQuery);
+
+(function ($) {
+  $(function () {
+    $('.make-switch').bootstrapSwitch();
+  });
+})(jQuery);
