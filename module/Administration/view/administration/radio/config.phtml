@@ -1,6 +1,7 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/js/radio.js')?>
 
+
 <div class="container-fluid">
 	<div class="span12">
 		<div class="block">
@@ -16,19 +17,44 @@
 							<th data-sort="string">Nom</th>
 							<th data-sort="string">Zone</th>
 							<th>Affiché</th>
-							<th></th>
+							<th>Position</th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php 
+						$i = 0;
+						$total = count($this->sectorsgroups);
 						foreach ($this->sectorsgroups as $sectorsgroup){
+							$i++;
 							echo '<tr>';
 								echo '<td>'.$sectorsgroup->getId().'</td>';
 								echo '<td>'.$sectorsgroup->getName().'</td>';
 								echo '<td>'.$sectorsgroup->getZone()->getName().'</td>';
-								echo '<td>'.$sectorsgroup->isDisplay().'</td>';
+								echo '<td>';
+								
+								echo '<div id="switch_'.$sectorsgroup->getId().'"
+											data-sectorgroupid="'.$sectorsgroup->getId().'"
+											data-href="'.$this->url('administration',
+																		array('controller'=>'radio', 'action' => 'switchdisplay'),
+																		array('query' => array('id' => $sectorsgroup->getId()))).'"
+											class="group-switch make-switch switch-small"
+											data-off="danger"
+											data-on="success"
+											data-on-label="O"
+											data-off-label="N"
+											>';
+								echo '<input type="checkbox" '.($sectorsgroup->isDisplay() ? 'checked="checked"' : '').'>';
+								echo '</div>';
+								
+								echo '</td>';
 								echo "<td>";
-									
+								echo '<a
+										href="'.$this->url('administration', array('controller'=>'radio', 'action'=>'groupdown'), array('query'=>array('id'=>$sectorsgroup->getId()))).'"'.
+										'class="groupdown'.($i == $total ? ' disabled':'').'">
+									<span class="caret middle"></span></a>
+									<a
+										href="'.$this->url('administration', array('controller'=>'radio', 'action'=>'groupup'), array('query'=>array('id'=>$sectorsgroup->getId()))).'"'.
+										'class="groupup'.($i == 1 ? ' disabled' : '').'">  <span class="up-caret middle"></span></a>';
 								echo "</td>";
 							echo '</tr>';
 							}							

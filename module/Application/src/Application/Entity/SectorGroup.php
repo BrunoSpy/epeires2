@@ -63,7 +63,7 @@ class SectorGroup {
 	 * @ORM\Column(type="integer")
 	 * @Gedmo\SortablePosition
 	 */
-	protected $postition;
+	protected $position;
 	
 	public function __construct(){
 		$this->sectors = new \Doctrine\Common\Collections\ArrayCollection();

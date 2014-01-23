@@ -218,8 +218,77 @@ class RadioController extends AbstractActionController
     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	 
-    	$viewmodel->setVariables(array('sectorsgroups' => $objectManager->getRepository('Application\Entity\SectorGroup')->findAll()));
+    	$viewmodel->setVariables(array('sectorsgroups' => $objectManager->getRepository('Application\Entity\SectorGroup')->findBy(array(), array('position' => 'ASC'))));
     	 
     	return $viewmodel;
     }
+    
+    public function groupdownAction(){
+    	$messages = array();
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id) {
+    		$sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+    		if($sectorgroup){
+    			$sectorgroup->setPosition($sectorgroup->getPosition() + 1);
+    			$em->persist($sectorgroup);
+    			try {
+    				$em->flush();
+    				$messages['success'][] = "Groupe correctement modifié.";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = "Impossible d'enregistrer la modification";
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de trouver l'élément.";
+    		}
+    	}
+    	return new JsonModel($messages);
+    }
+    
+    public function groupupAction(){
+    	$messages = array();
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id) {
+    		$sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+    		if($sectorgroup){
+    			$sectorgroup->setPosition($sectorgroup->getPosition() - 1);
+    			$em->persist($sectorgroup);
+    			try {
+    				$em->flush();
+    				$messages['success'][] = "Groupe correctement modifié.";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = "Impossible d'enregistrer la modification";
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de trouver l'élément.";
+    		}
+    	}
+    	return new JsonModel($messages);
+    }
+    
+    public function switchdisplayAction(){
+    	$messages = array();
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id){
+    		$sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+    		if($sectorgroup){
+    			$sectorgroup->setDisplay(!$sectorgroup->isDisplay());
+    			$em->persist($sectorgroup);
+    			try {
+    				$em->flush();
+    				$messages['success'][] = "Groupe correctement modifié.";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de trouver l'élément.";
+    		}
+    	}
+    	return new JsonModel($messages);
+    }
+    
 }

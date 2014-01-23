@@ -72,4 +72,62 @@ var radio = function(url){
 			location.reload();
 		});
 	});
+	
+	/* **************************** */
+	/*       Page Fréquences        */
+	/* **************************** */
+	
+	var updateCarets = function(element){
+		var tbody = element.find('tbody');
+		tbody.find('a.groupup').removeClass('disabled');
+		tbody.find('a.groupdown').removeClass('disabled');
+		tbody.find('tr:first a.groupup').addClass('disabled');
+		tbody.find('tr:last a.groupdown').addClass('disabled');
+		
+	};
+	
+	$(document).on('click', '.groupup', function(event){
+		event.preventDefault();
+		var me = $(this);
+		var href = me.attr('href');
+		$.post(href, function(data){
+			//si message d'erreur : ne rien faire
+			if(!data['error']) {
+				var metr = me.closest('tr');
+				var prevtr = metr.prev();
+				metr.remove();
+				metr.insertBefore(prevtr);
+				updateCarets(me.closest('table'));
+			}
+			displayMessages(data);
+		}, 'json');
+	});
+	
+	$(document).on('click',".groupdown", function(event){
+		event.preventDefault();
+		var me = $(this);
+		var href = me.attr('href');
+		$.post(href, function(data){
+			//si message d'erreur : ne rien faire
+			if(!data['error']) {
+				var metr = me.closest('tr');
+				var nexttr = metr.next();
+				metr.remove();
+				metr.insertAfter(nexttr);
+				updateCarets(me.closest('table'));
+			}
+			displayMessages(data);
+		}, 'json');
+	});
+	
+	$(document).on('switch-change', ".group-switch", function(event){
+		event.preventDefault();
+		var me = $(this);
+		$.post(me.data('href'), function(data){
+			if(data['error']){
+				me.bootstrapSwitch('setState', !me.bootstrapSwitch('status'), true);
+			} 
+			displayMessages(data);
+		}, 'json');
+	});
 };
