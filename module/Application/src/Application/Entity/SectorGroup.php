@@ -15,9 +15,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Gedmo\Sortable\Entity\Repository\SortableRepository")
  * @ORM\Table(name="sectorgroups")
  **/
 class SectorGroup {
@@ -53,6 +54,17 @@ class SectorGroup {
 	 */
 	protected $sectors;
 	
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $display = false;
+	
+	/**
+	 * @ORM\Column(type="integer")
+	 * @Gedmo\SortablePosition
+	 */
+	protected $postition;
+	
 	public function __construct(){
 		$this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
 	}
@@ -67,6 +79,24 @@ class SectorGroup {
 	
 	public function setName($name){
 		$this->name = $name;
+	}
+	
+	public function setPosition($position)
+	{
+		$this->position = $position;
+	}
+	
+	public function getPosition()
+	{
+		return $this->position;
+	}
+	
+	public function setDisplay($display){
+		$this->display = $display;
+	}
+	
+	public function isDisplay(){
+		return $this->display;
 	}
 	
 	public function getZone(){

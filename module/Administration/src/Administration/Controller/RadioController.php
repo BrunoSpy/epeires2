@@ -19,7 +19,7 @@ class RadioController extends AbstractActionController
     public function indexAction()
     {
     	$viewmodel = new ViewModel();
-    	$this->layout()->title = "Paramètres";
+    	$this->layout()->title = "Centres > Radio";
     	 
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
@@ -208,4 +208,18 @@ class RadioController extends AbstractActionController
     	return array('form'=>$form, 'frequency'=>$frequency);
     }
 
+    /* **************************** */
+    /*        Page Fréquences       */
+    /* **************************** */
+    
+    public function configAction(){
+    	$viewmodel = new ViewModel();
+    	$this->layout()->title = "Personnalisation > Page Fréquence";
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	 
+    	$viewmodel->setVariables(array('sectorsgroups' => $objectManager->getRepository('Application\Entity\SectorGroup')->findAll()));
+    	 
+    	return $viewmodel;
+    }
 }

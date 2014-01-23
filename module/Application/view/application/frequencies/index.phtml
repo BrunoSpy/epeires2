@@ -74,7 +74,11 @@
 $("#home").removeClass("dropdown-toggle")
 		  .attr('data-toggle', '')
 		  .html('<i class="icon-home"></i> Évènements');
-		  
+
+$("#create-link").remove();		  
+
+$("#zoom").remove;
+		  	  
 $(".sortable").stupidtable();
 
 $(".sortable").bind('aftertablesort', function(event, data){

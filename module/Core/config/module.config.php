@@ -6,6 +6,7 @@ return array(
 						'orm_default' => array(
 								'subscribers' => array(
 									'doctrine.loggable',
+									'Gedmo\Sortable\SortableListener'
 								),
 						),
 				),

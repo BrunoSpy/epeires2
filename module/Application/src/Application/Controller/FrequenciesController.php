@@ -156,7 +156,7 @@ class FrequenciesController extends AbstractActionController {
 			}
 		}
 			
-		foreach ($this->getCurrentAntennaEvents() as $result){
+		foreach ($em->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory') as $result){
 			$statefield = $result->getCategory()->getStatefield()->getId();
 			$antennafield = $result->getCategory()->getAntennafield()->getId();
 			$antennaid = 0;
@@ -176,31 +176,5 @@ class FrequenciesController extends AbstractActionController {
 		}
 		
 		return $antennas;
-	}
-	
-	private function getCurrentAntennaEvents(){
-		//tous les évènements antenne dont à la fois :
-		// * la date début et antèrieure à maintenant
-		// * la date de fin est nulle ou postèrieure à maintenant
-		// * le status est soit confirmé soit terminé
-		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		$now = new \DateTime('NOW');
-		$now->setTimezone(new \DateTimeZone("UTC"));
-		$qbEvents = $em->createQueryBuilder();
-		$qbEvents->select(array('e', 'cat'))
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\AntennaCategory')
-		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
-		->andWhere($qbEvents->expr()->orX(
-				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')))
-		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
-		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-						2 => $now->format('Y-m-d H:i:s')));
-					
-		$query = $qbEvents->getQuery();
-					
-		return $query->getResult();
 	}
 }

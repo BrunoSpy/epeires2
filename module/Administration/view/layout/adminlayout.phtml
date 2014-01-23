@@ -89,7 +89,7 @@
 					<ul class="dropdown-menu">
 						<li><a
 							data-title="Utilisateurs > Administration"
-							href="<?php echo $this->url('administration', array('controller'=>'users', 'action'=>'index')) ?>">Administration</a>
+							href="<?php echo $this->url('administration', array('controller'=>'users', 'action'=>'index')) ?>">Liste</a>
 						</li>
 						<li><a
 							data-title="Utilisateurs > Roles"
@@ -97,11 +97,11 @@
 						</li>
 						<li><a
 							data-title="Utilisateurs > IPO"
-							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">IPO</a>
+							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">Liste IPO</a>
 						</li>
 						<li><a
 							data-title="Utilisateurs > Op Sup"
-							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Op Sup</a>
+							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Liste Op Sup</a>
 						</li>
 					</ul>
 				</li>
@@ -112,11 +112,14 @@
 							data-title="Personnalisation > Catégories"
 							href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a>
 						</li>
-						<li><a href="<?php echo $this->url('administration', array('controller'=>'fields', 'action'=>'index')) ?>"
-							class="disabled">Champs</a></li>
 						<li><a
+							data-title="Personnalisation > Modèles"
 							href="<?php echo $this->url('administration', array('controller'=>'models', 'action'=>'index')) ?>"
 							>Modèles</a></li>
+						<li><a
+							data-title="Personnalisation > Page fréquence"
+							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Page Fréquence</a>
+						</li>
 					</ul>
 				</li>
 			</ul>

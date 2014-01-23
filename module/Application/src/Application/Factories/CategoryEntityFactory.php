@@ -12,6 +12,8 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 
 	private $sm;
 	
+	private $em = null;
+	
 	public function setServiceLocator(ServiceLocatorInterface $serviceLocator){
 		$this->sm = $serviceLocator;
 	}
@@ -20,12 +22,19 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		return $this->sm;
 	}
 	
+	private function getEntityManager(){
+		if(!$this->em){
+			$this->em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		}
+		return $this->em;
+	}
+	
 	/**
 	 * To be persisted
 	 * @return \Application\Entity\RadarCategory
 	 */
 	public function createRadarCategory(){
-		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$em = $this->getEntityManager();
 		$radarcat = new RadarCategory();
 		$radarfield = new CustomField();
 		$radarfield->setCategory($radarcat);
@@ -48,7 +57,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 	}
 	
 	public function createAntennaCategory(){
-		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$em = $this->getEntityManager();
 		$antennacat = new AntennaCategory();
 		$antennafield = new CustomField();
 		$antennafield->setCategory($antennacat);
@@ -68,5 +77,10 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$em->persist($antennafield);
 		$em->persist($statusfield);
 		return $antennacat;
+	}
+	
+	public function createFrequencyCategory(){
+		$em = $this->getEntityManager();
+		
 	}
 }

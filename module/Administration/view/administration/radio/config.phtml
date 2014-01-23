@@ -1,0 +1,62 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/radio.js')?>
+
+<div class="container-fluid">
+	<div class="span12">
+		<div class="block">
+			<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">Regroupements affichés </div>
+			</div>
+			<div class="block-content collapse in">
+				<div class="span12">
+				<table class="table table-striped sortable">
+					<thead>
+						<tr>
+							<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+							<th data-sort="string">Nom</th>
+							<th data-sort="string">Zone</th>
+							<th>Affiché</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						foreach ($this->sectorsgroups as $sectorsgroup){
+							echo '<tr>';
+								echo '<td>'.$sectorsgroup->getId().'</td>';
+								echo '<td>'.$sectorsgroup->getName().'</td>';
+								echo '<td>'.$sectorsgroup->getZone()->getName().'</td>';
+								echo '<td>'.$sectorsgroup->isDisplay().'</td>';
+								echo "<td>";
+									
+								echo "</td>";
+							echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+</div>
+
+			
+
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+radio('<?php echo $this->url('administration'); ?>');
+
+<?php $this->inlineScript()->captureEnd();?>
