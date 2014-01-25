@@ -28,9 +28,10 @@
 		//category and subcategory		
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
 		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
- 		if($this->event){
+ 		if($this->event || $this->model){
 			//Catégorie non modifiale si modification
 			$formSelectCat->setAttribute('disabled',true);
+			$formSelectSubCat->setAttribute('disabled', true);
  		}
 		
 		$html = $this->controlGroup(
@@ -38,10 +39,24 @@
 					$this->formSelect($formSelectCat));
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($formSelectSubCat->setAttribute('disabled',(!$this->event && !$this->model))),
+					$this->formSelect($formSelectSubCat),
 					array('control_id'=>'form_categories'));		
 		
-		echo $this->accordionGroup("Catégories", $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title'));
+		$catTitle = "Catégories";
+		
+		if($this->event) {
+			$catTitle .= " : ".($this->event->getCategory()->getParent() ? 
+									$this->event->getCategory()->getParent()->getName() . " > ".$this->event->getCategory()->getName() :
+									$this->event->getCategory()->getName());
+		}
+		
+		if($this->model) {
+			$catTitle .= " : ".($this->model->getCategory()->getParent() ?
+					$this->model->getCategory()->getParent()->getName() . " > ".$this->model->getCategory()->getName() :
+					$this->model->getCategory()->getName());
+		}
+		
+		echo $this->accordionGroup($catTitle, $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title', 'body-id' => "Catégories"));
  
 		//Modèles uniquement si création
 		if(!$this->event && !$this->model){
@@ -222,8 +237,8 @@
 	<div class="control-group">
 		<div class="controls">
 			<?php	
-			if($this->event){
-				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', ($this->copy ? "Ajouter" : "Modifier")));
+			if($this->event || $this->model){
+				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', (($this->copy || $this->model) ? "Ajouter" : "Modifier")));
 			} else {
 				echo $this->formSubmit($this->form->get('submit')->setAttribute('disabled', 'disabled'));
 			}?>

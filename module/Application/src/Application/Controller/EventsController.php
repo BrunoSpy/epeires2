@@ -600,6 +600,7 @@ class EventsController extends FormController {
     				$cat = $pevent->getCategory();
     				$viewmodel->setVariable('model', $pevent);
     				$zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($pevent->getOrganisation());
+    				$form->get('category')->setValue($cat->getId());
     			}
     		} else if($id) { //modification d'un evt
     			$event = $em->getRepository('Application\Entity\Event')->find($id);
@@ -647,7 +648,7 @@ class EventsController extends FormController {
     		}
     	}
     	
-    	if(!$id || ($id && $copy)){//nouvel évènement
+    	if(!$id || ($id && $copy) || ($id && $pevent)){//nouvel évènement
     		if($this->isGranted('events.status')){
     			//utilisateur opérationnel => statut confirmé dès le départ
     			$form->get('status')->setAttribute('value', 2);
