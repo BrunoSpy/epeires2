@@ -161,23 +161,25 @@
 		//ajout de fichier si nouvel evt ou mod avec droits ok
 		if(!$this->event || ($this->event && $mod)){
 			$html .= "<div id=\"file_list\">";
-			$html .= "<div id=\"filefield_1\">";
-			//ajouter des fichiers
-			$file = $this->form->get('fichiers')->get('fichier1')->get('file1');
-			$ref = $this->form->get('fichiers')->get('fichier1')->get('reference1');
-			$name = $this->form->get('fichiers')->get('fichier1')->get('name1');
-			$html .= $this->controlGroup(
+			if(!$this->event || !$mod){
+				//ajouter des fichiers : on affiche le premier champ seulement pour la création
+				$html .= "<div id=\"filefield_1\">";
+				$file = $this->form->get('fichiers')->get('fichier1')->get('file1');
+				$ref = $this->form->get('fichiers')->get('fichier1')->get('reference1');
+				$name = $this->form->get('fichiers')->get('fichier1')->get('name1');
+				$html .= $this->controlGroup(
 					"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\">&nbsp;</a>".
 					$this->formLabel($name).
 					"</div>",
 					$this->formInput($ref).
 					$this->formInput($name)
-			);
-			$html .= $this->controlGroup(
+				);
+				$html .= $this->controlGroup(
 					$this->formLabel($file->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formFile($file)
-			);
-			$html .= "</div>";
+				);
+				$html .= "</div>";
+			}
 			$html .= "</div>";
 			
 			$html .= "<a id=\"addfile\" href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";

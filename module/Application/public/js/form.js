@@ -490,7 +490,7 @@ var form = function(url){
 	//ajout formulaire fichier
 	$("#event").on('click', "#addfile", function(){
 		var lastinput = $("#file_list > div:last").attr('id');
-		var count = parseInt(lastinput[lastinput.length -1]) +1;
+		var count = (typeof lastinput == 'undefined' ? 1 : parseInt(lastinput[lastinput.length -1]) +1);
 		$("<div>").load(url+'/subform?part=file_field&count='+count, function(){
 			$("#file_list").append($(this).html());
 		});
