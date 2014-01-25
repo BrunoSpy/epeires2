@@ -55,11 +55,13 @@ class SectorGroup {
 	protected $sectors;
 	
 	/**
+	 * Affiché ou non dans la page fréquence
 	 * @ORM\Column(type="boolean")
 	 */
 	protected $display = false;
 	
 	/**
+	 * Position dans la page fréquence
 	 * @ORM\Column(type="integer")
 	 * @Gedmo\SortablePosition
 	 */

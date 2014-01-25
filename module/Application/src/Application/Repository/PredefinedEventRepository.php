@@ -1,11 +1,11 @@
 <?php
 namespace Application\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Expression;
+use Gedmo\Sortable\Entity\Repository\SortableRepository;
 
-class PredefinedEventRepository extends EntityRepository {
+class PredefinedEventRepository extends SortableRepository {
 	
 	/**
 	 * @return array

@@ -72,65 +72,47 @@ class ModelsController extends FormController
     }
     
     public function upAction(){
+    	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			//get the field just before
-    			$qb = $objectManager->createQueryBuilder();
-    			$qb->select('f')
-    			->from('Application\Entity\PredefinedEvent', 'f');
-    			if($pevent->getParent()){ //action => order by parent
-    				$qb->andWhere('f.parent = '.$pevent->getParent()->getId());
-    			} else { //order by category
-    				$qb->andWhere('f.category = '.$pevent->getCategory()->getId());
-    			}
-    			$qb->andWhere('f.place < '.$pevent->getPlace())
-    			->orderBy('f.place','DESC')
-    			->setMaxResults(1);
-    			$result = $qb->getQuery()->getSingleResult();
-    			//switch places
-    			$temp = $result->getPlace();
-    			$result->setPlace($pevent->getPlace());
-    			$pevent->setPlace($temp);
-    			$objectManager->persist($result);
+    			$pevent->setPlace($pevent->getPlace() -1);
     			$objectManager->persist($pevent);
-    			$objectManager->flush();
+    			try {
+    				$objectManager->flush();
+    				$messages['success'][] = "Élément correctement modifié.";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de trouver l'élément";
     		}
     	}
-    	return new JsonModel();
+    	return new JsonModel($messages);
     }
     
     public function downAction(){
+    	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			//get the field just before
-    			$qb = $objectManager->createQueryBuilder();
-    			$qb->select('f')
-    			->from('Application\Entity\PredefinedEvent', 'f');
-    			if($pevent->getParent()){ //action => order by parent
-    				$qb->andWhere('f.parent = '.$pevent->getParent()->getId());
-    			} else { //order by category
-    				$qb->andWhere('f.category = '.$pevent->getCategory()->getId());
-    			}
-    			$qb->andWhere('f.place > '.$pevent->getPlace())
-    			->orderBy('f.place','ASC')
-    			->setMaxResults(1);
-    			$result = $qb->getQuery()->getSingleResult();
-    			//switch places
-    			$temp = $result->getPlace();
-    			$result->setPlace($pevent->getPlace());
-    			$pevent->setPlace($temp);
-    			$objectManager->persist($result);
+    			$pevent->setPlace($pevent->getPlace() +1);
     			$objectManager->persist($pevent);
-    			$objectManager->flush();
+    			try {
+    				$objectManager->flush();
+    				$messages['success'][] = "Élément correctement modifié.";
+    			} catch (\Exception $e) {
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de trouver l'élément";
     		}
     	}
-    	return new JsonModel();
+    	return new JsonModel($messages);
     }
     
     public function saveAction(){
@@ -336,7 +318,7 @@ class ModelsController extends FormController
     	//disable layout if request by Ajax
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
     	if($id){
-    		$models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('category'=>$id, 'parent' => null));
+    		$models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('category'=>$id, 'parent' => null), array('place' => 'ASC'));
     		$viewmodel->setVariables(array('models'=>$models, 'catid'=>$id));
     	}
     	return $viewmodel;
@@ -376,4 +358,5 @@ class ModelsController extends FormController
      	}
      	return new JsonModel($zonefilters);
      }
+     
 }

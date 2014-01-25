@@ -9,6 +9,7 @@ namespace Application\Entity;
 
 use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 
 /**
@@ -35,9 +36,6 @@ class PredefinedEvent extends AbstractEvent{
 	 * @Annotation\Options({"label":"Recherche :"})
 	 */
  	protected $searchable;
-	
- 	/** @ORM\Column(type="integer", nullable=true) */
- 	protected $place;
  		 	
  	public function __construct(){
  		parent::__construct();

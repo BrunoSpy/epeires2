@@ -7,6 +7,21 @@
 
 var models = function(url){
 	
+	//by default last = true
+	var updateCarets = function(element, last){
+		var tbody = element.find('tbody');
+		tbody.find('a.up').removeClass('disabled');
+		tbody.find('a.down').removeClass('disabled');
+		tbody.find('tr:first a.up').addClass('disabled');
+		if((typeof last !== 'undefined') && !last){
+			tbody.find('tr:last').prev().find('a.down').addClass('disabled');
+		} else {
+			tbody.find('tr:last a.down').addClass('disabled');
+		}
+		
+	};
+	
+	
 	/* **************************** */
 	/*         List of models       */
 	/* **************************** */
@@ -80,14 +95,19 @@ var models = function(url){
 			} else {
 				var tr = $('<tr id="'+data.id+'"></tr>');
 				tr.append('<td>'+data.name+'</td>');
-				tr.append('<td><a '+
+				tr.append('<td>'+
+							'<a	href="'+url+'/models/down?id='+data.id+'"'+
+								'class="down"><span class="caret middle"></span></a>'+
+							'<a	href="'+url+'/models/up?id='+data.id+'"'+
+								'class="up"> <span class="up-caret middle"></span></a>'+
+							'<a '+
 							'title="Modifier" '+
 							'class="mod-model" '+
 							'href="#model-container" '+
 							'data-toggle="modal" '+
 							'data-id='+data.id+' '+
 							'data-name="'+data.name+'" '+
-							'><i class="icon-pencil"></i></a>'+ 
+							'> <i class="icon-pencil"></i></a>'+ 
 							'<a '+
 							'href="#confirm-delete-model" '+
 							'data-toggle="modal" '+
@@ -103,6 +123,36 @@ var models = function(url){
 			//reload only if no other modal
 			if(!$("#models-container").is(':visible')){
 				location.reload();
+			}
+		}, 'json');
+	});
+	
+	$(".modal").on('click', 'a.up', function(event){
+		event.preventDefault();
+		var me = $(this);
+		var href = me.attr('href');
+		$.post(href, function(data){
+			if(!data['error']){
+				var metr = me.closest('tr');
+				var prevtr = metr.prev();
+				metr.remove();
+				metr.insertBefore(prevtr);
+				updateCarets(me.closest('table'));
+			}
+		}, 'json');
+	});
+	
+	$(".modal").on('click', 'a.down', function(event){
+		event.preventDefault();
+		var me = $(this);
+		var href = me.attr('href');
+		$.post(href, function(data){
+			if(!data['error']){
+				var metr = me.closest('tr');
+				var nexttr = metr.next();
+				metr.remove();
+				metr.insertAfter(nexttr);
+				updateCarets(me.closest('table'));
 			}
 		}, 'json');
 	});
@@ -131,38 +181,6 @@ var models = function(url){
 		});
 	});
 	
-	var updateCarets = function(element){
-		var tbody = element.find('tbody');
-		tbody.find('a.up').removeClass('disabled');
-		tbody.find('a.down').removeClass('disabled');
-		tbody.find('tr:first a.up').addClass('disabled');
-		tbody.find('tr:last a.down').addClass('disabled');
-	};
-	
-	$("#model-container").on('click', 'a.up', function(event){
-		event.preventDefault();
-		var me = $(this);
-		$.post(me.attr('href'), function(){
-			var metr = me.closest('tr');
-			var prevtr = metr.prev();
-			metr.remove();
-			prevtr.before(metr);
-			updateCarets($("#model-container"));
-		});
-	});
-	
-	$("#model-container").on('click', 'a.down', function(event){
-		event.preventDefault();
-		var me = $(this);
-		$.post(me.attr('href'), function(){
-			var metr = me.closest('tr');
-			var nexttr = metr.next();
-			metr.remove();
-			metr.insertAfter(nexttr);
-			updateCarets($("#model-container"));
-		});
-	});
-	
 	/* ************************************ */
 	/*  Fenêtre création/mod d'une action   */
 	/* ************************************ */
@@ -180,7 +198,8 @@ var models = function(url){
 					var newtr = $('<tr id="'+data.id+'"></tr>');
 					newtr.append('<td>'+data.name+'</td>');
 					newtr.append('<td><span class="label label-'+data.impactstyle+'">'+data.impactname+'</span></td>');
-					newtr.append('<td><a class="down" href="'+url+'/models/down?id='+data.id+'">'+
+					newtr.append('<td>'+
+							'<a class="down" href="'+url+'/models/down?id='+data.id+'">'+
 							'<span class="caret middle"></span></a> '+
 							'<a class="up" href="'+url+'/models/up?id='+data.id+'"><span class="up-caret middle"></span></a>');
 					newtr.append('<td><i class="icon-pencil"></i> <a title="Supprimer"'+ 

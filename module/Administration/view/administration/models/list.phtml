@@ -12,11 +12,28 @@
 	</tr>
 </thead>
 <tbody>
-	<?php foreach ($this->models as $model){
+	<?php 
+		$total = count($this->models);
+		$i = 0;
+		foreach ($this->models as $model){
+		$i++;
 		//Warning : rows are also created with jquery
 		echo "<tr id=\"".$model->getId()."\">";
 			echo "<td>".$model->getName()."</td>";
-			echo '<td><a
+			echo '<td>
+				<a
+					href="'.$this->url('administration', 
+								array('controller'=>'models', 'action'=>'down'),
+								array('query'=>array('id'=>$model->getId()))).'"'.
+					'class="down'.($i == $total ? ' disabled':'').'"> 
+					<span class="caret middle"></span></a>
+				<a
+					href="'.$this->url('administration',
+								array('controller'=>'models', 'action'=>'up'),
+								array('query'=>array('id'=>$model->getId()))).'"'.
+					'class="up'.($i == 1 ? ' disabled' : '').'">  
+					<span class="up-caret middle"></span></a>
+				<a
 				title="Modifier" 
 				class="mod-model"
 				href="#model-container"
