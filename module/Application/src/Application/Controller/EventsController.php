@@ -397,6 +397,7 @@ class EventsController extends FormController {
     						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
     							$child = new Event();
     							$child->setParent($event);
+    							$child->setOrganisation($event->getOrganisation());
     							$child->createFromPredefinedEvent($action);
     							$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
     							//customfields
@@ -416,6 +417,7 @@ class EventsController extends FormController {
     						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
     							$child = new Event();
     							$child->setParent($event);
+    							$child->setOrganisation($event->getOrganisation());
     							$child->setCategory($action->getCategory());
     							$child->setImpact($action->getImpact());
     							$child->setPunctual($action->isPunctual());
@@ -455,12 +457,14 @@ class EventsController extends FormController {
     							}
     						}
     					}
-    					 
     					
     					$objectManager->persist($event);
-    					$objectManager->flush();
-    					
-    					$messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+    					try{
+    						$objectManager->flush();
+    						$messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+    					} catch(\Exception $e){
+    						$messages['error'][] = $e->getMessage();
+    					}
     					
     				} else {
     					//erase event
@@ -636,7 +640,7 @@ class EventsController extends FormController {
     	if($id && $pevent){ //copie d'un modèle
     		//prefill customfields with predefined values
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
-    			$customfieldvalue = $em->getRepository('Application\Entity\PredefinedCustomFieldValue')->findOneBy(array('predefinedevent'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
+    			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
     			if($customfieldvalue){
     				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     			}
@@ -1017,6 +1021,7 @@ class EventsController extends FormController {
     			'name' => $category->getName(),
     			'short_name' => $category->getShortName(),
     			'color' => $category->getColor(),
+    			'compact' => $category->isCompactMode(),
     		);
     	}
     	

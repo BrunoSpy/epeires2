@@ -32,7 +32,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 		if($this->auth->hasIdentity()) {
 			$router = $this->servicemanager->get('router');
 			$request = $this->servicemanager->get('request');
-			if($router->match($request)->getMatchedRouteName() == 'administration'){
+			if($router->match($request) && $router->match($request)->getMatchedRouteName() == 'administration'){
 				$html .= "<li><a href=\"".$urlHelper('application')."\">Retour application</a></li>";
 			} else {
 				if($this->auth->getIdentity()->hasRole('admin')){
