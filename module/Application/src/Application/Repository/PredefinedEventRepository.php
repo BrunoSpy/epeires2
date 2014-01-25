@@ -14,6 +14,7 @@ class PredefinedEventRepository extends SortableRepository {
 		$criteria = Criteria::create()->where(Criteria::expr()->eq('category', $category));
 		$criteria->andWhere(Criteria::expr()->isNull('parent'));
 		$criteria->andWhere(Criteria::expr()->eq('listable', true));
+		$criteria->orderBy(array('place' => 'ASC'));
 		$list = parent::matching($criteria);
 		$res = array();
 		foreach ($list as $element) {
