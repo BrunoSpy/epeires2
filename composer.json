@@ -17,9 +17,8 @@
         "doctrine/doctrine-orm-module": ">=0.7.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
         "zf-commons/zfc-user": "dev-master",
-        "zf-commons/zfc-rbac": "dev-master",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
-        "zfr/rbac": ">=1.0.0"
+        "zf-commons/zfc-rbac": "~2.0"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
