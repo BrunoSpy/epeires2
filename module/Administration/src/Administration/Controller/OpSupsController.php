@@ -125,7 +125,7 @@ class OpSupsController extends FormController
     	$opsup = new OperationalSupervisor();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($opsup);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\OperationalSupervisor'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($opsup);
         	 
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());

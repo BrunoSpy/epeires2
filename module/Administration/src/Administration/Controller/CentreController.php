@@ -134,7 +134,7 @@ class CentreController extends FormController
     	$organisation = new Organisation();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($organisation);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Organisation'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     		->setObject($organisation);
     	
     	if($id){
@@ -222,7 +222,7 @@ class CentreController extends FormController
     	$qualif = new QualificationZone();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($qualif);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\QualificationZone'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($qualif);
     	 
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
@@ -322,7 +322,7 @@ class CentreController extends FormController
     	$group = new SectorGroup();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($group);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\SectorGroup'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($group);
     
     	$form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray());
@@ -431,7 +431,7 @@ class CentreController extends FormController
     	$sector = new Sector();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($sector);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Sector'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($sector);
     
     	$form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray());

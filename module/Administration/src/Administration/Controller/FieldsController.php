@@ -178,7 +178,7 @@ class FieldsController extends AbstractActionController
     	$customfield = new CustomField();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($customfield);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\CustomField'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($customfield);
     	 
     	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getAllAsArray());

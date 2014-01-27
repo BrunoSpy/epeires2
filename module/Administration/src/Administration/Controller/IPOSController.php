@@ -111,7 +111,7 @@ class IPOSController extends FormController
     	$ipo = new IPO();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($ipo);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\IPO'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($ipo);
         	 
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());

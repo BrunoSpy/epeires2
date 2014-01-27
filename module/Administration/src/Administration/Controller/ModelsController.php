@@ -249,7 +249,7 @@ class ModelsController extends FormController
     	$pevent = new PredefinedEvent();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($pevent);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\PredefinedEvent'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($pevent);
     	
     	$form->get('impact')->setValueOptions($objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
@@ -336,7 +336,7 @@ class ModelsController extends FormController
      	$pevent = new PredefinedEvent();
      	$builder = new AnnotationBuilder();
      	$form = $builder->createForm($pevent);
-     	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\PredefinedEvent'))
+     	$form->setHydrator(new DoctrineObject($objectManager))
      	->setObject($pevent);
      	
      	$form->add(new CustomFieldset($this->getServiceLocator(), $id));

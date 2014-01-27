@@ -136,7 +136,7 @@ class RolesController extends FormController
     	$role = new Role();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($role);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Core\Entity\Role'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($role);
         	 
     	$form->get('parent')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());

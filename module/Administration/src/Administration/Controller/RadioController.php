@@ -102,7 +102,7 @@ class RadioController extends AbstractActionController
     	$antenna = new Antenna();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($antenna);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Antenna'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($antenna);
     
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
@@ -190,7 +190,7 @@ class RadioController extends AbstractActionController
     	$frequency = new Frequency();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($frequency);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Frequency'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($frequency);
     
     	$form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());

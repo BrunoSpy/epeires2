@@ -84,7 +84,7 @@ class CategoriesController extends FormController{
     	$category = new Category();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($category);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Category'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     		->setObject($category);
     	
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($id));
@@ -167,7 +167,7 @@ class CategoriesController extends FormController{
     		
 			$builder = new AnnotationBuilder();
 			$form = $builder->createForm($category);
-			$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Category'))
+			$form->setHydrator(new DoctrineObject($objectManager))
 			->setObject($category);
 			$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($post['id']));
 			$form->bind($category);

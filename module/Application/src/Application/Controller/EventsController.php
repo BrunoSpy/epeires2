@@ -694,7 +694,7 @@ class EventsController extends FormController {
     	
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($event);
-    	$form->setHydrator(new DoctrineObject($em, 'Application\Entity\Event'))
+    	$form->setHydrator(new DoctrineObject($em))
     		->setObject($event);    	
     	
     	$form->get('status')

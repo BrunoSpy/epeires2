@@ -172,7 +172,7 @@ class UsersController extends FormController
     	$user = new User();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($user);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Core\Entity\User'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($user);
     
     	$form->get('userroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());

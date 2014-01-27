@@ -82,7 +82,7 @@ class RadarsController extends AbstractActionController
     	$radar = new Radar();
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($radar);
-    	$form->setHydrator(new DoctrineObject($objectManager, 'Application\Entity\Radar'))
+    	$form->setHydrator(new DoctrineObject($objectManager))
     	->setObject($radar);
      	 
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
