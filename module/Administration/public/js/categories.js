@@ -19,26 +19,16 @@ var categories = function(url){
 		$("#form-title").html("Modification de "+$(this).data('name'));
 		$("#form").load(url+'/categories/form'+'?id='+$(this).data('id'),
 				function(){
-					$("#form").find(".colorpicker").spectrum({
-						showInitial: false,
-						showInput: true,
-						preferredFormat: "hex",
-					});
+					$("#form").find(".pick-a-color").pickAColor();
 			});	
 	});
 
 	$("#add-cat").on('click', function(evt){
 		$("#form-title").html("Nouvelle catégorie");
 		$("#form").load(url+'/categories/form',
-				function(){
-			$("#form").find(".colorpicker").spectrum({
-				showInitial: false,
-				showInput: true,
-				preferredFormat: "hex",
-			}
-			);
-		}
-		);	
+			function(){
+				$("#form").find(".pick-a-color").pickAColor();
+			});	
 	});
 
 	$(".mod_fields").on('click', function(){

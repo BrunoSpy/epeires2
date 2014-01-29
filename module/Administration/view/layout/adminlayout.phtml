@@ -12,7 +12,7 @@
                         ->prependStylesheet($this->basePath() . '/css/application.css') 
                         ->prependStylesheet($this->basePath() . '/css/admin.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-switch.css')
-                        ->prependStylesheet($this->basePath() . '/css/spectrum.css')
+                        ->prependStylesheet($this->basePath() . '/css/pick-a-color-1.1.8.min.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/css/jquery-ui.min.css')
@@ -20,7 +20,8 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
-        							  ->prependFile($this->basePath() . '/js/spectrum.js')
+        							  ->prependFile($this->basePath() . '/js/pick-a-color-1.1.8.min.js')
+        							  ->prependFile($this->basePath() . '/js/tinycolor-0.9.15.min.js')
         							  ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')

@@ -28,3 +28,12 @@
 th.no-border, td.no-border {
 	border: none;
 }
+
+div.pick-a-color-markup .color-menu {
+	right: 0px;
+	left: auto;
+}
+
+input.pick-a-color {
+	width : 116px;
+}
