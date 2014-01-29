@@ -14,8 +14,9 @@
 					<thead>
 						<tr>
 							<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
-							<th data-sort="string">Nom</th>
+							<th data-sort="string">Organisation</th>
 							<th data-sort="string">Zone</th>
+							<th data-sort="string">Nom</th>
 							<th>Affiché</th>
 							<th>Position</th>
 						</tr>
@@ -28,8 +29,9 @@
 							$i++;
 							echo '<tr>';
 								echo '<td>'.$sectorsgroup->getId().'</td>';
-								echo '<td>'.$sectorsgroup->getName().'</td>';
+								echo '<td>'.$sectorsgroup->getZone()->getOrganisation()->getName().'</td>';
 								echo '<td>'.$sectorsgroup->getZone()->getName().'</td>';
+								echo '<td>'.$sectorsgroup->getName().'</td>';
 								echo '<td>';
 								
 								echo '<div id="switch_'.$sectorsgroup->getId().'"
@@ -82,6 +84,8 @@ $(".sortable").bind('aftertablesort', function(event, data){
     var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
+
+$("table th:eq(1)").trigger('click');
 
 radio('<?php echo $this->url('administration'); ?>');
 

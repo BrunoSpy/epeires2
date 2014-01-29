@@ -68,6 +68,7 @@ return array(
     		'customfieldvalue' => 'Application\View\Helper\CustomFieldValue',
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     		'block' => 'Application\View\Helper\Block',
+    		'sector' => 'Application\View\Helper\Sector',
     	),
     	'factories' => array(
     		'eventName' => 'Application\Factories\EventNameFactory',

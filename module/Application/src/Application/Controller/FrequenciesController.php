@@ -37,6 +37,11 @@ class FrequenciesController extends AbstractActionController {
 		
 		$viewmodel->setVariable('antennas', $this->getAntennas());
 		
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$groups = $em->getRepository('Application\Entity\SectorGroup')->findBy(array('display' => true), array('position' => 'ASC'));
+		
+		$viewmodel->setVariable('groups', $groups);
+		
 		return $viewmodel;
 		
 	}

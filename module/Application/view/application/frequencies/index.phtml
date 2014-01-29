@@ -4,8 +4,17 @@
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span9">
-			<?php echo $this->block('test1', '<p>TEST</p>')?>
-			<?php echo $this->block('test2', '<p>TEST</p>')?>
+			<?php 
+			foreach ($this->groups as $group){
+				$inner = "";
+				$inner .= "<ul class=\"sector-list\">";
+				foreach ($group->getSectors() as $sector){
+					$inner .= "<li>".$this->sector($sector)."</li>";
+				}
+				$inner .= "</ul>";
+				echo $this->block($group->getName(), $inner);
+			}
+			?>
 		</div>
 		<div class="span3">
 			<div class="block">

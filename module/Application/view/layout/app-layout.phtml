@@ -39,6 +39,9 @@
     	<div class="header">
     		<ul class="inline">
     				<?php echo $this->userMenu(); ?>
+    				<?php if($this->zfcUserIdentity() && !$this->zoneform) :?>
+    				<li><i class="icon-road"></i><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?></li>
+    				<?php endif;?>
     				<?php if($this->zoneform) :?>
     				<li><i class="icon-filter"></i><b> Zone : </b></li>
     				<li><?php 
