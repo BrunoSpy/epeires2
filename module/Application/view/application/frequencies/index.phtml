@@ -9,7 +9,9 @@
 				$inner = "";
 				$inner .= "<ul class=\"sector-list\">";
 				foreach ($group->getSectors() as $sector){
-					$inner .= "<li>".$this->sector($sector)."</li>";
+					if($sector->getFrequency()){
+						$inner .= "<li>".$this->sector($sector)."</li>";
+					}
 				}
 				$inner .= "</ul>";
 				echo $this->block($group->getName(), $inner);
@@ -33,7 +35,7 @@
 							<tbody>
 								<?php 
 								foreach ($this->antennas as $antennaid => $antenna){
-									echo '<tr>';
+									echo '<tr data-id="'.$antennaid.'">';
 									echo '<td>'.$antenna['name'].'</td>';
 									echo '<td>';
 									

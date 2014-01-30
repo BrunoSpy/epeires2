@@ -53,6 +53,16 @@ $(document).ready(function(){
    $("a[data-toggle=tooltip]").tooltip();
    $("th[data-toggle=tooltip]").tooltip();
    
+   $("a[data-toggle=popover]").popover();
+   
+	//hide popover if click outside
+	$(document).mouseup(function(e){
+		var container = $("a[data-toggle=popover]");
+		if(!container.is(e.target) && container.has(e.target).length === 0){
+			container.popover('hide');
+		}
+	});
+   
    //open links in new window
    $(document).on('click', 'a[rel="external"]',function(){
 	   window.open($(this).attr('href'));
@@ -66,7 +76,7 @@ $(document).ready(function(){
 		$(".loading").hide();
 		}
 	);
-   
+	
    $.noty.defaults = {
 		    layout: 'bottomRight',
 		    theme: 'defaultTheme',

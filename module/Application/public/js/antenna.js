@@ -41,14 +41,34 @@ var antenna = function(url){
 		   $.post($("#end-antenna-href").attr('href'), function(data){
 			   displayMessages(data);
 			   back = true;
+			   var switchbtn = $('#switch_'+$("#cancel-antenna").data('antenna'));
 			   if(data['error']){
 				   //dans le doute, on remet le bouton à son état antérieur
 				   modal = false;
-				   $('#switch_'+$("#cancel-antenna").data('antenna')).bootstrapSwitch('toggleState');
+				   switchbtn.bootstrapSwitch('toggleState');
 				   modal = true;
+			   } else {
+				   //mise à jour des fréquences
+				   if(switchbtn.bootstrapSwitch('status')){
+					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).removeClass('background-status-fail');
+					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).addClass('background-status-ok');
+				   } else {
+					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).removeClass('background-status-ok');
+					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).addClass('background-status-fail');
+				   }
 			   }
 		   }, 'json');
 	   });
+	   
+	   $("#antennas tr").hover(
+			   //in
+			   function(){
+				   $('.antenna-'+$(this).data('id')).closest('.sector').addClass('background-status-test');
+			   },
+			   //out
+			   function(){
+				   $('.antenna-'+$(this).data('id')).closest('.sector').removeClass('background-status-test'); 
+			   });
 	   
 	   //refresh page every 30s
 	   (function doPoll(){
@@ -56,8 +76,29 @@ var antenna = function(url){
 	   			.done(function(data) {
 	   				$.each(data, function(key, value){
 	   					$('#switch_'+key).bootstrapSwitch('setState', value, true);
+	   					if(value){
+	   						$('.antenna-color.antenna-'+key).removeClass('background-status-fail');
+	   						$('.antenna-color.antenna-'+key).addClass('background-status-ok');
+	   					} else {
+	   						$('.antenna-color.antenna-'+key).removeClass('background-status-ok');
+	   						$('.antenna-color.antenna-'+key).addClass('background-status-fail');
+	   					}
 	   				});
 	   			})
 	   			.always(function() { setTimeout(doPoll, 30000);});
+		   
+		   $.post(url+'frequencies/getfrequenciesstate')
+  			.done(function(data) {
+  				$.each(data, function(key, value){
+  					if(value){
+  						$('.sector-color.frequency-'+key).removeClass('background-status-fail');
+  						$('.sector-color.frequency-'+key).addClass('background-status-ok');
+  					} else {
+  						$('.sector-color.frequency-'+key).removeClass('background-status-ok');
+  						$('.sector-color.frequency-'+key).addClass('background-status-fail');
+  					}
+  				});
+  			})
+  			.always(function() { setTimeout(doPoll, 30000);});
 	   })();
 };

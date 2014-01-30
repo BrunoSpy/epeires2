@@ -57,7 +57,7 @@ class FrequenciesController extends AbstractActionController {
 			$now->setTimezone(new \DateTimeZone("UTC"));
 			
 			if($state != null && $antennaid){
-				$events = $this->getCurrentAntennaEvents();
+				$events = $em->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory');
 				//on récupère les évènemets de l'antenne
 				$antennaEvents = array();
 				foreach ($events as $event){
@@ -143,6 +143,42 @@ class FrequenciesController extends AbstractActionController {
 	
 	public function getAntennaStateAction(){
 		return new JsonModel($this->getAntennas(false));
+	}
+	
+	/**
+	 * State of the frequencies
+	 * @return \Zend\View\Model\JsonModel
+	 */
+	public function getFrequenciesStateAction(){
+		return new JsonModel($this->getFrequencies(false));
+	}
+	
+	private function getFrequencies($full = true){
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		
+		$frequencies = array();
+		$results = $em->getRepository('Application\Entity\Frequency')->findAll();
+		
+		//retrieve antennas state once and for all
+		$antennas = $this->getAntennas(false);
+		
+		foreach ($results as $frequency){
+			if($full){
+				$frequencies[$frequency->getId()] = array();
+				$frequencies[$frequency->getId()]['name'] = $frequency->getValue();
+				$frequencies[$frequency->getId()]['status'] = true; 
+			} else {
+				$frequencies[$frequency->getId()] = true;
+			}
+			
+			//TODO take into account frequency events
+			if($full){
+				$frequencies[$frequency->getId()]['status'] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
+			} else {
+				$frequencies[$frequency->getId()] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
+			}
+		}	
+		return $frequencies;
 	}
 	
 	private function getAntennas($full = true){

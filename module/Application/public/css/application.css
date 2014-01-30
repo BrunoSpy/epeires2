@@ -51,10 +51,27 @@ ul.sector {
 	position: static;
 	margin-right: 1em;
 	min-width: 120px;
+	padding-bottom: 0px;
+	margin-bottom: 10px;
 }
 
 ul.sector-list {
 	list-style: none;
+	color: white;
+}
+
+.popover-content {
+	padding-left: 0px;
+	padding-bottom: 0px;
+}
+
+.popover-content ul {
+	list-style: none;
+}
+
+.sector-freq > a, .antenna-color > li > a {
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
 }
 
 .sector-name {
@@ -66,19 +83,27 @@ ul.sector-list {
 	text-align: center;
 }
 
+li.sector-freq > a:after {
+	display: block;
+	float: right;
+	width: 0;
+	height: 0;
+	margin-top: 5px;
+	margin-right: 10px;
+	border-color: transparent;
+	border-left-color: #cccccc;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+  	content: " ";
+}
+
 ul.antennas {
 	list-style: none;
 	margin-left: 0px;
 	padding-left: 10px;
 }
 
-ul.antennas li{
-	display: inline;
-	width: 50%;
-	float: left;
-}
-
-ul.antennas li > a:after {
+ul.antennas > div > li > a:after {
   display: block;
   float: right;
   width: 0;
@@ -93,7 +118,6 @@ ul.antennas li > a:after {
 }
 
 .sector-color {
-	background-color: salmon;
 	height: 100%;
 	margin-top: -5px;
 	padding-top: 5px;
@@ -101,6 +125,47 @@ ul.antennas li > a:after {
 	padding-bottom: 9px;
 	border-radius: 6px 6px 0px 0px;
 }
+
+.antenna-color {
+	height: 100%;
+	float: left;
+	width: 50%;
+	margin-top: -10px;
+	padding-top: 10px;
+	padding-bottom: 5px;
+}
+
+.mainantenna-color {
+	margin-left: -10px;
+	padding-left: 5px;
+	margin-right: -10px;
+	padding-right: 10px;
+	border-radius: 0px 0px 0px 6px;
+}
+
+.backupantenna-color {
+	padding-left: 5px;
+	border-radius: 0px 0px 6px 0px;
+}
+
+.background-status-ok {
+	background-image: linear-gradient(to bottom,#51a351,#62c462);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+}
+
+.background-status-fail {
+	background-image: linear-gradient(to bottom,#bd362f,#ee5f5b);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+}
+
+.background-status-test {
+	box-shadow: 10px 5px 10px rgba(255, 255, 0, 1);
+}
+
 /************* Block ***********************/
 
 .block {
@@ -342,13 +407,11 @@ a.disabled {
 	text-align:center;
 	color:white;
 	z-index: 10;
-	position: 'absolute';
+	position: absolute;
 	left: 0px;
 	top: 0px;
 	width: 20px;
 	height: 20px;
 	background: red;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
 	border-radius: 10px;
 }
