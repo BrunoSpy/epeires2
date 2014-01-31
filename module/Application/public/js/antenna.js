@@ -49,12 +49,17 @@ var antenna = function(url){
 				   modal = true;
 			   } else {
 				   //mise à jour des fréquences
+				   var antenna = $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna'));
 				   if(switchbtn.bootstrapSwitch('status')){
-					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).removeClass('background-status-fail');
-					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).addClass('background-status-ok');
+					   antenna.removeClass('background-status-fail')
+					   		  .addClass('background-status-ok');
+					   antenna.closest('.sector').find('.sector-color').removeClass('background-status-fail')
+				   		  								.addClass('background-status-ok');
 				   } else {
-					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).removeClass('background-status-ok');
-					   $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna')).addClass('background-status-fail');
+					   antenna.removeClass('background-status-ok')
+					   		  .addClass('background-status-fail');
+					   antenna.closest('.sector').find('.sector-color').removeClass('background-status-ok')
+				   		  								.addClass('background-status-fail');
 				   }
 			   }
 		   }, 'json');
@@ -71,7 +76,7 @@ var antenna = function(url){
 			   });
 	   
 	   //refresh page every 30s
-	   (function doPoll(){
+	   (function doPollAntenna(){
 		   $.post(url+'frequencies/getantennastate')
 	   			.done(function(data) {
 	   				$.each(data, function(key, value){
@@ -85,20 +90,22 @@ var antenna = function(url){
 	   					}
 	   				});
 	   			})
-	   			.always(function() { setTimeout(doPoll, 30000);});
-		   
+	   			.always(function() { setTimeout(doPollAntenna, 30000);});
+	   })();
+	   
+	   (function doPollFrequencies(){
 		   $.post(url+'frequencies/getfrequenciesstate')
-  			.done(function(data) {
-  				$.each(data, function(key, value){
-  					if(value){
-  						$('.sector-color.frequency-'+key).removeClass('background-status-fail');
-  						$('.sector-color.frequency-'+key).addClass('background-status-ok');
-  					} else {
-  						$('.sector-color.frequency-'+key).removeClass('background-status-ok');
-  						$('.sector-color.frequency-'+key).addClass('background-status-fail');
-  					}
-  				});
-  			})
-  			.always(function() { setTimeout(doPoll, 30000);});
+		   		.done(function(data) {
+		   			$.each(data, function(key, value){
+		   				if(value){
+		   					$('.sector-color.frequency-'+key).removeClass('background-status-fail');
+		   					$('.sector-color.frequency-'+key).addClass('background-status-ok');
+		   				} else {
+		   					$('.sector-color.frequency-'+key).removeClass('background-status-ok');
+		   					$('.sector-color.frequency-'+key).addClass('background-status-fail');
+		   				}
+		   			});
+		   		})
+		   		.always(function() { setTimeout(doPollFrequencies, 30000);});
 	   })();
 };
