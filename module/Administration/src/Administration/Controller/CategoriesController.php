@@ -178,7 +178,9 @@ class CategoriesController extends FormController{
 					//if new cat, force fieldname
 					$category->setFieldname($fieldname);
 				}
-				$category->setColor("#".$category->getColor());
+				if(!(strpos($category->getColor(),"#") === 0)){
+					$category->setColor("#".$category->getColor());
+				}
 				$objectManager->persist($category);
 				$objectManager->flush();
 				$this->flashMessenger()->addSuccessMessage("Catégorie modifiée");
