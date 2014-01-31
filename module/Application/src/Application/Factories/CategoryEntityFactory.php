@@ -6,6 +6,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Application\Entity\RadarCategory;
 use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
+use Application\Entity\FrequencyCategory;
 
 class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		
@@ -81,6 +82,32 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 	
 	public function createFrequencyCategory(){
 		$em = $this->getEntityManager();
-		
+		$frequencycat = new FrequencyCategory();
+		$frequencyfield = new CustomField();
+		$frequencyfield->setCategory($frequencycat);
+		$frequencyfield->setName('Fréquence');
+		$frequencyfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'frequency')));
+		$frequencyfield->setPlace(1);
+		$frequencyfield->setDefaultValue("");
+		$statefield = new CustomField();
+		$statefield->setCategory($frequencycat);
+		$statefield->setName('Indisponible');
+		$statefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'boolean')));
+		$statefield->setPlace(2);
+		$statefield->setDefaultValue("");
+		$currentAntenna = new CustomField();
+		$currentAntenna->setCategory($frequencycat);
+		$currentAntenna->setName('Couverture');
+		$currentAntenna->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type' => 'select')));
+		$currentAntenna->setPlace(3);
+		$currentAntenna->setDefaultValue("Normale\nSecours");
+		$frequencycat->setFieldname($frequencyfield);
+		$frequencycat->setFrequencyfield($frequencyfield);
+		$frequencycat->setCurrentAntennafield($currentAntenna);
+		$frequencycat->setStatefield($statefield);
+		$em->persist($frequencyfield);
+		$em->persist($statefield);
+		$em->persist($currentAntenna);
+		return $frequencycat;
 	}
 }

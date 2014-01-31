@@ -122,6 +122,7 @@ class Category {
 		$type['generic'] = "Générique";
 		$type['radar'] = "Radar";
 		$type['antenna'] = "Antenne";
+		$type['frequency'] = "Fréquence";
 		return $type;
 	}
 	

@@ -28,12 +28,12 @@ class FrequencyCategory extends Category{
 	/**
 	 * @ORM\OneToOne(targetEntity="CustomField")
 	 */
-	protected $normalcovfield;
-	
+	protected $currentcovfield;
+
 	/**
 	 * @ORM\OneToOne(targetEntity="CustomField")
 	 */
-	protected $backupcovfield;
+	protected $frequencyfield;
 	
 	public function getStatefield(){
 		return $this->statefield;
@@ -43,19 +43,20 @@ class FrequencyCategory extends Category{
 		$this->statefield = $statefield;
 	}
 	
-	public function getNormalAntennafield(){
-		return $this->normalcovfield;
+	public function getFrequencyField(){
+		return $this->frequencyfield;
 	}
 	
-	public function setNormalAntennafield($normalcovfield){
-		$this->normalcovfield = $normalcovfield;
+	public function setFrequencyfield($frequencyfield){
+		$this->frequencyfield = $frequencyfield;
 	}
 	
-	public function getBackupAntennafield(){
-		return $this->backupcovfield;
+	public function getCurrentAntennafield(){
+		return $this->currentcovfield;
 	}
 	
-	public function setBackupAntennafield($backupcovfield){
-		$this->backupcovfield = $normalcovfield;
+	public function setCurrentAntennafield($currentcovfield){
+		$this->currentcovfield = $currentcovfield;
 	}
+	
 }

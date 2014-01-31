@@ -97,12 +97,20 @@ var antenna = function(url){
 		   $.post(url+'frequencies/getfrequenciesstate')
 		   		.done(function(data) {
 		   			$.each(data, function(key, value){
-		   				if(value){
-		   					$('.sector-color.frequency-'+key).removeClass('background-status-fail');
-		   					$('.sector-color.frequency-'+key).addClass('background-status-ok');
+		   				var sector = $('.sector-color.frequency-'+key);
+		   				if(value.status){
+		   					sector.removeClass('background-status-fail');
+		   					sector.addClass('background-status-ok');
 		   				} else {
-		   					$('.sector-color.frequency-'+key).removeClass('background-status-ok');
-		   					$('.sector-color.frequency-'+key).addClass('background-status-fail');
+		   					sector.removeClass('background-status-ok');
+		   					sector.addClass('background-status-fail');
+		   				}
+		   				if(value.cov){ //principale = 0
+		   					sector.closest('.sector').find('.mainantenna-color').removeClass('background-selected');
+		   					sector.closest('.sector').find('.backupantenna-color').addClass('background-selected');
+		   				} else {
+		   					sector.closest('.sector').find('.backupantenna-color').removeClass('background-selected');
+		   					sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 		   				}
 		   			});
 		   		})

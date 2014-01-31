@@ -166,6 +166,13 @@ ul.antennas > div > li > a:after {
 	box-shadow: 10px 5px 10px rgba(255, 255, 0, 1);
 }
 
+.background-selected {
+	font-weight: bold;
+}
+
+.background-selected a {
+	text-shadow: 1px 1px 3px rgba(1, 1, 1, 0.9) !important}
+
 /************* Block ***********************/
 
 .block {

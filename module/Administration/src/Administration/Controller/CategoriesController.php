@@ -17,6 +17,7 @@ use Application\Controller\FormController;
 use Zend\Form\Element\Select;
 use Application\Entity\RadarCategory;
 use Application\Entity\AntennaCategory;
+use Application\Entity\FrequencyCategory;
 
 class CategoriesController extends FormController{
     
@@ -104,6 +105,8 @@ class CategoriesController extends FormController{
     				$form->get('type')->setValue('radar');
     			} else if($category instanceof AntennaCategory){
     				$form->get('type')->setValue('antenna');
+    			} else if($category instanceof FrequencyCategory){
+    				$form->get('type')->setValue('frequency');
     			}
     			
     			$form->get('type')->setAttribute('disabled', true);
@@ -150,6 +153,8 @@ class CategoriesController extends FormController{
 					$category = $this->getServiceLocator()->get('categoryfactory')->createRadarCategory();
 				} else if($post['type'] == 'antenna') {
 					$category = $this->getServiceLocator()->get('categoryfactory')->createAntennaCategory();
+				} else if($post['type'] == 'frequency') {
+					$category = $this->getServiceLocator()->get('categoryfactory')->createFrequencyCategory();
 				} else {
 					$category = new Category();
 					$fieldname = new CustomField();

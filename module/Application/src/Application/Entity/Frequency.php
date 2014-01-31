@@ -9,7 +9,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedCategoryRepository")
  * @ORM\Table(name="frequencies")
  **/
 class Frequency {
@@ -62,6 +62,10 @@ class Frequency {
 	
 	public function setValue($value){
 		$this->value = $value;
+	}
+	
+	public function getName(){
+		return $this->getDefaultsector()->getName()." ".$this->getValue();
 	}
 	
 	public function getDefaultsector(){

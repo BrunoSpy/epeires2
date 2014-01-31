@@ -150,7 +150,7 @@ class FrequenciesController extends AbstractActionController {
 	 * @return \Zend\View\Model\JsonModel
 	 */
 	public function getFrequenciesStateAction(){
-		return new JsonModel($this->getFrequencies(false));
+		return new JsonModel($this->getFrequencies(true));
 	}
 	
 	private function getFrequencies($full = true){
@@ -167,17 +167,43 @@ class FrequenciesController extends AbstractActionController {
 				$frequencies[$frequency->getId()] = array();
 				$frequencies[$frequency->getId()]['name'] = $frequency->getValue();
 				$frequencies[$frequency->getId()]['status'] = true; 
+				$frequencies[$frequency->getId()]['cov'] = 0;
 			} else {
 				$frequencies[$frequency->getId()] = true;
 			}
 			
-			//TODO take into account frequency events
 			if($full){
 				$frequencies[$frequency->getId()]['status'] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
 			} else {
 				$frequencies[$frequency->getId()] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
 			}
-		}	
+		}
+
+		foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event){
+			$statefield = $event->getCategory()->getStatefield()->getId();
+			$frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
+			$covfield = $event->getCategory()->getCurrentAntennafield()->getId();
+			$frequencyid = 0;
+			$available = true;
+			$cov = 0;
+			foreach ($event->getCustomFieldsValues() as $customvalue){
+				if($customvalue->getCustomField()->getId() == $statefield){
+					$available = !$customvalue->getValue();
+				} else if($customvalue->getCustomField()->getId() == $frequencyfield){
+					$frequencyid = $customvalue->getValue();
+				} else if($customvalue->getCustomField()->getId() == $covfield){
+					$cov = $customvalue->getValue();
+				}
+			}
+			if($full){
+				$frequencies[$frequencyid]['status'] *= $available;
+				$frequencies[$frequencyid]['cov'] = $cov;
+			} else {
+				$frequencies[$frequencyid] *= $available;
+			}
+		}
+		
+		
 		return $frequencies;
 	}
 	

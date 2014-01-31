@@ -48,6 +48,12 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 					$name = $antenna->getName();
 				}
 				break;
+			case 'frequency':
+				$frequency = $this->em->getRepository('Application\Entity\Frequency')->find($fieldvalue);
+				if($frequency){
+					$name = $frequency->getName();
+				}
+				break;
 			case 'radar':
 				$radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
 				if($radar){
@@ -94,6 +100,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 			case 'text':
 				$type = 'Zend\Form\Element\Textarea';
 				break;
+			case 'frequency':
 			case 'sector':
 			case 'antenna':
 			case 'select':
@@ -129,6 +136,9 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				break;
 			case 'antenna':
 				$value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();
+				break;
+			case 'frequency':
+				$value_options = $om->getRepository('Application\Entity\Frequency')->getAllAsArray();
 				break;
 			case 'radar':
 				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray();
