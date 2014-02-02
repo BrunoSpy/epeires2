@@ -91,6 +91,7 @@ var form = function(url){
 			var end = new Date(enddaysplit[0], enddaysplit[1]-1, enddaysplit[2], hoursplit[0], hoursplit[1]);
 			if(deb > end){
 				$("#dateFin").val($("#dateDeb").val());
+				$("#dateFin").trigger('change');
 				updateHours();
 			}
 		}
@@ -101,6 +102,7 @@ var form = function(url){
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
 		$("#dateFin").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+		$("#dateFin").trigger('change');
 		//check if end_date < start_date	
 		var daysplit = me.find('.day input').val().split('-');
 		var startsplit = $("#dateDeb").val().split(' ');
@@ -517,4 +519,20 @@ var form = function(url){
 		$("#filefield_"+count).remove();		
 	});
 	
+	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin
+	$('#event').on('change', 'select[name=status]', function(){
+		var select = $(this);
+		if(select.val() == '3' && !$("#punctual").is(':checked') && $('#dateFin').val() == ''){
+			$("input[type=submit]").tooltip({
+				container :'body',
+				title: 'Date de fin manquante'
+			}).addClass('disabled');
+		} else {
+			$("input[type=submit]").tooltip('destroy').removeClass('disabled');
+		}
+	});
+	
+	$("#event").on('change', '#dateFin', function(){
+		$("select[name=status]").trigger('change');
+	});
 };
