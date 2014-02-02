@@ -32,6 +32,7 @@ use Zend\Form\Form;
 use Zend\Session\Container;
 use Zend\Form\Element;
 use ZfcRbac\Exception\UnauthorizedException;
+use Application\Entity\FrequencyCategory;
 
 class EventsController extends FormController {
 	
@@ -458,6 +459,17 @@ class EventsController extends FormController {
     						}
     					}
     					
+    					if($event->getStatus()->getId() == 3) { //passage au statut terminé
+    						//on termine les évènements fils de type fréquence
+    						foreach ($event->getChildren() as $child){
+    							if($child->getCategory() instanceof FrequencyCategory){
+    								$child->setEnddate($event->getEnddate());
+    								$child->setStatus($event->getStatus());
+    								$em->persist($child);
+    							}
+    						}
+    					}
+    					
     					$objectManager->persist($event);
     					try{
     						$objectManager->flush();
@@ -858,7 +870,8 @@ class EventsController extends FormController {
     	$qb = $objectManager->createQueryBuilder();
     	$qb->select(array('e', 'f'))
     	->from('Application\Entity\Event', 'e')
-    	->leftJoin('e.zonefilters', 'f');
+    	->leftJoin('e.zonefilters', 'f')
+    	->andWhere($qb->expr()->isNull('e.parent'));//display only root events
     	
     	if($lastmodified){
     		$qb->andWhere($qb->expr()->gte('last_modified_on', $lastmodified));

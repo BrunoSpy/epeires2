@@ -122,6 +122,10 @@ class AbstractEvent {
  		return $this->zonefilters;
  	}
  	
+ 	public function addZonefilter(QualificationZone $zonefilter){
+ 		$this->zonefilters->add($zonefilter);
+ 	}
+ 	
  	public function addZonefilters(Collection $zonefilters){
  		foreach ($zonefilters as $zonefilter){
  			$this->zonefilters->add($zonefilter);

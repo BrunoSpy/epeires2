@@ -12,20 +12,20 @@ class Sector extends AbstractHelper {
 	
 	public function __invoke(\Application\Entity\Sector $sector){
 
-		$popoverfreq = "<ul>";
-		$popoverfreq .= "<li><a href='#'>Brouillage</a></li>";
-		$popoverfreq .= "<li><a href='#'>Perte totale</a></li>";
-		$popoverfreq .= "<li><a href='#'>Passage sur secours</a></li>";
+		$popoverfreq = "<ul id='actions-freq-'".$sector->getFrequency()->getId().">";
+	//	$popoverfreq .= "<li><a href='#'>Brouillage</a></li>";
+	//	$popoverfreq .= "<li><a href='#'>Perte totale</a></li>";
+		$popoverfreq .= "<li><a class='switch-coverture' data-cov='1' data-freqid='".$sector->getFrequency()->getId()."' href='#'>Passage sur secours</a></li>";
 		$popoverfreq .= "</ul>";
 		
-		$popovermain = "<ul>";
-		$popovermain .= "<li><a href='#'>Passage sur secours</a></li>";
-		$popovermain .= "<li><a href='#'>Antenne HS</a></li>";
+		$popovermain = "<ul class='actions-antenna-".$sector->getFrequency()->getMainAntenna()->getId()."'>";
+		$popovermain .= "<li><a class='switch-coverture' data-cov='1' data-freqid='".$sector->getFrequency()->getId()."' href='#'>Passage sur secours</a></li>";
+		$popovermain .= "<li><a class='switch-antenna' data-antenna='".$sector->getFrequency()->getMainAntenna()->getId()."' href='#'>Antenne HS</a></li>";
 		$popovermain .= "</ul>";
 		
-		$popoverbackup = "<ul>";
-		$popoverbackup .= "<li><a href='#'>Retour sur normal</a></li>";
-		$popoverbackup .= "<li><a href='#'>Antenne HS</a></li>";
+		$popoverbackup = "<ul class='actions-antenna-".$sector->getFrequency()->getBackupAntenna()->getId()."'>";
+		$popoverbackup .= "<li><a class='switch-coverture' data-cov='0' data-freqid='".$sector->getFrequency()->getId()."' href='#'>Retour sur normal</a></li>";
+		$popoverbackup .= "<li><a class='switch-antenna' data-antenna='".$sector->getFrequency()->getBackupAntenna()->getId()."' href='#'>Antenne HS</a></li>";
 		$popoverbackup .= "</ul>";
 		
 		$html = "<ul class=\"sector dropdown-menu\">";

@@ -13,6 +13,9 @@ use Doctrine\ORM\Query\Expr\Join;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
+use Application\Entity\Frequency;
+use Application\Entity\FrequencyCategory;
+use Zend\Validator\File\Count;
 
 class FrequenciesController extends AbstractActionController {
 	
@@ -77,6 +80,14 @@ class FrequenciesController extends AbstractActionController {
 						$event = $antennaEvents[0];
 						$endstatus = $em->getRepository('Application\Entity\Status')->find('3');
 						$event->setStatus($endstatus);
+						//ferme evts fils de type frequencycategory
+						foreach ($event->getChildren() as $child){
+							if($child->getCategory() instanceof FrequencyCategory){
+								$child->setEnddate($now);
+								$child->setStatus($endstatus);
+								$em->persist($child);
+							}
+						}
 						$event->setEnddate($now);
 						$em->persist($event);
 						try {
@@ -119,6 +130,10 @@ class FrequenciesController extends AbstractActionController {
 							$em->persist($antennafieldvalue);
 							$em->persist($statusvalue);
 							$em->persist($event);
+							//création des evts fils pour le passage en secours
+							foreach ($antenna->getMainfrequencies() as $frequency){
+								$this->switchCoverture($messages, $frequency, 1, $now, $event);
+							}
 							try {
 								$em->flush();
 								$messages['success'][] = "Nouvel évènement antenne créé.";
@@ -139,6 +154,114 @@ class FrequenciesController extends AbstractActionController {
 			$messages['error'] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
 		}
 		return new JsonModel($messages);
+	}
+	
+	public function switchCovertureAction(){
+		$messages = array();
+		if($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()){
+			$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+			$cov = $this->params()->fromQuery('cov', null);
+			$frequencyid = $this->params()->fromQuery('frequencyid', null);
+			
+			if($cov != null && $frequencyid){
+				$now = new \DateTime('NOW');
+				$now->setTimezone(new \DateTimeZone("UTC"));
+				$freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+				if($freq){
+					$this->switchCoverture($messages, $freq, intval($cov), $now);
+				} else {
+					$messages['error'][] = "Impossible de trouver la fréquence demandée";
+				}
+			} else {
+				$messages['error'][] = "Paramètres incorrects, impossible de créer l'évènement.";
+			}
+			
+		} else {
+			$messages['error'][] = "Droits insuffisants";
+		}
+		return new JsonModel($messages);
+	}
+	
+	/**
+	 * Create and persist a new frequency event
+	 * @param unknown $cov 0=principale, 1 = secours
+	 * @param Event $parent
+	 */
+	private function switchCoverture(&$messages, Frequency $frequency, $cov, $startdate, Event $parent = null){
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		if($cov == 0) {
+			$frequencyevents = array();
+			//on cloture l'evt "passage en couv secours"
+			foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event){
+				$frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
+				foreach ($event->getCustomFieldsValues() as $customvalue){
+					if($customvalue->getCustomField()->getId() == $frequencyfield){
+						if($customvalue->getValue() == $frequency->getId()){
+							$frequencyevents[] = $event;
+						}
+					}
+				}
+			}
+			if(count($frequencyevents) == 0 || count($frequencyevents) > 1) {
+				$messages['error'][] = "Impossible de trouver l'évènement à cloturer";
+			} else {
+				$event = $frequencyevents[0];
+				$endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+				$event->setStatus($endstatus);
+				$event->setEnddate($startdate);
+				$em->persist($event);
+				try {
+					$em->flush();
+				} catch (\Exception $e) {
+					$messages['error'][] = $e->getMessage();
+				}
+			}
+		} else {
+			//on crée l'evt "passage en coux secours"
+			$event = new Event();
+			if($parent){
+				$event->setParent($parent);
+			}
+			$status = $em->getRepository('Application\Entity\Status')->find('2');
+			$impact = $em->getRepository('Application\Entity\Impact')->find('3');
+			$event->setImpact($impact);
+			$event->setStatus($status);
+			$event->setStartdate($startdate);
+			$event->setPunctual(false);
+			$event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
+			$event->addZonefilter($frequency->getDefaultsector()->getZone());
+			$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+			$categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
+			//TODO paramétrer la catégorie au lieu de prendre la première
+			if($categories){
+				$cat = $categories[0];
+				$event->setCategory($cat);
+				$frequencyfieldvalue = new CustomFieldValue();
+				$frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
+				$frequencyfieldvalue->setEvent($event);
+				$frequencyfieldvalue->setValue($frequency->getId());
+				$event->addCustomFieldValue($frequencyfieldvalue);
+				$statusfield = new CustomFieldValue();
+				$statusfield->setCustomField($cat->getStatefield());
+				$statusfield->setEvent($event);
+				$statusfield->setValue(true); //unavailable
+				$event->addCustomFieldValue($statusfield);
+				$covfield = new CustomFieldValue();
+				$covfield->setCustomField($cat->getCurrentAntennafield());
+				$covfield->setEvent($event);
+				$covfield->setValue($cov);
+				$event->addCustomFieldValue($covfield);
+				$em->persist($frequencyfieldvalue);
+				$em->persist($statusfield);
+				$em->persist($covfield);
+				$em->persist($event);
+				try {
+					$em->flush();
+				} catch(\Exception $e){
+					$messages['error'][] = $e->getMessage();
+				}
+			}
+		}
 	}
 	
 	public function getAntennaStateAction(){
