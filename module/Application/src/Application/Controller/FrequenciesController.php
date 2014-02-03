@@ -61,7 +61,7 @@ class FrequenciesController extends AbstractActionController {
 			
 			if($state != null && $antennaid){
 				$events = $em->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory');
-				//on récupère les évènemets de l'antenne
+				//on récupère les évènements de l'antenne
 				$antennaEvents = array();
 				foreach ($events as $event){
 					$antennafield = $event->getCategory()->getAntennafield();
@@ -217,7 +217,7 @@ class FrequenciesController extends AbstractActionController {
 				}
 			}
 		} else {
-			//on crée l'evt "passage en coux secours"
+			//on crée l'evt "passage en couv secours"
 			$event = new Event();
 			if($parent){
 				$event->setParent($parent);
@@ -228,8 +228,13 @@ class FrequenciesController extends AbstractActionController {
 			$event->setStatus($status);
 			$event->setStartdate($startdate);
 			$event->setPunctual(false);
-			$event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
-			$event->addZonefilter($frequency->getDefaultsector()->getZone());
+			//fix horrible en attendant de gérer correctement les fréquences sans secteur
+			if($frequency->getDefaultsector()) {
+				$event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
+				$event->addZonefilter($frequency->getDefaultsector()->getZone());
+			} else {
+				$event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+			}
 			$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
 			$categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
 			//TODO paramétrer la catégorie au lieu de prendre la première
@@ -260,6 +265,8 @@ class FrequenciesController extends AbstractActionController {
 				} catch(\Exception $e){
 					$messages['error'][] = $e->getMessage();
 				}
+			} else {
+				$messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
 			}
 		}
 	}

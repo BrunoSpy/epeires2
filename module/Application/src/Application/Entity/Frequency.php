@@ -39,10 +39,10 @@ class Frequency {
 	/** 
 	 * @ORM\OneToOne(targetEntity="Sector", inversedBy="frequency")
 	 * @Annotation\Type("Zend\Form\Element\Select")
-	 * @Annotation\Required(true)
+	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Secteur par défaut :", "empty_option":"Choisir le secteur"})
 	 */
-	protected $defaultsector;
+	protected $defaultsector = null;
 	
 	/** 
 	 * @ORM\Column(type="decimal", precision=6, scale=3)
