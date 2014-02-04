@@ -38,6 +38,8 @@ $(document).ready(function(){
 
    setInterval('updateClock()', 1000);
    
+   $.datepicker.regional[ "fr" ];
+   
    //higlight tabs
    var url = window.location;
    $(".nav > li a").filter(function(){
