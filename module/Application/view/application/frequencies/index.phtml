@@ -3,20 +3,44 @@
 
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span9">
+		<div class="span9" id="frequencies">
 			<?php 
+			$i = 0;
 			foreach ($this->groups as $group){
+				if($i % 2 == 0){
+					echo "<div class='row-fluid'>";
+				}
 				$inner = "";
 				$inner .= "<ul class=\"sector-list\">";
 				foreach ($group->getSectors() as $sector){
 					if($sector->getFrequency()){
-						$inner .= "<li>".$this->sector($sector)."</li>";
+						$inner .= "<li>".$this->sector($sector->getFrequency(), $sector->getName())."</li>";
 					}
 				}
 				$inner .= "</ul>";
+				echo "<div class='span6'>";
 				echo $this->block($group->getName(), $inner);
+				echo "</div>";
+				if($i % 2 == 1){
+					echo "</div>";
+				}
+				$i++;
 			}
-			?>
+			if($i % 2 == 0){
+				echo "<div class='row-fluid'>";
+			}
+			$inner = "";
+			$inner .= "<ul class=\"sector-list\">";
+			foreach ($other as $frequency){
+					$inner .= "<li>".$this->sector($frequency, $frequency->getOthername())."</li>";
+			}
+			$inner .= "</ul>";
+			echo "<div class='span6'>";
+			echo $this->block("Autres fréquences", $inner);
+			echo "</div>";
+			echo "</div>";
+			
+			?>	
 		</div>
 		<div class="span3">
 			<div class="block">

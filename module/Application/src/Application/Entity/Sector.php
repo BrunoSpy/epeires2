@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Table(name="sectors")
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\SectorRepository")
  **/
 class Sector {
 	

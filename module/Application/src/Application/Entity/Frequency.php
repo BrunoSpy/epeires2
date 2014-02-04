@@ -52,6 +52,14 @@ class Frequency {
 	 */
 	protected $value;
 	
+	/** 
+	 * @ORM\Column(type="string")
+	 * @Annotation\Type("Zend\Form\Element\Text")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Nom :"})
+	 */
+	protected $othername;
+	
 	public function getId(){
 		return $this->id;
 	}
@@ -65,7 +73,19 @@ class Frequency {
 	}
 	
 	public function getName(){
-		return $this->getDefaultsector()->getName()." ".$this->getValue();
+		if($this->getDefaultsector()) {
+			return $this->getDefaultsector()->getName()." ".$this->getValue();
+		} else {
+			return $this->getOthername()." ".$this->getValue();
+		}
+	}
+	
+	public function getOthername(){
+		return $this->othername;
+	}
+	
+	public function setOthername($othername){
+		$this->othername = $othername;
 	}
 	
 	public function getDefaultsector(){

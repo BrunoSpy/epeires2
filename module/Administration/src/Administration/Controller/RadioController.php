@@ -13,6 +13,7 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Antenna;
 use Application\Entity\Frequency;
+use Doctrine\Common\Collections\Criteria;
 
 class RadioController extends AbstractActionController
 {
@@ -194,13 +195,21 @@ class RadioController extends AbstractActionController
     	->setObject($frequency);
     
     	$form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
-    	$form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
-    	$form->get('defaultsector')->setValueOptions($objectManager->getRepository('Application\Entity\Sector')->getAllAsArray());
+    	$form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());   	
+    	
+    	$unsetsectors = $objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
+    	$form->get('defaultsector')->setValueOptions($unsetsectors);
     	
     	if($id){
     		$frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
     		if($frequency){
     
+    			if($frequency->getDefaultsector()) {
+    				$options = $unsetsectors;
+    				$options[$frequency->getDefaultsector()->getId()] = $frequency->getDefaultsector()->getName();
+    				$form->get('defaultsector')->setValueOptions($options);
+    			}
+    			
     			$form->bind($frequency);
     			$form->setData($frequency->getArrayCopy());
     		}

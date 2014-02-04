@@ -16,6 +16,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
 use Zend\Validator\File\Count;
+use Doctrine\Common\Collections\Criteria;
 
 class FrequenciesController extends AbstractActionController {
 	
@@ -35,15 +36,18 @@ class FrequenciesController extends AbstractActionController {
 		}
 		
 		$this->flashMessenger()->clearMessages();
-		 
-		$viewmodel->setVariables(array('messages'=>$return));		
-		
-		$viewmodel->setVariable('antennas', $this->getAntennas());
-		
+		 				
 		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$groups = $em->getRepository('Application\Entity\SectorGroup')->findBy(array('display' => true), array('position' => 'ASC'));
 		
-		$viewmodel->setVariable('groups', $groups);
+		$criteria = Criteria::create();
+		$criteria->andWhere(Criteria::expr()->isNull('defaultsector'));
+		$otherfrequencies = $em->getRepository('Application\Entity\Frequency')->matching($criteria);
+		
+		$viewmodel->setVariables(array('antennas' => $this->getAntennas(), 
+										'messages' => $return,
+										'groups' => $groups,
+										'other' => $otherfrequencies));
 		
 		return $viewmodel;
 		

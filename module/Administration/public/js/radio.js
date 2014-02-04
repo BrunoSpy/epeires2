@@ -73,6 +73,13 @@ var radio = function(url){
 		});
 	});
 	
+	$("#frequency-container").on('change', 'select[name=defaultsector]', function(){
+		var option = $('select[name=defaultsector] option:selected');
+		if(option.val() != ''){
+			$("input[name=othername]").val(option.text());
+		}
+	});
+	
 	/* **************************** */
 	/*       Page Fréquences        */
 	/* **************************** */

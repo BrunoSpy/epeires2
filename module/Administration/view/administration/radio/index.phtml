@@ -78,7 +78,7 @@
 							echo '<tr>';
 								echo '<td>'.$frequency->getId().'</td>';
 								echo '<td>'.$frequency->getValue().'</td>';
-								echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): "").'</td>';
+								echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): $frequency->getOthername()).'</td>';
 								echo '<td>'.$frequency->getMainantenna()->getName().'</td>';
 								echo '<td>'.$frequency->getBackupantenna()->getName().'</td>';
 								echo "<td>";
