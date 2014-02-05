@@ -75,7 +75,7 @@
 					<tbody>
 						<?php 
 						foreach ($this->frequencies as $frequency){
-							echo '<tr>';
+							echo '<tr id="frequency_'.$frequency->getId().'">';
 								echo '<td>'.$frequency->getId().'</td>';
 								echo '<td>'.$frequency->getValue().'</td>';
 								echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): $frequency->getOthername()).'</td>';
@@ -141,5 +141,21 @@ $(".sortable").bind('aftertablesort', function(event, data){
 });
 
 radio('<?php echo $this->url('administration'); ?>');
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
 
 <?php $this->inlineScript()->captureEnd();?>

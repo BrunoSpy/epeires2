@@ -59,17 +59,20 @@ var radio = function(url){
 	});
 	
 	$(".delete-frequency").on('click', function(event){
-		$('a#delete-antenna-href').attr('href', $(this).data('href'));
-		$('#antenna-name').html($(this).data('name'));
-		$("#delete-antenna-href").data('id', $(this).data('id'));
+		$('a#delete-frequency-href').attr('href', $(this).data('href'));
+		$('#frequency-name').html($(this).data('name'));
+		$("a#delete-frequency-href").data('freqid', $(this).data('id'));
 	});
 	
 	$("#confirm-delete-frequency").on('click', '#delete-frequency-href', function(event){
 		event.preventDefault();
 		var me = $(this);
 		$("#confirm-delete-frequency").modal('hide');
-		$.post(me.attr('href'), function(){
-			location.reload();
+		$.post(me.attr('href'), function(data){
+			if(!data['error']){
+				$("#frequency_"+me.data('freqid')).remove();
+			}
+			displayMessages(data);
 		});
 	});
 	

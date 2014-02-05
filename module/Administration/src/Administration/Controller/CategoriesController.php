@@ -36,9 +36,7 @@ class CategoriesController extends FormController{
     	}
     	 
     	$this->flashMessenger()->clearMessages();
-    	 
-    	$viewmodel->setVariables(array('messages'=>$return));
-    	
+    	     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
@@ -65,6 +63,7 @@ class CategoriesController extends FormController{
     			'events' => $events,
     			'models' => $models,
     			'fields' => $fields,
+    			'messages' => $return,
     	));
     	
     	$this->layout()->title = "Personnalisation > Catégories";

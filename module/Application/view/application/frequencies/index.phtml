@@ -26,20 +26,21 @@
 				}
 				$i++;
 			}
-			if($i % 2 == 0){
-				echo "<div class='row-fluid'>";
-			}
-			$inner = "";
-			$inner .= "<ul class=\"sector-list\">";
-			foreach ($other as $frequency){
+			if(count($other) > 0) {
+				if($i % 2 == 0){
+					echo "<div class='row-fluid'>";
+				}
+				$inner = "";
+				$inner .= "<ul class=\"sector-list\">";
+				foreach ($other as $frequency){
 					$inner .= "<li>".$this->sector($frequency, $frequency->getOthername())."</li>";
+				}
+				$inner .= "</ul>";
+				echo "<div class='span6'>";
+				echo $this->block("Autres fréquences", $inner);
+				echo "</div>";
+				echo "</div>";
 			}
-			$inner .= "</ul>";
-			echo "<div class='span6'>";
-			echo $this->block("Autres fréquences", $inner);
-			echo "</div>";
-			echo "</div>";
-			
 			?>	
 		</div>
 		<div class="span3">
