@@ -215,6 +215,8 @@ class RadioController extends AbstractActionController
     
     	$form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
     	$form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());   	
+    	$form->get('mainantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
+    	$form->get('backupantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
     	
     	$unsetsectors = $objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
     	$form->get('defaultsector')->setValueOptions($unsetsectors);

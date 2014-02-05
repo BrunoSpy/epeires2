@@ -62,10 +62,22 @@ class Antenna {
 	 */
 	protected $backupfrequencies;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="mainantennaclimax", cascade={"detach"})
+	 */
+	protected $mainfrequenciesclimax;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="Frequency", mappedBy="backupantennaclimax", cascade={"detach"})
+	 */
+	protected $backupfrequenciesclimax;
+	
 	
 	public function __construct(){
 		$this->mainfrequencies = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->backupfrequencies = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->mainfrequenciesclimax = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->backupfrequenciesclimax = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
 	public function getId(){
@@ -110,6 +122,14 @@ class Antenna {
 	
 	public function getBackupfrequencies(){
 		return $this->backupfrequencies;
+	}
+	
+	public function getMainfrequenciesclimax(){
+		return $this->mainfrequenciesclimax;
+	}
+	
+	public function getBackupfrequenciesclimax(){
+		return $this->backupfrequenciesclimax;
 	}
 	
 	public function getArrayCopy() {
