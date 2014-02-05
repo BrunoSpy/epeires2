@@ -10,7 +10,7 @@ var impt_value = new Array();
 var largeur;
 var hauteur;
 var h_aff;
-var dy_max = 50;
+var dy_max = 30;
 var delt_ligne = 10;
 var y_temp;
 var decoup;
@@ -124,14 +124,13 @@ var timeline = {
 		// initialisation de la timeline 6h
 		init: function(element) {
 			d_actuelle = new Date();
-			d_actuelle.setHours(d_actuelle.getUTCHours());
-			h_act = d_actuelle.getHours();
+			h_act = d_actuelle.getUTCHours();
 			m_act = d_actuelle.getMinutes();
 			d_ref_deb = new Date();
-			d_ref_deb.setHours(d_ref_deb.getHours()-1,0,0);
+			d_ref_deb.setHours(d_actuelle.getHours()-1,0,0);
 			h_aff = 6;
 			y_temp = 10;
-			h_ref = d_ref_deb.getHours(); 
+			h_ref = d_ref_deb.getUTCHours(); 
 			d_ref_fin = new Date();
 			d_ref_fin.setDate(d_ref_deb.getDate());
 			d_ref_fin.setHours(d_ref_deb.getHours()+h_aff, 0, 0);
@@ -153,14 +152,13 @@ var timeline = {
 		// initialisation de la timeline journée
 		init_journee: function(element) {
 			d_actuelle = new Date();
-			d_actuelle.setHours(d_actuelle.getUTCHours());
-			h_act = d_actuelle.getHours();
+			h_act = d_actuelle.getUTCHours();
 			m_act = d_actuelle.getMinutes();
 			d_ref_deb = new Date();
 			d_ref_deb.setHours(0,0,0);
 			h_aff = 24;
 			y_temp = 10;
-			h_ref = d_ref_deb.getHours(); 
+			h_ref = d_ref_deb.getUTCHours(); 
 			d_ref_fin = new Date();
 			d_ref_fin.setDate(d_ref_deb.getDate());
 			d_ref_fin.setHours(d_ref_deb.getHours()+h_aff, 0, 0);
@@ -691,7 +689,7 @@ var timeline = {
 			elmt_fin = $('<p class="elmt_fin"></p>');
 			$(elmt).append(elmt_fin);
 			move_fin = $('<p class="move_fin"></p>');
-			$(elmt).append(move_fin);
+			$(elmt_rect).append(move_fin);
 			// css permanent
 			elmt.css({'position':'absolute', 'top': y0+'px', 'left':'0px', 'width': largeur, 'height':dy});
 			var l_deb = type[0];  
@@ -732,7 +730,7 @@ var timeline = {
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
-			move_fin.css({'position':'absolute', 'top': '0px', 'height':dy, 'z_index':2});
+			move_fin.css({'position':'absolute', 'top': dy-5+'px','height':10, 'z_index':2, 'background-color':'Transparant'});
 			move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
 		},
 		// animation pour identifier un évènement
@@ -792,8 +790,8 @@ var timeline = {
 				elmt_qm_but.hide();
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.hide();
-				elmt_star.css({'left': x0+wid-30+'px'});
-				move_fin.css({'left': x0+wid+'px', 'width':'10px'});
+				elmt_star.css({'left': x0+wid-15+'px'});
+				move_fin.css({'left': wid-15+'px', 'width':'2px'});
 				break;	
 			case 1 :
 				elmt_fleche2.show();
@@ -801,8 +799,8 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});				
 				elmt_compl.hide();
 				elmt_fleche2.css({'left': x2+'px'});
-				elmt_star.css({'left': x0+wid-30+'px'});
-				move_fin.css({'left': x0+wid+'px', 'width':'10px'});
+				elmt_star.css({'left': x0+wid-15+'px'});
+				move_fin.css({'left': wid-15+'px', 'width':'2px'});
 				break;
 			case -1 :
 				elmt_fleche2.hide();
@@ -811,7 +809,7 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.css({'left':x0+wid+1+'px'});
 				elmt_qm_but.css({'left': x2-8+'px'});
-				elmt_star.css({'left': x0+wid-30+'px'});
+				elmt_star.css({'left': x0+wid-15+'px'});
 				break;
 			case 2 :
 				elmt_fleche1.hide();
@@ -974,6 +972,7 @@ var timeline = {
 			elmt_write.css({'position':'relative','rows':3, 'width':'90%'});
 			elmt.css({'left':x1+'px', 'width': x2-x1});
 			elmt.children().css({'left':'-='+x1+'px'});
+			elmt_deb.css({'left':0+'px'});
 		},
 		// texte supplémentaire déplié. Option pas utilisée pour le moment.
 		option_open: function(this_elmt, timeline_content, speed) {
@@ -1348,7 +1347,6 @@ var timeline = {
 		},
 		// informations d'un évènement ajouté
 		add: function (data) {
-			alert("ok");
 			var i = 0;
 			var d_debut, d_fin;
 			var len = tab.length;
@@ -1455,7 +1453,7 @@ $(document).ready(function() {
 			elmt.css({'background-color':'transparent'});
 			elmt.removeClass('changed');
 		}
-		elmt.css({'z-index':11});
+//		elmt.css({'z-index':11});
 		elmt.find('.modify-evt').show();
 		elmt.find('.elmt_status').show();
 		elmt.find('.elmt_star').show();

@@ -49,7 +49,7 @@
 
 .elmt .elmt_deb, .elmt .elmt_fin {
 	display:none;
-}
+} 
 
 
 .warn_elmt .btn {
@@ -58,4 +58,9 @@
 	display:inline;
 }
 
+.move_fin
+{
+border-right-style:solid;
+border-left-style:solid;
+}
 
