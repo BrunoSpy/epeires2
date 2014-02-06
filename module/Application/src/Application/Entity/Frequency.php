@@ -37,6 +37,22 @@ class Frequency {
 	protected $backupantenna;
 	
 	/** 
+	 * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="mainfrequenciesclimax")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Antenne principale climax :", "empty_option":"Choisir l'antenne"})
+	 */
+	protected $mainantennaclimax;
+	
+	/** 
+	 * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="backupfrequenciesclimax")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(false)
+	 * @Annotation\Options({"label":"Antenne secours climax :", "empty_option":"Choisir l'antenne"})
+	 */
+	protected $backupantennaclimax;
+	
+	/** 
 	 * @ORM\OneToOne(targetEntity="Sector", inversedBy="frequency")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(false)
@@ -112,10 +128,28 @@ class Frequency {
 		return $this->backupantenna;
 	}
 	
+	public function setMainantennaclimax($mainantennaclimax){
+		$this->mainantennaclimax = $mainantennaclimax;
+	}
+	
+	public function getMainantennaclimax(){
+		return $this->mainantennaclimax;
+	}
+	
+	public function setBackupantennaclimax($backupantennaclimax){
+		$this->backupantennaclimax = $backupantennaclimax;
+	}
+	
+	public function getBackupantennaclimax(){
+		return $this->backupantennaclimax;
+	}
+	
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$object_vars['mainantenna'] = ($this->mainantenna ? $this->mainantenna->getId() : null);
 		$object_vars['backupantenna'] = ($this->backupantenna ? $this->backupantenna->getId() : null);
+		$object_vars['mainantennaclimax'] = ($this->mainantennaclimax ? $this->mainantennaclimax->getId() : null);
+		$object_vars['backupantennaclimax'] = ($this->backupantennaclimax ? $this->backupantennaclimax->getId() : null);
 		$object_vars['defaultsector'] = ($this->defaultsector ? $this->defaultsector->getId() : null);
 		return $object_vars;
 	}

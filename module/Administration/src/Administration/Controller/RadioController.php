@@ -21,12 +21,22 @@ class RadioController extends AbstractActionController
     {
     	$viewmodel = new ViewModel();
     	$this->layout()->title = "Centres > Radio";
-    	 
+    	
+    	$return = array();
+    	if($this->flashMessenger()->hasErrorMessages()){
+    		$return['error'] =  $this->flashMessenger()->getErrorMessages();
+    	}
+    	
+    	if($this->flashMessenger()->hasSuccessMessages()){
+    		$return['success'] =  $this->flashMessenger()->getSuccessMessages();
+    	}
+    	$this->flashMessenger()->clearMessages();
+    	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$viewmodel->setVariables(array('antennas' => $objectManager->getRepository('Application\Entity\Antenna')->findAll(),
     									'frequencies' => $objectManager->getRepository('Application\Entity\Frequency')->findAll(),
-    							));
+    									'messages' => $return));
     	
         return $viewmodel;
     }
@@ -176,14 +186,23 @@ class RadioController extends AbstractActionController
     public function deletefrequencyAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	$id = $this->params()->fromQuery('id', null);
+    	$messages = array();
     	if($id){
     		$frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
     		if($frequency){
     			$objectManager->remove($frequency);
-    			$objectManager->flush();
+    			try {
+    				$objectManager->flush();
+    				$messages['success'][] = "Fréquence ".$frequency->getValue()." correctement supprimée";
+    			} catch (\Exception $e){
+    				$messages['error'][] = "Impossible de supprimer la fréquence";
+    				$messages['error'][] = $e->getMessage();
+    			}
+    		} else {
+    			$messages['error'][] = "Impossible de supprimer la fréquence";
     		}
     	}
-    	return new JsonModel();
+    	return new JsonModel($messages);
     }
     
     private function getFormFrequency($id){
@@ -196,6 +215,8 @@ class RadioController extends AbstractActionController
     
     	$form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
     	$form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());   	
+    	$form->get('mainantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
+    	$form->get('backupantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')->getAllAsArray());
     	
     	$unsetsectors = $objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
     	$form->get('defaultsector')->setValueOptions($unsetsectors);

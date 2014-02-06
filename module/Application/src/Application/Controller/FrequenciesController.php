@@ -329,11 +329,13 @@ class FrequenciesController extends AbstractActionController {
 					$cov = $customvalue->getValue();
 				}
 			}
-			if($full){
-				$frequencies[$frequencyid]['status'] *= $available;
-				$frequencies[$frequencyid]['cov'] = $cov;
-			} else {
-				$frequencies[$frequencyid] *= $available;
+			if(array_key_exists($frequencyid, $frequencies)){ //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
+				if($full){
+					$frequencies[$frequencyid]['status'] *= $available;
+					$frequencies[$frequencyid]['cov'] = $cov;
+				} else {
+					$frequencies[$frequencyid] *= $available;
+				}
 			}
 		}
 		
