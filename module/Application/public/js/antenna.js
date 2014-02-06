@@ -76,23 +76,17 @@ var antenna = function(url){
 					.addClass('background-status-ok');
 					antenna.closest('.sector').find('.sector-color').removeClass('background-status-fail')
 					.addClass('background-status-ok');
-					if(antenna.hasClass('backupantenna-color')){
-						//antenne backup de retour : rien à faire
-					} else if(antenna.hasClass('mainantenna-color')){
-						//antenne main de retour : on reprend la couverture normale
-						antenna.siblings('.backupantenna-color').removeClass('background-selected');
-						antenna.addClass('background-selected');
-					}
+					//changement de couv : antenne main opérationnelle
+					antenna.filter('.mainantenna-color').addClass('background-selected')
+						.siblings('.backupantenna-color').removeClass('background-selected');
 				} else {
 					antenna.removeClass('background-status-ok')
 					.addClass('background-status-fail');
 					antenna.closest('.sector').find('.sector-color').removeClass('background-status-ok')
 					.addClass('background-status-fail');
-					if(antenna.hasClass('mainantenna-color')){
-						//antenne main en panne
-						antenna.removeClass('background-selected');
-						antenna.siblings('.backupantenna-color').addClass('background-selected');
-					}
+					//changement de couv : antenne main en panne
+					antenna.filter('.mainantenna-color').removeClass('background-selected')
+					.siblings('.backupantenna-color').addClass('background-selected');
 				}
 			}
 		}, 'json');
