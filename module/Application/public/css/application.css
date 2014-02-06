@@ -170,6 +170,13 @@ ul.antennas > div > li > a:after {
 	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
 }
 
+.background-status-planned {
+	background-image: linear-gradient(to bottom, rgb(47, 150, 180), rgb(91, 192, 222));
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+}
+
 .background-status-fail {
 	background-image: linear-gradient(to bottom,#bd362f,#ee5f5b);
 	background-repeat: repeat-x;

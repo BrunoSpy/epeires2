@@ -33,4 +33,34 @@ class ExtendedCategoryRepository extends CategoryRepository {
 		return $query->getResult();
 	}
 	
+	/**
+	 * Tous les éléments prévus :
+	 * - Date de début passée et état nouveau
+	 * ou
+	 * - Date de début dans les 12h
+	 */
+	public function getPlannedEvents($category){
+		$now = new \DateTime('NOW');
+		$now->setTimezone(new \DateTimeZone("UTC"));
+		$qbEvents = $this->getEntityManager()->createQueryBuilder();
+		$qbEvents->select(array('e', 'cat'))
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF '.$category)
+		->andWhere(
+				$qbEvents->expr()->orX(
+					$qbEvents->expr()->andX(
+						$qbEvents->expr()->eq('e.status', 1),
+						$qbEvents->expr()->lte('e.startdate', '?1')),
+					$qbEvents->expr()->andX(
+							$qbEvents->expr()->gte('e.startdate', '?2'),
+							$qbEvents->expr()->lte('e.startdate', '?3'))))
+		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+							2 => $now->format('Y-m-d H:i:s'),
+							3 => $now->add(new \DateInterval('PT12H'))->format('Y-m-d H:i:s')));
+					
+		$query = $qbEvents->getQuery();
+					
+		return $query->getResult();
+	}
 }

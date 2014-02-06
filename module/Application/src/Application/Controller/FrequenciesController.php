@@ -276,7 +276,7 @@ class FrequenciesController extends AbstractActionController {
 	}
 	
 	public function getAntennaStateAction(){
-		return new JsonModel($this->getAntennas(false));
+		return new JsonModel($this->getAntennas(true));
 	}
 	
 	/**
@@ -302,6 +302,7 @@ class FrequenciesController extends AbstractActionController {
 				$frequencies[$frequency->getId()]['name'] = $frequency->getValue();
 				$frequencies[$frequency->getId()]['status'] = true; 
 				$frequencies[$frequency->getId()]['cov'] = 0;
+				$frequencies[$frequency->getId()]['planned'] = false;
 			} else {
 				$frequencies[$frequency->getId()] = true;
 			}
@@ -339,6 +340,24 @@ class FrequenciesController extends AbstractActionController {
 			}
 		}
 		
+		if($full){ //en format complet, on donne aussi les evènements dans les 12h
+			foreach ($em->getRepository('Application\Entity\Frequency')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event){
+				$statefield = $event->getCategory()->getStatefield()->getId();
+				$frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
+				$frequencyid = 0;
+				$planned = false;
+				foreach ($event->getCustomFieldsValues() as $customvalue){
+					if($customvalue->getCustomField()->getId() == $statefield){
+						$planned = $customvalue->getValue();
+					} else if($customvalue->getCustomField()->getId() == $frequencyfield){
+						$frequencyid = $customvalue->getValue();
+					}
+				}
+				if(array_key_exists($frequencyid, $frequencies)){ //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
+					$frequencies[$frequencyid]['planned'] = $planned;
+				}
+			}
+		}
 		
 		return $frequencies;
 	}
@@ -354,6 +373,7 @@ class FrequenciesController extends AbstractActionController {
 				$antennas[$antenna->getId()] = array();
 				$antennas[$antenna->getId()]['name'] = $antenna->getName();
 				$antennas[$antenna->getId()]['status'] = true;
+				$antennas[$antenna->getId()]['planned'] = false;
 			} else {
 				$antennas[$antenna->getId()] = true;
 			}
@@ -375,6 +395,23 @@ class FrequenciesController extends AbstractActionController {
 				$antennas[$antennaid]['status'] *= $available;
 			} else {
 				$antennas[$antennaid] *= $available;
+			}
+		}
+		
+		if($full){
+			foreach ($em->getRepository('Application\Entity\Antenna')->getPlannedEvents('Application\Entity\AntennaCategory') as $result){
+				$statefield = $result->getCategory()->getStatefield()->getId();
+				$antennafield = $result->getCategory()->getAntennafield()->getId();
+				$antennaid = 0;
+				$planned = false;
+				foreach ($result->getCustomFieldsValues() as $customvalue){
+					if($customvalue->getCustomField()->getId() == $statefield){
+						$planned = $customvalue->getValue();
+					} else if($customvalue->getCustomField()->getId() == $antennafield){
+						$antennaid = $customvalue->getValue();
+					}
+				}
+				$antennas[$antennaid]['planned'] = $planned;
 			}
 		}
 		
