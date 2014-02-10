@@ -7,6 +7,8 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Zend\Form\Annotation;
+
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="stacks")
@@ -19,21 +21,22 @@ class Stack {
 	 */
 	protected $id;
 	
- 	/** @ORM\ManyToOne(targetEntity="QualificationZone") */
+ 	/** 
+ 	 * @ORM\ManyToOne(targetEntity="QualificationZone")
+ 	 * @ORM\JoinColumn(nullable=false)
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required({"required":"true"})
+	 * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Choisir la zone"})
+ 	 */
 	protected $zone;
 	
-	/** @ORM\Column(type="string") */
+	/** 
+	 * @ORM\Column(type="string")
+	 * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Nom :"})
+	 */
 	protected $name;
-	
-	/** @ORM\Column(type="string") */
-	protected $short_name;
-	
-	/** @ORM\Column(type="string") */
-	protected $location;
-	
-	public function setId($id){
-		$this->id = $id;
-	}
 	
 	public function getId(){
 		return $this->id;
@@ -47,4 +50,17 @@ class Stack {
 		$this->name = $name;
 	}
 	
+	public function getZone(){
+		return $this->zone;
+	}
+	
+	public function setZone(QualificationZone $zone){
+		$this->zone = $zone;
+	}
+	
+	public function getArrayCopy() {
+		$object_vars = get_object_vars($this);
+		$object_vars['zone'] = $this->zone->getId();
+		return $object_vars;
+	}
 }

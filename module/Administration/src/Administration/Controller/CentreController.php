@@ -16,6 +16,7 @@ use Application\Entity\QualificationZone;
 use Application\Entity\SectorGroup;
 use Application\Entity\Sector;
 use Application\Controller\FormController;
+use Application\Entity\Stack;
 
 class CentreController extends FormController
 {
@@ -34,8 +35,14 @@ class CentreController extends FormController
     	$centres = $objectManager->getRepository('Application\Entity\Organisation')->findAll();
     	
     	$groups = $objectManager->getRepository('Application\Entity\SectorGroup')->findAll();
+    	
+    	$stacks = $objectManager->getRepository('Application\Entity\Stack')->findAll();
     	    	
-    	$viewmodel->setVariables(array('qualifzones'=> $qualifzones, 'sectors'=>$sectors, 'centres' => $centres, 'groups'=>$groups));
+    	$viewmodel->setVariables(array('qualifzones'=> $qualifzones,
+    									'sectors'=>$sectors,
+    									'centres' => $centres,
+    									'groups'=>$groups,
+    									'stacks' => $stacks));
     	
     	$return = array();
     	if($this->flashMessenger()->hasErrorMessages()){
@@ -450,5 +457,103 @@ class CentreController extends FormController
     		}
     	}
     	return array('form'=>$form, 'sector'=>$sector);
+    }
+    
+    /* **************************** */
+    /*            Attentes          */
+    /* **************************** */
+    
+    public function formstackAction(){
+    	$request = $this->getRequest();
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$viewmodel = new ViewModel();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    
+    	$id = $this->params()->fromQuery('id', null);
+    
+    	$getform = $this->getFormStack($id);
+    	$form = $getform['form'];
+    
+    	$form->add(array(
+    			'name' => 'submit',
+    			'attributes' => array(
+    					'type' => 'submit',
+    					'value' => 'Enregistrer',
+    					'class' => 'btn btn-primary',
+    			),
+    	));
+    
+    	$viewmodel->setVariables(array('form' =>$form));
+    	return $viewmodel;
+    }
+    
+    public function savestackAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$stack = null;
+    	if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+    		$id = $post['id'];
+    		 
+    		$datas = $this->getFormStack($id);
+    		$form = $datas['form'];
+    		$form->setData($post);
+    
+    		$stack = $datas['stack'];
+    
+    		if($form->isValid()){
+    			$stack->setZone($objectManager->getRepository('Application\Entity\QualificationZone')->find($post['zone']));
+    
+    			$objectManager->persist($stack);
+    			try{
+    				$objectManager->flush();
+    			} catch (\Exception $e){
+    				$this->flashMessenger()->addErrorMessage(addslashes($e->getMessage()));
+    			}
+    		} else {
+    			$this->processFormMessages($form->getMessages());
+    		}
+    	}
+    
+    	if($stack){
+    		$json = array('id' => $stack->getId(), 'name' => $stack->getName());
+    	} else {
+    		$json = array();
+    	}
+    
+    	return new JsonModel($json);
+    }
+    
+    public function deletestackAction(){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$id = $this->params()->fromQuery('id', null);
+    	if($id){
+    		$stack = $objectManager->getRepository('Application\Entity\Stack')->find($id);
+    		if($stack){
+    			$objectManager->remove($stack);
+    			$objectManager->flush();
+    		}
+    	}
+    	return new JsonModel();
+    }
+    
+    private function getFormStack($id){
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$stack = new Stack();
+    	$builder = new AnnotationBuilder();
+    	$form = $builder->createForm($stack);
+    	$form->setHydrator(new DoctrineObject($objectManager))
+    	->setObject($stack);
+    
+    	$form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray());
+    
+    	if($id){
+    		$stack = $objectManager->getRepository('Application\Entity\Stack')->find($id);
+    		if($stack){
+    			$form->bind($stack);
+    			$form->setData($stack->getArrayCopy());
+    		}
+    	}
+    	return array('form'=>$form, 'stack'=>$stack);
     }
 }

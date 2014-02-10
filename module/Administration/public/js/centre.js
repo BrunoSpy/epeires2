@@ -182,4 +182,39 @@ var centre = function(url){
 			location.reload();
 		});
 	});
+	
+	/* **************************** */
+	/*            Attentes          */
+	/* **************************** */
+	$("#add-stack").on('click', function(){
+		$("#stack-title").html("Nouvelle attente");
+		$("#stack-form").load(url+'/centre/formstack');
+	});
+	
+	$(".mod-stack").on('click', function(){
+		$("#stack-title").html('Modification de <em>'+$(this).data('name')+'</em>');
+		$("#stack-form").load(url+'/centre/formstack?id='+$(this).data('id'));
+	});
+	
+	$("#stack-container").on('click', 'input[type=submit]', function(event){
+		event.preventDefault();
+		$.post(url+'/centre/savestack', $("#Stack").serialize(), function(data){
+			location.reload();
+		}, 'json');
+	});
+	
+	$(".delete-stack").on('click', function(event){
+		$('a#delete-stack-href').attr('href', $(this).data('href'));
+		$('#stack-name').html($(this).data('name'));
+		$("#delete-stack-href").data('id', $(this).data('id'));
+	});
+	
+	$("#confirm-delete-stack").on('click', '#delete-stack-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$("#confirm-delete-stack").modal('hide');
+		$.post(me.attr('href'), function(){
+			location.reload();
+		});
+	});
 };

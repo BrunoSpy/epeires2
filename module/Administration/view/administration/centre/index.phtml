@@ -25,6 +25,11 @@
 						<i class="icon-chevron-right"></i> 4. Secteurs
 					</a>
 				</li>
+				<li>
+					<a href="#Attentes">
+						<i class="icon-chevron-right"></i> 5. Attentes
+					</a>
+				</li>
 			</ul>
 		</div>
 		<div class="span9">
@@ -230,7 +235,54 @@
 					</div>
 				</div>
 			</div>
-			
+		
+			<div class="block">
+				<div class="navbar navbar-inner block-header">
+					<div class="muted pull-left" id="Attentes">5. Attentes</div>
+				</div>
+				<div class="block-content collapse in">
+					<div class="span12">
+					<table class="table table-striped sortable">
+						<thead>
+							<tr>
+							<th>Id</th>
+							<th>Nom</th>
+							<th>Organisation</th>
+							<th>Zone de qualification</th>
+							<th><a href="#stack-container" class="btn btn-mini" id="add-stack" data-toggle="modal">Ajouter</a></th>
+							</tr>
+						</thead>
+						<tboby>
+						<?php 
+						foreach ($this->stacks as $stack){
+							echo "<tr>";
+							echo "<td>".$stack->getId()."</td>";
+							echo "<td>".$stack->getName()."</td>";
+							echo "<td>".$stack->getZone()->getOrganisation()->getName()."</td>";
+							echo "<td>".$stack->getZone()->getName()."</td>";
+							echo "<td>";
+							echo "<a
+									title=\"Modifier\"
+									href=\"#stack-container\"
+									class=\"mod-stack\"
+									data-id=\"".$stack->getId()."\"
+									data-name=\"".$stack->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+							echo "<a
+									title=\"Supprimer\"
+									href=\"#confirm-delete-stack\"
+									data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletestack'))."?id=".$stack->getId()."\"
+									class=\"delete-stack\"
+									data-id=\"".$stack->getId()."\"
+									data-name=\"".$stack->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+							echo "</td>";
+							echo "</tr>";
+						}
+						?>
+						</tboby>
+					</table>
+					</div>
+				</div>
+			</div>	
 		</div>
 	</div>
 </div>
@@ -273,8 +325,18 @@
 						"<h3>Confirmer la suppression ?</h3>",
 						"", 
 						null, 
-						"<p>Voulez-vous vraiment supprimer le secteurs <em><span id=\"group-name\"></span></em> ?</p>",
+						"<p>Voulez-vous vraiment supprimer le secteur <em><span id=\"sector-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-sector-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+
+<?php echo $this->modalwindow("stack-container", "<h3 id=\"stack-title\"></h3>", "", "<div id=\"stack-form\"></div>") ?>
+
+<?php echo $this->modalwindow("confirm-delete-stack",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'attente <em><span id=\"stack-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-stack-href\">Confirmer</a>
 						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
 
 <?php $this->inlineScript()->captureStart();?>
@@ -304,7 +366,7 @@ centre('<?php echo $this->url('administration'); ?>');
 
 <?php if (isset($this->messages['error'])) { ?>
 	<?php foreach ($this->messages['error'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
+		var n = noty({text:"<?php echo $message ?>", 
 					type:'error',
 					layout: 'bottomRight',});
 	<?php }?>

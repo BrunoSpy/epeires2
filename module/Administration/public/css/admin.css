@@ -50,6 +50,10 @@ input.pick-a-color {
     border-radius: 6px 6px 0px 0px;
 }
 
+.centres-sidenav > li:last-child > a {
+    border-radius: 0px 0px 6px 6px;
+}
+
 .centres-sidenav > li > a {
     display: block;
     margin: 0px 0px -1px;
