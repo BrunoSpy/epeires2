@@ -127,10 +127,10 @@ var categories = function(url){
 	});
 	
 //	ajaxify form field submit
-	$('#fieldscontainer').on('click', 'input[type=submit]', function(event){
+	$('#fieldscontainer').on('submit', function(event){
 		event.preventDefault();
-		var me = $(this);
-		href = $(this).closest('form').attr('action');
+		href = $("#CustomField").attr('action');
+		var me = $("#CustomField").find("input[type=submit]");
 		$.post(href, $("#CustomField").serialize(), function(data){
 			var id = me.closest('tr').find('input[type=hidden]').val();
 			var tr = me.closest('tr');
