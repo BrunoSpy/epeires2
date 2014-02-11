@@ -19,7 +19,7 @@ class PredefinedEvent extends AbstractEvent{
 
 	/** @ORM\Column(type="string", nullable=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
-	 * @Annotation\Required(false)
+	 * @Annotation\Required(true)
 	 * @Annotation\Options({"label":"Nom :"})
 	 */
 	protected $name;

@@ -203,7 +203,10 @@ class ModelsController extends FormController
     		$json['id'] = $pevent->getId();
     		$json['name'] = $this->getServiceLocator()->get('EventService')->getName($pevent);
     		$json['impactstyle'] = $pevent->getImpact()->getStyle();
-    		$json['impactname'] = $pevent->getImpact()->getName();  			
+    		$json['impactname'] = $pevent->getImpact()->getName();
+    		if($pevent->getParent()){
+    			$json['parentid'] = $pevent->getParent()->getId(); 			
+    		}
     	}
     	
     	return new JsonModel($json);

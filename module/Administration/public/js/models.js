@@ -83,10 +83,10 @@ var models = function(url){
 		});	
 	});
 		
-	$("#model-container").on('click', 'input[type=submit]', function(event){
+	$("#model-container").on('submit', function(event){
 		event.preventDefault();
 		var catid = $("#PredefinedEvent select[name=category] option:selected").val();
-		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $(this).closest("#PredefinedEvent").serialize(), function(data){
+		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $("form#PredefinedEvent").serialize(), function(data){
 			var id = $("#PredefinedEvent input[type=hidden]").val();
 			if(id > 0){
 				var tr = $("#models-container tr#"+data.id);
@@ -184,10 +184,10 @@ var models = function(url){
 	/* ************************************ */
 	/*  Fenêtre création/mod d'une action   */
 	/* ************************************ */
-	$("#action-container").on('click', 'input[type=submit]', function(event){
+	$("#action-container").on('submit', function(event){
 		event.preventDefault();
 		var id = $("#action-form").find('input[name=id]').val();
-		$.post(url+'/models/save', $(this).closest("#PredefinedEvent").serialize(), function(data){
+		$.post(url+'/models/save', $("form#PredefinedEvent").serialize(), function(data){
 			if(data.hasOwnProperty('name')){
 				if(id > 0){ //modification d'une action existante
 					var tr = $("tr#"+id);
@@ -202,12 +202,21 @@ var models = function(url){
 							'<a class="down" href="'+url+'/models/down?id='+data.id+'">'+
 							'<span class="caret middle"></span></a> '+
 							'<a class="up" href="'+url+'/models/up?id='+data.id+'"><span class="up-caret middle"></span></a>');
-					newtr.append('<td><i class="icon-pencil"></i> <a title="Supprimer"'+ 
+					newtr.append('<td>'+
+						'<a '+
+						'title="Modifier"'+ 
+						'class="mod-action"'+
+						'href="#action-container"'+
+						'data-toggle="modal"'+
+						'data-id='+data.id+' '+
+						'data-name="'+data.name+'" '+
+						'data-parent='+data.parentid+'"> '+
+						'<i class="icon-pencil"></i></a> <a title="Supprimer"'+ 
 						'href="'+url+'/models/delete?id='+data.id+'&redirect=0 '+ 
 						'class="action-delete" '+ 
 						'data-id='+data.id +' '+ 
 						'data-name="'+data.name+'" '+ 
-						'><i class="icon-trash"></i></td>');
+						'><i class="icon-trash"></i></a></td>');
 					$("#actions-table").append(newtr);
 					updateCarets($("#model-container"));
 				}
