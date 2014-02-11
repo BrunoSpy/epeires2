@@ -215,29 +215,29 @@ var form = function(url){
 	/************************/
 	
 	//submit form
-	$("#event").on('click', 'input[type=submit]', function(event){
+	$("#event").on('submit', function(event){
 		event.preventDefault();
 		var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",
 			url: url+'/save',
 			xhr: function() {  // Custom XMLHttpRequest
-	            var myXhr = $.ajaxSettings.xhr();
-	            if(myXhr.upload){ // Check if upload property exists
-	            //    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
-	            }
-	            return myXhr;
-	        },
-	        // Form data
-	        data: formData,
-	        //Options to tell jQuery not to process data or worry about content-type.
-	        cache: false,
-	        contentType: false,
-	        processData: false,
-	        success: function(data){
-				//close form
-				$("#create-link").trigger("click");
-				var id = $("#Event").find('input[name="id"]').val();
+		           var myXhr = $.ajaxSettings.xhr();
+		           if(myXhr.upload){ // Check if upload property exists
+		           //    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+		           }
+		           return myXhr;
+		    },
+		    // Form data
+		    data: formData,
+		    //Options to tell jQuery not to process data or worry about content-type.
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+		    success: function(data){
+		    	//close form
+		    	$("#create-link").trigger("click");
+		    	var id = $("#Event").find('input[name="id"]').val();
 				if(id>0){
 					//modification
 					if(data['events']){
@@ -254,9 +254,8 @@ var form = function(url){
 			},
 			dataType: "json"
 		});
-		
 	});
-
+	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-evt").slideUp('fast');
 	});
