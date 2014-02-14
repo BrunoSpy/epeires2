@@ -101,7 +101,7 @@ class FrequenciesController extends AbstractActionController {
 							$messages['error'][] = $e->getMessage();
 						}
 					} else {
-						$messages['error'] = 'Impossible de déterminer l\'évènement à terminer';
+						$messages['error'][] = "Impossible de déterminer l'évènement à terminer";
 					}
 				} else {
 					if(count($antennaEvents) > 0){
@@ -155,7 +155,7 @@ class FrequenciesController extends AbstractActionController {
 			}
 			
 		} else {
-			$messages['error'] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
+			$messages['error'][] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
 		}
 		return new JsonModel($messages);
 	}
