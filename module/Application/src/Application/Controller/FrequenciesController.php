@@ -138,6 +138,9 @@ class FrequenciesController extends AbstractActionController {
 							foreach ($antenna->getMainfrequencies() as $frequency){
 								$this->switchCoverture($messages, $frequency, 1, $now, $event);
 							}
+							foreach ($antenna->getMainfrequenciesclimax() as $frequency){
+								$this->switchCoverture($messages, $frequency, 1, $now, $event);
+							}
 							try {
 								$em->flush();
 								$messages['success'][] = "Nouvel évènement antenne créé.";
@@ -266,6 +269,7 @@ class FrequenciesController extends AbstractActionController {
 				$em->persist($event);
 				try {
 					$em->flush();
+					$messages['success'][] = "Changement de couverture de la fréquence ".$frequency->getValue()." enregistré.";
 				} catch(\Exception $e){
 					$messages['error'][] = $e->getMessage();
 				}

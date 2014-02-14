@@ -150,16 +150,27 @@ ul.antennas > div > li > a:after {
 	padding-bottom: 5px;
 }
 
+.antenna-climax-color{
+	margin-top: 0px;
+	padding-top: 5px;
+}
+
 .mainantenna-color {
 	margin-left: -10px;
 	padding-left: 5px;
 	margin-right: -10px;
 	padding-right: 10px;
+}
+
+ul > .antennas:last-child > .mainantenna-color {
 	border-radius: 0px 0px 0px 6px;
 }
 
 .backupantenna-color {
 	padding-left: 5px;
+}
+
+ul > .antennas:last-child > .backupantenna-color {
 	border-radius: 0px 0px 6px 0px;
 }
 

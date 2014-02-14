@@ -43,6 +43,18 @@ class Sector extends AbstractHelper {
 		$html .= "<li><a href=\"#\" data-container=\"body\" data-content=\"".$popoverbackup."\" data-toggle=\"popover\" data-html=\"true\">".$frequency->getBackupAntenna()->getShortname()."</a></li>";
 		$html .= "</div>";
 		$html .= "</ul>";
+		
+		if($frequency->getMainantennaclimax() || $frequency->getBackupantennaclimax()){
+			$html .= "<ul class=\"antennas\">";
+			$html .= "<div class=\"mainantenna-color antenna-color antenna-climax-color antenna-".($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "")."\">";
+			$html .= "<li>".($frequency->getMainantennaclimax() ? "<a href=\"#\">".$frequency->getMainantennaclimax()->getShortname()."</a>" : "")."</li>";
+			$html .= "</div>";
+			$html .= "<div class=\"backupantenna-color antenna-color antenna-climax-color antenna-".($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getId() : "")."\">";
+			$html .= "<li>".($frequency->getBackupantennaclimax() ? "<a href=\"#\">".$frequency->getBackupantennaclimax()->getShortname()."</a>" : "")."</li>";
+			$html .= "</div>";
+			$html .= "</ul>";
+		}
+		
 		$html .= '</ul>';
 		
 		return $html;
