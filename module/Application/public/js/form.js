@@ -525,9 +525,9 @@ var form = function(url){
 			$("input[type=submit]").tooltip({
 				container :'body',
 				title: 'Date de fin manquante'
-			}).addClass('disabled');
+			}).addClass('disabled').attr('disabled', 'disabled');
 		} else {
-			$("input[type=submit]").tooltip('destroy').removeClass('disabled');
+			$("input[type=submit]").tooltip('destroy').removeClass('disabled').removeAttr('disabled');
 		}
 	});
 	
