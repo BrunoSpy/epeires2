@@ -30,6 +30,7 @@ var antenna = function(url){
 					antennas.find('.backupantenna-color').addClass('background-selected');
 					antennas.find('.mainantenna-color').removeClass('background-selected');
 				}
+				updateActions();
 			};
 		}, 'json');
 	});
@@ -88,10 +89,15 @@ var antenna = function(url){
 					antenna.filter('.mainantenna-color').removeClass('background-selected')
 					.siblings('.backupantenna-color').addClass('background-selected');
 				}
+				updateActions();
 			}
 		}, 'json');
 	});
 
+	$(document).on('click', '.switch-antenna', function(){
+		$("#switch_"+$(this).data('antennaid')).bootstrapSwitch('setState', $(this).data('state'));
+	});
+	
 	$("#antennas tr").hover(
 			//in
 			function(){
@@ -102,6 +108,41 @@ var antenna = function(url){
 				$('.antenna-'+$(this).data('id')).closest('.sector').removeClass('background-status-test'); 
 			});
 
+	
+	//actions
+	var updateActions = function(){
+		$("a.actions-freq").each(function(index, element){
+			var sector = $(this).closest('.sector');
+			var list = $("<ul id=\"list-actions-"+$(this).data('freq')+"\"></ul>");
+			if(sector.find('.antennas .mainantenna-color').hasClass('background-selected')){
+				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture secours</a></li>");
+			} else {
+				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
+			}
+			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color');
+			if(mainantenna.hasClass('background-status-ok')){
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale HS</a></li>");
+			} else {
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale opérationnelle</a></li>");
+			}
+			if(list.find('li').length > 0 ){
+				$(this).popover('destroy');
+				$(this).popover({
+					content: list,
+					html: true,
+					container: 'body'
+					});
+				};
+		});
+	};
+//	//hide popover if click outside
+	$(document).mouseup(function(e){
+		var container = $("a.actions-freq");
+		if(!container.is(e.target) && container.has(e.target).length === 0){
+			container.popover('hide');
+		}
+	});
+	
 	//refresh page every 30s
 	(function doPollAntenna(){
 		$.post(url+'frequencies/getantennastate')
@@ -159,6 +200,7 @@ var antenna = function(url){
 					}
 				}
 			});
+			updateActions();
 		})
 		.always(function() { setTimeout(doPollFrequencies, 30000);});
 	})();
