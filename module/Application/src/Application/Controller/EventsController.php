@@ -902,6 +902,7 @@ class EventsController extends FormController {
     		$now = new \DateTime('NOW');
     		$qb->andWhere($qb->expr()->orX(
     				$qb->expr()->gte('e.startdate', '?1'),
+    				$qb->expr()->gte('e.enddate', '?1'),
     				$qb->expr()->in('e.status', '?2')
     		));
     		$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
