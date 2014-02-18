@@ -27,7 +27,6 @@ var displayMessages = function(messages){
 	}
 	if(messages['error']){
 		$.each(messages.error, function(key, value){
-			alert(value);
 			var n = noty({text:value, 
 				type:'error',
 				layout: 'bottomRight',});
