@@ -114,16 +114,43 @@ var antenna = function(url){
 		$("a.actions-freq").each(function(index, element){
 			var sector = $(this).closest('.sector');
 			var list = $("<ul id=\"list-actions-"+$(this).data('freq')+"\"></ul>");
-			if(sector.find('.antennas .mainantenna-color').hasClass('background-selected')){
+			var mainantennacolor = sector.find('.antennas .mainantenna-color');
+			var backupantennacolor = sector.find('.antennas .backupantenna-color');
+			if(mainantennacolor.filter('.background-selected').length == mainantennacolor.length && backupantennacolor.filter('.background-status-ok').length == backupantennacolor.length){
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture secours</a></li>");
-			} else {
+			}
+			if (backupantennacolor.filter('.background-selected').length == backupantennacolor.length && mainantennacolor.filter('.background-status-ok').length == mainantennacolor.length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
-			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color');
+			//antennes
+			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(mainantenna.hasClass('background-status-ok')){
 				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale HS</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale opérationnelle</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale OPE</a></li>");
+			}
+			var backupantenna = sector.find('.antennas .backupantenna-color.antenna-color:not(.antenna-climax-color)');
+			if(backupantenna.hasClass('background-status-ok')){
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours HS</a></li>");
+			} else {
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours OPE</a></li>");
+			}
+			//si climax
+			var mainantennaclimax = sector.find('.antennas .mainantenna-color.antenna-climax-color');
+			if(mainantennaclimax.length > 0){
+				if(mainantennaclimax.hasClass('background-status-ok')){
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée HS</a></li>");
+				} else {
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée OPE</a></li>");
+				}
+			}
+			var backupantennaclimax = sector.find('.antennas .backupantenna-color.antenna-climax-color');
+			if(backupantennaclimax.length > 0){
+				if(backupantennaclimax.hasClass('background-status-ok')){
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée HS</a></li>");
+				} else {
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée OPE</a></li>");
+				}
 			}
 			if(list.find('li').length > 0 ){
 				$(this).popover('destroy');
@@ -134,10 +161,27 @@ var antenna = function(url){
 					});
 				};
 		});
+		$("a.actions-antenna").each(function(){
+			var antenna = $(this).closest('.antenna-color');
+			var list = $('<ul></ul>');
+			if(antenna.hasClass('background-status-ok')){
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne HS</a></li>");
+			} else {
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne OPE</a></li>");
+			}
+			if(list.find('li').length > 0){
+				$(this).popover('destroy');
+				$(this).popover({
+					content: list,
+					html: true,
+					container: 'body'
+				});
+			}
+		});
 	};
 //	//hide popover if click outside
 	$(document).mouseup(function(e){
-		var container = $("a.actions-freq");
+		var container = $("a.actions-freq, a.actions-antenna");
 		if(!container.is(e.target) && container.has(e.target).length === 0){
 			container.popover('hide');
 		}
@@ -202,6 +246,8 @@ var antenna = function(url){
 			});
 			updateActions();
 		})
-		.always(function() { setTimeout(doPollFrequencies, 30000);});
+		.always(function() {
+			setTimeout(doPollFrequencies, 30000);
+		});
 	})();
 };
