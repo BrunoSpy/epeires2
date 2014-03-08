@@ -346,6 +346,7 @@ class EventsController extends FormController {
     			if($credentials){
     				
     				$form = $this->getSkeletonForm($event);
+    				$form->setPreferFormInputFilter(true);
     					
     				$form->setData($post);
     				 
