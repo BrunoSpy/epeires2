@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "cd5b0ac7f0ad4d4b81d25b698f09a729",
+    "hash": "26a14c8d8c0e638d2c1cab5c21092386",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -45,8 +45,7 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
+                    "homepage": "http://www.jwage.com/"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -118,10 +117,9 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
+                    "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
+                    "homepage": "http://www.jwage.com/"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -260,8 +258,7 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
+                    "homepage": "http://www.jwage.com/"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -558,8 +555,7 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
+                    "homepage": "http://www.jwage.com/"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -577,7 +573,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -805,12 +801,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
+                "reference": "v1.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
-                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
+                "reference": "v1.1.2",
                 "shasum": ""
             },
             "require": {
@@ -869,6 +865,46 @@
                 "minification"
             ],
             "time": "2013-07-19 00:03:27"
+        },
+        {
+            "name": "mrclay/minify",
+            "version": "2.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mrclay/minify.git",
+                "reference": "db7fe244932ea77cf1438965693672ea12b33da8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mrclay/minify/zipball/db7fe244932ea77cf1438965693672ea12b33da8",
+                "reference": "db7fe244932ea77cf1438965693672ea12b33da8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": ">=5.2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "min/lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Clay",
+                    "email": "steve@mrclay.org",
+                    "homepage": "http://www.mrclay.org/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
+            "homepage": "http://code.google.com/p/minify/",
+            "time": "2013-07-23 19:58:28"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -1506,13 +1542,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "b577e10f92cb449cf70cfa1b6d069ee8acbe7b21"
+                "reference": "3e4fb960030a055ac27a7e214ec2586f7d54ad3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-b577e10f92cb449cf70cfa1b6d069ee8acbe7b21-zip-0b0e67.zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-3e4fb960030a055ac27a7e214ec2586f7d54ad3d-zip-987fed.zip",
                 "reference": "dev-master",
-                "shasum": "45a7dec1666e55f89b162ff68b9d63dd350561c7"
+                "shasum": "cc8c553ff675889beb86e87157047a289fe8c497"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -1562,7 +1598,7 @@
                 "source": "https://github.com/zendframework/ZendDeveloperTools/tree/master",
                 "issues": "https://github.com/zendframework/ZendDeveloperTools/issues"
             },
-            "time": "2014-02-20 14:58:50"
+            "time": "2014-03-12 00:47:04"
         },
         {
             "name": "zendframework/zftool",

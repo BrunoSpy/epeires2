@@ -1,7 +1,7 @@
 <?php
 return array(
+		//cache and minify only on production environments
 	    'asset_manager' => array(
-    		//only cache on production environments
 	    	'caching' => array(
     			'default' => array(
     				'cache'     => 'FilePath',
@@ -10,5 +10,17 @@ return array(
                		),
     			),
     		),
+	    	'filters' => array(
+	    		'application/javascript' => array(
+	    			array(
+	    				'filter' => 'JSMin',
+	    			),
+	    		),
+	    		'text/css' => array(
+	    			array(
+	    				'filter' => 'CSSMin',
+	    			)
+	    		),
+	   		),
     	),
 );
