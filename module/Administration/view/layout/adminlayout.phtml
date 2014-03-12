@@ -9,8 +9,8 @@
 
         <!-- Le styles -->
         <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-                        ->prependStylesheet($this->basePath() . '/css/application.css') 
-                        ->prependStylesheet($this->basePath() . '/css/admin.css')
+                        ->prependStylesheet($this->basePath() . '/assets/css/application.css') 
+                        ->prependStylesheet($this->basePath() . '/assets/css/admin.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-switch.css')
                         ->prependStylesheet($this->basePath() . '/css/pick-a-color-1.1.8.min.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
@@ -19,15 +19,13 @@
         				?>
 
         <!-- Scripts -->
-        <?php echo $this->headScript()->prependFile($this->basePath() . '/js/application.js')
+        <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
         							  ->prependFile($this->basePath() . '/js/pick-a-color-1.1.8.min.js')
         							  ->prependFile($this->basePath() . '/js/tinycolor-0.9.15.min.js')
         							  ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
         							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                       ->prependFile($this->basePath() . '/js/bootstrap.min.js')
-                                      ->prependFile($this->basePath() . '/js/noty/themes/default.js')
-                                      ->prependFile($this->basePath() . '/js/noty/layouts/bottomRight.js')
-                                      ->prependFile($this->basePath() . '/js/noty/jquery.noty.js')
+                                      ->prependFile($this->basePath() . '/js/noty/packaged/jquery.noty.packaged.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
                                       ->prependFile($this->basePath() . '/js/jquery.min.js')
         							   ?>

@@ -16,11 +16,6 @@ return array(
 	    				'filter' => 'JSMin',
 	    			),
 	    		),
-	    		'text/css' => array(
-	    			array(
-	    				'filter' => 'CSSMin',
-	    			)
-	    		),
 	   		),
     	),
 );

@@ -16,7 +16,7 @@ function updateClock ( )
     $("#clock").html(currentTimeString);
         
  };
- 
+
 var displayMessages = function(messages){
 	if(messages['success']){
 		$.each(messages.success, function(key, value){
@@ -35,7 +35,7 @@ var displayMessages = function(messages){
 };
  
 $(document).ready(function(){
-
+	
    setInterval('updateClock()', 1000);
    
    $.datepicker.regional[ "fr" ];
