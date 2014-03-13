@@ -22,6 +22,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('othername')->setLabe
 echo $this->controlGroup($this->formLabel($this->form->get('value')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('value')));
 
+echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($this->form->get('organisation')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('mainantenna')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('mainantenna')));
 

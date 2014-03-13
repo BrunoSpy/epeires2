@@ -306,6 +306,7 @@ class FrequenciesController extends AbstractActionController {
 				$frequencies[$frequency->getId()]['name'] = $frequency->getValue();
 				$frequencies[$frequency->getId()]['status'] = true; 
 				$frequencies[$frequency->getId()]['cov'] = 0;
+				$frequencies[$frequency->getId()]['otherfreq'] = 0;
 				$frequencies[$frequency->getId()]['planned'] = false;
 			} else {
 				$frequencies[$frequency->getId()] = true;
@@ -322,7 +323,9 @@ class FrequenciesController extends AbstractActionController {
 			$statefield = $event->getCategory()->getStatefield()->getId();
 			$frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
 			$covfield = $event->getCategory()->getCurrentAntennafield()->getId();
+			$otherfreqfield = $event->getCategory()->getOtherFrequencyfield()->getId();
 			$frequencyid = 0;
+			$otherfreqid = 0;
 			$available = true;
 			$cov = 0;
 			foreach ($event->getCustomFieldsValues() as $customvalue){
@@ -332,12 +335,26 @@ class FrequenciesController extends AbstractActionController {
 					$frequencyid = $customvalue->getValue();
 				} else if($customvalue->getCustomField()->getId() == $covfield){
 					$cov = $customvalue->getValue();
+				} else if($customvalue->getCustomField()->getId() == $otherfreqfield){
+					$otherfreqid = $customvalue->getValue();
 				}
 			}
 			if(array_key_exists($frequencyid, $frequencies)){ //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
 				if($full){
 					$frequencies[$frequencyid]['status'] *= $available;
 					$frequencies[$frequencyid]['cov'] = $cov;
+					$otherfreq = $em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
+					if($otherfreq){
+						$frequencies[$frequencyid]['otherfreq'] = $otherfreq->getValue();
+						$frequencies[$frequencyid]['main'] = $otherfreq->getMainantenna()->getId();
+						$frequencies[$frequencyid]['backup'] = $otherfreq->getBackupantenna()->getId();
+						if($otherfreq->getMainantennaclimax()){
+							$frequencies[$frequencyid]['mainclimax'] = $otherfreq->getMainantennaclimax()->getId();
+						}
+						if($otherfreq->getBackupantennaclimax()){
+							$frequencies[$frequencyid]['backupclimax'] = $otherfreq->getBackupantennaclimax()->getId();
+						}
+					} 
 				} else {
 					$frequencies[$frequencyid] *= $available;
 				}
@@ -420,5 +437,19 @@ class FrequenciesController extends AbstractActionController {
 		}
 		
 		return $antennas;
+	}
+	
+	public function getfrequenciesAction(){
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$frequencyid = $this->params()->fromQuery('id', null);
+		$frequencies = array();
+		if($frequencyid){
+			$frequency = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+			$frequencieslist = $em->getRepository('Application\Entity\Frequency')->findBy(array('organisation' => $frequency->getOrganisation()->getId()));
+			foreach ($frequencieslist as $freq){
+				$frequencies[$freq->getId()] = ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName()." ".$freq->getValue() : $freq->getOtherName()." ".$freq->getValue());
+			}
+		}
+		return new JsonModel($frequencies);
 	}
 }

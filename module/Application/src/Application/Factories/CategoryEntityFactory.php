@@ -101,13 +101,21 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$currentAntenna->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type' => 'select')));
 		$currentAntenna->setPlace(3);
 		$currentAntenna->setDefaultValue("Normale\nSecours");
+		$otherfreq = new CustomField();
+		$otherfreq->setCategory($frequencycat);
+		$otherfreq->setName('Utiliser fréquence');
+		$otherfreq->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type' => 'frequency')));
+		$otherfreq->setPlace(4);
+		$otherfreq->setDefaultValue("");
 		$frequencycat->setFieldname($frequencyfield);
 		$frequencycat->setFrequencyfield($frequencyfield);
 		$frequencycat->setCurrentAntennafield($currentAntenna);
 		$frequencycat->setStatefield($statefield);
+		$frequencycat->setOtherFrequencyfield($otherfreq);
 		$em->persist($frequencyfield);
 		$em->persist($statefield);
 		$em->persist($currentAntenna);
+		$em->persist($otherfreq);
 		return $frequencycat;
 	}
 }

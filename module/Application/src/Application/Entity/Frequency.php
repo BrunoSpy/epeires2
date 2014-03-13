@@ -20,6 +20,14 @@ class Frequency {
 	 */
 	protected $id;
 	
+	/**
+	 * @ORM\ManyToOne(targetEntity="Organisation")
+	 * @Annotation\Type("Zend\Form\Element\Select")
+	 * @Annotation\Required(true)
+	 * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
+	 */
+	protected $organisation;
+	
  	/** 
  	 * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="mainfrequencies") 
  	 * @Annotation\Type("Zend\Form\Element\Select")
@@ -96,6 +104,14 @@ class Frequency {
 		}
 	}
 	
+	public function getOrganisation(){
+		return $this->organisation;
+	}
+	
+	public function setOrganisation($organisation){
+		$this->organisation = $organisation;
+	}
+	
 	public function getOthername(){
 		return $this->othername;
 	}
@@ -151,6 +167,7 @@ class Frequency {
 		$object_vars['mainantennaclimax'] = ($this->mainantennaclimax ? $this->mainantennaclimax->getId() : null);
 		$object_vars['backupantennaclimax'] = ($this->backupantennaclimax ? $this->backupantennaclimax->getId() : null);
 		$object_vars['defaultsector'] = ($this->defaultsector ? $this->defaultsector->getId() : null);
+		$object_vars['organisation'] = ($this->organisation ? $this->organisation->getId() : null);
 		return $object_vars;
 	}
 }

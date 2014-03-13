@@ -98,7 +98,16 @@ ul.sector-list {
 	text-align: center;
 }
 
-li.sector-freq > a:after {
+.popover-content li.divider {
+	height: 1px;
+	background-color: #E5E5E5;
+	border-bottom: 1px solid #FFF;
+	margin: 9px 1px;
+	overflow: hidden;
+}
+
+li.sector-freq > a:after,
+li.submenu > a:after {
 	display: block;
 	float: right;
 	width: 0;
@@ -204,8 +213,17 @@ ul > .antennas:last-child > .backupantenna-color {
 }
 
 .background-selected a {
-	text-shadow: 1px 1px 3px rgba(1, 1, 1, 0.9) !important}
+	text-shadow: 1px 1px 3px rgba(1, 1, 1, 0.9) !important
+}
 
+.vertical-scroll {
+	overflow-y: auto;
+	height: 200px;
+}
+
+.vertical-scroll ul {
+	margin-bottom: 0px;
+}
 /************* Block ***********************/
 
 .block {
@@ -420,6 +438,10 @@ input, textarea, .uneditable-input {
 }
 
 /* ************************** */
+
+a.em {
+	font-style: italic;
+}
 
 a.disabled {
 	pointer-events: none;

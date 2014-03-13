@@ -215,6 +215,12 @@ class CategoriesController extends FormController{
     			$category->setRadarfield(null);
     			$category->setStatefield(null);
     		}
+    		if($category instanceof FrequencyCategory){
+    			$category->setCurrentAntennafield(null);
+    			$category->setStatefield(null);
+    			$category->setFrequencyfield(null);
+    			$category->setOtherFrequencyfield(null);
+    		}
     		$objectManager->persist($category);
     		$objectManager->flush();
     		//suppression des evts associés par cascade

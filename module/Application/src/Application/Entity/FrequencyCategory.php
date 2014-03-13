@@ -35,6 +35,11 @@ class FrequencyCategory extends Category{
 	 */
 	protected $frequencyfield;
 	
+	/**
+	 * @ORM\OneToOne(targetEntity="CustomField")
+	 */
+	protected $otherfrequencyfield;
+	
 	public function getStatefield(){
 		return $this->statefield;
 	}
@@ -59,4 +64,11 @@ class FrequencyCategory extends Category{
 		$this->currentcovfield = $currentcovfield;
 	}
 	
+	public function getOtherFrequencyField(){
+		return $this->otherfrequencyfield;
+	}
+	
+	public function setOtherFrequencyfield($otherfrequencyfield){
+		$this->otherfrequencyfield = $otherfrequencyfield;
+	}
 }

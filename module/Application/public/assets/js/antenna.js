@@ -108,12 +108,34 @@ var antenna = function(url){
 				$('.antenna-'+$(this).data('id')).closest('.sector').removeClass('background-status-test'); 
 			});
 
+	$(document).on('click', '#changefreq', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$.post(url+'frequencies/getfrequencies?id='+me.data('freqid'), function(data){
+			var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
+			$.each(data, function(key, value){
+				list.append("<li><a href=\"#\" class=\"action-changefreq\" data-frommfreq=\""+me.data('freqid')+"\" data-tofreq=\""+key+"\">"+value+"</a></li>");
+			});
+			if(list.find('li').length > 0 ){
+				var div = $('<div class="vertical-scroll"></div>');
+				div.append(list);
+				me.popover({
+					content: div,
+					html: true,
+					container: 'body',
+					trigger: 'manual'
+				});
+				me.popover('show');
+				div.closest('.popover-content').css('padding', '0px');
+			};
+		}, 'json');
+	});
 	
 	//actions
 	var updateActions = function(){
 		$("a.actions-freq").each(function(index, element){
 			var sector = $(this).closest('.sector');
-			var list = $("<ul id=\"list-actions-"+$(this).data('freq')+"\"></ul>");
+			var list = $("<ul></ul>");
 			var mainantennacolor = sector.find('.antennas .mainantenna-color');
 			var backupantennacolor = sector.find('.antennas .backupantenna-color');
 			if(mainantennacolor.filter('.background-selected').length == mainantennacolor.length && backupantennacolor.filter('.background-status-ok').length == backupantennacolor.length){
@@ -122,6 +144,10 @@ var antenna = function(url){
 			if (backupantennacolor.filter('.background-selected').length == backupantennacolor.length && mainantennacolor.filter('.background-status-ok').length == mainantennacolor.length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
+			var submenu = $("<li class=\"submenu\">");
+			submenu.append("<a id=\"changefreq\" data-freqid=\""+$(this).data('freq')+"\" href=\#\>Changer de fréquence</a>");
+			list.append(submenu);
+			list.append("<li class=\"divider\"></li>");
 			//antennes
 			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(mainantenna.hasClass('background-status-ok')){
@@ -157,7 +183,8 @@ var antenna = function(url){
 				$(this).popover({
 					content: list,
 					html: true,
-					container: 'body'
+					container: 'body',
+					trigger: 'manual'
 					});
 				};
 		});
@@ -174,19 +201,27 @@ var antenna = function(url){
 				$(this).popover({
 					content: list,
 					html: true,
-					container: 'body'
+					container: 'body',
+					trigger: 'manual'
 				});
 			}
 		});
 	};
-//	//hide popover if click outside
-	$(document).mouseup(function(e){
-		var container = $("a.actions-freq, a.actions-antenna");
-		if(!container.is(e.target) && container.has(e.target).length === 0){
-			container.popover('hide');
-		}
+	
+	$('a.actions-antenna, a.actions-freq').on('click', function(event){
+		event.preventDefault();
+		$(this).popover('toggle');
 	});
 	
+//	//hide popover if click outside
+	$(document).mousedown(function(e){
+		var container = $(".popover");
+		if(!container.is(e.target) && container.has(e.target).length === 0){
+			$("a.actions-freq, a.actions-antenna").not($(e.target)).popover('hide');
+			$("a#changefreq").not($(e.target)).popover('hide');
+		};		
+	});
+		
 	//refresh page every 30s
 	(function doPollAntenna(){
 		$.post(url+'frequencies/getantennastate')
@@ -219,21 +254,26 @@ var antenna = function(url){
 		.done(function(data) {
 			$.each(data, function(key, value){
 				var sector = $('.sector-color.frequency-'+key);
-				if(value.status){
+				if(value.status == 1 && value.otherfreq == 0){
 					sector.removeClass('background-status-fail');
 					sector.addClass('background-status-ok');
 				} else {
 					sector.removeClass('background-status-ok');
 					sector.addClass('background-status-fail');
 				}
-				if(value.cov){ //principale = 0
+				if(value.cov == 1){ //principale = 0
 					sector.closest('.sector').find('.mainantenna-color').removeClass('background-selected');
 					sector.closest('.sector').find('.backupantenna-color').addClass('background-selected');
 				} else {
 					sector.closest('.sector').find('.backupantenna-color').removeClass('background-selected');
 					sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 				}
-				if(value.status){
+				if(value.otherfreq != 0){
+					sector.find('.actions-freq').html(value.otherfreq).addClass('em');
+				} else {
+					sector.find('.actions-freq').html(value.name).removeClass('em');
+				}
+				if(value.status == 1){
 					//prise en compte des évts planifiés uniquement si pas d'evt en cours => statut ok
 					if(value.planned){
 						sector.addClass('background-status-planned');

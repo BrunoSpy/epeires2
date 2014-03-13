@@ -51,7 +51,7 @@ var radio = function(url){
 		$("#frequency-form").load(url+'/radio/formfrequency?id='+$(this).data('id'));
 	});
 	
-	$("#frequency-container").on('click', 'input[type=submit]', function(event){
+	$("#frequency-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/radio/savefrequency', $("#Frequency").serialize(), function(data){
 			location.reload();
