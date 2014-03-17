@@ -60,7 +60,7 @@
 							<tbody>
 								<?php 
 								foreach ($this->antennas as $antennaid => $antenna){
-									echo '<tr data-id="'.$antennaid.'">';
+									echo '<tr id="antenna-'.$antennaid.'" data-id="'.$antennaid.'" data-shortname="'.$antenna['shortname'].'">';
 									echo '<td>'.$antenna['name'].'</td>';
 									echo '<td>';
 									

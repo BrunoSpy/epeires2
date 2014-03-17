@@ -158,10 +158,13 @@ var centre = function(url){
 			$.each(data, function(key, value){
 				options[options.length] = new Option(value, key);
 			});
+			if(data['messages']){
+				displayMessages(data['messages']);
+			}
 		});
 	});
 	
-	$("#sector-container").on('click', 'input[type=submit]', function(event){
+	$("#sector-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/savesector', $("#Sector").serialize(), function(data){
 			location.reload();

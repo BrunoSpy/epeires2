@@ -183,6 +183,10 @@ ul > .antennas:last-child > .backupantenna-color {
 	border-radius: 0px 0px 6px 0px;
 }
 
+ul > .antennas > .antenna-color.mainantenna-color:only-child {
+	padding-right: 0px; 
+}
+
 .background-status-ok {
 	background-image: linear-gradient(to bottom,#51a351,#62c462);
 	background-repeat: repeat-x;
@@ -218,7 +222,7 @@ ul > .antennas:last-child > .backupantenna-color {
 
 .vertical-scroll {
 	overflow-y: auto;
-	height: 200px;
+	max-height: 200px;
 }
 
 .vertical-scroll ul {

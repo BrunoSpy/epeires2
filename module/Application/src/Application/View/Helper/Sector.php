@@ -33,9 +33,11 @@ class Sector extends AbstractHelper {
 			$html .= "<div data-antennaid=\"".($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "")."\" class=\"mainantenna-color antenna-color antenna-climax-color antenna-".($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "")."\">";
 			$html .= "<li>".($frequency->getMainantennaclimax() ? "<a href=\"#\" class=\"actions-antenna\" data-id=\"".$frequency->getMainantennaclimax()->getId()."\">".$frequency->getMainantennaclimax()->getShortname()."</a>" : "")."</li>";
 			$html .= "</div>";
-			$html .= "<div data-antennaid=\"".($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getId() : "")."\" class=\"backupantenna-color antenna-color antenna-climax-color antenna-".($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getId() : "")."\">";
-			$html .= "<li>".($frequency->getBackupantennaclimax() ? "<a href=\"#\" class=\"actions-antenna\" data-id=\"".$frequency->getBackupantennaclimax()->getId()."\">".$frequency->getBackupantennaclimax()->getShortname()."</a>" : "")."</li>";
-			$html .= "</div>";
+			if($frequency->getBackupantennaclimax()){
+				$html .= "<div data-antennaid=\"".($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getId() : "")."\" class=\"backupantenna-color antenna-color antenna-climax-color antenna-".($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getId() : "")."\">";
+				$html .= "<li>".($frequency->getBackupantennaclimax() ? "<a href=\"#\" class=\"actions-antenna\" data-id=\"".$frequency->getBackupantennaclimax()->getId()."\">".$frequency->getBackupantennaclimax()->getShortname()."</a>" : "")."</li>";
+				$html .= "</div>";
+			}
 			$html .= "</ul>";
 		}
 		

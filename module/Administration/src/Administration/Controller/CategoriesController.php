@@ -176,6 +176,7 @@ class CategoriesController extends FormController{
 			$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getRootsAsArray($post['id']));
 			$form->bind($category);
 			$form->setData($post);
+			$form->setPreferFormInputFilter(true);
 			
 			if($form->isValid()){
 				if(!$post['id']){

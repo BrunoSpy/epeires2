@@ -99,7 +99,7 @@ class CentreController extends FormController
     		$datas = $this->getFormOrganisation($id);
     		$form = $datas['form'];
     		$form->setData($post);
-    		
+    		$form->setPreferFormInputFilter(true);
     		$organisation = $datas['organisation'];
     		
     		if($form->isValid()){
@@ -184,6 +184,7 @@ class CentreController extends FormController
     
     public function savequalifAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$qualif = null;
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
@@ -191,6 +192,7 @@ class CentreController extends FormController
     		$datas = $this->getFormQualif($id);
     		$form = $datas['form'];
     		$form->setData($post);
+    		$form->setPreferFormInputFilter(true);
     
     		$qualif = $datas['qualif'];
     
@@ -206,8 +208,9 @@ class CentreController extends FormController
     		}
     	}
     
-    	$json = array('id' => $qualif->getId(), 'name' => $qualif->getName());
-    
+    	if($qualif) {
+    		$json = array('id' => $qualif->getId(), 'name' => $qualif->getName());
+    	}
     	return new JsonModel($json);
     }
     
@@ -295,7 +298,7 @@ class CentreController extends FormController
     		$datas = $this->getFormGroup($id);
     		$form = $datas['form'];
     		$form->setData($post);
-    		    
+    		$form->setPreferFormInputFilter(true);
     		$group = $datas['group'];
     
     		if($form->isValid()){   			
@@ -303,6 +306,8 @@ class CentreController extends FormController
     			 
     			$objectManager->persist($group);
     			$objectManager->flush();
+    		} else {
+			$this->processFormMessages($form->getMessages());
     		}
     	}
     
@@ -393,6 +398,8 @@ class CentreController extends FormController
     
     public function savesectorAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$messages = array();
+    	$sector = null;
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
@@ -400,18 +407,29 @@ class CentreController extends FormController
     		$datas = $this->getFormSector($id);
     		$form = $datas['form'];
     		$form->setData($post);
-    
+		$form->setPreferFormInputFilter(true);
     		$sector = $datas['sector'];
     
     		if($form->isValid()){
     			$sector->setZone($objectManager->getRepository('Application\Entity\QualificationZone')->find($post['zone']));
     
     			$objectManager->persist($sector);
-    			$objectManager->flush();
+    			try {
+    				$objectManager->flush();
+    				$this->flashMessenger()->addSuccessMessage('Nouveau secteur enregistré');
+    			} catch(\Exception $e){
+    				$this->flashMessenger()->addErrorMessage($e->getMessage());
+    			}
+    		} else {
+    			$this->flashMessenger()->addErrorMessage("Impossible d'enregistrer le secteur");
+			$this->processFormMessages($form->getMessages());
     		}
     	}
-    
-    	$json = array('id' => $sector->getId(), 'name' => $sector->getName());
+    	if($sector) {
+    		$json['id'] = $sector->getId();
+    		$json['name'] = $sector->getName();
+    	}
+    	$json['messages'] = $messages;
     
     	return new JsonModel($json);
     }
@@ -498,7 +516,7 @@ class CentreController extends FormController
     		$datas = $this->getFormStack($id);
     		$form = $datas['form'];
     		$form->setData($post);
-    
+    		$form->setPreferFormInputFilter(true);
     		$stack = $datas['stack'];
     
     		if($form->isValid()){

@@ -54,6 +54,7 @@ class FrequenciesController extends AbstractActionController {
 	}
 	
 	public function switchantennaAction(){
+		$json = array();
 		$messages = array();
 		if($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()){
 			$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -160,7 +161,9 @@ class FrequenciesController extends AbstractActionController {
 		} else {
 			$messages['error'][] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
 		}
-		return new JsonModel($messages);
+		$json['messages'] = $messages;
+		$json['frequencies'] = $this->getFrequencies(true);
+		return new JsonModel($json);
 	}
 	
 	public function switchCovertureAction(){
@@ -308,6 +311,14 @@ class FrequenciesController extends AbstractActionController {
 				$frequencies[$frequency->getId()]['cov'] = 0;
 				$frequencies[$frequency->getId()]['otherfreq'] = 0;
 				$frequencies[$frequency->getId()]['planned'] = false;
+				$frequencies[$frequency->getId()]['main'] = $frequency->getMainantenna()->getId();
+				$frequencies[$frequency->getId()]['backup'] = $frequency->getBackupAntenna()->getId();
+				if($frequency->getMainantennaclimax()){
+					$frequencies[$frequency->getId()]['mainclimax'] = $frequency->getMainantennaclimax()->getId();
+				}
+				if($frequency->getBackupantennaclimax()){
+					$frequencies[$frequency->getId()]['backupclimax'] = $frequency->getBackupantennaclimax()->getId();
+				}
 			} else {
 				$frequencies[$frequency->getId()] = true;
 			}
@@ -354,7 +365,9 @@ class FrequenciesController extends AbstractActionController {
 						if($otherfreq->getBackupantennaclimax()){
 							$frequencies[$frequencyid]['backupclimax'] = $otherfreq->getBackupantennaclimax()->getId();
 						}
-					} 
+					} else {
+						
+					}
 				} else {
 					$frequencies[$frequencyid] *= $available;
 				}
@@ -393,6 +406,7 @@ class FrequenciesController extends AbstractActionController {
 			if($full) {
 				$antennas[$antenna->getId()] = array();
 				$antennas[$antenna->getId()]['name'] = $antenna->getName();
+				$antennas[$antenna->getId()]['shortname'] = $antenna->getShortname();
 				$antennas[$antenna->getId()]['status'] = true;
 				$antennas[$antenna->getId()]['planned'] = false;
 			} else {
