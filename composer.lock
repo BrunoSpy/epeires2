@@ -868,16 +868,16 @@
         },
         {
             "name": "mrclay/minify",
-            "version": "2.1.7",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrclay/minify.git",
-                "reference": "db7fe244932ea77cf1438965693672ea12b33da8"
+                "reference": "d245bca4987dec197d1e6d7dc117614b60ff7494"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrclay/minify/zipball/db7fe244932ea77cf1438965693672ea12b33da8",
-                "reference": "db7fe244932ea77cf1438965693672ea12b33da8",
+                "url": "https://api.github.com/repos/mrclay/minify/zipball/d245bca4987dec197d1e6d7dc117614b60ff7494",
+                "reference": "d245bca4987dec197d1e6d7dc117614b60ff7494",
                 "shasum": ""
             },
             "require": {
@@ -904,7 +904,7 @@
             ],
             "description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
             "homepage": "http://code.google.com/p/minify/",
-            "time": "2013-07-23 19:58:28"
+            "time": "2014-03-12 12:54:23"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -1075,20 +1075,20 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.6",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "5eae447d46b00a280573b94c398b2f46f45a6903"
+                "reference": "5d22cee82f6f7f9218f47f22a145f3e95c39cacf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5eae447d46b00a280573b94c398b2f46f45a6903-zip-cbc7a8.zip",
-                "reference": "2.2.6",
-                "shasum": "fd15c9f720744a28ea2a93dda737ca37bd3c40b2"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5d22cee82f6f7f9218f47f22a145f3e95c39cacf-zip-2b68c6.zip",
+                "reference": "2.3.0",
+                "shasum": "f443b51a5253fc7d51799b82307a439ef5db02ce"
             },
             "require": {
-                "php": ">=5.3.3",
+                "php": ">=5.3.23",
                 "zendframework/zendxml": "~1.0-dev"
             },
             "replace": {
@@ -1149,14 +1149,16 @@
                 "fabpot/php-cs-fixer": "*@dev",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
-                "ocramius/proxy-manager": "0.4.*",
-                "phpunit/phpunit": "3.7.*"
+                "mikey179/vfsstream": "1.2.*",
+                "phpunit/phpunit": "3.7.*",
+                "satooshi/php-coveralls": "dev-master",
+                "sebastianbergmann/phpcov": "1.1.0"
             },
             "suggest": {
                 "doctrine/annotations": "Doctrine Annotations >=1.0 for annotation features",
                 "ext-intl": "ext/intl for i18n features (included in default builds of PHP)",
                 "ircmaxell/random-lib": "Fallback random byte generator for Zend\\Math\\Rand if OpenSSL/Mcrypt extensions are unavailable",
-                "ocramius/proxy-manager": "ProxyManager to handle lazy initialization of services",
+                "ocramius/proxy-manager": "ProxyManager 0.5.* to handle lazy initialization of services",
                 "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
                 "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
             },
@@ -1187,10 +1189,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.6",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.3.0",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2014-03-06 17:27:03"
+            "time": "2014-03-12 16:51:16"
         },
         {
             "name": "zendframework/zendxml",
@@ -1295,16 +1297,16 @@
         },
         {
             "name": "zf-commons/zfc-rbac",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-                "reference": "b1010ef5fad63551b92ac157f8018630a308f32c"
+                "reference": "542b6c6e641744622cf96aa6aef5d1005bfba901"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/b1010ef5fad63551b92ac157f8018630a308f32c",
-                "reference": "b1010ef5fad63551b92ac157f8018630a308f32c",
+                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/542b6c6e641744622cf96aa6aef5d1005bfba901",
+                "reference": "542b6c6e641744622cf96aa6aef5d1005bfba901",
                 "shasum": ""
             },
             "require": {
@@ -1357,7 +1359,7 @@
                 "rbac",
                 "zf2"
             ],
-            "time": "2014-02-20 13:29:58"
+            "time": "2014-03-14 16:58:42"
         },
         {
             "name": "zf-commons/zfc-user",
@@ -1365,12 +1367,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUser.git",
-                "reference": "a876f5765ea39256cb572048b7f6a425cec5ff13"
+                "reference": "5589c505834a958ef4f7ee68d9d092053cd3493f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/a876f5765ea39256cb572048b7f6a425cec5ff13",
-                "reference": "a876f5765ea39256cb572048b7f6a425cec5ff13",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUser/zipball/5589c505834a958ef4f7ee68d9d092053cd3493f",
+                "reference": "5589c505834a958ef4f7ee68d9d092053cd3493f",
                 "shasum": ""
             },
             "require": {
@@ -1426,7 +1428,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2014-03-07 12:02:08"
+            "time": "2014-03-16 09:10:27"
         },
         {
             "name": "zf-commons/zfc-user-doctrine-orm",
@@ -1606,13 +1608,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZFTool.git",
-                "reference": "d73bf6f0ae6ce9b92acc72ecc8f336e2352f3ae0"
+                "reference": "a8272c70d05e472dca0c56d2ffd3af3e87715350"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zftool-d73bf6f0ae6ce9b92acc72ecc8f336e2352f3ae0-zip-9b2b2a.zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zftool-a8272c70d05e472dca0c56d2ffd3af3e87715350-zip-00ee71.zip",
                 "reference": "dev-master",
-                "shasum": "a69020b25bdb8da64459c2f095b50728cece5975"
+                "shasum": "918772315955ce08acd57db3f0d2db8276041c47"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -1653,7 +1655,7 @@
                 "source": "https://github.com/zendframework/ZFTool/tree/master",
                 "issues": "https://github.com/zendframework/ZFTool/issues"
             },
-            "time": "2014-01-02 17:29:50"
+            "time": "2014-03-14 10:30:46"
         }
     ],
     "aliases": [
