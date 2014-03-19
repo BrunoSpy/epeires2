@@ -3,11 +3,15 @@
     "description": "Cahier de marche électronique Exploitation",
     "license": "AGPL-3.0",
     "homepage": "http://vulcain.do.aviation/projects/pvcds",
-	"repositories": [
+    "repositories": [
 		{
 			"type": "composer",
 			"url": "https://packages.zendframework.com/"
-		}
+		},
+                {
+                        "type": "vcs",
+                        "url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
+                }
 	],
     "require": {
         "php": ">=5.4.0",
@@ -19,7 +23,9 @@
         "zf-commons/zfc-user": "dev-master",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
         "zf-commons/zfc-rbac": "~2.0",
-        "mrclay/minify": "*"
+        "mrclay/minify": "*",
+        "doctrine/migrations": "dev-master",
+        "murganikolay/doctrine-migrations-module": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",

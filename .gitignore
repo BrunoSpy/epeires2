@@ -27,7 +27,9 @@ local.properties
 
 # PDT-specific
 .buildpath
+
 /nbproject/private/
-/data/DoctrineORMModule/
+
+/data/DoctrineORMModule/Proxy/
 /data/cache/
 /temp/

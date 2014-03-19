@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "26a14c8d8c0e638d2c1cab5c21092386",
+    "hash": "a4de27ecc0639a8dfc2b40f70ee1e497",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -640,6 +640,66 @@
             "time": "2013-01-12 18:59:04"
         },
         {
+            "name": "doctrine/migrations",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/migrations.git",
+                "reference": "46a031ddaea47d0685200027cfe8c83b02aee6f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/migrations/zipball/46a031ddaea47d0685200027cfe8c83b02aee6f6",
+                "reference": "46a031ddaea47d0685200027cfe8c83b02aee6f6",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "~2.0",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "symfony/console": "2.*",
+                "symfony/yaml": "2.*"
+            },
+            "suggest": {
+                "symfony/console": "to run the migration from the console"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Doctrine\\DBAL\\Migrations": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com",
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                }
+            ],
+            "description": "Database Schema migrations using Doctrine DBAL",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "database",
+                "migrations"
+            ],
+            "time": "2014-03-16 19:02:43"
+        },
+        {
             "name": "doctrine/orm",
             "version": "v2.4.2",
             "source": {
@@ -905,6 +965,54 @@
             "description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
             "homepage": "http://code.google.com/p/minify/",
             "time": "2014-03-12 12:54:23"
+        },
+        {
+            "name": "murganikolay/doctrine-migrations-module",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/abstractionnl/DoctrineMigrationsModule.git",
+                "reference": "dc4863a6295f03d8a168033e3acc162b72959f5d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/abstractionnl/DoctrineMigrationsModule/zipball/dc4863a6295f03d8a168033e3acc162b72959f5d",
+                "reference": "dc4863a6295f03d8a168033e3acc162b72959f5d",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-module": "*",
+                "doctrine/migrations": "1.0.*@dev",
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "DoctrineMigrationsModule\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Murga Nikolay",
+                    "email": "work@murga.kiev.ua"
+                }
+            ],
+            "description": "Doctrine migrations module for Zend Framework 2",
+            "homepage": "https://github.com/MurgaNikolay/DoctrineMigrationsModule",
+            "keywords": [
+                "doctrine",
+                "migrations",
+                "module",
+                "zend",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/abstractionnl/DoctrineMigrationsModule/tree/master"
+            },
+            "time": "2014-01-21 14:03:07"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -1665,6 +1773,8 @@
     "stability-flags": {
         "zf-commons/zfc-user": 20,
         "zf-commons/zfc-user-doctrine-orm": 20,
+        "doctrine/migrations": 20,
+        "murganikolay/doctrine-migrations-module": 20,
         "zendframework/zend-developer-tools": 20,
         "zendframework/zftool": 20
     },
