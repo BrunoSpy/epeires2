@@ -33,3 +33,5 @@ local.properties
 /data/DoctrineORMModule/Proxy/
 /data/cache/
 /temp/
+
+*.local.php
