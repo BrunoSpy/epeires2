@@ -7,22 +7,23 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use Doctrine\ORM\Query\Expr\Join;
 use Zend\View\Model\JsonModel;
+use Zend\Session\Container;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
-use Zend\Validator\File\Count;
 use Doctrine\Common\Collections\Criteria;
 
-class FrequenciesController extends AbstractActionController {
+class FrequenciesController extends ZoneController {
 	
 	
 	public function indexAction(){
 	
+                parent::indexAction();
+
+            
 		$viewmodel = new ViewModel();
 		 
 		$return = array();
@@ -38,16 +39,54 @@ class FrequenciesController extends AbstractActionController {
 		$this->flashMessenger()->clearMessages();
 		 				
 		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		$groups = $em->getRepository('Application\Entity\SectorGroup')->findBy(array('display' => true), array('position' => 'ASC'));
+                
+                $qb = $em->createQueryBuilder();
+                $qb->select(array('s', 'z'))
+                   ->from('Application\Entity\SectorGroup', 's')
+                   ->leftJoin('s.zone', 'z')
+                   ->andWhere($qb->expr()->eq('s.display', true))
+                   ->orderBy('s.position', 'ASC');
+                
+              	$session = new Container('zone');
+                $zonesession = $session->zoneshortname;
+                
+               
+                
+                if($zonesession != null){
+                    if($zonesession != '0') {
+                        $orga = $em->getRepository('Application\Entity\Organisation')->findOneBy(array('shortname' => $zonesession));
+                        if($orga){
+                            $qb->andWhere($qb->expr()->eq('z.organisation', $orga->getId()));
+                        } else {
+                            $zone = $em->getRepository('Application\Entity\QualificationZone')->findOneBy(array('shortname'=>$zonesession));
+                            if($zone){
+                                $qb->andWhere($qb->expr()->andX(
+                                        $qb->expr()->eq('z.organisation', $zone->getOrganisation()->getId()),
+                                        $qb->expr()->eq('s.zone', $zone->getId())
+                                ));
+                            } else {
+                                //error
+                            }
+                        }
+                    }
+                }
+                if( ($zonesession == null || ($zonesession != null && $zonesession == '0')) && $this->zfcUserAuthentication()->hasIdentity()){
+                    $orga = $this->zfcUserAuthentication()->getIdentity()->getOrganisation();
+                    $qb->andWhere($qb->expr()->eq('z.organisation', $orga->getId()));
+                }
+                
+                //pas de session, pas d'utilisateur connecté => tout ?
+                
+		$groups = $qb->getQuery()->getResult();
 		
 		$criteria = Criteria::create();
 		$criteria->andWhere(Criteria::expr()->isNull('defaultsector'));
 		$otherfrequencies = $em->getRepository('Application\Entity\Frequency')->matching($criteria);
 		
 		$viewmodel->setVariables(array('antennas' => $this->getAntennas(), 
-										'messages' => $return,
-										'groups' => $groups,
-										'other' => $otherfrequencies));
+						'messages' => $return,
+						'groups' => $groups,
+						'other' => $otherfrequencies));
 		
 		return $viewmodel;
 		

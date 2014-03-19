@@ -6,10 +6,8 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
-use Application\Form\EventForm;
 use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
 use Application\Entity\CustomFieldValue;
@@ -17,27 +15,21 @@ use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Fieldset;
-use Zend\Form\Element\File;
-use Zend\Form\Element\Text;
 use Application\Form\FileFieldset;
-use Application\Services\EventService;
-use Zend\Crypt\Password\Bcrypt;
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\EntityManager;
 use Application\Entity\PredefinedEvent;
 use Doctrine\ORM\QueryBuilder;
-use Zend\Form\Element\Select;
-use Zend\Form\Form;
 use Zend\Session\Container;
 use Zend\Form\Element;
 use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 
-class EventsController extends FormController {
+class EventsController extends ZoneController {
 	
     public function indexAction(){    	
     	
+        parent::indexAction();
+        
     	$viewmodel = new ViewModel();
     	
     	$return = array();
@@ -51,34 +43,6 @@ class EventsController extends FormController {
     	}
     	
     	$this->flashMessenger()->clearMessages();
-    	
-    	$form = $this->getZoneForm();
-    	
-    	if($this->zfcUserAuthentication()->hasIdentity()){
-    		$user = $this->zfcUserAuthentication()->getIdentity();
-    		$org = $user->getOrganisation();
-    		$zone = $user->getZone();
-    		
-    		$session = new Container('zone');
-    		$zonesession = $session->zoneshortname;
-  		
-    		if($zonesession != null){ //warning: "all" == 0
-    			$values = $form->get('zone')->getValueOptions();
-    			if(array_key_exists($zonesession, $values)){
-    				$form->get('zone')->setValue($zonesession);
-    			}
-    		} else {
-    			if($zone){
-	    			$form->get('zone')->setValue($zone->getShortname());
-    			} else {
-	    			$form->get('zone')->setValue($org->getShortname());
-    			}
-    		}
-    	} else {
-    		$form->get('zone')->setValue('0');
-    	}
-    	
-    	$this->layout()->zoneform = $form;
     	
     	$this->layout()->cds = "Nom chef de salle";
     	$this->layout()->ipo = "Nom IPO (téléphone)";
@@ -155,24 +119,6 @@ class EventsController extends FormController {
     		$session->zoneshortname = $zone;
     	}
     	return new JsonModel();
-    }
-    
-    private function getZoneForm(){
-    	$zoneElement = new Select('zone');
-    	$values = array();
-    	$values['0'] = "Tout";
-    	if($this->zfcUserAuthentication()->hasIdentity()){
-    		$user = $this->zfcUserAuthentication()->getIdentity();
-    		$values[$user->getOrganisation()->getShortname()] = $user->getOrganisation()->getName();
-    		foreach ($user->getOrganisation()->getZones() as $zone){
-    			$values[$zone->getShortname()] = " > ".$zone->getName();
-    		}
-    	}
-    	$zoneElement->setValueOptions($values);
-    	$form = new Form('zoneform');
-    	$form->add($zoneElement);
-    	
-    	return $form;
     }
     
     /**
