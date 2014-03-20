@@ -146,7 +146,6 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 			case 'select':
                                 $input = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
 				$value_options = explode("\n", $input);
-                                error_log(print_r($value_options, true));
 				break;
 			case 'stack':
 				$value_options = $om->getRepository('Application\Entity\Stack')->getAllAsArray();
