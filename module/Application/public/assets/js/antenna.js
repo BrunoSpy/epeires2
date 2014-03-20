@@ -10,6 +10,8 @@ var antenna = function(url){
 	var currentantennas;
 	var currentfrequencies;
 	
+        var timer;
+        
 	$(document).on('click', '.switch-antenna', function(){
 		var state = $("#switch_"+$(this).data('antenna')).bootstrapSwitch('status');
 		$("#switch_"+$(this).data('antenna')).bootstrapSwitch('setState', !state);
@@ -37,6 +39,15 @@ var antenna = function(url){
 			};
 		}, 'json');
 	});
+
+        $(document).on('click', '.action-changefreq', function(event){
+            var me = $(this);
+            $.post(url+'frequencies/switchfrequency?fromid='+me.data('fromfreq')+'&toid='+me.data('tofreq'), function(data){
+                displayMessages(data.messages);
+                clearTimeout(timer);
+                doPollFrequencies();
+            }, 'json');
+        });
 
 	$('.antenna-switch').on('switch-change', function(e, data){
 		$('a#end-antenna-href').attr('href', $(this).data('href')+"&state="+data.value);
@@ -112,10 +123,11 @@ var antenna = function(url){
 	$(document).on('click', '#changefreq', function(event){
 		event.preventDefault();
 		var me = $(this);
+                
 		$.post(url+'frequencies/getfrequencies?id='+me.data('freqid'), function(data){
 			var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
 			$.each(data, function(key, value){
-				list.append("<li><a href=\"#\" class=\"action-changefreq\" data-frommfreq=\""+me.data('freqid')+"\" data-tofreq=\""+key+"\">"+value+"</a></li>");
+				list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+key+"\">"+value+"</a></li>");
 			});
 			if(list.find('li').length > 0 ){
 				var div = $('<div class="vertical-scroll"></div>');
@@ -146,7 +158,7 @@ var antenna = function(url){
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
 			var submenu = $("<li class=\"submenu\">");
-			submenu.append("<a id=\"changefreq\" data-freqid=\""+$(this).data('freq')+"\" href=\#\>Changer de fréquence</a>");
+			submenu.append("<a id=\"changefreq\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
 			list.append(submenu);
 			list.append("<li class=\"divider\"></li>");
 			//antennes
@@ -218,7 +230,7 @@ var antenna = function(url){
 	$(document).mousedown(function(e){
 		var container = $(".popover");
 		if(!container.is(e.target) && container.has(e.target).length === 0){
-			$("a.actions-freq, a.actions-antenna").not($(e.target)).popover('hide');
+			$("a.actions-freq, a.actions-antenna, a.actions-changefreq").not($(e.target)).popover('hide');
 			$("a#changefreq").not($(e.target)).popover('hide');
 		};		
 	});
@@ -280,6 +292,10 @@ var antenna = function(url){
 				antenna.addClass('background-status-fail');
 			}
 		});
+                //delay update if a popover is opened
+                if($("body").find('.popover').length == 0) {
+                    updateActions();
+                } 
 	}
 	
 	var updatefrequencies = function() {
@@ -302,7 +318,10 @@ var antenna = function(url){
 			if(value.otherfreq != 0){
 				//mise à jour des antennes si changement de fréquence
 				//les couleurs sont mises à jour à l'apper de doPollAntenna juste ensuite
-				sector.find('.actions-freq').html(value.otherfreq).addClass('em');
+				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
+                                sector.find('.sector-name span').remove();
+                                var name = sector.find('.sector-name').html();
+                                sector.find('.sector-name').html(name+'<span> <i class="icon-forward"></i> '+value.otherfreqname);
 				changeantenna(key, '.mainantenna-color.antenna-color:not(.antenna-climax-color)', value.main);
 				changeantenna(key, '.backupantenna-color.antenna-color:not(.antenna-climax-color)', value.backup);
 				if(value['mainclimax']){
@@ -325,6 +344,7 @@ var antenna = function(url){
 				}
 			} else {
 				sector.find('.actions-freq').html(value.name).removeClass('em');
+                                sector.find('.sector-name span').remove();
 			}
 			if(value.status == 1){
 				//prise en compte des évts planifiés uniquement si pas d'evt en cours => statut ok
@@ -337,10 +357,6 @@ var antenna = function(url){
 				}
 			}
 		});
-		//delay update if a popover is opened
-		if($("body").find('.popover').length == 0) {
-			updateActions();
-		} 
 	}
 	//refresh page every 30s
 	function doPollAntenna(){
@@ -359,7 +375,7 @@ var antenna = function(url){
 		})
 		.always(function() {
 			doPollAntenna();
-			setTimeout(doPollFrequencies, 30000);
+			timer = setTimeout(doPollFrequencies, 30000);
 		});
 	})();
 };

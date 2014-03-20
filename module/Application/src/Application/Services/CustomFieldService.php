@@ -153,10 +153,40 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 			case 'boolean':
 				break;
 			default:
-				;
 				break;
 		}
 		return $value_options;
 	}
 	
+        public function getEmptyOption(\Application\Entity\CustomField $customfield){
+		$empty_option = null;
+		switch ($customfield->getType()->getType()) {
+			case 'string':
+				break;
+			case 'text':
+				break;
+			case 'sector':
+				$empty_option = "Choisissez le secteur.";
+				break;
+			case 'antenna':
+				$empty_option = "Choisissez l'antenne.";
+				break;
+			case 'frequency':
+				$empty_option = "Choisissez la fréquence.";
+				break;
+			case 'radar':
+				$empty_option = "Choisissez le radar.";
+				break;
+			case 'select':
+				break;
+			case 'stack':
+				$empty_option = "Choisissez l'attente.";
+				break;
+			case 'boolean':
+				break;
+			default:
+				break;
+		}
+		return $empty_option;
+	}
 }

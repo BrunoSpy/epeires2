@@ -13,10 +13,10 @@ class Sector extends AbstractHelper {
 	
 	public function __invoke(Frequency $frequency, $name){
 		
-		$html = "<ul class=\"sector dropdown-menu\">";
+		$html = "<ul class=\"sector dropdown-menu\" data-freq=\"".$frequency->getId()."\">";
 		$html .= "<div class=\"sector-color frequency-".$frequency->getId()."\">";
 		$html .= "<li class=\"sector-name\">".$name."</li>";
-		$html .= "<li class=\"sector-freq\"><a href=\"#\" id=\"actions-freq-".$frequency->getId()."\" class=\"actions-freq\" data-freq=\"".$frequency->getId()."\">".$frequency->getValue()."</a></li>";
+		$html .= "<li class=\"sector-freq\"><a href=\"#\" class=\"actions-freq\" data-freq=\"".$frequency->getId()."\">".$frequency->getValue()."</a></li>";
 		$html .= "</div>";
 		$html .= "<li class=\"divider\"></li>";
 		$html .= "<ul class=\"antennas\">";

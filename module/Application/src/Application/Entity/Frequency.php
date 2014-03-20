@@ -98,9 +98,9 @@ class Frequency {
 	
 	public function getName(){
 		if($this->getDefaultsector()) {
-			return $this->getDefaultsector()->getName()." ".$this->getValue();
+			return $this->getDefaultsector()->getName();
 		} else {
-			return $this->getOthername()." ".$this->getValue();
+			return $this->getOthername();
 		}
 	}
 	

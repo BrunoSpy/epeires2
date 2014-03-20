@@ -61,6 +61,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 			if($value_options){
 				$options['value_options'] = $value_options;
 			}
+                        $empty_option = $customfieldservice->getEmptyOption($customfield);
+                        if($empty_option){
+                            $options['empty_option'] = $empty_option;
+                        }
+                        
 			$definition['type'] = $customfieldservice->getZendType($customfield->getType());
 						
 			$definition['options'] = $options;
