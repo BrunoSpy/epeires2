@@ -51,7 +51,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 			case 'frequency':
 				$frequency = $this->em->getRepository('Application\Entity\Frequency')->find($fieldvalue);
 				if($frequency){
-					$name = $frequency->getName();
+					$name = $frequency->getName() . ' ' . $frequency->getValue();
 				}
 				break;
 			case 'radar':
@@ -144,7 +144,9 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray();
 				break;
 			case 'select':
-				$value_options = explode(PHP_EOL, $customfield->getDefaultValue());
+                                $input = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
+				$value_options = explode("\n", $input);
+                                error_log(print_r($value_options, true));
 				break;
 			case 'stack':
 				$value_options = $om->getRepository('Application\Entity\Stack')->getAllAsArray();
