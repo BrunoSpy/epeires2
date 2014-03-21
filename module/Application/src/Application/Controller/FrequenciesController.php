@@ -398,86 +398,119 @@ class FrequenciesController extends ZoneController {
      */
     private function switchCoverture(&$messages, Frequency $frequency, $cov, $startdate, Event $parent = null) {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        if ($cov == 0) {
-            $frequencyevents = array();
-            //on cloture l'evt "passage en couv secours"
-            foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
-                $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
-                foreach ($event->getCustomFieldsValues() as $customvalue) {
-                    if ($customvalue->getCustomField()->getId() == $frequencyfield) {
-                        if ($customvalue->getValue() == $frequency->getId()) {
-                            $frequencyevents[] = $event;
-                        }
+        //on recherche les évènements Fréquence en cours
+        $frequencyevents = array();
+        foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+            $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
+            foreach ($event->getCustomFieldsValues() as $customvalue) {
+                if ($customvalue->getCustomField()->getId() == $frequencyfield) {
+                    if ($customvalue->getValue() == $frequency->getId()) {
+                        $frequencyevents[] = $event;
                     }
                 }
             }
-            if (count($frequencyevents) == 0 || count($frequencyevents) > 1) {
-                $messages['error'][] = "Impossible de trouver l'évènement à cloturer";
+        }
+        //si pas d'evt et couv secours -> nouvel evt
+        //si pas d'evt et couv normal -> bug
+        //si un evt -> dépend des autres champs -> mise à jour ou fermetur
+        //plusieurs evts -> indécidable -> bug
+
+        if (count($frequencyevents) == 0) {
+            if ($cov == 0) {
+                $messages['error'][] = "Aucun évènement trouvé : impossible de passer la couverture sur normal.";
             } else {
-                $event = $frequencyevents[0];
+                //on crée l'evt "passage en couv secours"
+                $event = new Event();
+                if ($parent) {
+                    $event->setParent($parent);
+                }
+                $status = $em->getRepository('Application\Entity\Status')->find('2');
+                $impact = $em->getRepository('Application\Entity\Impact')->find('3');
+                $event->setImpact($impact);
+                $event->setStatus($status);
+                $event->setStartdate($startdate);
+                $event->setPunctual(false);
+                //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
+                if ($frequency->getDefaultsector()) {
+                    $event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
+                    $event->addZonefilter($frequency->getDefaultsector()->getZone());
+                } else {
+                    $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                }
+                $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
+                //TODO paramétrer la catégorie au lieu de prendre la première
+                if ($categories) {
+                    $cat = $categories[0];
+                    $event->setCategory($cat);
+                    $frequencyfieldvalue = new CustomFieldValue();
+                    $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
+                    $frequencyfieldvalue->setEvent($event);
+                    $frequencyfieldvalue->setValue($frequency->getId());
+                    $event->addCustomFieldValue($frequencyfieldvalue);
+                    $statusfield = new CustomFieldValue();
+                    $statusfield->setCustomField($cat->getStatefield());
+                    $statusfield->setEvent($event);
+                    $statusfield->setValue(true); //unavailable
+                    $event->addCustomFieldValue($statusfield);
+                    $covfield = new CustomFieldValue();
+                    $covfield->setCustomField($cat->getCurrentAntennafield());
+                    $covfield->setEvent($event);
+                    $covfield->setValue($cov);
+                    $event->addCustomFieldValue($covfield);
+                    $em->persist($frequencyfieldvalue);
+                    $em->persist($statusfield);
+                    $em->persist($covfield);
+                    $em->persist($event);
+                    try {
+                        $em->flush();
+                        $messages['success'][] = "Changement de couverture de la fréquence " . $frequency->getValue() . " enregistré.";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                } else {
+                    $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
+                }
+            }
+        } else if (count($frequencyevents) == 1) {
+            $event = $frequencyevents[0];
+            //otherfrequencyfield vide ou égal à la fréquence -> fermeture de l'evt 
+            $otherfreqfield = null;
+            $previousfield = null;
+            foreach ($event->getCustomFieldsValues() as $value){
+                if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
+                    $otherfreqfield = $value;
+                } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
+                    $previousfield = $value;
+                }
+            }
+            if($previousfield && ($otherfreqfield == null || $otherfreqfield->getValue() == $frequency->getId())){
+                //fermeture
                 $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($startdate);
                 $em->persist($event);
-                try {
-                    $em->flush();
-                } catch (\Exception $e) {
-                    $messages['error'][] = $e->getMessage();
-                }
+            } else if($previousfield) {
+                //cas improbable
+                $previousfield->setValue($cov);
+                $em->persist($previousfield);
+            } else {
+                $newfield = new CustomFieldValue();
+                $newfield->setEvent($event);
+                $newfield->setCustomField($event->getCategory()->getCurrentAntennafield());
+                $newfield->setValue($cov);
+                $event->addCustomFieldValue($newfield);
+                $em->persist($newfield);
+                $em->persist($event);
+            }
+            try {
+                $em->flush();
+                $messages['success'][] = "Evènement correctement mis à jour";
+            } catch (\Exception $e) {
+                $messages['error'][] = $e->getMessage();
             }
         } else {
-            //on crée l'evt "passage en couv secours"
-            $event = new Event();
-            if ($parent) {
-                $event->setParent($parent);
-            }
-            $status = $em->getRepository('Application\Entity\Status')->find('2');
-            $impact = $em->getRepository('Application\Entity\Impact')->find('3');
-            $event->setImpact($impact);
-            $event->setStatus($status);
-            $event->setStartdate($startdate);
-            $event->setPunctual(false);
-            //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
-            if ($frequency->getDefaultsector()) {
-                $event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
-                $event->addZonefilter($frequency->getDefaultsector()->getZone());
-            } else {
-                $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
-            }
-            $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-            $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
-            //TODO paramétrer la catégorie au lieu de prendre la première
-            if ($categories) {
-                $cat = $categories[0];
-                $event->setCategory($cat);
-                $frequencyfieldvalue = new CustomFieldValue();
-                $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
-                $frequencyfieldvalue->setEvent($event);
-                $frequencyfieldvalue->setValue($frequency->getId());
-                $event->addCustomFieldValue($frequencyfieldvalue);
-                $statusfield = new CustomFieldValue();
-                $statusfield->setCustomField($cat->getStatefield());
-                $statusfield->setEvent($event);
-                $statusfield->setValue(true); //unavailable
-                $event->addCustomFieldValue($statusfield);
-                $covfield = new CustomFieldValue();
-                $covfield->setCustomField($cat->getCurrentAntennafield());
-                $covfield->setEvent($event);
-                $covfield->setValue($cov);
-                $event->addCustomFieldValue($covfield);
-                $em->persist($frequencyfieldvalue);
-                $em->persist($statusfield);
-                $em->persist($covfield);
-                $em->persist($event);
-                try {
-                    $em->flush();
-                    $messages['success'][] = "Changement de couverture de la fréquence " . $frequency->getValue() . " enregistré.";
-                } catch (\Exception $e) {
-                    $messages['error'][] = $e->getMessage();
-                }
-            } else {
-                $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
-            }
+            $messages['error'][] = "Impossible de trouver l'évènement à modifier.";
         }
     }
 

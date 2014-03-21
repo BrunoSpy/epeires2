@@ -40,6 +40,11 @@ class FrequencyCategory extends Category{
 	 */
 	protected $otherfrequencyfield;
 	
+        /**
+         * True : unavailable
+         * False : avalaible
+         * @return type
+         */
 	public function getStatefield(){
 		return $this->statefield;
 	}
@@ -56,6 +61,10 @@ class FrequencyCategory extends Category{
 		$this->frequencyfield = $frequencyfield;
 	}
 	
+        /**
+         * 0 : normale
+         * 1 : secours
+         */
 	public function getCurrentAntennafield(){
 		return $this->currentcovfield;
 	}
