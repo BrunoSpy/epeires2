@@ -178,7 +178,43 @@ class FrequenciesController extends ZoneController {
                         //deux cas : changement de fréquence ou retour à la fréquence nominale
                         //dans le deuxième cas, il faut fermer l'évènement si couv normale et freq dispo
                         if($fromid == $toid) {
-                            
+                            //on vérifie que l'évènement existant a bien un champ changement de fréquence
+                            $previousfield = null;
+                            $otherfields = false;
+                            foreach ($event->getCustomFieldsValues() as $value){
+                                if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
+                                    $previousfield = $value;
+                                } else if ($value->getCustomField()->getId() == $event->getCategory()->getStatefield()->getId()) {
+                                    if($value->getValue() == true){
+                                        $otherfields = true;
+                                    }
+                                } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
+                                    if($value->getValue() == 1){
+                                        $otherfields = true;
+                                    }
+                                }
+                            }
+                            if($previousfield){
+                                //si il y a d'autres champs, on ne ferme pas l'évènement
+                                //sinon on ferme
+                                if($otherfields) {
+                                    $previousfield->setValue($toid);
+                                    $em->persist($previousfield);
+                                } else {
+                                    $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                                    $event->setEnddate($now);
+                                    $event->setStatus($endstatus);
+                                }
+                                $em->persist($event);
+                                try {
+                                    $em->flush();
+                                    $messages['success'][] = "Fréquence mise à jour";
+                                } catch (\Exception $ex) {
+                                    $messages['error'][] = $ex->getMessage();
+                                }
+                            } else {
+                                $messages['error'][] = "Erreur : fréquence identique.";
+                            }
                         } else {
                             $previousfield = null;
                             foreach ($event->getCustomFieldsValues() as $value){

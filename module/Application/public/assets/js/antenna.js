@@ -42,8 +42,11 @@ var antenna = function(url){
 
         $(document).on('click', '.action-changefreq', function(event){
             var me = $(this);
+            //close all popover
+            $('a.actions-freq, a#changefreq').popover('hide');
             $.post(url+'frequencies/switchfrequency?fromid='+me.data('fromfreq')+'&toid='+me.data('tofreq'), function(data){
                 displayMessages(data.messages);
+                //force page refresh
                 clearTimeout(timer);
                 doPollFrequencies();
             }, 'json');
@@ -123,7 +126,6 @@ var antenna = function(url){
 	$(document).on('click', '#changefreq', function(event){
 		event.preventDefault();
 		var me = $(this);
-                
 		$.post(url+'frequencies/getfrequencies?id='+me.data('freqid'), function(data){
 			var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
 			$.each(data, function(key, value){
@@ -315,7 +317,7 @@ var antenna = function(url){
 				sector.closest('.sector').find('.backupantenna-color').removeClass('background-selected');
 				sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 			}
-			if(value.otherfreq != 0){
+			if(value.otherfreq != 0 && value.otherfreqid != sector.closest('.sector').data('freq')){
 				//mise à jour des antennes si changement de fréquence
 				//les couleurs sont mises à jour à l'apper de doPollAntenna juste ensuite
 				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
@@ -367,7 +369,7 @@ var antenna = function(url){
 		});
 	};
 
-	(function doPollFrequencies(){
+	function doPollFrequencies(){
 		$.post(url+'frequencies/getfrequenciesstate')
 		.done(function(data) {
 			currentfrequencies = data;
@@ -377,5 +379,8 @@ var antenna = function(url){
 			doPollAntenna();
 			timer = setTimeout(doPollFrequencies, 30000);
 		});
-	})();
+	};
+        
+        //refresh page every 30s
+        doPollFrequencies();
 };
