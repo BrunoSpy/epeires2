@@ -1,5 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/js/radio.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radio.js')?>
 
 
 <div class="container-fluid">
@@ -67,11 +67,46 @@
 			</div>
 		</div>
 	</div>
-		
+	
+        <div class="span12">
+		<div class="block">
+			<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">Fiches réflexes des antennes </div>
+			</div>
+			<div class="block-content collapse in">
+				<div class="span12">
+				<table class="table table-striped sortable">
+					<thead>
+						<tr>
+							<th data-sort="string">Antenne</th>
+							<th>Fiche réflexe</th>
+                                                        <th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						foreach ($this->antennas as $antenna){
+							echo '<tr>';
+								echo '<td data-id="'.$antenna->getId().'">'.$antenna->getName().'</td>';
+								echo '<td>'.($antenna->getModel() ? $antenna->getModel()->getName() : 'Aucun modèle associé.').'</td>';
+                                                                echo '<td><a href="#model-container" '
+                                                                . 'data-toggle="modal" '
+                                                                . 'data-name="'.$antenna->getName().'" '
+                                                                . 'data-id="'.$antenna->getId().'" '
+                                                                . 'class="change-model"><i class="icon-pencil"></i></a></td>';
+                                                        echo '</tr>';
+							}							
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 			
-
+<?php echo $this->modalwindow("model-container", "<h3 id=\"model-title\"></h3>", "", "<div id=\"model-form\"></div>") ?>
 
 
 <?php $this->inlineScript()->captureStart();?>
@@ -89,4 +124,20 @@ $("table th:eq(1)").trigger('click');
 
 radio('<?php echo $this->url('administration'); ?>');
 
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+                                        
 <?php $this->inlineScript()->captureEnd();?>

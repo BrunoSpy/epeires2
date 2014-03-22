@@ -3,7 +3,6 @@ namespace Application\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Expression;
 use Application\Entity\Organisation;
 
 class QualificationZoneRepository extends EntityRepository {

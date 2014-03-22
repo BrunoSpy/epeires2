@@ -79,14 +79,14 @@ var models = function(url){
 	$(document).on('click',".mod-model", function(){
 		$("#model-title").html("Modification de <em>"+$(this).data('name')+"</em>");
 		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'), function(){
-			fillZoneFilters($("#model-container select[name=organisation]").val());
+			//fillZoneFilters($("#model-container select[name=organisation]").val());
 		});	
 	});
 		
 	$("#model-container").on('submit', function(event){
 		event.preventDefault();
 		var catid = $("#PredefinedEvent select[name=category] option:selected").val();
-		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $("form#PredefinedEvent").serialize(), function(data){
+		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $("#model-form form#PredefinedEvent").serialize(), function(data){
 			var id = $("#PredefinedEvent input[type=hidden]").val();
 			if(id > 0){
 				var tr = $("#models-container tr#"+data.id);
@@ -187,7 +187,7 @@ var models = function(url){
 	$("#action-container").on('submit', function(event){
 		event.preventDefault();
 		var id = $("#action-form").find('input[name=id]').val();
-		$.post(url+'/models/save', $("form#PredefinedEvent").serialize(), function(data){
+		$.post(url+'/models/save', $("#action-form form#PredefinedEvent").serialize(), function(data){
 			if(data.hasOwnProperty('name')){
 				if(id > 0){ //modification d'une action existante
 					var tr = $("tr#"+id);

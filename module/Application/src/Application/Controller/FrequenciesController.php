@@ -344,6 +344,25 @@ class FrequenciesController extends ZoneController {
                             foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
                                 $this->switchCoverture($messages, $frequency, 1, $now, $event);
                             }
+                            //création de la fiche réflexe
+                            if($antenna->getModel()){
+                                foreach($em->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $antenna->getModel()->getId())) as $action){
+                                    $child = new Event();
+                                    $child->setParent($event);
+                                    $child->setAuthor($event->getAuthor());
+                                    $child->setOrganisation($event->getOrganisation());
+                                    $child->createFromPredefinedEvent($action);
+                                    $child->setStatus($em->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
+                                    foreach($action->getCustomFieldsValues() as $value){
+                                        $newvalue = new CustomFieldValue();
+                                        $newvalue->setEvent($child);
+                                        $newvalue->setCustomField($value->getCustomField());
+                                        $newvalue->setValue($value->getValue());
+                                        $em->persist($newvalue);
+                                    }
+                                    $em->persist($child);
+                                }
+                            }
                             try {
                                 $em->flush();
                                 $messages['success'][] = "Nouvel évènement antenne créé.";

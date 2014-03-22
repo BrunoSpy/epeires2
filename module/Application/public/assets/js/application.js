@@ -97,7 +97,7 @@ $(document).ready(function(){
 		    },
 		    buttons: false // an array of buttons
 		};
-
+                
 });
 
 

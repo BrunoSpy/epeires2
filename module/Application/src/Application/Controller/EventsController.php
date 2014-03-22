@@ -406,13 +406,16 @@ class EventsController extends ZoneController {
     						}
     					}
     					
-    					if($event->getStatus()->getId() == 3) { //passage au statut terminé
+    					if($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { //passage au statut terminé ou annulé
     						//on termine les évènements fils de type fréquence
     						foreach ($event->getChildren() as $child){
     							if($child->getCategory() instanceof FrequencyCategory){
-    								$child->setEnddate($event->getEnddate());
+    								if($event->getStatus()->getId() == 3){
+                                                                    //date de fin uniquement pour les fermetures
+                                                                    $child->setEnddate($event->getEnddate());
+                                                                }
     								$child->setStatus($event->getStatus());
-    								$em->persist($child);
+    								$objectManager->persist($child);
     							}
     						}
     					}

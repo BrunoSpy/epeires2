@@ -1,14 +1,11 @@
 <?php
 namespace Application\Repository;
 
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Expression;
-
 class ExtendedCategoryRepository extends CategoryRepository {
 	
 	/**
 	 * Tous les évènements antenne dont à la fois :
-	 * la date début et antèrieure à maintenant
+	 * la date début est antèrieure à maintenant
 	 * la date de fin est nulle ou postèrieure à maintenant
 	 * le status est soit confirmé soit terminé
 	 */

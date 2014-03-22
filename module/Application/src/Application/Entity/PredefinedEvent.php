@@ -9,7 +9,6 @@ namespace Application\Entity;
 
 use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
 /**
@@ -19,25 +18,27 @@ class PredefinedEvent extends AbstractEvent{
 
 	/** @ORM\Column(type="string", nullable=true)
 	 * @Annotation\Type("Zend\Form\Element\Text")
-	 * @Annotation\Required(true)
+	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Nom :"})
 	 */
 	protected $name;
 	
  	
- 	/** @ORM\Column(type="boolean")
+ 	/** 
+         * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Liste :"})
 	 */
  	protected $listable;
  	
- 	/** @ORM\Column(type="boolean")
+ 	/** 
+         * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Recherche :"})
 	 */
  	protected $searchable;
- 		 	
- 	public function __construct(){
+
+        public function __construct(){
  		parent::__construct();
  	}
  	

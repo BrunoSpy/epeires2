@@ -10,10 +10,7 @@
 */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  **/

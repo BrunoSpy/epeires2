@@ -72,6 +72,11 @@ class Antenna {
 	 */
 	protected $backupfrequenciesclimax;
 	
+        /**
+         * @ORM\OneToOne(targetEntity="PredefinedEvent") 
+         * 
+         */
+        protected $model;
 	
 	public function __construct(){
 		$this->mainfrequencies = new \Doctrine\Common\Collections\ArrayCollection();
@@ -132,6 +137,14 @@ class Antenna {
 		return $this->backupfrequenciesclimax;
 	}
 	
+        public function getModel(){
+            return $this->model;
+        }
+        
+        public function setModel(PredefinedEvent $model){
+            $this->model = $model;
+        }
+        
 	public function getArrayCopy() {
 		return get_object_vars($this);
 	}
