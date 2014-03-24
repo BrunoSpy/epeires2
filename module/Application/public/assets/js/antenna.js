@@ -2,6 +2,38 @@
  * @author Bruno Spyckerelle
  */
 
+var togglefiche = function(){
+      
+        if($('#fiche').is(':visible')){
+            $("#fiche").animate({'margin-left':'-23%'}, '1000', function(){
+                $(this).hide();
+            });
+            $("#frequencies").animate({
+                'margin-left': '0px',
+                'width': '73%'
+            }, '1000');
+        } else {
+            $("#fiche").show(),
+            $("#fiche").animate({'margin-left':'0px'}, '1000');
+            $("#frequencies").animate({
+                'margin-left': '2.56%',
+                'width': '48.7%'
+            }, '1000');
+        }
+    
+    //without animation
+//        if($('#fiche').is(':visible')){
+//            $('#fiche').hide();
+//           $('#frequencies').css('margin-left', '0px');
+//            $('#frequencies').removeClass('span6').addClass('span9')
+//        } else {
+//            $('#fiche').show();
+//            $('#frequencies').css('margin-left', '');
+//            $('#frequencies').removeClass('span9').addClass('span6');
+//        }
+
+};
+
 var antenna = function(url){
 
 	//if true, switch the button to its previous state
