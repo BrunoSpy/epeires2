@@ -722,4 +722,28 @@ class FrequenciesController extends ZoneController {
         return new JsonModel($frequencies);
     }
 
+    public function getficheAction(){
+    	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	 
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
+    	$antennaId = $this->params()->fromQuery('id', null);
+    	
+    	$eventservice = $this->getServiceLocator()->get('EventService');
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
+    	
+    	$fiche = null;
+    	if($antenna){
+    		
+    	}
+    	
+    	$viewmodel->setVariable('fiche', $fiche);
+    	
+    	return $viewmodel;
+    }
+    
 }

@@ -44,6 +44,11 @@ var antenna = function(url){
 	
         var timer;
         
+        $(document).on('click', '.open-fiche', function(){
+            togglefiche();
+            $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'));
+        });
+        
 	$(document).on('click', '.switch-antenna', function(){
 		var state = $("#switch_"+$(this).data('antenna')).bootstrapSwitch('status');
 		$("#switch_"+$(this).data('antenna')).bootstrapSwitch('setState', !state);
@@ -309,8 +314,11 @@ var antenna = function(url){
 	var updateantennas = function(){
 		$.each(currentantennas, function(key, value){
 			$('#switch_'+key).bootstrapSwitch('setState', value.status, true);
+                        var antennatd = $("#antenna-"+key+" td:first");
 			var antenna = $('.antenna-color.antenna-'+key);
+                        antennatd.find('a').remove();
 			if(value.status){
+                                
 				antenna.removeClass('background-status-fail');
 				antenna.addClass('background-status-ok');
 				//evts planifiés ?
@@ -322,6 +330,7 @@ var antenna = function(url){
 					antenna.addClass('background-status-ok');
 				}
 			} else {
+                                antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
 				antenna.removeClass('background-status-ok');
 				antenna.addClass('background-status-fail');
 			}
