@@ -57,6 +57,7 @@ class OpSupsController extends FormController
     		$id = $post['id'];
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
+                $form->setPreferFormInputFilter(true);
     		$form->setData($post);
     		$opsup = $datas['opsup'];
     		

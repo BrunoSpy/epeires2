@@ -6,7 +6,6 @@
 
 namespace Administration\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Core\Entity\User;
@@ -18,10 +17,7 @@ use Administration\Form\ChangePassword;
 use Administration\Form\ChangePasswordFilter;
 use Application\Controller\FormController;
 
-class UsersController extends FormController
-{
-	private $options;
-	
+class UsersController extends FormController {
 	
     public function indexAction()
     {
@@ -60,6 +56,7 @@ class UsersController extends FormController
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$form->setData($post);
+                $form->setPreferFormInputFilter(true);
     		$user = $datas['user'];
     		
     		if($form->isValid()){
@@ -114,7 +111,7 @@ class UsersController extends FormController
 
     		$form = new ChangePassword('changepassword');
     		$form->setInputFilter(new ChangePasswordFilter());
-    		
+//    		$form->setPreferFormInputFilter(true);
     		$form->setData($post);
     	
     		if($form->isValid()){
@@ -132,6 +129,7 @@ class UsersController extends FormController
     				$this->flashMessenger()->addErrorMessage($e->getMessage());
     			}
     		} else {
+                    error_log(print_r($form->getMessages(), true));
     			$this->processFormMessages($form->getMessages());
     		}
     	}
@@ -144,9 +142,13 @@ class UsersController extends FormController
     	//disable layout if request by Ajax
     	$viewmodel->setTerminal($request->isXmlHttpRequest());
     	
+        $userid = $this->params()->fromQuery('id', null);
+        
     	$form = new ChangePassword('changepassword');
     	$form->setInputFilter(new ChangePasswordFilter());
     	
+        $form->get('id')->setValue($userid);
+        
     	$viewmodel->setVariables(array('form' => $form));
     	return $viewmodel;
     }

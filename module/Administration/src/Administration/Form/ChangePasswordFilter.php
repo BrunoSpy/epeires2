@@ -3,14 +3,13 @@
 namespace Administration\Form;
 
 use Zend\InputFilter\InputFilter;
-use ZfcUser\Options\AuthenticationOptionsInterface;
 
 class ChangePasswordFilter extends InputFilter
 {
     public function __construct()
     {
         $identityParams = array(
-            'name'       => 'identity',
+            'name'       => 'id',
             'required'   => true,
             'validators' => array()
         );

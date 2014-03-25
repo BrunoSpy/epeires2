@@ -141,7 +141,7 @@ class EventsController extends ZoneController {
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')		
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
-    			->andWhere($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')))
+                        ->andWhere($qbEvents->expr()->isNull('e.parent'))
     			->add('orderBy', 'e.startdate DESC')
     			->setFirstResult( 0 )
     			->setMaxResults( 10 );
@@ -154,7 +154,7 @@ class EventsController extends ZoneController {
     			->innerJoin('m.custom_fields_values', 'v')
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')
-    			->andWhere($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')))
+                        ->andWhere($qbModels->expr()->isNull('m.parent'))
     			->andWhere($qbModels->expr()->eq('m.searchable', true));
     			
     			$this->addCustomFieldsSearch($qbEvents, $qbModels, $search);
@@ -200,14 +200,17 @@ class EventsController extends ZoneController {
     	$query = $qb->getQuery();
     	$radars = $query->getResult();
     	
+        $orModels = $qbModels->expr()->orX($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')));
+        $orEvents = $qbEvents->expr()->orX($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
+        
     	foreach ($antennas as $antenna){
-    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    		$orEvents->add($qbEvents->expr()->andX(
     				$qbEvents->expr()->eq('t.type', '?1'),
     				$qbEvents->expr()->eq('v.value',$antenna->getId())
     		));
     		$qbEvents->setParameter('1', 'antenna');
     		
-    		$qbModels->orWhere($qbModels->expr()->andX(
+    		$orModels->add($qbModels->expr()->andX(
     				$qbModels->expr()->eq('t.type', '?1'),
     				$qbModels->expr()->eq('v.value',$antenna->getId())
     		));
@@ -215,13 +218,13 @@ class EventsController extends ZoneController {
     	}
     	
     	foreach ($sectors as $sector){
-    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    		$orEvents->add($qbEvents->expr()->andX(
     				$qbEvents->expr()->eq('t.type', '?2'),
     				$qbEvents->expr()->eq('v.value',$sector->getId())
     		));
     		$qbEvents->setParameter('2', 'sector');
     		
-    		$qbModels->orWhere($qbModels->expr()->andX(
+    		$orModels->add($qbModels->expr()->andX(
     				$qbModels->expr()->eq('t.type', '?2'),
     				$qbModels->expr()->eq('v.value',$sector->getId())
     		));
@@ -229,18 +232,21 @@ class EventsController extends ZoneController {
     	}
     	
     	foreach ($radars as $radar) {
-    		$qbEvents->orWhere($qbEvents->expr()->andX(
+    		$orEvents->add($qbEvents->expr()->andX(
     			$qbEvents->expr()->eq('t.type', '?3'),
     			$qbEvents->expr()->eq('v.value', $radar->getId())
     		));
     		$qbEvents->setParameter('3', 'radar');
     		
-    		$qbModels->orWhere($qbModels->expr()->andX(
+    		$orModels->add($qbModels->expr()->andX(
     				$qbModels->expr()->eq('t.type', '?3'),
     				$qbModels->expr()->eq('v.value', $radar->getId())
     		));
     		$qbModels->setParameter('3', 'radar');
     	}
+        
+        $qbModels->andWhere($orModels);
+        $qbEvents->andWhere($orEvents);
     }
     
  	/**
