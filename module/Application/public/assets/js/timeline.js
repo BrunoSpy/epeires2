@@ -1673,6 +1673,7 @@ $(document).ready(function() {
 	// retracé de la timeline si taille fenêtre modifiée
 	$(window).resize(function () {
 		var timel = $('#timeline');
+                timel.css('height', $(window).height()-82+'px');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');

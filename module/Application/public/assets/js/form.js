@@ -360,9 +360,11 @@ var form = function(url){
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
 					$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
-					$.each(data.defaultvalues.zonefilters, function(key, value){
+                                        if(data.defaultvalues['zonefilters']){
+                                            $.each(data.defaultvalues.zonefilters, function(key, value){
 						$("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
-					});
+                                            });
+                                        }
 					$.each(data.customvalues, function(key, value){
 						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
 						if(elt.is("select")){
