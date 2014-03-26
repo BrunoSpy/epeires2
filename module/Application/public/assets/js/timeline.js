@@ -47,7 +47,7 @@ var timeline = {
 		// chargement de la liste des impacts
 		set_impacts: function (url) {
 			var i = 0;
-			$.getJSON(url+"/getimpacts", function (data) {
+			return $.getJSON(url+"/getimpacts", function (data) {
 				$.each(data, function(key, value) {
 					impt_name[i] = value.name;
 					impt_style[i] = value.short_name;
@@ -59,7 +59,7 @@ var timeline = {
 		// chargement des catégories
 		set_cat: function (url) {
 			var i = 0;
-			$.getJSON(url+"/getcategories", function (data) {
+			return $.getJSON(url+"/getcategories", function (data) {
 				$.each(data, function(key, value) {
 					categorie[i] = value.name;
 					cat_short[i] = value.short_name;
@@ -84,40 +84,40 @@ var timeline = {
 			var timeline_content = $('<div class="timeline_content"></div>');
 			$(element).append(timeline_content);
 			var timeline_other = $('<div class="timeline_other"></div>');
-			$.when(timeline.set_cat(url), timeline.set_impacts(url)).then(function(){});
-			$(element).append(timeline_other);
-			tab = Array();
-			var i = 0;
-			var ddeb, dfin;
-			$.getJSON(url+"/getevents", function (data) {
-				$.each(data, function(key, value) {
-					ddeb = new Date(value.start_date);
-					if (value.punctual == true) {
-						dfin = ddeb;
-					} else {
-						if (value.end_date == null) { 
-							dfin = -1;
+			$.when(timeline.set_cat(url), timeline.set_impacts(url)).then(function(){
+				$(element).append(timeline_other);
+				tab = Array();
+				var i = 0;
+				var ddeb, dfin;
+				$.getJSON(url+"/getevents", function (data) {
+					$.each(data, function(key, value) {
+						ddeb = new Date(value.start_date);
+						if (value.punctual == true) {
+							dfin = ddeb;
 						} else {
-							dfin = new Date(value.end_date);
+							if (value.end_date == null) { 
+								dfin = -1;
+							} else {
+								dfin = new Date(value.end_date);
+							}
 						}
-					}
-//					tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
-					var impt = 0;
-					if (value.impact_value == 100) {impt = 1;}
-					tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.star, value.category_root,"", value.status_name];
-					corresp[key] = i;
-					var j = 0;
-					/*					tab[i][7] = new Array();
+//						tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
+						var impt = 0;
+						if (value.impact_value == 100) {impt = 1;}
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.star, value.category_root,"", value.status_name];
+						corresp[key] = i;
+						var j = 0;
+						/*					tab[i][7] = new Array();
 					$.each(value.actions, function(k, val){
 						tab[i][7][j] = [k, val];
 						j ++;
 					});*/
-					i ++;
+						i ++;
+					});
+					timeline.create(timeline_content, tab);
+					timeline.tri_cat(timeline_content, tab, 1);
+					timeline.timeBar(timeline_content);
 				});
-				timeline.create(timeline_content, tab);
-				timeline.tri_cat(timeline_content, tab, 1);
-				timeline.affiche_listes(timeline_other);
-				timeline.timeBar(timeline_content);
 			});
 		},
 		// initialisation de la timeline 6h
@@ -270,48 +270,7 @@ var timeline = {
 			return [x1, wid];
 		},
 		// affichage / desaffichage des éléments passés ou futurs via les boutons latéraux
-		affiche_listes: function (element) {
-			$('#cpt_evts').text(cpt_journee.length);
-			$(element).empty();
-			var nb1 = liste_passee.length;
-			var nb2 = liste_avenir.length;
-			var button1;
-			if (nb1 == 0) {
-				button1 = $('<button type="button" class="passee" disabled><strong>'+nb1+'</strong></button>');
-				button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
-				$(element).append(button1);
-			} else {
-				button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
-				$(element).append(button1);
-				button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
-				button1.append('<i class="icon-chevron-right"></i>');
-				var liste1 = $('<div class="liste_passee">');
-				$(element).append(liste1);
-				for (var i=0; i<nb1; i++) {
-					liste1.append($('<div>'+tab[liste_passee[i]][4]+'</div>'));
-				}
-				liste1.css({'display':'none','position':'absolute','top':'0px','left':'0px','width':'auto','height':hauteur,'text-align':'left','z-index':5,
-					'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
-			}
-			var button2;
-			if (nb2 == 0) {
-				button2 = $('<button type="button" class="avenir" disabled><strong>'+nb2+'</strong></button>');
-				button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
-				$(element).append(button2);
-			} else {
-				button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
-				$(element).append(button2);
-				button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
-				button2.append('<i class="icon-chevron-left"></i>');
-				var liste2 = $('<div class="liste_avenir">');
-				$(element).append(liste2);
-				for (var i=0; i<nb2; i++) {
-					liste2.append($('<div>'+tab[liste_avenir[i]][4]+'</div>'));
-				}
-				liste2.css({'display':'none','position':'absolute','top':'0px','right':'0px','width':'auto','height':hauteur,'text-align':'left','z-index':5,
-					'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
-			}
-		},
+
 		// création du squelette des évènements affichés sur la timeline 
 		create: function(timeline_elmt, tableau) {
 			var len = tableau.length;
@@ -727,7 +686,7 @@ var timeline = {
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 		//	move_deb.css({'position':'absolute', 'top': 2+'px','height':dy-4, 'z_index':2, 'background-color':'Transparant', 
 		//		'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
-			move_fin.css({'position':'absolute', 'top': 2+'px','height':dy-4, 'z_index':2, 'background-color':'Transparant', 
+			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
 				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
 		//	move_deb.hover(function(){$(this).css({'cursor':'e-resize'});});
 		//	move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
@@ -1264,13 +1223,11 @@ var timeline = {
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
 					if (d_fin > d_min){ 
 						liste_passee.push(id);
-						timeline.affiche_listes(other);
 					}
 					elmt.remove();
 				} else if (d_debut > d_ref_fin) {
 					if (d_debut < d_max){
 						liste_avenir.push(id);
-						timeline.affiche_listes(other);
 					}
 					elmt.remove();
 				} else {
@@ -1338,12 +1295,10 @@ var timeline = {
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
 					if (d_fin > d_min) {
 						liste_passee.push(len);
-						timeline.affiche_listes(other);
 					}
 				} else if (d_debut > d_ref_fin) {
 					if (d_debut < d_max) {
 						liste_avenir.push(len);
-						timeline.affiche_listes(other);
 					}
 				} else {
 					liste_affichee.push(len);
@@ -1375,7 +1330,6 @@ var timeline = {
 				if (impt_on) {
 					impt_on(timeline_content, tab);
 				}
-				timeline.affiche_listes(other);
 				timeline.timeBar(timeline_content);
 				$.holdReady(false);
 			} else {
@@ -1498,16 +1452,20 @@ $(document).ready(function() {
 		}
 		timeline.base(base);	
 		timeline.create(timeline_content, tab);
+		if (impt_on) {	
+			timeline.impt_on(timeline_content, tab);
+		}
+		else {
+			timeline.impt_off(timeline_content, tab);
+		}
 		if (tri_cat) { 
 			timeline.tri_cat(timeline_content, tab,1);
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
-		timeline.affiche_listes(other);
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
-	
 	
 	// activation / désactivation du tri par catégories
 	$('#tri_cat').on('click',function(){
@@ -1666,14 +1624,14 @@ $(document).ready(function() {
 			var n = corresp[id];
 			tab[n][2] = temp_fin;
 			timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
-			$.post(ini_url+'/changefield?id='+id+'&field=enddate&value='+temp_fin.toUTCString());
+			$.post(ini_url+'/changefield?id='+id+'&field=enddate&value='+temp_fin.toUTCString(), function(data){displayMessages(data);});
 		}
 	});
 
 	// retracé de la timeline si taille fenêtre modifiée
 	$(window).resize(function () {
 		var timel = $('#timeline');
-                timel.css('height', $(window).height()-82+'px');
+        timel.css('height', $(window).height()-82+'px');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
 		var other = timel.find('.timeline_other');
@@ -1693,7 +1651,6 @@ $(document).ready(function() {
 		} else if (tri_hdeb) {
 			timeline.tri_hdeb(timeline_content, tab,1);
 		}
-		timeline.affiche_listes(other);
 		timeline.timeBar(timeline_content);
 		$.holdReady(false);
 	});
@@ -1782,5 +1739,46 @@ $(document).ready(function() {
 			}*/
 	
 	
-			
+/*	affiche_listes: function (element) {
+		$('#cpt_evts').text(cpt_journee.length);
+		$(element).empty();
+		var nb1 = liste_passee.length;
+		var nb2 = liste_avenir.length;
+		var button1;
+		if (nb1 == 0) {
+			button1 = $('<button type="button" class="passee" disabled><strong>'+nb1+'</strong></button>');
+			button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
+			$(element).append(button1);
+		} else {
+			button1 = $('<button type="button" class="passee"><strong>'+nb1+'</strong></button>');
+			$(element).append(button1);
+			button1.css({'position':'absolute', 'top': '0px', 'left':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
+			button1.append('<i class="icon-chevron-right"></i>');
+			var liste1 = $('<div class="liste_passee">');
+			$(element).append(liste1);
+			for (var i=0; i<nb1; i++) {
+				liste1.append($('<div>'+tab[liste_passee[i]][4]+'</div>'));
+			}
+			liste1.css({'display':'none','position':'absolute','top':'0px','left':'0px','width':'auto','height':hauteur,'text-align':'left','z-index':5,
+				'background-color':'LemonChiffon', 'padding':'5px', 'white-space':'nowrap', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
+		}
+		var button2;
+		if (nb2 == 0) {
+			button2 = $('<button type="button" class="avenir" disabled><strong>'+nb2+'</strong></button>');
+			button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
+			$(element).append(button2);
+		} else {
+			button2 = $('<button type="button" class="avenir"><strong>'+nb2+'</strong></button>');
+			$(element).append(button2);
+			button2.css({'position':'absolute', 'top': '0px', 'right':'0px', 'width':'30px','height':hauteur, 'text-align':'center', 'z-index':5});
+			button2.append('<i class="icon-chevron-left"></i>');
+			var liste2 = $('<div class="liste_avenir">');
+			$(element).append(liste2);
+			for (var i=0; i<nb2; i++) {
+				liste2.append($('<div>'+tab[liste_avenir[i]][4]+'</div>'));
+			}
+			liste2.css({'display':'none','position':'absolute','top':'0px','right':'0px','width':'auto','height':hauteur,'text-align':'left','z-index':5,
+				'background-color':'LemonChiffon', 'padding':'5px', 'border-style':'solid', 'border-width': '1px', 'border-radius': '2px' });
+		}
+	},*/
 });
