@@ -1083,15 +1083,16 @@ class EventsController extends ZoneController {
     		if ($event) {
 				switch ($field) {
 					case 'enddate' :
-						$event->setEnddate(new \DateTime($value));
-						$objectManager->persist($event);
-						$objectManager->flush();
-						$messages['success'][0] = "Date et heure de fin modifiées.";
+						if($event->setEnddate(new \DateTime($value))){
+                                                    $objectManager->persist($event);
+                                                    $messages['success'][0] = "Date et heure de fin modifiées.";
+                                                } else {
+                                                    $messages['error'][] = "Impossible de changer la date de fin.";
+                                                }
 						break;	
 					case 'startdate' :
 						$event->setStartdate(new \DateTime($value));
 						$objectManager->persist($event);
-						$objectManager->flush();
 						$messages['success'][0] = "Date et heure de début modifiées.";
 						break;
 					case 'impact' :
@@ -1099,14 +1100,12 @@ class EventsController extends ZoneController {
 						if($impact){
 							$event->setImpact($impact);
 							$objectManager->persist($event);
-							$objectManager->flush();
 							$messages['success'][0] = "Impact modifié.";
 						}
 						break;
 					case 'star' :
 						$event->setStar($value);
 						$objectManager->persist($event);
-						$objectManager->flush();
 						$messages['success'][0] = "Evènement modifié.";
 						break;
 					case "status" :
@@ -1114,13 +1113,17 @@ class EventsController extends ZoneController {
 						if($status){
 							$event->setStatus($status);
 							$objectManager->persist($event);
-							$objectManager->flush();
 							$messages['success'][0] = "Statut de l'évènement modifié.";
 						}
 					default :
 						;
 						break;
 				}
+                                try {
+                                    $objectManager->flush();
+                                } catch (\Exception $ex) {
+                                    $messages['error'][] = $ex->getMessage();
+                                }
     		}
     	} else {
     		$messages['error'][0] = "Impossible de modifier l'évènement.";
