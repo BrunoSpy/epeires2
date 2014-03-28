@@ -1627,8 +1627,8 @@ $(document).ready(function() {
 			var delt, delt2;
 			var elmt = $(this).closest('.elmt');
 			elmt.addClass('on_drag');
+			var move_fin = elmt.find('.move_fin'); 
 			var rect_elmt = elmt.find('.rect_elmt');
-			var move_deb = $(this);
 			var elmt_star = elmt.find('.elmt_star');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var pix_time = 30*60000/lar_unit;
