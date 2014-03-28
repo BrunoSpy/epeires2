@@ -39,6 +39,8 @@ var plus_info = 0;
 var warn = new Array();
 var temp_fin;
 var aff_fin;
+var temp_deb;
+var aff_deb;
 var cpt_journee;
 var ini_url;
 
@@ -269,8 +271,6 @@ var timeline = {
 			}
 			return [x1, wid];
 		},
-		// affichage / desaffichage des éléments passés ou futurs via les boutons latéraux
-
 		// création du squelette des évènements affichés sur la timeline 
 		create: function(timeline_elmt, tableau) {
 			var len = tableau.length;
@@ -559,11 +559,6 @@ var timeline = {
 			elmt.append(elmt_rect);
 			var elmt_compl = $('<div class="complement"></div>');
 			elmt_rect.after(elmt_compl);
-			// ajout du bouton warning
-	//		var elmt_obj = $('<button type="button" class="elmt_warn"></button>');
-	//		$(elmt).append(elmt_obj);
-	//		elmt_obj.addClass('btn btn-link btn-mini');
-	//		$(elmt_obj).append('<i class="icon-warning-sign icon-red"></i>');
 			// si l'événement a commencé avant la timeline, ajout d'une flèche gauche
 			var elmt_fleche1 = $('<div class="elmt_fleche1"></div>');
 			elmt.append(elmt_fleche1);
@@ -577,38 +572,6 @@ var timeline = {
 			$(elmt).append(elmt_opt);
 			var elmt_write = $('<textarea class="elmt_write">'+label+'</textarea>');
 			elmt_opt.append(elmt_write);
-			// +
-			/*					'<table class="table">'+
-					'<tbody>'+
-					'<tr>'+
-					'<td class="hour">'+
-					'<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>'+
-					'<input type="text" class="input-mini"><br>'+
-					'<a class="previous" href="#"><i class="icon-chevron-down"></i></a>'+
-					'</td>'+
-					'<td class="separator">:</td>'+
-					'<td class="minute">'+
-					'<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>'+
-					'<input type="text" class="input-mini"><br>'+
-					'<a class="previous" href="#"><i class="icon-chevron-down"></i></a>'+
-					'</td>'+
-					'<td>'+
-					'<button type="submit" class="btn">OK</button>'+
-					'</td>'+
-					'<td>'+
-					'<button type="submit" class="btn">Annuler</button>'+		
-					'</tr>'+
-					'</tbody>'+
-					'</table>'+
-					'</div>');*/
-
-//			var list_tag = $('<form>'); // class="nav nav-pills nav-stacked"
-//			elmt_opt.append(list_tag);
-//			var len = list.length;
-//			for (var i = 0; i<len; i++) {
-			//	list_tag.append('<label class="checkbox"><input type="checkbox" value='+list[i][0]+'>'+list[i][1]+'</label><li></li>');
-//			}
-//			elmt_opt.append('</form>');
 			// ajout du bouton modifications
 			elmt_status = $('<button type="button" class="elmt_status" data-id="'+id+'"data-name="'+label+'"></button>');
 			elmt_status.addClass('btn btn-mini');
@@ -641,8 +604,8 @@ var timeline = {
 			$(elmt).append(elmt_deb);
 			elmt_fin = $('<p class="elmt_fin"></p>');
 			$(elmt).append(elmt_fin);
-		//	move_deb = $('<p class="move_deb"></p>');
-		//	$(elmt_rect).append(move_deb);
+			move_deb = $('<p class="move_deb"></p>');
+			$(elmt_rect).append(move_deb);
 			move_fin = $('<p class="move_fin"></p>');
 			$(elmt_rect).append(move_fin);
 			// css permanent
@@ -684,12 +647,12 @@ var timeline = {
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
 			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
 				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
-		//	move_deb.css({'position':'absolute', 'top': 2+'px','height':dy-4, 'z_index':2, 'background-color':'Transparant', 
-		//		'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
+			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
+				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
 			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
 				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
-		//	move_deb.hover(function(){$(this).css({'cursor':'e-resize'});});
-		//	move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
+		move_deb.hover(function(){$(this).css({'cursor':'e-resize'});});
+		move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
 		},
 		// animation pour identifier un évènement
 		warn_animate:function(elmt_warn) {
@@ -718,7 +681,7 @@ var timeline = {
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var elmt_fin = elmt.find('.elmt_fin');
-		//	var move_deb = elmt.find('.move_deb');
+			var move_deb = elmt.find('.move_deb');
 			var move_fin = elmt.find('.move_fin');
 			var lien = elmt.find('.no_lien');
 			var x1 = x0;
@@ -745,6 +708,8 @@ var timeline = {
 				elmt_star.css({'left': x0+wid-40+'px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});
+				move_deb.addClass('disp');
+				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;	
 			case 1 : // heure de fin au-delà de la timeline
 				elmt_fleche2.show();
@@ -768,6 +733,8 @@ var timeline = {
 				elmt_star.css({'left': x0+wid-40+'px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});
+				move_deb.addClass('disp');
+				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;
 			case 3 : // ponctuel
 				elmt_fleche1.hide();
@@ -807,9 +774,9 @@ var timeline = {
 				}
 			} else {
 				var lar_nec = 30*2+txt_wid+10;
-				var x_left = x1;
+				var x_left = x1+20;
 				if (wid > lar_nec) {
-					elmt_b1.css({'left': x1+2+'px'});
+					elmt_b1.css({'left': x_left+2+'px'});
 					b1_pos = x_left+2;
 					x_left += 30;
 					elmt_txt.css({'left': x_left+2+'px'});
@@ -944,6 +911,8 @@ var timeline = {
 			} else { hDeb = ""; }
 			elmt_deb.text(hDeb);
 			elmt_deb.css({'top':h1+'px'});
+			var data_deb = elmt_deb[0];
+			jQuery.data(data_deb,"d_deb",d_debut);
 			// ajout de l'heure de fin
 			if (d_fin > 0) {
 				var fin_min = d_fin.getMinutes();
@@ -1136,6 +1105,12 @@ var timeline = {
 			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt);
+			if (impt_on) {	
+				timeline.impt_on(base_element, tab);
+			}
+			else {
+				timeline.impt_off(base_element, tab);
+			}
 			if (tri_cat) { 
 				timeline.tri_cat(base_element, tab,1);
 			} else if (tri_hdeb) {
@@ -1165,8 +1140,14 @@ var timeline = {
 			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt);
+			if (impt_on) {	
+				timeline.impt_on(base_element, tab);
+			}
+			else {
+				timeline.impt_off(base_element, tab);
+			}
 		},
-		// informations d'un eévènement modifié
+		// informations d'un évènement modifié
 		modify: function (data, loc) {
 			var i = 0;
 			var d_debut, d_fin;
@@ -1233,6 +1214,12 @@ var timeline = {
 				} else {
 					liste_affichee.push(id);
 					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
+				}
+				if (impt_on) {	
+					timeline.impt_on(base_element, tab);
+				}
+				else {
+					timeline.impt_off(base_element, tab);
 				}
 				if (tri_cat) { 
 					timeline.tri_cat(timeline_content, tab,1);
@@ -1367,6 +1354,8 @@ $(document).ready(function() {
 		elmt.find('.lien').hide();
 		var move_fin = elmt.find('.move_fin');
 		if (move_fin.hasClass('disp')) {move_fin.show();}
+		var move_deb = elmt.find('.move_deb');
+		if (move_deb.hasClass('disp')) {move_deb.show();}
 	});
 	// affichage normal en sortie d'évènement
 	$('#timeline').on('mouseleave','.elmt',function(){
@@ -1382,6 +1371,7 @@ $(document).ready(function() {
 		elmt.find('.elmt_qm_fleche').show();
 		elmt.find('.lien').show();
 		elmt.find('.move_fin').hide();
+		elmt.find('.move_deb').hide();
 	});
 
 	// clic sur un statut... à coder
@@ -1611,8 +1601,9 @@ $(document).ready(function() {
 				move_fin.css({'left':'+='+delt});
 			});
 	});
+	
 	// enregistrement de l'heure de fin
-	$('#timeline').on('mouseup', function(){
+	$('#timeline').on('mouseup', '.move_fin', function(){
 		$('#timeline').unbind('mousemove');
 		var timeline_content = $('#timeline').find('.timeline_content');
 		var elmt = timeline_content.find('.on_drag');
@@ -1628,6 +1619,59 @@ $(document).ready(function() {
 		}
 	});
 
+
+	// Déplacement de l'heure de debut
+	$('#timeline').on('mousedown','.move_deb', function(e1){
+			var x_ref = e1.clientX;
+			var x_temp = x_ref;
+			var delt, delt2;
+			var elmt = $(this).closest('.elmt');
+			elmt.addClass('on_drag');
+			var rect_elmt = elmt.find('.rect_elmt');
+			var move_deb = $(this);
+			var elmt_star = elmt.find('.elmt_star');
+			var elmt_deb = elmt.find('.elmt_deb');
+			var pix_time = 30*60000/lar_unit;
+			var elmt_fin = elmt.find('.elmt_fin');
+			var data_deb = elmt_deb[0];
+			var d_deb = jQuery.data(data_deb,"d_deb");
+			temp_deb = new Date();
+			temp_deb.setTime(d_deb.getTime());		
+			aff_deb = new Date();
+			aff_deb.setTime(d_deb.getTime());
+			$('#timeline').mousemove(function(e2) {
+				delt = e2.clientX-x_temp;
+				delt2 = e2.clientX-x_ref;
+				temp_deb.setTime(d_deb.getTime()+delt2*pix_time);
+				aff_deb.setTime(d_deb.getTime()+delt2*pix_time);
+				aff_deb.setHours(aff_deb.getUTCHours());
+				elmt_deb.text(aff_deb.toLocaleTimeString().substr(0,5));
+				x_temp = e2.clientX;
+				elmt.css({'left':'+='+delt, 'width':'-='+delt});
+				rect_elmt.css({'width':'-='+delt});
+				elmt_fin.css({'left':'-='+delt});
+				elmt_star.css({'left':'-='+delt});
+				move_fin.css({'left':'-='+delt});
+			});
+	});
+	
+	// enregistrement de l'heure de debut
+	$('#timeline').on('mouseup', '.move_deb', function(){
+		$('#timeline').unbind('mousemove');
+		var timeline_content = $('#timeline').find('.timeline_content');
+		var elmt = timeline_content.find('.on_drag');
+		if (elmt[0] != null){
+			var ss_elmt = elmt[0];
+			elmt.removeClass('on_drag');
+			var elmt_deb = elmt.find('.elmt_deb');
+			var id = jQuery.data(ss_elmt, "ident");
+			var n = corresp[id];
+			tab[n][1] = temp_deb;
+			timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
+			$.post(ini_url+'/changefield?id='+id+'&field=startdate&value='+temp_deb.toUTCString(), function(data){displayMessages(data);});
+		}
+	});
+	
 	// retracé de la timeline si taille fenêtre modifiée
 	$(window).resize(function () {
 		var timel = $('#timeline');
