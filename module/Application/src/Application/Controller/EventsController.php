@@ -1095,7 +1095,7 @@ class EventsController extends ZoneController {
                                                     $objectManager->persist($event);
                                                     $messages['success'][] = "Date et heure de début modifiées."; 
                                                 } else {
-                                                    $messages['error'][] = "Impossible de changer la date de début."
+                                                    $messages['error'][] = "Impossible de changer la date de début.";
                                                 }						
 						break;
 					case 'impact' :
