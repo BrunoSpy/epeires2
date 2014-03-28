@@ -124,7 +124,12 @@ class Event extends AbstractEvent{
 	}
 	
   	public function setStartdate($startdate = null){
-  		$this->startdate = $startdate;
+            if($this->enddate == null || ($this->enddate != null && $this->enddate >= $startdate) ) {
+                $this->startdate = $startdate;
+                return true;
+            } else {
+                return false;
+            }
   	}
 	
  	public function getStartdate(){
