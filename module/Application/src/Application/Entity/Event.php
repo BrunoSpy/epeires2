@@ -124,15 +124,35 @@ class Event extends AbstractEvent{
 	}
 	
   	public function setStartdate($startdate = null){
-  		$this->startdate = $startdate;
+            if($this->enddate == null || ($this->enddate != null && $this->enddate >= $startdate) ) {
+                $this->startdate = $startdate;
+                return true;
+            } else {
+                return false;
+            }
   	}
 	
  	public function getStartdate(){
  		return $this->startdate;
  	}
 	
+        /**
+         * 
+         * @param type $enddate
+         * @return boolean
+         */
 	public function setEnddate($enddate = null){
-		$this->enddate = $enddate;
+            if($this->startdate == null) {
+                //impossible de ficer la date de fin si aucune date de début
+                return false;
+            } else {
+                if($this->startdate <= $enddate) {
+                    $this->enddate = $enddate;
+                } else {
+                    return false;
+                }
+            }
+            return true;
 	}
 	
 	public function getEnddate(){

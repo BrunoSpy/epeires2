@@ -6,8 +6,10 @@ class ExtendedCategoryRepository extends CategoryRepository {
 	/**
 	 * Tous les évènements antenne dont à la fois :
 	 * la date début est antèrieure à maintenant
-	 * la date de fin est nulle ou postèrieure à maintenant
-	 * le status est soit confirmé soit terminé
+         * et
+	 *      la date de fin est nulle ou postèrieure à maintenant et le statut est confirmé ou terminé
+         *      ou
+         *      la date de fin est antèrieure à maintenant et le statut est confirmé
 	 */
 	public function getCurrentEvents($category){
 		$now = new \DateTime('NOW');
@@ -19,11 +21,19 @@ class ExtendedCategoryRepository extends CategoryRepository {
 		->andWhere('cat INSTANCE OF '.$category)
 		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
 		->andWhere($qbEvents->expr()->orX(
+                     $qbEvents->expr()->andX(
+                        $qbEvents->expr()->orX(
 				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')))
-		->andWhere($qbEvents->expr()->in('e.status', array(2,3)))
+				$qbEvents->expr()->gte('e.enddate', '?2')),
+                        $qbEvents->expr()->in('e.status', array(2,3))),
+                     $qbEvents->expr()->andX(
+                            $qbEvents->expr()->lte('e.enddate', '?3') ,
+                            $qbEvents->expr()->in('e.status', array(2)))
+                        )
+                    )
 		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-						2 => $now->format('Y-m-d H:i:s')));
+                                      2 => $now->format('Y-m-d H:i:s'),
+                                      3 => $now->format('Y-m-d H:i:s')));
 					
 		$query = $qbEvents->getQuery();
 					
