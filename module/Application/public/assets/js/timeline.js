@@ -731,8 +731,8 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.css({'left':x0+wid+5+'px'});
 				elmt_star.css({'left': x0+wid-40+'px'});
-				move_fin.addClass('disp');
-				move_fin.css({'left': wid-10+'px', 'width':'2px'});
+//				move_fin.addClass('disp');
+//				move_fin.css({'left': wid-10+'px', 'width':'2px'});
 				move_deb.addClass('disp');
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;
@@ -1630,6 +1630,7 @@ $(document).ready(function() {
 			elmt.addClass('on_drag');
 			var move_fin = elmt.find('.move_fin'); 
 			var rect_elmt = elmt.find('.rect_elmt');
+			var elmt_compl = elmt.find('.complement');
 			var rect_width = rect_elmt.width();
 			var elmt_star = elmt.find('.elmt_star');
 			var elmt_deb = elmt.find('.elmt_deb');
@@ -1644,7 +1645,7 @@ $(document).ready(function() {
 			$('#timeline').mousemove(function(e2) {
 				delt = e2.clientX-x_temp;
 				delt2 = e2.clientX-x_ref;
-				if (del2 > rect_width) {
+				if (delt2 < rect_width) {
 					temp_deb.setTime(d_deb.getTime()+delt2*pix_time);
 					aff_deb.setTime(d_deb.getTime()+delt2*pix_time);
 					aff_deb.setHours(aff_deb.getUTCHours());
@@ -1652,6 +1653,7 @@ $(document).ready(function() {
 					x_temp = e2.clientX;
 					elmt.css({'left':'+='+delt, 'width':'-='+delt});
 					rect_elmt.css({'width':'-='+delt});
+					elmt_compl.css({'left':'-='+delt});
 					elmt_fin.css({'left':'-='+delt});
 					elmt_star.css({'left':'-='+delt});
 					move_fin.css({'left':'-='+delt});
