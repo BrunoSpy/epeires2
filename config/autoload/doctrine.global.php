@@ -11,4 +11,14 @@ return array(
 					'password' => '',
 					'dbname'   => 'epeires2',
 					'charset' => 'utf8'
-)))));
+                                )
+                        )
+                ),
+                'migrations' => array( // /!\ do not change these settings /!\
+                        'connection' => 'doctrine.connection.orm_default',
+                        'migrations_table' => 'migrations',
+                        'migrations_namespace' => 'DoctrineORMModule\Migrations',
+                        'migrations_directory' => 'data/DoctrineORMModule/Migrations',
+                )
+            )
+    );

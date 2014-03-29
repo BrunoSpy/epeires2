@@ -4,14 +4,15 @@ $env = getenv('APP_ENV') ?: 'production';
 
 // Production modules
 $modules = array(
-		'DoctrineModule',
+	'DoctrineModule',
         'DoctrineORMModule',
+        'DoctrineMigrationsModule',
         'ZfcBase',
-		'ZfcRbac',
-		'ZfcUser',
+	'ZfcRbac',
+	'ZfcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
-		'Core',
+	'Core',
         'Application',
         'Administration',
         'IPO',
@@ -34,7 +35,7 @@ return array(
         ),
 
     	//cache only for production
-  		'config_cache_enabled' => ($env == 'production'),
+        'config_cache_enabled' => ($env == 'production'),
     	'config_cache_key' => 'app_config',
     	'module_map_cache_enabled' => ($env == 'production'),
     	'module_map_cache_key' => 'module_map',
