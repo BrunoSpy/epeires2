@@ -1,27 +1,36 @@
+<?php 
+
+    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+
+    $stringfromfile = $stringfromfile[0]; //get the string from the array
+
+    $explodedstring = explode("/", $stringfromfile); //seperate out by the "/" in the string
+    
+    $branchname = $explodedstring[2]; //get the one that is always the branch name
+
+    $stringfromfile = file('.git/FETCH_HEAD', FILE_USE_INCLUDE_PATH);
+
+    $stringfromfile = $stringfromfile[0]; //get the string from the array
+    
+    $explodedstring = explode("\t", $stringfromfile);
+       
+    $revision = $explodedstring[0];
+?>
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span4">
+            	<div class="span12">
 			<div class="block">
 				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Graphique des évènements</div>
+					<div class="muted pull-left">Version</div>
 				</div>
 				<div class="block-content collapse in">
 					<div class="span12">
-						En construction
+                                            <p> Branche : <em><?php echo $branchname; ?></em></p>
+                                            <p> Revision : <em><?php echo $revision; ?></em></p>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="span8">
-			<div class="block">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">Liste des évènements de la semaine</div>
-				</div>
-				<div class="block-content collapse in">
-					<div class="span12">En construction</div>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
