@@ -46,7 +46,11 @@ var antenna = function(url){
         
         $(document).on('click', '.open-fiche', function(){
             togglefiche();
-            $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'));
+            if($("#fiche").is(':visible')){
+                $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'));
+            } else {
+                $("#fiche").empty();
+            }
         });
         
 	$(document).on('click', '.switch-antenna', function(){
@@ -424,4 +428,22 @@ var antenna = function(url){
         
         //refresh page every 30s
         doPollFrequencies();
+        
+        //click sur une fiche reflexe
+	$("#fiche").on("click", "a.fiche", function(){
+		var id = $(this).data('id');
+		var me = $(this);
+		//tell the server to toggle the status
+		$.getJSON(url+'events/togglefiche'+'?id='+id,
+                    function(data){
+			if(data.open){
+				me.html("A faire");
+				me.removeClass("active");
+			} else {
+				me.html("Fait");
+				me.addClass("active");
+			}
+                    }
+		);
+	});
 };

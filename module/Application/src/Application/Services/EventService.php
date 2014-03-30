@@ -202,6 +202,24 @@ class EventService implements ServiceManagerAwareInterface{
 			$historyentry['newvalue'] = $update->getText();
 			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
 		}
+                //fiche reflexe
+                foreach($event->getChildren() as $child){
+                    if(!($child->getCategory() instanceof \Application\Entity\FrequencyCategory) && !$child->getStatus()->isOpen()){
+                        if(!array_key_exists($child->getLastModifiedOn()->format(DATE_RFC2822), $history)){
+                            $entry = array();
+                            $entry['date'] = $child->getLastModifiedOn();
+                            $entry['changes'] = array();
+                            $history[$child->getLastModifiedOn()->format(DATE_RFC2822)] = $entry;
+                        }
+                        $historyentry = array();
+                        $historyentry['fieldname'] = 'action';
+                        $historyentry['oldvalue'] = '';
+                        $historyentry['newvalue'] = $this->getName($child);
+                        $historyentry['status'] = $child->getStatus();
+                        $history[$child->getLastModifiedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
+                    }
+                }
+                
 		uksort($history, array($this, "sortbydate"));
 		return $history;
 	}

@@ -737,10 +737,27 @@ class FrequenciesController extends ZoneController {
     	$antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
     	
     	$fiche = null;
+        $history = null;
     	if($antenna){
-    		
+    		$events = $objectManager->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory');
+                $antennaEvents = array();
+                foreach ($events as $event){
+                    foreach ($event->getCustomFieldsValues() as $value){
+                        if($value->getCustomField()->getId() == $event->getCategory()->getAntennafield()->getId()){
+                            if($value->getValue() == $antennaId) {
+                                $antennaEvents[] = $event;
+                            }
+                        }
+                    }
+                }
+                if(count($antennaEvents) == 1) {
+                    $event = $antennaEvents[0];
+                    $fiche = $event;
+                    $history = $eventservice->getHistory($event);
+                }
     	}
     	
+        $viewmodel->setVariable('history', $history);
     	$viewmodel->setVariable('fiche', $fiche);
     	
     	return $viewmodel;

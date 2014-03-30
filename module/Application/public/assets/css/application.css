@@ -46,6 +46,12 @@
 
 /*******************************************/
 
+#fiche .table tr:first-child td,
+#accordion-Ficheréflexe .table tr:first-child td,
+#predefined_events .table tr:first-child td{
+    border: none;
+}
+
 #frequencies .block {
 	margin-bottom: 0px;
 }

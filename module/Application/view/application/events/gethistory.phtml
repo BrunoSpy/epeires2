@@ -3,9 +3,9 @@
 if($this->history){
 	
 	$history = $this->history;
-	
-	echo '<dl>';
-	foreach ($history as $key => $value){
+	if(count($history) > 0) {
+            echo '<dl>';
+            foreach ($history as $key => $value){
 		echo '<dt>'.$value['date']->format("d M Y, H:i T").'</dt>';
 		echo '<dd>';
 		echo '<ul>';
@@ -13,7 +13,11 @@ if($this->history){
 			echo '<li>';
 			if($change['fieldname'] == 'note'){
 				echo $change['newvalue'];
-			} else {
+			} elseif ($change['fieldname'] == 'action') {
+                                if(!$change['status']->isOpen()){
+                                    echo "Action \"".$change['newvalue']."\" effectuée";
+                                }
+                        }else {
 				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
 				if(empty($change['oldvalue'])){
 					echo ' enregistré à <em>'.$change['newvalue'].'</em>';
@@ -25,8 +29,13 @@ if($this->history){
 		}
 		echo '</ul>';
 		echo '</dd>';
-	}
-	echo '</dl>';
+            }
+            echo '</dl>';
+        } else {
+            echo "<p>Aucun historique à afficher.</p>";
+        }
+} else {
+    echo "<p>Aucun historique à afficher.</p>";
 }
 
 

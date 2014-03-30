@@ -114,6 +114,10 @@ class Event extends AbstractEvent{
 		$this->last_modified_on = new \DateTime('NOW');
 		$this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
 	}
+        
+        public function getLastModifiedOn(){
+            return $this->last_modified_on;
+        }
 
 	public function setStatus($status){
 		$this->status = $status;
