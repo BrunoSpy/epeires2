@@ -7,6 +7,7 @@ use Application\Entity\RadarCategory;
 use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\ActionCategory;
 
 class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		
@@ -57,6 +58,29 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		return $radarcat;
 	}
 	
+        public function createActionCategory(){
+		$em = $this->getEntityManager();
+		$actioncat = new ActionCategory();
+		$namefield = new CustomField();
+		$namefield->setCategory($actioncat);
+		$namefield->setName('Nom');
+		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$namefield->setPlace(1);
+		$namefield->setDefaultValue("");
+		$textfield = new CustomField();
+		$textfield->setCategory($actioncat); 
+		$textfield->setName('Commentaire');
+		$textfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
+		$textfield->setPlace(2);
+		$textfield->setDefaultValue("");
+		$actioncat->setFieldname($namefield);
+		$actioncat->setNamefield($namefield);
+		$actioncat->setTextfield($textfield);
+		$em->persist($namefield);
+		$em->persist($textfield);
+		return $actioncat;
+	}
+        
 	public function createAntennaCategory(){
 		$em = $this->getEntityManager();
 		$antennacat = new AntennaCategory();
