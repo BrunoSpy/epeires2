@@ -204,9 +204,9 @@ if($this->error){
 			if(count($children) > 0){
 				$html .= '<table class="table table-hover" >';
 				$html .= '<tbody>';
-                                //quick and dirty fix
-                                if(!($child->getCategory() instanceof FrequencyCategory)){
-                                    foreach ($children as $child){
+                                foreach ($children as $child){
+                                     //quick and dirty fix
+                                    if(!($child->getCategory() instanceof FrequencyCategory)){
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
