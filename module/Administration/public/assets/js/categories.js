@@ -2,7 +2,18 @@ var categories = function(url){
 	var reload = false;
 	var closesttr;
 
-	//function updateCarets inside models.js
+    var updateCarets = function(element, last) {
+        var tbody = element.find('tbody');
+        tbody.find('a.up').removeClass('disabled');
+        tbody.find('a.down').removeClass('disabled');
+        tbody.find('tr:first a.up').addClass('disabled');
+        if ((typeof last !== 'undefined') && !last) {
+            tbody.find('tr:last').prev().find('a.down').addClass('disabled');
+        } else {
+            tbody.find('tr:last a.down').addClass('disabled');
+        }
+
+    };
 	
 	/* ************************************ */
 	/* *** Fenêtre de liste des modèles *** */

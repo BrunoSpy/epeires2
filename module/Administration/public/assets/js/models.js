@@ -127,7 +127,7 @@ var models = function(url){
 		}, 'json');
 	});
 	
-	$(".modal").on('click', 'a.up', function(event){
+	$("#model-container, #models-container").on('click', 'a.up', function(event){
 		event.preventDefault();
 		var me = $(this);
 		var href = me.attr('href');
@@ -142,7 +142,7 @@ var models = function(url){
 		}, 'json');
 	});
 	
-	$(".modal").on('click', 'a.down', function(event){
+	$("#model-container, #models-container").on('click', 'a.down', function(event){
 		event.preventDefault();
 		var me = $(this);
 		var href = me.attr('href');
