@@ -123,6 +123,11 @@ class ModelsController extends FormController
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
     		$catid = $this->params()->fromQuery('catid', null);
+                
+                if(isset($post['custom_fields']) && isset($post['custom_fields']['category_id'])) {
+                    $catid = $post['custom_fields']['category_id'];
+                }
+                
     		$datas = $this->getForm($id, null, $catid, $post['organisation']);
     		
     		$form = $datas['form'];
@@ -136,7 +141,7 @@ class ModelsController extends FormController
     				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
     			} else if($pevent->getCategory()){
     				$category = $pevent->getCategory()->getId();
-    			} else { //last chance cat id passed by query
+                        } else { //last chance cat id passed by query
     				$category = $catid;
     				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($catid));
     			}
@@ -259,7 +264,7 @@ class ModelsController extends FormController
     	
     	$form->get('impact')->setValueOptions($objectManager->getRepository('Application\Entity\Impact')->getAllAsArray());
     	 
-    	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getChildsAsArray());
+    	$form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getAllAsArray());
     	
     	$form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')->getRootsAsArray());
 
@@ -269,15 +274,24 @@ class ModelsController extends FormController
             $form->get('name')->setAttribute('required', 'required');
         }
         
-    	if($catid){
-    		//set category
-    		$form->get('category')->setAttribute('value', $catid);
+    	if($catid || $action){
+                if($catid) {
+                    //set category
+                    $form->get('category')->setAttribute('value', $catid);
+                    //add custom fields input
+                    $form->add(new CustomFieldset($this->getServiceLocator(), $catid));
+                } else {
+                    $catactions = $objectManager->getRepository('Application\Entity\ActionCategory')->findAll();
+                    //TODO rendre paramétrable
+                    $cataction = $catactions[0];
+                    //add custom fields input
+                    $form->get('category')->setAttribute('value', $cataction->getId());
+                    $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId()));
+                }
     		//disable category modification
     		$form->get('category')->setAttribute('disabled', 'disabled');
     		//and change validator
     		$form->getInputFilter()->get('category')->setRequired(false);
-    		//add custom fields input
-    		$form->add(new CustomFieldset($this->getServiceLocator(), $catid));
     	}
     	
         if($orgid){
