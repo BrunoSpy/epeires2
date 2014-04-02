@@ -8,6 +8,7 @@ namespace Administration\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\Category;
 use Application\Entity\CustomField;
