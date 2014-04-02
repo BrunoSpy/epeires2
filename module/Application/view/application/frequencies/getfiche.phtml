@@ -9,7 +9,7 @@
                 echo "<table class=\"table\">";
                 echo "<tbody>";
                 foreach ($this->fiche->getChildren() as $child) {
-                    if( !($child->getCategory() instanceof Application\Entity\FrequencyCategory) ){
+                    if( $child->getCategory() instanceof Application\Entity\ActionCategory ){
                         echo "<tr data-id=\"".$child->getId()."\">";
                         echo "<td>".$this->eventName($child)."</td>";
                         echo '<td><a class="fiche btn btn-small '.($child->getStatus()->isOpen() ? "" : "active").'" data-id="'.$child->getId().'">'.($child->getStatus()->isOpen() ? "A faire" : "Fait").'</a></td>';
