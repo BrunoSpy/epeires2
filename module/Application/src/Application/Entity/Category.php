@@ -11,6 +11,7 @@
 namespace Application\Entity;
 
 use Zend\Form\Annotation;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,6 +36,7 @@ class Category {
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Catégorie parente :", "empty_option":"Choisir la catégorie parente"})
+	 * @Gedmo\SortableGroup
 	 */
 	protected $parent;
 	
@@ -46,22 +48,23 @@ class Category {
 	
 	/**
 	 * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom court :"})
+         * @Annotation\Required({"required":"true"})
+         * @Annotation\Options({"label":"Nom court :"})
 	 * @ORM\Column(type="string")
 	 */
 	protected $shortname;
 	
 	/**
 	 * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Couleur :"})
+         * @Annotation\Required({"required":"true"})
+         * @Annotation\Options({"label":"Couleur :"})
 	 * @ORM\Column(type="string")
 	 * Color coded in hexa, ex: #FFFFFF
 	 */
 	protected $color;
 	
-	/** @ORM\Column(type="boolean")
+	/** 
+         * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Mode compact :"})
 	 */
@@ -111,6 +114,12 @@ class Category {
 	 */
 	protected $readroles;
 	
+        /**
+         * @ORM\Column(type="integer", nullable=true)
+	 * @Gedmo\SortablePosition
+         */
+        protected $place;
+        
 	public function __construct(){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
@@ -130,6 +139,14 @@ class Category {
 		return $this->customfields;
 	}
 	
+        public function setPlace($place){
+            $this->place = $place;
+        }
+        
+        public function getPlace(){
+            return $this->place;
+        }
+        
 	public function getParent(){
 		return $this->parent;
 	}

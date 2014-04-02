@@ -26,6 +26,7 @@ class CategoryRepository extends ExtendedRepository {
 		if($id){
 			$criteria->andWhere(Criteria::expr()->neq('id', $id));
 		}
+                $criteria->orderBy(array('place' => Criteria::ASC));
 		$list = parent::matching($criteria);
 		return $list;
 	}
@@ -36,7 +37,7 @@ class CategoryRepository extends ExtendedRepository {
 		} else {
 			$criteria = Criteria::create()->where(Criteria::expr()->neq('parent', null));
 		}
-		
+		$criteria->orderBy(array('place' => Criteria::ASC));
 		$list = parent::matching($criteria);
 		
 		return $list;

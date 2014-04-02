@@ -985,6 +985,7 @@ class EventsController extends ZoneController {
     	$json = array();
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
     	$criteria->andWhere(Criteria::expr()->eq('timeline', true));
+        $criteria->orderBy(array("place" => Criteria::ASC));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	$readablecat = $this->filterReadableCategories($categories);
     	foreach ($readablecat as $category){

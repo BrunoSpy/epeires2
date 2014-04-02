@@ -40,12 +40,14 @@ class CategoriesController extends FormController{
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
+        $criteria->orderBy(array("place" => Criteria::ASC));
     	
     	$rootcategories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	
     	$subcategories = array();
     	foreach ($rootcategories as $category){
     		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $category));
+                $criteria->orderBy(array("place" => Criteria::ASC));
     		$subcategories[$category->getId()] = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	}
     	
@@ -247,4 +249,48 @@ class CategoriesController extends FormController{
     	return $viewmodel;
     }
     
+    public function upcategoryAction() {
+        $messages = array();
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($id) {
+            $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
+            if ($cat) {
+                $cat->setPlace($cat->getPlace() - 1);
+                $objectManager->persist($cat);
+                try {
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie correctement modifiée.";
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver la catégorie";
+            }
+        }
+        return new JsonModel($messages);
+    }
+    
+    public function downcategoryAction() {
+        $messages = array();
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($id) {
+            $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
+            if ($cat) {
+                $cat->setPlace($cat->getPlace() + 1);
+                $objectManager->persist($cat);
+                try {
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie correctement modifiée.";
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver la catégorie";
+            }
+        }
+        return new JsonModel($messages);
+    }
+
 }

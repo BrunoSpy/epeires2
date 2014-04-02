@@ -15,6 +15,20 @@ var categories = function(url){
 
     };
 	
+        $(".up-category").on('click', function(event){
+            event.preventDefault();
+            $.post(url+'/categories/upcategory?id='+$(this).data('id'), function(){
+                location.reload();
+            });
+        });
+        
+        $(".down-category").on('click', function(event){
+            event.preventDefault();
+            $.post(url+'/categories/downcategory?id='+$(this).data('id'), function(){
+                location.reload();
+            });
+        });
+        
 	/* ************************************ */
 	/* *** Fenêtre de liste des modèles *** */
 	/* ************************************ */

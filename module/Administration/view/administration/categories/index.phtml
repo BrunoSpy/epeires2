@@ -42,6 +42,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					}
 					echo "</td>";
 					echo "<td>";
+                                                echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$category->getId()."\"><span class=\"up-caret middle\"></span></a> ";
+                                                echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$category->getId()."\"><span class=\"caret middle\"></span></a> ";
 						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
 						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
 					echo "</td>";
@@ -72,6 +74,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							}
 							echo "</td>";
 							echo "<td>";
+                                                                echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$subcategory->getId()."\"><span class=\"up-caret middle\"></span></a> ";
+                                                                echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$subcategory->getId()."\"><span class=\"caret middle\"></span></a> ";
 								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
 								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
 							echo "</td>";
