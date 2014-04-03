@@ -883,8 +883,11 @@ class EventsController extends ZoneController {
     					if($zone){
     						$qb->andWhere($qb->expr()->andX(
     							$qb->expr()->eq('e.organisation', $zone->getOrganisation()->getId()),
-    							$qb->expr()->eq('f', $zone->getId())
-    						));
+                                                        $qb->expr()->orX(
+                                                            $qb->expr()->eq('f', $zone->getId()),
+                                                            $qb->expr()->isNull('f.id'))
+                                                        )
+    						);
     					} else {
     						//throw error
     					}
@@ -902,7 +905,7 @@ class EventsController extends ZoneController {
     	} else {
     		//aucun filtre autre que les rôles
     	}
-    	
+
     	$events = $qb->getQuery()->getResult();
     	
     	$readableEvents = array();
