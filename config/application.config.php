@@ -12,6 +12,7 @@ $modules = array(
 	'ZfcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
+        'DOMPDFModule',
 	'Core',
         'Application',
         'Administration',

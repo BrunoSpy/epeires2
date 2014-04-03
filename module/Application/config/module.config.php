@@ -56,6 +56,7 @@ return array(
             'Application\Controller\Events' => 'Application\Controller\EventsController',
             'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
             'Application\Controller\Radars' => 'Application\Controller\RadarsController',
+            'Application\Controller\Report' => 'Application\Controller\ReportController',
     	),
     ),
     'view_helpers' => array(
@@ -92,7 +93,7 @@ return array(
             __DIR__ . '/../view/application',
         ),
     	'strategies' => array(
-    		'ViewJsonStrategy',	
+    		'ViewJsonStrategy',
     	),
     ),
     /**

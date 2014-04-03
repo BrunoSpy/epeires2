@@ -11,6 +11,10 @@
                 {
                         "type": "vcs",
                         "url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
+                },
+                {
+                        "type": "vcs",
+                        "url": "https://github.com/BrunoSpy/DOMPDFModule"
                 }
 	],
     "require": {
@@ -25,7 +29,8 @@
         "zf-commons/zfc-rbac": "~2.0",
         "mrclay/minify": "*",
         "doctrine/migrations": "dev-master",
-        "murganikolay/doctrine-migrations-module": "dev-master"
+        "murganikolay/doctrine-migrations-module": "dev-master",
+        "dino/dompdf-module": "dev-patch-1"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
