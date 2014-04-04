@@ -100,12 +100,22 @@ class AbstractEvent {
  	 */
  	protected $zonefilters;
  	
+        /**
+ 	 * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
+ 	 */
+ 	protected $files;
+        
  	public function __construct(){
  		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->zonefilters = new \Doctrine\Common\Collections\ArrayCollection();
  		$this->custom_fields_values = new \Doctrine\Common\Collections\ArrayCollection();
+                $this->files = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
+        public function getFiles(){
+		return $this->files;
+	}
+        
  	public function getOrganisation(){
  		return $this->organisation;
  	}

@@ -14,9 +14,11 @@ class ControlGroup extends AbstractHelper {
 
 		$control_id = (isset($options['control_id'])) ? "id=\"".$options['control_id']."\"" : "" ;
 		
+                $group_id = (isset($options['group_id'])) ? "id=\"".$options['group_id']."\"" : "" ;
+                
 		$class = (isset($options['class'])) ? " ".$options['class'] : "";
 		
-		$result = "<div class=\"control-group".$class."\">";
+		$result = "<div class=\"control-group".$class."\" ".$group_id.">";
 		$result .= $label;
 		$result .= "<div class=\"controls\" ".$control_id.">";
 		$result .= $control;

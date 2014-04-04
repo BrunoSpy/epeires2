@@ -120,11 +120,12 @@ if($this->error){
 			if($this->zfcUserIdentity()){
 				$mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.modify'));
 			}
+                        $html = '<table class="table table-hover" id="file-table">';
+			$html .= '<tbody>';
 			if(count($files) > 0){
 				$countfiles = count($files);
 				//accéder aux fichiers
-				$html = '<table class="table table-hover" id="file-table">';
-				$html .= '<tbody>';
+				
 				foreach ($files as $file){
 					$html .= "<tr id=\"file_".$file->getId()."\">";
 					$html .= "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
@@ -150,9 +151,10 @@ if($this->error){
 					}
 					$html .= "</tr>";
 				}
-				$html .= '</tbody>';
-				$html .= '</table>';
+				
 			} 
+                        $html .= '</tbody>';
+			$html .= '</table>';
 			if(!$mod && count($files) == 0){
 				$titleclass = "disabled";
 				$html = "";
@@ -160,30 +162,7 @@ if($this->error){
 		}
 		//ajout de fichier si nouvel evt ou mod avec droits ok
 		if(!$this->event || ($this->event && $mod)){
-			$html .= "<div id=\"file_list\">";
-			if(!$this->event || !$mod){
-				//ajouter des fichiers : on affiche le premier champ seulement pour la création
-				$html .= "<div id=\"filefield_1\">";
-				$file = $this->form->get('fichiers')->get('fichier1')->get('file1');
-				$ref = $this->form->get('fichiers')->get('fichier1')->get('reference1');
-				$name = $this->form->get('fichiers')->get('fichier1')->get('name1');
-				$html .= $this->controlGroup(
-					"<div class=\"control-label\"><a data-count=".$this->count." href=\"#\" class=\"removefile pull-left\">&nbsp;</a>".
-					$this->formLabel($name).
-					"</div>",
-					$this->formInput($ref).
-					$this->formInput($name)
-				);
-				$html .= $this->controlGroup(
-					$this->formLabel($file->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formFile($file)
-				);
-				$html .= "</div>";
-			}
-			$html .= "</div>";
-			
-			$html .= "<a id=\"addfile\" href=\"#\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
-			
+			$html .= "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		
 		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle', 'title_class'=>$titleclass));

@@ -48,7 +48,8 @@
 
 #fiche .table tr:first-child td,
 #accordion-Ficheréflexe .table tr:first-child td,
-#predefined_events .table tr:first-child td{
+#predefined_events .table tr:first-child td,
+#file-table.table tr:first-child td{
     border: none;
 }
 

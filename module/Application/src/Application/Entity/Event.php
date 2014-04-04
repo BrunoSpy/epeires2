@@ -69,15 +69,9 @@ class Event extends AbstractEvent{
  	 */
  	protected $updates;
  	
- 	/**
- 	 * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
- 	 */
- 	protected $files;
- 	
  	public function __construct(){
  		parent::__construct();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
- 		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
  	}
  	
  	public function getAuthor(){
@@ -161,10 +155,6 @@ class Event extends AbstractEvent{
 	
 	public function getEnddate(){
 		return $this->enddate;
-	}
-	
-	public function getFiles(){
-		return $this->files;
 	}
 	
 	/** 

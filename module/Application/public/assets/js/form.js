@@ -1,5 +1,25 @@
+var urlt;
+
+var formAddFile = function(fileId, formData){
+    var tr = $('<tr id="file_'+fileId+'"></tr>');
+    tr.append('<td>'+formData.reference+'</td>');
+    tr.append('<td><a rel="external" href="'+formData.path+'">'+formData.name+'</a></td>');
+    tr.append('<td><a rel="external" href="'+formData.path+'"><i class="icon-download"></i></a></td>')
+    tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
+            'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
+            'data-id="'+fileId+'" '+
+            'data-name="'+formData.name+'" '+
+            'data-toggle="modal" '+
+            '><i class="icon-trash"></i></a></td>');
+    $("#file-table").append(tr);
+    var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
+    $("#inner-Fichiers").append(input);
+}
+
 var form = function(url){
 	
+        urlt = url;
+        
 	/*********************/
 	/***** Time Picker ***/
 	/*********************/
@@ -220,7 +240,7 @@ var form = function(url){
 		var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",
-			url: url+'/save',
+			url: url+'events/save',
 			xhr: function() {  // Custom XMLHttpRequest
 		           var myXhr = $.ajaxSettings.xhr();
 		           if(myXhr.upload){ // Check if upload property exists
@@ -276,7 +296,7 @@ var form = function(url){
 			$("#event").html('<div>Chargement...</div>');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
-					url+'/form',
+					url+'events/form',
 					function(){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
@@ -297,7 +317,7 @@ var form = function(url){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
-		$("#event").load(url+'/form?id='+me.data('id')+'&model=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
@@ -312,7 +332,7 @@ var form = function(url){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
-		$("#event").load(url+'/form?id='+me.data('id')+'&copy=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
@@ -327,7 +347,7 @@ var form = function(url){
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 
-		$("#event").load(url+'/form?id='+me.data('id'), function(){
+		$("#event").load(url+'events/form?id='+me.data('id'), function(){
 			updateHours();
 		});
 	});
@@ -337,7 +357,7 @@ var form = function(url){
 		var id = $(this).data('id');
 		var me = $(this);
 		//tell the server to toggle the status
-		$.getJSON(url+'/togglefiche'+'?id='+id,
+		$.getJSON(url+'events/togglefiche'+'?id='+id,
 				function(data){
 			if(data.open){
 				me.html("A faire");
@@ -355,7 +375,7 @@ var form = function(url){
 		$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 		var me = $(this);
 		$.getJSON(
-				url+'/getpredefinedvalues?id='+me.data('id'),
+				url+'events/getpredefinedvalues?id='+me.data('id'),
 				function(data){
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
@@ -387,7 +407,7 @@ var form = function(url){
 				});
 		//get actions
 		$.getJSON(
-				url+'/getactions?id='+me.data('id'),
+				url+'events/getactions?id='+me.data('id'),
 				function(data){
 					var container = $("#inner-Ficheréflexe");
 					container.html("");
@@ -422,13 +442,13 @@ var form = function(url){
 		
 		if(root_value > 0) {
 			
-			$.post(url+'/subform?part=subcategories&id='+$(this).val(),
+			$.post(url+'events/subform?part=subcategories&id='+$(this).val(),
 				function(data){
 					$('#subcategories').prop('disabled',false);
 					$("#subcategories").html(data);
 					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text());
 					$.post(
-						url+'/subform?part=custom_fields&id='+root_value,
+						url+'events/subform?part=custom_fields&id='+root_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -457,14 +477,14 @@ var form = function(url){
 		var subcat_value = $("#subcategories option:selected").val();
 		if(subcat_value > 0) {
 			$.post(
-				url+'/subform?part=predefined_events&id='+$(this).val(),
+				url+'events/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
 					$("#predefined_events").html(data);
 					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
 					$("#Modèlesid").removeClass("disabled");
 					$("#custom_fields").html("");
 					$.post(
-						url+'/subform?part=custom_fields&id='+subcat_value,
+						url+'events/subform?part=custom_fields&id='+subcat_value,
 						function(data){
 							$("#custom_fields").html(data);
 						}			
@@ -491,14 +511,10 @@ var form = function(url){
 	});
 
 	//ajout formulaire fichier
-	$("#event").on('click', "#addfile", function(){
-		var lastinput = $("#file_list > div:last").attr('id');
-		var count = (typeof lastinput == 'undefined' ? 1 : parseInt(lastinput[lastinput.length -1]) +1);
-		$("<div>").load(url+'/subform?part=file_field&count='+count, function(){
-			$("#file_list").append($(this).html());
-		});
-	});
-	
+        $(document).on('click', '#addfile', function(){
+            $("#file-upload-form").load(url+'file/form');
+        });
+        
 	$("#event").on('click', '.delete-file', function(){
 		$("a#delete-file-href").attr('href', $(this).data("href"));
 		$("#file_name").html($(this).data('name'));
@@ -511,6 +527,7 @@ var form = function(url){
 		$('#confirm-delete-file').modal('hide');
 		$.post($("#delete-file-href").attr('href'), function(data){
 			$("#file-table").find('tr#file_'+me.data('id')).remove();
+                        $('#inner-Fichiers input[name=fichiers\\['+me.data('id')+'\\]]').remove();
 			displayMessages(data);
 		}, 'json');
 	});

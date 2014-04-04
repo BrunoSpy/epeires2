@@ -30,12 +30,12 @@ class File {
 	protected $path;
 
 	/**
-	 * @ORM\Column(name="mime_type", type="string")
+	 * @ORM\Column(name="mime_type", type="string", nullable=true)
 	 */
 	protected $mimetype;
 	
 	/**
-	 * @ORM\Column(name="size", type="decimal")
+	 * @ORM\Column(name="size", type="decimal", nullable=true)
 	 */
 	protected $size;
 	
@@ -53,34 +53,15 @@ class File {
 	 * @ORM\Column(type="string")
 	 */
 	protected $filename;
-	
-	/**
+
+        /**
 	 * @ORM\ManyToMany(targetEntity="Event", inversedBy="files")
 	 * @ORM\JoinTable(name="file_event")
 	 */
 	protected $events;
-	
-	/**
-	 * 
-	 * @param unknown $fileinfo
-	 * @param unknown $already_exist
-	 * @throws Exception
-	 */
-	public function __construct($fileinfo, $already_exist){
+
+	public function __construct(){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->setSize($fileinfo['size']);
-		$this->setMimetype($fileinfo['type']);
-		$filter = new RenameUpload("./public/files/");
-		$filter->setUseUploadName(true);
-		$filter->setRandomize($already_exist);
-		try {
-			$targetname = $filter->filter($fileinfo);
-		} catch (\Exception $e) {
-			throw $e;
-		}
-		$name = substr($targetname['tmp_name'], 15);
-		$this->setFilename($name);
-		$this->setPath('/files/'.$name);
 	}
 	
 	public function getId(){
@@ -106,7 +87,7 @@ class File {
 			$this->events->removeElement($event);
 		}
 	}
-	
+        
 	public function getSize(){
 		return $this->size;
 	}

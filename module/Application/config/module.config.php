@@ -57,6 +57,7 @@ return array(
             'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
             'Application\Controller\Radars' => 'Application\Controller\RadarsController',
             'Application\Controller\Report' => 'Application\Controller\ReportController',
+            'Application\Controller\File' => 'Application\Controller\FileController',
     	),
     ),
     'view_helpers' => array(

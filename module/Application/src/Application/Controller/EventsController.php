@@ -303,7 +303,7 @@ class EventsController extends ZoneController {
     				$form->setData($post);
     				 
     				if($form->isValid()){
-    						
+    						                                    
     					//TODO find why hydrator can't set a null value to a datetime
     					if(isset($post['enddate']) && empty($post['enddate'])){
     						$event->setEndDate(null);
@@ -391,24 +391,12 @@ class EventsController extends ZoneController {
     					if(isset($post['fichiers']) && is_array($post['fichiers'])){
     						foreach ($post['fichiers'] as $key => $f){
     							
-    							$count = substr($key, strlen($key) -1);
-    							if(!empty($f['file'.$count]['name'])){
-    								try {
-    									$file = new \Application\Entity\File($f['file'.$count],
-    									$objectManager->getRepository('Application\Entity\File')->findBy(array('filename'=>$f['file'.$count]['name'])));
-    									if(isset($f['name'.$count]) && !empty($f['name'.$count])){
-	    									$file->setName($f['name'.$count]);
-    									}
-    									if(isset($f['reference'.$count]) && !empty($f['reference'.$count])){
-    										$file->setReference($f['reference'.$count]);
-    									}
-    									$file->addEvent($event);
-    									$objectManager->persist($file);
-    								} catch (\Exception $e) {
-    									$messages['error'][] = "Impossible d'ajouter le fichier ".$f['file'.$count]['name']." : ".$e->getMessage();
-    								}
-
-    							}
+                                                    $file = $objectManager->getRepository('Application\Entity\File')->find($key);
+                                                    if($file){
+                                                        $file->addEvent($event);
+                                                        $objectManager->persist($file);
+                                                    }
+      
     						}
     					}
     					
@@ -513,14 +501,6 @@ class EventsController extends ZoneController {
     			case 'custom_fields':
     				$viewmodel->setVariables(array('part' => $part,));
     				$form->add(new CustomFieldset($this->getServiceLocator(), $this->params()->fromQuery('id')));
-    				break;
-    			case 'file_field':
-    				$count = $this->params()->fromQuery('count', 1);
-    				$viewmodel->setVariables(array(
-    					'part' => $part,
-    					'count' => $count,
-    				));
-    				$form->get('fichiers')->addFile($count);
     				break;
     			default:
     				;
@@ -681,13 +661,8 @@ class EventsController extends ZoneController {
     	}
     	
     	$form->add(new CategoryFormFieldset($rootarray));
- 	    	
-    	//files
-    	$filesFieldset = new FileFieldset('fichiers');
-    	$filesFieldset->addFile();
     	
-    	$form->add($filesFieldset);
-    	$form->bind($event);
+        $form->bind($event);
     	$form->setData($event->getArrayCopy());
     	
     	//replace default category element

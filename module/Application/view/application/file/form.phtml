@@ -1,0 +1,59 @@
+<?php
+// Init Form
+$form = $this->form;
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('action', $this->url('application', array('controller' => 'file', 'action' => 'form')));
+$form->prepare();
+?>
+<?php echo $this->form()->openTag($form); ?>
+
+<div class="modal-body">
+    <?php
+    //
+    // Progress id hidden field.
+    // *NOTE* The hidden element MUST be before the file elements.
+    //
+    echo $this->formFileSessionProgress();
+    ?>
+
+    
+    
+    <?php
+    
+    echo $this->controlGroup($this->formLabel($this->form->get('reference')->setLabelAttributes(array('class' => 'control-label'))),
+            $this->formInput($this->form->get('reference')));
+    
+    echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
+            $this->formInput($this->form->get('name')));
+    
+ //   echo $this->controlGroup($this->formLabel($this->form->get('url')->setLabelAttributes(array('class' => 'control-label'))),
+ //           $this->formInput($this->form->get('url')));
+    
+    echo $this->controlGroup($this->formLabel($this->form->get('file')->setLabelAttributes(array('class' => 'control-label'))),
+            $this->formFile($form->get('file')).$this->formElementErrors($form->get('file')) . 
+            '<div id="file-errors" class="help-block"></div>
+                <div id="progress" class="help-block">
+                <div class="progress progress-info progress-striped active">
+                    <div class="bar"></div>
+                </div>
+                <p></p>
+            </div>', array('group_id' => 'file-controls'));
+    ?>
+
+
+    <div id="output"></div>
+
+</div>
+
+<div class="modal-footer">
+    <div id="action-buttons" class="control-group">
+        <div class="controls">
+            <button class="btn btn-primary">Envoyer</button>
+            <a id="cancel-form-upload" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+        </div>
+    </div>
+    
+</div>
+    
+    
+<?php echo $this->form()->closeTag($form); ?>

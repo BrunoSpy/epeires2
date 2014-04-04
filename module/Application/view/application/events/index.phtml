@@ -1,4 +1,7 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/timeline.js'); ?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/timeline.js');
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
+?>
 
 <div class="row-fluid">
 	<div id="panel">
@@ -18,10 +21,25 @@ echo $this->modalwindow("confirm-delete-file",
 					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
 ?>
 
+<?php
+
+echo $this->modalwindow(
+    "add-file",
+    "<h3>Ajout d'un fichier</h3>",
+    "",
+    "<div id=\"file-upload-form\"></div>"
+    );
+?>
+
 <?php $this->inlineScript()->captureStart();?>
 
 $('#timeline').css('height', $(window).height()-82+'px');
 //init timeline
 timeline.conf($('#timeline'), '<?php echo $this->url('application', array('controller' => 'events', ''))?>');
-				
+	
+//init form
+form('<?php echo $this->url('application');?>');
+
+fileupload('<?php echo $this->url('application')?>');
+
 <?php $this->inlineScript()->captureEnd();?>
