@@ -1,0 +1,94 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span9">
+            <table class="table table-striped sortable">
+                <thead>
+                    <tr>
+                        <th data-sort="string">Nom</th>
+                        <th>Catégorie par défaut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fréquence</td>
+                        <td>
+                            <select id="freq-select">
+                                <option value="0">Choisir la catégorie fréquence par défaut</option>
+                                <?php
+                                foreach ($this->freqcategories as $freq) {
+                                    echo "<option value=\"" . $freq->getId() . "\" " .
+                                    ($freq->isDefaultFrequencyCategory() ? "selected=\"selected\"" : "") .
+                                    ">" . $freq->getName() . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Antenne</td>
+                        <td>
+                            <select id="antenna-select">
+                                <option value="0">Choisir la catégorie antenne par défaut</option>
+                                <?php
+                                foreach ($this->antennacategories as $antenna) {
+                                    echo "<option value=\"" . $antenna->getId() . "\" " .
+                                    ($antenna->isDefaultAntennaCategory() ? "selected=\"selected\"" : "") .
+                                    ">" . $antenna->getName() . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    <tr>
+                        <td>Radar</td>
+                        <td>
+                            <select id="radar-select">
+                                <option value="0">Choisir la catégorie radar par défaut</option>
+                                <?php
+                                foreach ($this->radarcategories as $radar) {
+                                    echo "<option value=\"" . $radar->getId() . "\" " .
+                                    ($radar->isDefaultRadarCategory() ? "selected=\"selected\"" : "") .
+                                    ">" . $radar->getName() . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="span3">
+            <div class="block">
+                <div class="navbar navbar-inner block-header">
+                    <div class="muted pull-left" id="Organisations">Aide</div>
+                </div>
+                <div class="block-content collapse in">
+                    Les catégories par défaut sont utilisées lors de la création automatique d'évènements depuis les pages spéciales telles que :
+                    <ul>
+                        <li>la page Radar ;</li>
+                        <li>la page Fréquences.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+categories('<?php echo $this->url('administration'); ?>');
+
+
+<?php $this->inlineScript()->captureEnd();?>

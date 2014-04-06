@@ -16,6 +16,11 @@ use Doctrine\ORM\Mapping as ORM;
  **/
 class AntennaCategory extends Category{
 	
+        /**
+         * @ORM\Column(type="boolean")
+         */
+        protected $defaultantennacategory = false;
+         
 	/**
 	 * Ref to the field used to store the state of an antenna
 	 * @ORM\OneToOne(targetEntity="CustomField")
@@ -27,6 +32,14 @@ class AntennaCategory extends Category{
 	 */
 	protected $antennafield;
 	
+        public function isDefaultAntennaCategory(){
+            return $this->defaultantennacategory;
+        }
+        
+        public function setDefaultAntennaCategory($default){
+            $this->defaultantennacategory = $default;
+        }
+        
 	public function getStatefield(){
 		return $this->statefield;
 	}

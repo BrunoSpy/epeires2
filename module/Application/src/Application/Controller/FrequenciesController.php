@@ -140,8 +140,7 @@ class FrequenciesController extends ZoneController {
                             $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
                         }
                         $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                        $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
-                        //TODO paramétrer la catégorie au lieu de prendre la première
+                        $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
                         if ($categories) {
                             $cat = $categories[0];
                             $event->setCategory($cat);
@@ -320,7 +319,7 @@ class FrequenciesController extends ZoneController {
                         $antenna = $em->getRepository('Application\Entity\Antenna')->find($antennaid);
                         $event->setOrganisation($antenna->getOrganisation()); //TODO et si une antenne appartient à plusieurs orga ?
                         $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                        $categories = $em->getRepository('Application\Entity\AntennaCategory')->findAll();
+                        $categories = $em->getRepository('Application\Entity\AntennaCategory')->findBy(array('defaultantennacategory' => true));
                         if ($categories) {
                             $cat = $categories[0];
                             $antennafieldvalue = new CustomFieldValue();
@@ -457,8 +456,7 @@ class FrequenciesController extends ZoneController {
                     $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
                 }
                 $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findAll();
-                //TODO paramétrer la catégorie au lieu de prendre la première
+                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
                 if ($categories) {
                     $cat = $categories[0];
                     $event->setCategory($cat);

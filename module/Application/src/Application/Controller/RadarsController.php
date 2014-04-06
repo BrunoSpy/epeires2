@@ -100,7 +100,7 @@ class RadarsController extends AbstractActionController {
 						$radar = $em->getRepository('Application\Entity\Radar')->find($radarid);
 						$event->setOrganisation($radar->getOrganisation());
 						$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-						$categories = $em->getRepository('Application\Entity\RadarCategory')->findAll();
+						$categories = $em->getRepository('Application\Entity\RadarCategory')->findBy(array('defaultradarcategory' => true));
 						if($categories){
 							$cat = $categories[0];
 							$radarfieldvalue = new CustomFieldValue();

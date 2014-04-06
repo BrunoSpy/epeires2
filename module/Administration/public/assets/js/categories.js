@@ -200,4 +200,22 @@ var categories = function(url){
 		}, 'json');
 		$('#new-field').removeClass('disabled');
 	});
+        
+        $("#freq-select").on('change', function(){
+            $.post(url+'/categories/changedefaultfrequency?id='+$(this).val(), function(data){
+                    displayMessages(data);
+                });
+        });
+        
+        $("#radar-select").on('change', function(){
+            $.post(url+'/categories/changedefaultradar?id='+$(this).val(), function(data){
+                    displayMessages(data);
+                });
+        });
+        
+        $("#antenna-select").on('change', function(){
+            $.post(url+'/categories/changedefaultantenna?id='+$(this).val(), function(data){
+                    displayMessages(data);
+                });
+        });      
 }

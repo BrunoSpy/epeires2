@@ -19,6 +19,11 @@ use Doctrine\Common\Collections\Collection;
  **/
 class RadarCategory extends Category{
 	
+        /**
+         * @ORM\Column(type="boolean")
+         */
+        protected $defaultradarcategory = false;
+    
 	/**
 	 * Ref to the field used to store the state of a radar
 	 * @ORM\OneToOne(targetEntity="CustomField")
@@ -30,7 +35,16 @@ class RadarCategory extends Category{
 	 */
 	protected $radarfield;
 	
-	public function getStatefield(){
+        public function isDefaultRadarCategory() {
+            return $this->defaultradarcategory;
+        }
+        
+        public function setDefaultRadarCategory($default){
+            $this->defaultradarcategory = $default;
+        }
+
+
+        public function getStatefield(){
 		return $this->statefield;
 	}
 	

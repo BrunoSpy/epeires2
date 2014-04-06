@@ -294,4 +294,85 @@ class CategoriesController extends FormController{
         return new JsonModel($messages);
     }
 
+    public function defaultindexAction(){
+        
+        $this->layout()->title = "Personnalisation > Catégories par défaut";
+        
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $freqcategories = $objectManager->getRepository('Application\Entity\FrequencyCategory')->findAll();
+        
+        $radarcategories = $objectManager->getRepository('Application\Entity\RadarCategory')->findAll();
+
+        $antennacategories = $objectManager->getRepository('Application\Entity\AntennaCategory')->findAll();
+  
+        return array('freqcategories' => $freqcategories, 
+                    'radarcategories' => $radarcategories, 
+                    'antennacategories' => $antennacategories);
+    }
+    
+    public function changedefaultfrequencyAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $messages = array();
+        if($id){
+            $freq = $objectManager->getRepository('Application\Entity\FrequencyCategory')->find($id);
+            if($freq){
+                foreach ($objectManager->getRepository('Application\Entity\FrequencyCategory')->findAll() as $freqcat){
+                    $freqcat->setDefaultFrequencyCategory(($freqcat->getId() == $freq->getId()));
+                    $objectManager->persist($freqcat);
+                }
+                try{
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie fréquence par défaut modifiée";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+    
+    public function changedefaultradarAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $messages = array();
+        if($id){
+            $radar = $objectManager->getRepository('Application\Entity\RadarCategory')->find($id);
+            if($radar){
+                foreach ($objectManager->getRepository('Application\Entity\RadarCategory')->findAll() as $radarcat){
+                    $radarcat->setDefaultRadarCategory(($radarcat->getId() == $radar->getId()));
+                    $objectManager->persist($radarcat);
+                }
+                try{
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie radar par défaut modifiée";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+    
+    public function changedefaultantennaAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $messages = array();
+        if($id){
+            $antenna = $objectManager->getRepository('Application\Entity\AntennaCategory')->find($id);
+            if($antenna){
+                foreach ($objectManager->getRepository('Application\Entity\AntennaCategory')->findAll() as $antennacat){
+                    $antennacat->setDefaultAntennaCategory(($antennacat->getId() == $antenna->getId()));
+                    $objectManager->persist($antennacat);
+                }
+                try{
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie antenne par défaut modifiée";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
 }

@@ -19,7 +19,13 @@ use Doctrine\Common\Collections\Collection;
  **/
 class FrequencyCategory extends Category{
 	
-	/**
+        /**
+         * @ORM\Column(type="boolean")
+         */
+        protected $defaultfrequencycategory = false;
+
+
+        /**
 	 * Ref to the field used to store the state of the frequency
 	 * @ORM\OneToOne(targetEntity="CustomField")
 	 */
@@ -40,6 +46,14 @@ class FrequencyCategory extends Category{
 	 */
 	protected $otherfrequencyfield;
 	
+        public function isDefaultFrequencyCategory(){
+            return $this->defaultfrequencycategory;
+        }
+        
+        public function setDefaultFrequencyCategory($default){
+            $this->defaultfrequencycategory = $default;
+        }
+        
         /**
          * True : unavailable
          * False : avalaible

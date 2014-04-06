@@ -53,6 +53,11 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$radarcat->setFieldname($radarfield);
 		$radarcat->setRadarfield($radarfield);
 		$radarcat->setStatefield($statusfield);
+                
+                //si aucune cat par défaut --> nouvelle catégorie par défaut
+                $cats = $em->getRepository('Application\Entity\RadarCategory')->findBy(array('defaultradarcategory' => true));
+                $radarcat->setDefaultRadarCategory((count($cats) == 0));
+                
 		$em->persist($radarfield);
 		$em->persist($statusfield);
 		return $radarcat;
@@ -101,6 +106,11 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$antennacat->setStatefield($statusfield);
 		$em->persist($antennafield);
 		$em->persist($statusfield);
+                
+                //si aucune cat par défaut --> nouvelle catégorie par défaut
+                $cats = $em->getRepository('Application\Entity\AntennaCategory')->findBy(array('defaultantennacategory' => true));
+                $antennacat->setDefaultAntennaCategory((count($cats) == 0));
+                
 		return $antennacat;
 	}
 	
@@ -140,6 +150,11 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$em->persist($statefield);
 		$em->persist($currentAntenna);
 		$em->persist($otherfreq);
+                
+                //si aucune cat par défaut --> nouvelle catégorie par défaut
+                $cats = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
+                $frequencycat->setDefaultFrequencyCategory((count($cats) == 0));
+                
 		return $frequencycat;
 	}
 }
