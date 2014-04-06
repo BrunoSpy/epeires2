@@ -753,18 +753,33 @@ class EventsController extends ZoneController {
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	 
     	$fileid = $this->params()->fromQuery('id', null);
-    	
+    	$eventid = $this->params()->fromQuery('eventid', null);
     	$messages = array();
     	
     	if($fileid){
     		$file = $objectManager->getRepository('Application\Entity\File')->find($fileid);
-    		if($file){
-    			$objectManager->remove($file);
-    			$objectManager->flush();
-    		} else {
-    			$messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
-    		}
-    	} else {
+                if($eventid && $file){
+                    $event = $objectManager->getRepository('Application\Entity\Event')->find($eventid);
+                    if($event){
+                        $file->removeEvent($event);
+                        $objectManager->persist($file);
+                    } else {
+                        $messages['error'][] = "Impossible d'enlever le fichier de l'évènement";
+                    }
+                } else {
+                    if($file){
+                    	$objectManager->remove($file);
+                        $messages['success'][] = "Fichier correctement ajouté";
+                    } else {
+                        $messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
+                    }
+                }
+                try {
+                     $objectManager->flush();
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+        } else {
     		$messages['error'][] = "Impossible de supprimer le fichier : aucun paramètre trouvé.";
     	}
     	return new JsonModel($messages);

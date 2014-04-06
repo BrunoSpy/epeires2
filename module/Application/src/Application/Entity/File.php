@@ -88,6 +88,10 @@ class File {
 		}
 	}
         
+        public function removeEvent(Event $event){
+            $this->events->removeElement($event);
+        }
+        
 	public function getSize(){
 		return $this->size;
 	}

@@ -114,14 +114,15 @@ if($this->error){
 		$html = "";	
 		$countfiles = 0;
 		$mod = false;
+                $html = '<table class="table table-hover" id="file-table">';
+		$html .= '<tbody>';
 		if($this->event){
 			$files = $this->event->getFiles();
 			
 			if($this->zfcUserIdentity()){
 				$mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.modify'));
 			}
-                        $html = '<table class="table table-hover" id="file-table">';
-			$html .= '<tbody>';
+                        
 			if(count($files) > 0){
 				$countfiles = count($files);
 				//accéder aux fichiers
@@ -142,7 +143,7 @@ if($this->error){
 									class=\"delete-file\"
 									data-href=\"".$this->url('application', 
 															array('controller'=>'events', 'action' => 'deletefile'),
-															array('query'=>array('id'=>$file->getId())))."\"
+															array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
 									data-id=\"".$file->getId()."\"
 									data-name=\"".($file->getName() ? $file->getname() : $file->getFilename())."\"
 									data-toggle=\"modal\"
@@ -153,13 +154,14 @@ if($this->error){
 				}
 				
 			} 
-                        $html .= '</tbody>';
-			$html .= '</table>';
+                        
 			if(!$mod && count($files) == 0){
 				$titleclass = "disabled";
 				$html = "";
 			}
 		}
+                $html .= '</tbody>';
+		$html .= '</table>';
 		//ajout de fichier si nouvel evt ou mod avec droits ok
 		if(!$this->event || ($this->event && $mod)){
 			$html .= "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
