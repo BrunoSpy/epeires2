@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "af20ecfd96027b2dddadf37f4a42cacb",
+    "hash": "a6998277edc59144ea5bc639e9ca6539",
     "packages": [
         {
             "name": "dino/dompdf-module",
@@ -90,7 +90,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -162,9 +163,10 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
+                    "name": "Jonathan H. Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -303,7 +305,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -600,7 +603,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -618,7 +622,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -947,12 +951,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "v1.1.2"
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
-                "reference": "v1.1.2",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
                 "shasum": ""
             },
             "require": {
@@ -1198,17 +1202,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.4.2",
+            "version": "v2.4.3",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "940f217cbc3c8a33e5403e7c595495c4884400fe"
+                "reference": "ef20f1f58d7f693ee888353962bd2db336e3bbcb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/940f217cbc3c8a33e5403e7c595495c4884400fe",
-                "reference": "940f217cbc3c8a33e5403e7c595495c4884400fe",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/ef20f1f58d7f693ee888353962bd2db336e3bbcb",
+                "reference": "ef20f1f58d7f693ee888353962bd2db336e3bbcb",
                 "shasum": ""
             },
             "require": {
@@ -1249,21 +1253,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-11 13:52:09"
+            "time": "2014-03-01 17:35:04"
         },
         {
             "name": "symfony/process",
-            "version": "v2.4.2",
+            "version": "v2.4.3",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "c175448bac997556f8ab972908a4e14c7291fb03"
+                "reference": "c09c3b08455c35688eee3e481fdfc85518ef01d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/c175448bac997556f8ab972908a4e14c7291fb03",
-                "reference": "c175448bac997556f8ab972908a4e14c7291fb03",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/c09c3b08455c35688eee3e481fdfc85518ef01d7",
+                "reference": "c09c3b08455c35688eee3e481fdfc85518ef01d7",
                 "shasum": ""
             },
             "require": {
@@ -1298,7 +1302,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-11 13:52:09"
+            "time": "2014-03-26 11:35:33"
         },
         {
             "name": "zendframework/zendframework",
@@ -1524,16 +1528,16 @@
         },
         {
             "name": "zf-commons/zfc-rbac",
-            "version": "2.1.2",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-                "reference": "542b6c6e641744622cf96aa6aef5d1005bfba901"
+                "reference": "9f710ee9cbf050e0dc4a51dddec4a4369eb204cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/542b6c6e641744622cf96aa6aef5d1005bfba901",
-                "reference": "542b6c6e641744622cf96aa6aef5d1005bfba901",
+                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/9f710ee9cbf050e0dc4a51dddec4a4369eb204cf",
+                "reference": "9f710ee9cbf050e0dc4a51dddec4a4369eb204cf",
                 "shasum": ""
             },
             "require": {
@@ -1586,7 +1590,7 @@
                 "rbac",
                 "zf2"
             ],
-            "time": "2014-03-14 16:58:42"
+            "time": "2014-04-04 21:00:15"
         },
         {
             "name": "zf-commons/zfc-user",
@@ -1663,12 +1667,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUserDoctrineORM.git",
-                "reference": "36bb99cfaad47a16083d38f7cdf75d9ad4c65976"
+                "reference": "731e7807857c6fb12f1ad7f37694dea3855a226a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUserDoctrineORM/zipball/36bb99cfaad47a16083d38f7cdf75d9ad4c65976",
-                "reference": "36bb99cfaad47a16083d38f7cdf75d9ad4c65976",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUserDoctrineORM/zipball/731e7807857c6fb12f1ad7f37694dea3855a226a",
+                "reference": "731e7807857c6fb12f1ad7f37694dea3855a226a",
                 "shasum": ""
             },
             "require": {
@@ -1711,7 +1715,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2014-03-03 22:09:43"
+            "time": "2014-04-04 19:57:32"
         },
         {
             "name": "zfr/rbac",
