@@ -86,6 +86,29 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		return $actioncat;
 	}
         
+        public function createActionCategory(){
+		$em = $this->getEntityManager();
+		$alarmcat = new AlarmCategory();
+		$namefield = new CustomField();
+		$namefield->setCategory($alarmcat);
+		$namefield->setName('Nom');
+		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$namefield->setPlace(1);
+		$namefield->setDefaultValue("");
+		$textfield = new CustomField();
+		$textfield->setCategory($alarmcat); 
+		$textfield->setName('Commentaire');
+		$textfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
+		$textfield->setPlace(2);
+		$textfield->setDefaultValue("");
+		$alarmcat->setFieldname($namefield);
+		$alarmcat->setNamefield($namefield);
+		$alarmcat->setTextfield($textfield);
+		$em->persist($namefield);
+		$em->persist($textfield);
+		return $alarmcat;
+	}
+        
 	public function createAntennaCategory(){
 		$em = $this->getEntityManager();
 		$antennacat = new AntennaCategory();

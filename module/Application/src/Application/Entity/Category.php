@@ -20,7 +20,7 @@ use Doctrine\Common\Collections\Collection;
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"generic" = "Category", "radar" = "RadarCategory", "antenna" = "AntennaCategory", "frequency" = "FrequencyCategory", "action" = "ActionCategory"})
+ * @ORM\DiscriminatorMap({"generic" = "Category", "radar" = "RadarCategory", "antenna" = "AntennaCategory", "frequency" = "FrequencyCategory", "action" = "ActionCategory", "alarm" = "AlarmCategory"})
  **/
 class Category {
 	/**
