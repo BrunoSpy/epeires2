@@ -18,20 +18,21 @@
         				?>
 
         <!-- Scripts -->
-        <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
-        							  ->prependFile($this->basePath() . '/assets/js/headerbar.js')
-       							      ->prependFile($this->basePath() . '/assets/js/search.js')
-        							  ->prependFile($this->basePath() . '/assets/js/form.js')
-        							  ->prependFile($this->basePath() . '/assets/js/application.js')
-        							  ->prependFile($this->basePath() . '/js/jquery.mousewheel.js')
-        							  ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
-        							  ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-                                      ->prependFile($this->basePath() . '/js/bootstrap.min.js')
-                                      ->prependFile($this->basePath() . '/js/noty/packaged/jquery.noty.packaged.min.js')
-                                      ->prependFile($this->basePath() . '/js/i18n/jquery.ui.datepicker-fr.js')
-                                      ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
-                                      ->prependFile($this->basePath() . '/js/jquery.min.js')
-        							   ?>
+        <?php
+        echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
+                        ->prependFile($this->basePath() . '/assets/js/headerbar.js')
+                        ->prependFile($this->basePath() . '/assets/js/search.js')
+                        ->prependFile($this->basePath() . '/assets/js/form.js')
+                        ->prependFile($this->basePath() . '/assets/js/application.js')
+                        ->prependFile($this->basePath() . '/js/jquery.mousewheel.js')
+                        ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
+                        ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+                        ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+                        ->prependFile($this->basePath() . '/js/noty/packaged/jquery.noty.packaged.min.js')
+                        ->prependFile($this->basePath() . '/js/i18n/jquery.ui.datepicker-fr.js')
+                        ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
+                        ->prependFile($this->basePath() . '/js/jquery.min.js')
+        ?>
 
     </head>
     <body>
@@ -88,7 +89,8 @@
 	            	<li class="divider-vertical"></li>
 	            	<li><a href="<?php echo $this->url('application', array('controller'=>'radars', 'action'=>'index')) ?>">Radars</a></li>
 	            	<li><a id="frequency" href="<?php echo $this->url('application', array('controller'=>'frequencies', 'action'=>'index')) ?>">Fréquences</a></li>
-	        	</ul>
+                        <li><a id="test" href="#">Test</a></li>
+                        </ul>
 	        	<ul class="nav pull-right">
 	        		<li>
 	        			<form class="navbar-search" id="search">
@@ -145,7 +147,8 @@
 		} ?>
         
         <?php $this->inlineScript()->captureStart();?>
-
+                
+                setURL('<?php echo $this->url('application');?>');
 
 		//search
 		search('<?php echo $this->url('application', array('controller'=>'events'));?>');

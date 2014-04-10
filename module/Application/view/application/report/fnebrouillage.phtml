@@ -1,10 +1,82 @@
-<table>
-    
-    <tbody>
-        <tr>
-            <td>Cell</td>
-            <td>Cell</td>
-        </tr>
-    </tbody>
-</table>   
+<html>
+    <head>
+        <style>
+            .text-center {
+                text-align: center;
+            }
+  
+            .push-left {
+                float: left;
+            }
+            
+            #header {
+                width: 21cm;
+            }
+            
+            #logo, #head-title {
+                display: inline;
+            }
+            
+            #title {
+                font-size: larger;
+            }
+            
+            .table th, .table td {
+                border: 1px solid;
+            }
+            
+            table {
+                width: 100%;
+            }
+            
+            #header table tr td:first-child {
+                width: 5%;
+            }
+        </style>
+    </head>
 
+    <body>
+        <div id="header">
+            <table>
+                <tr>
+                    <td> <img src="<?php echo __DIR__ ?>/../../../../../public/img/logo-dsna.png"></img></td>
+                    <td> <p class="text-center">Centre en route de la navigation aérienne Nord<br />Service Exploitation<br />Subdivision Etudes</p></td>
+                </tr>
+            </table>
+        </div>
+        <div id="title" class="text-center">
+            FNE Brouillage
+        </div>
+        <div id="renseignements">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Equipe</th>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Position</th>
+                        <th>Fréquence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="strip">
+            
+        </div>
+
+        
+        
+    </body>
+</html>

@@ -34,6 +34,42 @@ var displayMessages = function(messages){
 	}
 };
  
+ var displayPanel = function(id){
+        var timeline = $('#timeline');
+        timeline.animate({
+            left: '300px'
+        }, 300);
+        $('#panel').load(url+'events/getfiche?id='+id);
+ };
+ 
+ var hidePanel = function(){
+        var panel = $('#timeline');
+        panel.animate({
+            left: '0px'
+        }, 300);
+        $('#panel').empty();
+ }
+ 
+ var togglePanel = function(id){
+        var panel = $('#timeline');
+        //on détermine si on affiche ou si on cache
+        var val = panel.css('left') == '300px' ? '0px' : '300px';
+        panel.animate({
+            left: val
+        }, 300);
+        if(panel.css('left') == '300px') {
+            $('#panel').empty();
+        } else {
+            $('#panel').load(url+'events/getfiche?id='+id);
+        }
+ }
+ 
+ var url;
+ 
+ var setURL = function(urlt){
+     url = urlt;
+ };
+ 
 $(document).ready(function(){
 	
    setInterval('updateClock()', 1000);
@@ -97,7 +133,11 @@ $(document).ready(function(){
 		    },
 		    buttons: false // an array of buttons
 		};
-                
+           
+    $('#test').on('click', function(e){
+        e.preventDefault();
+        togglePanel(205);
+    });
 });
 
 

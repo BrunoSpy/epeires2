@@ -10,6 +10,7 @@ namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use DOMPDFModule\View\Model\PdfModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * Description of ReportController
@@ -17,14 +18,25 @@ use DOMPDFModule\View\Model\PdfModel;
  * @author spyckerelle
  */
 class ReportController extends AbstractActionController {
-    
-    public function fnebrouillageAction(){
-        $pdf = new PdfModel();
-        $pdf->setOption('filename', 'fne-brouillage');
-        $pdf->setOption('parperSize', 'a4');
-        
-        return $pdf;
-        
+
+    public function fnebrouillageAction() {
+
+        $view = $this->params()->fromQuery('view', null);
+
+        if ($view == 'pdf') {
+            $pdf = new PdfModel();
+            $pdf->setOption('filename', 'fne-brouillage');
+            $pdf->setOption('parperSize', 'a4');
+
+            return $pdf;
+        } else {
+            $viewmodel = new ViewModel();
+            $request = $this->getRequest();
+
+            //disable layout if request by Ajax
+            $viewmodel->setTerminal(true);
+            return $viewmodel;
+        }
     }
-    
+
 }

@@ -1,5 +1,17 @@
 @CHARSET "UTF-8";
 
+/************** Slide panel **************/
+
+#panel {
+    position:fixed;
+    left:0;
+    right:auto;
+    width:290px;
+    height: 100%;
+    z-index: 1;
+    margin-left: 10px;
+}
+
 /***************** TIME PICKER *************/
 
 .timepicker-form > table {
@@ -268,16 +280,11 @@ th.no-border, td.no-border {
 
 /*******************************************/
 
-/* Panel */
-#panel {
-	float:left;
-	width:0px;
-	display:none;
-}
 
 /* Bandeau du haut */ 
 
 body{
+        overflow-x: hidden;
 	padding-top: 0px;
 }
 

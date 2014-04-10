@@ -1130,4 +1130,28 @@ class EventsController extends ZoneController {
     	return new JsonModel($messages);
     }
     
+    public function getficheAction(){
+    	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	 
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
+    	$id = $this->params()->fromQuery('id', null);
+    	
+    	$eventservice = $this->getServiceLocator()->get('EventService');
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    	
+        $history = null;
+    	if($event){
+            $history = $eventservice->getHistory($event);
+    	}
+    	
+        $viewmodel->setVariable('history', $history);
+    	$viewmodel->setVariable('fiche', $event);
+    	
+    	return $viewmodel;
+    }
 }
