@@ -47,19 +47,15 @@
     <?php endif; ?>
 
 
-<?php if($this->event->getUpdates() && count($this->event->getUpdates()) > 0 ) : ?>
-
 <div class="block">
     <div class="navbar navbar-inner block-header">
         <div class="muted pull-left">Notes</div>
-        <div class="pull-right"><i class="icon-chevron-up icon-grey"></i></div>
+        <div class="pull-right"><i class="icon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?> icon-grey"></i></div>
     </div>
-    <div class="block-content collapse in" id="updates">
+    <div class="block-content collapse in" id="updates" <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? '' : 'style="display:none"')?>>
         <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
     </div>
 </div>
-
-<?php endif; ?>
 
 <div class="block">
     <div class="navbar navbar-inner block-header">

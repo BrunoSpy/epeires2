@@ -150,6 +150,7 @@ $(document).ready(function(){
             if(!data['error']){
                 me.find('textarea').val('');
                 $("#updates").load(url+'events/updates?id='+me.data('id'));
+                $("#updates").show();
             }
             displayMessages(data);
         });
