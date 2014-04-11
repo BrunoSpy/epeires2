@@ -34,6 +34,27 @@ var togglefiche = function(){
 
 };
 
+var closeFiche = function() {
+    $("#fiche").animate({'margin-left': '-23%'}, '1000', function() {
+        $(this).hide();
+    });
+    $("#frequencies").animate({
+        'margin-left': '0px',
+        'width': '73%'
+    }, '1000');
+};
+
+var openFiche = function() {
+    if(!$('#fiche').is(':visible')){
+        $("#fiche").show(),
+        $("#fiche").animate({'margin-left': '0px'}, '1000');
+        $("#frequencies").animate({
+            'margin-left': '2.56%',
+            'width': '48.7%'
+        }, '1000');
+    }
+};
+
 var antenna = function(url){
 
 	//if true, switch the button to its previous state
@@ -45,12 +66,17 @@ var antenna = function(url){
         var timer;
         
         $(document).on('click', '.open-fiche', function(){
-            togglefiche();
+            openFiche();
             if($("#fiche").is(':visible')){
                 $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'));
             } else {
                 $("#fiche").empty();
             }
+        });
+        
+        $("#fiche").on('click', "#close-panel", function(e){
+            e.preventDefault();
+            closeFiche();
         });
         
 	$(document).on('click', '.switch-antenna', function(){
@@ -136,12 +162,15 @@ var antenna = function(url){
 					//changement de couv : antenne main opérationnelle
 					antenna.filter('.mainantenna-color').addClass('background-selected')
 						.siblings('.backupantenna-color').removeClass('background-selected');
+                                        //suppression de la fiche reflexe si besoin
+                                        $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td a").remove();
 				} else {
 					antenna.removeClass('background-status-ok')
 					.addClass('background-status-fail');
 					//changement de couv : antenne main en panne
 					antenna.filter('.mainantenna-color').removeClass('background-selected')
 					.siblings('.backupantenna-color').addClass('background-selected');
+                                        $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td:first-child").append('<a href="#" class="open-fiche" data-id="'+$('#cancel-antenna').data('antenna')+'"> <i class="icon-tasks"></i></a>');
 				}
 				currentfrequencies = data.frequencies;
 				updatefrequencies();
@@ -429,21 +458,5 @@ var antenna = function(url){
         //refresh page every 30s
         doPollFrequencies();
         
-        //click sur une fiche reflexe
-	$("#fiche").on("click", "a.fiche", function(){
-		var id = $(this).data('id');
-		var me = $(this);
-		//tell the server to toggle the status
-		$.getJSON(url+'events/togglefiche'+'?id='+id,
-                    function(data){
-			if(data.open){
-				me.html("A faire");
-				me.removeClass("active");
-			} else {
-				me.html("Fait");
-				me.addClass("active");
-			}
-                    }
-		);
-	});
+
 };

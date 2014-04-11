@@ -1,0 +1,28 @@
+<?php
+
+if($this->updates){
+	
+	$history = $this->history;
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            \IntlTimeZone::getGMT(),
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL, HH:mm');
+	if (count($this->updates) > 0) {
+            echo '<dl>';
+            foreach ($this->updates as $update) {
+                echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC</dt>';
+                echo '<dd>';
+                    echo nl2br($update->getText());
+                echo '</dd>';
+        }
+        echo '</dl>';
+    } else {
+        echo "<p>Aucune note à afficher.</p>";
+    }
+} else {
+    echo "<p>Aucune note à afficher.</p>";
+}
+
+

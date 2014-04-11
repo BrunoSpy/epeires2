@@ -1,7 +1,20 @@
-<?php
-if ($this->fiche) {
+<a href="#" id="close-panel"><span class="pull-right" style="margin-right:-4px; margin-top:-4px; "><i class="icon-chevron-left icon-grey"></i></span></a>
+
+<?php if ($this->event) : ?>
+    
+<div class="block">
+    <div class="navbar navbar-inner block-header">
+        <div class="muted pull-left">Résumé</div>
+        <div class="pull-right"><i class="icon-chevron-up icon-grey"></i></div>
+    </div>
+    <div class="block-content collapse in">
+        <?php echo $this->partial('events/summary.phtml');?>
+    </div>
+</div>
+    
+    <?php
     $count = 0;
-    foreach ($this->fiche->getChildren() as $child) {
+    foreach ($this->event->getChildren() as $child) {
         if ($child->getCategory() instanceof Application\Entity\ActionCategory) {
             $count++;
         }
@@ -11,17 +24,18 @@ if ($this->fiche) {
 
         <div class="block">
             <div class="navbar navbar-inner block-header">
-                <div class="muted pull-left">Fiche réflexe <?php echo $this->eventName($this->fiche); ?></div>
+                <div class="muted pull-left">Fiche réflexe <?php echo $this->eventName($this->event); ?></div>
+                <div class="pull-right"><i class="icon-chevron-up icon-grey"></i></div>
             </div>
             <div class="block-content collapse in">
                 <?php
                 echo "<table class=\"table\">";
                 echo "<tbody>";
-                foreach ($this->fiche->getChildren() as $child) {
+                foreach ($this->event->getChildren() as $child) {
                     if ($child->getCategory() instanceof Application\Entity\ActionCategory) {
                         echo "<tr data-id=\"" . $child->getId() . "\">";
                         echo "<td>" . $this->eventName($child) . "</td>";
-                        echo '<td><a class="fiche btn btn-small ' . ($child->getStatus()->isOpen() ? "" : "active") . '" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
+                        echo '<td><a class="fiche btn btn-small ' . ($child->getStatus()->isOpen() ? "" : "active") . '" data-eventid="'.$this->event->getId().'" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
                         echo "</tr>";
                     }
                 }
@@ -31,21 +45,42 @@ if ($this->fiche) {
         </div>
 
     <?php endif; ?>
-    <?php
-}
-?>
 
 
+<?php if($this->event->getUpdates() && count($this->event->getUpdates()) > 0 ) : ?>
+
+<div class="block">
+    <div class="navbar navbar-inner block-header">
+        <div class="muted pull-left">Notes</div>
+        <div class="pull-right"><i class="icon-chevron-up icon-grey"></i></div>
+    </div>
+    <div class="block-content collapse in" id="updates">
+        <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
+    </div>
+</div>
+
+<?php endif; ?>
 
 <div class="block">
     <div class="navbar navbar-inner block-header">
         <div class="muted pull-left">Historique</div>
+        <div class="pull-right"><i class="icon-chevron-down icon-grey"></i></div>
     </div>
-    <div class="block-content collapse in">
+    <div class="block-content collapse in" id="history" style="display:none;">
         <?php echo $this->partial('events/gethistory.phtml'); ?>
     </div>
 </div>
 
+<div class="block-controls">
+    <form data-id="<?php echo $this->event->getId();?>" id="add-note" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
+    <textarea name="new-update" placeholder="Ajouter une note."></textarea>
+    <input type="submit" class="btn btn-small btn-primary pull-right" value="Ajouter note"></input>
+    </form>
+</div>
+
+<?php else : ?>
+
+<?php endif; ?>
 
 
 

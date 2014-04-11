@@ -67,7 +67,6 @@ return array(
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     		'impact' => 'Application\View\Helper\Impact',
     		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
-    		'customfieldvalue' => 'Application\View\Helper\CustomFieldValue',
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     		'block' => 'Application\View\Helper\Block',
     		'sector' => 'Application\View\Helper\Sector',
@@ -75,7 +74,8 @@ return array(
     	'factories' => array(
     		'eventName' => 'Application\Factories\EventNameFactory',
     		'ipo' => 'Application\Factories\IPOFactory',
-    		'opsup' => 'Application\Factories\OpSupFactory'
+    		'opsup' => 'Application\Factories\OpSupFactory',
+                'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory'
     	),
     ),
     'view_manager' => array(

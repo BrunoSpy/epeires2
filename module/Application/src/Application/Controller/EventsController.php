@@ -1150,8 +1150,57 @@ class EventsController extends ZoneController {
     	}
     	
         $viewmodel->setVariable('history', $history);
-    	$viewmodel->setVariable('fiche', $event);
+    	$viewmodel->setVariable('event', $event);
     	
     	return $viewmodel;
+    }
+    
+    public function addnoteAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $messages = array();
+        
+        if($id && $this->getRequest()->isPost()){
+            $post = $this->getRequest()->getPost();
+            $event = $em->getRepository('Application\Entity\Event')->find($id);
+            if($event){
+                $eventupdate = new \Application\Entity\EventUpdate();
+                $eventupdate->setText($post['new-update']);
+                $eventupdate->setEvent($event);
+                $em->persist($eventupdate);
+                try{
+                    $em->flush();
+                    $messages['success'][] = "Note correctement ajoutée.";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible d'ajouter la note (évènement non trouvé).";
+            }
+        } else {
+            $messages['error'][] = "Impossible d'ajouter la note.";
+        }
+        
+        return new JsonModel($messages);
+    }
+    
+    public function updatesAction(){
+        $id = $this->params()->fromQuery('id', null);
+
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+        
+        
+        $event = $em->getRepository('Application\Entity\Event')->find($id);
+        
+        $viewmodel->setVariable('updates', $event->getUpdates());
+        
+        return $viewmodel;
+        
     }
 }

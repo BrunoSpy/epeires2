@@ -6,10 +6,52 @@
     position:fixed;
     left:0;
     right:auto;
-    width:290px;
-    height: 100%;
+    width:320px;
+    height: 90%;
     z-index: 1;
     margin-left: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.panel .block-header {
+    cursor: pointer;
+}
+
+.panel .block-content {
+    margin-top : 0px;
+    margin-bottom: 0px;
+}
+
+.panel .block-content .table {
+    margin-bottom: 0px;
+}
+
+.panel .block-content dl {
+    margin-bottom: 0px;
+}
+
+.panel dd {
+    display: list-item;
+    list-style-type: disc;
+    margin-left: 2em;
+}
+
+.panel .dl-horizontal dd {
+    display: inherit;
+    margin-left: 120px;
+}
+
+.panel .dl-horizontal dt {
+    width: 100px;
+}
+
+.block-controls {
+    margin-right: 1em;
+}
+
+.block-controls textarea {
+    width: 100%;
 }
 
 /***************** TIME PICKER *************/
@@ -61,7 +103,8 @@
 #fiche .table tr:first-child td,
 #accordion-Ficheréflexe .table tr:first-child td,
 #predefined_events .table tr:first-child td,
-#file-table.table tr:first-child td{
+#file-table.table tr:first-child td,
+#panel table.table tr:first-child td{
     border: none;
 }
 

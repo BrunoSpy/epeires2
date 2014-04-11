@@ -3,17 +3,20 @@
 if($this->history){
 	
 	$history = $this->history;
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            \IntlTimeZone::getGMT(),
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL, HH:mm');
 	if(count($history) > 0) {
             echo '<dl>';
             foreach ($history as $key => $value){
-		echo '<dt>'.$value['date']->format("d M Y, H:i T").'</dt>';
-		echo '<dd>';
-		echo '<ul>';
+		echo '<dt>'.$formatter->format($value['date']).' UTC</dt>';
+
 		foreach($value['changes'] as $change){
-			echo '<li>';
-			if($change['fieldname'] == 'note'){
-				echo $change['newvalue'];
-			} elseif ($change['fieldname'] == 'action') {
+			echo '<dd>';
+			if ($change['fieldname'] == 'action') {
                                 if(!$change['status']->isOpen()){
                                     echo "Action \"".$change['newvalue']."\" effectuée";
                                 }
@@ -25,10 +28,9 @@ if($this->history){
 					echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
 				}
 			}
-			echo '</li>';
+			echo '</dd>';
 		}
-		echo '</ul>';
-		echo '</dd>';
+
             }
             echo '</dl>';
         } else {

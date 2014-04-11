@@ -37,7 +37,7 @@ var displayMessages = function(messages){
  var displayPanel = function(id){
         var timeline = $('#timeline');
         timeline.animate({
-            left: '300px'
+            left: '330px'
         }, 300);
         $('#panel').load(url+'events/getfiche?id='+id);
  };
@@ -46,18 +46,20 @@ var displayMessages = function(messages){
         var panel = $('#timeline');
         panel.animate({
             left: '0px'
-        }, 300);
-        $('#panel').empty();
+        }, 300, function(){
+            $('#panel').empty();
+        });
+        
  }
  
  var togglePanel = function(id){
         var panel = $('#timeline');
         //on détermine si on affiche ou si on cache
-        var val = panel.css('left') == '300px' ? '0px' : '300px';
+        var val = panel.css('left') == '330px' ? '0px' : '330px';
         panel.animate({
             left: val
         }, 300);
-        if(panel.css('left') == '300px') {
+        if(panel.css('left') == '330px') {
             $('#panel').empty();
         } else {
             $('#panel').load(url+'events/getfiche?id='+id);
@@ -77,14 +79,14 @@ $(document).ready(function(){
    $.datepicker.regional[ "fr" ];
    
    //higlight tabs
-   var url = window.location;
+   var urlt = window.location;
    $(".nav > li a").filter(function(){
 	   //remove #
-	   var i = url.toString().lastIndexOf("#");
+	   var i = urlt.toString().lastIndexOf("#");
 	   if(i != -1){
-		   url = url.toString().substring(0, i);
+		   urlt = urlt.toString().substring(0, i);
 	   }
-	   return this.href == url; 
+	   return this.href == urlt; 
    }).parent().addClass('active') //on ajoute la classe active
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
    
@@ -133,11 +135,60 @@ $(document).ready(function(){
 		    },
 		    buttons: false // an array of buttons
 		};
-           
-    $('#test').on('click', function(e){
+    
+    
+    //slidepanel
+    $(document).on('click', "#close-panel", function(e){
         e.preventDefault();
-        togglePanel(205);
+        hidePanel();
     });
+    
+    $(document).on('submit', '#add-note', function(e){
+        e.preventDefault();
+        var me = $(this);
+        $.post(url+'events/addnote?id='+$(this).data('id'), $(this).serialize(), function(data){
+            if(!data['error']){
+                me.find('textarea').val('');
+                $("#updates").load(url+'events/updates?id='+me.data('id'));
+            }
+            displayMessages(data);
+        });
+    });
+    
+    //click sur une fiche reflexe
+    $(document).on("click", "a.fiche", function(){
+		var id = $(this).data('id');
+		var me = $(this);
+		//tell the server to toggle the status
+		$.getJSON(url+'events/togglefiche'+'?id='+id,
+                    function(data){
+			if(data.open){
+				me.html("A faire");
+				me.removeClass("active");
+			} else {
+				me.html("Fait");
+				me.addClass("active");
+			}
+                        $("#history").load(url+'events/gethistory?id='+me.data('eventid'));
+                    }
+		);
+	});
+    
+    $(document).on('click', '.block-header', function(){
+        var me = $(this);
+        var content = me.siblings(".block-content");
+        //change icon
+        if(content.is(':visible')){
+            me.find('i').removeClass('icon-chevron-up');
+            me.find('i').addClass('icon-chevron-down');
+            content.slideUp('fast(');
+        } else {
+            me.find('i').addClass('icon-chevron-up');
+            me.find('i').removeClass('icon-chevron-down');
+            content.slideDown('fast');
+        }        
+    });
+
 });
 
 

@@ -748,13 +748,13 @@ class FrequenciesController extends ZoneController {
                         }
                     }
                 }
-                if(count($antennaEvents) == 1) {
+                if(count($antennaEvents) >= 1) {
                     $event = $antennaEvents[0];
                     $fiche = $event;
                     $history = $eventservice->getHistory($event);
-                }
-    	}
-    	
+                } 
+    	} 
+        
         $viewmodel->setVariable('history', $history);
     	$viewmodel->setVariable('fiche', $fiche);
     	

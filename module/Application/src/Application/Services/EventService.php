@@ -96,11 +96,20 @@ class EventService implements ServiceManagerAwareInterface{
 	 * @param Application\Entity\Event $event
 	 */
 	public function getHistory($event){
-		$history = array();
+            $history = array();
 
-		$repo = $this->em->getRepository('Application\Entity\Log');
+            $repo = $this->em->getRepository('Application\Entity\Log');
 		
-		//history of event
+            $formatter = \IntlDateFormatter::create(
+                            \Locale::getDefault(),
+                            \IntlDateFormatter::FULL,
+                            \IntlDateFormatter::FULL,
+                            \IntlTimeZone::getGMT(),
+                            \IntlDateFormatter::GREGORIAN,
+                            'dd LLL, HH:mm');
+
+
+        //history of event
 		$logentries = $repo->getLogEntries($event);	
 		if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
 			$ref = null;
@@ -138,12 +147,17 @@ class EventService implements ServiceManagerAwareInterface{
 								$newvalue->setTimezone(new \DateTimeZone("UTC"));
 								$newvalue->add(new \DateInterval("PT".$offset."S"));
 								
-								$historyentry['oldvalue'] = ($ref[$key] ? $oldvalue->format("d M Y, H:i T") : '');
-								$historyentry['newvalue'] = $newvalue->format("d M Y, H:i T");
+								$historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($oldvalue) : '');
+								$historyentry['newvalue'] = $formatter->format($newvalue);
 							} else if ($key == 'punctual') {
 								$historyentry['oldvalue'] = ($ref[$key] ? "Vrai" : "Faux") ;
 								$historyentry['newvalue'] = ($value ? "Vrai" : "Faux");
-							} else {
+                                                        } else if($key == 'status') {
+                                                                $old = $this->em->getRepository('Application\Entity\Status')->find($ref[$key]['id']);
+                                                                $new = $this->em->getRepository('Application\Entity\Status')->find($value['id']);
+                                                                $historyentry['oldvalue'] =  $old->getName();
+								$historyentry['newvalue'] = $new->getName();
+                                                        } else {
 								$historyentry['oldvalue'] = $ref[$key];
 								$historyentry['newvalue'] = $value;
 							}
@@ -188,20 +202,20 @@ class EventService implements ServiceManagerAwareInterface{
 			}
 		}
 		
-		//updates
-		foreach($event->getUpdates() as $update){
-			if(!array_key_exists($update->getCreatedOn()->format(DATE_RFC2822), $history)){
-				$entry = array();
-				$entry['date'] = $update->getCreatedOn();
-				$entry['changes'] = array();
-				$history[$update->getCreatedOn()->format(DATE_RFC2822)] = $entry;
-			}
-			$historyentry = array();
-			$historyentry['fieldname'] = 'note';
-			$historyentry['oldvalue'] = '';
-			$historyentry['newvalue'] = $update->getText();
-			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
-		}
+		//updates --> not displayed in history
+//		foreach($event->getUpdates() as $update){
+//			if(!array_key_exists($update->getCreatedOn()->format(DATE_RFC2822), $history)){
+//				$entry = array();
+//				$entry['date'] = $update->getCreatedOn();
+//				$entry['changes'] = array();
+//				$history[$update->getCreatedOn()->format(DATE_RFC2822)] = $entry;
+//			}
+//			$historyentry = array();
+//			$historyentry['fieldname'] = 'note';
+//			$historyentry['oldvalue'] = '';
+//			$historyentry['newvalue'] = $update->getText();
+//			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
+//		}
                 //fiche reflexe
                 foreach($event->getChildren() as $child){
                     if(!($child->getCategory() instanceof \Application\Entity\FrequencyCategory) && !$child->getStatus()->isOpen()){

@@ -65,4 +65,8 @@ class EventUpdate {
 	public function getText(){
 		return $this->text;
 	}
+        
+        public function setEvent($event){
+            $this->event = $event;
+        }
 }

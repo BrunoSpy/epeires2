@@ -1,40 +1,4 @@
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Fiche réflexe <?php echo $this->eventName($this->fiche);?></div>
-    </div>
-    <div class="block-content collapse in">
-        <div class="span12">
-            <?php
-            if ($this->fiche) {
-                echo "<table class=\"table\">";
-                echo "<tbody>";
-                foreach ($this->fiche->getChildren() as $child) {
-                    if( $child->getCategory() instanceof Application\Entity\ActionCategory ){
-                        echo "<tr data-id=\"".$child->getId()."\">";
-                        echo "<td>".$this->eventName($child)."</td>";
-                        echo '<td><a class="fiche btn btn-small '.($child->getStatus()->isOpen() ? "" : "active").'" data-id="'.$child->getId().'">'.($child->getStatus()->isOpen() ? "A faire" : "Fait").'</a></td>';
-                        echo "</tr>";
-                    }
-                }
-                echo "</tbody></table>";
-            } else {
-                echo "<p>Erreur : Impossible de trouver la ficher correspondante.</p>";
-            }
-            ?>
-        </div>
-    </div>
-</div>
-
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Historique</div>
-    </div>
-    <div class="block-content collapse in">
-        <div class="span12">
-            <?php echo $this->partial('events/gethistory.phtml'); ?>
-        </div>
-    </div>
-</div>
+<?php echo $this->partial('events/getfiche.phtml', array('event' => $this->fiche, 'history' => $this->history)); ?>
 
 
 
