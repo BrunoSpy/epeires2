@@ -39,7 +39,10 @@ class Version20140409212742 extends AbstractMigration
         $this->connection->insert('customfields', array('type_id' => $textid, 'name' => 'Commentaire', 'place' => 2));
         $commentid = $this->connection->lastInsertId();
         
-        $this->connection->insert('categories', array('fieldname_id' => $nameid, 'shortname' => 'Alarme', 'color' => '#000000',
+        $stmt = $this->connection->executeQuery("SELECT MAX(`place`) as place FROM `categories` WHERE `parent_id` is null");
+        $place = $stmt->fetch()['place'] + 1;
+        
+        $this->connection->insert('categories', array('fieldname_id' => $nameid, 'shortname' => 'Alarme', 'color' => '#000000', 'place' => $place,
                                                         'compactmode' => 0, 'timeline' => 0, 'name' => 'Alarme', 'discr' => 'alarm'));
         $catid = $this->connection->lastInsertId();
         
