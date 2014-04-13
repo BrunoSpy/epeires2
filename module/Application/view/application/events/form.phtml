@@ -1,9 +1,4 @@
 <?php use Application\Entity\FrequencyCategory;
-if($this->error){
-		echo "<div class=\"alert alert-error\">";
-		echo $this->error."</div>";
-		return false;
-	}
 
 	if($this->event && !$this->copy){
 		//form de modif
@@ -66,11 +61,10 @@ if($this->error){
 		$html = $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
-		$html .= $this->controlGroup("", $this->formHidden($this->form->get('startdate')));
 		
 		$html .= $this->controlGroup(
 				$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-				$this->formDateTimeEnhanced("start"), array('class'=>'compact'));
+				$this->formDateTimeEnhanced("start") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
 		
 		$formEndDate = $this->form->get('enddate');
 		if($this->event){
@@ -83,11 +77,10 @@ if($this->error){
 				$formEndDate->setAttribute('disabled', true);
 			}
 		}
-		$html .= $this->controlGroup("",$this->formHidden($formEndDate));
 		
 		$html .= $this->controlGroup(
 				$this->formLabel($this->form->get('enddate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-				$this->formDateTimeEnhanced("end"), array('class'=>'compact'));
+				$this->formDateTimeEnhanced("end") . $this->formHidden($formEndDate), array('class'=>'compact'));
 		
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
@@ -110,6 +103,30 @@ if($this->error){
 		$html .= "</div>";
 		
 		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
+		
+		$titleclass="";	
+		$html = "";	
+		
+		$mod = !$this->event || ($this->event && ($this->isGranted('events.modify') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
+
+		$html .= '<table class="table table-hover" id="alarm-table">';
+		if($this->event){
+			foreach($this->event->getChildren() as $child) {
+				if($child->getCategory() instanceof AlarmCategory){
+					$html .= '<tr data-id="'.$child->getId().'">';
+					$html .= '<tr></tr>';
+					$html .= '<td>'.$this->eventname($child).'</td>';
+					$html .= "</tr>";
+				}
+			}
+		}
+		$html .= '</table>';
+		if($mod){
+			$html .= "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
+		}
+		
+		echo $this->accordionGroup("Alarmes", $html, array('data-parent'=>'form'));
+		
 		$titleclass="";	
 		$html = "";	
 		$countfiles = 0;
@@ -223,7 +240,7 @@ if($this->error){
 		<div class="controls">
 			<?php	
 			if($this->event || $this->model){
-				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', (($this->copy || $this->model) ? "Ajouter" : "Modifier")));
+				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', (($this->copy || $this->model) ? "Ajouter" : "Enregistrer")));
 			} else {
 				echo $this->formSubmit($this->form->get('submit')->setAttribute('disabled', 'disabled'));
 			}?>
