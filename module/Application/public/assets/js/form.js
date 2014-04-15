@@ -162,9 +162,9 @@ var form = function(url){
 			var endsplit = datefin.val().split(' ');
 			var enddaysplit = endsplit[0].split('-');
 			var hoursplit = endsplit[1].split(':');
-			var deb = new Date(daysplit[0], daysplit[1]-1, daysplit[2], hourstartsplit[0], hourstartsplit[1]);
-			var end = new Date(enddaysplit[0], enddaysplit[1]-1, enddaysplit[2], hoursplit[0], hoursplit[1]);
-			if(deb > end){
+			var deb = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourstartsplit[0], hourstartsplit[1]);
+			var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
+                        if(deb > end){
 				datefin.val(dateDeb.val());
 				datefin.trigger('change');
 				updateHours();
@@ -183,8 +183,8 @@ var form = function(url){
 		var startsplit = dateDeb.val().split(' ');
 		var startdaysplit = startsplit[0].split('-');
 		var hoursplit = startsplit[1].split(':');
-		var end = new Date(daysplit[0], daysplit[1]-1, daysplit[2], hourendsplit[0], hourendsplit[1]);
-		var deb = new Date(startdaysplit[0], startdaysplit[1]-1, startdaysplit[2], hoursplit[0], hoursplit[1]);
+		var end = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourendsplit[0], hourendsplit[1]);
+		var deb = new Date(startdaysplit[2], startdaysplit[1]-1, startdaysplit[0], hoursplit[0], hoursplit[1]);
 		if(deb > end){
 			dateDeb.val(dateFin.val());
 			updateHours();
