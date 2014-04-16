@@ -1,4 +1,4 @@
-<?php use Application\Entity\FrequencyCategory;
+<?php
 if($this->error){
 		echo "<div class=\"alert alert-error\">";
 		echo $this->error."</div>";
@@ -186,7 +186,7 @@ if($this->error){
 				$html .= '<table class="table table-hover" >';
 				$html .= '<tbody>';
                                 foreach ($children as $child){
-                                    if($child->getCategory() instanceof ActionCategory){
+                                    if($child->getCategory() instanceof Application\Entity\ActionCategory){
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
