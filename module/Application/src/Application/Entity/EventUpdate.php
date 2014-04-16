@@ -37,7 +37,11 @@ class EventUpdate {
 	/** @ORM\Column(type="datetime") */
 	protected $created_on;
 	
-	/** @ORM\PrePersist */
+        public function getId(){
+            return $this->id;
+        }
+
+                /** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
 		$this->created_on->setTimeZone(new \DateTimeZone("UTC"));

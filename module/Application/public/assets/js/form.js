@@ -556,11 +556,12 @@ var form = function(url){
 	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin
 	$('#event').on('change', 'select[name=status]', function(){
 		var select = $(this);
-		if(select.val() == '3' && !$("#punctual").is(':checked') && $('#dateFin').val() == ''){
-			$("input[type=submit]").tooltip({
+		if(select.val() == '3' && !$("#punctual").is(':checked') && $('.timepicker-form#end ~ input[type=hidden]').val() == ''){
+			$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
+                        $("#event #hack-tooltip").tooltip({
 				container :'body',
 				title: 'Date de fin manquante'
-			}).addClass('disabled').attr('disabled', 'disabled');
+			});
 		} else {
 			$("input[type=submit]").tooltip('destroy').removeClass('disabled').removeAttr('disabled');
 		}

@@ -718,9 +718,11 @@ class EventsController extends ZoneController {
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
+            if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
     		$json[$action->getId()] = array('name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
+            }
     	}
     	
     	return new JsonModel($json);
@@ -1182,6 +1184,31 @@ class EventsController extends ZoneController {
             $messages['error'][] = "Impossible d'ajouter la note.";
         }
         
+        return new JsonModel($messages);
+    }
+    
+    public function savenoteAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $messages = array();
+        
+        if($id && $this->getRequest()->isPost()){
+            $note = $em->getRepository('Application\Entity\EventUpdate')->find($id);
+            $post = $this->getRequest()->getPost();
+            if($note){
+                $note->setText($post['note']);
+                $em->persist($note);
+                try{
+                    $em->flush();
+                    $messages['success'][] = "Note correctement mise à jour.";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de mettre à jour la note.";
+            }
+        }
         return new JsonModel($messages);
     }
     

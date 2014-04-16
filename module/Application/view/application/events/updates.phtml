@@ -6,7 +6,7 @@ if($this->updates){
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            \IntlTimeZone::getGMT(),
+            \DateTimeZone::UTC,
             \IntlDateFormatter::GREGORIAN,
             'dd LLL, HH:mm');
 	if (count($this->updates) > 0) {
@@ -14,7 +14,7 @@ if($this->updates){
             foreach ($this->updates as $update) {
                 echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC</dt>';
                 echo '<dd>';
-                    echo nl2br($update->getText());
+                    echo '<span class="note" data-id="'.$update->getId().'">'.nl2br($update->getText()).'</span>';
                 echo '</dd>';
         }
         echo '</dl>';
