@@ -221,12 +221,15 @@ if($this->error){
 	
 	<div class="control-group">
 		<div class="controls">
+                    <div style="display:inline-block; position:relative;">
 			<?php	
 			if($this->event || $this->model){
 				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', (($this->copy || $this->model) ? "Ajouter" : "Modifier")));
 			} else {
 				echo $this->formSubmit($this->form->get('submit')->setAttribute('disabled', 'disabled'));
 			}?>
+                        <div id="hack-tooltip" style="position:absolute; left:0; right: 0; top: 0; bottom: 0;"></div>
+                    </div>
 			<a class="btn" id="cancel-form">Annuler</a>
 		</div>
 	</div>	
