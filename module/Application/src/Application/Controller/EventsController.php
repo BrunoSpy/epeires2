@@ -1187,6 +1187,31 @@ class EventsController extends ZoneController {
         return new JsonModel($messages);
     }
     
+    public function savenoteAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $messages = array();
+        
+        if($id && $this->getRequest()->isPost()){
+            $note = $em->getRepository('Application\Entity\EventUpdate')->find($id);
+            $post = $this->getRequest()->getPost();
+            if($note){
+                $note->setText($post['note']);
+                $em->persist($note);
+                try{
+                    $em->flush();
+                    $messages['success'][] = "Note correctement mise à jour.";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de mettre à jour la note.";
+            }
+        }
+        return new JsonModel($messages);
+    }
+    
     public function updatesAction(){
         $id = $this->params()->fromQuery('id', null);
 
