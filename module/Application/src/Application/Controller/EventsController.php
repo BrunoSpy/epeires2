@@ -718,9 +718,11 @@ class EventsController extends ZoneController {
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
+            if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
     		$json[$action->getId()] = array('name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
+            }
     	}
     	
     	return new JsonModel($json);
