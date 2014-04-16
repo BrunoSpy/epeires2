@@ -6,7 +6,7 @@ if($this->updates){
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            \IntlTimeZone::getGMT(),
+            \DateTimeZone::UTC,
             \IntlDateFormatter::GREGORIAN,
             'dd LLL, HH:mm');
 	if (count($this->updates) > 0) {

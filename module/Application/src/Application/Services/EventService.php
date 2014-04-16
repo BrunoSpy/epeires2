@@ -104,7 +104,7 @@ class EventService implements ServiceManagerAwareInterface{
                             \Locale::getDefault(),
                             \IntlDateFormatter::FULL,
                             \IntlDateFormatter::FULL,
-                            \IntlTimeZone::getGMT(),
+                            \DateTimeZone::UTC,
                             \IntlDateFormatter::GREGORIAN,
                             'dd LLL, HH:mm');
 
