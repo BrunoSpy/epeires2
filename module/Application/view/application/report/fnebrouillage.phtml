@@ -4,34 +4,48 @@
             .text-center {
                 text-align: center;
             }
-  
+
             .push-left {
                 float: left;
             }
-            
+
             #header {
                 width: 21cm;
             }
-            
+
             #logo, #head-title {
                 display: inline;
             }
-            
+
             #title {
                 font-size: larger;
             }
-            
+
             .table th, .table td {
                 border: 1px solid;
             }
-            
+
             table {
                 width: 100%;
             }
-            
+
             #header table tr td:first-child {
                 width: 5%;
             }
+
+            #strip {
+                height: 3.1cm;
+                border: 1px solid black;
+                font-size: 32pt;
+                text-align: center;
+                font-weight: bolder;
+                font-family: sans-serif;
+            }
+
+            #strip p {
+                color: #CCC;
+            }
+
         </style>
     </head>
 
@@ -45,7 +59,7 @@
             </table>
         </div>
         <div id="title" class="text-center">
-            FNE Brouillage
+            <h1>FNE Brouillage</h1>
         </div>
         <div id="renseignements">
             <table class="table">
@@ -62,7 +76,7 @@
                 <tbody>
                     <tr>
                         <td></td>
-                        <td></td>
+                        <td>ghh</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -70,13 +84,107 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-        
-        <div id="strip">
-            
+            <br />
         </div>
 
-        
-        
+        <div id="strip">
+            <p>STRIP</p>
+        </div>
+
+        <div id="aircraft">
+            <h2>Description</h2>
+            <table class='twocol'>
+                <tr>
+                    <td><h3>Position de l'avion</h3></td>
+                    <td>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Niveau</th>
+                                    <th>Balise</th>
+                                    <th>Distance</th>
+                                    <th>Azimut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>ff</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><h3>Plaignant</h3></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Sol : <input type='checkbox'></input></td>
+                                <td>Bord : <input type='checkbox'></input></td>
+                                <td>Sol + Bord : <input type='checkbox'></input></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><h3>Type de bruit</h3></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Brouillage : <input type='checkbox'></input></td>
+                                <td>(tout phénomène qui n'est pas de caractère aéronautique)</td>
+                            </tr>
+                            <tr>
+                                <td>Interférence : <input type='checkbox'></input></td>
+                                <td>(tout ce qui parait être du domaine aéronautique)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+
+        <div id="recherche">
+            <h2>Recherche de bruit</h2>
+            <table class='twocol'>
+                <tr>
+                    <td><h3>Brouillage</h3></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Radio FM : <input type='checkbox'></input></td>
+                                <td>Bruit industriel : <input type='checkbox'></input></td>
+                                <td>Autre : <input type='checkbox'></input></td>
+                                <td>Rien : <input type='checkbox'></input></td>
+                            </tr>
+                            <tr>
+                                Commentaire :
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr><td><br/></td></tr>
+                <tr>
+                    <td><h3>Interférence</h3></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Porteuse : <input type='checkbox'></input></td>
+                                <td>Emission permanente : <input type='checkbox'></input></td>
+                                <td>Autre fréquence* : <input type='checkbox'></input></td>
+                            </tr>
+                            <tr>
+                                *contenu du message :
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </body>
 </html>

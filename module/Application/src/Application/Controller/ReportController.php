@@ -25,7 +25,7 @@ class ReportController extends AbstractActionController {
 
         if ($view == 'pdf') {
             $pdf = new PdfModel();
-            $pdf->setOption('filename', 'fne-brouillage');
+         //   $pdf->setOption('filename', 'fne-brouillage');
             $pdf->setOption('parperSize', 'a4');
 
             return $pdf;
