@@ -108,6 +108,14 @@
 						<a class=\"btn\" href=\"#\" id=\"cancel-antenna\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
 ?>
 
+<?php
+echo $this->modalwindow("fne-brouillage",
+			"<h3>Fiche brouillage fréquence <em><span id=\"frequency_name\"></span></em></h3>",
+			"",
+			"<div id=\"form-brouillage\"></div>");
+			
+?>
+
 <?php $this->inlineScript()->captureStart();?>
 
 $("#home").removeClass("dropdown-toggle")

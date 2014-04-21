@@ -11,11 +11,17 @@ namespace Application\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Session\Container;
+use Zend\Form\Annotation\AnnotationBuilder;
+
+use Doctrine\Common\Collections\Criteria;
+
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
-use Doctrine\Common\Collections\Criteria;
+use Application\Form\CustomFieldset;
 
 class FrequenciesController extends ZoneController {
 
@@ -759,6 +765,139 @@ class FrequenciesController extends ZoneController {
     	$viewmodel->setVariable('fiche', $fiche);
     	
     	return $viewmodel;
+    }
+    
+    public function formbrouillageAction(){
+	$freqId = $this->params()->fromQuery('id', null);
+    
+	$viewmodel = new ViewModel();
+    	$request = $this->getRequest();
+    	 
+    	//disable layout if request by Ajax
+    	$viewmodel->setTerminal($request->isXmlHttpRequest());
+    	
+    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+    	$brouillagecat = $objectManager->getRepository('Application\Entity\BrouillageCategory')->findOneBy(array('defaultbrouillagecategory' => true));
+    	if($brouillagecat) {
+		$form = $this->getFormBrouillage($freqId)['form'];
+		$viewmodel->setVariable('freqid', $freqId);
+		$viewmodel->setVariable('form', $form);
+    	} else {
+		$viewmodel->setVariable('error', 'Aucune catégorie Brouillage configurée : contactez l\'administrateur');
+    	}
+    	
+    	return $viewmodel;
+	
+    }
+    
+    public function savebrouillageAction(){
+	$messages = array();
+	$event = null;
+	$return = $this->params()->fromQuery('return', null);
+	
+	$freqId = $this->params()->fromQuery('freqid', null);
+
+	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	
+    	if($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.create')){
+		if($this->getRequest()->isPost()){
+			$post = $this->getRequest()->getPost();
+			$datas = $this->getFormBrouillage($freqId);
+			$form = $datas['form'];
+			$event = $datas['event'];
+    			$form->setPreferFormInputFilter(true);
+    			$form->setData($post);
+    			if($form->isValid()){
+				//getAuthor
+				$event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+				$event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+				
+				if(isset($post['startdate']) && !empty($post['startdate'])){
+    					$offset = date("Z");
+    					$startdate = new \DateTime($post['startdate']);
+    					$startdate->setTimezone(new \DateTimeZone("UTC"));
+    					$startdate->add(new \DateInterval("PT".$offset."S"));
+    					$event->setStartdate($startdate);
+    				}
+				if(isset($post['custom_fields'])){
+    					foreach ($post['custom_fields'] as $key => $value){
+    						//génération des customvalues si un customfield dont le nom est $key est trouvé
+    						$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
+    						if($customfield){
+    							//$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+    							//->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
+    							//if(!$customvalue){
+    								$customvalue = new CustomFieldValue();
+    								$customvalue->setEvent($event);
+    								$customvalue->setCustomField($customfield);
+    								$event->addCustomFieldValue($customvalue);
+    							//}
+    							$customvalue->setValue($value);
+    							$objectManager->persist($customvalue);
+    						}
+    					}
+    				}
+    				$objectManager->persist($event);
+    				try {
+					$objectManager->flush();
+					$messages['success'][] = "Brouillage enregistré";
+    				} catch(\Exception $e) {
+					$messages['error'][] = $e->getMessage();
+    				}
+    			} else {
+				$this->processFormMessages($form->getMessages(), $messages);
+    			}
+		}
+	} else {
+		$messages['error'][] = "Connexion obligatoire pour créer un évènement";
+	}
+	return new JsonModel($messages);
+    }
+    
+    private function getFormBrouillage($idfreq, $event = null){
+	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	if(!$event) {
+		$event = new Event();
+		$event->setCategory($em->getRepository('Application\Entity\BrouillageCategory')->findOneBy(array('defaultbrouillagecategory'=>true)));
+	}
+	
+	$builder = new AnnotationBuilder();
+    	$form = $builder->createForm($event);
+    	$form->setHydrator(new DoctrineObject($em))
+    		->setObject($event);   
+    		
+    	$form->bind($event);
+    	$form->setData($event->getArrayCopy());
+    	
+	$form->get('impact')
+		->setValueOptions($em->getRepository('Application\Entity\Impact')->getAllAsArray());
+    	
+    	if($this->zfcUserAuthentication()->hasIdentity()){
+    		$org = $this->zfcUserAuthentication()->getIdentity()->getOrganisation();
+    		$form->get('organisation')->setValue($org->getId());
+    	}
+    	
+    	$form->get('startdate')->setAttribute('required', true);
+    	
+    	$form->get('status')->setValue(3);
+    	$form->get('punctual')->setValue(true);
+    	
+    	$form->add(new CustomFieldset($this->getServiceLocator(), $event->getCategory()->getId()));
+    	
+    	$form->get('custom_fields')->get($event->getCategory()->getFrequencyField()->getId())->setValue($idfreq);
+    	
+    	
+	$form->add(array(
+    		'name' => 'submit',
+    		'attributes' => array(
+    			'type' => 'submit',
+    			'value' => 'Enregistrer',
+    			'class' => 'btn btn-primary',
+    		),
+    	));
+    	
+    	return array('form' => $form, 'event' => $event);
     }
     
 }

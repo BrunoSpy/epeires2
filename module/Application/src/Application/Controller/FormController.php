@@ -17,7 +17,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 abstract class FormController extends AbstractActionController {
 
 	protected function processFormMessages($messages, &$json = null){
-		if($json && !isset($json['error'])){
+		if(is_array($json) && !isset($json['error'])){
 			$json['error'] = array();
 		}
 		foreach($messages as $key => $message){
@@ -25,8 +25,7 @@ abstract class FormController extends AbstractActionController {
 				if(is_array($mvalue)){
 					foreach ($mvalue as $nkey => $nvalue){//les fieldsets sont un niveau en dessous
 						if($json){
-							$n = isset($json['error']) ? count($json['error']) : 0;
-							$json['error'][$n] = "Champ ".addslashes($mkey)." incorrect : ".addslashes($nvalue);
+							$json['error'][] = "Champ ".addslashes($mkey)." incorrect : ".addslashes($nvalue);
 						} else {
 							$this->flashMessenger()->addErrorMessage(
 									"Champ ".addslashes($mkey)." incorrect : ".addslashes($nvalue));
@@ -34,8 +33,7 @@ abstract class FormController extends AbstractActionController {
 					}
 				} else {
 					if($json){
-						$n = isset($json['error']) ? count($json['error']) : 0;
-						$json['error'][$n] = "Champ ".addslashes($key)." incorrect : ".addslashes($mvalue);
+						$json['error'][] = "Champ ".addslashes($key)." incorrect : ".addslashes($mvalue);
 					} else {
 						$this->flashMessenger()->addErrorMessage(
 								"Champ ".addslashes($key)." incorrect : ".addslashes($mvalue));

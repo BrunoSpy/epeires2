@@ -8,6 +8,7 @@ use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\BrouillageCategory;
 
 class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		
@@ -86,7 +87,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		return $actioncat;
 	}
         
-        public function createActionCategory(){
+        public function createAlarmCategory(){
 		$em = $this->getEntityManager();
 		$alarmcat = new AlarmCategory();
 		$namefield = new CustomField();
@@ -179,5 +180,117 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
                 $frequencycat->setDefaultFrequencyCategory((count($cats) == 0));
                 
 		return $frequencycat;
+	}
+	
+	public function createBrouillageCategory(){
+		$em = $this->getEntityManager();
+		$brouillagecat = new BrouillageCategory();
+		$frequencyfield = new CustomField();
+		$frequencyfield->setCategory($brouillagecat);
+		$frequencyfield->setName('Fréquence');
+		$frequencyfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'frequency')));
+		$frequencyfield->setPlace(1);
+		$frequencyfield->setDefaultValue("");
+		
+		$levelfield = new CustomField();
+		$levelfield->setCategory($brouillagecat);
+		$levelfield->setName('Niveau');
+		$levelfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$levelfield->setPlace(2);
+		$levelfield->setDefaultValue("");
+			
+		$rnavfield = new CustomField();
+		$rnavfield->setCategory($brouillagecat);
+		$rnavfield->setName('Balise');
+		$rnavfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$rnavfield->setPlace(3);
+		$rnavfield->setDefaultValue("");
+	
+		$distancefield = new CustomField();
+		$distancefield->setCategory($brouillagecat);
+		$distancefield->setName('Distance');
+		$distancefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$distancefield->setPlace(4);
+		$distancefield->setDefaultValue("");
+	
+		$azimutfield = new CustomField();
+		$azimutfield->setCategory($brouillagecat);
+		$azimutfield->setName('Azimut');
+		$azimutfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$azimutfield->setPlace(5);
+		$azimutfield->setDefaultValue("");
+		
+		$originfield = new CustomField();
+		$originfield->setCategory($brouillagecat);
+		$originfield->setName('Plaignant');
+		$originfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
+		$originfield->setPlace(6);
+		$originfield->setDefaultValue("Sol\nBord\nSol+Bord");
+		
+		$typefield = new CustomField();
+		$typefield->setCategory($brouillagecat);
+		$typefield->setName('Type de bruit');
+		$typefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
+		$typefield->setPlace(7);
+		$typefield->setDefaultValue("Brouillage\nInterférence");
+		
+		$causebrouillagefield = new CustomField();
+		$causebrouillagefield->setCategory($brouillagecat);
+		$causebrouillagefield->setName('Cause du brouillage');
+		$causebrouillagefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
+		$causebrouillagefield->setPlace(8);
+		$causebrouillagefield->setDefaultValue("Radio FM\nBruit industriel\nAutre\nRien");
+			
+		$causeinterferencefield = new CustomField();
+		$causeinterferencefield->setCategory($brouillagecat);
+		$causeinterferencefield->setName('Cause interférence');
+		$causeinterferencefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
+		$causeinterferencefield->setPlace(10);
+		$causeinterferencefield->setDefaultValue("Porteuse\nÉmission permanente\nAutre fréquence");
+				
+		$commentairebrouillagefield = new CustomField();
+		$commentairebrouillagefield->setCategory($brouillagecat);
+		$commentairebrouillagefield->setName('Cause du brouillage (commentaire)');
+		$commentairebrouillagefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
+		$commentairebrouillagefield->setPlace(9);
+		$commentairebrouillagefield->setDefaultValue("");
+			
+		$commentaireinterferencefield = new CustomField();
+		$commentaireinterferencefield->setCategory($brouillagecat);
+		$commentaireinterferencefield->setName('Cause interférence (commentaire)');
+		$commentaireinterferencefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
+		$commentaireinterferencefield->setPlace(11);
+		$commentaireinterferencefield->setDefaultValue("");
+				
+		$brouillagecat->setFieldname($frequencyfield);
+		$brouillagecat->setFrequencyfield($frequencyfield);
+		$brouillagecat->setLevelField($levelfield);
+		$brouillagecat->setRnavField($rnavfield);
+		$brouillagecat->setDistanceField($distancefield);
+		$brouillagecat->setAzimutField($azimutfield);
+		$brouillagecat->setOriginField($originfield);
+		$brouillagecat->setTypeField($typefield);
+		$brouillagecat->setCauseBrouillageField($causebrouillagefield);
+		$brouillagecat->setCauseInterferenceField($causeinterferencefield);
+		$brouillagecat->setCommentaireBrouillageField($commentairebrouillagefield);
+		$brouillagecat->setCommentaireInterferenceField($commentaireinterferencefield);
+		
+		$em->persist($frequencyfield);
+		$em->persist($levelfield);
+		$em->persist($rnavfield);
+		$em->persist($distancefield);
+		$em->persist($azimutfield);
+		$em->persist($originfield);
+		$em->persist($typefield);
+		$em->persist($causebrouillagefield);
+		$em->persist($causeinterferencefield);
+		$em->persist($commentairebrouillagefield);
+		$em->persist($commentaireinterferencefield);
+                
+                //si aucune cat par défaut --> nouvelle catégorie par défaut
+                $cats = $em->getRepository('Application\Entity\BrouillageCategory')->findBy(array('defaultbrouillagecategory' => true));
+                $brouillagecat->setDefaultBrouillageCategory((count($cats) == 0));
+                
+		return $brouillagecat;
 	}
 }

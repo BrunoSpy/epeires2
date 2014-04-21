@@ -217,5 +217,11 @@ var categories = function(url){
             $.post(url+'/categories/changedefaultantenna?id='+$(this).val(), function(data){
                     displayMessages(data);
                 });
-        });      
+        });  
+	
+        $("#brouillage-select").on('change', function(){
+            $.post(url+'/categories/changedefaultbrouillage?id='+$(this).val(), function(data){
+                    displayMessages(data);
+                });
+        });
 }

@@ -19,6 +19,7 @@ use Zend\Form\Element\Select;
 use Application\Entity\RadarCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\BrouillageCategory;
 
 class CategoriesController extends FormController{
     
@@ -109,6 +110,8 @@ class CategoriesController extends FormController{
     				$form->get('type')->setValue('antenna');
     			} else if($category instanceof FrequencyCategory){
     				$form->get('type')->setValue('frequency');
+    			} else if($category instanceof BrouillageCategory){
+				$form->get('type')->setValue('brouillage');
     			}
     			
     			$form->get('type')->setAttribute('disabled', true);
@@ -157,6 +160,8 @@ class CategoriesController extends FormController{
 					$category = $this->getServiceLocator()->get('categoryfactory')->createAntennaCategory();
 				} else if($post['type'] == 'frequency') {
 					$category = $this->getServiceLocator()->get('categoryfactory')->createFrequencyCategory();
+				} else if($post['type'] == 'brouillage') {
+					$category = $this->getServiceLocator()->get('categoryfactory')->createBrouillageCategory();
 				} else {
 					$category = new Category();
 					$fieldname = new CustomField();
@@ -224,6 +229,19 @@ class CategoriesController extends FormController{
     			$category->setStatefield(null);
     			$category->setFrequencyfield(null);
     			$category->setOtherFrequencyfield(null);
+    		}
+    		if($category instanceof BrouillageCategory){
+			$category->setFrequencyField(null);
+			$category->setLevelField(null);
+			$category->setRnavField(null);
+			$category->setDistanceField(null);
+			$category->setAzimutField(null);
+			$category->setOriginField(null);
+			$category->setTypeField(null);
+			$category->setCauseBrouillageField(null);
+			$category->setCauseInterferenceField(null);
+			$category->setCommentaireBrouillageField(null);
+			$category->setCommentaireInterferenceField(null);
     		}
     		$objectManager->persist($category);
     		$objectManager->flush();
@@ -304,10 +322,13 @@ class CategoriesController extends FormController{
         $radarcategories = $objectManager->getRepository('Application\Entity\RadarCategory')->findAll();
 
         $antennacategories = $objectManager->getRepository('Application\Entity\AntennaCategory')->findAll();
+        
+        $brouillagecategories = $objectManager->getRepository('Application\Entity\BrouillageCategory')->findAll();
   
         return array('freqcategories' => $freqcategories, 
                     'radarcategories' => $radarcategories, 
-                    'antennacategories' => $antennacategories);
+                    'antennacategories' => $antennacategories,
+                    'brouillagecategories' => $brouillagecategories);
     }
     
     public function changedefaultfrequencyAction(){
@@ -368,6 +389,28 @@ class CategoriesController extends FormController{
                 try{
                     $objectManager->flush();
                     $messages['success'][] = "Catégorie antenne par défaut modifiée";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+    
+    public function changedefaultbrouillageAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $messages = array();
+        if($id){
+            $brouillage = $objectManager->getRepository('Application\Entity\BrouillageCategory')->find($id);
+            if($brouillage){
+                foreach ($objectManager->getRepository('Application\Entity\BrouillageCategory')->findAll() as $brouillagecat){
+                    $brouillagecat->setDefaultBrouillageCategory(($brouillagecat->getId() == $brouillage->getId()));
+                    $objectManager->persist($brouillagecat);
+                }
+                try{
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie brouillage par défaut modifiée";
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }

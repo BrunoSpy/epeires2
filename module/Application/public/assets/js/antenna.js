@@ -216,6 +216,18 @@ var antenna = function(url){
 		}, 'json');
 	});
 	
+	$(document).on('click', '.brouillage', function(e){
+		$("#frequency_name").html($(this).data('freqname'));
+		$('#form-brouillage').load(url+'frequencies/formbrouillage?id='+$(this).data('freqid'));
+	});
+	
+	$('#form-brouillage').on('submit', function(e){
+		e.preventDefault();
+		$.post($("#form-brouillage form").attr('action'), $("#form-brouillage form").serialize(), function(data){
+			displayMessages(data);
+		});
+	});
+	
 	//actions
 	var updateActions = function(){
 		$("a.actions-freq").each(function(index, element){
@@ -229,9 +241,10 @@ var antenna = function(url){
 			if (backupantennacolor.filter('.background-selected').length == backupantennacolor.length && mainantennacolor.filter('.background-status-ok').length == mainantennacolor.length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
-			var submenu = $("<li class=\"submenu\">");
+			var submenu = $("<li class=\"submenu\"></li>");
 			submenu.append("<a id=\"changefreq\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
 			list.append(submenu);
+			list.append("<li><a class=\"brouillage\" data-toggle=\"modal\" data-freqname=\""+$(this).html()+"\" data-freqid=\""+sector.data('freq')+"\" href=\"#fne-brouillage\">Brouillage</a></li>");
 			list.append("<li class=\"divider\"></li>");
 			//antennes
 			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color:not(.antenna-climax-color)');

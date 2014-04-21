@@ -29,6 +29,21 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>Brouillage fréquence</td>
+                        <td>
+                            <select id="brouillage-select">
+                                <option value="0">Choisir la catégorie brouillage fréquence par défaut</option>
+                                <?php
+                                foreach ($this->brouillagecategories as $brouillage) {
+                                    echo "<option value=\"" . $brouillage->getId() . "\" " .
+                                    ($brouillage->isDefaultBrouillageCategory() ? "selected=\"selected\"" : "") .
+                                    ">" . $brouillage->getName() . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>Antenne</td>
                         <td>
                             <select id="antenna-select">
