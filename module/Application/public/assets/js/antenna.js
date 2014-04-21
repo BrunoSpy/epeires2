@@ -224,6 +224,10 @@ var antenna = function(url){
 	$('#form-brouillage').on('submit', function(e){
 		e.preventDefault();
 		$.post($("#form-brouillage form").attr('action'), $("#form-brouillage form").serialize(), function(data){
+			if(!data['error']){
+				$("#fne-brouillage").hide();
+				
+			}
 			displayMessages(data);
 		});
 	});

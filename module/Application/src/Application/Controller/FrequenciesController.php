@@ -897,6 +897,15 @@ class FrequenciesController extends ZoneController {
     		),
     	));
     	
+    	$form->add(array(
+    		'name' => 'submitfne',
+    		'attributes' => array(
+    			'type' => 'submit',
+    			'value' => 'Enregistrer + FNE',
+    			'class' => 'btn btn-primary',
+    		),
+    	));
+    	
     	return array('form' => $form, 'event' => $event);
     }
     
