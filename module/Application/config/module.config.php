@@ -58,6 +58,7 @@ return array(
             'Application\Controller\Radars' => 'Application\Controller\RadarsController',
             'Application\Controller\Report' => 'Application\Controller\ReportController',
             'Application\Controller\File' => 'Application\Controller\FileController',
+            'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
     	),
     ),
     'view_helpers' => array(

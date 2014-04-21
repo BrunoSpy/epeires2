@@ -33,17 +33,17 @@ class Event extends AbstractEvent{
    	 * @Annotation\Type("Zend\Form\Element\DateTime")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Début :", "format" : "d-m-Y H:i"})
-	 * @Annotation\Attributes({"class":"datetime", "id":"dateDeb"})
+	 * @Annotation\Attributes({"class":"datetime"})
  	 * @Gedmo\Versioned
  	 */
   	protected $startdate;
 	
  	/** 
  	 * @ORM\Column(type="datetime", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\DateTime")
+	 * @Annotation\Type("Zend\Form\Element\DateTime")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Fin :", "format" : "d-m-Y H:i"})
-	 * @Annotation\Attributes({"class":"datetime", "id":"dateFin"})
+	 * @Annotation\Attributes({"class":"datetime"})
  	 * @Gedmo\Versioned
  	 */
  	protected $enddate = null;

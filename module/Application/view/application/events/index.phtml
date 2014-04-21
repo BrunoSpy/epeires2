@@ -28,6 +28,12 @@ echo $this->modalwindow(
     "",
     "<div id=\"file-upload-form\"></div>"
     );
+
+echo $this->modalwindow("add-alarm",
+	"<h3>Ajout d'une alarme</h3>",
+	"",
+	"<div id=\"alarm-form\"></div>");
+    
 ?>
 
 <?php $this->inlineScript()->captureStart();?>

@@ -97,90 +97,105 @@ var form = function(url){
 		}
 	};
 	
-	$('#event').on('change', '.timepicker-form#start input', function(){
+	$(document).on('change', '.timepicker-form input', function(){
+		//mise à jour du champ caché
+		// 1 : remplissage des autres champs si besoin
 		var me = $(this).closest('.timepicker-form');
 		fillInputs(me);
-		$("#dateDeb").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
-		//check if start_date > end_date, if end_date is set
-		if($("#dateFin").val()){
-			var daysplit = me.find('.day input').val().split('-');
-			var endsplit = $("#dateFin").val().split(' ');
-			var enddaysplit = endsplit[0].split('-');
-			var hoursplit = endsplit[1].split(':');
-			var deb = new Date(daysplit[0], daysplit[1]-1, daysplit[2], me.find('.hour input').val(),me.find('.minute input').val());
-			var end = new Date(enddaysplit[0], enddaysplit[1]-1, enddaysplit[2], hoursplit[0], hoursplit[1]);
-			if(deb > end){
-				$("#dateFin").val($("#dateDeb").val());
-				$("#dateFin").trigger('change');
-				updateHours();
-			}
-		}
-		updateHourTitle();
+		//2: mise à jour du champ caché en fonction
+		var hidden = me.siblings('input[type=hidden]');
+		hidden.val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
+		//3: on prévient les autres qu'il y a eu un changement
+		hidden.trigger('change');
 	});
 	
-	$('#event').on('change', '.timepicker-form#end input', function(){
-		var me = $(this).closest('.timepicker-form');
-		fillInputs(me);
-		$("#dateFin").val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
-		$("#dateFin").trigger('change');
-		//check if end_date < start_date	
-		var daysplit = me.find('.day input').val().split('-');
-		var startsplit = $("#dateDeb").val().split(' ');
-		var startdaysplit = startsplit[0].split('-');
-		var hoursplit = startsplit[1].split(':');
-		var end = new Date(daysplit[0], daysplit[1]-1, daysplit[2], me.find('.hour input').val(),me.find('.minute input').val());
-		var deb = new Date(startdaysplit[0], startdaysplit[1]-1, startdaysplit[2], hoursplit[0], hoursplit[1]);
-		if(deb > end){
-			$("#dateDeb").val($("#dateFin").val());
-			updateHours();
-		}
-		updateHourTitle();
-	});
-	
-	$('#event').on('click', '.timepicker-form .hour .next', function(event){
+	$(document).on('click', '.timepicker-form .hour .next', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(hourplusone(input, 1));
 		input.trigger('change');
 	});
 	
-	$('#event').on('click', '.timepicker-form .minute .next', function(event){
+	$(document).on('click', '.timepicker-form .minute .next', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(minuteplusone(input, 1));
 		input.trigger('change');
 	});
 	
-	$('#event').on('click', '.timepicker-form .hour .previous', function(event){
+	$(document).on('click', '.timepicker-form .hour .previous', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(hourplusone(input, -1));
 		input.trigger('change');
 	});
 	
-	$('#event').on('click', '.timepicker-form .minute .previous', function(event){
+	$(document).on('click', '.timepicker-form .minute .previous', function(event){
 		event.preventDefault();
 		var input = $(this).closest('td').find('input');
 		input.val(minuteplusone(input, -1));
 		input.trigger('change');
 	});
 	
-	$('#event').on('mousewheel', 'td.hour input', function(event, delta){
+	$(document).on('mousewheel', 'td.hour input', function(event, delta){
 		event.preventDefault();
 		$(this).val(hourplusone($(this), delta));
 		$(this).trigger('change');
 	});
 	
-	$('#event').on('mousewheel', 'td.minute input', function(event, delta){
+	$(document).on('mousewheel', 'td.minute input', function(event, delta){
 		event.preventDefault();
-		$(this).val(minuteplusone($(this), delta));;
+		$(this).val(minuteplusone($(this), delta));
 		$(this).trigger('change');
+	});
+	
+	//specific functions to maintain coherence between end and start inputs
+	
+	$('#event').on('change', '.timepicker-form#start ~ input[type=hidden]', function(){
+		var datefin = $("#inner-Horaires #end").siblings('input[type=hidden]');
+		var dateDeb = $("#inner-Horaires #start").siblings('input[type=hidden]');
+		//check if start_date > end_date, if end_date is set
+		if(datefin.val()){
+			var startsplit = dateDeb.val().split(' ');
+			var daysplit = startsplit[0].split('-');
+			var hourstartsplit = startsplit[1].split(':');
+			var endsplit = datefin.val().split(' ');
+			var enddaysplit = endsplit[0].split('-');
+			var hoursplit = endsplit[1].split(':');
+			var deb = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourstartsplit[0], hourstartsplit[1]);
+			var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
+                        if(deb > end){
+				datefin.val(dateDeb.val());
+				datefin.trigger('change');
+				updateHours();
+			}
+		}
+		updateHourTitle();
+	});
+	
+	$('#event').on('change', '.timepicker-form#end ~ input[type=hidden]', function(){
+		var dateDeb = $("#inner-Horaires #start").siblings("input[type=hidden]");
+		var dateFin = $("#inner-Horaires #end").siblings("input[type=hidden]");
+		//check if end_date < start_date	
+		var endsplit = dateFin.val().split(' ');
+		var daysplit = endsplit[0].split('-');
+		var hourendsplit = endsplit[1].split(':');
+		var startsplit = dateDeb.val().split(' ');
+		var startdaysplit = startsplit[0].split('-');
+		var hoursplit = startsplit[1].split(':');
+		var end = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourendsplit[0], hourendsplit[1]);
+		var deb = new Date(startdaysplit[2], startdaysplit[1]-1, startdaysplit[0], hoursplit[0], hoursplit[1]);
+		if(deb > end){
+			dateDeb.val(dateFin.val());
+			updateHours();
+		}
+		updateHourTitle();
 	});
 	
 	var updateHours = function(){
 		//initialize datetime pickers
 		//start date
-		var start = $("#dateDeb").val();
+		var start = $("#inner-Horaires #start").siblings("input[type=hidden]").val();
 		if(start){
 			var daysplit = start.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -202,7 +217,7 @@ var form = function(url){
 			$("#start .minute input").val(minute);
 			$("#start .minute input").trigger('change');
 		}
-		var end = $("#dateFin").val();
+		var end = $("#inner-Horaires #end").siblings("input[type=hidden]").val();
 		if(end){
 			var daysplit = end.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -213,14 +228,14 @@ var form = function(url){
 	};
 	
 	var updateHourTitle = function(){
-		var start = $("#dateDeb").val();
+		var start = $("#inner-Horaires #start").siblings("input[type=hidden]").val();
 		var split = start.split(' ');
 		var daysplit = split[0].split('-');
 		var text = "Horaires : "+daysplit[0]+"/"+daysplit[1]+" "+split[1];
 		var punctual = $("#punctual").is(':checked');
 		if(!punctual){
 			text += " > ";
-			var end = $("#dateFin").val();
+			var end = $("#inner-Horaires #end").siblings("input[type=hidden]").val();
 			if(end){
 				var split = end.split(' ');
 				var daysplit = split[0].split('-');
@@ -280,7 +295,7 @@ var form = function(url){
 		$("#create-evt").slideUp('fast');
 	});
 	
-	$("#event").on("focus", 'input[type=text].date', function(){
+	$(document).on("focus", 'input[type=text].date', function(){
 		$(this).datepicker({
 			dateFormat: "dd-mm-yy",
 		});
@@ -457,7 +472,7 @@ var form = function(url){
 					$("#Horairesid").removeClass("disabled");
 					$("#Descriptionid").removeClass("disabled");
 					$("#filesTitle").removeClass("disabled");
-					
+					$("#Alarmesid").removeClass("disabled");
 					$("input[name='submit']").prop('disabled', false);
 					
 			});
@@ -466,6 +481,7 @@ var form = function(url){
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
 			$("#Descriptionid").addClass("disabled");
+			$("#Alarmesid").addClass("disabled");
 			$("#filesTitle").addClass("disabled");
 			$("input[name='submit']").prop('disabled', true);
 			$("input[name='category']").val('');
@@ -540,7 +556,7 @@ var form = function(url){
 	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin
 	$('#event').on('change', 'select[name=status]', function(){
 		var select = $(this);
-		if(select.val() == '3' && !$("#punctual").is(':checked') && $('#dateFin').val() == ''){
+		if(select.val() == '3' && !$("#punctual").is(':checked') && $('.timepicker-form#end ~ input[type=hidden]').val() == ''){
 			$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
                         $("#event #hack-tooltip").tooltip({
 				container :'body',
@@ -553,5 +569,22 @@ var form = function(url){
 	
 	$("#event").on('change', '#dateFin', function(){
 		$("select[name=status]").trigger('change');
+	});
+	
+	//fenêtre de création d'alarme
+	$(document).on('click', '#addalarm', function(e){
+		e.preventDefault();
+		$('#alarm-form').load(url+'alarm/form');
+	});
+	
+	$('#alarm-form').on('submit', function(e){
+		e.preventDefault();
+		//deux cas : nouvelle alarme ou modif
+		var me = $(this);
+		if(me.find('input[name=id]').val()){
+			
+		} else {
+			
+		}
 	});
 };
