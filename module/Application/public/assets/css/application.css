@@ -108,6 +108,11 @@
     border: none;
 }
 
+#file-table.table, #alarm-table.table {
+    margin-bottom: 0px;
+}
+
+
 #frequencies .block {
 	margin-bottom: 0px;
 }
