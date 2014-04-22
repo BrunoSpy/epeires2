@@ -558,16 +558,17 @@ var form = function(url){
 		var select = $(this);
 		if(select.val() == '3' && !$("#punctual").is(':checked') && $('.timepicker-form#end ~ input[type=hidden]').val() == ''){
 			$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
-                        $("#event #hack-tooltip").tooltip({
+                        $("#event #hack-tooltip").show().tooltip({
 				container :'body',
 				title: 'Date de fin manquante'
 			});
 		} else {
-			$("input[type=submit]").tooltip('destroy').removeClass('disabled').removeAttr('disabled');
+                        $("#event #hack-tooltip").hide().tooltip('destroy');
+			$("input[type=submit]").removeClass('disabled').removeAttr('disabled');
 		}
 	});
 	
-	$("#event").on('change', '#dateFin', function(){
+	$("#event").on('change', '.timepicker-form#end ~ input[type=hidden]', function(){
 		$("select[name=status]").trigger('change');
 	});
 	
