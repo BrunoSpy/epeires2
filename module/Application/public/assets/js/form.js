@@ -3,8 +3,8 @@ var urlt;
 var formAddFile = function(fileId, formData){
     var tr = $('<tr id="file_'+fileId+'"></tr>');
     tr.append('<td>'+formData.reference+'</td>');
-    tr.append('<td><a rel="external" href="'+formData.path+'">'+formData.name+'</a></td>');
-    tr.append('<td><a rel="external" href="'+formData.path+'"><i class="icon-download"></i></a></td>')
+    tr.append('<td><a rel="external" href="'+urlt+formData.path+'">'+formData.name+'</a></td>');
+    tr.append('<td><a rel="external" href="'+urlt+formData.path+'"><i class="icon-download"></i></a></td>')
     tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
             'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
             'data-id="'+fileId+'" '+
