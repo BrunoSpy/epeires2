@@ -13,7 +13,7 @@ var formAddFile = function(fileId, formData){
             '><i class="icon-trash"></i></a></td>');
     $("#file-table").append(tr);
     var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
-    $("#inner-Fichiers").append(input);
+    $("#inner-filesTitle").append(input);
 }
 
 var form = function(url){
@@ -152,8 +152,8 @@ var form = function(url){
 	//specific functions to maintain coherence between end and start inputs
 	
 	$('#event').on('change', '.timepicker-form#start ~ input[type=hidden]', function(){
-		var datefin = $("#inner-Horaires #end").siblings('input[type=hidden]');
-		var dateDeb = $("#inner-Horaires #start").siblings('input[type=hidden]');
+		var datefin = $("#inner-Horairesid #end").siblings('input[type=hidden]');
+		var dateDeb = $("#inner-Horairesid #start").siblings('input[type=hidden]');
 		//check if start_date > end_date, if end_date is set
 		if(datefin.val()){
 			var startsplit = dateDeb.val().split(' ');
@@ -174,8 +174,8 @@ var form = function(url){
 	});
 	
 	$('#event').on('change', '.timepicker-form#end ~ input[type=hidden]', function(){
-		var dateDeb = $("#inner-Horaires #start").siblings("input[type=hidden]");
-		var dateFin = $("#inner-Horaires #end").siblings("input[type=hidden]");
+		var dateDeb = $("#inner-Horairesid #start").siblings("input[type=hidden]");
+		var dateFin = $("#inner-Horairesid #end").siblings("input[type=hidden]");
 		//check if end_date < start_date	
 		var endsplit = dateFin.val().split(' ');
 		var daysplit = endsplit[0].split('-');
@@ -195,7 +195,7 @@ var form = function(url){
 	var updateHours = function(){
 		//initialize datetime pickers
 		//start date
-		var start = $("#inner-Horaires #start").siblings("input[type=hidden]").val();
+		var start = $("#inner-Horairesid #start").siblings("input[type=hidden]").val();
 		if(start){
 			var daysplit = start.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -217,7 +217,7 @@ var form = function(url){
 			$("#start .minute input").val(minute);
 			$("#start .minute input").trigger('change');
 		}
-		var end = $("#inner-Horaires #end").siblings("input[type=hidden]").val();
+		var end = $("#inner-Horairesid #end").siblings("input[type=hidden]").val();
 		if(end){
 			var daysplit = end.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -228,14 +228,14 @@ var form = function(url){
 	};
 	
 	var updateHourTitle = function(){
-		var start = $("#inner-Horaires #start").siblings("input[type=hidden]").val();
+		var start = $("#inner-Horairesid #start").siblings("input[type=hidden]").val();
 		var split = start.split(' ');
 		var daysplit = split[0].split('-');
 		var text = "Horaires : "+daysplit[0]+"/"+daysplit[1]+" "+split[1];
 		var punctual = $("#punctual").is(':checked');
 		if(!punctual){
 			text += " > ";
-			var end = $("#inner-Horaires #end").siblings("input[type=hidden]").val();
+			var end = $("#inner-Horairesid #end").siblings("input[type=hidden]").val();
 			if(end){
 				var split = end.split(' ');
 				var daysplit = split[0].split('-');
@@ -364,6 +364,7 @@ var form = function(url){
 
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
 			updateHours();
+                        updateHourTitle();
 		});
 	});
 	
@@ -543,7 +544,7 @@ var form = function(url){
 		$('#confirm-delete-file').modal('hide');
 		$.post($("#delete-file-href").attr('href'), function(data){
 			$("#file-table").find('tr#file_'+me.data('id')).remove();
-                        $('#inner-Fichiers input[name=fichiers\\['+me.data('id')+'\\]]').remove();
+                        $('#inner-filesTitle input[name=fichiers\\['+me.data('id')+'\\]]').remove();
 			displayMessages(data);
 		}, 'json');
 	});

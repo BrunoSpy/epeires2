@@ -14,10 +14,10 @@ class AccordionGroup extends AbstractHelper {
 		
 		
 		$dataparent = (isset($options['data-parent'])) ? "#".$options['data-parent'] : "#parent";
-		$bodyid = (isset($options['body-id'])) ? $options['body-id'] : "accordion-".preg_replace('/\s+/', '', $title);
-		$innerbody = (isset($options['inner-id'])) ? $options['inner-id'] : "inner-".preg_replace('/\s+/', '', $title);
+                $titleid = (isset($options['title_id'])) ? $options['title_id'] : preg_replace('/\s+/', '', $title)."id";
+		$bodyid = (isset($options['body-id'])) ? $options['body-id'] : "accordion-".$titleid;
+		$innerbody = (isset($options['inner-id'])) ? $options['inner-id'] : "inner-".$titleid;
 		$in = (isset($options['in']) && $options['in']) ? "in" : "";
-		$titleid = (isset($options['title_id'])) ? $options['title_id'] : $title."id";
 		$titleclass = (isset($options['title_class'])) ? $options['title_class'] : "";
 		
 		$result = "<div class=\"accordion-group\">";

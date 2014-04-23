@@ -125,7 +125,7 @@
 			$html .= "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		
-		echo $this->accordionGroup("Alarmes", $html, array('data-parent'=>'form'));
+//		echo $this->accordionGroup("Alarmes", $html, array('data-parent'=>'form'));
 		
 		$titleclass="";	
 		$html = "";	
@@ -184,11 +184,12 @@
 			$html .= "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		
-		echo $this->accordionGroup("Fichiers", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle', 'title_class'=>$titleclass));
+		echo $this->accordionGroup("Fichiers <span class=\"pull-right badge\">".$countfiles."</span>", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle', 'title_class'=>$titleclass));
 		
 		
 		$html = "";
 		$actionsClass = "";
+                $countactions = 0;
 		if($this->event || $this->model) {
 			if($this->copy){
 				echo "<input type=\"hidden\" name=\"fromeventid\" value=\"".$this->copy."\">";
@@ -204,6 +205,7 @@
 				$html .= '<tbody>';
                                 foreach ($children as $child){
                                     if($child->getCategory() instanceof Application\Entity\ActionCategory){
+                                        $countactions++;
 					$html .= "<tr data-id=\"".$child->getId()."\">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
@@ -219,7 +221,7 @@
 				$actionsClass="disabled";
 			}
 		}
-		echo $this->accordionGroup("Fiche réflexe", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
+		echo $this->accordionGroup("Fiche réflexe <span class=\"pull-right badge\">".$countactions."</span>", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
 		
 		?>
 
