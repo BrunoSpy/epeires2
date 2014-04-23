@@ -16,7 +16,7 @@ echo $this->formHidden($this->form->get('id'));
 echo $this->formHidden($this->form->get('parent'));
 
 echo $this->controlGroup($this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-			$this->formDateTimeEnhanced("startalarm") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
+			$this->formDateTimeEnhanced(true, "startalarm") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
 
 foreach ($this->form->get('custom_fields')->getElements() as $element){
 	echo $this->customFieldGroup($element);
