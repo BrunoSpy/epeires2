@@ -10,7 +10,7 @@ use Zend\Form\View\Helper\AbstractHelper;
 
 class FormDateTimeEnhanced extends AbstractHelper {
 	
-	public function __invoke($id = null){
+	public function __invoke($required = false, $id = null){
 
 		$html = '<div class="timepicker-form"'.($id ? 'id="'.$id.'"' : '').'>'.
 				'<table class="table">'.
@@ -19,7 +19,7 @@ class FormDateTimeEnhanced extends AbstractHelper {
 				'<td class="day">'.
 				"<div class=\"input-prepend\">".
 				"<span class=\"add-on\"><i class=\"icon-calendar\"></i></span>".
-				'<input type="text" class="date"></input>'.
+				'<input type="text" class="date" '.($required ? 'required="required"': '').'></input>'.
 				"</div>".
 				'</td>'.
 				'<td class="hour">'.

@@ -32,7 +32,7 @@ echo $this->formHidden($this->form->get('status'));
 
 echo $this->controlGroup(
 		$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-		$this->formDateTimeEnhanced("start") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
+		$this->formDateTimeEnhanced(true, "start") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
 
 ?>
 

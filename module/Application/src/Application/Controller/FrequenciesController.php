@@ -852,7 +852,7 @@ class FrequenciesController extends ZoneController {
 	} else {
 		$messages['error'][] = "Connexion obligatoire pour créer un évènement";
 	}
-	return new JsonModel($messages);
+	return new JsonModel(array('messages' => $messages, 'eventid' => $event->getId()));
     }
     
     private function getFormBrouillage($idfreq, $event = null){

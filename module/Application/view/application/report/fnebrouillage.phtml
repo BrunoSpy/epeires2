@@ -1,3 +1,18 @@
+<?php
+    $formatterJour = \IntlDateFormatter::create(\Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            \DateTimeZone::UTC,
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLLL yyyy');
+    $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            \DateTimeZone::UTC,
+            \IntlDateFormatter::GREGORIAN,
+            'HH:mm');
+?>
+
 <html>
     <head>
         <style>
@@ -75,12 +90,12 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td><?php echo $this->event->getAuthor()->getUsername()?></td>
                         <td></td>
-                        <td>ghh</td>
+                        <td><?php echo $formatterJour->format($this->event->getStartDate())?></td>
+                        <td><?php echo $formatterHeure->format($this->event->getStartDate())?></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><?php echo $this->frequency->getValue() ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -108,10 +123,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td>ff</td>
-                                    <td></td>
+                                    <td><?php echo $this->fields[$this->event->getCategory()->getLevelField()->getId()] ?></td>
+                                    <td><?php echo $this->fields[$this->event->getCategory()->getRnavField()->getId()] ?></td>
+                                    <td><?php echo $this->fields[$this->event->getCategory()->getDistanceField()->getId()] ?></td>
+                                    <td><?php echo $this->fields[$this->event->getCategory()->getAzimutField()->getId()] ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -122,9 +137,9 @@
                     <td>
                         <table>
                             <tr>
-                                <td>Sol : <input type='checkbox'></input></td>
-                                <td>Bord : <input type='checkbox'></input></td>
-                                <td>Sol + Bord : <input type='checkbox'></input></td>
+                                <td>Sol : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getOriginField()->getId()] == 0 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Bord : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getOriginField()->getId()] == 1 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Sol + Bord : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getOriginField()->getId()] == 2 ? 'checked="checked"' : "" ) ?>></input></td>
                             </tr>
                         </table>
                     </td>
@@ -134,11 +149,11 @@
                     <td>
                         <table>
                             <tr>
-                                <td>Brouillage : <input type='checkbox'></input></td>
+                                <td>Brouillage : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getTypeField()->getId()] == 0 ? 'checked="checked"' : "" ) ?>></input></td>
                                 <td>(tout phénomène qui n'est pas de caractère aéronautique)</td>
                             </tr>
                             <tr>
-                                <td>Interférence : <input type='checkbox'></input></td>
+                                <td>Interférence : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getTypeField()->getId()] == 1 ? 'checked="checked"' : "" ) ?>></input></td>
                                 <td>(tout ce qui parait être du domaine aéronautique)</td>
                             </tr>
                         </table>
@@ -152,38 +167,38 @@
         <div id="recherche">
             <h2>Recherche de bruit</h2>
             <table class='twocol'>
+                <?php if($this->fields[$this->event->getCategory()->getTypeField()->getId()] == 0) :?>
                 <tr>
                     <td><h3>Brouillage</h3></td>
                     <td>
                         <table>
                             <tr>
-                                <td>Radio FM : <input type='checkbox'></input></td>
-                                <td>Bruit industriel : <input type='checkbox'></input></td>
-                                <td>Autre : <input type='checkbox'></input></td>
-                                <td>Rien : <input type='checkbox'></input></td>
+                                <td>Radio FM : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseBrouillageField()->getId()] == 0 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Bruit industriel : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseBrouillageField()->getId()] == 1 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Autre : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseBrouillageField()->getId()] == 2 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Rien : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseBrouillageField()->getId()] == 3 ? 'checked="checked"' : "" ) ?>></input></td>
                             </tr>
-                            <tr>
-                                Commentaire :
-                            </tr>
+                            <tr><td colspan='4'><em>Commentaire : </em><br/><?php echo nl2br($this->fields[$this->event->getCategory()->getCommentaireBrouillageField()->getId()]) ?></td></tr>
                         </table>
                     </td>
                 </tr>
                 <tr><td><br/></td></tr>
+                <?php endif;?>
+                <?php if($this->fields[$this->event->getCategory()->getTypeField()->getId()] == 1) :?>
                 <tr>
                     <td><h3>Interférence</h3></td>
                     <td>
                         <table>
                             <tr>
-                                <td>Porteuse : <input type='checkbox'></input></td>
-                                <td>Emission permanente : <input type='checkbox'></input></td>
-                                <td>Autre fréquence* : <input type='checkbox'></input></td>
+                                <td>Porteuse : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseInterferenceField()->getId()] == 0 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Emission permanente : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseInterferenceField()->getId()] == 1 ? 'checked="checked"' : "" ) ?>></input></td>
+                                <td>Autre fréquence* : <input type='checkbox' <?php echo ($this->fields[$this->event->getCategory()->getCauseInterferenceField()->getId()] == 2 ? 'checked="checked"' : "" ) ?>></input></td>
                             </tr>
-                            <tr>
-                                *contenu du message :
-                            </tr>
+                            <tr><td>*contenu du message : <?php echo nl2br($this->fields[$this->event->getCategory()->getCommentaireInterferenceField()->getId()]) ?></td></tr>
                         </table>
                     </td>
                 </tr>
+                <?php endif; ?>
             </table>
         </div>
     </body>

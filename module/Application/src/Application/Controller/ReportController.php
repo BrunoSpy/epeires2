@@ -23,19 +23,40 @@ class ReportController extends AbstractActionController {
 
         $view = $this->params()->fromQuery('view', null);
 
-        if ($view == 'pdf') {
-            $pdf = new PdfModel();
-         //   $pdf->setOption('filename', 'fne-brouillage');
-            $pdf->setOption('parperSize', 'a4');
+        $brouillageid = $this->params()->fromQuery('id', null);
 
-            return $pdf;
-        } else {
-            $viewmodel = new ViewModel();
-            $request = $this->getRequest();
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
-            //disable layout if request by Ajax
-            $viewmodel->setTerminal(true);
-            return $viewmodel;
+        $brouillage = $objectManager->getRepository('Application\Entity\Event')->find($brouillageid);
+
+        if ($brouillage) {
+            $fields = array();
+            foreach ($brouillage->getCustomFieldsValues() as $values) {
+                $fields[$values->getCustomField()->getId()] = $values->getValue();
+            }
+            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()->getFrequencyField()->getId()]);
+
+            if ($view == 'pdf') {
+                $pdf = new PdfModel();
+                $pdf->setVariable('event', $brouillage);
+
+
+                $pdf->setVariables(array('frequency' => $frequency, 'fields' => $fields));
+
+                //   $pdf->setOption('filename', 'fne-brouillage');
+                $pdf->setOption('parperSize', 'a4');
+
+                return $pdf;
+            } else {
+                $viewmodel = new ViewModel();
+                $viewmodel->setVariable('event', $brouillage);
+                $viewmodel->setVariables(array('frequency' => $frequency, 'fields' => $fields));
+                $request = $this->getRequest();
+
+                //disable layout if request by Ajax
+                $viewmodel->setTerminal(true);
+                return $viewmodel;
+            }
         }
     }
 
