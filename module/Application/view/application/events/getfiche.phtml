@@ -35,7 +35,10 @@
                     if ($child->getCategory() instanceof Application\Entity\ActionCategory) {
                         echo "<tr data-id=\"" . $child->getId() . "\">";
                         echo "<td>" . $this->eventName($child) . "</td>";
-                        echo '<td><a class="fiche btn btn-small ' . ($child->getStatus()->isOpen() ? "" : "active") . '" data-eventid="'.$this->event->getId().'" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
+                        echo '<td><a class="fiche btn btn-small ' . 
+                                ($child->getStatus()->isOpen() ? "" : "active") . ' '
+                                . ($this->isGranted('events.modify') ? '' : 'disabled').'" '
+                                . 'data-eventid="'.$this->event->getId().'" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
                         echo "</tr>";
                     }
                 }
@@ -70,7 +73,7 @@
                 foreach ($this->event->getFiles() as $file) {
                     echo "<tr id=\"file_".$file->getId()."\">";
                     echo "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
-                    echo "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\">".
+                    echo "<td style=\"word-wrap: break-word; max-width: 200px;\"><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\">".
 				($file->getName() ? $file->getname() : $file->getFilename())."</a></td>";
                     echo "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a></td>";
                     echo "</tr>";
@@ -91,13 +94,14 @@
         <?php echo $this->partial('events/gethistory.phtml'); ?>
     </div>
 </div>
-
+<?php if($this->isGranted('events.modify')) :?>
 <div class="block-controls">
     <form data-id="<?php echo $this->event->getId();?>" id="add-note" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
     <textarea name="new-update" placeholder="Ajouter une note."></textarea>
     <input type="submit" class="btn btn-small btn-primary pull-right" value="Ajouter note"></input>
     </form>
 </div>
+<?php endif; ?>
 
 <?php else : ?>
 
