@@ -149,8 +149,11 @@ $(document).ready(function(){
         $.post(url+'events/addnote?id='+$(this).data('id'), $(this).serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
-                $("#updates").load(url+'events/updates?id='+me.data('id'));
+                $("#updates").load(url+'events/updates?id='+me.data('id'), function(){
+                    $("#updates").parent().find("span.badge").html($("#updates dt").size());
+                });
                 $("#updates").show();
+                
             }
             displayMessages(data);
         });

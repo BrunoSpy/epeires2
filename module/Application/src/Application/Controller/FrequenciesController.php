@@ -367,6 +367,11 @@ class FrequenciesController extends ZoneController {
                                     }
                                     $em->persist($child);
                                 }
+                                //ajout des fichiers
+                                foreach ($antenna->getModel()->getFiles() as $file){
+                                    $file->addEvent($event);
+                                    $em->persist($file);
+                                }
                             }
                             try {
                                 $em->flush();
