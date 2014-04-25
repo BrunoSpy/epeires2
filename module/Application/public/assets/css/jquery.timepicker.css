@@ -1,0 +1,48 @@
+/* 
+    Created on : 25 avr. 2014, 11:54:31
+    Author     : Bruno Spyckerelle
+*/
+
+
+.timepicker-form > table {
+    width: 180px;
+    margin: 0;
+}
+
+.form-horizontal .control-group.compact {
+    margin-bottom: 0px;
+}
+
+.timepicker-form > table > tbody > tr > td {
+    text-align: center;
+    border: 0;
+    padding: 2px;
+}
+
+.timepicker-form > table > tbody > tr > td.separator {
+    line-height: 65px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.timepicker-form > table > tbody > tr > td > input {
+    margin: 0;
+    text-align: center;
+}
+
+.timepicker-form > table > tbody > tr > td.day {
+    vertical-align: middle;
+}
+
+.timepicker-form > table > tbody > tr > td.day input {
+    width: 80px;
+}
+
+.timepicker-form > table > tbody > tr > td input.input-mini {
+    width: 30px;
+}
+
+.time-middle {
+    margin-top:20px;
+}
+

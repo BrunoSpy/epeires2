@@ -14,144 +14,16 @@ var formAddFile = function(fileId, formData){
     $("#file-table").append(tr);
     var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
     $("#inner-filesTitle").append(input);
+    $("#filesTitle span").html(parseInt($("#filesTitle span").html())+1);
 }
 
 var form = function(url){
 	
         urlt = url;
-        
-	/*********************/
-	/***** Time Picker ***/
-	/*********************/
-	
-	var hourplusone = function(input, delta){
-		if(input.val()){
-			var hour = parseInt(input.val())+delta;
-			if(hour >0 && hour <= 9)
-				hour = "0"+hour;
-			if(hour<=0)
-				hour = 23;
-			if(hour>23)
-				hour = "00";
-		} else {
-			var d = new Date();
-			hour = d.getUTCHours();
-			if(hour >=0 && hour <= 9){
-				hour = "0"+hour;
-			}
-		}
-		return hour;
-	};
-	
-	var minuteplusone = function(input, delta){
-		if(input.val()){
-			var minutes = parseInt(input.val())+delta;
-			if(minutes>0 && minutes <= 9)
-				minutes = "0"+minutes;
-			if(minutes<=0)
-				minutes = 59;
-			if(minutes>59)
-				minutes = "00";
-		} else {
-			var d = new Date();
-			minutes = d.getUTCMinutes();
-			if(minutes >=0 && minutes <= 9){
-				minutes = "0"+minutes;
-			}
-		}
-		return minutes;
-	};
-	
-	var fillInputs = function(timepickerform){
-		var day = "";
-		if(!timepickerform.find('.day input').val()){
-			var d = new Date();
-			day = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
-			timepickerform.find('.day input').val(day);
-		}
-		if(!timepickerform.find('.hour input').val()){
-			var hour = "00";
-			if($(this).attr('end')){
-				hour = $("#start .hour input").val();
-			} else {
-				var d = new Date();
-				hour = d.getUTCHours();
-				if(hour >=0 && hour <= 9){
-					hour = "0"+hour;
-				}
-			}
-			timepickerform.find('.hour input').val(hour);
-		}
-		if(!timepickerform.find('.minute input').val()){
-			var minutes = "00";
-			if($(this).attr('end')){
-				minutes = $("#start .minute input").val();
-			} else {
-				var d = new Date();
-				minutes = d.getUTCMinutes();
-				if(minutes >=0 && minutes <= 9){
-					minutes = "0"+minutes;
-				}
-			}
-			timepickerform.find('.minute input').val(minutes);
-		}
-	};
-	
-	$(document).on('change', '.timepicker-form input', function(){
-		//mise à jour du champ caché
-		// 1 : remplissage des autres champs si besoin
-		var me = $(this).closest('.timepicker-form');
-		fillInputs(me);
-		//2: mise à jour du champ caché en fonction
-		var hidden = me.siblings('input[type=hidden]');
-		hidden.val(me.find('.day input').val()+" "+me.find('.hour input').val()+":"+me.find('.minute input').val());
-		//3: on prévient les autres qu'il y a eu un changement
-		hidden.trigger('change');
-	});
-	
-	$(document).on('click', '.timepicker-form .hour .next', function(event){
-		event.preventDefault();
-		var input = $(this).closest('td').find('input');
-		input.val(hourplusone(input, 1));
-		input.trigger('change');
-	});
-	
-	$(document).on('click', '.timepicker-form .minute .next', function(event){
-		event.preventDefault();
-		var input = $(this).closest('td').find('input');
-		input.val(minuteplusone(input, 1));
-		input.trigger('change');
-	});
-	
-	$(document).on('click', '.timepicker-form .hour .previous', function(event){
-		event.preventDefault();
-		var input = $(this).closest('td').find('input');
-		input.val(hourplusone(input, -1));
-		input.trigger('change');
-	});
-	
-	$(document).on('click', '.timepicker-form .minute .previous', function(event){
-		event.preventDefault();
-		var input = $(this).closest('td').find('input');
-		input.val(minuteplusone(input, -1));
-		input.trigger('change');
-	});
-	
-	$(document).on('mousewheel', 'td.hour input', function(event, delta){
-		event.preventDefault();
-		$(this).val(hourplusone($(this), delta));
-		$(this).trigger('change');
-	});
-	
-	$(document).on('mousewheel', 'td.minute input', function(event, delta){
-		event.preventDefault();
-		$(this).val(minuteplusone($(this), delta));
-		$(this).trigger('change');
-	});
 	
 	//specific functions to maintain coherence between end and start inputs
 	
-	$('#event').on('change', '.timepicker-form#start ~ input[type=hidden]', function(){
+	$('#event').on('change', 'input[name=startdate]', function(){
 		var datefin = $("#inner-Horairesid #end").siblings('input[type=hidden]');
 		var dateDeb = $("#inner-Horairesid #start").siblings('input[type=hidden]');
 		//check if start_date > end_date, if end_date is set
@@ -173,7 +45,7 @@ var form = function(url){
 		updateHourTitle();
 	});
 	
-	$('#event').on('change', '.timepicker-form#end ~ input[type=hidden]', function(){
+	$('#event').on('change', 'input[name=enddate]', function(){
 		var dateDeb = $("#inner-Horairesid #start").siblings("input[type=hidden]");
 		var dateFin = $("#inner-Horairesid #end").siblings("input[type=hidden]");
 		//check if end_date < start_date	
@@ -294,12 +166,6 @@ var form = function(url){
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-evt").slideUp('fast');
 	});
-	
-	$(document).on("focus", 'input[type=text].date', function(){
-		$(this).datepicker({
-			dateFormat: "dd-mm-yy",
-		});
-	});
 
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
@@ -315,6 +181,8 @@ var form = function(url){
 					function(){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
+                                                $("#event input[name=startdate]").timepickerform({'id':'start'});
+                                                $("#event input[name=enddate]").timepickerform({'id':'end'});
 						updateHours();
 						updateHourTitle();
 					}
@@ -363,6 +231,8 @@ var form = function(url){
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
+                        $("#event input[name=startdate]").timepickerform({'id':'start'});
+                        $("#event input[name=enddate]").timepickerform({'id':'end'});
 			updateHours();
                         updateHourTitle();
 		});
@@ -545,13 +415,9 @@ var form = function(url){
 		$.post($("#delete-file-href").attr('href'), function(data){
 			$("#file-table").find('tr#file_'+me.data('id')).remove();
                         $('#inner-filesTitle input[name=fichiers\\['+me.data('id')+'\\]]').remove();
+                        $('#filesTitle span').html(parseInt($('#filesTitle span').html())-1);
 			displayMessages(data);
 		}, 'json');
-	});
-	
-	$("#event").on('click', ".removefile", function(){
-		var count = $(this).data('count');
-		$("#filefield_"+count).remove();		
 	});
 	
 	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin

@@ -67,7 +67,6 @@ return array(
     		'controlGroup' => 'Application\View\Helper\ControlGroup',
     		'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
     		'impact' => 'Application\View\Helper\Impact',
-    		'formDateTimeEnhanced' => 'Application\View\Helper\FormDateTimeEnhanced',
     		'eventfieldname' => 'Application\View\Helper\EventFieldName',
     		'block' => 'Application\View\Helper\Block',
     		'sector' => 'Application\View\Helper\Sector',
