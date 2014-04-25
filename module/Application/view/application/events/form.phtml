@@ -1,5 +1,4 @@
 <?php
-
 	if($this->event && !$this->copy){
 		//form de modif
 		$this->form->setAttributes(array(
@@ -107,7 +106,7 @@
 		$titleclass="";	
 		$html = "";	
 		
-		$mod = !$this->event || ($this->event && ($this->isGranted('events.modify') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
+		$mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
 
 		$html .= '<table class="table table-hover" id="alarm-table">';
 		if($this->event){
@@ -144,7 +143,7 @@
 			
 			if($this->zfcUserIdentity()){
                             if($this->event) {
-                                $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.modify'));
+                                $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
                             } else {
                                 //pas de modification possible d'un modèle
                                 $mod = false;

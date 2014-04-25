@@ -2,13 +2,13 @@
     $formatterJour = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            \DateTimeZone::UTC,
+            new \DateTimeZone('UTC'),
             \IntlDateFormatter::GREGORIAN,
             'dd LLLL yyyy');
     $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            \DateTimeZone::UTC,
+            new \DateTimeZone('UTC'),
             \IntlDateFormatter::GREGORIAN,
             'HH:mm');
 ?>

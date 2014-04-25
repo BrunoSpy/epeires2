@@ -37,7 +37,7 @@ class EventService implements ServiceManagerAwareInterface{
 	}
 	
 	/**
-	 * An event is modifiable if the current user is the author of the event or if he has the 'events.modify' permission
+	 * An event is modifiable if the current user is the author of the event or if he has the 'events.write' permission
 	 * @return boolean
 	 */
 	public function isModifiable(Event $event){
@@ -104,7 +104,7 @@ class EventService implements ServiceManagerAwareInterface{
                             \Locale::getDefault(),
                             \IntlDateFormatter::FULL,
                             \IntlDateFormatter::FULL,
-                            \DateTimeZone::UTC,
+                            new \DateTimeZone('UTC'),
                             \IntlDateFormatter::GREGORIAN,
                             'dd LLL, HH:mm');
 

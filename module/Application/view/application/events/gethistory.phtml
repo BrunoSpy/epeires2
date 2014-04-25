@@ -6,7 +6,7 @@ if($this->history){
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            \DateTimeZone::UTC,
+            new \DateTimeZone('UTC'),
             \IntlDateFormatter::GREGORIAN,
             'dd LLL, HH:mm');
 	if(count($history) > 0) {
