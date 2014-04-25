@@ -133,11 +133,22 @@
 		$mod = false;
                 $html = '<table class="table table-hover" id="file-table">';
 		$html .= '<tbody>';
-		if($this->event){
-			$files = $this->event->getFiles();
+		if($this->event || $this->model){
+			$files = null;
+                        if($this->event) {
+                            $files = $this->event->getFiles();
+                        }
+                        if($this->model) {
+                            $files = $this->model->getFiles();
+                        }
 			
 			if($this->zfcUserIdentity()){
-				$mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.modify'));
+                            if($this->event) {
+                                $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.modify'));
+                            } else {
+                                //pas de modification possible d'un modèle
+                                $mod = false;
+                            }
 			}
                         
 			if(count($files) > 0){
@@ -152,7 +163,7 @@
 					$html .= "<td>";
 					$html .= "<a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a>";
 					$html .= "</td>";
-					if($mod){
+					if($mod){//suppression d'un fichier possible si le fichier ne vient pas d'un modèle ou si droits ok
 						$html .= "<td>";
 						//TODO
 						//$html .= "<a href=\"#\"><i class=\"icon-pencil mod-file\"></i></a> ";
@@ -180,7 +191,7 @@
                 $html .= '</tbody>';
 		$html .= '</table>';
 		//ajout de fichier si nouvel evt ou mod avec droits ok
-		if(!$this->event || ($this->event && $mod)){
+		if(!$this->event || $this->model || ($this->event && $mod)){
 			$html .= "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		

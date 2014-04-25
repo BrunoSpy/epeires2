@@ -5,8 +5,31 @@
  * Id to delete a model : #delete-model
  */
 
-var models = function(url){
+var urlt;
+var urla;
+
+/* Ajout de fichiers */
+var formAddFile = function(fileId, formData) {
+    var tr = $('<tr id="file_' + fileId + '"></tr>');
+    tr.append('<td>' + formData.reference + '</td>');
+    tr.append('<td><a rel="external" href="' + urla + formData.path + '">' + formData.name + '</a></td>');
+    tr.append('<td><a rel="external" href="' + urla + formData.path + '"><i class="icon-download"></i></a></td>')
+    tr.append('<td><a href="#confirm-delete-file" class="delete-file" ' +
+            'data-href="' + urlt + 'models/deletefile?id=' + fileId + '" ' +
+            'data-id="' + fileId + '" ' +
+            'data-name="' + formData.name + '" ' +
+            'data-toggle="modal" ' +
+            '><i class="icon-trash"></i></a></td>');
+    $("#file-table").append(tr);
+    var input = $('<input type="hidden" name="fichiers[' + fileId + ']" value="' + fileId + '"></input>');
+    $("#model-files").append(input);
+};
+
+var models = function(url, urlapp){
 	
+        urlt = url;
+        urla = urlapp;
+        
 	//by default last = true
 	var updateCarets = function(element, last){
 		var tbody = element.find('tbody');
@@ -244,5 +267,21 @@ var models = function(url){
 		}, 'json');
 	};
 	
-	
+        $("#model-form").on('click', '.delete-file', function() {
+            $("a#delete-file-href").attr('href', $(this).data("href"));
+            $("#file_name").html($(this).data('name'));
+            $("#delete-file-href").data('id', $(this).data('id'));
+        });
+
+        $("#confirm-delete-file").on('click', "#delete-file-href", function(event) {
+            event.preventDefault();
+            var me = $(this);
+            $('#confirm-delete-file').modal('hide');
+            $.post($("#delete-file-href").attr('href'), function(data) {
+                $("#file-table").find('tr#file_' + me.data('id')).remove();
+                $('#model-files input[name=fichiers\\[' + me.data('id') + '\\]]').remove();
+                displayMessages(data);
+            }, 'json');
+        });
+
 };

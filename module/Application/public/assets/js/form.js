@@ -1,16 +1,19 @@
 var urlt;
 
-var formAddFile = function(fileId, formData){
+var formAddFile = function(fileId, formData, modifiable){
+    modifiable = (typeof modifiable === "undefined") ? true : modifiable;
     var tr = $('<tr id="file_'+fileId+'"></tr>');
     tr.append('<td>'+formData.reference+'</td>');
     tr.append('<td><a rel="external" href="'+urlt+formData.path+'">'+formData.name+'</a></td>');
-    tr.append('<td><a rel="external" href="'+urlt+formData.path+'"><i class="icon-download"></i></a></td>')
-    tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
+    tr.append('<td><a rel="external" href="'+urlt+formData.path+'"><i class="icon-download"></i></a></td>');
+    if(modifiable){
+        tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
             'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
             'data-id="'+fileId+'" '+
             'data-name="'+formData.name+'" '+
             'data-toggle="modal" '+
             '><i class="icon-trash"></i></a></td>');
+    }
     $("#file-table").append(tr);
     var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
     $("#inner-filesTitle").append(input);
@@ -295,7 +298,7 @@ var form = function(url){
 		$.getJSON(
 				url+'events/getactions?id='+me.data('id'),
 				function(data){
-					var container = $("#inner-Ficheréflexe");
+					var container = $("#inner-actionsTitle");
 					container.html("");
 					//save id of model
 					var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
@@ -306,11 +309,19 @@ var form = function(url){
 						content += "<td><span class=\"label label-"+value.impactstyle+"\">"+value.impactname+"</span></td>";
 						content += "<td>"+value.name+"</td>";
 						content += '</tr>';
+                                                $("#actionsTitle span").html(parseInt($("#actionsTitle span").html())+1);
 					});						
 					content += '</tbody></table>';
 					container.html(content);
 				}
 		);
+                //getfiles
+                $.getJSON(url+'events/getfiles?id='+me.data('id'),
+                        function(data){
+                            $.each(data, function(i, item){
+                                formAddFile(item.id, item.datas, false);
+                            });
+                        });
 	});
 
 	//choosing a category
@@ -396,11 +407,6 @@ var form = function(url){
 		}
 		updateHourTitle();
 	});
-
-	//ajout formulaire fichier
-        $(document).on('click', '#addfile', function(){
-            $("#file-upload-form").load(url+'file/form');
-        });
         
 	$("#event").on('click', '.delete-file', function(){
 		$("a#delete-file-href").attr('href', $(this).data("href"));
@@ -423,7 +429,7 @@ var form = function(url){
 	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin
 	$('#event').on('change', 'select[name=status]', function(){
 		var select = $(this);
-		if(select.val() == '3' && !$("#punctual").is(':checked') && $('.timepicker-form#end ~ input[type=hidden]').val() == ''){
+		if(select.val() == '3' && !$("#punctual").is(':checked') && $('input[name=enddate]').val() == ''){
 			$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
                         $("#event #hack-tooltip").show().tooltip({
 				container :'body',
@@ -435,7 +441,7 @@ var form = function(url){
 		}
 	});
 	
-	$("#event").on('change', '.timepicker-form#end ~ input[type=hidden]', function(){
+	$("#event").on('change', 'input[name=enddate]', function(){
 		$("select[name=status]").trigger('change');
 	});
 	

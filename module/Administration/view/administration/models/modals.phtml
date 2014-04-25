@@ -23,12 +23,32 @@ echo $this->modalwindow("confirm-delete-model",
 						"<p>Voulez-vous vraiment supprimer le modèle <em><span id=\"model_name\"></span></em> ?</p>
 						<p>La fiche réflexe associée sera supprimée également.</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-model-href\">Confirmer</a>
-						<a id=\"cancel-form\" class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+						<a id=\"cancel-form\" class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+ 
+//modal windows to modify or delete file
+echo $this->modalwindow("confirm-delete-file",
+					"<h3>Confirmer la suppression du fichier ?</h3>",
+					"",
+					null,
+					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
+					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
+					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+
+echo $this->modalwindow(
+    "add-file",
+    "<h3>Ajout d'un fichier</h3>",
+    "",
+    "<div id=\"file-upload-form\"></div>"
+    );
+
+?>
 
 </div>
 
 <?php $this->inlineScript()->captureStart();?>
 
-models('<?php echo $this->url('administration')?>');
+models('<?php echo $this->url('administration')?>', '<?php echo $this->url('application')?>');
+
+fileupload('<?php echo $this->url('application')?>');
 
 <?php $this->inlineScript()->captureEnd();?>

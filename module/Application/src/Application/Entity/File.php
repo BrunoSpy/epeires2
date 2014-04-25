@@ -55,7 +55,7 @@ class File {
 	protected $filename;
 
         /**
-	 * @ORM\ManyToMany(targetEntity="Event", inversedBy="files")
+	 * @ORM\ManyToMany(targetEntity="AbstractEvent", inversedBy="files")
 	 * @ORM\JoinTable(name="file_event")
 	 */
 	protected $events;
@@ -72,7 +72,7 @@ class File {
 		return $this->events;
 	}
 	
-	public function addEvent(Event $event){
+	public function addEvent(AbstractEvent $event){
 		$this->events->add($event);
 	}
 	
@@ -88,7 +88,7 @@ class File {
 		}
 	}
         
-        public function removeEvent(Event $event){
+        public function removeEvent(AbstractEvent $event){
             $this->events->removeElement($event);
         }
         

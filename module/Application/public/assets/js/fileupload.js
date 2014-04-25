@@ -1,5 +1,10 @@
 var fileupload = function(url) {
 
+    //ajout formulaire fichier
+    $(document).on('click', '#addfile', function(){
+        $("#file-upload-form").load(url+'file/form');
+    });
+
     /**
      * Error Message functions
      */
@@ -57,11 +62,11 @@ var fileupload = function(url) {
     }
 
     $(document).on('change', 'input[name=file]', function(event) {
-        if ($.trim($('input[name=name]').val()).length == 0) {
-            $('input[name=name]').val($(this).val());
+        if ($.trim($('#file-upload-form input[name=name]').val()).length == 0) {
+            $('#file-upload-form input[name=name]').val($(this).val());
         }
         //disable url
-        $("input[name=url]").prop('disabled', true);
+        $("#file-upload-form input[name=url]").prop('disabled', true);
         
         //check fileSize
         //TODO rendre ça paramétrable
@@ -81,8 +86,8 @@ var fileupload = function(url) {
         
     });
 
-    $(document).on('change', 'input[name=url]', function(){
-        $('input[name=name]').val($(this).val().replace(/^.*[\\\/]/, ''));
+    $(document).on('change', '#file-upload-form input[name=url]', function(){
+        $('#file-upload-form input[name=name]').val($(this).val().replace(/^.*[\\\/]/, ''));
     });
 
     $(document).on('click', '#cancel-form-upload', function(){

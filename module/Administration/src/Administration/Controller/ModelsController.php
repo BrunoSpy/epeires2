@@ -175,6 +175,18 @@ class ModelsController extends FormController
     				}
     			}
     			$pevent->setImpact($objectManager->getRepository('Application\Entity\Impact')->find($post['impact']));
+                        
+                        //fichiers
+                        if(isset($post['fichiers']) && is_array($post['fichiers'])){
+                            foreach ($post['fichiers'] as $key => $value){
+                                $file = $objectManager->getRepository("Application\Entity\File")->find($key);
+                                if($file){
+                                    $file->addEvent($pevent);
+                                    $objectManager->persist($file);
+                                }
+                            }
+                        }
+                        
     			$objectManager->persist($pevent);
     			//predefined custom field values
     			if(isset($post['custom_fields'])){
@@ -193,6 +205,9 @@ class ModelsController extends FormController
     					}
     				}
     			}
+                        
+                        
+                        
     			$objectManager->flush();
     			$this->flashMessenger()->addSuccessMessage("Modèle ".$pevent->getName()." enregistré.");
     			$this->processFormMessages($form->getMessages());
@@ -232,9 +247,12 @@ class ModelsController extends FormController
     	$parentid = $this->params()->fromQuery('parentid', null);
     	$catid = $this->params()->fromQuery('catid', null);
 
-    	if($id){//fiche reflexe
+    	if($id){//fiche reflexe et fichiers
     		$childs = $objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$id), array('place'=>'asc'));
     		$viewmodel->setVariables(array('childs' => $childs));
+                
+                $files = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id)->getFiles();
+                $viewmodel->setVariable('files', $files);
     	}
     	
     	$getform = $this->getForm($id, $parentid, $catid, null, $action);
@@ -386,4 +404,40 @@ class ModelsController extends FormController
      	return new JsonModel($zonefilters);
      }
      
+    public function deletefileAction() {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $fileid = $this->params()->fromQuery('id', null);
+        $modelid = $this->params()->fromQuery('modelid', null);
+        $messages = array();
+
+        if ($fileid) {
+            $file = $objectManager->getRepository('Application\Entity\File')->find($fileid);
+            if ($modelid && $file) {
+                $model = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($modelid);
+                if ($model) {
+                    $file->removeEvent($model);
+                    $objectManager->persist($file);
+                } else {
+                    $messages['error'][] = "Impossible d'enlever le fichier de l'évènement";
+                }
+            } else {
+                if ($file) {
+                    $objectManager->remove($file);
+                    $messages['success'][] = "Fichier correctement ajouté";
+                } else {
+                    $messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
+                }
+            }
+            try {
+                $objectManager->flush();
+            } catch (\Exception $ex) {
+                $messages['error'][] = $ex->getMessage();
+            }
+        } else {
+            $messages['error'][] = "Impossible de supprimer le fichier : aucun paramètre trouvé.";
+        }
+        return new JsonModel($messages);
+    }
+
 }

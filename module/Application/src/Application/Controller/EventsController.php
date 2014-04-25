@@ -728,6 +728,23 @@ class EventsController extends ZoneController {
     	return new JsonModel($json);
     }
     
+    public function getfilesAction(){
+        $eventid = $this->params()->fromQuery('id', null);
+        $json = array();
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->find($eventid)->getFiles() as $file){
+            $data = array();
+            $data['reference'] = $file->getReference();
+            $data['path'] = $file->getPath();
+            $data['name'] = ($file->getName() ? $file->getName() : $file->getFilename());
+            $fichier = array();
+            $fichier['id'] = $file->getId();
+            $fichier['datas'] = $data;
+            $json[] = $fichier;
+        }
+        return new JsonModel($json);
+    }
+    
     /**
      * Return {'open' => '<true or false>'}
      * @return \Zend\View\Model\JsonModel

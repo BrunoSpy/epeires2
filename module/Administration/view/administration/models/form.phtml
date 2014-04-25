@@ -65,6 +65,34 @@ if($this->form->has('custom_fields')){
 }
 ?>
 </div>
+    
+<div id="model-files">
+    <h4 style="display: inline;">Fichiers</h4>
+    <a class="pull-right btn btn-mini" href="#add-file" data-toggle="modal" id="addfile">Ajouter fichier</a>
+    <table class="table table-hover" id="file-table">
+        <tbody>
+            <?php
+            $countfiles = count($this->files);
+            foreach ($this->files as $file){
+                echo '<tr id="file_'.$file->getId().'">';
+                    echo '<td>'.($file->getReference() ? '#'.$file->getReference() : "N/A").'</td>';
+                    echo '<td><a href="'.$this->basePath().$file->getPath().'" rel="external">'
+                            . ($file->getName() ? $file->getName() : $file->getFilename()) . '</a></td>';
+                    echo '<td><a href="'.$this->basePath().$file->getPath().'" rel="external"><i class="icon-download"></i></a></td>';
+                    echo '<td><a class="delete-file" href="#confirm-delete-file" '
+                            . 'data-id="'.$file->getId().'" '
+                            . 'data-name="'.($file->getName() ? $file->getName() : $file->getFilename()).'" '
+                            . 'data-toggle="modal" '
+                            . 'data-href="'.$this->url('administration', array('controller' => 'models', 'action' => 'deletefile'), 
+                                                                        array('query' => array('id' => $file->getId(), 'modelid' => $this->form->get('id')->getValue()))).'">'
+                            . '<i class="icon-trash"></a></td>';
+                echo '</tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+    
+</div>
 <?php if(!$this->action){ //action form cannot have actions?>
 <?php if($this->form->get('id')->getValue()){?>
 <div>
