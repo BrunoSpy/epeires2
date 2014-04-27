@@ -354,7 +354,7 @@ var form = function(url){
 					$("#Horairesid").removeClass("disabled");
 					$("#Descriptionid").removeClass("disabled");
 					$("#filesTitle").removeClass("disabled");
-					$("#Alarmesid").removeClass("disabled");
+					$("#alarmTitle").removeClass("disabled");
 					$("input[name='submit']").prop('disabled', false);
 					
 			});
@@ -363,7 +363,7 @@ var form = function(url){
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
 			$("#Descriptionid").addClass("disabled");
-			$("#Alarmesid").addClass("disabled");
+			$("#alarmTitle").addClass("disabled");
 			$("#filesTitle").addClass("disabled");
 			$("input[name='submit']").prop('disabled', true);
 			$("input[name='category']").val('');
@@ -448,17 +448,27 @@ var form = function(url){
 	//fenêtre de création d'alarme
 	$(document).on('click', '#addalarm', function(e){
 		e.preventDefault();
-		$('#alarm-form').load(url+'alarm/form');
+		$('#alarm-form').load(url+'alarm/form', function(){
+                    $("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart"});
+                });
 	});
 	
 	$('#alarm-form').on('submit', function(e){
 		e.preventDefault();
 		//deux cas : nouvelle alarme ou modif
 		var me = $(this);
+                var form = $("#alarm-form form");
 		if(me.find('input[name=id]').val()){
 			
 		} else {
-			
+			$.post(form.attr('action'), form.serialize(), function(data){
+                            if(!data.messages['error']){
+                                $("#add-alarm").modal('hide');
+                                //ajouter ligne dans le tableau
+                                //ajouter fieldset caché
+                            }
+                            displayMessages(data.messages);
+                        });
 		}
 	});
 };

@@ -21,8 +21,34 @@ use Application\Entity\Event;
 */
 class AlarmController extends FormController {
 
+  public function saveAction() {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $json = array();
+        $messages = array();
+        if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+                
+                $datas = $this->getForm();
+                $form = $datas['form'];
+                $form->setData($post);
+                $form->setPreferFormInputFilter(true);
+                if($form->isValid()){
+                    $event = $form->getData();
+                    $alarm = array();
+                    $alarm['datetime'] = $event->getStartDate()->format(DATE_RFC2822);
+                    $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
+                    $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
+                    $json['alarm'] = $alarm;
+                } else {
+                    $this->processFormMessages($form->getMessages(), $messages);
+                }
+                
+        }
+        $json['messages'] = $messages;
+        return new \Zend\View\Model\JsonModel($json);
+    }
 
-  public function formAction(){
+    public function formAction(){
 	$request = $this->getRequest();
 	$viewmodel = new ViewModel();
 	//disable layout if request by Ajax
@@ -49,15 +75,28 @@ class AlarmController extends FormController {
 		
 	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
 	
+        
 	if($alarmid){
 		$alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
 		if($alarm) {
 			$form->bind($alarm);
 			$form->setData($alarm->getArrayCopy());
 		}
-	}
-	
-	$form->add(array(
+	} else {
+            //alarm : punctual, impact : info, organisation, category : alarm, status : open (closed when aknowledged)
+            //all these information are just here to validate form
+            $form->get('impact')->setValue(5);
+            $form->get('punctual')->setValue(true);
+            $form->get('category')->setValue($alarmcat->getId());
+            $form->get('status')->setValue($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open'=>true, 'defaut'=>true))->getId());
+            if($this->zfcUserAuthentication()->hasIdentity()){
+                $form->get('organisation')->setValue($this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId());
+            } else {
+                throw new \ZfcRbac\Exception\UnauthorizedException();
+            }
+        }
+
+        $form->add(array(
 		'name' => 'submit',
 		'attributes' => array(
 			'type' => 'submit',

@@ -1,7 +1,7 @@
 
 
 <?php 
-$this->form->setAttribute('action', $this->url('application', array('controller'=>'events', 'action'=>'savealarm')));
+$this->form->setAttribute('action', $this->url('application', array('controller'=>'alarm', 'action'=>'save')));
 $this->form->setAttribute('class', 'form-horizontal');
 $this->form->prepare();
 
@@ -15,8 +15,18 @@ echo $this->formHidden($this->form->get('id'));
 
 echo $this->formHidden($this->form->get('parent'));
 
+echo $this->formHidden($this->form->get('punctual'));
+
+echo $this->formHidden($this->form->get('category'));
+
+echo $this->formHidden($this->form->get('status'));
+
+echo $this->formHidden($this->form->get('organisation'));
+
+echo $this->formHidden($this->form->get('impact'));
+
 echo $this->controlGroup($this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-			$this->formDateTimeEnhanced(true, "startalarm") . $this->formHidden($this->form->get('startdate')), array('class'=>'compact'));
+			$this->formInput($this->form->get('startdate')), array('class'=>'compact'));
 
 foreach ($this->form->get('custom_fields')->getElements() as $element){
 	echo $this->customFieldGroup($element);
