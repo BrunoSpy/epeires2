@@ -315,7 +315,7 @@ var timeline = {
 				}
 				var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
 				timeline_elmt.append(categ);
-				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
+				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-30px', 'width':30+'px', 'height':'auto', 'text-align':'center',
 					'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
 				//	var separateur = $('<div class="elmt separateur"></div>');
 				//	timeline_elmt.append(separateur);
@@ -604,6 +604,10 @@ var timeline = {
 			$(elmt).append(elmt_deb);
 			elmt_fin = $('<p class="elmt_fin"></p>');
 			$(elmt).append(elmt_fin);
+			but_deb = $('<button type="button" class="but_deb btn"></button>');
+			$(elmt).append(but_deb);
+			but_fin = $('<button type="button" class="but_fin btn"></button>');
+			$(elmt).append(but_fin);
 			move_deb = $('<p class="move_deb"></p>');
 			$(elmt_rect).append(move_deb);
 			move_fin = $('<p class="move_fin"></p>');
@@ -643,10 +647,14 @@ var timeline = {
 	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
 			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
 			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
-			elmt_deb.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
-				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
-			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '40px', 'text-align' : 'center', 
-				'font-style':'italic', 'background-color':'LemonChiffon', 'z_index':2});
+			elmt_deb.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+				'font-style':'italic', 'background-color':'Chartreuse', 'z_index':2});
+			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+				'font-style':'italic', 'background-color':'Chartreuse', 'z_index':2});
+			but_deb.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+				'font-style':'italic', 'z_index':2});
+			but_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+				'font-style':'italic', 'z_index':2});
 			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
 				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
 			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
@@ -659,7 +667,7 @@ var timeline = {
 			elmt_warn.toggle(200);
 		},
 		// positionnement des éléments d'un évènement sur la ligne dédiée
-		position_ligne: function (base_element, id, type, x0, wid, impt) {
+		position_ligne: function (base_element, id, type, x0, wid, impt, type) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
 			var warn = type[2];
@@ -681,6 +689,8 @@ var timeline = {
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var elmt_fin = elmt.find('.elmt_fin');
+			var but_deb = elmt.find('.but_deb');
+			var but_fin = elmt.find('.but_fin');
 			var move_deb = elmt.find('.move_deb');
 			var move_fin = elmt.find('.move_fin');
 			var lien = elmt.find('.no_lien');
@@ -751,6 +761,26 @@ var timeline = {
 				elmt_star.css({'left': x0+5+'px'});
 				break;
 			}
+			but_deb.removeClass("btn-warning btn-danger");
+			but_fin.removeClass("btn-warning btn-danger");
+			if (sts < 4) {
+				elmt_deb.removeClass("show");
+				but_deb.addClass("show");
+			} else {
+				elmt_deb.addClass("show");
+				but_deb.removeClass("show");
+			}
+			if (sts < 11) {
+				elmt_fin.removeClass("show");
+				but_fin.addClass("show");				
+			} else {
+				elmt_fin.removeClass("show");
+				but_fin.addClass("show");
+			}
+			if (sts == 2) { but_deb.addClass("btn btn-warning"); } 
+			else if (sts == 3) { but_deb.addClass("btn btn-danger"); }
+			else if (sts == 5) { but_fin.addClass("btn btn-warning");}
+			else if (sts == 6) { but_fin.addClass("btn btn-danger"); }			
 			lien.hide();
 			if (ponctuel) {
 				lien.addClass('lien');
@@ -760,6 +790,7 @@ var timeline = {
 				b1_pos = x1+2;
 				// on place l'heure à droite
 				elmt_fin.css({'left': x2+15+'px'});
+				but_fin.css({'left': x2+15+'px'});
 				elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 				txt_wid = elmt_txt.outerWidth();
 				x2 += 60;
@@ -781,11 +812,13 @@ var timeline = {
 					x_left += 30;
 					elmt_txt.css({'left': x_left+2+'px'});
 					// on place l'heure de début à gauche
-					x1 -= 50;
+					x1 -= 90;
 					elmt_deb.css({'left': x1+'px'});
+					but_deb.css({'left': x1+'px'});
 					// on place l'heure de fin à droite
 					elmt_fin.css({'left': x2+5+'px'});
-					x2 += 50;
+					but_fin.css({'left': x2+15+'px'});
+					x2 += 90;
 				} else {
 						if ((wid > 30*2+10) || (l_fin == 2)) {
 							elmt_b1.css({'left': x1+2+'px'});
@@ -800,14 +833,16 @@ var timeline = {
 						elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 						txt_wid = elmt_txt.outerWidth();
 						// on place l'heure de début à gauche
-						x1 -= 50;
+						x1 -= 90;
 						elmt_deb.css({'left': x1+'px'});
+						but_deb.css({'left': x1+'px'});
 						// on place l'heure de fin à droite
 						elmt_fin.css({'left': x2+5+'px'});
-						x2 += 50;
+						but_fin.css({'left': x2+5+'px'});
+						x2 += 90;
 						if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
 							elmt_txt.css({'left': x2+'px'});
-							lien.css({'left': x2-50+'px','width':50+'px'});	
+							lien.css({'left': x2-90+'px','width':90+'px'});	
 							x2 += 30;
 						} else { // sinon on le met à gauche
 							lien.css({'left': x1-2+'px','width':x0-x1+'px'});
@@ -891,6 +926,8 @@ var timeline = {
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var elmt_fin = elmt.find('.elmt_fin');
+			var but_deb = elmt.find('.but_deb');
+			var but_fin = elmt.find('.but_fin');
 			// positionnement des différents objets sur la ligne elmt
 			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
 			var h1, h2, hDeb, hFin;
@@ -911,9 +948,9 @@ var timeline = {
 				}
 			} else { hDeb = ""; }
 			elmt_deb.text(hDeb);
-			elmt_deb.css({'top':h1+'px'});
 			var data_deb = elmt_deb[0];
 			jQuery.data(data_deb,"d_deb",d_debut);
+			but_deb.text(hDeb+" ?");
 			// ajout de l'heure de fin
 			if (d_fin > 0) {
 				var fin_min = d_fin.getMinutes();
@@ -934,9 +971,9 @@ var timeline = {
 				hFin = ""; 
 			}
 			elmt_fin.text(hFin);
-			elmt_fin.css({'top':h2+'px'});
 			var data_fin = elmt_fin[0];
 			jQuery.data(data_fin,"d_fin",d_fin);
+			but_fin.text(hFin+" ?");
 		},
 		// affichage en fonction du statut (à modifier)
 		set_status: function (base_element, id, type) {
@@ -1089,7 +1126,7 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
 			y_temp += dy + delt_ligne;
 		},
 		// création d'un évènement timeline supplémentaire
@@ -1108,7 +1145,7 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
 			if (impt_on) {	
 				timeline.impt_on(base_element, tab);
 			}
@@ -1143,7 +1180,7 @@ var timeline = {
 			elmt.remove();
 			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
 			if (impt_on) {	
 				timeline.impt_on(base_element, tab);
 			}
@@ -1353,8 +1390,14 @@ $(document).ready(function() {
 		var elmt_star = elmt.find('.elmt_star');
 		if (! elmt_star.hasClass('nodisp')) {elmt_star.show();}
 		elmt.find('.show').show();
-		elmt.find('.elmt_deb').show();
-		elmt.find('.elmt_fin').show();
+		var elmt_deb = elmt.find('.elmt_deb');
+		if (elmt_deb.hasClass('show')) {elmt_deb.show();}
+		var elmt_fin = elmt.find('.elmt_fin');
+		if (elmt_fin.hasClass('show')) {elmt_fin.show();}
+		var but_deb = elmt.find('.but_deb');
+		if (but_deb.hasClass('show')) {but_deb.show();}
+		var deb_fin = elmt.find('.but_fin');
+		if (deb_fin.hasClass('show')) {deb_fin.show();}
 		elmt.find('.elmt_qm_fleche').hide();
 		elmt.find('.lien').hide();
 		var move_fin = elmt.find('.move_fin');
@@ -1373,6 +1416,8 @@ $(document).ready(function() {
 		elmt.find('.show').hide();
 		elmt.find('.elmt_deb').hide();
 		elmt.find('.elmt_fin').hide();
+		elmt.find('.but_deb').hide();
+		elmt.find('.but_fin').hide();
 		elmt.find('.elmt_qm_fleche').show();
 		elmt.find('.lien').show();
 		elmt.find('.move_fin').hide();
@@ -1579,12 +1624,21 @@ $(document).ready(function() {
 			var delt, delt2;
 			var elmt = $(this).closest('.elmt');
 			elmt.addClass('on_drag');
+			var ss_elmt = elmt[0];
+			var id = jQuery.data(ss_elmt, "ident");
+			var n = corresp[id];
+			if (tab[n][8] == "Confirmé") { tab[n][8] = "Terminé"; }
 			var rect_elmt = elmt.find('.rect_elmt');
 			var rect_width = rect_elmt.width();
 			var move_fin = $(this);
 			var elmt_star = elmt.find('.elmt_star');
 			var pix_time = 30*60000/lar_unit;
 			var elmt_fin = elmt.find('.elmt_fin');
+			var but_fin = elmt.find('.but_fin');
+			but_fin.removeClass("show");
+			elmt_fin.addClass("show");
+			elmt_fin.show();
+			but_fin.hide();
 			var data_fin = elmt_fin[0];
 			var d_fin = jQuery.data(data_fin,"d_fin");
 			temp_fin = new Date();
@@ -1633,12 +1687,21 @@ $(document).ready(function() {
 			var delt, delt2;
 			var elmt = $(this).closest('.elmt');
 			elmt.addClass('on_drag');
+			var ss_elmt = elmt[0];
+			var id = jQuery.data(ss_elmt, "ident");
+			var n = corresp[id];
+			if (tab[n][8] == "Nouveau") { tab[n][8] = "Confirmé"; }
 			var move_fin = elmt.find('.move_fin'); 
 			var rect_elmt = elmt.find('.rect_elmt');
 			var elmt_compl = elmt.find('.complement');
 			var rect_width = rect_elmt.width();
 			var elmt_star = elmt.find('.elmt_star');
 			var elmt_deb = elmt.find('.elmt_deb');
+			var but_deb = elmt.find('.but_deb');
+			elmt_deb.addClass("show");
+			elmt_deb.show();
+			but_deb.removeClass("show");
+			but_deb.hide();
 			var pix_time = 30*60000/lar_unit;
 			var elmt_fin = elmt.find('.elmt_fin');
 			var data_deb = elmt_deb[0];

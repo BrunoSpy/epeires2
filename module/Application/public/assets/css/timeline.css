@@ -49,7 +49,7 @@
 }
 
 
-.elmt .elmt_deb, .elmt .elmt_fin {
+.elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
 	display:none;
 } 
 
