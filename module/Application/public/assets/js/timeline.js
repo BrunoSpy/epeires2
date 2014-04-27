@@ -886,6 +886,7 @@ var timeline = {
 		},
 		// saisie du texte des champs heure et du champ label
 		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
+		//	alert(d_debut+"///"+d_fin);
 			var elmt = base_element.find('.ident'+id);
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
@@ -987,15 +988,18 @@ var timeline = {
 			var l_fin = 0;
 			var warn;
 			var sts;
-			
 			if (ponct == 0) {
-				// flèche gauche
-				if (d_debut < d_ref_deb) { l_deb = 1;}
-				// flèche droite
-				if (d_fin > d_ref_fin) { l_fin = 1;}
-				if (d_fin < d_ref_deb) { l_fin = 2;}
-				// pas de fin
-				if (d_fin == -1) { l_fin = -1; }
+				if (d_fin-d_debut == 0) {
+					l_fin = 3;
+				} else {
+					// flèche gauche
+					if (d_debut < d_ref_deb) { l_deb = 1;}
+					// flèche droite
+					if (d_fin > d_ref_fin) { l_fin = 1;}
+					if (d_fin < d_ref_deb) { l_fin = 2;}
+					// pas de fin
+					if (d_fin == -1) { l_fin = -1; }
+				}
 			} else { 
 				// ponctuel
 				l_fin = 3;
@@ -1154,7 +1158,7 @@ var timeline = {
 			var j;
 			var id = -1;
 			var len = tab.length;
-			var d_now = new Date();
+		//	var d_now = new Date();
 			$.each(data, function(key, value) {
 				d_debut = new Date(value.start_date);
 				if (value.punctual == true) {
@@ -1166,6 +1170,7 @@ var timeline = {
 						d_fin = new Date(value.end_date);
 					}
 				}
+				alert(d_debut+"   ///   "+d_fin);
 				j = 0;
 				while (j < len && id == -1) {
 					if (tab[j][0] == key) { id = j; }
@@ -1184,7 +1189,7 @@ var timeline = {
 					tab[id][7][l]= [k, val];
 					l ++;
 				});*/
-				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
+/*				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
 						(d_fin.toLocaleDateString() == d_now.toLocaleDateString())) {
 					if (cpt_journee.indexOf(i) == -1) {
@@ -1194,10 +1199,10 @@ var timeline = {
 					if (cpt_journee.indexOf(i) > 0) {
 						cpt_journee.splice(cpt_journee.indexOf(i),1);
 					}
-				}
+				}*/
 				$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
-				var base = timel.find('.Base');
+				var base_element = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
 				var other = timel.find('.timeline_other');
 				var elmt = timeline_content.find('.ident'+key);
