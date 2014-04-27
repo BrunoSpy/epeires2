@@ -121,6 +121,22 @@ class Event extends AbstractEvent{
 		return $this->status;
 	}
 	
+        /**
+         * 
+         * @param \DateTime $startdate Warning : Timezone == UTC !
+         * @param \DateTime $enddate Warning : Timezone == UTC !
+         */
+        public function setDates(\DateTime $startdate,  \DateTime $enddate){
+            if($startdate && $enddate){
+                if($startdate <= $enddate){
+                    $this->startdate = $startdate;
+                    $this->enddate = $enddate;
+                    return true;
+                }
+            }
+            return false;
+        }
+        
   	public function setStartdate($startdate = null){
             if($this->enddate == null || ($this->enddate != null && $this->enddate >= $startdate) ) {
                 $this->startdate = $startdate;
@@ -134,11 +150,6 @@ class Event extends AbstractEvent{
  		return $this->startdate;
  	}
 	
-        /**
-         * 
-         * @param type $enddate
-         * @return boolean
-         */
 	public function setEnddate($enddate = null){
             if($this->startdate == null) {
                 //impossible de ficer la date de fin si aucune date de début

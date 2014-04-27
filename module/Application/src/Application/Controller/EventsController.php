@@ -299,7 +299,6 @@ class EventsController extends ZoneController {
     				
     				$form = $this->getSkeletonForm($event);
     				$form->setPreferFormInputFilter(true);
-    					
     				$form->setData($post);
     				 
     				if($form->isValid()){
@@ -315,16 +314,16 @@ class EventsController extends ZoneController {
     						$startdate = new \DateTime($post['startdate']);
     						$startdate->setTimezone(new \DateTimeZone("UTC"));
     						$startdate->add(new \DateInterval("PT".$offset."S"));
-    						$event->setStartdate($startdate);
+                                                if(isset($post['enddate']) && !empty($post['enddate'])) {
+                                                    $enddate = new \DateTime($post['enddate']);
+                                                    $enddate->setTimezone(new \DateTimeZone("UTC"));
+                                                    $enddate->add(new \DateInterval("PT".$offset."S"));
+                                                    $event->setDates($startdate, $enddate);
+                                                } else {
+                                                    $event->setStartdate($startdate);
+                                                }
     					}
-    					if(isset($post['enddate']) && !empty($post['enddate'])){
-    						$offset = date("Z");
-    						$enddate = new \DateTime($post['enddate']);
-    						$enddate->setTimezone(new \DateTimeZone("UTC"));
-    						$enddate->add(new \DateInterval("PT".$offset."S"));
-    						$event->setEnddate($enddate);
-    					}
-    					 
+                                                                                
     					//save optional datas
     					if(isset($post['custom_fields'])){
     						foreach ($post['custom_fields'] as $key => $value){
