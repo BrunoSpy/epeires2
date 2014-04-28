@@ -1207,7 +1207,7 @@ var timeline = {
 						d_fin = new Date(value.end_date);
 					}
 				}
-				alert(d_debut+"   ///   "+d_fin);
+			//	alert(d_debut+"   ///   "+d_fin);
 				j = 0;
 				while (j < len && id == -1) {
 					if (tab[j][0] == key) { id = j; }
