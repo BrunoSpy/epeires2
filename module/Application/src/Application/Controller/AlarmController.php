@@ -34,6 +34,11 @@ class AlarmController extends FormController {
                 $form->setPreferFormInputFilter(true);
                 if($form->isValid()){
                     $event = $form->getData();
+                    $offset = date("Z");
+                    $startdate = clone $event->getStartDate();
+                    $startdate->setTimezone(new \DateTimeZone("UTC"));
+                    $startdate->add(new \DateInterval("PT".$offset."S"));
+                    $event->setStartDate($startdate);
                     $alarm = array();
                     $alarm['datetime'] = $event->getStartDate()->format(DATE_RFC2822);
                     $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];

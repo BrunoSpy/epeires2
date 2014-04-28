@@ -294,7 +294,7 @@ class EventsController extends ZoneController {
     					$credentials = true;
     				}
     			}
-    			
+    			                        
     			if($credentials){
     				
     				$form = $this->getSkeletonForm($event);
@@ -399,6 +399,38 @@ class EventsController extends ZoneController {
     						}
     					}
     					
+                                        //alertes
+                                        if(isset($post['alarm']) && is_array($post['alarm'])){
+                                            foreach ($post['alarm'] as $key => $alarmpost){
+                                                $alarm = new Event();
+                                                $alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]);
+                                                $alarm->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                                                $alarm->setOrganisation($event->getOrganisation());
+                                                $alarm->setParent($event);
+                                                $alarm->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open'=> true, 'defaut'=>true)));
+                                                $offset = date("Z");
+    						$startdate = new \DateTime($alarmpost['date']);
+    						$startdate->setTimezone(new \DateTimeZone("UTC"));
+    						$startdate->add(new \DateInterval("PT".$offset."S"));
+                                                $alarm->setStartdate($startdate);
+                                                $alarm->setPunctual(true);
+                                                $alarm->setImpact($objectManager->getRepository('Application\Entity\Impact')->find(5));
+                                                $name = new CustomFieldValue();
+                                                $name->setCustomField($alarm->getCategory()->getNamefield());
+                                                $name->setValue($alarmpost['name']);
+                                                $name->setEvent($alarm);
+                                                $alarm->addCustomFieldValue($name);
+                                                $comment = new CustomFieldValue();
+                                                $comment->setCustomField($alarm->getCategory()->getTextfield());
+                                                $comment->setValue($alarmpost['comment']);
+                                                $comment->setEvent($alarm);
+                                                $alarm->addCustomFieldValue($comment);
+                                                $objectManager->persist($name);
+                                                $objectManager->persist($comment);
+                                                $objectManager->persist($alarm);
+                                            }
+                                        }
+                                        
     					if($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { //passage au statut terminé ou annulé
     						//on termine les évènements fils de type fréquence
     						foreach ($event->getChildren() as $child){
@@ -420,7 +452,6 @@ class EventsController extends ZoneController {
     					} catch(\Exception $e){
     						$messages['error'][] = $e->getMessage();
     					}
-    					
     				} else {
     					//erase event
     					$event = null;
@@ -971,7 +1002,9 @@ class EventsController extends ZoneController {
     	
     	$actions = array();
     	foreach ($event->getChildren() as $child){
-    		$actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
+            if($child->getStatus() != null) { //Status is required but...
+                $actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
+            }
     	}
     	$json['actions'] = $actions;
     	

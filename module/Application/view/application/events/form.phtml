@@ -1,4 +1,5 @@
 <?php
+
 	if($this->event && !$this->copy){
 		//form de modif
 		$this->form->setAttributes(array(
@@ -110,10 +111,19 @@
 
 		$html .= '<table class="table table-hover" id="alarm-table">';
 		if($this->event){
+                    $formatter = \IntlDateFormatter::create(
+                                \Locale::getDefault(),
+                                \IntlDateFormatter::FULL,
+                                \IntlDateFormatter::FULL,
+                                'UTC',
+                                \IntlDateFormatter::GREGORIAN,
+                                'HH:mm');
 			foreach($this->event->getChildren() as $child) {
-				if($child->getCategory() instanceof AlarmCategory){
+				if($child->getCategory() instanceof Application\Entity\AlarmCategory){
+                                        $countalarm++;
 					$html .= '<tr data-id="'.$child->getId().'">';
-					$html .= '<tr></tr>';
+					$html .= '<td></td>';
+                                        $html .= '<td>'.$formatter->format($child->getStartDate()).'</td>';
 					$html .= '<td>'.$this->eventname($child).'</td>';
 					$html .= "</tr>";
 				}
@@ -124,7 +134,7 @@
 			$html .= "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
 		}
 		
-		echo $this->accordionGroup("Alarmes <span class=\"badge pull-right\">".$countalarm."</span>", $html, array('data-parent'=>'form', 'title_id' => "alarmTitle"));
+		echo $this->accordionGroup("Alertes <span class=\"badge pull-right\">".$countalarm."</span>", $html, array('data-parent'=>'form', 'title_id' => "alarmTitle"));
 		
 		$titleclass="";	
 		$html = "";	

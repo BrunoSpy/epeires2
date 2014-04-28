@@ -464,8 +464,22 @@ var form = function(url){
 			$.post(form.attr('action'), form.serialize(), function(data){
                             if(!data.messages['error']){
                                 $("#add-alarm").modal('hide');
+                                var alarm = data.alarm;
+                                var d = new Date(alarm.datetime);
                                 //ajouter ligne dans le tableau
+                                var tr = $("<tr></tr>");
+                                tr.append('<td></td>');
+                                tr.append("<td>"+d.getUTCHours()+":"+d.getUTCMinutes()+"</td>");
+                                tr.append('<td>'+alarm.name+'</td>');
+                                $('#alarm-table').append(tr);
                                 //ajouter fieldset caché
+                                var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
+                                var timestring = d.getUTCHours()+":"+d.getUTCMinutes();
+                                var count = Math.floor($("#inner-alarmTitle input").length / 3);
+                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
+                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
+                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
+                                $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
                             }
                             displayMessages(data.messages);
                         });
