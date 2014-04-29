@@ -178,7 +178,7 @@ $(document).ready(function(){
 		);
 	});
     
-    $(document).on('click', '.block-header', function(){
+    $(document).on('click', '#fiche .block-header', function(){
         var me = $(this);
         var content = me.siblings(".block-content");
         //change icon
