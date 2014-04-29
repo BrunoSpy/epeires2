@@ -157,6 +157,11 @@ class EventService implements ServiceManagerAwareInterface{
                                                                 $new = $this->em->getRepository('Application\Entity\Status')->find($value['id']);
                                                                 $historyentry['oldvalue'] =  $old->getName();
 								$historyentry['newvalue'] = $new->getName();
+                                                        } else if($key == 'impact') {
+                                                            $old = $this->em->getRepository('Application\Entity\Impact')->find($ref[$key]['id']);
+                                                            $new = $this->em->getRepository('Application\Entity\Impact')->find($value['id']);
+                                                            $historyentry['oldvalue'] =  $old->getName();
+                                                            $historyentry['newvalue'] = $new->getName();
                                                         } else {
 								$historyentry['oldvalue'] = $ref[$key];
 								$historyentry['newvalue'] = $value;
