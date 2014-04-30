@@ -11,12 +11,18 @@
 		'action' => $this->url('application', array('controller'=>'events', 'action'=>'create')),
 		'class' => 'form-horizontal'));
 	}
-	
+        
+	if($this->isGranted('events.status')){
+            $this->form->setAttributes(array('data-modstatus' => true));
+        }
+        
 	$this->form->prepare();
 	echo $this->form()->openTag($this->form);
 	echo $this->formHidden($this->form->get('id'));
 	echo $this->formHidden($this->form->get('category'));
 	?>
+
+
 	
 	<div class="accordion" id="form">
 		<?php 
