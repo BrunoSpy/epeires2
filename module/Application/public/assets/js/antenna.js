@@ -218,7 +218,9 @@ var antenna = function(url){
 	
 	$(document).on('click', '.brouillage', function(e){
 		$("#frequency_name").html($(this).data('freqname'));
-		$('#form-brouillage').load(url+'frequencies/formbrouillage?id='+$(this).data('freqid'));
+		$('#form-brouillage').load(url+'frequencies/formbrouillage?id='+$(this).data('freqid'), function(){
+                    $("input[name=startdate]").timepickerform({'id':'start', 'required':true});
+                });
 	});
 	
 	$('#form-brouillage').on('submit', function(e){
