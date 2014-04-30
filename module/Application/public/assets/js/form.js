@@ -45,6 +45,10 @@ var form = function(url){
 				updateHours();
 			}
 		}
+                //change status if needed and authorized
+                if($('#event form').data('modstatus') && $("#event select[name=status] option:selected").val() == '1'){
+                    $("#event select[name=status] option[value=2]").prop('selected', true);
+                }
 		updateHourTitle();
 	});
 	
@@ -387,7 +391,12 @@ var form = function(url){
 							$("#custom_fields").html(data);
 						}			
 					);
-					$('#Modèlesid').trigger('click');
+                                        //don't open model panel if there is no model
+                                        if($('#predfined_events table').length > 0) {
+                                            $('#Modèlesid').trigger('click');
+                                        } else {
+                                            $("#Horairesid").trigger('click');
+                                        }
 				}
 			);
 			$("input[name='category']").val(subcat_value);
