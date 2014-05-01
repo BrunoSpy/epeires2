@@ -9,6 +9,7 @@ namespace Application\Controller;
 
 use Zend\Form\Form;
 use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
@@ -105,12 +106,105 @@ class AlarmController extends FormController {
 		'name' => 'submit',
 		'attributes' => array(
 			'type' => 'submit',
-			'value' => 'Enregistrer',
+			'value' => 'Ajouter',
 			'class' => 'btn btn-primary',
 		),
 	));
 	
 	return array('form' => $form, 'alarm'=>$alarm);
     }
+    
+    public function deleteAction(){
+	    $alarmid = $this->params()->fromQuery('id', null);
+	    $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	    $messages = array();
+	    
+	    if($alarmid){
+		    $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
+		    if($alarm){
+			$objectManager->remove($alarm);
+			try {
+				$objectManager->flush();
+				$messages['success'][] = "Alarme supprimée";
+			} catch (\Exception $e) {
+				$messages['error'][] = $e->getMessage();
+			}
+		    } else {
+			$messages['error'][] = "Aucune alarme correspondante trouvée";    
+		    }
+	    } else {
+		$messages['error'][] = "Aucune alarme à supprimer";    
+	    }
+	    return new JsonModel($messages);
+    }
 
+    public function getalarmsAction(){
+	$alarms = array();
+	$lastupdate = $this->params()->fromQuery('lastupdate', null);
+	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	$eventservice = $this->getServiceLocator()->get('EventService');
+	$now = new \DateTime('NOW');
+	$now->setTimezone(new \DateTimeZone("UTC"));
+	$qbEvents = $objectManager->createQueryBuilder();
+	$qbEvents->select(array('e', 'cat'))
+		->from('Application\Entity\Event', 'e')
+		->innerJoin('e.category', 'cat')
+		->andWhere('cat INSTANCE OF Application\Entity\AlarmCategory')
+		->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future
+		->andWhere($qbEvents->expr()->in('e.status', '?2'))		//alarme nouvelle
+	->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+				2 => array(1,2)));
+	if($lastupdate && $lastupdate != 'undefined'){
+		$from = new \DateTime($lastupdate);
+		//uniquement les alarmes créés et modifiées à partir de lastupdate
+		$qbEvents->andWhere($qbEvents->expr()->gte('e.last_modified_on', '?3'))
+		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+				2 => array(1,2),
+				3 => $from->format('Y-m-d H:i:s')));
+	}
+	$result = $qbEvents->getQuery()->getResult();
+	foreach($result as $alarm){
+		$alarmjson = array();
+		$alarmjson['id'] = $alarm->getId();
+		$alarmjson['datetime'] = $alarm->getStartDate()->format(DATE_RFC2822);
+		$parentname = $eventservice->getName($alarm->getParent());
+		$alarmname = $eventservice->getName($alarm);
+		$alarmcomment = "";
+		foreach($alarm->getCustomFieldsValues() as $value){
+			if($value->getCustomField()->getId() == $alarm->getCategory()->getTextfield()->getId()){
+				$alarmcomment = nl2br($value->getValue());
+			}
+		}
+		$alarmjson['text'] = "<b>Alerte pour ".$parentname."</b><br />"
+				. $alarmname." : <br />".$alarmcomment;
+		
+		$alarms[] = $alarmjson;
+	}
+	return new JsonModel($alarms);
+    }
+    
+    public function confirmAction(){
+	$id = $this->params()->fromQuery('id', null);
+	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	$messages = array();
+	if($id){
+		$alarm = $objectManager->getRepository('Application\Entity\Event')->find($id);
+		if($alarm){
+			$status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
+			$alarm->setStatus($status);
+			$objectManager->persist($alarm);
+			try {
+				$objectManager->flush();
+				$messages['success'][] = "Alarme acquittée";
+			} catch (\Exception $e) {
+				$messages['error'][] = $e->getMessage();
+			}
+		} else {
+			$messages['error'][] = "Aucune alarme trouvée";
+		}
+	} else {
+		$messages['error'][] = "Argument incorrect";
+	}
+	return new JsonModel($messages);
+    }
 }

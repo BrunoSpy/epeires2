@@ -128,9 +128,24 @@
 				if($child->getCategory() instanceof Application\Entity\AlarmCategory){
                                         $countalarm++;
 					$html .= '<tr data-id="'.$child->getId().'">';
-					$html .= '<td></td>';
+					$now = new \DateTime();
+					$now->setTimezone(new \DateTimeZone("UTC"));
+					if($child->getStatus()->isOpen()){
+						if($child->getStartDate() < $now) {
+							$html .= '<td><i class="icon-warning-sign"></i></td>';
+						} else {
+							$html .= '<td><i class="icon-bell"></i></td>';
+						}
+					} else {
+						if($child->getStartDate() < $now) {
+							$html .= '<td><i class="icon-ok"></i></td>';
+						} else {
+							$html .= '<td><i class="icon-warning-sign"></i></td>';
+						}
+					}
                                         $html .= '<td>'.$formatter->format($child->getStartDate()).'</td>';
 					$html .= '<td>'.$this->eventname($child).'</td>';
+					$html .= '<td><a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
 					$html .= "</tr>";
 				}
 			}

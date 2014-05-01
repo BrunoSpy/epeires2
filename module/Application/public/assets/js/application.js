@@ -1,3 +1,14 @@
+//add show/hide events
+(function ($) {
+	$.each(['show', 'hide'], function (i, ev) {
+		var el = $.fn[ev];
+		$.fn[ev] = function () {
+			this.trigger(ev);
+			return el.apply(this, arguments);
+		};
+	});
+})(jQuery);
+
 function updateClock ( )
     {
     var currentTime = new Date ( );
@@ -17,6 +28,14 @@ function updateClock ( )
         
  };
 
+function FormatNumberLength(num, length) {
+    var r = "" + num;
+    while (r.length < length) {
+        r = "0" + r;
+    }
+    return r;
+}
+ 
 var displayMessages = function(messages){
 	if(messages['success']){
 		$.each(messages.success, function(key, value){
@@ -72,9 +91,57 @@ var displayMessages = function(messages){
      url = urlt;
  };
  
+ //stockage des timers
+ var alarms = new Array();
+ var lastupdate;
+ var timerAlarm;
+ var updateAlarms = function(){
+	 $.getJSON(url+'alarm/getalarms?lastupdate='+lastupdate, function(data){
+		 lastupdate = new Date();
+		 $.each(data, function(i, item){
+			 //si l'alarme existe déjà, on l'annule
+			 if(alarms[item.id]){
+				clearTimeout(alarms[item.id]);
+			 }
+			 var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
+			 var timer = setTimeout(function(){
+				 var n = noty({
+					text:item.text,
+					type:'warning',
+					layout:'topCenter',
+					timeout:false,
+					callback: {
+						onClose: function(){
+							$.post(url+'alarm/confirm?id='+item.id, function(data){displayMessages(data);});
+						}
+					}
+				});
+			}, delta);
+			alarms[item.id] = timer;
+		});
+	}).always(function(){
+		setTimeout(updateAlarms, 50000);
+	});
+};
+
+var pauseUpdateAlarms = function(){
+	clearTimeout(timerAlarm);
+}
+
+var restoreUpdateAlarms = function(){
+	clearTimeout(timerAlarm);
+	updateAlarms();
+}
+
+var deleteAlarm = function(id){
+	clearTimeout(alarms[id]);
+};
+
 $(document).ready(function(){
 	
    setInterval('updateClock()', 1000);
+   
+   updateAlarms();
    
    $.datepicker.regional[ "fr" ];
    
@@ -226,7 +293,8 @@ $(document).ready(function(){
         dd.empty();
         dd.append(span);
     });
-
+    
+    
 });
 
 

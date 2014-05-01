@@ -83,6 +83,7 @@ class FileController extends FormController {
                         }
                     } else if (isset ($data['url'])){
                         //unused : forbidden by browsers
+                        //TODO find a way to allow links to local files...
                         $file->setFileName($data['name']);
                         $file->setPath('file:///'.$data['url']);
                     }

@@ -172,13 +172,17 @@ var form = function(url){
 	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-evt").slideUp('fast');
+		$("#create-evt").offset({top:8, left:5});
+		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
+		restoreUpdateAlarms();
 	});
-
+	
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
 			$("#create-evt").slideUp('fast');
 			$("#create-evt").offset({top:8, left:5});
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
+			restoreUpdateAlarms();
 		} else {
 			$("#create-evt").offset({top: $(".navbar").offset().top+$(".navbar").outerHeight(), left:3.5});
 			$("#event").html('<div>Chargement...</div>');
@@ -196,6 +200,7 @@ var form = function(url){
 			);
 			$("#create-evt").slideDown('fast');
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+			pauseUpdateAlarms();
 		}
 	});
 	
@@ -212,6 +217,7 @@ var form = function(url){
 			$("#Horairesid").trigger('click');
 		});
 		$("#search-results").offset({top:0, left:0});
+		pauseUpdateAlarms();
 	});
 	
 	//clic sur copie d'un évènement
@@ -227,6 +233,7 @@ var form = function(url){
 			$("#Horairesid").trigger('click');
 		});
 		$("#search-results").offset({top:0, left:0});
+		pauseUpdateAlarms();
 	});
 	
 	//click sur modification d'un évènement
@@ -455,7 +462,7 @@ var form = function(url){
 	});
 	
 	//fenêtre de création d'alarme
-	$(document).on('click', '#addalarm', function(e){
+	$('#event').on('click', '#addalarm', function(e){
 		e.preventDefault();
 		$('#alarm-form').load(url+'alarm/form', function(){
                     $("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart"});
@@ -475,23 +482,55 @@ var form = function(url){
                                 $("#add-alarm").modal('hide');
                                 var alarm = data.alarm;
                                 var d = new Date(alarm.datetime);
+				var count = Math.floor($("#inner-alarmTitle input").length / 3);
                                 //ajouter ligne dans le tableau
-                                var tr = $("<tr></tr>");
-                                tr.append('<td></td>');
-                                tr.append("<td>"+d.getUTCHours()+":"+d.getUTCMinutes()+"</td>");
+                                var tr = $('<tr data-id="fake-'+count+'"></tr>');
+				//si date est déjà passée : warning
+				var now = new Date();
+				if(now - d > 0) {
+					tr.append('<td><i class="icon-warning-sign"></i></td>');
+				} else {
+					tr.append('<td><i class="icon-bell"></i></td>');
+				}
+                                tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
                                 tr.append('<td>'+alarm.name+'</td>');
+				tr.append('<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>');
                                 $('#alarm-table').append(tr);
                                 //ajouter fieldset caché
                                 var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
-                                var timestring = d.getUTCHours()+":"+d.getUTCMinutes();
-                                var count = Math.floor($("#inner-alarmTitle input").length / 3);
-                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
-                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
-                                $('#inner-alarmTitle').append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
+                                var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
+				var div = $('<div id="alarm-fake-'+count+'"></div>');
+                                div.append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
+				$('#inner-alarmTitle').append(div);
                                 $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
                             }
                             displayMessages(data.messages);
                         });
 		}
+	});
+
+	$("#event").on('click', '.delete-fake-alarm', function(e){
+		e.preventDefault();
+		var me = $(this);
+		var id = me.closest('tr').data('id');
+		me.closest('tr').remove();
+		$('div#alarm-'+id).remove();
+		$('#alarmTitle span').html(parseInt($('#alarmTitle span').html())-1);
+	});
+	
+	$("#event").on('click', '.delete-alarm', function(e){
+		e.preventDefault();
+		var me = $(this);
+		var id = me.closest('tr').data('id');
+		$.post(url+'alarm/delete?id='+id, function(data){
+			if(!data['error']){
+				me.closest('tr').remove();
+				$('#alarmTitle span').html(parseInt($('#alarmTitle span').html())-1);
+				deleteAlarm(id);
+			}
+			displayMessages(data);
+		});
 	});
 };
