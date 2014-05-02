@@ -32,7 +32,13 @@ class ModelsController extends FormController
     	$actions = array();
     	foreach ($models as $model){
     		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model));
-    		$actions[$model->getId()] = count($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria));
+    		$count = 0;
+    		foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria) as $child){
+			if($child->getCategory() instanceof Application\Entity\ActionCategory){
+				$count++;
+			}
+    		}
+    		$actions[$model->getId()] = $count;
     	}
     	
     	$viewmodel->setVariables(array('models'=> $models, 'actions'=>$actions));
@@ -175,6 +181,34 @@ class ModelsController extends FormController
     				}
     			}
     			$pevent->setImpact($objectManager->getRepository('Application\Entity\Impact')->find($post['impact']));
+                        
+                        //alarms
+                        if(isset($post['alarm']) && is_array($post['alarm'])){
+				foreach($post['alarm'] as $key => $alarmpost){
+					$alarm = new PredefinedEvent();
+					$alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]);
+					$alarm->setOrganisation($pevent->getOrganisation());
+					$alarm->setParent($pevent);
+					$alarm->setListable(false);
+					$alarm->setSearchable(false);
+					$alarm->setStartdateDelta($alarmpost['delta']);
+					$alarm->setPunctual(true);
+					$alarm->setImpact($objectManager->getRepository('Application\Entity\Impact')->find(5));
+					$name = new CustomFieldValue();
+					$name->setCustomField($alarm->getCategory()->getNamefield());
+					$name->setValue($alarmpost['name']);
+					$name->setEvent($alarm);
+					$alarm->addCustomFieldValue($name);
+					$comment = new CustomFieldValue();
+					$comment->setCustomField($alarm->getCategory()->getTextfield());
+					$comment->setValue($alarmpost['comment']);
+					$comment->setEvent($alarm);
+					$alarm->addCustomFieldValue($comment);
+					$objectManager->persist($name);
+					$objectManager->persist($comment);
+					$objectManager->persist($alarm);
+				}
+                        }
                         
                         //fichiers
                         if(isset($post['fichiers']) && is_array($post['fichiers'])){
@@ -440,4 +474,115 @@ class ModelsController extends FormController
         return new JsonModel($messages);
     }
 
+  public function validatealarmAction() {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $json = array();
+        $messages = array();
+        if($this->getRequest()->isPost()){
+    		$post = $this->getRequest()->getPost();
+                
+                $datas = $this->getForm();
+                $form = $datas['form'];
+                $form->setData($post);
+                $form->setPreferFormInputFilter(true);
+                if($form->isValid()){
+                    $event = $form->getData();
+                    $alarm = array();
+                    $alarm['delta'] = $event->getStartdateDelta();
+                    $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
+                    $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
+                    $json['alarm'] = $alarm;
+                } else {
+                    $this->processFormMessages($form->getMessages(), $messages);
+                }
+                
+        }
+        $json['messages'] = $messages;
+        return new \Zend\View\Model\JsonModel($json);
+    }
+
+    public function formalarmAction(){
+	$request = $this->getRequest();
+	$viewmodel = new ViewModel();
+	//disable layout if request by Ajax
+	$viewmodel->setTerminal($request->isXmlHttpRequest());
+
+	$alarmid = $this->params()->fromQuery('id', null);
+	
+	$getform = $this->getAlarmForm($alarmid);
+
+	$viewmodel->setVariables(array('form' => $getform['form'],'alarmid'=>$alarmid));
+	return $viewmodel;
+  }
+  
+  private function getAlarmForm($alarmid = null){
+	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	$alarm = new PredefinedEvent();
+	
+	$builder = new AnnotationBuilder();
+	$form = $builder->createForm($alarm);
+	$form->setHydrator(new DoctrineObject($objectManager))
+	     ->setObject($alarm);
+	
+	$alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; //TODO
+		
+	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
+        
+        $form->get('startdatedelta')->setAttributes(array('required'=> 'required', 'placeholder'=>'Durée en minutes'));
+        
+        
+	if($alarmid){
+		$alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);
+		if($alarm) {
+			$form->bind($alarm);
+			$form->setData($alarm->getArrayCopy());
+		}
+	} else {
+            //alarm : punctual, impact : info, organisation, category : alarm, status : open (closed when aknowledged)
+            //all these information are just here to validate form
+            $form->get('impact')->setValue(5);
+            $form->get('punctual')->setValue(true);
+            $form->get('category')->setValue($alarmcat->getId());
+            if($this->zfcUserAuthentication()->hasIdentity()){
+                $form->get('organisation')->setValue($this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId());
+            } else {
+                throw new \ZfcRbac\Exception\UnauthorizedException();
+            }
+        }
+
+        $form->add(array(
+		'name' => 'submit',
+		'attributes' => array(
+			'type' => 'submit',
+			'value' => 'Ajouter',
+			'class' => 'btn btn-primary',
+		),
+	));
+	
+	return array('form' => $form, 'alarm'=>$alarm);
+    }
+    
+    public function deletealarmAction(){
+	    $alarmid = $this->params()->fromQuery('id', null);
+	    $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	    $messages = array();
+	    
+	    if($alarmid){
+		    $alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);
+		    if($alarm){
+			$objectManager->remove($alarm);
+			try {
+				$objectManager->flush();
+				$messages['success'][] = "Alarme supprimée";
+			} catch (\Exception $e) {
+				$messages['error'][] = $e->getMessage();
+			}
+		    } else {
+			$messages['error'][] = "Aucune alarme correspondante trouvée";    
+		    }
+	    } else {
+		$messages['error'][] = "Aucune alarme à supprimer";    
+	    }
+	    return new JsonModel($messages);
+    }
 }

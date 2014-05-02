@@ -348,48 +348,51 @@ class EventsController extends ZoneController {
     						$parentID = $post['modelid'];
     						//get actions
     						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
-    							$child = new Event();
-    							$child->setParent($event);
-    							$child->setOrganisation($event->getOrganisation());
-    							$child->createFromPredefinedEvent($action);
-    							$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
-    							//customfields
-    							foreach($action->getCustomFieldsValues() as $customvalue){
-    								$newcustomvalue = new CustomFieldValue();
-    								$newcustomvalue->setEvent($child);
-    								$newcustomvalue->setCustomField($customvalue->getCustomField());
-    								$newcustomvalue->setValue($customvalue->getValue());
-    								$objectManager->persist($newcustomvalue);
+						if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+								$child = new Event();
+								$child->setParent($event);
+								$child->setOrganisation($event->getOrganisation());
+								$child->createFromPredefinedEvent($action);
+								$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
+								//customfields
+								foreach($action->getCustomFieldsValues() as $customvalue){
+									$newcustomvalue = new CustomFieldValue();
+									$newcustomvalue->setEvent($child);
+									$newcustomvalue->setCustomField($customvalue->getCustomField());
+									$newcustomvalue->setValue($customvalue->getValue());
+									$objectManager->persist($newcustomvalue);
+								}
+								$objectManager->persist($child);
     							}
-    							$objectManager->persist($child);
     						}
     					}
     					//associated actions to be copied
     					if(isset($post['fromeventid'])){
     						$parentID = $post['fromeventid'];
     						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
-    							$child = new Event();
-    							$child->setParent($event);
-    							$child->setOrganisation($event->getOrganisation());
-    							$child->setCategory($action->getCategory());
-    							$child->setImpact($action->getImpact());
-    							$child->setPunctual($action->isPunctual());
-    							$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));   								
-    							foreach ($action->getCustomFieldsValues() as $customvalue){
-    								$newcustomvalue = new CustomFieldValue();
-    								$newcustomvalue->setEvent($child);
-    								$newcustomvalue->setCustomField($customvalue->getCustomField());
-    								$newcustomvalue->setValue($customvalue->getValue());
-    								$objectManager->persist($newcustomvalue);
+							if($action->getCategory() instanceof \Application\Entity\ActionCategory){
+								$child = new Event();
+								$child->setParent($event);
+								$child->setOrganisation($event->getOrganisation());
+								$child->setCategory($action->getCategory());
+								$child->setImpact($action->getImpact());
+								$child->setPunctual($action->isPunctual());
+								$child->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));   								
+								foreach ($action->getCustomFieldsValues() as $customvalue){
+									$newcustomvalue = new CustomFieldValue();
+									$newcustomvalue->setEvent($child);
+									$newcustomvalue->setCustomField($customvalue->getCustomField());
+									$newcustomvalue->setValue($customvalue->getValue());
+									$objectManager->persist($newcustomvalue);
+								}
+								$objectManager->persist($child);
     							}
-    							$objectManager->persist($child);
     						}
     					}
     					
     					//fichiers
     					if(isset($post['fichiers']) && is_array($post['fichiers'])){
     						foreach ($post['fichiers'] as $key => $f){
-    							
                                                     $file = $objectManager->getRepository('Application\Entity\File')->find($key);
                                                     if($file){
                                                         $file->addEvent($event);
@@ -773,6 +776,30 @@ class EventsController extends ZoneController {
             $json[] = $fichier;
         }
         return new JsonModel($json);
+    }
+    
+    public function getalarmsAction(){
+	$eventid = $this->params()->fromQuery('id', null);
+	$json = array();
+	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+	foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $eventid)) as $alarm){
+		if($alarm->getCategory() instanceof \Application\Entity\AlarmCategory){
+			$alarmjson = array();
+			$now = new \DateTime('NOW');
+			$now->setTimezone(new \DateTimeZone("UTC"));
+			$now->add(new \DateInterval('PT'.$alarm->getStartdateDelta().'M'));
+			$alarmjson['datetime'] = $now->format(DATE_RFC2822);
+			foreach($alarm->getCustomFieldsValues() as $value){
+				if($value->getCustomField()->getId() == $alarm->getCategory()->getFieldname()->getId()){
+					$alarmjson['name'] = $value->getValue();
+				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getTextField()->getId()) {
+					$alarmjson['comment'] = $value->getValue();
+				}
+			}
+			$json[] = $alarmjson;
+		}
+	}
+	return new JsonModel($json);
     }
     
     /**

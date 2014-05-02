@@ -20,6 +20,33 @@ var formAddFile = function(fileId, formData, modifiable){
     $("#filesTitle span").html(parseInt($("#filesTitle span").html())+1);
 }
 
+var formAddAlarm = function(alarm) {
+	var d = new Date(alarm.datetime);
+	var count = Math.floor($("#inner-alarmTitle input").length / 3);
+        //ajouter ligne dans le tableau
+        var tr = $('<tr data-id="fake-'+count+'"></tr>');
+	//si date est déjà passée : warning
+	var now = new Date();
+	if(now - d > 0) {
+		tr.append('<td><i class="icon-warning-sign"></i></td>');
+	} else {
+		tr.append('<td><i class="icon-bell"></i></td>');
+	}
+        tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        tr.append('<td>'+alarm.name+'</td>');
+	tr.append('<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>');
+        $('#alarm-table').append(tr);
+        //ajouter fieldset caché
+        var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
+        var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
+	var div = $('<div id="alarm-fake-'+count+'"></div>');
+        div.append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
+        div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
+        div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
+	$('#inner-alarmTitle').append(div);
+        $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
+}
+
 var form = function(url){
 	
         urlt = url;
@@ -333,6 +360,13 @@ var form = function(url){
                                 formAddFile(item.id, item.datas, false);
                             });
                         });
+		//getalerts
+		$.getJSON(url+'events/getalarms?id='+me.data('id'), 
+			function(data){
+				$.each(data, function(i, item){
+					formAddAlarm(item);
+				});  
+			});
 	});
 
 	//choosing a category
@@ -399,7 +433,7 @@ var form = function(url){
 						}			
 					);
                                         //don't open model panel if there is no model
-                                        if($('#predfined_events table').length > 0) {
+                                        if($('#predefined_events table').length > 0) {
                                             $('#Modèlesid').trigger('click');
                                         } else {
                                             $("#Horairesid").trigger('click');
@@ -481,30 +515,7 @@ var form = function(url){
                             if(!data.messages['error']){
                                 $("#add-alarm").modal('hide');
                                 var alarm = data.alarm;
-                                var d = new Date(alarm.datetime);
-				var count = Math.floor($("#inner-alarmTitle input").length / 3);
-                                //ajouter ligne dans le tableau
-                                var tr = $('<tr data-id="fake-'+count+'"></tr>');
-				//si date est déjà passée : warning
-				var now = new Date();
-				if(now - d > 0) {
-					tr.append('<td><i class="icon-warning-sign"></i></td>');
-				} else {
-					tr.append('<td><i class="icon-bell"></i></td>');
-				}
-                                tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
-                                tr.append('<td>'+alarm.name+'</td>');
-				tr.append('<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>');
-                                $('#alarm-table').append(tr);
-                                //ajouter fieldset caché
-                                var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
-                                var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
-				var div = $('<div id="alarm-fake-'+count+'"></div>');
-                                div.append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
-				$('#inner-alarmTitle').append(div);
-                                $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
+				formAddAlarm(alarm);
                             }
                             displayMessages(data.messages);
                         });

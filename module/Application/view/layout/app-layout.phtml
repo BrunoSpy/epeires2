@@ -20,9 +20,11 @@
 
         <!-- Scripts -->
         <?php
-        echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
+        echo $this->headScript()
+			->prependFile($this->basePath() . '/assets/js/application.js')
                         ->prependFile($this->basePath() . '/assets/js/headerbar.js')
                         ->prependFile($this->basePath() . '/assets/js/search.js')
+                        ->prependFile($this->basePath() . '/assets/js/alarm.js')
                         ->prependFile($this->basePath() . '/assets/js/form.js')
                         ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
                         ->prependFile($this->basePath() . '/assets/js/application.js')
@@ -156,6 +158,9 @@
 		
 		//init header bar
 		headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
+		
+		//gestion des alertes
+		setURLAlarm('<?php echo $this->url('application');?>');
 		
 		<?php $this->inlineScript()->captureEnd();?>
         

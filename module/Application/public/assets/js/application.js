@@ -1,13 +1,7 @@
-//add show/hide events
-(function ($) {
-	$.each(['show', 'hide'], function (i, ev) {
-		var el = $.fn[ev];
-		$.fn[ev] = function () {
-			this.trigger(ev);
-			return el.apply(this, arguments);
-		};
-	});
-})(jQuery);
+/**
+ * Licence : AGPL
+ * @author Bruno Spyckerelle
+ */
 
 function updateClock ( )
     {
@@ -90,57 +84,11 @@ var displayMessages = function(messages){
  var setURL = function(urlt){
      url = urlt;
  };
- 
- //stockage des timers
- var alarms = new Array();
- var lastupdate;
- var timerAlarm;
- var updateAlarms = function(){
-	 $.getJSON(url+'alarm/getalarms?lastupdate='+lastupdate, function(data){
-		 lastupdate = new Date();
-		 $.each(data, function(i, item){
-			 //si l'alarme existe déjà, on l'annule
-			 if(alarms[item.id]){
-				clearTimeout(alarms[item.id]);
-			 }
-			 var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
-			 var timer = setTimeout(function(){
-				 var n = noty({
-					text:item.text,
-					type:'warning',
-					layout:'topCenter',
-					timeout:false,
-					callback: {
-						onClose: function(){
-							$.post(url+'alarm/confirm?id='+item.id, function(data){displayMessages(data);});
-						}
-					}
-				});
-			}, delta);
-			alarms[item.id] = timer;
-		});
-	}).always(function(){
-		setTimeout(updateAlarms, 50000);
-	});
-};
-
-var pauseUpdateAlarms = function(){
-	clearTimeout(timerAlarm);
-}
-
-var restoreUpdateAlarms = function(){
-	clearTimeout(timerAlarm);
-	updateAlarms();
-}
-
-var deleteAlarm = function(id){
-	clearTimeout(alarms[id]);
-};
 
 $(document).ready(function(){
 	
    setInterval('updateClock()', 1000);
-   
+      
    updateAlarms();
    
    $.datepicker.regional[ "fr" ];
@@ -157,8 +105,7 @@ $(document).ready(function(){
    }).parent().addClass('active') //on ajoute la classe active
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
    
-   $("a[data-toggle=tooltip]").tooltip();
-   $("th[data-toggle=tooltip]").tooltip();
+   $("a[data-toggle=tooltip], th[data-toggle=tooltip], td[data-toggle=tooltip]").tooltip();
    
    $("a[data-toggle=popover]").popover();
    

@@ -61,6 +61,7 @@
 #predefined_events .table tr:first-child td,
 #file-table.table tr:first-child td,
 #panel table.table tr:first-child td,
+#alert-table.table tr:first-child td,
 #alarm-table.table tr:first-child td{
     border: none;
 }

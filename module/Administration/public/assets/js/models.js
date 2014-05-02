@@ -283,5 +283,53 @@ var models = function(url, urlapp){
                 displayMessages(data);
             }, 'json');
         });
-
+	
+	/* ************************************ */
+	/*    Fenêtre création d'une alerte     */
+	/* ************************************ */
+	
+	$('#model-container').on('click', '#addalert', function(){
+		$("#alert-form").load(url+'/models/formalarm');
+	});
+	
+	$('#add-alert').on('submit', function(e){
+		e.preventDefault();
+		var me = $('#add-alert form');
+		$.post(me.attr('action'), me.serialize(), function(data){
+			if(!data.messages['error']){
+				$('#add-alert').modal('hide');
+				var count = Math.floor($("#alerts input").length / 3);
+				var tr = $('<tr id=fake-"'+count+'"></tr>');
+				tr.append('<td>'+data.alarm.delta+' min.</td>');
+				tr.append('<td>'+data.alarm.name+'</td>');
+				tr.append('<td><a href="#" class="delete-fake-alarm"><i class="icon-trash"></i></a></td>');
+				var div = $('<div id="alarm-fake"'+count+'></div>');
+				div.append('<input type="hidden" name="alarm['+count+'][delta]" value="'+data.alarm.delta+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+data.alarm.name+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+data.alarm.comment+'"></input>');
+				$("#alerts").append(div);
+				$('#alerts tbody').append(tr);
+			}
+			displayMessages(data.messages);
+		});
+	});
+	
+	$('#model-container').on('click', '.delete-fake-alarm', function(e){
+		e.preventDefault();
+		var me = $(this);
+		var id = me.closest('tr').data('id');
+		me.closest('tr').remove();
+		$('#model-container #alarm-'+id).remove();
+	});
+	
+	$('#model-container').on('click', '.delete-alarm', function(e){
+		e.preventDefault();
+		var me = $(this);
+		$.post(url+'/models/deletealarm?id='+$(this).data('id'), function(data){
+			if(!data['error']){
+				me.closest('tr').remove();
+			}
+			displayMessages(data);
+		});
+	});
 };
