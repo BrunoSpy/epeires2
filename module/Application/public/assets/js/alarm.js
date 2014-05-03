@@ -6,31 +6,44 @@ var setURLAlarm = function(urlt){
 
 //stockage des timers
 var alarms = new Array();
+var alarmsnoty = new Array();
 var lastupdate;
 var timerAlarm;
 var updateAlarms = function(){
-	$.getJSON(url+'alarm/getalarms?lastupdate='+lastupdate, function(data){
+	$.getJSON(url+'alarm/getalarms'+(typeof lastupdate != 'undefined' ? '?lastupdate='+lastupdate.toUTCString() : ''), function(data){
 		lastupdate = new Date();
 		$.each(data, function(i, item){
-			//si l'alarme existe déjà, on l'annule
-			if(alarms[item.id]){
-				clearTimeout(alarms[item.id]);
-			}
-			var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
-			var timer = setTimeout(function(){
-				var n = noty({
-					text:item.text,
-					type:'warning',
-					layout:'topCenter',
-					timeout:false,
-					callback: {
-						onClose: function(){
-							$.post(url+'alarm/confirm?id='+item.id, function(data){displayMessages(data);});
+			if(item.status == 3) { //alarme acquittée par ailleurs
+				//si l'alarme est ouverte et acquittée, on la ferme
+				if(alarmsnoty[item.id]){
+					alarmsnoty[item.id].close();
+					delete(alarmsnoty[item.id]);
+				}
+			} else {
+				//si l'alarme existe déjà, on l'annule
+				if(alarms[item.id]){
+					clearTimeout(alarms[item.id]);
+					delete(alarms[item.id]);
+				}
+
+				var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
+				var timer = setTimeout(function(){
+					alarmsnoty[item.id] = noty({
+						text:item.text,
+						type:'warning',
+						layout:'topCenter',
+						timeout:false,
+						callback: {
+							onClose: function(){
+								$.post(url+'alarm/confirm?id='+item.id, function(data){displayMessages(data);});
+								delete(alarmsnoty[item.id]);
+							}
 						}
-					}
-				});
-			}, delta);
-			alarms[item.id] = timer;
+					});
+				}, delta);
+				alarms[item.id] = timer;
+			}
+
 		});
 	}).always(function(){
 		timerAlarm = setTimeout(updateAlarms, 50000);

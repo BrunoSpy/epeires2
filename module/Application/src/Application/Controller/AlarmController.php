@@ -138,72 +138,99 @@ class AlarmController extends FormController {
 	    return new JsonModel($messages);
     }
 
+    /*
+     * Alarmes futures non acquittées.
+     * Seules les alarmes de l'organisation de l'utilisateur sont envoyées.
+     * Si lastupdate contient une date valide, envoit les alarmes modifiées depuis lastupdate, y compris celles acquittées
+     * Dans tous les cas : nécessite d'être identifié.
+     */
     public function getalarmsAction(){
 	$alarms = array();
-	$lastupdate = $this->params()->fromQuery('lastupdate', null);
-	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-	$eventservice = $this->getServiceLocator()->get('EventService');
-	$now = new \DateTime('NOW');
-	$now->setTimezone(new \DateTimeZone("UTC"));
-	$qbEvents = $objectManager->createQueryBuilder();
-	$qbEvents->select(array('e', 'cat'))
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\AlarmCategory')
-		->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future
-		->andWhere($qbEvents->expr()->in('e.status', '?2'))		//alarme nouvelle
-	->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-				2 => array(1,2)));
-	if($lastupdate && $lastupdate != 'undefined'){
-		$from = new \DateTime($lastupdate);
-		//uniquement les alarmes créés et modifiées à partir de lastupdate
-		$qbEvents->andWhere($qbEvents->expr()->gte('e.last_modified_on', '?3'))
-		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-				2 => array(1,2),
-				3 => $from->format('Y-m-d H:i:s')));
-	}
-	$result = $qbEvents->getQuery()->getResult();
-	foreach($result as $alarm){
-		$alarmjson = array();
-		$alarmjson['id'] = $alarm->getId();
-		$alarmjson['datetime'] = $alarm->getStartDate()->format(DATE_RFC2822);
-		$parentname = $eventservice->getName($alarm->getParent());
-		$alarmname = $eventservice->getName($alarm);
-		$alarmcomment = "";
-		foreach($alarm->getCustomFieldsValues() as $value){
-			if($value->getCustomField()->getId() == $alarm->getCategory()->getTextfield()->getId()){
-				$alarmcomment = nl2br($value->getValue());
-			}
+	if($this->zfcUserAuthentication()->hasIdentity()) {
+		$organisation = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId();
+		$lastupdate = $this->params()->fromQuery('lastupdate', null);
+		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$eventservice = $this->getServiceLocator()->get('EventService');
+		$now = new \DateTime('NOW');
+		$now->setTimezone(new \DateTimeZone("UTC"));
+		$qbEvents = $objectManager->createQueryBuilder();
+		$qbEvents->select(array('e', 'cat'))
+			->from('Application\Entity\Event', 'e')
+			->innerJoin('e.category', 'cat')
+			->andWhere($qbEvents->expr()->eq('e.organisation', $organisation))
+			->andWhere('cat INSTANCE OF Application\Entity\AlarmCategory')
+			->andWhere($qbEvents->expr()->in('e.status', '?2'));		//statut alarme
+		if($lastupdate && $lastupdate != 'undefined'){
+			$from = new \DateTime($lastupdate);
+			$from->setTimezone(new \DateTimeZone("UTC"));
+			//uniquement les alarmes créés et modifiées à partir de lastupdate
+			$qbEvents->andWhere($qbEvents->expr()->gte('e.last_modified_on', '?1'))
+			->setParameters(array(2 => array(1,2,3),
+					1 => $from->format('Y-m-d H:i:s')));
+		} else {
+			$qbEvents->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future
+			->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
+					2 => array(1,2)));
 		}
-		$alarmjson['text'] = "<b>Alerte pour ".$parentname."</b><br />"
-				. $alarmname." : <br />".$alarmcomment;
-		
-		$alarms[] = $alarmjson;
+		$result = $qbEvents->getQuery()->getResult();
+		foreach($result as $alarm){
+			$alarmjson = array();
+			$alarmjson['id'] = $alarm->getId();
+			$alarmjson['datetime'] = $alarm->getStartDate()->format(DATE_RFC2822);
+			$alarmjson['status'] = $alarm->getStatus()->getId();
+			$parentname = $eventservice->getName($alarm->getParent());
+			$alarmname = $eventservice->getName($alarm);
+			$alarmcomment = "";
+			foreach($alarm->getCustomFieldsValues() as $value){
+				if($value->getCustomField()->getId() == $alarm->getCategory()->getTextfield()->getId()){
+					$alarmcomment = nl2br($value->getValue());
+				}
+			}
+			$alarmjson['text'] = "<b>Alerte pour ".$parentname."</b><br />"
+					. $alarmname." : <br />".$alarmcomment;
+			
+			$alarms[] = $alarmjson;
+		}
 	}
 	return new JsonModel($alarms);
     }
     
+    /**
+     * Change le statut d'une alarme à Terminé
+     * Nécessite d'être identifié et d'avoir les droits events.status
+     */
     public function confirmAction(){
-	$id = $this->params()->fromQuery('id', null);
-	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-	$messages = array();
-	if($id){
-		$alarm = $objectManager->getRepository('Application\Entity\Event')->find($id);
-		if($alarm){
-			$status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
-			$alarm->setStatus($status);
-			$objectManager->persist($alarm);
-			try {
-				$objectManager->flush();
-				$messages['success'][] = "Alarme acquittée";
-			} catch (\Exception $e) {
-				$messages['error'][] = $e->getMessage();
+	if($this->zfcUserAuthentication()->hasIdentity()){
+		if($this->isGranted('events.status')){
+			$id = $this->params()->fromQuery('id', null);
+			$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+			$messages = array();
+			if($id){
+				$alarm = $objectManager->getRepository('Application\Entity\Event')->find($id);
+				if($alarm){
+					$status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
+					//ne pas enregistrer si pas de changement
+					if($alarm->getStatus()->getId() != $status->getId()){
+						$alarm->setStatus($status);
+						$objectManager->persist($alarm);
+						try {
+							$objectManager->flush();
+							$messages['success'][] = "Alarme acquittée";
+						} catch (\Exception $e) {
+							$messages['error'][] = $e->getMessage();
+						}
+					}
+				} else {
+					$messages['error'][] = "Aucune alarme trouvée";
+				}
+			} else {
+				$messages['error'][] = "Argument incorrect";
 			}
 		} else {
-			$messages['error'][] = "Aucune alarme trouvée";
+			$messages['error'][] = "Droits insuffisants pour acquitter l'alarme";
 		}
 	} else {
-		$messages['error'][] = "Argument incorrect";
+		$messages['error'][] = "Utilisateur non identifié, modification impossible";
 	}
 	return new JsonModel($messages);
     }

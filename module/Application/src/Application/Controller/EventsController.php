@@ -761,6 +761,9 @@ class EventsController extends ZoneController {
     	return new JsonModel($json);
     }
     
+    /*
+     * Fichiers liés à un évènement, au format JSON
+     */
     public function getfilesAction(){
         $eventid = $this->params()->fromQuery('id', null);
         $json = array();
@@ -778,6 +781,9 @@ class EventsController extends ZoneController {
         return new JsonModel($json);
     }
     
+    /**
+     * Alarmes liées à un évènement, au format JSON
+     */
     public function getalarmsAction(){
 	$eventid = $this->params()->fromQuery('id', null);
 	$json = array();
