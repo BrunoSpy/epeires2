@@ -88,7 +88,7 @@
 <div class="block">
     <div class="navbar navbar-inner block-header">
         <div class="muted pull-left">Historique</div>
-        <div class="pull-right"><i class="icon-chevron-down icon-grey"></i></div>
+        <div class="pull-right"><span class="badge"><?php echo count($this->history) ?></span> <i class="icon-chevron-down icon-grey"></i></div>
     </div>
     <div class="block-content collapse in" id="history" style="display:none;">
         <?php echo $this->partial('events/gethistory.phtml'); ?>
