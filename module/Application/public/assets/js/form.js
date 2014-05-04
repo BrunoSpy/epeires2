@@ -276,6 +276,7 @@ var form = function(url){
                         $("#event input[name=enddate]").timepickerform({'id':'end'});
 			updateHours();
                         updateHourTitle();
+			pauseUpdateAlarms();
 		});
 	});
 	
