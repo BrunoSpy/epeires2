@@ -207,6 +207,12 @@ class EventsController extends ZoneController {
     	$query = $qb->getQuery();
     	$frequencies = $query->getResult();
     	
+    	$qb = $em->createQueryBuilder();
+    	$qb->select(array('st'))
+    	->from('Application\Entity\Stack', 'st')
+    	->andWhere($qb->expr()->like('st.name', $qb->expr()->literal($search.'%')))
+    	$query = $qb->getQuery();
+    	$stacks = $query->getResult();    	
     	
         $orModels = $qbModels->expr()->orX($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')));
         $orEvents = $qbEvents->expr()->orX($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
@@ -266,6 +272,20 @@ class EventsController extends ZoneController {
     		));
     		$qbModels->setParameter('4', 'frequency');
     	}
+        
+    	foreach ($stacks as $stack){
+    		$orEvents->add($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?5'),
+    				$qbEvents->expr()->eq('v.value',$stack->getId())
+    		));
+    		$qbEvents->setParameter('5', 'stack');
+    		
+    		$orModels->add($qbModels->expr()->andX(
+    				$qbModels->expr()->eq('t.type', '?5'),
+    				$qbModels->expr()->eq('v.value',$stack->getId())
+    		));
+    		$qbModels->setParameter('5', 'stack');
+    	}      
         
         $qbModels->andWhere($orModels);
         $qbEvents->andWhere($orEvents);
