@@ -130,22 +130,21 @@ class EventsController extends ZoneController {
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$search = $post['search'];
-    		if(strlen($search) >= 2){  			
+    		if(strlen($search) >= 2){
     			
     			//search events
     			$results['events'] = array();
-    			$qbEvents = $em->createQueryBuilder();;
+    			$qbEvents = $em->createQueryBuilder();
     			$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
     			->from('Application\Entity\Event', 'e')
     			->innerJoin('e.custom_fields_values', 'v')
     			->innerJoin('v.customfield', 'c')
-    			->innerJoin('c.type', 't')		
+    			->innerJoin('c.type', 't')
     			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
                         ->andWhere($qbEvents->expr()->isNull('e.parent'))
-    			->add('orderBy', 'e.startdate DESC')
-    			->setFirstResult( 0 )
+    			->orderBy('e.startdate', 'DESC')
     			->setMaxResults( 10 );
-    			    			
+
     			//search models
     			$results['models'] = array();
     			$qbModels = $em->createQueryBuilder();
@@ -200,6 +199,15 @@ class EventsController extends ZoneController {
     	$query = $qb->getQuery();
     	$radars = $query->getResult();
     	
+    	$qb = $em->createQueryBuilder();
+    	$qb->select(array('f'))
+    	->from('Application\Entity\Frequency', 'f')
+    	->andWhere($qb->expr()->like('f.value', $qb->expr()->literal($search.'%')))
+    	->orWhere($qb->expr()->like('f.othername', $qb->expr()->literal($search.'%')));
+    	$query = $qb->getQuery();
+    	$frequencies = $query->getResult();
+    	
+    	
         $orModels = $qbModels->expr()->orX($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')));
         $orEvents = $qbEvents->expr()->orX($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
         
@@ -243,6 +251,20 @@ class EventsController extends ZoneController {
     				$qbModels->expr()->eq('v.value', $radar->getId())
     		));
     		$qbModels->setParameter('3', 'radar');
+    	}
+
+    	foreach ($frequencies as $frequency){
+    		$orEvents->add($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?4'),
+    				$qbEvents->expr()->eq('v.value',$frequency->getId())
+    		));
+    		$qbEvents->setParameter('4', 'frequency');
+    		
+    		$orModels->add($qbModels->expr()->andX(
+    				$qbModels->expr()->eq('t.type', '?4'),
+    				$qbModels->expr()->eq('v.value',$frequency->getId())
+    		));
+    		$qbModels->setParameter('4', 'frequency');
     	}
         
         $qbModels->andWhere($orModels);
@@ -1027,6 +1049,7 @@ class EventsController extends ZoneController {
     					'category_short' => $event->getCategory()->getShortName(),
     					'category_compact' => $event->getCategory()->isCompactMode(),
     					'status_name' => $event->getStatus()->getName(),
+    					'status_id' => $event->getStatus()->getId(),
     					'impact_value' => $event->getImpact()->getValue(),
     					'impact_name' => $event->getImpact()->getName(),
     					'impact_style' => $event->getImpact()->getStyle(),

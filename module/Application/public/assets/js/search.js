@@ -18,6 +18,7 @@ var search = function(url){
 						$.each(data.models, function(key, value){
 							html += createModelEntry(key, value);
 						});
+						//TODO convert json into array as json has no order...
 						$.each(data.events, function(key, value){
 							html += createEventEntry(key, value);
 						});
@@ -46,11 +47,18 @@ var search = function(url){
 
 var createEventEntry = function(id, event){
 	var html = "";
-	html += "<dt>"+event.name+"</dt>";
+	var start = new Date(event.start_date);
+	var end = new Date(event.end_date);
+	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '')+"</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+event.category+'</small>';
-	//TODO si evt en cours -> modifier
-	html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';
+	if(event.status_id <= 2){
+		//evt en cours : modifier l'evt
+		html += '<a data-id="'+id+'" class="btn btn-mini pull-right modify-evt">Modifier</a></dd>';
+	} else {
+		//evt terminé : copier
+		html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';
+	}
 	return html;
 };
 

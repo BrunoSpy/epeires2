@@ -256,6 +256,8 @@ var form = function(url){
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
+                        $("#event input[name=startdate]").timepickerform({'id':'start'});
+                        $("#event input[name=enddate]").timepickerform({'id':'end'});
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
@@ -264,7 +266,7 @@ var form = function(url){
 	});
 	
 	//click sur modification d'un évènement
-	$("#timeline").on("click", "button.modify-evt", function(){
+	$(document).on("click", "#timeline button.modify-evt, #search-results a.modify-evt", function(){
 		var me = $(this);	
 		$("#event").html('<div>Chargement...</div>');
 		$("#form-title").html(me.data('name'));
