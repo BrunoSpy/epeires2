@@ -192,6 +192,10 @@ class AlarmController extends FormController {
 			$alarms[] = $alarmjson;
 		}
 	}
+	if(empty($alarms)){
+		$this->getResponse()->setStatusCode(304);
+		return;
+	}
 	return new JsonModel($alarms);
     }
     
