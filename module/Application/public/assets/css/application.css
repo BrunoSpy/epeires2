@@ -405,6 +405,10 @@ body{
 	width: 280px;
 }
 
+#search-results .result:nth-child(even) {
+	background-color: ghostwhite;
+}
+
 /******************************/
 /*     Tune Bootstrap css     */
 /******************************/

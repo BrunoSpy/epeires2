@@ -135,12 +135,11 @@ class EventsController extends ZoneController {
     			//search events
     			$results['events'] = array();
     			$qbEvents = $em->createQueryBuilder();
-    			$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
+    			$qbEvents->select(array('e', 'v', 'c', 't'))
     			->from('Application\Entity\Event', 'e')
-    			->innerJoin('e.custom_fields_values', 'v')
-    			->innerJoin('v.customfield', 'c')
-    			->innerJoin('c.type', 't')
-    			->innerJoin('e.category', 'cat', Join::WITH, 'cat.fieldname = c')
+    			->leftJoin('e.custom_fields_values', 'v')
+    			->leftJoin('v.customfield', 'c')
+    			->leftJoin('c.type', 't')
                         ->andWhere($qbEvents->expr()->isNull('e.parent'))
     			->orderBy('e.startdate', 'DESC')
     			->setMaxResults( 10 );
@@ -160,14 +159,27 @@ class EventsController extends ZoneController {
     			
     			$query = $qbEvents->getQuery();
     			$events = $query->getResult();
+    			//events are loaded partially during query
+    			//as a consequence, we need to reload them
+    			$eventsid = array();
     			foreach ($events as $event){
-    				$results['events'][$event->getId()] = $this->getEventJson($event);
+				$eventsid[] = $event->getId();
     			}
+
     			
     			$query = $qbModels->getQuery();
     			$models = $query->getResult();
+    			$modelsid = array();
     			foreach ($models as $model){
-    				$results['models'][$model->getId()] = $this->getModelJson($model);
+    				$modelsid[] = $model->getId();
+    			}
+    			
+    			$em->clear();
+    			foreach($eventsid as $id){
+				$results['events'][$id] = $this->getEventJson($em->getRepository('Application\Entity\Event')->find($id));
+    			}
+    			foreach($modelsid as $id){
+				$results['models'][$id] = $this->getModelJson($em->getRepository('Application\Entity\PredefinedEvent')->find($id));
     			}
     		}
     	}
@@ -210,7 +222,7 @@ class EventsController extends ZoneController {
     	$qb = $em->createQueryBuilder();
     	$qb->select(array('st'))
     	->from('Application\Entity\Stack', 'st')
-    	->andWhere($qb->expr()->like('st.name', $qb->expr()->literal($search.'%')))
+    	->andWhere($qb->expr()->like('st.name', $qb->expr()->literal($search.'%')));
     	$query = $qb->getQuery();
     	$stacks = $query->getResult();    	
     	
@@ -1058,6 +1070,7 @@ class EventsController extends ZoneController {
     
     private function getEventJson(Event $event){
     	$eventservice = $this->getServiceLocator()->get('EventService');
+    	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
     	$json = array('name' => $eventservice->getName($event),
     					'modifiable' => $eventservice->isModifiable($event),
     					'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
@@ -1076,23 +1089,39 @@ class EventsController extends ZoneController {
     					'star' => $event->isStar(),
     	);
     	
-    	$actions = array();
-    	foreach ($event->getChildren() as $child){
-            if($child->getStatus() != null) { //Status is required but...
-                $actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
-            }
+    	$fields = array();
+    	foreach($event->getCustomFieldsValues() as $value){
+		$formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+		if($formattedvalue != null) {
+			$fields[$value->getCustomField()->getName()] = $formattedvalue;
+		}
     	}
-    	$json['actions'] = $actions;
     	
+    	$json['fields'] = $fields;
+    	
+//     	$actions = array();
+//     	foreach ($event->getChildren() as $child){
+//             if($child->getStatus() != null) { //Status is required but...
+//                 $actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
+//             }
+//     	}
+//     	$json['actions'] = $actions;
+//     	
     	return $json;
     }
     
     private function getModelJson(PredefinedEvent $model){
+	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
     	$json = array(
     		'name' => $model->getName(),
     		'category_root' => ($model->getCategory()->getParent() ? $model->getCategory()->getParent()->getName() : $model->getCategory()->getName()),
     		'category' => $model->getCategory()->getName(), 
     	);
+    	$fields = array();
+    	foreach($model->getCustomFieldsValues() as $value){
+		$fields[$value->getCustomField()->getName()] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+    	}
+    	$json['fields'] = $fields;
     	return $json;
     }
     

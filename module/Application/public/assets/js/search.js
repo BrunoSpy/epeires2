@@ -14,16 +14,16 @@ var search = function(url){
 					if(data.events.length < 1 && data.models.length < 1) {
 						$("#results").html("Aucun résultat.");
 					} else {
-						var html = "<dl>";
+						$('#results').empty();
+						var dl = $("<dl></dl>");
 						$.each(data.models, function(key, value){
-							html += createModelEntry(key, value);
+							dl.append(createModelEntry(key, value));
 						});
 						//TODO convert json into array as json has no order...
 						$.each(data.events, function(key, value){
-							html += createEventEntry(key, value);
+							dl.append(createEventEntry(key, value));
 						});
-						html += "</dl>";
-						$("#results").html(html);
+						$("#results").append(dl);
 					}
 				});
 			} else {
@@ -33,6 +33,15 @@ var search = function(url){
 			$("#search-results").show();
 			$("#search-results").slideDown('fast');
 	   });
+	   
+	   $("#search").on({
+		mouseenter:function(){
+			$(this).tooltip('show');
+		},
+		mouseleave:function(){
+			$(this).tooltip('hide');
+		}
+	   }, '.result');
 	   
 	   //hide search results if click outside
 	   $(document).mouseup(function(e){
@@ -46,6 +55,7 @@ var search = function(url){
 };
 
 var createEventEntry = function(id, event){
+	var div = $('<div class="result"></div>');
 	var html = "";
 	var start = new Date(event.start_date);
 	var end = new Date(event.end_date);
@@ -59,7 +69,21 @@ var createEventEntry = function(id, event){
 		//evt terminé : copier
 		html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';
 	}
-	return html;
+	div.append(html);
+	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)+'/'+FormatNumberLength(start.getUTCMonth(),2);
+	if(event.end_date != null){
+		titlehtml += '<br /><b>Date de fin :</b> '+FormatNumberLength(end.getUTCDate(), 2)+'/'+FormatNumberLength(end.getUTCMonth(),2);
+	}
+	$.each(event.fields, function(key, value){
+		titlehtml += '<br/><b>'+key+' :</b> '+value; 
+	});
+	div.tooltip({
+		title: titlehtml,
+		container:'body',
+		placement:'left',
+		html:true
+	});
+	return div;
 };
 
 var createModelEntry = function(id, model){
