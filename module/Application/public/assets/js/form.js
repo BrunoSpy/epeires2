@@ -158,7 +158,7 @@ var form = function(url){
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
-		var formData = new FormData($("#Event")[0]);
+                var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",
 			url: url+'events/save',
@@ -483,14 +483,15 @@ var form = function(url){
 	$('#event').on('change', 'select[name=status]', function(){
 		var select = $(this);
 		if(select.val() == '3' && !$("#punctual").is(':checked') && $('input[name=enddate]').val() == ''){
-			$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
-                        $("#event #hack-tooltip").show().tooltip({
+			//$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
+                        $("#event input[type=submit]").tooltip({
 				container :'body',
-				title: 'Date de fin manquante'
+                                html:true,
+				title: 'Heure de fin non renseignée.<br />L\'heure actuelle sera utilisée pour l\'heure de fin.'
 			});
 		} else {
-                        $("#event #hack-tooltip").hide().tooltip('destroy');
-			$("input[type=submit]").removeClass('disabled').removeAttr('disabled');
+                        // $("#event #hack-tooltip").hide().tooltip('destroy');
+			//$("input[type=submit]").removeClass('disabled').removeAttr('disabled');
 		}
 	});
 	

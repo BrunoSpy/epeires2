@@ -361,6 +361,14 @@ class EventsController extends ZoneController {
     					if(isset($post['enddate']) && empty($post['enddate'])){
     						$event->setEndDate(null);
     					}
+                                        
+                                        //si statut terminé, non ponctuel et pas d'heure de fin
+                                        //alors l'heure de fin est mise auto à l'heure actuelle
+                                        if(!$event->isPunctual() && $event->getStatus()->getId() == 3 && $event->getEnddate() == null){
+                                            $now = new \DateTime('now');
+                                            $now->setTimezone(new \DateTimeZone('UTC'));
+                                            $event->setEnddate($now);
+                                        }
     					    					
     					//hydrator can't guess timezone, force UTC of end and start dates
     					if(isset($post['startdate']) && !empty($post['startdate'])){
