@@ -96,6 +96,10 @@ var form = function(url){
 			updateHours();
 		}
 		updateHourTitle();
+                //changement du statut à terminé, sauf si c'est une création
+                if($('#event form').data('modstatus') && $('#event input[name=id]').val() > 0){
+                    $('#event select[name=status] option[value=3]').prop('selected', true);
+                }
 	});
 	
 	var updateHours = function(){
