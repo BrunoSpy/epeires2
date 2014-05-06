@@ -1227,62 +1227,89 @@ class EventsController extends ZoneController {
     	$field = $this->params()->fromQuery('field', 0);
     	$value = $this->params()->fromQuery('value', 0);
     	$messages = array();
-    	if($id){
+        //modification autorisée à l'auteur ou aux utilisateurs disposant des droits en écriture
+        if($this->zfcUserAuthentication()->hasIdentity() &&
+            ($this->event->getAuthor()->getId() == $this->zfcUserAuthentication()->getIdentity()->getId() 
+             || $this->isGranted('events.write'))) {
+            if($id){
     		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
     		if ($event) {
-				switch ($field) {
-					case 'enddate' :
-						if($event->setEnddate(new \DateTime($value))){
-                                                    $objectManager->persist($event);
-                                                    $messages['success'][] = "Date et heure de fin modifiées.";
-                                                } else {
-                                                    $messages['error'][] = "Impossible de changer la date de fin.";
-                                                }
-						break;	
-					case 'startdate' :
-						if($event->setStartdate(new \DateTime($value))){
-                                                    $objectManager->persist($event);
-                                                    $messages['success'][] = "Date et heure de début modifiées."; 
-                                                } else {
-                                                    $messages['error'][] = "Impossible de changer la date de début.";
-                                                }						
-						break;
-					case 'impact' :
-						$impact = $objectManager->getRepository('Application\Entity\Impact')->findOneBy(array('value'=>$value));
-						if($impact){
-							$event->setImpact($impact);
-							$objectManager->persist($event);
-							$messages['success'][] = "Impact modifié.";
-						}
-						break;
-					case 'star' :
-						$event->setStar($value);
-						$objectManager->persist($event);
-						$messages['success'][] = "Evènement modifié.";
-						break;
-					case "status" :
-						$status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name'=>$value));
-						if($status){
-							$event->setStatus($status);
-							$objectManager->persist($event);
-							$messages['success'][] = "Statut de l'évènement modifié.";
-						}
-					default :
-						;
-						break;
-				}
-                                try {
-                                    $objectManager->flush();
-                                } catch (\Exception $ex) {
-                                    $messages['error'][] = $ex->getMessage();
+                    switch ($field) {
+			case 'enddate' :
+                            if ($event->setEnddate(new \DateTime($value))) {
+                                $messages['success'][] = "Date et heure de fin modifiées.";
+                                //passage au statut terminé si pertinent et droits ok
+                                if($this->isGranted('events.status')){
+                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
+                                    if($event->getStatus()->getId() <= 2){
+                                        $event->setStatus($status);
+                                        $messages['success'][] = "Statut modifié.";
+                                    }
                                 }
-    		} else {
+                                $objectManager->persist($event);
+                            } else {
+                                $messages['error'][] = "Impossible de changer la date de fin.";
+                            }
+                            break;
+                        case 'startdate' :
+                            if ($event->setStartdate(new \DateTime($value))) {
+                                $messages['success'][] = "Date et heure de début modifiées.";
+                                //passage au statut confirmé si pertinent et droits ok
+                                if($this->isGranted('events.status')){
+                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => true));
+                                    if($event->getStatus()->getId() == 1){
+                                        $event->setStatus($status);
+                                        $messages['success'][] = "Statut modifié.";
+                                    }
+                                }
+                                $objectManager->persist($event);
+                            } else {
+                                $messages['error'][] = "Impossible de changer la date de début.";
+                            }
+                            break;
+                        case 'impact' :
+                            $impact = $objectManager->getRepository('Application\Entity\Impact')->findOneBy(array('value' => $value));
+                            if ($impact) {
+                                $event->setImpact($impact);
+                                $objectManager->persist($event);
+                                $messages['success'][] = "Impact modifié.";
+                            }
+                            break;
+                        case 'star' :
+                            $event->setStar($value);
+                            $objectManager->persist($event);
+                            $messages['success'][] = "Evènement modifié.";
+                            break;
+                        case "status" :
+                            if ($this->isGranted('events.status')) {
+                                $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name' => $value));
+                                if ($status) {
+                                    $event->setStatus($status);
+                                    $objectManager->persist($event);
+                                    $messages['success'][] = "Statut de l'évènement modifié.";
+                                }
+                            } else {
+                                $messages['error'][] = "Droits insuffisants pour changer le statut.";
+                            }
+                            break;
+                        default :
+                            break;
+                    }
+                    try {
+                        $objectManager->flush();
+                    } catch (\Exception $ex) {
+                        $messages['error'][] = $ex->getMessage();
+                    }
+                } else {
                     $messages['error'][] = "Impossible de trouver l'évènement à modifier";
                 }
-    	} else {
-    		$messages['error'][] = "Impossible de modifier l'évènement.";
-    	}
+            } else {
+    		$messages['error'][] = "Requête incorrect : impossible de modifier l'évènement.";
+            }
+        } else {
+            $messages['error'][] = "Droits insuffisants pour modifier l'évènement.";
+        }
     	return new JsonModel($messages);
     }
     
