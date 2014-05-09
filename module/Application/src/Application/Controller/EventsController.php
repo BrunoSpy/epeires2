@@ -1230,29 +1230,32 @@ class EventsController extends ZoneController {
      * $this->url('application', array('controller' => 'events'))+'/changefield?id=<id>&field=<field>&value=<newvalue>'
      * @return JSon with messages
      */
-    public function changefieldAction(){
-    	$id = $this->params()->fromQuery('id', 0);
-    	$field = $this->params()->fromQuery('field', 0);
-    	$value = $this->params()->fromQuery('value', 0);
-    	$messages = array();
-        //modification autorisée à l'auteur ou aux utilisateurs disposant des droits en écriture
-        if($this->zfcUserAuthentication()->hasIdentity() &&
-            ($this->event->getAuthor()->getId() == $this->zfcUserAuthentication()->getIdentity()->getId() 
-             || $this->isGranted('events.write'))) {
-            if($id){
-    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
-    		if ($event) {
+    public function changefieldAction() {
+        $id = $this->params()->fromQuery('id', 0);
+        $field = $this->params()->fromQuery('field', 0);
+        $value = $this->params()->fromQuery('value', 0);
+        $messages = array();
+        if ($id) {
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+            if ($event) {
+                //modification autorisée à l'auteur ou aux utilisateurs disposant des droits en écriture
+                if ($this->zfcUserAuthentication()->hasIdentity() &&
+                        ($event->getAuthor()->getId() == $this->zfcUserAuthentication()->getIdentity()->getId()
+                        || $this->isGranted('events.write'))) {
                     switch ($field) {
-			case 'enddate' :
+                        case 'enddate' :
                             if ($event->setEnddate(new \DateTime($value))) {
                                 $messages['success'][] = "Date et heure de fin modifiées.";
                                 //passage au statut terminé si pertinent et droits ok
-                                if($this->isGranted('events.status')){
+                                $now = new \DateTime('now');
+                                $now->setTimezone(new \DateTimeZone('UTC'));
+                                if ($this->isGranted('events.status')) {
                                     $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
-                                    if($event->getStatus()->getId() <= 2){
+                                    if ($event->getStatus()->getId() == 2 ||
+                                            ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now)) {
                                         $event->setStatus($status);
-                                        $messages['success'][] = "Statut modifié.";
+                                        $messages['success'][] = "Statut modifié : terminé.";
                                     }
                                 }
                                 $objectManager->persist($event);
@@ -1263,12 +1266,14 @@ class EventsController extends ZoneController {
                         case 'startdate' :
                             if ($event->setStartdate(new \DateTime($value))) {
                                 $messages['success'][] = "Date et heure de début modifiées.";
-                                //passage au statut confirmé si pertinent et droits ok
-                                if($this->isGranted('events.status')){
-                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => true));
-                                    if($event->getStatus()->getId() == 1){
+                                //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle
+                                if ($this->isGranted('events.status')) {
+                                    $now = new \DateTime('now');
+                                    $now->setTimezone(new \DateTimeZone('UTC'));
+                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => false));
+                                    if ($event->getStatus()->getId() == 1 && (($event->getStartDate()->format('U') - $now->format('U')) / 60) < 10) {
                                         $event->setStatus($status);
-                                        $messages['success'][] = "Statut modifié.";
+                                        $messages['success'][] = "Statut modifié : confirmé.";
                                     }
                                 }
                                 $objectManager->persist($event);
@@ -1310,17 +1315,17 @@ class EventsController extends ZoneController {
                         $messages['error'][] = $ex->getMessage();
                     }
                 } else {
-                    $messages['error'][] = "Impossible de trouver l'évènement à modifier";
+                    $messages['error'][] = "Droits insuffisants pour modifier l'évènement.";
                 }
             } else {
-    		$messages['error'][] = "Requête incorrect : impossible de modifier l'évènement.";
+                $messages['error'][] = "Requête incorrect : impossible de modifier l'évènement.";
             }
         } else {
-            $messages['error'][] = "Droits insuffisants pour modifier l'évènement.";
+            $messages['error'][] = "Impossible de trouver l'évènement à modifier";
         }
-    	return new JsonModel($messages);
+        return new JsonModel($messages);
     }
-    
+
     public function getficheAction(){
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();

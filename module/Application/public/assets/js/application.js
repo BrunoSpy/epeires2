@@ -109,19 +109,6 @@ $(document).ready(function(){
    
    $("a[data-toggle=popover]").popover();
    
-   $('#timeline').on({
-	mouseenter:function(){
-		var id = $(this).find('.modify-evt').data('id');
-		$(this).tooltip({
-			title:'test'+id,
-			container:'body'
-		}).tooltip('show');
-	},
-	mouseleave:function(){
-		$(this).tooltip('hide');
-	}
-   }, '.elmt');
-   
    //open links in new window
    $(document).on('click', 'a[rel="external"]',function(){
 	   window.open($(this).attr('href'));

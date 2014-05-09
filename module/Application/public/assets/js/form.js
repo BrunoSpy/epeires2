@@ -56,15 +56,15 @@ var form = function(url){
 	$('#event').on('change', 'input[name=startdate]', function(){
 		var datefin = $("#inner-Horairesid #end").siblings('input[type=hidden]');
 		var dateDeb = $("#inner-Horairesid #start").siblings('input[type=hidden]');
+                var startsplit = dateDeb.val().split(' ');
+		var daysplit = startsplit[0].split('-');
+		var hourstartsplit = startsplit[1].split(':');
+                var deb = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourstartsplit[0], hourstartsplit[1]);
 		//check if start_date > end_date, if end_date is set
 		if(datefin.val()){
-			var startsplit = dateDeb.val().split(' ');
-			var daysplit = startsplit[0].split('-');
-			var hourstartsplit = startsplit[1].split(':');
 			var endsplit = datefin.val().split(' ');
 			var enddaysplit = endsplit[0].split('-');
 			var hoursplit = endsplit[1].split(':');
-			var deb = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourstartsplit[0], hourstartsplit[1]);
 			var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
                         if(deb > end){
 				datefin.val(dateDeb.val());
@@ -72,8 +72,13 @@ var form = function(url){
 				updateHours();
 			}
 		}
-                //change status if needed and authorized
-                if($('#event form').data('modstatus') && $("#event select[name=status] option:selected").val() == '1'){
+                var now = new Date();
+                var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
+                var diff = (deb - nowUTC)/60000; //différence en minutes
+                //change status if needed, authorized and beginning near actual time
+                if($('#event form').data('modstatus') 
+                   && $("#event select[name=status] option:selected").val() == '1'
+                   && (diff < 10)){
                     $("#event select[name=status] option[value=2]").prop('selected', true);
                 }
 		updateHourTitle();
@@ -96,8 +101,15 @@ var form = function(url){
 			updateHours();
 		}
 		updateHourTitle();
-                //changement du statut à terminé, sauf si c'est une création
-                if($('#event form').data('modstatus') && $('#event input[name=id]').val() > 0){
+                //changement du statut à terminé si :
+                //   * droits ok
+                //et * modif d'un evt
+                //et * heure de début passée ou statut confirmé
+                var now = new Date();
+                var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
+                if($('#event form').data('modstatus') 
+                   && $('#event input[name=id]').val() > 0 //id != 0 => modif
+                   && (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')){
                     $('#event select[name=status] option[value=3]').prop('selected', true);
                 }
 	});
@@ -483,19 +495,15 @@ var form = function(url){
 		}, 'json');
 	});
 	
-	//interdiction de sauver un evt si status = terminé et !punctual et pas de date de fin
+	//tooltip pour prévenir que l'heure de fin va être remplie automatiquement
 	$('#event').on('change', 'select[name=status]', function(){
 		var select = $(this);
 		if(select.val() == '3' && !$("#punctual").is(':checked') && $('input[name=enddate]').val() == ''){
-			//$("#event input[type=submit]").addClass('disabled').attr('disabled', 'disabled');
                         $("#event input[type=submit]").tooltip({
 				container :'body',
                                 html:true,
 				title: 'Heure de fin non renseignée.<br />L\'heure actuelle sera utilisée pour l\'heure de fin.'
 			});
-		} else {
-                        // $("#event #hack-tooltip").hide().tooltip('destroy');
-			//$("input[type=submit]").removeClass('disabled').removeAttr('disabled');
 		}
 	});
 	
