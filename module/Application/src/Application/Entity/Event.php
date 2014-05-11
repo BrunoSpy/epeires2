@@ -12,7 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
 
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\EventRepository")
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/

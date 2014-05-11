@@ -33,8 +33,8 @@ class Role implements HierarchicalRoleInterface{
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="children")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
-	 * @Annotation\Attributes({"multiple":false})
-	 * @Annotation\Options({"label":"Parent :", "empty_option":"Rôle parent (facultatif)"})
+     * @Annotation\Attributes({"multiple":false})
+     * @Annotation\Options({"label":"Parent :", "empty_option":"Rôle parent (facultatif)"})
      */
     protected $parent;
 
@@ -64,6 +64,10 @@ class Role implements HierarchicalRoleInterface{
 
     /**
      * @ORM\ManyToMany(targetEntity="Application\Entity\Category", mappedBy="readroles")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"multiple":"true"})
+     * @Annotation\Options({"label":"Catégories accessibles :"})
      */
     protected $readcategories;
     
@@ -75,6 +79,7 @@ class Role implements HierarchicalRoleInterface{
     public function __construct(){
     	$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
     	$this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->readcategories = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -237,6 +242,28 @@ class Role implements HierarchicalRoleInterface{
         $this->children->add($child);
     }
     
+    public function getReadcategories(){
+        return $this->readcategories;
+    }
+    
+    public function addReadcategories(Collection $categories){
+        foreach ($categories as $cat){
+            $collection = new ArrayCollection();
+            $collection->add($this);
+            $cat->addReadroles($collection);
+            $this->readcategories->add($cat);
+        }
+    }
+    
+    public function removeReadcategories(Collection $categories){
+        foreach ($categories as $cat){
+            $collection = new ArrayCollection();
+            $collection->add($this);
+            $cat->removeReadroles($collection);
+            $this->readcategories->removeElement($cat);
+        }
+    }
+    
     public function __toString()
     {
         return $this->name;
@@ -247,6 +274,11 @@ class Role implements HierarchicalRoleInterface{
     	if($this->parent){
     		$object_vars['parent'] = $this->parent->getId();
     	}
+        $readcategories = array();
+        foreach($this->readcategories as $cat){
+            $readcategories[] = $cat->getId();
+        }
+        $object_vars['readcategories'] = $readcategories;
     	return $object_vars;
     }
 }

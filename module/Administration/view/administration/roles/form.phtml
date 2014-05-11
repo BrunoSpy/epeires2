@@ -23,8 +23,11 @@ echo $this->controlGroup($this->formLabel($form->get('name')->setLabelAttributes
 		$this->formInput($form->get('name')) . $this->formElementErrors($form->get('name')));
 
 echo $this->controlGroup($this->formLabel($form->get('parent')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('parent')) . $this->formElementErrors($form->get('parent')))
+		$this->formSelect($form->get('parent')) . $this->formElementErrors($form->get('parent')));
 
+echo $this->controlGroup($this->formLabel($form->get('readcategories')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formSelect($form->get('readcategories')) . $this->formElementErrors($form->get('parent')));
+        
 ?>
 
 </div>

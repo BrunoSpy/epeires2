@@ -8,12 +8,23 @@ var roles = function(url){
 		var me = $(this);
 		var state = me.is(':checked');
 		if(!state){
-			$.post(url + '/roles/removepermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(){
-				location.reload();
+			$.post(url + '/roles/removepermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(data){
+				if(data['error']){
+                                    me.prop('checked', true);
+                                    displayMessages(data);
+                                } else {
+                                    location.reload();
+                                }
+                                
 			});
 		} else {
-			$.post(url + '/roles/addpermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(){
-				location.reload();
+			$.post(url + '/roles/addpermission?permission='+$(this).data('permission')+'&roleid='+$(this).data('roleid'), function(data){
+				if(data['error']){
+                                    me.prop('checked', false);
+                                    displayMessages(data);
+                                } else {
+                                    location.reload();
+                                }
 			});
 		}
 	});
@@ -29,10 +40,14 @@ var roles = function(url){
 		$("#role-form").load(url+'/roles/form?id='+$(this).data('id'));
 	});
 	
-	$("#role-container").on('click', 'input[type=submit]', function(event){
+	$("#role-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/roles/saverole', $("#Role").serialize(), function(data){
-			location.reload();
+                    if(data['error']){
+                        displayMessages(data);
+                    } else {
+                        location.reload();
+                    }
 		}, 'json');
 	});
 	

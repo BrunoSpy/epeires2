@@ -20,6 +20,8 @@ class RolesController extends FormController
 {
     public function indexAction()
     {
+        $viewmodel = new ViewModel();
+
     	$this->layout()->title = "Utilisateurs > Roles";
     	 
     	$config = $this->serviceLocator->get('config');
@@ -28,14 +30,29 @@ class RolesController extends FormController
 
     	$roles = $objectManager->getRepository('Core\Entity\Role')->findAll();
     	
-        return array('config'=>$config['permissions'], 'roles' => $roles);
+    	$return = array();
+    	if($this->flashMessenger()->hasErrorMessages()){
+    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    	}
+    	 
+    	if($this->flashMessenger()->hasSuccessMessages()){
+    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    	}
+    	 
+    	$this->flashMessenger()->clearMessages();
+    	 
+    	$viewmodel->setVariables(array('messages'=>$return,
+                                    'config'=>$config['permissions'],
+                                    'roles' => $roles));
+        
+        return $viewmodel;
     }
     
     public function addpermissionAction(){
     	$permission = $this->params()->fromQuery('permission', null);
     	$roleid = $this->params()->fromQuery('roleid', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	
+    	$messages = array();
     	if($permission && $roleid){
     		$perm = $objectManager->getRepository('Core\Entity\Permission')->findOneBy(array('name' => $permission));
     		if(!$perm){
@@ -50,20 +67,26 @@ class RolesController extends FormController
     			$role->addPermissions($permissioncollection);
     			$objectManager->persist($perm);
     			$objectManager->persist($role);
-    			$objectManager->flush();
-    		}
-    	}
-    	
-    	//TODO renvoyer true si tout s'est bien passé
-    	return new JsonModel();
-    	
+                        try {
+                            $objectManager->flush();
+                            $messages['success'][] = "Permission ".$perm->getName()." ajoutée à ".$role->getName();
+                        } catch (\Exception $ex) {
+                            $messages['error'][] = $ex->getMessage();
+                        }
+    		} else {
+                    $messages['error'][] = "Rôle introuvable";
+                }
+        } else {
+            $messages['error'][] = "Requête invalide.";
+        }
+        return new JsonModel($messages);	
     }
     
     public function removepermissionAction(){
     	$permission = $this->params()->fromQuery('permission', null);
     	$roleid = $this->params()->fromQuery('roleid', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	 
+    	$messages = array();
     	if($permission && $roleid){
     		$perm = $objectManager->getRepository('Core\Entity\Permission')->findOneBy(array('name' => $permission));
     		if(!$perm){
@@ -78,32 +101,47 @@ class RolesController extends FormController
     			$role->removePermissions($permissioncollection);
     			$objectManager->persist($perm);
     			$objectManager->persist($role);
-    			$objectManager->flush();
-    		}
-    	}
+    			try {
+                            $objectManager->flush();
+                            $messages['success'][] = "Permission ".$perm->getName()." retirée à ".$role->getName();
+                        } catch (\Exception $ex) {
+                            $messages['error'][] = $ex->getMessage();
+                        }
+    		} else {
+                    $messages['error'][] = "Rôle introuvable";
+                }
+    	} else {
+            $messages['error'][] = "Requête invalide.";
+        }
     	 
-    	//TODO renvoyer true si tout s'est bien passé
-    	return new JsonModel();
-    	 
+    	return new JsonModel($messages);
     }
     
     public function saveroleAction(){
-    	
+    	$messages = array();
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
-    		$form->setData($post);
+    		$form->setPreferFormInputFilter(true);
+                $form->setData($post);
     		$role = $datas['role'];
     		
     		if($form->isValid()){
     			$objectManager->persist($role);
-    			$objectManager->flush();
-    		}
+                        try {
+                            $objectManager->flush();
+                            $this->flashMessenger()->addSuccessMessage("Rôle ".$role->getName()." correctement enregistré.");
+                        } catch (\Exception $ex) {
+                            $messages['error'][] = $ex->getMessage();
+                        }
+    		} else {
+                    $this->processFormMessages($form->getMessages(), $messages);
+                }
     	}
-    	return new JsonModel();
+    	return new JsonModel($messages);
     }
     
     public function deleteroleAction(){
@@ -140,6 +178,7 @@ class RolesController extends FormController
     	->setObject($role);
         	 
     	$form->get('parent')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());
+        $form->get('readcategories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getAllAsArray());
     	
     	if($id){
     		$role = $objectManager->getRepository('Core\Entity\Role')->find($id);

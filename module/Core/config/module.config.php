@@ -91,4 +91,14 @@ return array(
             'Zend\Session\Validator\HttpUserAgent',
         ),
     ),
+    /**
+     * Automatically use module assets
+     */
+    'asset_manager' => array(
+    	'resolver_configs' => array(
+    		'paths' => array(
+    			__DIR__ . '/../public',
+    		),
+    	),
+    ),
 );

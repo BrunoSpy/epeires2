@@ -21,7 +21,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 		$html = '<li class="dropdown">';
 		$html .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
 		$html .= '<i class="icon-user"></i> ';
-		if($this->auth->hasIdentity()) {
+		if($this->auth->getIdentity() != null) {
 			$html .= $this->auth->getIdentity()->getUserName();
 		} else {
 			$html .= "Non connecté";
@@ -29,14 +29,21 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 		$html .= '<b class="caret"></b>';
 		$html .= '</a>';
 		$html .= '<ul class="dropdown-menu">';
-		if($this->auth->hasIdentity()) {
+		if($this->auth->getIdentity() != null) {
 			$router = $this->servicemanager->get('router');
 			$request = $this->servicemanager->get('request');
+                        if($router->match($request) && $router->match($request)->getMatchedRouteName() == 'ipo'){
+                            $html .= "<li><a href=\"".$urlHelper('application')."\">Interface OPE</a></li>";
+                        } else {
+                            if($this->auth->isGranted('ipo.read')){
+                                $html .= "<li><a href=\"".$urlHelper('ipo')."\">Interface IPO</a></li>";
+                            }
+                        }
 			if($router->match($request) && $router->match($request)->getMatchedRouteName() == 'administration'){
-				$html .= "<li><a href=\"".$urlHelper('application')."\">Retour application</a></li>";
+				$html .= "<li><a href=\"".$urlHelper('application')."\">Interface OPE</a></li>";
 			} else {
 				if($this->auth->getIdentity()->hasRole('admin')){
-					$html .= "<li><a href=\"".$urlHelper('administration', array('controller'=>'home', 'action'=>'index'))."\">Administration</a></li>";
+					$html .= "<li><a href=\"".$urlHelper('administration', array('controller'=>'home', 'action'=>'index'))."\">Interface administration</a></li>";
 				}
 			}
 		    $html .= "<li><a href=\"".$urlHelper('zfcuser/logout')."?redirect=".$urlHelper('application')."\">Se déconnecter</a></li>";
@@ -50,7 +57,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 		
 	}
 	
-	public function setAuthService($auth){
+	public function setAuthService(\ZfcRbac\Service\AuthorizationService $auth){
 		$this->auth = $auth;
 	}
 

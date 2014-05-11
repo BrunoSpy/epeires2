@@ -88,9 +88,7 @@ var displayMessages = function(messages){
 $(document).ready(function(){
 	
    setInterval('updateClock()', 1000);
-      
-   updateAlarms();
-   
+         
    $.datepicker.regional[ "fr" ];
    
    //higlight tabs

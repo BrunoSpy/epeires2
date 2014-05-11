@@ -1,0 +1,180 @@
+/* 
+    CSS shared by all Epeires2 modules
+    Created on : 10 mai 2014, 11:12:07
+    Author     : Bruno Spyckerelle
+*/
+
+/************* Block ***********************/
+
+.block {
+	border: 1px solid #ccc;
+	background: white;
+	margin: 1em 0em;
+	border-top: none;
+}
+
+.block-content {
+	margin: 1em;
+	min-height: .25em;
+}
+
+.block-header {
+	margin-bottom: 0px;
+	border-right: none;
+	border-left: none;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+}
+
+.block-header div {
+	padding-top: 10px;
+}
+
+th.no-border, td.no-border {
+	border: none;
+}
+
+/* Bandeau du haut */ 
+
+body{
+        overflow-x: hidden;
+	padding-top: 0px;
+}
+
+.header {
+	min-height:2em;
+	width:100%;
+	background-color:#aaa;
+	padding-top:5px;
+	padding-left:5px;
+}
+
+.header form{
+	margin-bottom: 0px;
+}
+
+.header select{
+	display: inline-block;
+	vertical-align: baseline;
+	margin-bottom: 5px;
+}
+
+.header ul{
+	margin-bottom: 0px;
+}
+
+
+
+#clock {
+	margin-right:0.5em;
+	font-weight: bold;
+	font-size: 1.4em;
+	margin-top: 0.3em;
+}
+
+/* Barre de nav */ 
+
+.nav-centered {
+	width: 30%;
+	padding-left: 25%;
+}
+
+.navbar-after-top {
+	right:0px;
+	left:0px;
+	margin-bottom:0px;
+}
+
+.has-switch.nav-in {
+	margin-top:7px;
+	margin-left:5px;
+}
+
+/******************************/
+/*     Tune Bootstrap css     */
+/******************************/
+
+.modal-backdrop, .modal-backdrop.fade.in {
+    opacity: 0.6;
+}
+
+.icon-grey, .nav-pills > .active > a > [class^="icon-"], .nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"], .navbar-inverse .nav > .active > a > [class^="icon-"], .navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"], .dropdown-menu > li > a:focus > [class^="icon-"], .dropdown-menu > li > a:hover > [class*=" icon-"], .dropdown-menu > li > a:focus > [class*=" icon-"], .dropdown-menu > .active > a > [class^="icon-"], .dropdown-menu > .active > a > [class*=" icon-"], .dropdown-submenu:hover > a > [class^="icon-"], .dropdown-submenu:focus > a > [class^="icon-"], .dropdown-submenu:hover > a > [class*=" icon-"], .dropdown-submenu:focus > a > [class*=" icon-"] {
+    background-image: url("../../img/glyphicons-halflings-grey.png");
+}
+
+.icon-red, .nav-pills > .active > a > [class^="icon-"], .nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"], .navbar-inverse .nav > .active > a > [class^="icon-"], .navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"], .dropdown-menu > li > a:focus > [class^="icon-"], .dropdown-menu > li > a:hover > [class*=" icon-"], .dropdown-menu > li > a:focus > [class*=" icon-"], .dropdown-menu > .active > a > [class^="icon-"], .dropdown-menu > .active > a > [class*=" icon-"], .dropdown-submenu:hover > a > [class^="icon-"], .dropdown-submenu:focus > a > [class^="icon-"], .dropdown-submenu:hover > a > [class*=" icon-"], .dropdown-submenu:focus > a > [class*=" icon-"] {
+    background-image: url("../../img/glyphicons-halflings-red.png");
+}
+
+.form-horizontal .control-group {
+	margin-bottom: 10px;
+}
+.form-horizontal .controls {
+    margin-left: 130px;
+}
+.form-horizontal .control-label {
+    width: 110px;
+}
+select {
+    width: 200px;
+}
+
+input, textarea, .uneditable-input {
+    width: 187px;
+}
+
+.popover-title {
+	font-weight:bold;
+}
+
+.up-caret {
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    border-bottom: 4px solid #000000;
+    display: inline-block;
+    height: 0;
+    vertical-align: top;
+    width: 0;
+}
+
+.middle {
+	vertical-align: 25%;	
+}
+
+.modal.large{
+    min-width: 400px;
+    width:auto;
+}
+
+.modal form{
+	margin: 0px;
+}
+
+/* ************************** */
+
+a.em {
+	font-style: italic;
+}
+
+a.disabled {
+	pointer-events: none;
+	cursor: default;
+	color: gray;
+}
+
+.unvisible{
+	display:none !important;
+}
+
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+.ui-timepicker-rtl{ direction: rtl; }
+.ui-timepicker-rtl dl { text-align: right; }
+.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }

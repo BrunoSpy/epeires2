@@ -56,9 +56,9 @@ return array(
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_map' => array(
-            'ipo/index/index' => __DIR__ . '/../view/ipo/index/index.phtml',
-            'error/404'               => __DIR__ . '/../view/error/404.phtml',
-            'error/index'             => __DIR__ . '/../view/error/index.phtml',
+            'ipo/layout'    => __DIR__ . '/../view/layout/ipolayout.phtml',
+            'error/404'     => __DIR__ . '/../view/error/404.phtml',
+            'error/index'   => __DIR__ . '/../view/error/index.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
@@ -75,12 +75,10 @@ return array(
     		),
     	),
     ),
-    /**
-     * Remove this configuration once ZF 2.2.2 is released.
-     *
-     * See https://github.com/zendframework/zf2/pull/4652
-     */
-    'console' => array(
-    		'router' => array(),
+    
+    'permissions' => array(
+    	'IPO' => array(
+    		'ipo.read' => 'Accès',
+    	),	
     ),
 );

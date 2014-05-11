@@ -46,7 +46,8 @@ foreach($this->config as $key => $value){
 				data-id=\"".$role->getId()."\" 
 				data-name=\"".$role->getName()."\" 
 				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-		echo "<a 
+		if($role->getName() != 'admin'){
+                    echo "<a 
 				title=\"Supprimer\" 
 				href=\"#confirm-delete-role\" 
 				data-href=\"".$this->url('administration', array('controller'=>'roles', 'action'=>'deleterole'), array('query'=>array('id'=>$role->getId())))."\" 
@@ -54,6 +55,7 @@ foreach($this->config as $key => $value){
 				data-id=\"".$role->getId()."\" 
 				data-name=\"".$role->getName()."\" 
 				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+                }
 	echo '</td>';
 	echo "<td>".$role->getName()."</td>";
 	echo "<td>".($role->getParent() ? $role->getParent()->getName() : "<em>Aucun</em>")."</td>";
@@ -86,7 +88,7 @@ foreach($this->config as $key => $value){
 </div>
 </div>
 
-<?php echo $this->modalWindow("role-container", "<h3>Nouveau rôle</h3>", "", "<div id=\"role-form\"></div>")?>
+<?php echo $this->modalWindow("role-container", '<h3 id="role-title">Nouveau rôle</h3>', "", "<div id=\"role-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-role",
 						"<h3>Confirmer la suppression ?</h3>",
@@ -101,5 +103,22 @@ foreach($this->config as $key => $value){
 <?php $this->inlineScript()->captureStart();?>
 
 roles('<?php echo $this->url('administration'); ?>');
+
+<?php if (isset($this->messages['successMessages'])) { ?>
+	<?php foreach ($this->messages['successMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['errorMessages'])) { ?>
+	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
 
 <?php $this->inlineScript()->captureEnd();?>
