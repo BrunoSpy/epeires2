@@ -88,7 +88,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -302,7 +303,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -599,7 +601,8 @@
                 {
                     "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
                 },
                 {
                     "name": "Guilherme Blanco",
@@ -946,12 +949,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "v1.1.2"
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
-                "reference": "v1.1.2",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
                 "shasum": ""
             },
             "require": {
@@ -1197,17 +1200,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.4.3",
+            "version": "v2.4.4",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "ef20f1f58d7f693ee888353962bd2db336e3bbcb"
+                "reference": "2e452005b1e1d003d23702d227e23614679eb5ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/ef20f1f58d7f693ee888353962bd2db336e3bbcb",
-                "reference": "ef20f1f58d7f693ee888353962bd2db336e3bbcb",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/2e452005b1e1d003d23702d227e23614679eb5ca",
+                "reference": "2e452005b1e1d003d23702d227e23614679eb5ca",
                 "shasum": ""
             },
             "require": {
@@ -1248,21 +1251,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2014-03-01 17:35:04"
+            "time": "2014-04-27 13:34:57"
         },
         {
             "name": "symfony/process",
-            "version": "v2.4.3",
+            "version": "v2.4.4",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "c09c3b08455c35688eee3e481fdfc85518ef01d7"
+                "reference": "8721f1476d5d38a43c7d6ccb6435b351cf8f3bb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/c09c3b08455c35688eee3e481fdfc85518ef01d7",
-                "reference": "c09c3b08455c35688eee3e481fdfc85518ef01d7",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/8721f1476d5d38a43c7d6ccb6435b351cf8f3bb7",
+                "reference": "8721f1476d5d38a43c7d6ccb6435b351cf8f3bb7",
                 "shasum": ""
             },
             "require": {
@@ -1297,7 +1300,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2014-03-26 11:35:33"
+            "time": "2014-04-27 13:34:57"
         },
         {
             "name": "zendframework/zendframework",
@@ -1523,16 +1526,16 @@
         },
         {
             "name": "zf-commons/zfc-rbac",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-                "reference": "9f710ee9cbf050e0dc4a51dddec4a4369eb204cf"
+                "reference": "7598d81a2608d9e98f3b45c99abeeaed6b115fb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/9f710ee9cbf050e0dc4a51dddec4a4369eb204cf",
-                "reference": "9f710ee9cbf050e0dc4a51dddec4a4369eb204cf",
+                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/7598d81a2608d9e98f3b45c99abeeaed6b115fb8",
+                "reference": "7598d81a2608d9e98f3b45c99abeeaed6b115fb8",
                 "shasum": ""
             },
             "require": {
@@ -1585,7 +1588,7 @@
                 "rbac",
                 "zf2"
             ],
-            "time": "2014-04-04 21:00:15"
+            "time": "2014-05-04 16:46:52"
         },
         {
             "name": "zf-commons/zfc-user",
@@ -1778,13 +1781,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "9f93faecc1c9c31b8af67491f0e706e75b1f85bf"
+                "reference": "8907edf3a03ae0ac761b43e33b3629ac1b6c3cf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-9f93faecc1c9c31b8af67491f0e706e75b1f85bf-zip-dcd32b.zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-8907edf3a03ae0ac761b43e33b3629ac1b6c3cf3-zip-d7f388.zip",
                 "reference": "dev-master",
-                "shasum": "7968677ac5b08ebe06725e72078e91b0104b9bc9"
+                "shasum": "4b770a0b2178e1627cd10e73030842305a1eb150"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -1834,7 +1837,7 @@
                 "source": "https://github.com/zendframework/ZendDeveloperTools/tree/master",
                 "issues": "https://github.com/zendframework/ZendDeveloperTools/issues"
             },
-            "time": "2014-04-16 14:11:24"
+            "time": "2014-05-06 03:29:18"
         },
         {
             "name": "zendframework/zenddiagnostics",
@@ -1901,13 +1904,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZFTool.git",
-                "reference": "784d29af4e6d967d268ac5e385f49999f85de96a"
+                "reference": "8bab848834bfc48fef2f4b3e874ddd3760fb9e0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zftool-784d29af4e6d967d268ac5e385f49999f85de96a-zip-90db27.zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zftool-8bab848834bfc48fef2f4b3e874ddd3760fb9e0d-zip-9951ef.zip",
                 "reference": "dev-master",
-                "shasum": "4d0ed03dee6943902c5c3e128c2d62d57874e38d"
+                "shasum": "32d14f13b107ba27d12fa7e95c2c0cbac39c9af0"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -1950,12 +1953,10 @@
                 "source": "https://github.com/zendframework/ZFTool/tree/master",
                 "issues": "https://github.com/zendframework/ZFTool/issues"
             },
-            "time": "2014-03-31 11:52:40"
+            "time": "2014-04-22 18:35:37"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "zf-commons/zfc-user-doctrine-orm": 20,
@@ -1968,7 +1969,5 @@
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
