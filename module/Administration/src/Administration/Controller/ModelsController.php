@@ -30,18 +30,28 @@ class ModelsController extends FormController
     	$models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
     	
     	$actions = array();
+        $alerts = array();
+        $files = array();
     	foreach ($models as $model){
     		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model));
-    		$count = 0;
+    		$countactions = 0;
+                $countalerts = 0;
     		foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria) as $child){
 			if($child->getCategory() instanceof \Application\Entity\ActionCategory){
-				$count++;
-			}
+				$countactions++;
+			} else if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
+                            $countalerts++;
+                        }
     		}
-    		$actions[$model->getId()] = $count;
+                $files[$model->getId()] = count($model->getFiles());
+                $alerts[$model->getId()] = $countalerts;
+    		$actions[$model->getId()] = $countactions;
     	}
     	
-    	$viewmodel->setVariables(array('models'=> $models, 'actions'=>$actions));
+    	$viewmodel->setVariables(array('models'=> $models,
+                                        'actions'=>$actions, 
+                                        'alerts'=>$alerts,
+                                        'files' => $files));
     	
     	$return = array();
     	if($this->flashMessenger()->hasErrorMessages()){

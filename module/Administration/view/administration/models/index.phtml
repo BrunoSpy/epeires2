@@ -8,11 +8,13 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 <thead>
 	<tr>
 		<th>id</th>
+                <th data-sort="string">Organisation</th>
 		<th data-sort="string">Nom</th>
 		<th data-sort="string">Catégorie</th>
-		<th data-sort="string">Organisation</th>
 		<th>Impact</th>
 		<th>Fiche réflexe</th>
+                <th>Alertes</th>
+                <th>Fichiers</th>
 		<th>Ponctuel</th>
 		<th>Liste</th>
 		<th>Recherche</th>
@@ -25,11 +27,13 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 	foreach ($this->models as $model){
 		echo '<tr>';
 		echo '<td>'.$model->getId().'</td>';
+		echo '<td>'.$model->getOrganisation()->getName().'</td>';
 		echo '<td>'.$model->getName().'</td>';
 		echo '<td>'.$model->getCategory()->getName().'</td>';
-		echo '<td>'.$model->getOrganisation()->getName().'</td>';
 		echo '<td>'.$this->impact($model->getImpact()).'</td>';
 		echo '<td>'.$this->actions[$model->getId()].'</td>';
+                echo '<td>'.$this->alerts[$model->getId()].'</td>';
+                echo '<td>'.$this->files[$model->getId()].'</td>';
 		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 		echo '<td>'.($model->isListable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
