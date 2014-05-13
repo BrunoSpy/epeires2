@@ -25,9 +25,12 @@ class EventRepository extends ExtendedRepository {
     	->leftJoin('e.zonefilters', 'f')
     	->andWhere($qb->expr()->isNull('e.parent'));//display only root events
     	
+        //restriction à tous les evts modifiés depuis $lastmodified
     	if($lastmodified){
     		$qb->andWhere($qb->expr()->gte('last_modified_on', $lastmodified));
-    	} else if($day) {
+    	}
+        
+        if($day) {
     		$daystart = new \DateTime($day);
     		$daystart->setTime(0, 0, 0);
     		$dayend = new \DateTime($day);
@@ -36,18 +39,22 @@ class EventRepository extends ExtendedRepository {
     		$dayend = $dayend->format("Y-m-d H:i:s");
     		//tous les évènements ayant une intersection non nulle avec $day
     		$qb->andWhere($qb->expr()->orX(
-    				$qb->expr()->andX(
-    					$qb->expr()->lt('e.startdate', '?1'),
-    					$qb->expr()->orX(
-    						$qb->expr()->isNull('e.enddate'),
-    						$qb->expr()->gte('e.enddate', '?1')
+                        //evt dont la date de début est le bon jour : inclus les ponctuels
+                        $qb->expr()->andX(
+                                $qb->expr()->gte('e.startdate', '?1'),
+                                $qb->expr()->lte('e.startdate', '?2')
+                                ),
+                        //evt dont la date de début est passée : forcément non ponctuels
+                        $qb->expr()->andX(
+                                $qb->expr()->eq('e.punctual', 'false'),
+                                $qb->expr()->lt('e.startdate', '?1'),
+                                $qb->expr()->orX(
+                                        $qb->expr()->isNull('e.enddate'),
+    					$qb->expr()->gte('e.enddate', '?1')
     					)
-    				),
-    				$qb->expr()->andX(
-    					$qb->expr()->gte('e.startdate', '?1'),
-    					$qb->expr()->lte('e.startdate', '?2')
-    				)
-    		));
+                                )	
+                    )
+                );
     		$qb->setParameters(array(1 => $daystart, 2 => $dayend));    		
     	} else {
     		//every open events and all events of the last 3 days
@@ -60,7 +67,6 @@ class EventRepository extends ExtendedRepository {
     		$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
     				2 => array(1,2)));
     	}
-
     
     	//filtre par zone
     	$session = new Container('zone');

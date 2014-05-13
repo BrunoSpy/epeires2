@@ -19,6 +19,7 @@ class ExtendedCategoryRepository extends CategoryRepository {
 		->from('Application\Entity\Event', 'e')
 		->innerJoin('e.category', 'cat')
 		->andWhere('cat INSTANCE OF '.$category)
+                ->andWhere($qbEvents->expr()->eq('e.punctual', 'false'))
 		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
 		->andWhere($qbEvents->expr()->orX(
                      $qbEvents->expr()->andX(

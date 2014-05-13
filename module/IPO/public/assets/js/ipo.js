@@ -38,7 +38,7 @@ $(document).ready(function(){
     
     $("#prev-day").on('click', function(e){
         var date = new Date($('#day').data('day'));
-        var prevday = new Date();
+        var prevday = new Date($('#day').data('day'));
         prevday.setDate(date.getDate()-1);
         $('#day').data('day', prevday.toUTCString());
         $.getJSON('ipo/index/getevents?day='+prevday.toUTCString(), function(data){
@@ -50,7 +50,7 @@ $(document).ready(function(){
     
     $("#next-day").on('click', function(e){
         var date = new Date($('#day').data('day'));
-        var nextday = new Date();
+        var nextday = new Date($('#day').data('day'));
         nextday.setDate(date.getDate()+1);
         $('#day').data('day', nextday.toUTCString());
         $.getJSON('ipo/index/getevents?day='+nextday.toUTCString(), function(data){
