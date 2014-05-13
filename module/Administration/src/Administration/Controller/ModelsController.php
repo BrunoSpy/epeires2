@@ -34,7 +34,7 @@ class ModelsController extends FormController
     		$criteria = Criteria::create()->andWhere(Criteria::expr()->eq('parent', $model));
     		$count = 0;
     		foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria) as $child){
-			if($child->getCategory() instanceof Application\Entity\ActionCategory){
+			if($child->getCategory() instanceof \Application\Entity\ActionCategory){
 				$count++;
 			}
     		}
