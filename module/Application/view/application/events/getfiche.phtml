@@ -49,17 +49,6 @@
 
     <?php endif; ?>
 
-
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Notes</div>
-        <div class="pull-right"><span class="badge"><?php echo count($this->event->getUpdates()) ?></span> <i class="icon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?> icon-grey"></i></div>
-    </div>
-    <div class="block-content collapse in" id="updates" <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? '' : 'style="display:none"')?>>
-        <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
-    </div>
-</div>
-
 <?php if(count($this->event->getFiles())>0) : ?>
 <div class="block">
     <div class="navbar navbar-inner block-header">
@@ -94,6 +83,17 @@
         <?php echo $this->partial('events/gethistory.phtml'); ?>
     </div>
 </div>
+
+<div class="block">
+    <div class="navbar navbar-inner block-header">
+        <div class="muted pull-left">Notes</div>
+        <div class="pull-right"><span class="badge"><?php echo count($this->event->getUpdates()) ?></span> <i class="icon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?> icon-grey"></i></div>
+    </div>
+    <div class="block-content collapse in" id="updates" <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? '' : 'style="display:none"')?>>
+        <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
+    </div>
+</div>
+
 <?php if($this->isGranted('events.write')) :?>
 <div class="block-controls">
     <form data-id="<?php echo $this->event->getId();?>" id="add-note" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
@@ -103,11 +103,4 @@
 </div>
 <?php endif; ?>
 
-<?php else : ?>
-
 <?php endif; ?>
-
-
-
-
-

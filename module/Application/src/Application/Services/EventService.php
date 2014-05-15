@@ -207,23 +207,23 @@ class EventService implements ServiceManagerAwareInterface{
 			}
 		}
 		
-		//updates --> not displayed in history
-//		foreach($event->getUpdates() as $update){
-//			if(!array_key_exists($update->getCreatedOn()->format(DATE_RFC2822), $history)){
-//				$entry = array();
-//				$entry['date'] = $update->getCreatedOn();
-//				$entry['changes'] = array();
-//				$history[$update->getCreatedOn()->format(DATE_RFC2822)] = $entry;
-//			}
-//			$historyentry = array();
-//			$historyentry['fieldname'] = 'note';
-//			$historyentry['oldvalue'] = '';
-//			$historyentry['newvalue'] = $update->getText();
-//			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
-//		}
+		//updates
+		foreach($event->getUpdates() as $update){
+			if(!array_key_exists($update->getCreatedOn()->format(DATE_RFC2822), $history)){
+				$entry = array();
+				$entry['date'] = $update->getCreatedOn();
+				$entry['changes'] = array();
+				$history[$update->getCreatedOn()->format(DATE_RFC2822)] = $entry;
+			}
+			$historyentry = array();
+			$historyentry['fieldname'] = 'note';
+			$historyentry['oldvalue'] = '';
+			$historyentry['newvalue'] = $update->getText();
+			$history[$update->getCreatedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
+		}
                 //fiche reflexe
                 foreach($event->getChildren() as $child){
-                    if(!($child->getCategory() instanceof \Application\Entity\FrequencyCategory) && !$child->getStatus()->isOpen()){
+                    if(($child->getCategory() instanceof \Application\Entity\ActionCategory) && !$child->getStatus()->isOpen()){
                         if(!array_key_exists($child->getLastModifiedOn()->format(DATE_RFC2822), $history)){
                             $entry = array();
                             $entry['date'] = $child->getLastModifiedOn();
@@ -238,7 +238,23 @@ class EventService implements ServiceManagerAwareInterface{
                         $history[$child->getLastModifiedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
                     }
                 }
-                
+                //alertes
+                foreach($event->getChildren() as $child){
+                    if(($child->getCategory() instanceof \Application\Entity\AlarmCategory) && !$child->getStatus()->isOpen()){
+                        if(!array_key_exists($child->getLastModifiedOn()->format(DATE_RFC2822), $history)){
+                            $entry = array();
+                            $entry['date'] = $child->getLastModifiedOn();
+                            $entry['changes'] = array();
+                            $history[$child->getLastModifiedOn()->format(DATE_RFC2822)] = $entry;
+                        }
+                        $historyentry = array();
+                        $historyentry['fieldname'] = 'alarm';
+                        $historyentry['oldvalue'] = '';
+                        $historyentry['newvalue'] = $this->getName($child);
+                        $historyentry['status'] = $child->getStatus();
+                        $history[$child->getLastModifiedOn()->format(DATE_RFC2822)]['changes'][] = $historyentry;
+                    }
+                }
 		uksort($history, array($this, "sortbydate"));
 		return $history;
 	}
