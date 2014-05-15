@@ -28,7 +28,13 @@ class OpSupHelper extends AbstractHelper {
 		
 		if($zfcuserauth->hasIdentity()) {
 		
-			$opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy(array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId()));
+                        $criteria = array();
+                        $criteria['organisation'] = $zfcuserauth->getIdentity()->getOrganisation()->getId();
+                        if($zfcuserauth->getIdentity()->getZone()){
+                            $criteria['zone'] = $zfcuserauth->getIdentity()->getZone()->getId();
+                        }
+                    
+			$opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy($criteria, array('name' => 'asc'));
 		
 			$currentopsup = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(
 									array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId(),
