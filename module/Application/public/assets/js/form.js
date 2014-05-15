@@ -282,7 +282,7 @@ var form = function(url){
 	});
 	
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline button.modify-evt, #search-results a.modify-evt", function(){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(){
 		var me = $(this);	
 		$("#event").html('<div>Chargement...</div>');
 		$("#form-title").html(me.data('name'));
