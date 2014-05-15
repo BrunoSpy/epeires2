@@ -375,6 +375,7 @@ var antenna = function(url){
 				antenna.addClass('background-status-ok');
 				//evts planifiés ?
 				if(value.planned){
+                                        antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
 					antenna.removeClass('background-status-ok');
 					antenna.addClass('background-status-planned');
 				} else {

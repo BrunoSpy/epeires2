@@ -161,11 +161,15 @@ $(document).ready(function(){
         $.post(url+'events/addnote?id='+$(this).data('id'), $(this).serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
+                //mise à jour notes
                 $("#updates").load(url+'events/updates?id='+me.data('id'), function(){
                     $("#updates").parent().find("span.badge").html($("#updates dt").size());
                 });
                 $("#updates").show();
-                
+                //mise à jour histo
+                $("#history").load(url+'events/gethistory?id='+me.data('id'), function(){
+                    $("#history").parent().find("span.badge").html($("#history dd").size());
+                });
             }
             displayMessages(data);
         });

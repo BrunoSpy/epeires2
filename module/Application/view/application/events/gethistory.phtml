@@ -20,7 +20,13 @@ if($this->history){
                                 if(!$change['status']->isOpen()){
                                     echo "Action \"".$change['newvalue']."\" effectuée";
                                 }
-                        }else {
+                        } else if($change['fieldname'] == 'note'){
+                            echo $change['newvalue'];
+                        } else if($change['fieldname'] == 'alarm') {
+                            if(!$change['status']->isOpen()){
+                                echo 'Alerte <em>'.$change['newvalue'].'</em> acquittée';
+                            }
+                        } else {
 				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
 				if(empty($change['oldvalue'])){
 					echo ' enregistré à <em>'.$change['newvalue'].'</em>';
