@@ -759,6 +759,18 @@ class FrequenciesController extends ZoneController {
                         }
                     }
                 }
+                //recherche aussi sur les evts planifiés
+                $events = $objectManager->getRepository('Application\Entity\Antenna')->getPlannedEvents('Application\Entity\AntennaCategory');
+                foreach ($events as $event){
+                    foreach ($event->getCustomFieldsValues() as $value){
+                        if($value->getCustomField()->getId() == $event->getCategory()->getAntennafield()->getId()){
+                            if($value->getValue() == $antennaId) {
+                                $antennaEvents[] = $event;
+                            }
+                        }
+                    }
+                }
+                
                 if(count($antennaEvents) >= 1) {
                     $event = $antennaEvents[0];
                     $fiche = $event;
