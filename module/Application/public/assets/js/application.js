@@ -184,10 +184,10 @@ $(document).ready(function(){
                     function(data){
 			if(data.open){
 				me.html("A faire");
-				me.removeClass("active");
+				me.removeClass("active btn-success");
 			} else {
 				me.html("Fait");
-				me.addClass("active");
+				me.addClass("active btn-success");
 			}
                         $("#history").load(url+'events/gethistory?id='+me.data('eventid'));
                     }

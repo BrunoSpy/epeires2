@@ -36,7 +36,7 @@
                         echo "<tr data-id=\"" . $child->getId() . "\">";
                         echo "<td>" . $this->eventName($child) . "</td>";
                         echo '<td><a class="fiche btn btn-small ' . 
-                                ($child->getStatus()->isOpen() ? "" : "active") . ' '
+                                ($child->getStatus()->isOpen() ? "" : "btn-success active") . ' '
                                 . ($this->isGranted('events.write') ? '' : 'disabled').'" '
                                 . 'data-eventid="'.$this->event->getId().'" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
                         echo "</tr>";

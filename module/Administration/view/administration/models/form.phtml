@@ -104,14 +104,16 @@ if($this->form->has('custom_fields')){
 	<table class="table table-hover alert-table">
 		<tbody>
 		<?php
+                $countalarms = 0;
 		if($this->childs){
 			foreach($this->childs as $alarm){
 				if($alarm->getCategory() instanceof Application\Entity\AlarmCategory){
-				echo '<tr>';
-				echo '<td data-toggle="tooltip" data-title="Déclenchement de l\'alerte x minutes après le début de l\'évènement">'.$alarm->getStartdateDelta().' min</td>';
-				echo '<td>'.$this->eventName($alarm).'</td>';
-				echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><i class="icon-trash"></i></a></td>';
-				echo '</tr>';
+                                    $countalarms++;
+                                    echo '<tr>';
+                                    echo '<td data-toggle="tooltip" data-title="Déclenchement de l\'alerte x minutes après le début de l\'évènement">'.$alarm->getStartdateDelta().' min</td>';
+                                    echo '<td>'.$this->eventName($alarm).'</td>';
+                                    echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><i class="icon-trash"></i></a></td>';
+                                    echo '</tr>';
 				}
 			}
 		}
@@ -133,8 +135,9 @@ if($this->form->has('custom_fields')){
 <?php 
 if($this->childs) {
 	$i = 0;
-	$total = count($this->childs);
+	$total = count($this->childs) - $countalarms;
 	foreach ($this->childs as $child){
+            if($child->getCategory() instanceof Application\Entity\ActionCategory){
 		$i++;
 		echo '<tr id="'.$child->getId().'">';
 			echo '<td>'.$this->eventName($child).'</td>';
@@ -163,6 +166,7 @@ if($this->childs) {
 				data-name="'.$this->eventName($child).'"> 
 				<i class="icon-trash"></i></a></td>';
 		echo '</tr>';
+            }
 	}
  }?>
 </table>

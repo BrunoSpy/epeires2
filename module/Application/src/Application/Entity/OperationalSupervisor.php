@@ -27,9 +27,9 @@ class OperationalSupervisor {
 	/** 
 	 * @ORM\Column(type="string")
 	 * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom :"})
-     */
+        * @Annotation\Required({"required":"true"})
+        * @Annotation\Options({"label":"Nom :"})
+        */
 	protected $name;
 	
  	/** 
@@ -41,7 +41,7 @@ class OperationalSupervisor {
 	protected $organisation;
 	
 
-	/**
+	/** 
 	 * @ORM\ManyToOne(targetEntity="QualificationZone")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(true)
@@ -49,7 +49,7 @@ class OperationalSupervisor {
 	 */
 	protected $zone;
 	
-	/**
+	/** 
 	 * @ORM\Column(type="boolean")
 	 * @Gedmo\Versioned
 	 */
