@@ -643,9 +643,9 @@ var timeline = {
 	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
 			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
 			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
-			elmt_deb.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+			elmt_deb.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '80px', 'text-align' : 'right', 
 				'font-style':'italic', 'background-color':'transparent', 'z_index':2});
-			elmt_fin.css({'position':'absolute', 'top': '0px','left': '0px', 'width': '80px', 'height':dy, 'text-align' : 'center', 
+			elmt_fin.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '80px', 'text-align' : 'left', 
 				'font-style':'italic', 'background-color':'transparent', 'z_index':2});
 			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z_index':2, 'background-color':'Transparant', 
 				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
@@ -751,17 +751,20 @@ var timeline = {
 				elmt_star.css({'left': x0+5+'px'});
 				break;
 			}
-			elmt_deb.removeClass("icon-question-sign icon-warning-sign icon-check");
-			elmt_fin.removeClass("icon-question-sign icon-warning-sign icon-check");
+			elmt_deb.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
+			elmt_fin.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
 			if (sts < 3) {
 				elmt_deb.prepend('<i class="icon-question-sign"></i>');
 			} else if (sts == 3) { 
 				elmt_deb.prepend('<i class="icon-warning-sign"></i>');
+				elmt_deb.show();
 			} else {
 				elmt_deb.prepend('<i class="icon-check"></i>');
 			}
-			if (sts == 6) { elmt_fin.append('<i class="icon-warning-sign"></i>'); }
-			else if (sts < 11) {
+			if (sts == 6) { 
+				elmt_fin.append('<i class="icon-warning-sign"></i>'); 
+				elmt_fin.show(); 
+			} else if (sts < 11) {
 				elmt_fin.append('<i class="icon-question-sign"></i>');
 			} else {
 				elmt_fin.append('<i class="icon-check"></i>');
@@ -919,16 +922,17 @@ var timeline = {
 				//	var dDeb = d_debut.toLocaleDateString();
 				//	hDeb = dDeb.substr(0,dDeb.length-5)+" "+hDeb;
 					var dDeb = d_debut.getUTCMonth()+1;
-					if (dDeb > 10) {hDeb = d_debut.getUTCDate()+"/"+dDeb+" "+hDeb;} 
+					if (dDeb > 10) {hDeb = d_debut.getUTCDate()+"<br/>"+"/"+dDeb+" "+hDeb;} 
 					else {hDeb = d_debut.getUTCDate()+"/0"+dDeb+" "+hDeb;}
 					var h1 = 0;
 				} else {
-					h1 = 4;
+					h1 = 6;
 				}
 			} else { hDeb = ""; }
 			elmt_deb.text(" "+hDeb);
 			var data_deb = elmt_deb[0];
 			jQuery.data(data_deb,"d_deb",d_debut);
+			elmt_deb.css({'top':h1+'px'});
 			// ajout de l'heure de fin
 			if (d_fin > 0) {
 				var fin_min = d_fin.getMinutes();
@@ -938,11 +942,11 @@ var timeline = {
 				//	var dFin = d_fin.toLocaleDateString();
 				//	hFin = dFin.substr(0,dFin.length-5)+" "+hFin; 
 					var dFin = d_fin.getUTCMonth()+1;
-					if (dFin > 10) {hFin = d_fin.getUTCDate()+"/"+dFin+" "+hFin; }
+					if (dFin > 10) {hFin = d_fin.getUTCDate()+"<br/>"+"/"+dFin+" "+hFin; }
 					else {hFin = d_fin.getUTCDate()+"/0"+dFin+" "+hFin; }
 					h2 = 0;
 				} else {
-					h2 = 4;
+					h2 = 6;
 				}
 			} else { 
 				h2 = 4;
@@ -951,6 +955,7 @@ var timeline = {
 			elmt_fin.text(hFin+" ");
 			var data_fin = elmt_fin[0];
 			jQuery.data(data_fin,"d_fin",d_fin);
+			elmt_fin.css({'top':h2+'px'});
 		},
 		// affichage en fonction du statut (à modifier)
 		set_status: function (base_element, id, type) {
@@ -1351,6 +1356,16 @@ var timeline = {
 
 $(document).ready(function() {	
 
+	$('#timeline').attr('unselectable','on')
+    .css({'-moz-user-select':'-moz-none',
+          '-moz-user-select':'none',
+          '-o-user-select':'none',
+          '-khtml-user-select':'none', /* you could also put this in a class */
+          '-webkit-user-select':'none',/* and add the CSS class here instead */
+          '-ms-user-select':'none',
+          'user-select':'none'
+    }).bind('selectstart', function(){ return false; });
+	
 	// mise à jour toutes les minutes 
 	setInterval("timeline.update($('#timeline'))", 60000);
 
@@ -1387,8 +1402,10 @@ $(document).ready(function() {
 		if (!(elmt_status.hasClass('btn-warning') || elmt_status.hasClass('btn-danger'))) { elmt_status.hide(); }
 		elmt.find('.elmt_star').hide();
 		elmt.find('.show').hide();
-		elmt.find('.elmt_deb').hide();
-		elmt.find('.elmt_fin').hide();
+		var elmt_deb = elmt.find('.elmt_deb');
+		if (! elmt_deb.find('i').hasClass("icon-warning-sign")) {elmt_deb.hide();}
+		var elmt_fin = elmt.find('.elmt_fin');
+		if (! elmt_fin.find('i').hasClass("icon-warning-sign")) {elmt_fin.hide();}
 		elmt.find('.elmt_qm_fleche').show();
 		elmt.find('.lien').show();
 		elmt.find('.move_fin').hide();
@@ -1588,6 +1605,40 @@ $(document).ready(function() {
 		}*/
 	});
 	
+	// clic sur heure de début
+	$('#timeline').on('click','.elmt_deb', function(e1){
+		var elmt = $(this).closest('.elmt');
+		var elmt_deb = elmt.find('.elmt_deb');
+		var ss_elmt = elmt[0];
+		var id = jQuery.data(ss_elmt, "ident");
+		var n = corresp[id];	
+		if (tab[n][8] == "Nouveau") { 
+			tab[n][8] = "Confirmé"; 
+			elmt_deb.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
+			elmt_deb.prepend('<i class="icon-check"></i>');
+		}
+		$.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
+	});
+	
+	// clic sur heure de fin
+	$('#timeline').on('click','.elmt_fin', function(e1){
+		var elmt = $(this).closest('.elmt');
+		var elmt_deb = elmt.find('.elmt_deb');
+		var elmt_fin = elmt.find('.elmt_fin');
+		var ss_elmt = elmt[0];
+		var id = jQuery.data(ss_elmt, "ident");
+		var n = corresp[id];	
+		if (tab[n][8] == "Nouveau" || tab[n][8] == "Confirmé") { 
+			tab[n][8] = "Terminé"; 
+			elmt_fin.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
+			elmt_fin.append('<i class="icon-check"></i>');
+			elmt_deb.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
+			elmt_deb.prepend('<i class="icon-check"></i>');
+		}
+		$.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
+	});
+	
+	
 	// Déplacement de l'heure de fin
 	$('#timeline').on('mousedown','.move_fin', function(e1){
 			on_drag = 2;
@@ -1599,7 +1650,7 @@ $(document).ready(function() {
 			var ss_elmt = elmt[0];
 			var id = jQuery.data(ss_elmt, "ident");
 			var n = corresp[id];
-			if (tab[n][8] == "Confirmé") { tab[n][8] = "Terminé"; }
+			// if (tab[n][8] == "Confirmé") { tab[n][8] = "Terminé"; }
 			// $.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
 			var rect_elmt = elmt.find('.rect_elmt');
 			var rect_width = rect_elmt.width();
