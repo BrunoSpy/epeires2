@@ -16,6 +16,9 @@ echo $this->formHidden($this->form->get('id'));
 echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('name')));
 
+echo $this->controlGroup($this->formLabel($this->form->get('longname')->setLabelAttributes(array('class' => 'control-label'))),
+                                                $this->formInput($this->form->get('longname')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formInput($this->form->get('shortname')));
 

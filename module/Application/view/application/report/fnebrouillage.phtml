@@ -69,7 +69,7 @@
             <table>
                 <tr>
                     <td> <img src="<?php echo __DIR__ ?>/../../../../../public/img/logo-dsna.png"></img></td>
-                    <td> <p class="text-center">Centre en route de la navigation aérienne Nord<br />Service Exploitation<br />Subdivision Etudes</p></td>
+                    <td> <p class="text-center"><?php echo $this->event->getAuthor()->getOrganisation()->getLongname(); ?><br />Service Exploitation<br />Subdivision Etudes</p></td>
                 </tr>
             </table>
         </div>

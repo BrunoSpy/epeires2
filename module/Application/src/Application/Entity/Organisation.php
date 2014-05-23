@@ -39,7 +39,14 @@ class Organisation {
 	 */
 	protected $shortname;
 	
-	/** 
+        /** 
+         * @ORM\Column(type="string")
+         * @Annotation\Type("Zend\Form\Element\Text")
+         * @Annotation\Options({"label":"Nom complet :"})
+         */
+        protected $longname;
+
+        /** 
 	 * @ORM\Column(type="string")
 	 * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Required(false)
@@ -73,6 +80,10 @@ class Organisation {
 	public function getShortname(){
 		return $this->shortname;
 	}
+        
+        public function getLongname(){
+            return $this->longname;
+        }
 	
 	public function getAddress(){
 		return $this->address;
@@ -90,6 +101,10 @@ class Organisation {
 		$this->shortname = $shortname;
 	}
 	
+        public function setLongname($longname){
+            $this->longname = $longname;
+        }
+        
 	public function setAddress($adress){
 		$this->address = $adress;
 	}
