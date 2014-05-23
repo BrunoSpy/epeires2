@@ -638,6 +638,13 @@ class FrequenciesController extends ZoneController {
             }
         }
 
+        //on refait une passe pour mettre les couvertures en cohérence en cas de changement de fréquence
+        foreach ($frequencies as $key => $freq){
+            if($freq['otherfreqid'] != 0){
+                $frequencies[$key]['cov'] = $frequencies[$freq['otherfreqid']]['cov'];
+            }
+        }
+        
         if ($full) { //en format complet, on donne aussi les evènements dans les 12h
             foreach ($em->getRepository('Application\Entity\Frequency')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
                 $statefield = $event->getCategory()->getStatefield()->getId();
