@@ -1121,6 +1121,14 @@ class EventsController extends ZoneController {
      * @return JSon with messages
      */
     public function changefieldAction() {
+        $formatter = \IntlDateFormatter::create(
+                            \Locale::getDefault(),
+                            \IntlDateFormatter::FULL,
+                            \IntlDateFormatter::FULL,
+                            'UTC',
+                            \IntlDateFormatter::GREGORIAN,
+                            'dd LLL, HH:mm');
+        
         $id = $this->params()->fromQuery('id', 0);
         $field = $this->params()->fromQuery('field', 0);
         $value = $this->params()->fromQuery('value', 0);
@@ -1136,7 +1144,7 @@ class EventsController extends ZoneController {
                     switch ($field) {
                         case 'enddate' :
                             if ($event->setEnddate(new \DateTime($value))) {
-                                $messages['success'][] = "Date et heure de fin modifiées.";
+                                $messages['success'][] = "Date et heure de fin modifiées au ".$formatter->format($event->getEnddate());
                                 //passage au statut terminé si pertinent et droits ok
                                 $now = new \DateTime('now');
                                 $now->setTimezone(new \DateTimeZone('UTC'));
@@ -1145,7 +1153,7 @@ class EventsController extends ZoneController {
                                     if ($event->getStatus()->getId() == 2 ||
                                             ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now)) {
                                         $event->setStatus($status);
-                                        $messages['success'][] = "Statut modifié : terminé.";
+                                        $messages['success'][] = "Evènement passé au statut : terminé.";
                                     }
                                 }
                                 $objectManager->persist($event);
@@ -1155,7 +1163,7 @@ class EventsController extends ZoneController {
                             break;
                         case 'startdate' :
                             if ($event->setStartdate(new \DateTime($value))) {
-                                $messages['success'][] = "Date et heure de début modifiées.";
+                                $messages['success'][] = "Date et heure de début modifiées au ".$formatter->format($event->getStartdate());
                                 //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle
                                 if ($this->isGranted('events.status')) {
                                     $now = new \DateTime('now');
@@ -1163,7 +1171,7 @@ class EventsController extends ZoneController {
                                     $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => false));
                                     if ($event->getStatus()->getId() == 1 && (($event->getStartDate()->format('U') - $now->format('U')) / 60) < 10) {
                                         $event->setStatus($status);
-                                        $messages['success'][] = "Statut modifié : confirmé.";
+                                        $messages['success'][] = "Evènement passé au statut : confirmé.";
                                     }
                                 }
                                 $objectManager->persist($event);
@@ -1188,9 +1196,24 @@ class EventsController extends ZoneController {
                             if ($this->isGranted('events.status')) {
                                 $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name' => $value));
                                 if ($status) {
-                                    $event->setStatus($status);
+                                    
+                                    //si statut terminé et pas d'heure de fin -> heure de fin = now
+                                    if(!$status->isOpen() && $status->isDefault() && !$event->getEnddate()){
+                                        $now = new \DateTime('now');
+                                        $now->setTimezone(new \DateTimeZone('UTC'));
+                                        if($event->setEnddate($now)){
+                                            $event->setStatus($status);
+                                            $messages['success'][] = "Date et heure de fin modifiée au ".$formatter->format($event->getEnddate());
+                                            $messages['success'][] = "Evènement passé au statut ".$status->getName();
+                                        } else {
+                                            $messages['error'][] = "Impossible de changer le statut sans heure de fin";
+                                        }
+                                    } else {
+                                        $event->setStatus($status);
+                                        $messages['success'][] = "Evènement passé au statut ".$status->getName();
+                                    }
                                     $objectManager->persist($event);
-                                    $messages['success'][] = "Statut de l'évènement modifié.";
+                                    
                                 }
                             } else {
                                 $messages['error'][] = "Droits insuffisants pour changer le statut.";
