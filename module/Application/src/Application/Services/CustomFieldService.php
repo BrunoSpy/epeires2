@@ -61,9 +61,9 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				}
 				break;
 			case 'select':
-				$defaultvalue = $customfield->getDefaultValue();
+				$defaultvalue = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
 				if($defaultvalue && $fieldvalue != null) {
-					$values = explode(PHP_EOL, $defaultvalue);
+					$values = explode("\n", $defaultvalue);
 					if(count($values) >= $fieldvalue){
 						$name = $values[$fieldvalue];
 					}
