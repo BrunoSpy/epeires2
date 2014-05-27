@@ -243,6 +243,14 @@ $(document).ready(function(){
         dd.append(span);
     });
     
+    //à mettre dans timeline.js ?
+    $('#zoom').on('switch-change', function(e, data){
+       if(data.value){
+           $("#calendar").show();
+       }  else {
+           $("#calendar").hide();
+       }
+    });
     
 });
 

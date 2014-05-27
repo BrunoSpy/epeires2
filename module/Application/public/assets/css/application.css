@@ -324,3 +324,9 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 	background-color: ghostwhite;
 }
 
+#calendar {
+    display: none;
+    float:left;
+    text-align: center;
+    width: 100%;
+}
