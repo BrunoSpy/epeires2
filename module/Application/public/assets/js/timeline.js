@@ -86,9 +86,9 @@ var timeline = {
 			timeline.base(base_elmt);
 			var timeline_content = $('<div class="timeline_content"></div>');
 			$(element).append(timeline_content);
-			var timeline_other = $('<div class="timeline_other"></div>');
+			//var timeline_other = $('<div class="timeline_other"></div>');
 			$.when(timeline.set_cat(url), timeline.set_impacts(url)).then(function(){
-				$(element).append(timeline_other);
+				//$(element).append(timeline_other);
 				tab = Array();
 				var i = 0;
 				var ddeb, dfin;
@@ -1223,7 +1223,7 @@ var timeline = {
 				var timel = $('#timeline');
 				var base_element = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
-				var other = timel.find('.timeline_other');
+				//var other = timel.find('.timeline_other');
 				var elmt = timeline_content.find('.ident'+key);
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
 					if (d_fin > d_min){ 
@@ -1302,7 +1302,7 @@ var timeline = {
 				var timel = $('#timeline');
 				var base = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
-				var other = timel.find('.timeline_other');
+				//var other = timel.find('.timeline_other');
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
 					if (d_fin > d_min) {
 						liste_passee.push(len);
@@ -1326,11 +1326,11 @@ var timeline = {
 			timeline.maj_timeBar(timeline_content);
 			if (h_ref_old != h_ref) { 
 				var base = timel.find('.Base');
-				var other = timel.find('.timeline_other');
+				//var other = timel.find('.timeline_other');
 				$.holdReady(true);
 				base.empty();
 				timeline_content.empty();
-				other.empty();
+				//other.empty();
 				timeline.base(base);	
 				var res = timeline.create(timeline_content, tab);
 				if (tri_cat) { 
@@ -1468,11 +1468,11 @@ $(document).ready(function() {
 		var timel = $('#timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
-		var other = timel.find('.timeline_other');
+		//var other = timel.find('.timeline_other');
 		$.holdReady(true);
 		base.empty();
 		timeline_content.empty();
-		other.empty();
+		//other.empty();
 		if(data.value){
 			timeline.init_journee(timel);
 		} else {
@@ -1531,42 +1531,42 @@ $(document).ready(function() {
 	});
 	
 	// ouverture des évènement passés et à venir dans les bandeaux gauche et droit
-	$('#timeline').on('click','.passee', function(){
-		var timel = $(this).closest('.timeline_other');
-		var liste_passee = timel.find('.liste_passee');
-		var len = liste_passee.outerWidth(); 
-		if (liste_passee.hasClass("liste_passee_affichee")) {
-			liste_passee.removeClass("liste_passee_affichee");
-			$(this).css({'left':'-='+len});
-			$(this).find('.icon-chevron-left').remove();
-			$(this).append($('<i class="icon-chevron-right"></i>'));
-			liste_passee.hide();
-		} else {
-			liste_passee.addClass("liste_passee_affichee");
-			$(this).css({'left':'+='+len});
-			$(this).find('.icon-chevron-right').remove();
-			$(this).append($('<i class="icon-chevron-left"></i>'));
-			liste_passee.show();
-		}
-	});
-	$('#timeline').on('click','.avenir', function(){
-		var timel = $(this).closest('.timeline_other');
-		var liste_avenir = timel.find('.liste_avenir');
-		var len = liste_avenir.outerWidth();
-		if (liste_avenir.hasClass("liste_avenir_affichee")) {
-			liste_avenir.removeClass("liste_avenir_affichee");
-			$(this).css({'right':'-='+len});
-			$(this).find('.icon-chevron-right').remove();
-			$(this).append($('<i class="icon-chevron-left"></i>'));
-			liste_avenir.hide();
-		} else {
-			liste_avenir.addClass("liste_avenir_affichee");
-			$(this).css({'right':'+='+len});
-			$(this).find('.icon-chevron-left').remove();
-			$(this).append($('<i class="icon-chevron-right"></i>'));
-			liste_avenir.show();
-		}
-	});
+//	$('#timeline').on('click','.passee', function(){
+//		var timel = $(this).closest('.timeline_other');
+//		var liste_passee = timel.find('.liste_passee');
+//		var len = liste_passee.outerWidth(); 
+//		if (liste_passee.hasClass("liste_passee_affichee")) {
+//			liste_passee.removeClass("liste_passee_affichee");
+//			$(this).css({'left':'-='+len});
+//			$(this).find('.icon-chevron-left').remove();
+//			$(this).append($('<i class="icon-chevron-right"></i>'));
+//			liste_passee.hide();
+//		} else {
+//			liste_passee.addClass("liste_passee_affichee");
+//			$(this).css({'left':'+='+len});
+//			$(this).find('.icon-chevron-right').remove();
+//			$(this).append($('<i class="icon-chevron-left"></i>'));
+//			liste_passee.show();
+//		}
+//	});
+//	$('#timeline').on('click','.avenir', function(){
+//		var timel = $(this).closest('.timeline_other');
+//		var liste_avenir = timel.find('.liste_avenir');
+//		var len = liste_avenir.outerWidth();
+//		if (liste_avenir.hasClass("liste_avenir_affichee")) {
+//			liste_avenir.removeClass("liste_avenir_affichee");
+//			$(this).css({'right':'-='+len});
+//			$(this).find('.icon-chevron-right').remove();
+//			$(this).append($('<i class="icon-chevron-left"></i>'));
+//			liste_avenir.hide();
+//		} else {
+//			liste_avenir.addClass("liste_avenir_affichee");
+//			$(this).css({'right':'+='+len});
+//			$(this).find('.icon-chevron-left').remove();
+//			$(this).append($('<i class="icon-chevron-right"></i>'));
+//			liste_avenir.show();
+//		}
+//	});
 	
 	// sauvegarde du texte enrichi. Pas utilisé
 	$('#timeline').on('mouseleave','.elmt_write', function(){
@@ -1757,14 +1757,14 @@ $(document).ready(function() {
 	// retracé de la timeline si taille fenêtre modifiée
 	$(window).resize(function () {
 		var timel = $('#timeline');
-        timel.css('height', $(window).height()-82+'px');
+                timel.css('height', $(window).height()-82+'px');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
-		var other = timel.find('.timeline_other');
+		//var other = timel.find('.timeline_other');
 		$.holdReady(true);
 		base.empty();
 		timeline_content.empty();
-		other.empty();
+		//other.empty();
 		if(vue == 1){
 			timeline.init_journee(timel);
 		} else {

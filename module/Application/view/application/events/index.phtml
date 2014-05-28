@@ -6,12 +6,16 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 <div id="panel" class="panel">
 </div>
 
-<div id="calendar">
-    <p><i class="icon-backward"></i>  27 mai <i class="icon-forward"></i></p>
-</div>
+
 
 <div id="timeline">
+    
+    <div id="calendar">
+    <p><i class="icon-backward"></i> <input id="date" type="text" class="date input-small"></input> <i class="icon-forward"></i></p>
+    </div>
+    
 </div>
+
 
 <?php 
 //modal windows to modify or delete file

@@ -252,6 +252,16 @@ $(document).ready(function(){
        }
     });
     
+    var now = new Date();
+    $("#calendar input[type=text].date").val(now.toLocaleDateString());
+    $("#calendar input[type=text].date").on('change', function(){
+        
+    });
+    $("#date").datepicker({
+            dateFormat: "dd/mm/yy",
+            showButtonPanel: true
+    });
+    
 });
 
 
