@@ -165,7 +165,7 @@ class AlarmController extends FormController {
 			$from->setTimezone(new \DateTimeZone("UTC"));
 			//uniquement les alarmes créés et modifiées à partir de lastupdate
 			$qbEvents->andWhere($qbEvents->expr()->gte('e.last_modified_on', '?1'))
-			->setParameters(array(2 => array(1,2,3),
+			->setParameters(array(2 => array(1,2,3,4),
 					1 => $from->format('Y-m-d H:i:s')));
 		} else {
 			$qbEvents->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future

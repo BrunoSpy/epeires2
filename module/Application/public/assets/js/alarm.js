@@ -26,9 +26,10 @@ var updateAlarms = function(){
 						clearTimeout(alarms[item.id]);
 						delete(alarms[item.id]);
 					}
-
-					var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
-					var timer = setTimeout(function(){
+                                        //on ajoute l'alarme si statut nouveau ou en cours
+                                        if(item.status == 1 || item.status == 2) {
+                                            var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
+                                            var timer = setTimeout(function(){
 						alarmsnoty[item.id] = noty({
 							text:item.text,
 							type:'warning',
@@ -41,8 +42,9 @@ var updateAlarms = function(){
 								}
 							}
 						});
-					}, delta);
-					alarms[item.id] = timer;
+                                            }, delta);
+                                            alarms[item.id] = timer;
+                                        }
 				}
 
 			});

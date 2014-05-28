@@ -423,6 +423,8 @@ var form = function(url){
 					
 			});
 			$("input[name='category']").val(root_value);
+                        //affichage des évts suggérés
+                        
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");

@@ -136,7 +136,9 @@
 						} else {
 							$html .= '<td><i class="icon-bell"></i></td>';
 						}
-					} else {
+                                        } else if($child->getStatus()->getId() == 4) {
+                                            $html .= '<td><i class="icon-remove"></i></td>';
+                                        } else {
 						if($child->getStartDate() < $now) {
 							$html .= '<td><i class="icon-ok"></i></td>';
 						} else {

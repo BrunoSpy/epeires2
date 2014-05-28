@@ -495,19 +495,8 @@ class EventsController extends ZoneController {
                                                 $objectManager->persist($alarm);
                                             }
                                         }
-                                        
     					if($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { //passage au statut terminé ou annulé
-    						//on termine les évènements fils de type fréquence
-    						foreach ($event->getChildren() as $child){
-    							if($child->getCategory() instanceof FrequencyCategory){
-    								if($event->getStatus()->getId() == 3){
-                                                                    //date de fin uniquement pour les fermetures
-                                                                    $child->setEnddate($event->getEnddate());
-                                                                }
-    								$child->setStatus($event->getStatus());
-    								$objectManager->persist($child);
-    							}
-    						}
+    						$this->closeEvent($event);
     					}
     					
     					$objectManager->persist($event);
@@ -1208,6 +1197,10 @@ class EventsController extends ZoneController {
                                         } else {
                                             $messages['error'][] = "Impossible de changer le statut sans heure de fin";
                                         }
+                                        //on ferme l'evt proprement
+                                        if(!$status->isOpen()){
+                                            $this->closeEvent($event);
+                                        }
                                     } else {
                                         $event->setStatus($status);
                                         $messages['success'][] = "Evènement passé au statut ".$status->getName();
@@ -1239,6 +1232,28 @@ class EventsController extends ZoneController {
         return new JsonModel($messages);
     }
 
+    private function closeEvent(Event $event){
+        error_log('fermeture des enfants');
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        //on termine les évènements fils de type fréquence
+        foreach ($event->getChildren() as $child) {
+            if ($child->getCategory() instanceof FrequencyCategory) {
+                if ($event->getStatus()->getId() == 3) {
+                    //date de fin uniquement pour les fermetures
+                    $child->setEnddate($event->getEnddate());
+                }
+                $child->setStatus($event->getStatus());
+            } else if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
+                //on annule les alarmes non acquittées dont la fin est postèrieure à la fin de l'evt
+                if ($child->getStatus()->getId() != 3 && $child->getStartDate() > $event->getEnddate()) {
+                    $cancelStatus = $objectManager->getRepository('Application\Entity\Status')->find(4);
+                    $child->setStatus($cancelStatus);
+                }
+            }
+            $objectManager->persist($child);
+        }
+    }
+    
     public function getficheAction(){
     	$viewmodel = new ViewModel();
     	$request = $this->getRequest();

@@ -365,6 +365,13 @@ class FrequenciesController extends ZoneController {
                                         $newvalue->setValue($value->getValue());
                                         $em->persist($newvalue);
                                     }
+                                    //si alert
+                                    if($action->getCategory() instanceof \Application\Entity\AlarmCategory){
+                                        $now = new \DateTime('now');
+                                        $now->setTimezone(new \DateTimeZone('UTC'));
+                                        $now->add(new \DateInterval('PT'.$action->getStartdateDelta().'M'));
+                                        $child->setStartdate($now);
+                                    }
                                     $em->persist($child);
                                 }
                                 //ajout des fichiers
