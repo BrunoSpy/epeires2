@@ -110,35 +110,38 @@ var form = function(url){
 		updateHourTitle();
 	});
 	
-	$('#event').on('change', 'input[name=enddate]', function(){
-		var dateDeb = $("#inner-Horairesid #start").siblings("input[type=hidden]");
-		var dateFin = $("#inner-Horairesid #end").siblings("input[type=hidden]");
-		//check if end_date < start_date	
-		var endsplit = dateFin.val().split(' ');
-		var daysplit = endsplit[0].split('-');
-		var hourendsplit = endsplit[1].split(':');
-		var startsplit = dateDeb.val().split(' ');
-		var startdaysplit = startsplit[0].split('-');
-		var hoursplit = startsplit[1].split(':');
-		var end = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourendsplit[0], hourendsplit[1]);
-		var deb = new Date(startdaysplit[2], startdaysplit[1]-1, startdaysplit[0], hoursplit[0], hoursplit[1]);
-		if(deb > end){
-			dateDeb.val(dateFin.val());
-			updateHours();
-		}
-		updateHourTitle();
+        $('#event').on('change', 'input[name=enddate]', function() {
+            var dateDeb = $("#inner-Horairesid #start").siblings("input[type=hidden]");
+            var dateFin = $("#inner-Horairesid #end").siblings("input[type=hidden]");
+            if (dateFin.val()) {
+                //check if end_date < start_date	
+                var endsplit = dateFin.val().split(' ');
+                var daysplit = endsplit[0].split('-');
+                var hourendsplit = endsplit[1].split(':');
+                var startsplit = dateDeb.val().split(' ');
+                var startdaysplit = startsplit[0].split('-');
+                var hoursplit = startsplit[1].split(':');
+                var end = new Date(daysplit[2], daysplit[1] - 1, daysplit[0], hourendsplit[0], hourendsplit[1]);
+                var deb = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hoursplit[0], hoursplit[1]);
+                if (deb > end) {
+                    dateDeb.val(dateFin.val());
+                    updateHours();
+                }
                 //changement du statut à terminé si :
                 //   * droits ok
                 //et * modif d'un evt
                 //et * heure de début passée ou statut confirmé
                 var now = new Date();
-                var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
-                if($('#event form').data('modstatus') 
-                   && $('#event input[name=id]').val() > 0 //id != 0 => modif
-                   && (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')){
+                var nowUTC = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+                if ($('#event form').data('modstatus')
+                        && $('#event input[name=id]').val() > 0 //id != 0 => modif
+                        && (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')) {
                     $('#event select[name=status] option[value=3]').prop('selected', true);
                 }
-	});
+            }
+            updateHourTitle();
+
+        });
 	
 	var updateHours = function(){
 		//initialize datetime pickers
@@ -262,7 +265,7 @@ var form = function(url){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
                                                 $("#event input[name=startdate]").timepickerform({'id':'start'});
-                                                $("#event input[name=enddate]").timepickerform({'id':'end'});
+                                                $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 						updateHours();
 						updateHourTitle();
 					}
@@ -304,7 +307,7 @@ var form = function(url){
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
                         $("#event input[name=startdate]").timepickerform({'id':'start'});
-                        $("#event input[name=enddate]").timepickerform({'id':'end'});
+                        $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
@@ -328,7 +331,7 @@ var form = function(url){
 
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
                         $("#event input[name=startdate]").timepickerform({'id':'start'});
-                        $("#event input[name=enddate]").timepickerform({'id':'end'});
+                        $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
                         updateHourTitle();
 			pauseUpdateAlarms();
@@ -558,7 +561,9 @@ var form = function(url){
                                 html:true,
 				title: 'Heure de fin non renseignée.<br />L\'heure actuelle sera utilisée pour l\'heure de fin.'
 			});
-		}
+		} else {
+                    $("#event input[type=submit]").tooltip('destroy');
+                }
 	});
 	
 	$("#event").on('change', 'input[name=enddate]', function(){

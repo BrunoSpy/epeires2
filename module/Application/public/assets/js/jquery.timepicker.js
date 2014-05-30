@@ -104,6 +104,9 @@
                     '<input type="text" class="input-mini"><br>' +
                     '<a class="previous" href="#"><i class="icon-chevron-down"></i></a>' +
                     '</td>' +
+                    '<td>'+
+                    (parameters.clearable ? '<a href="#" class="clear-time"><i class="icon-remove"></i></a>' : '') +
+                    '</td>' +
                     '</tr>' +
                     '</tbody>');
             div.append(table);
@@ -112,7 +115,8 @@
 
         var defaults = {
             'id': '',
-            'required': false
+            'required': false,
+            'clearable': false
         };
 
         var parameters = $.extend(defaults, options);
@@ -184,6 +188,14 @@
                     event.preventDefault();
                     $(this).val(minuteplusone($(this), delta));
                     $(this).trigger('change');
+                });
+                
+                div.on('click', 'a.clear-time', function(e){
+                    e.preventDefault();
+                    element.val('');
+                    var form = $(this).closest('.timepicker-form');
+                    form.find('td input').val('');
+                    element.trigger('change');
                 });
             }
         });

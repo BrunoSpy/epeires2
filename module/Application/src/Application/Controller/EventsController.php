@@ -1233,7 +1233,6 @@ class EventsController extends ZoneController {
     }
 
     private function closeEvent(Event $event){
-        error_log('fermeture des enfants');
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         //on termine les évènements fils de type fréquence
         foreach ($event->getChildren() as $child) {

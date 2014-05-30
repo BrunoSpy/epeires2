@@ -155,7 +155,7 @@ class Event extends AbstractEvent{
                 //impossible de fixer la date de fin si aucune date de début
                 return false;
             } else {
-                if($this->startdate <= $enddate) {
+                if($enddate == null || $this->startdate <= $enddate) {
                     $this->enddate = $enddate;
                 } else {
                     return false;
