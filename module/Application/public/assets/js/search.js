@@ -64,7 +64,7 @@ var createEventEntry = function(id, event){
 	html += '<small>Catégorie : '+event.category+'</small>';
 	if(event.status_id <= 2){
 		//evt en cours : modifier l'evt
-		html += '<a data-id="'+id+'" class="btn btn-mini pull-right modify-evt">Modifier</a></dd>';
+		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-mini pull-right modify-evt">Modifier</a></dd>';
 	} else {
 		//evt terminé : copier
 		html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';

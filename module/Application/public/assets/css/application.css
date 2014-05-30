@@ -104,12 +104,12 @@ ul.sector-list {
 	color: white;
 }
 
-.popover-content {
+#popover-frequencies .popover-content {
 	padding-left: 0px;
 	padding-bottom: 0px;
 }
 
-.popover-content ul {
+#popover-frequencies .popover-content ul {
 	list-style: none;
 }
 
@@ -322,6 +322,28 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 
 #search-results .result:nth-child(even) {
 	background-color: ghostwhite;
+}
+
+#search-results .result{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#search-results dl {
+    margin: 0px;
+}
+
+#search-results #results {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#suggestions-container .result {
+    margin: 0px -15px 0px -15px;
+    padding: 0px 5px 0px 5px;
+}
+#suggestions-container .result:nth-child(even){
+    background-color: ghostwhite;
 }
 
 #calendar {

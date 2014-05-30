@@ -1,5 +1,31 @@
 var urlt;
 
+var createEventSuggest = function(id, event){
+	var div = $('<div class="result"></div>');
+	var html = "";
+	var start = new Date(event.start_date);
+	var end = new Date(event.end_date);
+	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '')+"</dt>";
+	html += '<dd>';
+	html += '<small>Catégorie : '+event.category+'</small>';
+	if(event.status_id <= 2){
+		//evt en cours : modifier l'evt
+		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-mini pull-right modify-evt">Modifier</a></dd>';
+	} else {
+		//evt terminé : copier
+		html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';
+	}
+	div.append(html);
+	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)+'/'+FormatNumberLength(start.getUTCMonth(),2);
+	if(event.end_date != null){
+		titlehtml += '<br /><b>Date de fin :</b> '+FormatNumberLength(end.getUTCDate(), 2)+'/'+FormatNumberLength(end.getUTCMonth(),2);
+	}
+	$.each(event.fields, function(key, value){
+		titlehtml += '<br/><b>'+key+' :</b> '+value; 
+	});
+	return div;
+};
+
 var formAddFile = function(fileId, formData, modifiable){
     modifiable = (typeof modifiable === "undefined") ? true : modifiable;
     var tr = $('<tr id="file_'+fileId+'"></tr>');
@@ -52,7 +78,7 @@ var form = function(url){
         urlt = url;
 	
 	//specific functions to maintain coherence between end and start inputs
-	
+        
 	$('#event').on('change', 'input[name=startdate]', function(){
 		var datefin = $("#inner-Horairesid #end").siblings('input[type=hidden]');
 		var dateDeb = $("#inner-Horairesid #start").siblings('input[type=hidden]');
@@ -264,12 +290,17 @@ var form = function(url){
 	});
 	
 	//clic sur copie d'un évènement
-	$("#search-results").on("click", ".copy-event", function(){
+	$("#search-results, #suggestions-container").on("click", ".copy-event", function(e){
 		var me = $(this);
 		$("#search-results").slideUp('fast');
-		$("#event").html('<div>Chargement...</div>');
 		$("#form-title").html(me.data('name'));
-		$("#create-evt").slideDown('fast');
+                if($("#suggestions-container").has(e.target).length === 0){
+                    $("#event").html('<div>Chargement...</div>');
+                    $("#create-evt").slideDown('fast');
+                } else {
+                    $("#root_categories").popover('hide');
+                }
+                
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
                         $("#event input[name=startdate]").timepickerform({'id':'start'});
@@ -282,11 +313,17 @@ var form = function(url){
 	});
 	
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(){
-		var me = $(this);	
-		$("#event").html('<div>Chargement...</div>');
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #suggestions-container a.modify-evt", function(e){
+		var me = $(this);
 		$("#form-title").html(me.data('name'));
-		$("#create-evt").slideDown('fast');
+                //formulaire déjà ouvert si clic via suggestion
+		if($("#suggestions-container").has(e.target).length === 0){	
+                    $("#event").html('<div>Chargement...</div>');
+                    $("#create-evt").slideDown('fast');
+                } else {
+                    $("#root_categories").popover('hide');
+                }
+                
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
@@ -424,7 +461,22 @@ var form = function(url){
 			});
 			$("input[name='category']").val(root_value);
                         //affichage des évts suggérés
-                        
+                        $.getJSON(url+'events/suggestEvents?id='+root_value, function(data){
+                            var dl = $("<dl></dl>");
+                            $.each(data, function(key, value){
+                                dl.append(createEventSuggest(key, value));
+                            });
+                            //add suggestions
+                            $('#root_categories').popover('destroy');
+                            $('#root_categories').popover({
+                                html: true,
+                                trigger: "manual",
+                                title: "Suggestions : ",
+                                content: dl.html(),
+                                container: "#suggestions-container"
+                            });
+                            $("#root_categories").popover('show');
+                        });
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
@@ -561,5 +613,13 @@ var form = function(url){
 			}
 			displayMessages(data);
 		});
+	});
+        
+        //hide popover if click outside
+	$(document).mousedown(function(e){
+		var container = $(".popover, #root_categories").not("#create-evt");
+		if(!container.is(e.target) && container.has(e.target).length === 0){
+                    $("#root_categories").popover('hide');
+		};		
 	});
 };

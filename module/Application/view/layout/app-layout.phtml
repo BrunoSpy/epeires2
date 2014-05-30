@@ -24,7 +24,6 @@
         echo $this->headScript()
 			->prependFile($this->basePath() . '/assets/js/application.js')
                         ->prependFile($this->basePath() . '/assets/js/headerbar.js')
-                        ->prependFile($this->basePath() . '/assets/js/search.js')
                         ->prependFile($this->basePath() . '/assets/js/alarm.js')
                         ->prependFile($this->basePath() . '/assets/js/form.js')
                         ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
@@ -112,26 +111,6 @@
 	        	</ul>
         	</div>
         </div>
-        
-        <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-		<div id="create-evt" class="popover fade bottom in">
-			<div class="arrow"></div>
-			<div class="loading"></div>
-			<h3 class="popover-title" id="form-title">Nouvel évènement</h3>
-			<div id="event">
-				<div>Chargement...</div>
-				<!-- formulaire createform.phtml récupéré via ajax -->
-			</div>
-		</div>
-		<?php endif; ?>
-
-		<div id="search-results" class="popover fade bottom in">
-			<div class="arrow"></div>
-			<div class="loading"></div>
-			<div id="results">
-				<div>Chargement...</div>
-			</div>
-		</div>
         
         <div class="content">
             <?php echo $this->content; ?>

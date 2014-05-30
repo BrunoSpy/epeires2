@@ -207,7 +207,7 @@ var antenna = function(url){
 				me.popover({
 					content: div,
 					html: true,
-					container: 'body',
+					container: '#popover-frequencies',
 					trigger: 'manual'
 				});
 				me.popover('show');
@@ -287,7 +287,7 @@ var antenna = function(url){
 				$(this).popover({
 					content: list,
 					html: true,
-					container: 'body',
+					container: '#popover-frequencies',
 					trigger: 'manual'
 					});
 				};
@@ -305,7 +305,7 @@ var antenna = function(url){
 				$(this).popover({
 					content: list,
 					html: true,
-					container: 'body',
+					container: '#popover-frequencies',
 					trigger: 'manual'
 				});
 			}
