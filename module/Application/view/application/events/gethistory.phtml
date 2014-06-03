@@ -31,7 +31,11 @@ if($this->history){
 				if(empty($change['oldvalue'])){
 					echo ' enregistré à <em>'.$change['newvalue'].'</em>';
 				} else {
-					echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
+                                    if($change['newvalue'] != null) {
+                                        echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
+                                    } else {
+                                        echo ' <em>'.$change['oldvalue'].'</em> effacé.';
+                                    }
 				}
 			}
 			echo '</dd>';

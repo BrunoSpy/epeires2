@@ -128,7 +128,7 @@ class EventService implements ServiceManagerAwareInterface{
 							}
 							$historyentry = array();
 							$historyentry['fieldname'] = $key;
-							if($value instanceof \DateTime ){
+							if($key== 'enddate' || $key == 'startdate' ){
 								if($key == 'enddate') {
 									$historyentry['fieldname'] = "Fin";
 								} else if($key == 'startdate') {
@@ -143,12 +143,14 @@ class EventService implements ServiceManagerAwareInterface{
 									$oldvalue->add(new \DateInterval("PT".$offset."S"));
 								}
 								
-								$newvalue = clone $value;
-								$newvalue->setTimezone(new \DateTimeZone("UTC"));
-								$newvalue->add(new \DateInterval("PT".$offset."S"));
-								
+                                                                $newvalue = null;
+                                                                if($value){
+                                                                    $newvalue = clone $value;
+                                                                    $newvalue->setTimezone(new \DateTimeZone("UTC"));
+                                                                    $newvalue->add(new \DateInterval("PT".$offset."S"));
+                                                                }
 								$historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($oldvalue) : '');
-								$historyentry['newvalue'] = $formatter->format($newvalue);
+								$historyentry['newvalue'] = ($newvalue ? $formatter->format($newvalue) : null);
 							} else if ($key == 'punctual') {
 								$historyentry['oldvalue'] = ($ref[$key] ? "Vrai" : "Faux") ;
 								$historyentry['newvalue'] = ($value ? "Vrai" : "Faux");

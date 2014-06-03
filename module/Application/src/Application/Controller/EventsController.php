@@ -706,6 +706,7 @@ class EventsController extends ZoneController {
     			$form->get('id')->setValue('');
     			$form->get('startdate')->setValue('');
     			$form->get('enddate')->setValue('');
+                        $form->get('status')->setValue('');
     			$viewmodel->setVariables(array('event'=>$event, 'copy'=>$id));
     		} else {
     			$viewmodel->setVariables(array('event'=>$event));
@@ -1122,6 +1123,7 @@ class EventsController extends ZoneController {
         $field = $this->params()->fromQuery('field', 0);
         $value = $this->params()->fromQuery('value', 0);
         $messages = array();
+        $event = null;
         if ($id) {
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
@@ -1229,7 +1231,10 @@ class EventsController extends ZoneController {
         } else {
             $messages['error'][] = "Impossible de trouver l'évènement à modifier";
         }
-        return new JsonModel($messages);
+        $json = array();
+        $json['event'] = $event;
+        $json['messages'] = $messages;
+        return new JsonModel($json);
     }
 
     private function closeEvent(Event $event){
@@ -1362,6 +1367,7 @@ class EventsController extends ZoneController {
         
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         
+        //search in category and its children
         $children = $em->getRepository('Application\Entity\Category')->findBy(array('parent' => $catid));
         $catids = array();
         foreach ($children as $child){

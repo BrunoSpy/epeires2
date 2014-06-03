@@ -71,7 +71,7 @@ var formAddAlarm = function(alarm) {
         div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
 	$('#inner-alarmTitle').append(div);
         $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
-}
+};
 
 var form = function(url){
 	
@@ -285,6 +285,8 @@ var form = function(url){
 		$("#create-evt").slideDown('fast');
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
+                        $("#event input[name=startdate]").timepickerform({'id':'start'});
+                        $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
 			$("#Horairesid").trigger('click');
 		});
@@ -619,6 +621,16 @@ var form = function(url){
 			displayMessages(data);
 		});
 	});
+        
+        /**
+         * Si le champ heure de fin est effacé, il faut veiller à supprimer le statut Terminé
+         */
+        $('#event').on('click', '.clear-time', function(e){
+            var status = $('#event select[name=status]');
+            if(status.val() == '3'){
+                status.val('2');
+            }
+        });
         
         //hide popover if click outside
 	$(document).mousedown(function(e){

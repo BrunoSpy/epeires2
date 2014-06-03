@@ -1,4 +1,9 @@
 <?php
+// 4 cas :
+// * nouvel évènement vierge : $this->event, $this->model, $this->copy : null
+// * nouvel évènement via copie d'un evt : $this->event not null && $this->copy = true
+// * nouvel évènement via instantiation d'un modèle : $this->model not null
+// * modification d'un évènement : $this->event not null && $this->copy = false
 
 	if($this->event && !$this->copy){
 		//form de modif
@@ -116,7 +121,7 @@
 		$mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
 
 		$html .= '<table class="table table-hover" id="alarm-table">';
-		if($this->event){
+		if($this->event || $this->model){
                     $formatter = \IntlDateFormatter::create(
                                 \Locale::getDefault(),
                                 \IntlDateFormatter::FULL,
@@ -124,12 +129,52 @@
                                 'UTC',
                                 \IntlDateFormatter::GREGORIAN,
                                 'HH:mm');
-			foreach($this->event->getChildren() as $child) {
+                    $formatterLong = \IntlDateFormatter::create(
+                                \Locale::getDefault(),
+                                \IntlDateFormatter::FULL,
+                                \IntlDateFormatter::FULL,
+                                'UTC',
+                                \IntlDateFormatter::GREGORIAN,
+                                'd-MM-y HH:mm');
+                    $alarms = ($this->event ? $this->event->getChildren() : $this->model->getChildren());
+                    foreach($alarms as $child) {
 				if($child->getCategory() instanceof Application\Entity\AlarmCategory){
-                                        $countalarm++;
+                                    $countalarm++;
+                                    $now = new \DateTime();
+                                    $now->setTimezone(new \DateTimeZone("UTC"));
+                                    if($this->copy || $this->model) {
+                                        $timeAlert = clone $now;
+                                        
+                                        //diff in minutes
+                                        $diff = 0;
+                                        if($this->copy){
+                                            $diff = (int)(($child->getStartdate()->getTimestamp() - $this->event->getStartDate()->getTimestamp())/60);
+                                        } else {
+                                            $diff = $child->getStartdateDelta();
+                                        }
+                                        $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
+                                        
+                                        foreach($child->getCustomFieldsValues() as $value){
+                                            if($value->getCustomField()->getId() == $child->getCategory()->getTextfield()->getId()){
+                                                $alarmcomment = nl2br($value->getValue());
+                                            }
+                                        }                                       
+                                        
+                                        $html .= '<tr><div id="alarm-fake-'.$countalarm.'">'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.$formatterLong->format($timeAlert).'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
+                                                . '</div></tr>';
+                                        
+                                        $html .= '<tr data-id="fake-'.$countalarm.'">'
+                                                . '<td><i class="icon-bell"></i></td>'
+                                                . '<td>'.$formatter->format($timeAlert).'</td>'
+                                                . '<td>'.$this->eventName($child).'</td>'
+                                                . '<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>'
+                                                . '</tr>';
+                                        
+                                    } else {
 					$html .= '<tr data-id="'.$child->getId().'">';
-					$now = new \DateTime();
-					$now->setTimezone(new \DateTimeZone("UTC"));
 					if($child->getStatus()->isOpen()){
 						if($child->getStartDate() < $now) {
 							$html .= '<td><i class="icon-warning-sign"></i></td>';
@@ -149,6 +194,7 @@
 					$html .= '<td>'.$this->eventname($child).'</td>';
 					$html .= '<td><a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
 					$html .= "</tr>";
+                                    }
 				}
 			}
 		}
@@ -202,8 +248,8 @@
 						$html .= "<a href=\"#confirm-delete-file\"
 									class=\"delete-file\"
 									data-href=\"".$this->url('application', 
-															array('controller'=>'events', 'action' => 'deletefile'),
-															array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
+												array('controller'=>'events', 'action' => 'deletefile'),
+												array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
 									data-id=\"".$file->getId()."\"
 									data-name=\"".($file->getName() ? $file->getname() : $file->getFilename())."\"
 									data-toggle=\"modal\"
@@ -211,6 +257,9 @@
 						$html .= "</td>";
 					}
 					$html .= "</tr>";
+                                        if($this->copy || $this->model){ //ajout de l'input caché pour enregistrement
+                                            $html .= '<tr><input type="hidden" name="fichiers['.$file->getId().']" value="'.$file->getId().'"></input></tr>';
+                                        }
 				}
 				
 			} 
@@ -260,6 +309,10 @@
                                 }
                                 $html .= '</tbody>';
 				$html .= '</table>';
+                                if($this->model){
+                                    //ajout de la référence pour copie des actions lors de l'enregistrement
+                                    $html .= '<input name="modelid" type="hidden" value="'.$this->model->getId().'" >';
+                                }
 			} else {
 				$actionsClass="disabled";
 			}
