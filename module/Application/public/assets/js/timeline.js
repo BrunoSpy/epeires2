@@ -238,11 +238,7 @@ var timeline = {
 				if (h_deb >= h_ref) { delta = h_deb - h_ref; } else { delta = 24 + h_deb - h_ref;}
 				x1 = lar_unit + delta*lar_unit*2 + m_deb*lar_unit*2/60;
 				if (d_fin < 0) {	
-					if (x_act < x1 + 50) {
-						wid = ((largeur-lar_unit)-x1)/2;
-					} else {
-						wid = Math.min(x_act-x1+lar_unit*4,largeur-lar_unit-x1);
-					}
+						wid = largeur-lar_unit-x1;
 				} else if (d_fin < d_ref_fin) {
 					if (h_fin >= h_ref) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
 					wid = lar_unit + delta*lar_unit*2 + m_fin*lar_unit*2/60 - x1;
@@ -253,13 +249,8 @@ var timeline = {
 				}
 			} else {
 				x1 = lar_unit;
-
 				if (d_fin < 0) {
-					if (x_act < x1 + 50) {
-						wid = ((largeur-lar_unit)-x1)/2;
-					} else {
-						wid = x_act-x1+50;
-					}
+					wid = largeur-lar_unit-x1;
 				} else if (d_fin < d_ref_deb) {
 					// evmt non terminé
 					wid = 40;	
@@ -735,6 +726,9 @@ var timeline = {
 //				move_fin.css({'left': wid-10+'px', 'width':'2px'});
 				move_deb.addClass('disp');
 				move_deb.css({'left': 8+'px', 'width':'2px'});
+				move_fin.addClass('disp');
+				move_fin.css({'left': wid-10+'px', 'width':'2px'});
+				elmt_fin.addClass('nodisp');
 				break;
 			case 3 : // ponctuel
 				elmt_fleche1.hide();
@@ -1142,7 +1136,7 @@ var timeline = {
 			elmt = base_element.find('.ident'+id);
 			elmt.effect( "highlight",4000);
 		},
-		// mise à jour d'un évènement sur la timeline
+		// mise à jour d'un évènement sur la timeline 
 		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
@@ -1170,14 +1164,13 @@ var timeline = {
 				timeline.impt_off(base_element, tab);
 			}
 		},
-		// informations d'un évènement modifié
-		modify: function (data, loc) {
+		// vérification et mise à jour d'un élément
+		check: function (data) {
 			var i = 0;
 			var d_debut, d_fin;
 			var j;
 			var id = -1;
 			var len = tab.length;
-		//	var d_now = new Date();
 			$.each(data, function(key, value) {
 				d_debut = new Date(value.start_date);
 				if (value.punctual == true) {
@@ -1189,7 +1182,66 @@ var timeline = {
 						d_fin = new Date(value.end_date);
 					}
 				}
-			//	alert(d_debut+"   ///   "+d_fin);
+				j = 0;
+				while (j < len && id == -1) {
+					if (tab[j][0] == key) { id = j; }
+					j++;
+				}
+				var ponct = value.punctual;
+				var label = value.name;
+				var etat = value.status_name;
+				//	tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
+				if (d_debut != tab[id][1]) {}
+				if (d_fin != tab[id][2]) {}
+				if (ponct != tab[id][3]) {}
+				if (label != tab[id][4]) {}
+				// mise à jour de l'état : rajout de l'icone associé
+				var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
+				var sts = type [3];
+				var timel = $('#timeline');
+				var timeline_content = timel.find('.timeline_content');
+				var elmt = timeline_content.find('.ident'+key);
+				var elmt_deb = elmt.find('.elmt_deb');
+				var elmt_fin = elmt.find('.elmt_fin');
+				console.log("coucou");
+				elmt_deb.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
+				elmt_fin.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
+				if (sts < 3) {
+					elmt_deb.prepend('<i class="icon-question-sign"></i>');
+				} else if (sts == 3) { 
+					elmt_deb.prepend('<i class="icon-warning-sign"></i>');
+					elmt_deb.show();
+				} else {
+					elmt_deb.prepend('<i class="icon-check"></i>');
+				}
+				if (sts == 6) { 
+					elmt_fin.append('<i class="icon-warning-sign"></i>'); 
+					elmt_fin.show(); 
+				} else if (sts < 11) {
+					elmt_fin.append('<i class="icon-question-sign"></i>');
+				} else {
+					elmt_fin.append('<i class="icon-check"></i>');
+				}
+			});
+		},
+		// informations d'un évènement modifié
+		modify: function (data, loc) {
+			var i = 0;
+			var d_debut, d_fin;
+			var j;
+			var id = -1;
+			var len = tab.length;
+			$.each(data, function(key, value) {
+				d_debut = new Date(value.start_date);
+				if (value.punctual == true) {
+					d_fin = d_debut;
+				} else {
+					if (value.end_date == null) { 
+						d_fin = -1;
+					} else {
+						d_fin = new Date(value.end_date);
+					}
+				}
 				j = 0;
 				while (j < len && id == -1) {
 					if (tab[j][0] == key) { id = j; }
@@ -1202,28 +1254,10 @@ var timeline = {
 //				var impt = timeline.compute_impact("",value.impact_value);
 				var impt = value.star;
 				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
-				/*				var l = 0;
-				tab[id][7] = new Array();
-				$.each(value.actions, function(k, val){
-					tab[id][7][l]= [k, val];
-					l ++;
-				});*/
-/*				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
-						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
-						(d_fin.toLocaleDateString() == d_now.toLocaleDateString())) {
-					if (cpt_journee.indexOf(i) == -1) {
-						cpt_journee.push(i);
-					}
-				} else {
-					if (cpt_journee.indexOf(i) > 0) {
-						cpt_journee.splice(cpt_journee.indexOf(i),1);
-					}
-				}*/
 				$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
 				var base_element = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
-				//var other = timel.find('.timeline_other');
 				var elmt = timeline_content.find('.ident'+key);
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
 					if (d_fin > d_min){ 
@@ -1385,7 +1419,7 @@ $(document).ready(function() {
 		var elmt_deb = elmt.find('.elmt_deb');
 		elmt_deb.show();
 		var elmt_fin = elmt.find('.elmt_fin');
-		elmt_fin.show();
+		if (! elmt_fin.hasClass('nodisp')) {elmt_fin.show();}
 		elmt.find('.elmt_qm_fleche').hide();
 		elmt.find('.lien').hide();
 		var move_fin = elmt.find('.move_fin');
@@ -1612,11 +1646,11 @@ $(document).ready(function() {
 		var ss_elmt = elmt[0];
 		var id = jQuery.data(ss_elmt, "ident");
 		var n = corresp[id];	
-		if (tab[n][8] == "Nouveau") { 
+/*		if (tab[n][8] == "Nouveau") { 
 			tab[n][8] = "Confirmé"; 
 			elmt_deb.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
 			elmt_deb.prepend('<i class="icon-check"></i>');
-		}
+		}*/
 		$.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
 	});
 	
@@ -1628,13 +1662,13 @@ $(document).ready(function() {
 		var ss_elmt = elmt[0];
 		var id = jQuery.data(ss_elmt, "ident");
 		var n = corresp[id];	
-		if (tab[n][8] == "Nouveau" || tab[n][8] == "Confirmé") { 
+	/*	if (tab[n][8] == "Nouveau" || tab[n][8] == "Confirmé") { 
 			tab[n][8] = "Terminé"; 
 			elmt_fin.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
 			elmt_fin.append('<i class="icon-check"></i>');
 			elmt_deb.find("i").removeClass("icon-question-sign icon-warning-sign icon-check");
 			elmt_deb.prepend('<i class="icon-check"></i>');
-		}
+		}*/
 		$.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
 	});
 	
@@ -1653,6 +1687,7 @@ $(document).ready(function() {
 			// if (tab[n][8] == "Confirmé") { tab[n][8] = "Terminé"; }
 			// $.post(ini_url+'/changefield?id='+id+'&field=status&value='+tab[n][8], function(data){displayMessages(data);});
 			var rect_elmt = elmt.find('.rect_elmt');
+			elmt.find('.complement').hide();
 			var rect_width = rect_elmt.width();
 			var move_fin = $(this);
 			var elmt_star = elmt.find('.elmt_star');
@@ -1660,11 +1695,22 @@ $(document).ready(function() {
 			var elmt_fin = elmt.find('.elmt_fin');
 			elmt_fin.show();
 			var data_fin = elmt_fin[0];
-			var d_fin = jQuery.data(data_fin,"d_fin");
+			var d_fin = new Date();
 			temp_fin = new Date();
-			temp_fin.setTime(d_fin.getTime());
 			aff_fin = new Date();
-			aff_fin.setTime(d_fin.getTime());
+			if (tab[n][2] < 0) { 
+				temp_fin.setTime(d_ref_fin.getTime());
+				aff_fin.setTime(d_ref_fin.getTime());
+				aff_fin.setHours(aff_fin.getUTCHours());
+				elmt_fin.text(aff_fin.toLocaleTimeString().substr(0,5)+" ");
+				d_fin.setTime(temp_fin.getTime());
+				tab[n][2] = temp_fin;
+				console.log(tab[n][2]);
+			} else {
+				temp_fin.setTime(d_fin.getTime());
+				aff_fin.setTime(d_fin.getTime());
+				d_fin = jQuery.data(data_fin,"d_fin");
+			}
 			$('#timeline').mousemove(function(e2) {
 			//	e2.preventDefault();
 				delt = e2.clientX-x_temp;
@@ -1673,7 +1719,7 @@ $(document).ready(function() {
 					temp_fin.setTime(d_fin.getTime()+delt2*pix_time);
 					aff_fin.setTime(d_fin.getTime()+delt2*pix_time);
 					aff_fin.setHours(aff_fin.getUTCHours());
-					elmt_fin.text(aff_fin.toLocaleTimeString().substr(0,5));
+					elmt_fin.text(aff_fin.toLocaleTimeString().substr(0,5)+" ");
 					x_temp = e2.clientX;
 					elmt.css({'width':'+='+delt});
 					rect_elmt.css({'width':'+='+delt});
@@ -1696,12 +1742,25 @@ $(document).ready(function() {
 			var n = corresp[id];
 			if (on_drag == 1) {
 				tab[n][1] = temp_deb;
-				timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
-				$.post(ini_url+'/changefield?id='+id+'&field=startdate&value='+temp_deb.toUTCString(), function(data){displayMessages(data);});
+			//	timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
+				$.post(ini_url+'/changefield?id='+id+'&field=startdate&value='+temp_deb.toUTCString(), 
+						function(data){
+					displayMessages(data.messages);
+					if (data['event']) {
+						timeline.check(data.event);
+					}
+				});
 			} else if (on_drag == 2) {
 				tab[n][2] = temp_fin;
-				timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
-				$.post(ini_url+'/changefield?id='+id+'&field=enddate&value='+temp_fin.toUTCString(), function(data){displayMessages(data);});
+			//	timeline.update_elmt(timeline_content, id, tab[n][1], tab[n][2], tab[n][3], tab[n][4], tab[n][5], tab[n][6], tab[n][7], tab[n][8]);
+				$.post(ini_url+'/changefield?id='+id+'&field=enddate&value='+temp_fin.toUTCString(), 
+						function(data){
+					displayMessages(data.messages);
+					if (data['event']) {
+						timeline.check(data.event);
+					}	
+				});
+				
 			}
 		}
 		on_drag = 0;
@@ -1742,7 +1801,7 @@ $(document).ready(function() {
 					temp_deb.setTime(d_deb.getTime()+delt2*pix_time);
 					aff_deb.setTime(d_deb.getTime()+delt2*pix_time);
 					aff_deb.setHours(aff_deb.getUTCHours());
-					elmt_deb.text(aff_deb.toLocaleTimeString().substr(0,5));
+					elmt_deb.text(" "+aff_deb.toLocaleTimeString().substr(0,5));
 					x_temp = e2.clientX;
 					elmt.css({'left':'+='+delt, 'width':'-='+delt});
 					rect_elmt.css({'width':'-='+delt});
