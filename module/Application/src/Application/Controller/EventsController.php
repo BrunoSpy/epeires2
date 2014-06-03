@@ -1232,7 +1232,7 @@ class EventsController extends ZoneController {
             $messages['error'][] = "Impossible de trouver l'évènement à modifier";
         }
         $json = array();
-        $json['event'] = $event;
+        $json['event'] = array($event->getId() => $this->getEventJson($event));
         $json['messages'] = $messages;
         return new JsonModel($json);
     }
