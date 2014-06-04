@@ -75,4 +75,7 @@ form('<?php echo $this->url('application');?>');
 
 fileupload('<?php echo $this->url('application')?>');
 
+//search
+search('<?php echo $this->url('application', array('controller'=>'events'));?>');
+
 <?php $this->inlineScript()->captureEnd();?>

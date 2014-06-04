@@ -86,7 +86,7 @@
 	            			<li class="divider"></li>
 	            			<li class="nav-header">Filtre</li>
 	            			<li class="active"><a href="#" id="tri_std">Tous les évènements</a></li>
-	            			<li><a id="tri_impt" href="#">Évènements importants uniquement</a></li>
+	            			<li><a id="tri_cancel" href="#">Cacher les évènements archivés et annulés</a></li>
 	            		</ul>
 	            		
 	            	</li>
@@ -124,9 +124,6 @@
         <?php $this->inlineScript()->captureStart();?>
                 
                 setURL('<?php echo $this->url('application');?>');
-
-		//search
-		search('<?php echo $this->url('application', array('controller'=>'events'));?>');
 		
 		//init header bar
 		headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
