@@ -412,36 +412,41 @@ var antenna = function(url){
 				sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 			}
 			if(value.otherfreq != 0 && value.otherfreqid != sector.closest('.sector').data('freq')){
-				//mise à jour des antennes si changement de fréquence
-				//les couleurs sont mises à jour à l'apper de doPollAntenna juste ensuite
 				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
                                 sector.find('.sector-name span').remove();
                                 var name = sector.find('.sector-name').html();
                                 sector.find('.sector-name').html(name+'<span> <i class="icon-forward"></i> '+value.otherfreqname);
-				changeantenna(key, '.mainantenna-color.antenna-color:not(.antenna-climax-color)', value.main);
-				changeantenna(key, '.backupantenna-color.antenna-color:not(.antenna-climax-color)', value.backup);
-				if(value['mainclimax']){
-					if(sector.closest('.sector').find('.mainantenna-color.antenna-climax-color').length > 0) {
-						changeantenna(key, '.mainantenna-color.antenna-climax-color', value.mainclimax);
-					} else {
-						createantenna(key, 'mainantenna-color', value.mainclimax);
-					}
-				} else {
-					sector.closest('.sector').find('.mainantenna-color.antenna-climax-color').remove();
-				}
-				if(value['backupclimax']) {
-					if(sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').length > 0) {
-						changeantenna(key, '.backupantenna-climax.antenna-climax-color', value.backupclimax);
-					} else {
-						createantenna(key, 'backupantenna-color', value.backupclimax);
-					}
-				} else {
-					sector.closest('.sector').find('.backupantenna-climax.antenna-climax-color').remove();
-				}
 			} else {
-				sector.find('.actions-freq').html(value.name).removeClass('em');
-                                sector.find('.sector-name span').remove();
+                            sector.find('.actions-freq').html(value.name).removeClass('em');
+                            sector.find('.sector-name span').remove();
 			}
+                        //mise à jour des antennes (uniquement si passage en autre freq ou retour en freq normale
+                        //mais on le fait à tous les coups pour faire simple)
+                        //les couleurs sont mises à jour à l'appel de doPollAntenna juste ensuite
+                        changeantenna(key, '.mainantenna-color.antenna-color:not(.antenna-climax-color)', value.main);
+                        changeantenna(key, '.backupantenna-color.antenna-color:not(.antenna-climax-color)', value.backup);
+                        if (value['mainclimax']) {
+                            if (sector.closest('.sector').find('.mainantenna-color.antenna-climax-color').length > 0) {
+                                changeantenna(key, '.mainantenna-color.antenna-climax-color', value.mainclimax);
+                            } else {
+                                createantenna(key, 'mainantenna-color', value.mainclimax);
+                            }
+                        } else {
+                            sector.closest('.sector').find('.mainantenna-color.antenna-climax-color').empty().data('antennaid','');
+                        }
+                        if (value['backupclimax']) {
+                            if (sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').length > 0) {
+                                changeantenna(key, '.backupantenna-climax.antenna-climax-color', value.backupclimax);
+                            } else {
+                                createantenna(key, 'backupantenna-color', value.backupclimax);
+                            }
+                        } else {
+                            sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').empty().data('antennaid','');
+                        }
+                        if(!value['mainclimax'] && !value['backupclimax'] && sector.closest('.sector').find('.antennas').length > 1){
+                            sector.closest('.sector').find('.antennas:last-child').remove();
+                        }
+                        
 			if(value.status == 1){
 				//prise en compte des évts planifiés uniquement si pas d'evt en cours => statut ok
 				if(value.planned){
