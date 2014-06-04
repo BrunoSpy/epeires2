@@ -684,6 +684,7 @@ var timeline = {
 			switch (l_deb) {
 			case 0 :
 				elmt_fleche1.hide();
+				move_deb.addClass('disp');
 				break;	
 			case 1 :
 				elmt_fleche1.show();
@@ -698,8 +699,7 @@ var timeline = {
 				elmt_compl.hide();
 				elmt_star.css({'left': x0+wid-40+'px'});
 				move_fin.addClass('disp');
-				move_fin.css({'left': wid-10+'px', 'width':'2px'});
-				move_deb.addClass('disp');
+				move_fin.css({'left': wid-10+'px', 'width':'2px'});	
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;	
 			case 1 : // heure de fin au-delà de la timeline
@@ -722,9 +722,7 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.css({'left':x0+wid+5+'px'});
 				elmt_star.css({'left': x0+wid-40+'px'});
-//				move_fin.addClass('disp');
-//				move_fin.css({'left': wid-10+'px', 'width':'2px'});
-				move_deb.addClass('disp');
+				move_fin.addClass('disp');
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});
@@ -1151,10 +1149,9 @@ var timeline = {
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			var elmt = base_element.find('.ident'+id);
-			elmt.toggle(400);
 			var y = elmt.position().top;
-			elmt.remove();
-			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
+//			elmt.remove();
+//			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
 			if (impt_on) {	
@@ -1163,66 +1160,6 @@ var timeline = {
 			else {
 				timeline.impt_off(base_element, tab);
 			}
-		},
-		// vérification et mise à jour d'un élément
-		check: function (data) {
-			var i = 0;
-			var d_debut, d_fin;
-			var j;
-			var id = -1;
-			var len = tab.length;
-			$.each(data, function(key, value) {
-				d_debut = new Date(value.start_date);
-				if (value.punctual == true) {
-					d_fin = d_debut;
-				} else {
-					if (value.end_date == null) { 
-						d_fin = -1;
-					} else {
-						d_fin = new Date(value.end_date);
-					}
-				}
-				j = 0;
-				while (j < len && id == -1) {
-					if (tab[j][0] == key) { id = j; }
-					j++;
-				}
-				var ponct = value.punctual;
-				var label = value.name;
-				var etat = value.status_name;
-				//	tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
-				if (d_debut != tab[id][1]) {}
-				if (d_fin != tab[id][2]) {}
-				if (ponct != tab[id][3]) {}
-				if (label != tab[id][4]) {}
-				// mise à jour de l'état : rajout de l'icone associé
-				var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-				var sts = type [3];
-				var timel = $('#timeline');
-				var timeline_content = timel.find('.timeline_content');
-				var elmt = timeline_content.find('.ident'+key);
-				var elmt_deb = elmt.find('.elmt_deb');
-				var elmt_fin = elmt.find('.elmt_fin');
-				console.log("coucou");
-				elmt_deb.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
-				elmt_fin.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
-				if (sts < 3) {
-					elmt_deb.prepend('<i class="icon-question-sign"></i>');
-				} else if (sts == 3) { 
-					elmt_deb.prepend('<i class="icon-warning-sign"></i>');
-					elmt_deb.show();
-				} else {
-					elmt_deb.prepend('<i class="icon-check"></i>');
-				}
-				if (sts == 6) { 
-					elmt_fin.append('<i class="icon-warning-sign"></i>'); 
-					elmt_fin.show(); 
-				} else if (sts < 11) {
-					elmt_fin.append('<i class="icon-question-sign"></i>');
-				} else {
-					elmt_fin.append('<i class="icon-check"></i>');
-				}
-			});
 		},
 		// informations d'un évènement modifié
 		modify: function (data, loc) {
@@ -1260,17 +1197,10 @@ var timeline = {
 				var timeline_content = timel.find('.timeline_content');
 				var elmt = timeline_content.find('.ident'+key);
 				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
-					if (d_fin > d_min){ 
-						liste_passee.push(id);
-					}
 					elmt.remove();
 				} else if (d_debut > d_ref_fin) {
-					if (d_debut < d_max){
-						liste_avenir.push(id);
-					}
 					elmt.remove();
 				} else {
-					liste_affichee.push(id);
 					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
 				}
 				if (impt_on) {	
@@ -1286,7 +1216,7 @@ var timeline = {
 				}
 				elmt = timeline_content.find('.ident'+key);
 				if (loc) {
-					elmt.effect( "highlight", 4000);
+					// elmt.effect( "highlight", 4000);
 				} else {
 					elmt.addClass("changed");
 					elmt.css({'background-color':'yellow'});
@@ -1705,7 +1635,6 @@ $(document).ready(function() {
 				elmt_fin.text(aff_fin.toLocaleTimeString().substr(0,5)+" ");
 				d_fin.setTime(temp_fin.getTime());
 				tab[n][2] = temp_fin;
-				console.log(tab[n][2]);
 			} else {
 				temp_fin.setTime(d_fin.getTime());
 				aff_fin.setTime(d_fin.getTime());
@@ -1747,7 +1676,7 @@ $(document).ready(function() {
 						function(data){
 					displayMessages(data.messages);
 					if (data['event']) {
-						timeline.check(data.event);
+						timeline.modify(data.event, 1);
 					}
 				});
 			} else if (on_drag == 2) {
@@ -1757,7 +1686,7 @@ $(document).ready(function() {
 						function(data){
 					displayMessages(data.messages);
 					if (data['event']) {
-						timeline.check(data.event);
+						timeline.modify(data.event, 1);
 					}	
 				});
 				
