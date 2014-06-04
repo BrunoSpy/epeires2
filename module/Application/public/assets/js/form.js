@@ -629,6 +629,7 @@ var form = function(url){
             var status = $('#event select[name=status]');
             if(status.val() == '3'){
                 status.val('2');
+                status.trigger('change');
             }
         });
         

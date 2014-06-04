@@ -121,6 +121,19 @@ $(document).ready(function(){
 		}
 	);
 	
+    $('#timeline').on({
+        mouseenter: function() {
+            var id = $(this).find('.modify-evt').data('id');
+            $(this).tooltip({
+                title: 'test' + id,
+                container: 'body'
+            }).tooltip('show');
+        },
+        mouseleave: function() {
+            $(this).tooltip('hide');
+        }
+    }, '.elmt'); 
+       
    $.noty.defaults = {
 		    layout: 'bottomRight',
 		    theme: 'defaultTheme',
@@ -189,7 +202,10 @@ $(document).ready(function(){
 				me.html("Fait");
 				me.addClass("active btn-success");
 			}
-                        $("#history").load(url+'events/gethistory?id='+me.data('eventid'));
+                        $("#history").load(url+'events/gethistory?id='+me.data('eventid'), function(){
+                            $("#history").parent().find("span.badge").html($("#history dd").size());
+                        });
+                        
                     }
 		);
 	});

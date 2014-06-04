@@ -158,7 +158,7 @@ class FrequenciesController extends ZoneController {
                             $statusfield = new CustomFieldValue();
                             $statusfield->setCustomField($cat->getStatefield());
                             $statusfield->setEvent($event);
-                            $statusfield->setValue(false); //available
+                            $statusfield->setValue(true); //unavailable
                             $event->addCustomFieldValue($statusfield);
                             $freqfield = new CustomFieldValue();
                             $freqfield->setCustomField($cat->getOtherFrequencyField());
@@ -189,10 +189,6 @@ class FrequenciesController extends ZoneController {
                             foreach ($event->getCustomFieldsValues() as $value){
                                 if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
                                     $previousfield = $value;
-                                } else if ($value->getCustomField()->getId() == $event->getCategory()->getStatefield()->getId()) {
-                                    if($value->getValue() == true){
-                                        $otherfields = true;
-                                    }
                                 } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
                                     if($value->getValue() == 1){
                                         $otherfields = true;
@@ -200,7 +196,7 @@ class FrequenciesController extends ZoneController {
                                 }
                             }
                             if($previousfield){
-                                //si il y a d'autres champs, on ne ferme pas l'évènement
+                                //si il y a d'autres champs autre que le champ "indisponible", on ne ferme pas l'évènement
                                 //sinon on ferme
                                 if($otherfields) {
                                     $previousfield->setValue($toid);
@@ -450,7 +446,6 @@ class FrequenciesController extends ZoneController {
         //si pas d'evt et couv normal -> bug
         //si un evt -> dépend des autres champs -> mise à jour ou fermetur
         //plusieurs evts -> indécidable -> bug
-
         if (count($frequencyevents) == 0) {
             if ($cov == 0) {
                 $messages['error'][] = "Aucun évènement trouvé : impossible de passer la couverture sur normal.";
@@ -519,7 +514,7 @@ class FrequenciesController extends ZoneController {
                     $previousfield = $value;
                 }
             }
-            if($previousfield && ($otherfreqfield == null || $otherfreqfield->getValue() == $frequency->getId())){
+            if($previousfield && ($otherfreqfield == null || $otherfreqfield->getValue() == null || $otherfreqfield->getValue() == $frequency->getId())){
                 //fermeture
                 $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
