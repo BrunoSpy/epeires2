@@ -473,14 +473,16 @@ var form = function(url){
                             });
                             //add suggestions
                             $('#root_categories').popover('destroy');
-                            $('#root_categories').popover({
-                                html: true,
-                                trigger: "manual",
-                                title: "Suggestions : ",
-                                content: dl.html(),
-                                container: "#suggestions-container"
-                            });
-                            $("#root_categories").popover('show');
+                            if(dl.find('div.result').length > 0){
+                                $('#root_categories').popover({
+                                    html: true,
+                                    trigger: "manual",
+                                    title: "Suggestions : ",
+                                    content: dl.html(),
+                                    container: "#suggestions-container"
+                                });
+                                $("#root_categories").popover('show');
+                            }
                         });
 		} else {
 			$("#category_title").html('Catégories');
