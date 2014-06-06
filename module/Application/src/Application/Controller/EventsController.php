@@ -165,7 +165,6 @@ class EventsController extends ZoneController {
     			foreach ($events as $event){
 				$eventsid[] = $event->getId();
     			}
-
     			
     			$query = $qbModels->getQuery();
     			$models = $query->getResult();
@@ -299,19 +298,33 @@ class EventsController extends ZoneController {
     		$qbModels->setParameter('5', 'stack');
     	}      
         
+        //custom fields text
+        $orEvents->add($qbEvents->expr()->andX(
+                        $qbEvents->expr()->in('t.type', '?6'),
+                        $qbEvents->expr()->like('v.value', $qbEvents->expr()->literal('%'.$search.'%'))
+                ));
+        $qbEvents->setParameter('6', array('text', 'string'));
+                
+        //custom fields text
+        $orModels->add($qbModels->expr()->andX(
+                        $qbModels->expr()->in('t.type', '?6'),
+                        $qbModels->expr()->like('v.value', $qbModels->expr()->literal('%'.$search.'%'))
+                ));
+        $qbModels->setParameter('6', array('text', 'string'));
+        
         $qbModels->andWhere($orModels);
         $qbEvents->andWhere($orEvents);
     }
     
- 	/**
- 	 * 
- 	 * @return \Zend\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application. 
- 	 */
+    /**
+     * 
+     * @return \Zend\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application. 
+     */
     public function saveAction(){   
     	
-		$messages = array();
-		$event = null;
-		$return = $this->params()->fromQuery('return', null);
+        $messages = array();
+        $event = null;
+        $return = $this->params()->fromQuery('return', null);
 		
     	if($this->zfcUserAuthentication()->hasIdentity()){
     		

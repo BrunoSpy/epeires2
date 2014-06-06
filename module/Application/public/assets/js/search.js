@@ -87,10 +87,10 @@ var createEventEntry = function(id, event){
 };
 
 var createModelEntry = function(id, model){
-	var html = "";
+	var html = '<div class="result">';
 	html += "<dt>Modèle : "+model.name+"</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+model.category+'</small>';
-	html += '<a data-id='+id+' class="btn btn-mini pull-right use-model">Utiliser</a></dd>';
+	html += '<a data-id='+id+' class="btn btn-mini pull-right use-model">Utiliser</a></dd></div>';
 	return html;
 };

@@ -187,7 +187,7 @@ class AlarmController extends FormController {
 				}
 			}
 			$alarmjson['text'] = "<b>Alerte pour ".$parentname."</b><br />"
-					. $alarmname." : <br />".$alarmcomment;
+					. $alarmname.(strlen($alarmcomment) > 0 ? " : <br />".$alarmcomment : "");
 			
 			$alarms[] = $alarmjson;
 		}
