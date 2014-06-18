@@ -572,7 +572,7 @@ var timeline = {
 			$(elmt).append(elmt_b1);
 			$(elmt_b1).append(' <i class="icon-pencil"></i>');
 			// ajout du bouton développé
-			elmt_b2 = $('<button type="button" class="plus"></button>');
+			elmt_b2 = "" // $('<a type="button" href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 //			$(elmt).append(elmt_b2);
 			elmt_b2.addClass('btn btn-link btn-mini show');
 			$(elmt_b2).append('<i class="icon-plus"></i>');
@@ -634,10 +634,10 @@ var timeline = {
 	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
 			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
 			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
-			elmt_deb.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '80px', 'text-align' : 'right', 
-				'font-style':'italic', 'background-color':'white', 'z-index':3});
-			elmt_fin.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '80px', 'text-align' : 'left', 
-				'font-style':'italic', 'background-color':'white', 'z-index':3});
+			elmt_deb.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '50px', 'text-align' : 'right', 
+				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
+			elmt_fin.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '50px', 'text-align' : 'left', 
+				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
 			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
 				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
 			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
@@ -692,7 +692,11 @@ var timeline = {
 				elmt_fleche1.css({'left': x0-12+'px'});
 				break;	
 			}
+			// initialisation en cas de redessin de l'élément
 			elmt_txt.css({'color':'black'});
+			elmt_fin.removeClass('nodisp');
+			move_fin.removeClass('disp');
+			
 			switch (l_fin) {
 			case 0 :
 				elmt_fleche2.hide();
@@ -786,46 +790,36 @@ var timeline = {
 					lien.css({'left': x1+'px','width':x0-x1+'px'});
 				}
 			} else {
-				console.log(txt_wid);
-				var lar_nec = txt_wid;
-				var x_left = x1+20;
+				var lar_nec = txt_wid + 50;
+				var x_left = x1+18;
 				if (wid > lar_nec) {
 					elmt_txt.css({'left': x_left+2+'px'});
 					// on place l'heure de début à gauche
-					x1 -= 90;
+					x1 -= elmt_deb.outerWidth()+10;
 					elmt_deb.css({'left': x1+'px'});
 					// on place l'heure de fin à droite
 					elmt_fin.css({'left': x2+5+'px'});
-					x2 += 90;
+					x2 += elmt_fin.outerWidth()+10;
 				} else {
-						if ((wid > 30*2+10) || (l_fin == 2)) {
-					//		elmt_b1.css({'left': x1+2+'px'});
-							b1_pos = x1+2;
-						} else {
-							x_left -= 30;
-					//		elmt_b1.css({'left': x_left+2+'px'});
-							b1_pos = x_left+2;
-						}
-						lien.addClass('lien');
-						lien.show();
-						elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-						txt_wid = elmt_txt.outerWidth();
-						// on place l'heure de début à gauche
-						x1 -= 90;
-						elmt_deb.css({'left': x1+'px'});
-						// on place l'heure de fin à droite
-						elmt_fin.css({'left': x2+5+'px'});
-						x2 += 90;
-						if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-							elmt_txt.css({'left': x2+'px'});
-							lien.css({'left': x2-90+'px','width':90+'px'});	
-							x2 += 30;
-						} else { // sinon on le met à gauche
-							lien.css({'left': x1-2+'px','width':x0-x1+'px'});
-							x1 -= txt_wid+2;
-							elmt_txt.css({'left': x1+'px'});
-						}
-					} 
+					lien.addClass('lien');
+					lien.show();
+					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
+					txt_wid = elmt_txt.outerWidth();
+					// on place l'heure de début à gauche
+					x1 -= elmt_deb.outerWidth()+10;
+					elmt_deb.css({'left': x1+'px'});
+					// on place l'heure de fin à droite
+					elmt_fin.css({'left': x2+5+'px'});
+					x2 += elmt_fin.outerWidth()+10;
+					if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+						elmt_txt.css({'left': x2+'px'});
+						lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
+					} else { // sinon on le met à gauche
+						lien.css({'left': x1-2+'px','width':x0-x1+'px'});
+						x1 -= txt_wid+2;
+						elmt_txt.css({'left': x1+'px'});
+					}
+				} 
 			}
 			if (impt == 1) {
 				elmt_star.find('.icon-star-empty').remove();
@@ -897,7 +891,6 @@ var timeline = {
 		},
 		// saisie du texte des champs heure et du champ label
 		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
-		//	alert(d_debut+"///"+d_fin);
 			var elmt = base_element.find('.ident'+id);
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
@@ -911,15 +904,16 @@ var timeline = {
 				if (d_debut.getMinutes() < 10) {deb_min = "0"+d_debut.getMinutes();} 
 				var hDeb = d_debut.getUTCHours()+":"+deb_min;						
 				if (d_debut < d_ref_deb && d_debut.getDate() != d_actuelle.getDate()){ 
+					
 					var dDeb = d_debut.getUTCMonth()+1;
-					if (dDeb > 10) {hDeb = d_debut.getUTCDate()+"/"+dDeb+"<br/>"+hDeb;} 
-					else {hDeb = d_debut.getUTCDate()+"/0"+dDeb+"<br/>"+hDeb;}
+					if (dDeb > 10) {hDeb = '<span style="display: inline-block; vertical-align: middle;">'+d_debut.getUTCDate()+"/"+dDeb+"<br/>"+hDeb+'</span>';} 
+					else {hDeb = '<span style="display: inline-block; vertical-align: middle;">'+d_debut.getUTCDate()+"/0"+dDeb+"<br/>"+hDeb+'</span>';}
 					var h1 = 0;
 				} else {
 					h1 = 6;
 				}
 			} else { hDeb = ""; }
-			elmt_deb.text(" "+hDeb);
+			elmt_deb.html(" "+hDeb);
 			var data_deb = elmt_deb[0];
 			jQuery.data(data_deb,"d_deb",d_debut);
 			elmt_deb.css({'top':h1+'px'});
@@ -930,8 +924,8 @@ var timeline = {
 				var hFin = d_fin.getUTCHours()+":"+fin_min;
 				if (d_fin.getDate() != d_actuelle.getDate()){
 					var dFin = d_fin.getUTCMonth()+1;
-					if (dFin > 10) {hFin = d_fin.getUTCDate()+"/"+dFin+"<br/>"+hFin; }
-					else {hFin = d_fin.getUTCDate()+"/0"+dFin+"<br/>"+hFin; }
+					if (dFin > 10) {hFin = '<span style="display: inline-block; vertical-align: middle;">'+d_fin.getUTCDate()+"/"+dFin+"<br/>"+hFin+'</span>'; }
+					else {hFin = '<span style="display: inline-block; vertical-align: middle;">'+d_fin.getUTCDate()+"/0"+dFin+"<br/>"+hFin+'</span>'; }
 					h2 = 0;
 				} else {
 					h2 = 6;
@@ -940,7 +934,7 @@ var timeline = {
 				h2 = 4;
 				hFin = ""; 
 			}
-			elmt_fin.text(hFin+" ");
+			elmt_fin.html(hFin+" ");
 			var data_fin = elmt_fin[0];
 			jQuery.data(data_fin,"d_fin",d_fin);
 			elmt_fin.css({'top':h2+'px'});
