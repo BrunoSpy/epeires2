@@ -572,7 +572,7 @@ var timeline = {
 			$(elmt).append(elmt_b1);
 			$(elmt_b1).append(' <i class="icon-pencil"></i>');
 			// ajout du bouton développé
-			elmt_b2 = "" // $('<a type="button" href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			elmt_b2 = $('<button type="button" class="plus"></button>');
 //			$(elmt).append(elmt_b2);
 			elmt_b2.addClass('btn btn-link btn-mini show');
 			$(elmt_b2).append('<i class="icon-plus"></i>');
