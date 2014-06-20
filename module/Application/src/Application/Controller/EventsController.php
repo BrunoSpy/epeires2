@@ -1002,7 +1002,7 @@ class EventsController extends ZoneController {
     					'impact_value' => $event->getImpact()->getValue(),
     					'impact_name' => $event->getImpact()->getName(),
     					'impact_style' => $event->getImpact()->getStyle(),
-    					'star' => $event->isStar(),
+    					'archived' => $event->isArchived(),
     	);
     	
     	$fields = array();
@@ -1175,10 +1175,14 @@ class EventsController extends ZoneController {
                                 $messages['success'][] = "Impact modifié.";
                             }
                             break;
-                        case 'star' :
-                            $event->setStar($value);
+                        case 'archived' :
+                            $event->setArchived($value);
                             $objectManager->persist($event);
-                            $messages['success'][] = "Evènement modifié.";
+                            if($value){
+                                $messages['success'][] = "Evènement archivé.";
+                            } else {
+                                $messages['success'][] = "Evènement non archivé.";
+                            }
                             break;
                         case "status" :
                             if ($this->isGranted('events.status')) {

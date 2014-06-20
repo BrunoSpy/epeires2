@@ -57,7 +57,7 @@ class Event extends AbstractEvent{
  	/**
  	 * @ORM\Column(type="boolean")
  	 */
- 	protected $star = false;
+ 	protected $archived = false;
  	
  	/**
  	 * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
@@ -86,12 +86,12 @@ class Event extends AbstractEvent{
  		return $this->updates;
  	}
 	
-	public function isStar(){
-		return $this->star;
+	public function isArchived(){
+		return $this->archived;
 	}
 	
-	public function setStar($star){
-		$this->star = $star;
+	public function setArchived($archived){
+		$this->archived = $archived;
 	}
 	
 	/** @ORM\PrePersist */
