@@ -290,7 +290,7 @@ var timeline = {
 								(fin.toLocaleDateString() == d_actuelle.toLocaleDateString())) {
 							cpt_journee.push(i);
 						}
-						if (fin >0 && fin < d_ref_deb && etat == "Terminé") { 
+						if (fin > 0 && fin < d_ref_deb && etat == "Terminé") { 
 							if (fin > d_min) {liste_passee.push(i);}
 						} else if (debut > d_ref_fin) {
 							if (debut < d_max) {liste_avenir.push(i);}
@@ -310,15 +310,12 @@ var timeline = {
 				timeline_elmt.append(categ);
 				categ.css({'position':'absolute', 'top':yy+'px', 'left':'-30px', 'width':30+'px', 'height':'auto', 'text-align':'center',
 					'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
-				//	var separateur = $('<div class="elmt separateur"></div>');
-				//	timeline_elmt.append(separateur);
 				h_current = y_temp-7-yy;
 				if (categ.height() > h_current) {
 					y_temp = yy + categ.height() + 7;
 				} else {
 					categ.css({'height':h_current+'px'});
 				}
-				//	separateur.css({'position':'absolute', 'top':y_temp-delt_ligne/2+'px', 'left':-15+'px', 'width':largeur+30+'px', 'height':'1px', 'background-color':'grey','z-index':1});
 				yy = y_temp-4;
 			}
 		},
@@ -568,19 +565,14 @@ var timeline = {
 			// ajout du bouton modifications
 			elmt_status = $('<a class="elmt_status" href="#" data-id="'+id+'"data-name="'+label+'"></a>');
 			// $(elmt).append(elmt_status);
-			elmt_b1 = $('<a type="button" href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 			$(elmt).append(elmt_b1);
-			$(elmt_b1).append(' <i class="icon-pencil"></i>');
-			// ajout du bouton développé
-			elmt_b2 = $('<button type="button" class="plus"></button>');
-//			$(elmt).append(elmt_b2);
-			elmt_b2.addClass('btn btn-link btn-mini show');
-			$(elmt_b2).append('<i class="icon-plus"></i>');
-			// ajout du bouton minimisé
-			elmt_b2bis = $('<button type="button" class="moins"></button>');
-//			$(elmt).append(elmt_b2bis);
-			elmt_b2bis.addClass('btn btn-link btn-mini');
-			$(elmt_b2bis).append('<i class="icon-minus"></i>');
+			$(elmt_b1).append('  <i class="icon-pencil"></i>');
+			// ajout du bouton fiche réflexe
+			elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt).append(elmt_b2);
+			$(elmt_b2).append('  <i class="icon-tasks"></i>');
+			// ajout de l'étoile
 			elmt_star = $('<button type="button" class="elmt_star"></button>');
 	//		$(elmt).append(elmt_star);
 			elmt_star.addClass('btn btn-link btn-mini');
@@ -599,10 +591,81 @@ var timeline = {
 			$(elmt_rect).append(move_deb);
 			move_fin = $('<p class="move_fin"></p>');
 			$(elmt_rect).append(move_fin);
-			// css permanent
+			
 			elmt.css({'position':'absolute', 'top': y0+'px', 'left':'0px', 'width': largeur, 'height':dy});
+			elmt_fleche1.css({'position':'absolute', 'top': dy-22+'px', 'left': '0px'});
+			elmt_fleche2.css({'position':'absolute', 'top': dy-22+'px', 'left': '0px'});
+			elmt_write.css({'background-color':couleur});
+			elmt_opt.css({'position':'absolute', 'top':dy+1+'px', 'left': '0px', 'width': 'auto', 'height':'auto' ,'z-index' : 1, 
+				'background-color':couleur,'border-style':'solid','border-color':'transparent', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
+			elmt_b1.css({'z-index' : 1});
+			elmt_b2.css({'z-index' : 1});
+			elmt_star.css({'position':'absolute', 'top': 0+'px', 'left': '0px', 'z-index' : 1});
+			elmt_status.css({'position':'absolute', 'bottom': 0+'px', 'left': '0px', 'width':'56px', 'z-index' : 1});
+			elmt_status.hide();
+	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
+			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
+			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
+			elmt_deb.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '54px', 'text-align' : 'right', 
+				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
+			elmt_fin.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '54px', 'text-align' : 'left', 
+				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
+			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
+				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
+			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
+				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
+		move_deb.hover(function(){$(this).css({'cursor':'e-resize'});});
+		move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
+		},
+		// animation pour identifier un évènement
+		warn_animate:function(elmt_warn) {
+			elmt_warn.toggle(200);
+		},
+		// positionnement des éléments d'un évènement sur la ligne dédiée
+		position_ligne: function (base_element, id, type, x0, wid, impt, type, couleur) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
+			var warn = type[2];
+			var sts = type[3];
+			var elmt = base_element.find('.ident'+id);
+			var elmt_rect = elmt.find('.rect_elmt');
+			var elmt_compl = elmt.find('.complement');
+//			var elmt_qm_but = elmt.find('.no_elmt_qm_but');
+//			var elmt_warn = elmt.find('.elmt_warn');
+			var elmt_fleche1 = elmt.find('.elmt_fleche1');
+			var elmt_fleche2 = elmt.find('.elmt_fleche2');
+			var elmt_opt = elmt.find('.elmt_opt');
+			var elmt_write = elmt_opt.find('.elmt_write');
+			var elmt_status = elmt.find('.elmt_status');
+			var elmt_b1 = elmt.find('.modify-evt');
+			var elmt_b2 = elmt.find('.checklist-evt');
+			var elmt_star = elmt.find('.elmt_star');
+			var elmt_txt = elmt.find('.label_elmt');
+			var elmt_deb = elmt.find('.elmt_deb');
+			var elmt_fin = elmt.find('.elmt_fin');
+			var move_deb = elmt.find('.move_deb');
+			var move_fin = elmt.find('.move_fin');
+			var lien = elmt.find('.no_lien');
+			var x1 = x0;
+			var b1_pos;
+			var x2 = x1 + wid;
+			var inter_boutons = 2;
+			var ponctuel = 0;
+			
+			// initialisation en cas de redessin de l'élément
+			elmt_rect.css({'position':'', 'top':'', 'left': '', 'width': '', 'height':'' ,'z-index' : '', 
+				'background-color':'','border-style':'','border-color':'',  'border-width': '', 'border-radius': '',
+				'border-left':'', 'border-right':'', 'border-bottom':''});
+			elmt_txt.css({'color':'black'});
+			elmt_deb.removeClass('nodisp');
+			move_deb.removeClass('disp');
+			elmt_fin.removeClass('nodisp');
+			move_fin.removeClass('disp');
+			elmt_compl.show();
+			var dr = 1;
+			
+			// css permanent
+			var dy = elmt.height();
 			if (l_fin == 0 || l_fin == 1 || l_fin == 2) {
 				elmt_rect.css({'position':'absolute', 'top':'0px', 'left': '0px', 'width': '10px', 'height':dy ,'z-index' : 1, 
 					'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
@@ -620,67 +683,9 @@ var timeline = {
 				elmt_compl.css({'position':'absolute', 'left': '0px','width':0, 'height':0, 'border-left':larg+'px solid transparent',
 					'border-right':larg+'px solid transparent', 'border-top':haut+'px solid '+couleur, 'margin':haut*3/8+'px 0 0 -'+larg+'px','z-index' : 2});
 			}
-			elmt_fleche1.css({'position':'absolute', 'top': dy-22+'px', 'left': '0px'});
-			elmt_fleche2.css({'position':'absolute', 'top': dy-22+'px', 'left': '0px'});
-			elmt_write.css({'background-color':couleur});
-			elmt_opt.css({'position':'absolute', 'top':dy+1+'px', 'left': '0px', 'width': 'auto', 'height':'auto' ,'z-index' : 1, 
-				'background-color':couleur,'border-style':'solid','border-color':'transparent', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
-			elmt_b1.css({'z-index' : 1});
-			elmt_b2.css({'position':'absolute', 'top': 0+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
-			elmt_b2bis.css({'position':'absolute', 'top': 0+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
-			elmt_star.css({'position':'absolute', 'top': 0+'px', 'left': '0px', 'z-index' : 1});
-			elmt_status.css({'position':'absolute', 'bottom': 0+'px', 'left': '0px', 'width':'56px', 'z-index' : 1});
-			elmt_status.hide();
-	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
-			elmt_txt.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'font-weight':'normal', 'z-index' : 2});
-			lien.css({'position':'absolute', 'top': dy/2+'px', 'left': '0px','width':'10px','height':'1px','background-color':'gray', 'z-index' : 1});
-			elmt_deb.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '50px', 'text-align' : 'right', 
-				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
-			elmt_fin.css({'position':'absolute', 'top': '6px','left': '0px', 'width': '50px', 'text-align' : 'left', 
-				'font-style':'italic', 'background-color':'Transparant', 'z-index':3});
-			move_deb.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
-				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
-			move_fin.css({'position':'absolute', 'top': 4+'px','height':dy-8, 'z-index':2, 'background-color':'Transparant', 
-				'border-right-style':'solid', 'border-left-style':'solid', 'border-width':'2px', 'display':'none'});
-		move_deb.hover(function(){$(this).css({'cursor':'e-resize'});});
-		move_fin.hover(function(){$(this).css({'cursor':'e-resize'});});
-		},
-		// animation pour identifier un évènement
-		warn_animate:function(elmt_warn) {
-			elmt_warn.toggle(200);
-		},
-		// positionnement des éléments d'un évènement sur la ligne dédiée
-		position_ligne: function (base_element, id, type, x0, wid, impt, type) {
-			var l_deb = type[0];  
-			var l_fin = type[1];
-			var warn = type[2];
-			var sts = type[3];
-			var elmt = base_element.find('.ident'+id);
-			var elmt_rect = elmt.find('.rect_elmt');
-			var elmt_compl = elmt.find('.complement');
-//			var elmt_qm_but = elmt.find('.no_elmt_qm_but');
-//			var elmt_warn = elmt.find('.elmt_warn');
-			var elmt_fleche1 = elmt.find('.elmt_fleche1');
-			var elmt_fleche2 = elmt.find('.elmt_fleche2');
-			var elmt_opt = elmt.find('.elmt_opt');
-			var elmt_write = elmt_opt.find('.elmt_write');
-			var elmt_status = elmt.find('.elmt_status');
-			var elmt_b1 = elmt.find('.modify-evt');
-			var elmt_b2 = elmt.find('.plus');
-			var elmt_b2bis = elmt.find('.moins');
-			var elmt_star = elmt.find('.elmt_star');
-			var elmt_txt = elmt.find('.label_elmt');
-			var elmt_deb = elmt.find('.elmt_deb');
-			var elmt_fin = elmt.find('.elmt_fin');
-			var move_deb = elmt.find('.move_deb');
-			var move_fin = elmt.find('.move_fin');
-			var lien = elmt.find('.no_lien');
-			var x1 = x0;
-			var b1_pos;
-			var x2 = x1 + wid;
-			var inter_boutons = 2;
-			var ponctuel = 0;
+			
 			elmt_txt.append(elmt_b1);
+			elmt_txt.append(elmt_b2);
 			var txt_wid = elmt_txt.outerWidth();
 			switch (l_deb) {
 			case 0 :
@@ -692,11 +697,7 @@ var timeline = {
 				elmt_fleche1.css({'left': x0-12+'px'});
 				break;	
 			}
-			// initialisation en cas de redessin de l'élément
-			elmt_txt.css({'color':'black'});
-			elmt_fin.removeClass('nodisp');
-			move_fin.removeClass('disp');
-			
+
 			switch (l_fin) {
 			case 0 :
 				elmt_fleche2.hide();
@@ -713,6 +714,7 @@ var timeline = {
 				elmt_compl.hide();
 				elmt_fleche2.css({'left': x2+'px'});
 				elmt_star.css({'left': x0+wid-40+'px'});
+				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;
 			case 2 : // évènement avant la timeline
 				elmt_fleche2.show();
@@ -727,7 +729,6 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.css({'left':x0+wid+5+'px'});
 				elmt_star.css({'left': x0+wid-40+'px'});
-				move_fin.addClass('disp');
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});
@@ -736,7 +737,8 @@ var timeline = {
 			case 3 : // ponctuel
 				elmt_fleche1.hide();
 				elmt_fleche2.hide();
-				elmt_deb.hide();
+				move_deb.removeClass('disp');
+				elmt_deb.addClass('nodisp');
 				var left_pos = elmt_rect.position().left;
 				x0 += 2;
 				x1 = x0 + left_pos;
@@ -773,16 +775,15 @@ var timeline = {
 				lien.addClass('lien');
 				lien.show();
 				x1 -= 30;
-			//	elmt_b1.css({'left': x1+2+'px'});
 				b1_pos = x1+2;
 				// on place l'heure à droite
-				elmt_fin.css({'left': x2+15+'px'});
+				elmt_fin.css({'left': x2+'px'});
 				elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 				txt_wid = elmt_txt.outerWidth();
-				x2 += 60;
+				x2 += elmt_fin.outerWidth()+10;
 				if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
 					elmt_txt.css({'left': x2+'px'});
-					lien.css({'left': x2-60+'px','width':60+'px'});	
+					lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
 					x2 += txt_wid;
 				} else { // sinon on le met à gauche
 					x1 -= txt_wid+2;
@@ -812,9 +813,11 @@ var timeline = {
 					elmt_fin.css({'left': x2+5+'px'});
 					x2 += elmt_fin.outerWidth()+10;
 					if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+						dr = 1;
 						elmt_txt.css({'left': x2+'px'});
 						lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
 					} else { // sinon on le met à gauche
+						dr = 0;
 						lien.css({'left': x1-2+'px','width':x0-x1+'px'});
 						x1 -= txt_wid+2;
 						elmt_txt.css({'left': x1+'px'});
@@ -843,7 +846,7 @@ var timeline = {
 			elmt_write.css({'position':'relative','rows':3, 'width':'90%'});
 			elmt.css({'left':x1+'px', 'width': x2-x1});
 			elmt.children().css({'left':'-='+x1+'px'});
-			elmt_deb.css({'left':0+'px'});
+			if (dr == 1) {elmt_deb.css({'left':0+'px'});} else {elmt_txt.css({'left':0+'px'});}
 		},
 		// texte supplémentaire déplié. Option pas utilisée pour le moment.
 		option_open: function(this_elmt, timeline_content, speed) {
@@ -1090,7 +1093,7 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
 			y_temp += dy + delt_ligne;
 		},
 		// création d'un évènement timeline supplémentaire
@@ -1109,7 +1112,7 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
 			if (impt_on) {	
 				timeline.impt_on(base_element, tab);
 			}
@@ -1143,7 +1146,7 @@ var timeline = {
 //			elmt.remove();
 //			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
 			if (impt_on) {	
 				timeline.impt_on(base_element, tab);
 			}
@@ -1332,12 +1335,13 @@ $(document).ready(function() {
 		}
 		elmt.css({'z-index':11});
 		elmt.find('.modify-evt').show();
+		elmt.find('.checklist-evt').show();
 		elmt.find('.elmt_status').show();
 //		var elmt_star = elmt.find('.elmt_star');
 //		if (! elmt_star.hasClass('nodisp')) {elmt_star.show();}
 		elmt.find('.show').show();
 		var elmt_deb = elmt.find('.elmt_deb');
-		elmt_deb.show();
+		if (! elmt_deb.hasClass('nodisp')) {elmt_deb.show();}
 		var elmt_fin = elmt.find('.elmt_fin');
 		if (! elmt_fin.hasClass('nodisp')) {elmt_fin.show();}
 		elmt.find('.elmt_qm_fleche').hide();
@@ -1352,6 +1356,7 @@ $(document).ready(function() {
 		var elmt = $(this);
 		elmt.css({'z-index':1});
 		elmt.find('.modify-evt').hide();
+		elmt.find('.checklist-evt').hide();
 		var elmt_status = elmt.find('.elmt_status');
 		if (!(elmt_status.hasClass('btn-warning') || elmt_status.hasClass('btn-danger'))) { elmt_status.hide(); }
 		elmt.find('.elmt_star').hide();

@@ -278,7 +278,7 @@ $(document).ready(function(){
             showButtonPanel: true
     });
     
-    $("#timeline .checklist-evt").on('click', function(e){
+    $("#timeline").on('click', ".checklist-evt", function(e){
         e.preventDefault();
         togglePanel($(this).data('id'));
     });
