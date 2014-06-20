@@ -369,21 +369,16 @@ class EventsController extends ZoneController {
     				$form->setData($post);
     				 
     				if($form->isValid()){
-    						                                    
+    					
+                                    $now = new \DateTime('now');
+                                    $now->setTimezone(new \DateTimeZone('UTC'));
+                                    
     					//TODO find why hydrator can't set a null value to a datetime
     					if(isset($post['enddate']) && empty($post['enddate'])){
-    						$event->setEndDate(null);
+    						$this->changeEndDate($event, null);
     					}
                                         
-                                        //si statut terminé, non ponctuel et pas d'heure de fin
-                                        //alors l'heure de fin est mise auto à l'heure actuelle
-                                        if(!$event->isPunctual() && $event->getStatus()->getId() == 3 && $event->getEnddate() == null){
-                                            $now = new \DateTime('now');
-                                            $now->setTimezone(new \DateTimeZone('UTC'));
-                                            $event->setEnddate($now);
-                                        }
-    					    					
-    					//hydrator can't guess timezone, force UTC of end and start dates
+                                        //hydrator can't guess timezone, force UTC of end and start dates
     					if(isset($post['startdate']) && !empty($post['startdate'])){
     						$offset = date("Z");
     						$startdate = new \DateTime($post['startdate']);
@@ -393,12 +388,32 @@ class EventsController extends ZoneController {
                                                     $enddate = new \DateTime($post['enddate']);
                                                     $enddate->setTimezone(new \DateTimeZone("UTC"));
                                                     $enddate->add(new \DateInterval("PT".$offset."S"));
+                                                    //on change les deux dates d'un coup pour éviter les incohérences temporaires
                                                     $event->setDates($startdate, $enddate);
+                                                    //vérification de cohérence
+                                                    $this->changeStartDate($event, $startdate);
+                                                    $this->changeEndDate($event, $enddate);
                                                 } else {
-                                                    $event->setStartdate($startdate);
+                                                    $this->changeStartDate($event, $startdate);
                                                 }
     					}
-                                                                                
+                                        
+                                        //si statut terminé, non ponctuel et pas d'heure de fin
+                                        //alors l'heure de fin est mise auto à l'heure actuelle
+                                        //sauf si heure de début future (cas improbable)
+                                        if(!$event->isPunctual()
+                                            && $event->getStatus()->getId() == 3 
+                                            && $event->getEnddate() == null){
+                                            if($event->getStartdate() < $now && $event->setEnddate($now)) {
+                                                $this->changeEndDate($event, $now);
+                                            } else {
+                                                //dans le cas contraire, retour au statut confirmé
+                                                $confirm = $objectManager->getRepository('Application\Entity\Status')->find(2);
+                                                $event->setStatus($confirm);
+                                                $messages['error'][] = "Impossible de passer l'évènement au statut terminé.";
+                                            }
+                                        }
+                                        
     					//save optional datas
     					if(isset($post['custom_fields'])){
     						foreach ($post['custom_fields'] as $key => $value){
@@ -1147,41 +1162,10 @@ class EventsController extends ZoneController {
                         || $this->isGranted('events.write'))) {
                     switch ($field) {
                         case 'enddate' :
-                            if ($event->setEnddate(new \DateTime($value))) {
-                                $messages['success'][] = "Date et heure de fin modifiées au ".$formatter->format($event->getEnddate());
-                                //passage au statut terminé si pertinent et droits ok
-                                $now = new \DateTime('now');
-                                $now->setTimezone(new \DateTimeZone('UTC'));
-                                if ($this->isGranted('events.status')) {
-                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
-                                    if ($event->getStatus()->getId() == 2 ||
-                                            ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now)) {
-                                        $event->setStatus($status);
-                                        $messages['success'][] = "Evènement passé au statut : terminé.";
-                                    }
-                                }
-                                $objectManager->persist($event);
-                            } else {
-                                $messages['error'][] = "Impossible de changer la date de fin.";
-                            }
+                            $this->changeEndDate($event, new \DateTime($value), $messages);
                             break;
                         case 'startdate' :
-                            if ($event->setStartdate(new \DateTime($value))) {
-                                $messages['success'][] = "Date et heure de début modifiées au ".$formatter->format($event->getStartdate());
-                                //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle
-                                if ($this->isGranted('events.status')) {
-                                    $now = new \DateTime('now');
-                                    $now->setTimezone(new \DateTimeZone('UTC'));
-                                    $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => false));
-                                    if ($event->getStatus()->getId() == 1 && (($event->getStartDate()->format('U') - $now->format('U')) / 60) < 10) {
-                                        $event->setStatus($status);
-                                        $messages['success'][] = "Evènement passé au statut : confirmé.";
-                                    }
-                                }
-                                $objectManager->persist($event);
-                            } else {
-                                $messages['error'][] = "Impossible de changer la date de début.";
-                            }
+                            $this->changeStartDate($event, new \DateTime($value), $messages);
                             break;
                         case 'impact' :
                             $impact = $objectManager->getRepository('Application\Entity\Impact')->findOneBy(array('value' => $value));
@@ -1248,6 +1232,119 @@ class EventsController extends ZoneController {
         $json['event'] = array($event->getId() => $this->getEventJson($event));
         $json['messages'] = $messages;
         return new JsonModel($json);
+    }
+
+    /**
+     * 
+     * @param \Application\Entity\Event $event
+     * @param \DateTime $enddate
+     * @param type $messages
+     */
+    private function changeEndDate(Event $event, $enddate, &$messages = null){
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $formatter = \IntlDateFormatter::create(
+                    \Locale::getDefault(),
+                    \IntlDateFormatter::FULL,
+                    \IntlDateFormatter::FULL,
+                    'UTC',
+                    \IntlDateFormatter::GREGORIAN,
+                    'dd LLL, HH:mm');
+        if($event->setEnddate($enddate)){
+            if($enddate){
+                if(is_array($messages)){
+                    $messages['success'][] = "Date et heure de fin modifiées au ".$formatter->format($event->getEnddate());
+                }
+            } else {
+                if(is_array($messages)){
+                    $messages['success'][] = "Date et heure de fin supprimées.";
+                }
+            }
+            $now = new \DateTime('now');
+            $now->setTimezone(new \DateTimeZone('UTC'));
+            
+            foreach ($event->getChildren() as $child){
+                if($child->getCategory() instanceof FrequencyCategory){
+                    $child->setEnddate($enddate);
+                    $objectManager->persist($child);
+                }
+            }
+            
+            //passage au statut terminé si 
+            //- evt confirmé ou (evt nouveau et heure de début passée)
+            //et
+            //- heure de fin proche de l'heure de début (15min)
+            if ($this->isGranted('events.status') && $event->getEnddate()) {
+                $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
+                if ( ($event->getStatus()->getId() == 2 ||
+                    ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now))
+                    && (($now->format('U') - $event->getEndDate()->format('U')) / 60) < 15) {
+                    $event->setStatus($status);
+                    //on ferme l'evt proprement
+                    $this->closeEvent($event);
+                    if(is_array($messages)){
+                        $messages['success'][] = "Evènement passé au statut : terminé.";
+                    }
+                 }
+            }
+            
+            $objectManager->persist($event);
+        } else {
+            if(is_array($messages)){
+                $messages['error'][] = "Impossible de changer la date de fin.";
+            }
+        }
+    }
+    
+    
+    /**
+     * Change la date de début d'un evt et 
+     * - vérifie la cohérence des évènements fils
+     * - vérifie la cohérence du statut
+     * @param \Application\Entity\Event $event
+     * @param \DateTime $startdate
+     * @param array Messages
+     * @return true Si tout s'est bien passé
+     */
+    private function changeStartDate(Event $event, \DateTime $startdate, &$messages = null) {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $formatter = \IntlDateFormatter::create(
+                    \Locale::getDefault(),
+                    \IntlDateFormatter::FULL,
+                    \IntlDateFormatter::FULL,
+                    'UTC',
+                    \IntlDateFormatter::GREGORIAN,
+                    'dd LLL, HH:mm');
+        if ($event->setStartdate($startdate)) {
+            error_log('test');
+            if(is_array($messages)){
+                error_log('ok');
+                $messages['success'][] = "Date et heure de début modifiées au " . $formatter->format($event->getStartdate());
+            }
+            //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle
+            if ($this->isGranted('events.status')) {
+                $now = new \DateTime('now');
+                $now->setTimezone(new \DateTimeZone('UTC'));
+                $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => false));
+                if ($event->getStatus()->getId() == 1 && (($event->getStartDate()->format('U') - $now->format('U')) / 60) < 15) {
+                    $event->setStatus($status);
+                    if(is_array($messages)){
+                        $messages['success'][] = "Evènement passé au statut : confirmé.";
+                    }
+                }
+            }
+            //changement de l'heure de début des évènements fils si pertinent
+            foreach($event->getChildren() as $child){
+                if($child->getCategory() instanceof FrequencyCategory){
+                    $child->setStartdate($startdate);
+                    $objectManager->persist($child);
+                }
+            }
+            $objectManager->persist($event);
+        } else {
+            if(is_array($messages)){
+                $messages['error'][] = "Impossible de changer l'heure de début.";
+            }
+        }
     }
 
     private function closeEvent(Event $event){
