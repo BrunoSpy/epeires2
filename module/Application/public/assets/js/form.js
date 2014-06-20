@@ -334,6 +334,8 @@ var form = function(url){
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
                         $("#event input[name=startdate]").timepickerform({'id':'start'});
                         $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+                        //mise à jour en fonction du statut ponctuel
+                        $('#event #punctual').trigger('change');
 			updateHours();
                         updateHourTitle();
 			pauseUpdateAlarms();
@@ -528,10 +530,12 @@ var form = function(url){
 	});
 
 	$("#event").on("change", "#punctual", function(){
-		$("#dateFin").prop('disabled',$(this).is(':checked')); 
+		$("#end").siblings('input').prop('disabled',$(this).is(':checked')); 
 		$("#end input").prop('disabled', $(this).is(':checked'));
 		if($(this).is(':checked')){
 			$("#end a").addClass("disabled");
+                        $("#end input").val('');
+                        $("#end").siblings('input').val('');
 		} else {
 			$("#end a").removeClass("disabled");
 		}
