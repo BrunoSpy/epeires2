@@ -121,18 +121,18 @@ $(document).ready(function(){
 		}
 	);
 	
-    $('#timeline').on({
-        mouseenter: function() {
-            var id = $(this).find('.modify-evt').data('id');
-            $(this).tooltip({
-                title: 'test' + id,
-                container: 'body'
-            }).tooltip('show');
-        },
-        mouseleave: function() {
-            $(this).tooltip('hide');
-        }
-    }, '.elmt'); 
+//    $('#timeline').on({
+//        mouseenter: function() {
+//            var id = $(this).find('.modify-evt').data('id');
+//            $(this).tooltip({
+//                title: 'test' + id,
+//                container: 'body'
+//            }).tooltip('show');
+//        },
+//        mouseleave: function() {
+//            $(this).tooltip('hide');
+//        }
+//    }, '.elmt'); 
        
    $.noty.defaults = {
 		    layout: 'bottomRight',
@@ -278,6 +278,10 @@ $(document).ready(function(){
             showButtonPanel: true
     });
     
+    $("#timeline .checklist-evt").on('click', function(e){
+        e.preventDefault();
+        togglePanel($(this).data('id'));
+    });
 });
 
 
