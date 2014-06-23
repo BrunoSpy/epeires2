@@ -52,16 +52,15 @@ var displayMessages = function(messages){
         timeline.animate({
             left: '330px'
         }, 300);
-        $('#panel').load(url+'events/getfiche?id='+id);
+        $('#fiche').load(url+'events/getfiche?id='+id);
  };
  
  var hidePanel = function(){
-        var panel = $('#timeline');
-        panel.animate({
+        var timeline = $('#timeline');
+        $('#fiche').empty();
+        timeline.animate({
             left: '0px'
-        }, 300, function(){
-            $('#panel').empty();
-        });
+        }, 300);
         
  }
  
@@ -69,14 +68,14 @@ var displayMessages = function(messages){
         var panel = $('#timeline');
         //on détermine si on affiche ou si on cache
         var val = panel.css('left') == '330px' ? '0px' : '330px';
+        if(panel.css('left') == '330px') {
+            $('#fiche').empty();
+        } else {
+            $('#fiche').load(url+'events/getfiche?id='+id);
+        }
         panel.animate({
             left: val
         }, 300);
-        if(panel.css('left') == '330px') {
-            $('#panel').empty();
-        } else {
-            $('#panel').load(url+'events/getfiche?id='+id);
-        }
  }
  
  var url;
@@ -280,7 +279,7 @@ $(document).ready(function(){
     
     $("#timeline").on('click', ".checklist-evt", function(e){
         e.preventDefault();
-        togglePanel($(this).data('id'));
+        displayPanel($(this).data('id'));
     });
 });
 

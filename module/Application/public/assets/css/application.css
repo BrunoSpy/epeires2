@@ -2,7 +2,7 @@
 
 /************** Slide panel **************/
 
-#panel {
+.panel-fixed {
     position:fixed;
     left:0;
     right:auto;
