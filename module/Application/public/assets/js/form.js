@@ -130,13 +130,23 @@ var form = function(url){
                 //changement du statut à terminé si :
                 //   * droits ok
                 //et * modif d'un evt
-                //et * heure de début passée ou statut confirmé
+                //et * (heure de début passée ou statut confirmé) et heure de fin < now+15
                 var now = new Date();
                 var nowUTC = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+                var nowUTCplus = new Date(nowUTC.getTime() + 15 * 60000);
                 if ($('#event form').data('modstatus')
                         && $('#event input[name=id]').val() > 0 //id != 0 => modif
-                        && (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')) {
+                        && (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')
+                        && end < nowUTCplus) {
                     $('#event select[name=status] option[value=3]').prop('selected', true);
+                } else if($('#event form').data('modstatus')
+                        && $('#event input[name=id]').val() == 0){
+                    //en cas de création on se permet le changement de statut
+                    if(deb < nowUTC && end < nowUTCplus){
+                        $('#event select[name=status] option[value=3]').prop('selected', true);
+                    } else {
+                        $('#event select[name=status] option[value=2]').prop('selected', true);
+                    }
                 }
             }
             updateHourTitle();
