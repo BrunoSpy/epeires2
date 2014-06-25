@@ -62,6 +62,14 @@ class CustomField {
 	 */
 	protected $defaultvalue;
 	
+        /** 
+         * @ORM\Column(type="text")
+         * @Annotation\Type("Zend\Form\Element\Text")
+         * @Annotation\Required(false)
+         * @Annotation\Options({"label":"Popup d'aide"})
+         */
+        protected $tooltip;
+        
 	/**
 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
 	 */
@@ -111,7 +119,15 @@ class CustomField {
 	public function setDefaultValue($defaultvalue){
 		$this->defaultvalue = $defaultvalue;
 	}
+        
+        public function getTooltip(){
+            return $this->tooltip;
+        }
 	
+        public function setTooltip($tooltip){
+            $this->tooltip = $tooltip;
+        }
+        
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
