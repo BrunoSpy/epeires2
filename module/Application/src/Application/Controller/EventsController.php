@@ -1189,8 +1189,8 @@ class EventsController extends ZoneController {
                                 $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name' => $value));
                                 if ($status) {
                                     
-                                    //si statut terminé et pas d'heure de fin -> heure de fin = now
-                                    if(!$status->isOpen() && $status->isDefault() && !$event->getEnddate()){
+                                    //si statut terminé et (pas d'heure de fin + pas ponctuel) -> heure de fin = now
+                                    if(!$status->isOpen() && $status->isDefault() && !$event->getEnddate() && !$event->isPunctual()){
                                         $now = new \DateTime('now');
                                         $now->setTimezone(new \DateTimeZone('UTC'));
                                         if($event->setEnddate($now)){

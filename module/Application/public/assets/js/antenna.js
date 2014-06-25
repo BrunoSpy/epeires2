@@ -247,6 +247,11 @@ var antenna = function(url){
 			if (backupantennacolor.filter('.background-selected').length == backupantennacolor.length && mainantennacolor.filter('.background-status-ok').length == mainantennacolor.length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
+                        //retour à la fréquence nominale
+                        if(sector.find(".sector-name span").length > 0){
+                            list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+sector.data('freq')+
+                                    "\" data-tofreq=\""+sector.data('freq')+"\">Retour à la fréquence nominale</a></li>");
+                        }
 			var submenu = $("<li class=\"submenu\"></li>");
 			submenu.append("<a id=\"changefreq\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
 			list.append(submenu);

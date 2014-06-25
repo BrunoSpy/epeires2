@@ -67,7 +67,9 @@ var categories = function(url){
 	});
 
 	$("#fieldscontainer").on('click', '#new-field', function(){
-		$("#add-field").load(url+'/fields/form'+'?categoryid='+$(this).data('id'));
+		$("#add-field").load(url+'/fields/form'+'?categoryid='+$(this).data('id'), function(){
+                    $(this).closest('.modal').css('left','30%');
+                });
 	});
 
 	$("#fieldscontainer").on('click', '#cancel-form-field', function(){
@@ -80,13 +82,16 @@ var categories = function(url){
 		}
 
 		$('#new-field').removeClass('disabled');
+                $("#fieldscontainer").css('left','');
 	});
 
 
 	$("#fieldscontainer").on('click', '.mod-field', function(){
 		var me = $(this);	
 		closesttr = me.closest('tr').html();
-		me.closest('tr').load(url+'/fields/form'+'?id='+$(this).data('id'));
+		me.closest('tr').load(url+'/fields/form'+'?id='+$(this).data('id'), function(){
+                    $(this).closest('.modal').css('left','30%');
+                });
 		//don't add a new field during modifying one
 		$('#new-field').addClass('disabled');
 	});
@@ -165,9 +170,10 @@ var categories = function(url){
 				tr.find('td:eq(1)').html(data.name);
 				tr.find('td:eq(2)').html(data.type);
 				tr.find('td:eq(3)').html(data.defaut);
-				tr.find('td:eq(4)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
+                                tr.find('td:eq(4)').html(data.help);
+				tr.find('td:eq(5)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
-				tr.find('td:eq(5)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
+				tr.find('td:eq(6)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
 							' class="delete-field" '+ 
@@ -182,6 +188,7 @@ var categories = function(url){
 				newhtml.append('<td>'+data.name+'</td>');
 				newhtml.append('<td>'+data.type+'</td>');
 				newhtml.append('<td>'+data.defaut+'</td>');
+                                newhtml.append('<td>'+data.help+'</td>');
 				newhtml.append('<td>'+'<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a></td>');
 				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
@@ -198,6 +205,7 @@ var categories = function(url){
 			}
 			reload = true;
 		}, 'json');
+                $("#fieldscontainer").css('left','');
 		$('#new-field').removeClass('disabled');
 	});
         

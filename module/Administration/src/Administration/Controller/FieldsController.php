@@ -150,6 +150,7 @@ class FieldsController extends AbstractActionController
     		return new JsonModel(array('id'=>$customfield->getId(), 
     									'name' => $customfield->getName(), 
     									'type' => $customfield->getType()->getName(), 
+                                                                        'help' => $customfield->getTooltip(),
     									'defaut'=>$customfield->getDefaultValue()));
     	}
     }
