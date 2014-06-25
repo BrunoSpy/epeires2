@@ -104,10 +104,7 @@ var timeline = {
 								dfin = new Date(value.end_date);
 							}
 						}
-//						tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
-						var impt = 0;
-						if (value.impact_value == 100) {impt = 1;}
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,"", value.status_name];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
 						corresp[key] = i;
 						var j = 0;
 						i ++;
@@ -398,7 +395,6 @@ var timeline = {
 						}
 					}
 					if (cat_regroup[j] == 1 && id_list != null) { 
-					//	y_temp = timeline.regroupement(timeline_elmt,id_list, y1); 
 					}
 					var text_cat = "";
 					var len_cat = cat_short[j].length;
@@ -496,7 +492,7 @@ var timeline = {
 		},
 
 		// création des éléments d'une ligne d'un évènement affiché
-		creation_ligne: function (base_element, id, label, list, y0, dy, type, couleur){
+		creation_ligne: function (base_element, id, label, y0, dy, type, couleur){
 			// création d'un élément
 			var elmt = $('<div class="elmt"></div>');
 			var ss_elmt = elmt[0];
@@ -582,7 +578,7 @@ var timeline = {
 			elmt_warn.toggle(200);
 		},
 		// positionnement des éléments d'un évènement sur la ligne dédiée
-		position_ligne: function (base_element, id, type, x0, wid, arch, type, couleur) {
+		position_ligne: function (base_element, id, type, x0, wid, arch, mod, couleur) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
 			var warn = type[2];
@@ -622,6 +618,9 @@ var timeline = {
 			move_fin.removeClass('disp');
 			elmt_deb.removeClass("disabled");
 			elmt_fin.removeClass("disabled");
+			elmt_b1.removeClass("invisible");
+			elmt_b2.removeClass("invisible");
+			elmt_arch.removeClass("invisible");
 			elmt_compl.show();
 			var dr = 1;
 			lien.removeClass('lien');
@@ -649,6 +648,7 @@ var timeline = {
 			}
 			
 			var txt_wid = elmt_txt.outerWidth();
+			
 			switch (l_deb) {
 			case 0 :
 				elmt_fleche1.hide();
@@ -803,6 +803,17 @@ var timeline = {
 			elmt.css({'left':x1+'px', 'width': x2-x1});
 			elmt.children().css({'left':'-='+x1+'px'});
 			if (dr == 1) {elmt_deb.css({'left':0+'px'});} else {elmt_txt.css({'left':0+'px'});}
+			
+			if (mod == 0) {
+				elmt_b1.addClass("invisible");
+				elmt_b2.addClass("invisible");
+				elmt_arch.addClass("invisible");
+				move_deb.removeClass('disp');
+				move_fin.removeClass('disp');
+				elmt_deb.addClass("disabled");
+				elmt_fin.addClass("disabled");
+			}
+			
 		},
 		// texte supplémentaire déplié. Option pas utilisée pour le moment.
 		option_open: function(this_elmt, timeline_content, speed) {
@@ -1038,7 +1049,7 @@ var timeline = {
 			return [l_deb, l_fin, warn, sts];
 		},
 		// création d'un évènement timeline supplémentaire
-		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//	dy = impt;
@@ -1051,13 +1062,13 @@ var timeline = {
 			var x0 = coord[0];
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-			timeline.creation_ligne(base_element, id, label, list, y_temp, dy, type, couleur);
+			timeline.creation_ligne(base_element, id, label, y_temp, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 			y_temp += dy + delt_ligne;
 		},
 		// création d'un évènement timeline supplémentaire
-		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//	dy = impt;
@@ -1070,9 +1081,9 @@ var timeline = {
 			var x0 = coord[0];
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
+			timeline.creation_ligne(base_element, id, label, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 			if (tri_cat) { 
 				timeline.tri_cat(base_element, tab,1);
 			} else if (tri_hdeb) {
@@ -1082,7 +1093,7 @@ var timeline = {
 			elmt.effect( "highlight",4000);
 		},
 		// mise à jour d'un évènement sur la timeline 
-		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, list, etat) {
+		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//  dy = impt;
@@ -1098,7 +1109,7 @@ var timeline = {
 			var elmt = base_element.find('.ident'+id);
 			var y = elmt.position().top;
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
-			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
+			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 		},
 		// informations d'un évènement modifié
 		modify: function (data, loc) {
@@ -1127,9 +1138,9 @@ var timeline = {
 				var label = value.name;
 				var etat = value.status_name;
 				var cat = value.category_root;
-//				var impt = timeline.compute_impact("",value.impact_value);
 				var impt = value.archived;
-				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
+				var mod = value.modifiable;
+				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
 				$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
 				var base_element = timel.find('.Base');
@@ -1140,7 +1151,7 @@ var timeline = {
 				} else if (d_debut > d_ref_fin) {
 					elmt.remove();
 				} else {
-					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
+					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
 				}
 				if (tri_cat) { 
 					timeline.tri_cat(timeline_content, tab,1);
@@ -1181,7 +1192,8 @@ var timeline = {
 				var etat = value.status_name;
 				var cat = value.category_root;
 				var impt = value.archived;
-				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
+				var mod = value.modifiable;
+				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
 				corresp[key] = len;
 				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
@@ -1203,7 +1215,7 @@ var timeline = {
 					}
 				} else {
 					liste_affichee.push(len);
-					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[len][7], etat);
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
 				}
 				i ++;
 			});
