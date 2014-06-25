@@ -30,7 +30,6 @@ var liste_avenir = new Array();
 var tri_cat;
 var tri_hdeb;
 var tri_impt;
-var impt_on;
 var open_list = new Array();
 var x_act;
 var tab = Array();
@@ -44,6 +43,7 @@ var aff_deb;
 var cpt_journee;
 var ini_url;
 var on_drag;
+var aff_archives = 0;
 
 var timeline = {
 
@@ -107,14 +107,9 @@ var timeline = {
 //						tab[i] = [key, ddeb, dfin, value.punctual, value.name, timeline.compute_impact("",value.impact_value), value.category_root,"", value.status_name];
 						var impt = 0;
 						if (value.impact_value == 100) {impt = 1;}
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.star, value.category_root,"", value.status_name];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,"", value.status_name];
 						corresp[key] = i;
 						var j = 0;
-						/*					tab[i][7] = new Array();
-					$.each(value.actions, function(k, val){
-						tab[i][7][j] = [k, val];
-						j ++;
-					});*/
 						i ++;
 					});
 					timeline.create(timeline_content, tab);
@@ -177,7 +172,6 @@ var timeline = {
 			var delta;
 			if (d_ref_deb.getDate() != d_actuelle.getDate()) { delta = h_act + 24 - h_ref;  } else { delta = h_act - h_ref; }
 			x_act = lar_unit + 2*lar_unit*delta + m_act*(2*lar_unit)/60;
-			console.log(x_act+"  "+delta);
 			vue = 1;
 		},
 		// création des éléments de base
@@ -290,7 +284,7 @@ var timeline = {
 								(fin.toLocaleDateString() == d_actuelle.toLocaleDateString())) {
 							cpt_journee.push(i);
 						}
-						if (fin > 0 && fin < d_ref_deb && etat == "Terminé") { 
+						if (fin > 0 && fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
 							if (fin > d_min) {liste_passee.push(i);}
 						} else if (debut > d_ref_fin) {
 							if (debut < d_max) {liste_avenir.push(i);}
@@ -345,6 +339,23 @@ var timeline = {
 			}
 			return y_t;
 		},
+		// affichage ou non des évènements archivés
+		affichage_arch: function(elmt, arch) {
+			var elmt_rect = elmt.find('.rect_elmt');
+			var elmt_compt = elmt.find('.complement');
+			elmt_text = elmt.find('.label_elmt');
+			if (arch == 1) {
+				elmt_rect.css({'opacity':'0.4'});
+				elmt_rect.children().css({'opacity':'0.4'});
+				elmt_compt.css({'opacity':'0.4'});
+				elmt_text.css({'color':'DarkGray'});
+			} else {
+				elmt_rect.css({'opacity':'1'});
+				elmt_rect.children().css({'opacity':'1'});
+				elmt_compt.css({'opacity':'1'});
+				elmt_text.css({'color':'black'});
+			}			
+		},
 		// tri des évènements par catégorie
 		tri_cat: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
@@ -371,11 +382,18 @@ var timeline = {
 							debut = tableau[i][1];
 							fin = tableau[i][2];
 							etat = tableau[i][8];
+							arch = tableau[i][5];
 							if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
 								elmt = timeline_elmt.find('.ident'+id);
 								id_list.push([id, tableau[i][4]]);
 								elmt.css({'top':y_temp+'px'});
-								y_temp = y_temp + elmt.height() + delt_ligne;
+								if (arch == 0 || (arch == 1 && aff_archives == 1)) {
+									y_temp = y_temp + elmt.height() + delt_ligne;
+									elmt.show();
+								} else if (arch == 1 && aff_archives == 0) {
+									elmt.hide();
+								}
+								timeline.affichage_arch(elmt,arch);
 							}
 						}
 					}
@@ -422,15 +440,22 @@ var timeline = {
 				debut = tableau[i][1];
 				fin = tableau[i][2];
 				etat = tableau[i][8];
+				arch = tableau[i][5];
 				if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
-					y_temp += delt_ligne;
 					elmt = timeline_elmt.find('.ident'+id);
-					if (speed) {
-						elmt.css({'top':y_temp+'px'});
-					} else {
-						elmt.animate({'top':y_temp+'px'});
+					if (arch == 0 || (arch == 1 && aff_archives == 1)) {
+						y_temp += delt_ligne;
+						if (speed) {
+							elmt.css({'top':y_temp+'px'});
+						} else {
+							elmt.animate({'top':y_temp+'px'});
+						}
+						y_temp += elmt.height();
+						elmt.show();
+					} else if (arch == 1 && aff_archives == 0) {
+						elmt.hide();
 					}
-					y_temp += elmt.height();
+					timeline.affichage_arch(elmt,arch);					
 				}
 			}
 		},
@@ -469,73 +494,7 @@ var timeline = {
 				}
 			}
 		},
-		// passage d'un évènement au statut d'étoile vrai (star pleine)
-		impt_on: function(timeline_elmt, tableau) {
-			impt_on = 1;
-			var len = tableau.length;
-			var debut, fin, etat;
-			var elmt;
-			y_temp = 0;
-			for (var i = 0; i<len; i++) {
-				id = tableau[i][0];
-				corresp[id] = i;
-				debut = tableau[i][1];
-				fin = tableau[i][2];
-				etat = tableau[i][8];
-				impt = tableau[i][5];
-				if (!(fin < d_ref_deb && etat == "Terminé") && (debut <= d_ref_fin)) {
-					elmt = timeline_elmt.find('.ident'+id);
-					var elmt_rect = elmt.find('.rect_elmt');
-					var elmt_compt = elmt.find('.complement');
-					var elmt_b1 = elmt.find('.modify-evt');
-					var elmt_b2 = elmt.find('.plus');
-					elmt_text = elmt.find('.label_elmt');
-					if (impt == 0) {
-						elmt_rect.css({'opacity':'0.4'});
-						elmt_rect.children().css({'opacity':'0.4'});
-						elmt_compt.css({'opacity':'0.4'});
-						elmt_b1.css({'opacity':'0.4'});
-						elmt_b2.css({'opacity':'0.4'});
-						elmt_text.css({'color':'DarkGray'});
-					} else {
-						elmt_rect.css({'opacity':'1'});
-						elmt_rect.children().css({'opacity':'1'});
-						elmt_compt.css({'opacity':'1'});
-						elmt_b1.css({'opacity':'1'});
-						elmt_b2.css({'opacity':'1'});
-						elmt_text.css({'color':'black'});
-					}
-				}
-			}
-		},
-		// passage d'un évènement au statut d'étoile fausse (star vide)
-		impt_off: function(timeline_elmt, tableau) {
-			impt_on = 0;
-			var len = tableau.length;
-			var debut, fin, etat;
-			var elmt;
-			y_temp = 0;
-			for (var i = 0; i<len; i++) {
-				id = tableau[i][0];
-				corresp[id] = i;
-				debut = tableau[i][1];
-				fin = tableau[i][2];
-				etat = tableau[i][8];
-				impt = tableau[i][5];
-				if (!(fin < d_ref_deb && etat == "Terminé") && (debut <= d_ref_fin) && (impt == 0)) {
-					elmt = timeline_elmt.find('.ident'+id);
-					var elmt_rect = elmt.find('.rect_elmt');
-					var elmt_compt = elmt.find('.complement');
-					elmt_text = elmt.find('.label_elmt');
-					elmt_rect.css({'opacity':'1'});
-					elmt_rect.children().css({'opacity':'1'});
-					elmt_compt.css({'opacity':'1'});
-					elmt_b1.css({'opacity':'1'});
-					elmt_b2.css({'opacity':'1'});
-					elmt_text.css({'color':'black'});
-				}
-			}
-		},
+
 		// création des éléments d'une ligne d'un évènement affiché
 		creation_ligne: function (base_element, id, label, list, y0, dy, type, couleur){
 			// création d'un élément
@@ -565,24 +524,25 @@ var timeline = {
 			// ajout du bouton modifications
 			elmt_status = $('<a class="elmt_status" href="#" data-id="'+id+'"data-name="'+label+'"></a>');
 			// $(elmt).append(elmt_status);
-			elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
-			$(elmt).append(elmt_b1);
-			$(elmt_b1).append('  <i class="icon-pencil"></i>');
-			// ajout du bouton fiche réflexe
-			elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
-			$(elmt).append(elmt_b2);
-			$(elmt_b2).append('  <i class="icon-tasks"></i>');
-			// ajout de l'étoile
-			elmt_star = $('<button type="button" class="elmt_star"></button>');
-	//		$(elmt).append(elmt_star);
-			elmt_star.addClass('btn btn-link btn-mini');
+			
 			// ajout du nom de l'événement
 			elmt_txt = $('<p class="label_elmt">'+label+'</p>');
 			$(elmt).append(elmt_txt);
+			// ajout du bouton "ouverture fiche"
+			elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b1);
+			$(elmt_b1).append('  <i class="icon-pencil"></i>');
+			// ajout du bouton "ouverture fiche réflexe"
+			elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b2);
+			$(elmt_b2).append('  <i class="icon-tasks"></i>');
+			// ajout de l'archivage
+			elmt_arch = $('<a href="#" class="archive-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_arch);
+			$(elmt_arch).append('  <i class="icon-eye-close"></i>');
 			// lien entre le texte et l'événement (si texte écrit en dehors)
 			var lien = $('<div class="no_lien"></div>');
 			$(elmt).append(lien);
-			// + h_deb + h_fin
 			elmt_deb = $('<a href="#" class="elmt_deb"></a>');
 			$(elmt).append(elmt_deb);
 			elmt_fin = $('<a href="#" class="elmt_fin"></a>');
@@ -600,7 +560,7 @@ var timeline = {
 				'background-color':couleur,'border-style':'solid','border-color':'transparent', 'padding':'0px' ,'border-width': '1px', 'display':'none'});
 			elmt_b1.css({'z-index' : 1});
 			elmt_b2.css({'z-index' : 1});
-			elmt_star.css({'position':'absolute', 'top': 0+'px', 'left': '0px', 'z-index' : 1});
+			elmt_arch.css({'z-index' : 1});
 			elmt_status.css({'position':'absolute', 'bottom': 0+'px', 'left': '0px', 'width':'56px', 'z-index' : 1});
 			elmt_status.hide();
 	//		elmt_obj.css({'position':'absolute', 'top': dy/2-11+'px', 'left': '0px', 'background-color':couleur, 'z-index' : 1});
@@ -622,7 +582,7 @@ var timeline = {
 			elmt_warn.toggle(200);
 		},
 		// positionnement des éléments d'un évènement sur la ligne dédiée
-		position_ligne: function (base_element, id, type, x0, wid, impt, type, couleur) {
+		position_ligne: function (base_element, id, type, x0, wid, arch, type, couleur) {
 			var l_deb = type[0];  
 			var l_fin = type[1];
 			var warn = type[2];
@@ -639,7 +599,7 @@ var timeline = {
 			var elmt_status = elmt.find('.elmt_status');
 			var elmt_b1 = elmt.find('.modify-evt');
 			var elmt_b2 = elmt.find('.checklist-evt');
-			var elmt_star = elmt.find('.elmt_star');
+			var elmt_arch = elmt.find('.archive-evt');
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var elmt_fin = elmt.find('.elmt_fin');
@@ -649,7 +609,6 @@ var timeline = {
 			var x1 = x0;
 			var b1_pos;
 			var x2 = x1 + wid;
-			var inter_boutons = 2;
 			var ponctuel = 0;
 			
 			// initialisation en cas de redessin de l'élément
@@ -661,8 +620,13 @@ var timeline = {
 			move_deb.removeClass('disp');
 			elmt_fin.removeClass('nodisp');
 			move_fin.removeClass('disp');
+			elmt_deb.removeClass("disabled");
+			elmt_fin.removeClass("disabled");
 			elmt_compl.show();
 			var dr = 1;
+			lien.removeClass('lien');
+			elmt_txt.css({'background-color':'','border-style':'', 'border-color':'','border-width': '','border-radius': '', 'padding':'','text-decoration':''});
+			lien.hide();
 			
 			// css permanent
 			var dy = elmt.height();
@@ -684,8 +648,6 @@ var timeline = {
 					'border-right':larg+'px solid transparent', 'border-top':haut+'px solid '+couleur, 'margin':haut*3/8+'px 0 0 -'+larg+'px','z-index' : 2});
 			}
 			
-			elmt_txt.append(elmt_b1);
-			elmt_txt.append(elmt_b2);
 			var txt_wid = elmt_txt.outerWidth();
 			switch (l_deb) {
 			case 0 :
@@ -703,7 +665,6 @@ var timeline = {
 				elmt_fleche2.hide();
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.hide();
-				elmt_star.css({'left': x0+wid-40+'px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});	
 				move_deb.css({'left': 8+'px', 'width':'2px'});
@@ -713,7 +674,6 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});				
 				elmt_compl.hide();
 				elmt_fleche2.css({'left': x2+'px'});
-				elmt_star.css({'left': x0+wid-40+'px'});
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;
 			case 2 : // évènement avant la timeline
@@ -721,14 +681,12 @@ var timeline = {
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});				
 				elmt_compl.hide();
 				elmt_fleche2.hide();
-				elmt_star.addClass('nodisp');
 				elmt_txt.css({'color':'red'});
 				break;
 			case -1 : // pas d'heure de fin
 				elmt_fleche2.hide();
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});
 				elmt_compl.css({'left':x0+wid+5+'px'});
-				elmt_star.css({'left': x0+wid-40+'px'});
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				move_fin.addClass('disp');
 				move_fin.css({'left': wid-10+'px', 'width':'2px'});
@@ -747,30 +705,35 @@ var timeline = {
 				elmt_rect.css({'left': '+='+x0});
 				elmt_compl.css({'left':x0+'px'});
 				ponctuel = 1;
-				elmt_star.css({'left': x0+5+'px'});
 				break;
 			}
 			elmt_deb.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
 			elmt_fin.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
 			if (sts < 3) {
-				elmt_deb.prepend('<i class="icon-question-sign"></i>');
+				elmt_deb.prepend(' <i class="icon-question-sign"></i>');
 			} else if (sts == 3) { 
-				elmt_deb.prepend('<i class="icon-warning-sign"></i>');
+				elmt_deb.prepend(' <i class="icon-warning-sign"></i>');
 				elmt_deb.show();
-			} else {
-				elmt_deb.prepend('<i class="icon-check"></i>');
+			} else if (sts != 20) {
+				elmt_deb.prepend(' <i class="icon-check"></i>');
 			}
 			if (sts == 6) { 
-				elmt_fin.append('<i class="icon-warning-sign"></i>'); 
+				elmt_fin.append(' <i class="icon-warning-sign"></i>'); 
 				elmt_fin.show(); 
 			} else if (sts < 11) {
-				elmt_fin.append('<i class="icon-question-sign"></i>');
-			} else {
-				elmt_fin.append('<i class="icon-check"></i>');
+				elmt_fin.append(' <i class="icon-question-sign"></i>');
+			} else if (sts < 20) {
+				elmt_fin.append(' <i class="icon-check"></i>');
+			} else if (sts == 20) {
+				elmt_deb.addClass("disabled");
+				elmt_fin.addClass("disabled");
+				elmt_txt.css({'text-decoration':'line-through'});
 			}
-			lien.removeClass('lien');
-			elmt_txt.css({'background-color':'','border-style':'', 'border-color':'','border-width': '','border-radius': '', 'padding':''});
-			lien.hide();
+			elmt_arch.find('i').removeClass("icon-eye-open icon-eye-close");
+			if (arch == 0) { elmt_arch.append(' <i class="icon-eye-close"></i>'); 
+			} else {elmt_arch.append(' <i class="icon-eye-open"></i>'); 
+			}
+			
 			if (ponctuel) {
 				lien.addClass('lien');
 				lien.show();
@@ -823,13 +786,6 @@ var timeline = {
 						elmt_txt.css({'left': x1+'px'});
 					}
 				} 
-			}
-			if (impt == 1) {
-				elmt_star.find('.icon-star-empty').remove();
-				elmt_star.append('<i class="star_style icon-star icon-red"></i>');
-			} else {
-				elmt_star.find('.icon-star').remove();
-				elmt_star.append('<i class="star_style icon-star-empty"></i>');
 			}
 			elmt_status.css({'left': b1_pos+'px'});
 			timeline.set_status(base_element, id, type);
@@ -1010,67 +966,71 @@ var timeline = {
 			}
 			var d_temp = new Date();
 			d_temp.setTime(d_actuelle.getTime()+300000);
-			if (d_debut > d_temp) {
-				if (etat == "Nouveau") {
-					sts = 0; // Nouveau pas commencé
-					warn = 0;
-				} else {
-					if (etat == "Confirmé") {
-						sts = 10; // Confirmé pas commencé
-					} else if (etat == "Terminé") {
-						sts = 11; // Terminé pas commencé
-					}
-					warn = 0;
-				}
-			} else if (d_debut > d_actuelle) {
-				if (etat == "Nouveau") {
-					sts = 2; // Nouveau et proche de commencer
-					warn = 0;
-				} else {
-					if (etat == "Confirmé") {
-						sts = 10; // Confirmé pas commencé
-					} else if (etat == "Terminé") {
-						sts = 11; // Terminé pas commencé
-					}
-					warn = 0;
-				}
-			} else if (d_fin == -1) { 
-				if (etat == "Nouveau") {
-					warn = 1;
-					sts = 3; // Nouveau et commencé
-				} else if (etat == "Confirmé") {
-					sts = 4; // Confirmé et commencé
-					warn = 0;
-				}
+
+			if (etat == "Annulé") { sts = 20; warn = 0; 
 			} else {
-				if (etat == "Nouveau") {
-					warn = 1;
-					sts = 3; // Nouveau et commencé
+				if (d_debut > d_temp) {
+					if (etat == "Nouveau") {
+						sts = 0; // Nouveau pas commencé
+						warn = 0;
+					} else {
+						if (etat == "Confirmé") {
+							sts = 10; // Confirmé pas commencé
+						} else if (etat == "Terminé") {
+							sts = 11; // Terminé pas commencé
+						}
+						warn = 0;
+					}
+				} else if (d_debut > d_actuelle) {
+					if (etat == "Nouveau") {
+						sts = 2; // Nouveau et proche de commencer
+						warn = 0;
+					} else {
+						if (etat == "Confirmé") {
+							sts = 10; // Confirmé pas commencé
+						} else if (etat == "Terminé") {
+							sts = 11; // Terminé pas commencé
+						}
+						warn = 0;
+					}
+				} else if (d_fin == -1) { 
+					if (etat == "Nouveau") {
+						warn = 1;
+						sts = 3; // Nouveau et commencé
+					} else if (etat == "Confirmé") {
+						sts = 4; // Confirmé et commencé
+						warn = 0;
+					}
 				} else {
-					if (d_fin < d_actuelle) {
-						if (etat == "Confirmé") {
-							sts = 6; // Confirmé et terminé
-							warn = 2;
-						} else {
-							sts = 11; // Terminé et bientot terminé
-							warn = 0;
+					if (etat == "Nouveau") {
+						warn = 1;
+						sts = 3; // Nouveau et commencé
+					} else {
+						if (d_fin < d_actuelle) {
+							if (etat == "Confirmé") {
+								sts = 6; // Confirmé et terminé
+								warn = 2;
+							} else {
+								sts = 11; // Terminé et bientot terminé
+								warn = 0;
+							}
+						} else if (d_fin < d_temp) {
+							if (etat == "Confirmé") {
+								sts = 5; // Confirmé et bientot terminé
+								warn = 2;
+							} else {
+								sts = 11; // Terminé et bientot terminé
+								warn = 0;
+							}
+						} else if (d_fin > d_actuelle) {
+							if (etat == "Confirmé") {
+								sts = 4; // Confirmé et commencé
+								warn = 0;
+							} else if (etat == "Terminé") {
+								sts = 11; // Terminé et commencé
+								warn = 0;
+							} 
 						}
-					} else if (d_fin < d_temp) {
-						if (etat == "Confirmé") {
-							sts = 5; // Confirmé et bientot terminé
-							warn = 2;
-						} else {
-							sts = 11; // Terminé et bientot terminé
-							warn = 0;
-						}
-					} else if (d_fin > d_actuelle) {
-						if (etat == "Confirmé") {
-							sts = 4; // Confirmé et commencé
-							warn = 0;
-						} else {
-							sts = 11; // Terminé et commencé
-							warn = 0;
-						} 
 					}
 				}
 			}
@@ -1113,12 +1073,6 @@ var timeline = {
 			timeline.creation_ligne(base_element, id, label, list, 0, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
-			if (impt_on) {	
-				timeline.impt_on(base_element, tab);
-			}
-			else {
-				timeline.impt_off(base_element, tab);
-			}
 			if (tri_cat) { 
 				timeline.tri_cat(base_element, tab,1);
 			} else if (tri_hdeb) {
@@ -1143,16 +1097,8 @@ var timeline = {
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			var elmt = base_element.find('.ident'+id);
 			var y = elmt.position().top;
-//			elmt.remove();
-//			timeline.creation_ligne(base_element, id, label, list, y, dy, type, couleur);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, type, couleur);
-			if (impt_on) {	
-				timeline.impt_on(base_element, tab);
-			}
-			else {
-				timeline.impt_off(base_element, tab);
-			}
 		},
 		// informations d'un évènement modifié
 		modify: function (data, loc) {
@@ -1182,25 +1128,19 @@ var timeline = {
 				var etat = value.status_name;
 				var cat = value.category_root;
 //				var impt = timeline.compute_impact("",value.impact_value);
-				var impt = value.star;
+				var impt = value.archived;
 				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
 				var base_element = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
 				var elmt = timeline_content.find('.ident'+key);
-				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
+				if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
 					elmt.remove();
 				} else if (d_debut > d_ref_fin) {
 					elmt.remove();
 				} else {
 					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, tab[id][7], etat);
-				}
-				if (impt_on) {	
-					timeline.impt_on(base_element, tab);
-				}
-				else {
-					timeline.impt_off(base_element, tab);
 				}
 				if (tri_cat) { 
 					timeline.tri_cat(timeline_content, tab,1);
@@ -1240,16 +1180,9 @@ var timeline = {
 				var label = value.name;
 				var etat = value.status_name;
 				var cat = value.category_root;
-	//			var impt = timeline.compute_impact("",value.impact_value);
-				var impt = value.star;
+				var impt = value.archived;
 				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,"", etat];
 				corresp[key] = len;
-				/*				var l = 0;
-				tab[id][7] = new Array();
-				$.each(value.actions, function(k, val){
-					tab[len][7][l] = [k, val];
-					l ++;
-				});*/
 				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
 						(d_fin.toLocaleDateString() == d_now.toLocaleDateString())) {
@@ -1260,7 +1193,7 @@ var timeline = {
 				var base = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
 				//var other = timel.find('.timeline_other');
-				if (d_fin >0 && d_fin < d_ref_deb && etat == "Terminé") { 
+				if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
 					if (d_fin > d_min) {
 						liste_passee.push(len);
 					}
@@ -1294,9 +1227,6 @@ var timeline = {
 					timeline.tri_cat(timeline_content, tab,1);
 				} else if (tri_hdeb) {
 					timeline.tri_hdeb(timeline_content, tab,1);
-				}
-				if (impt_on) {
-					impt_on(timeline_content, tab);
 				}
 				timeline.timeBar(timeline_content);
 				$.holdReady(false);
@@ -1336,9 +1266,8 @@ $(document).ready(function() {
 		elmt.css({'z-index':11});
 		elmt.find('.modify-evt').show();
 		elmt.find('.checklist-evt').show();
+		elmt.find('.archive-evt').show();
 		elmt.find('.elmt_status').show();
-//		var elmt_star = elmt.find('.elmt_star');
-//		if (! elmt_star.hasClass('nodisp')) {elmt_star.show();}
 		elmt.find('.show').show();
 		var elmt_deb = elmt.find('.elmt_deb');
 		if (! elmt_deb.hasClass('nodisp')) {elmt_deb.show();}
@@ -1357,9 +1286,9 @@ $(document).ready(function() {
 		elmt.css({'z-index':1});
 		elmt.find('.modify-evt').hide();
 		elmt.find('.checklist-evt').hide();
+		elmt.find('.archive-evt').hide();
 		var elmt_status = elmt.find('.elmt_status');
 		if (!(elmt_status.hasClass('btn-warning') || elmt_status.hasClass('btn-danger'))) { elmt_status.hide(); }
-		elmt.find('.elmt_star').hide();
 		elmt.find('.show').hide();
 		var elmt_deb = elmt.find('.elmt_deb');
 		if (! elmt_deb.find('i').hasClass("icon-warning-sign")) {elmt_deb.hide();}
@@ -1423,28 +1352,19 @@ $(document).ready(function() {
 	
 	// changement de zoom sur la timeline
 	$('#zoom').on('switch-change', function(e, data){
-		//data.value = true => vue journée
 		var timel = $('#timeline');
 		var base = timel.find('.Base');
 		var timeline_content = timel.find('.timeline_content');
-		//var other = timel.find('.timeline_other');
 		$.holdReady(true);
 		base.empty();
 		timeline_content.empty();
-		//other.empty();
 		if(data.value){
 			timeline.init_journee(timel);
 		} else {
 			timeline.init(timel);
 		}
-		timeline.base(base);	
+		timeline.base(base);
 		timeline.create(timeline_content, tab);
-		if (impt_on) {	
-			timeline.impt_on(timeline_content, tab);
-		}
-		else {
-			timeline.impt_off(timeline_content, tab);
-		}
 		if (tri_cat) { 
 			timeline.tri_cat(timeline_content, tab,1);
 		} else if (tri_hdeb) {
@@ -1473,20 +1393,30 @@ $(document).ready(function() {
 	});
 
 	// activation / désactivation du tri par statut
-	$('#tri_impt').on('click', function(){
+	$('#tri_tout').on('click', function(){
 		$(this).parent().addClass('active');
 		$('#tri_std').parent().removeClass('active');
 		var timel = $('#timeline');
 		var timeline_content = timel.find('.timeline_content');
-		timeline.impt_on(timeline_content, tab);
+		aff_archives = 1;
+		if (tri_cat) { 
+			timeline.tri_cat(timeline_content, tab,1);
+		} else if (tri_hdeb) {
+			timeline.tri_hdeb(timeline_content, tab,1);
+		}
 	});
 	
 	$('#tri_std').on('click', function(){
 		var timel = $('#timeline');
 		$(this).parent().addClass('active');
-		$('#tri_impt').parent().removeClass('active');
+		$('#tri_tout').parent().removeClass('active');
 		var timeline_content = timel.find('.timeline_content');
-		timeline.impt_off(timeline_content, tab);
+		aff_archives = 0;
+		if (tri_cat) { 
+			timeline.tri_cat(timeline_content, tab,1);
+		} else if (tri_hdeb) {
+			timeline.tri_hdeb(timeline_content, tab,1);
+		}
 	});
 	
 	// sauvegarde du texte enrichi. Pas utilisé
@@ -1494,36 +1424,24 @@ $(document).ready(function() {
 		$(this).val(); // valeur à sauvegarder
 	});
 	
-	// effet de clic sur l'étoile ("importance").
-	$('#timeline').on('click','.elmt_star', function(){
-		var star_style = $(this).find('.star_style');
-		var ss_elmt = $(this).closest('.elmt')[0];
+	// clic sur "archiver"
+	$('#timeline').on('click','.archive-evt', function(e1){
+		var elmt = $(this).closest('.elmt');
+		var ss_elmt = elmt[0];
 		var id = jQuery.data(ss_elmt, "ident");
-		var n = corresp[id];
-		if (tab[n][5] == 1) {
-			star_style.removeClass('icon-star');
-			star_style.removeClass('icon-red');
-			star_style.addClass('icon-star-empty');
+		var n = corresp[id];	
+		if (tab[n][5] == 0) { 
+			tab[n][5] = 1; 
+		} else { 
 			tab[n][5] = 0;
-			var star = false;
-		} else if (tab[n][5] == 0) {
-			star_style.removeClass('icon-star-empty');
-			star_style.addClass('icon-red');
-			star_style.addClass('icon-star');
-			tab[n][5] = 1;
-			star = true;
 		}
-		$.post(ini_url+'/changefield?id='+id+'&field=star&value='+star, function(data){displayMessages(data);});
-		if (impt_on == 1) {
-			var timel = $('#timeline');
-			var timeline_content = timel.find('.timeline_content');
-			timeline.impt_on(timeline_content, tab);			
-		}
-/*		if (tri_impt == 1) { 
-			var timel = $('#timeline');
-			var timeline_content = timel.find('.timeline_content');
-			timeline.tri_impt(timeline_content, tab, 0);
-		}*/
+		$.post(ini_url+'/changefield?id='+id+'&field=archived&value='+tab[n][5], 
+				function(data){
+			displayMessages(data.messages);
+			if (data['event']) {
+				timeline.modify(data.event, 1);
+			}
+		});
 	});
 	
 	// clic sur heure de début
@@ -1583,7 +1501,6 @@ $(document).ready(function() {
 			elmt.find('.complement').hide();
 			var rect_width = rect_elmt.width();
 			var move_fin = $(this);
-			var elmt_star = elmt.find('.elmt_star');
 			var pix_time = 30*60000/lar_unit;
 			var elmt_fin = elmt.find('.elmt_fin');
 			elmt_fin.show();
@@ -1615,7 +1532,6 @@ $(document).ready(function() {
 					x_temp = e2.clientX;
 					elmt.css({'width':'+='+delt});
 					rect_elmt.css({'width':'+='+delt});
-					elmt_star.css({'left':'+='+delt});
 					elmt_fin.css({'left':'+='+delt});
 					move_fin.css({'left':'+='+delt});
 				}
@@ -1674,7 +1590,6 @@ $(document).ready(function() {
 			var rect_elmt = elmt.find('.rect_elmt');
 			var elmt_compl = elmt.find('.complement');
 			var rect_width = rect_elmt.width();
-			var elmt_star = elmt.find('.elmt_star');
 			var elmt_deb = elmt.find('.elmt_deb');
 			elmt_deb.show();
 			var pix_time = 30*60000/lar_unit;
@@ -1686,7 +1601,6 @@ $(document).ready(function() {
 			aff_deb = new Date();
 			aff_deb.setTime(d_deb.getTime());
 			$('#timeline').mousemove(function(e2) {
-			//	e2.preventDefault();
 				delt = e2.clientX-x_temp;
 				delt2 = e2.clientX-x_ref;
 				if (delt2 < rect_width) {
@@ -1699,7 +1613,6 @@ $(document).ready(function() {
 					rect_elmt.css({'width':'-='+delt});
 					elmt_compl.css({'left':'-='+delt});
 					elmt_fin.css({'left':'-='+delt});
-					elmt_star.css({'left':'-='+delt});
 					move_fin.css({'left':'-='+delt});
 				}
 			});
