@@ -51,6 +51,7 @@
 
 .elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
 	display:none;
+	text-decoration:none;
 } 
 
 
@@ -59,5 +60,6 @@
 	width : 27px;
 	display:inline;
 }
+
 
 

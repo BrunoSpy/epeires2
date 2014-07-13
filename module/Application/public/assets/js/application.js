@@ -270,7 +270,8 @@ $(document).ready(function(){
     var now = new Date();
     $("#calendar input[type=text].date").val(now.toLocaleDateString());
     $("#calendar input[type=text].date").on('change', function(){
-        
+    	var temp = $('#calendar input[type=text].date').val().split('/');
+    	var new_date = new Date(temp[2],temp[1],temp[0]);
     });
     $("#date").datepicker({
             dateFormat: "dd/mm/yy",
