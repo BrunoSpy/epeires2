@@ -414,6 +414,20 @@ class EventsController extends ZoneController {
                                             }
                                         }
                                         
+                                        //si annulé, non ponctuel et pas d'heure de fin
+                                        //alors on met l'heure de fin à heure de début +90min
+                                        if(!$event->isPunctual()
+                                                && $event->getStatus()->getId() == 4
+                                                && $event->getEnddate() == null){
+                                            if($event->getStartdate() < $now){
+                                                $this->changeEndDate($event, $now);
+                                            } else {
+                                                $enddate = clone $event->getStartdate();
+                                                $enddate->add(new \DateInterval("PT90M"));
+                                                $this->changeEndDate($event, $enddate);
+                                            }
+                                        }
+                                        
     					//save optional datas
     					if(isset($post['custom_fields'])){
     						foreach ($post['custom_fields'] as $key => $value){
@@ -1204,6 +1218,9 @@ class EventsController extends ZoneController {
                                         if(!$status->isOpen()){
                                             $this->closeEvent($event);
                                         }
+                                    } else if(!$status->isOpen() && !$status->isDefault() && !$event->getEnddate() && !$event->isPunctual()){
+                                        //si statut annulé, non ponctuel et pas d'heure de fin
+                                        // -> impossible                                    
                                     } else {
                                         $event->setStatus($status);
                                         $messages['success'][] = "Evènement passé au statut ".$status->getName();

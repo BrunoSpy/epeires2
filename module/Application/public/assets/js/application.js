@@ -268,7 +268,12 @@ $(document).ready(function(){
     });
     
     var now = new Date();
-    $("#calendar input[type=text].date").val(now.toLocaleDateString());
+    var day = now.getUTCDate();
+    var month = now.getUTCMonth()+1;
+    var year = now.getUTCFullYear();
+    var nowString = FormatNumberLength(day, 2)+"/"+FormatNumberLength(month, 2)+"/"+FormatNumberLength(year, 4);
+    
+    $("#calendar input[type=text].date").val(nowString);
     $("#calendar input[type=text].date").on('change', function(){
     	var temp = $('#calendar input[type=text].date').val().split('/');
     	var new_date = new Date(temp[2],temp[1],temp[0]);
