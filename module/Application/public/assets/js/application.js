@@ -275,7 +275,8 @@ $(document).ready(function(){
     
     $("#calendar input[type=text].date").val(nowString);
     $("#calendar input[type=text].date").on('change', function(){
-        
+    	var temp = $('#calendar input[type=text].date').val().split('/');
+    	var new_date = new Date(temp[2],temp[1],temp[0]);
     });
     $("#date").datepicker({
             dateFormat: "dd/mm/yy",
