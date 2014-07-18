@@ -42,6 +42,9 @@
 				echo "<div class='span6'>";
 				echo $this->block("Autres fréquences", $inner);
 				echo "</div>";
+				if($i % 2 == 1){
+					echo "</div>";
+				}
                                 $i++;
 			}
                         if($i % 2 == 1){
