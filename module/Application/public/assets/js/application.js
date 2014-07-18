@@ -259,28 +259,58 @@ $(document).ready(function(){
     });
     
     //à mettre dans timeline.js ?
-    $('#zoom').on('switch-change', function(e, data){
-       if(data.value){
-           $("#calendar").show();
-       }  else {
-           $("#calendar").hide();
-       }
+    $('#zoom').on('switch-change', function(e, data) {
+        if (data.value) {
+            $("#calendar").show();
+            $("#export").show();
+            var now = new Date();
+            var day = now.getUTCDate();
+            var month = now.getUTCMonth() + 1;
+            var year = now.getUTCFullYear();
+            var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
+            $("#calendar input[type=text].date").val(nowString);
+        } else {
+            $("#calendar").hide();
+            $("#export").hide();
+        }
     });
-    
-    var now = new Date();
-    var day = now.getUTCDate();
-    var month = now.getUTCMonth()+1;
-    var year = now.getUTCFullYear();
-    var nowString = FormatNumberLength(day, 2)+"/"+FormatNumberLength(month, 2)+"/"+FormatNumberLength(year, 4);
-    
-    $("#calendar input[type=text].date").val(nowString);
-    $("#calendar input[type=text].date").on('change', function(){
-    	var temp = $('#calendar input[type=text].date').val().split('/');
-    	var new_date = new Date(temp[2],temp[1],temp[0]);
-    });
+
     $("#date").datepicker({
             dateFormat: "dd/mm/yy",
             showButtonPanel: true
+    });
+    
+    $("#day-backward").on('click', function(e) {
+        e.preventDefault();
+        var temp = $('#calendar input[type=text].date').val().split('/');
+        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+        var back = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+        var day = back.getUTCDate();
+        var month = back.getUTCMonth() + 1;
+        var year = back.getUTCFullYear();
+        var backString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
+        $("#calendar input[type=text].date").val(backString);
+        $("#calendar input[type=text].date").trigger('change');
+    });
+
+    $("#day-forward").on('click', function(e) {
+        e.preventDefault();
+        var temp = $('#calendar input[type=text].date').val().split('/');
+        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+        var forward = new Date(date.getTime() + (24 * 60 * 60 * 1000));
+        var day = forward.getUTCDate();
+        var month = forward.getUTCMonth() + 1;
+        var year = forward.getUTCFullYear();
+        var forwardString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
+        $("#calendar input[type=text].date").val(forwardString);
+        $("#calendar input[type=text].date").trigger('change');
+    });  
+    
+    $("#export").on('click', function(e){
+        e.preventDefault();
+        var temp = $('#calendar input[type=text].date').val().split('/');
+    	var date = new Date(temp[2],temp[1]-1,temp[0],"5");
+        window.open(url+'report/daily?day='+date.toUTCString());
     });
     
     $("#timeline").on('click', ".checklist-evt", function(e){

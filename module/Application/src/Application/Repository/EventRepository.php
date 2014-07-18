@@ -17,7 +17,7 @@ class EventRepository extends ExtendedRepository {
      * @param type $lastmodified
      * @return type
      */
-    public function getEvents($userauth, $day = null, $lastmodified = null){
+    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false){
             	
     	$qb = $this->getEntityManager()->createQueryBuilder();
     	$qb->select(array('e', 'f'))
@@ -36,7 +36,9 @@ class EventRepository extends ExtendedRepository {
     		$dayend = new \DateTime($day);
     		$dayend->setTime(23, 59, 59);
     		$daystart = $daystart->format("Y-m-d H:i:s");
+                error_log("daystart ".$daystart);
     		$dayend = $dayend->format("Y-m-d H:i:s");
+                error_log("daystart ".$dayend);
     		//tous les évènements ayant une intersection non nulle avec $day
     		$qb->andWhere($qb->expr()->orX(
                         //evt dont la date de début est le bon jour : inclus les ponctuels
@@ -108,6 +110,11 @@ class EventRepository extends ExtendedRepository {
     		//aucun filtre autre que les rôles
     	}
 
+        if($orderbycat){
+            $qb->addOrderBy('e.category')
+               ->addOrderBy('e.startdate');
+        }
+        
     	$events = $qb->getQuery()->getResult();
     	
     	$readableEvents = array();

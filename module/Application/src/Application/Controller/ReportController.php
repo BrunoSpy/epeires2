@@ -44,7 +44,7 @@ class ReportController extends AbstractActionController {
                 $pdf->setVariables(array('frequency' => $frequency, 'fields' => $fields));
 
                 //   $pdf->setOption('filename', 'fne-brouillage');
-                $pdf->setOption('parperSize', 'a4');
+                $pdf->setOption('paperSize', 'a4');
 
                 return $pdf;
             } else {
@@ -60,4 +60,20 @@ class ReportController extends AbstractActionController {
         }
     }
 
+    public function dailyAction(){
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $day = $this->params()->fromQuery('day', null);
+        if($day){
+            error_log($day);
+            $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
+            $pdf = new PdfModel();
+            $pdf->setVariables(array('events' => $events, 'day' => $day));
+            $pdf->setOption('paperSize', 'a4');
+            return $pdf;
+        } else {
+            //erreur
+        }
+        
+    }
+    
 }
