@@ -126,6 +126,11 @@ class Category {
          */
         protected $place;
         
+        /** 
+         * @ORM\Column(type="boolean")
+         */
+        protected $system = false;
+        
 	public function __construct(){
 		$this->events = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
@@ -146,6 +151,14 @@ class Category {
 		return $this->customfields;
 	}
 	
+        public function setSystem($system){
+            $this->system = $system;
+        }
+        
+        public function isSystem(){
+            return $this->system;
+        }
+        
         public function setPlace($place){
             $this->place = $place;
         }

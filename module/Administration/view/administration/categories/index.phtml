@@ -23,8 +23,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					</tr>
 				</thead>
 				<tbody>
-					<?php 
-					foreach ($this->categories as $category){
+                                <?php 
+                                foreach ($this->categories as $category){
+                                    if(!$category->isSystem()){
 					echo "<tr>";
 					echo "<td>".$category->getId()."</td>";		
 					echo "<td>".$category->getName()."</td>";
@@ -81,8 +82,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo "</td>";
 							echo "</tr>";
 						}			
-					}
-					?>
+                                    }
+                                }
+				?>
 				</tbody>
 			</table>
 		</div>
