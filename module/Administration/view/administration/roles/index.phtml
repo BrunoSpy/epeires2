@@ -39,6 +39,7 @@ foreach($this->config as $key => $value){
 <?php foreach($this->roles as $role){
 	echo "<tr>";
 	echo "<td>";
+        
 		echo "<a 
 				title=\"Modifier\" 
 				href=\"#role-container\" 
@@ -46,7 +47,7 @@ foreach($this->config as $key => $value){
 				data-id=\"".$role->getId()."\" 
 				data-name=\"".$role->getName()."\" 
 				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-		if($role->getName() != 'admin'){
+		if($role->getName() != 'admin' && $role->getName() != 'guest'){
                     echo "<a 
 				title=\"Supprimer\" 
 				href=\"#confirm-delete-role\" 

@@ -120,16 +120,29 @@ class RolesController extends FormController
     public function saveroleAction(){
     	$messages = array();
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $guest = false;
+        $admin = false;
     	if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
     		$id = $post['id'];
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
+                
+                $guest = $datas['role']->getName() == 'guest';
+                $admin = $datas['role']->getName() == 'admin';                
     		$form->setPreferFormInputFilter(true);
                 $form->setData($post);
     		$role = $datas['role'];
     		
     		if($form->isValid()){
+                        if($guest && $post['name'] != 'guest'){
+                            $role->setName('guest');
+                            $this->flashMessenger()->addErrorMessage("Modification du nom du rôle 'guest' interdit.");
+                        }
+                        if($admin && $post['name'] != 'admin'){
+                            $role->setName('admin');
+                            $this->flashMessenger()->addErrorMessage("Modification du nom du rôle 'admin' interdit.");
+                        }
     			$objectManager->persist($role);
                         try {
                             $objectManager->flush();
