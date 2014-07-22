@@ -169,6 +169,7 @@ class CategoriesController extends FormController{
 					$fieldname->setName('Nom');
 					$fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 					$fieldname->setPlace(1);
+                                        $fieldname->setTooltip("");
 					$fieldname->setDefaultvalue("");
 					$objectManager->persist($fieldname);
 					$category->setFieldname($fieldname);
