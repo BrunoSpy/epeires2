@@ -88,10 +88,22 @@ class EventService implements ServiceManagerAwareInterface{
 		return \DateTime::createFromFormat(DATE_RFC2822, $a) > \DateTime::createFromFormat(DATE_RFC2822, $b);
 	}
 	
+        public function getUpdateAuthor(\Application\Entity\EventUpdate $eventupdate){
+            $repo = $this->em->getRepository('Application\Entity\Log');
+            
+            $logentries = $repo->getLogEntries($eventupdate);
+            if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
+                return $logentries[count($logentries)-1]->getUsername();
+            } else {
+                return "Unknown";
+            }
+        }
+        
 	/**
 	 * Returns an array :
 	 * datetime => array('date' => datetime object,
-	 * 					 'changes' => array(array ('fieldname', 'oldvalue', 'newvalue', 'user'))
+         *                   'user' => user name,
+	 *                   'changes' => array(array ('fieldname', 'oldvalue', 'newvalue'))
 	 * 					)
 	 * @param Application\Entity\Event $event
 	 */
@@ -124,6 +136,7 @@ class EventService implements ServiceManagerAwareInterface{
 								$entry = array();
 								$entry['date'] = $logentry->getLoggedAt();
 								$entry['changes'] = array();
+                                                                $entry['user'] = $logentry->getUsername();
 								$history[$logentry->getLoggedAt()->format(DATE_RFC2822)] = $entry;
 							}
 							$historyentry = array();
@@ -193,6 +206,7 @@ class EventService implements ServiceManagerAwareInterface{
 									$entry = array();
 									$entry['date'] = $fieldlogentry->getLoggedAt();
 									$entry['changes'] = array();
+                                                                        $entry['user'] = $fieldlogentry->getUsername();
 									$history[$fieldlogentry->getLoggedAt()->format(DATE_RFC2822)] = $entry;
 								}
 								$historyentry = array();
@@ -215,6 +229,7 @@ class EventService implements ServiceManagerAwareInterface{
 				$entry = array();
 				$entry['date'] = $update->getCreatedOn();
 				$entry['changes'] = array();
+                                $entry['user'] = $this->getUpdateAuthor($update);
 				$history[$update->getCreatedOn()->format(DATE_RFC2822)] = $entry;
 			}
 			$historyentry = array();
@@ -230,6 +245,7 @@ class EventService implements ServiceManagerAwareInterface{
                             $entry = array();
                             $entry['date'] = $child->getLastModifiedOn();
                             $entry['changes'] = array();
+                            $entry['user'] = $child->getAuthor()->getUsername();
                             $history[$child->getLastModifiedOn()->format(DATE_RFC2822)] = $entry;
                         }
                         $historyentry = array();

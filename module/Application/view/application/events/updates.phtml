@@ -13,7 +13,7 @@ if($this->updates){
 	if (count($this->updates) > 0) {
             echo '<dl>';
             foreach ($this->updates as $update) {
-                echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC</dt>';
+                echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC ('.$this->updateAuthor($update).')</dt>';
                 echo '<dd>';
                     echo '<span class="note" data-id="'.$update->getId().'">'.nl2br($update->getText()).'</span>';
                 echo '</dd>';

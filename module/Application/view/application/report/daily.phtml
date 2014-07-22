@@ -44,6 +44,16 @@
                 width: 100%;
             }
 
+            table td:first-child {
+                width: 10%;
+            }
+            table td:nth-child(2){
+                width: 40%;
+            }
+            table td:last-child{
+                width: 50%;
+            }
+            
             #header table tr td:first-child {
                 width: 5%;
             }
@@ -56,7 +66,11 @@
             .event_name {
                 font-style: italic;
             }
-
+            
+            .event_title{
+                font-weight: bold;
+            }
+            
         </style>
     </head>
 
@@ -79,7 +93,8 @@
                     $cat = $event->getCategory()->getName();
                     echo '<div class="cat_title">'.$cat.'</div>';
                 }
-                echo '<p class="event_name">'.$this->eventName($event);
+                echo '<div class="event">';
+                echo '<p class="event_title"><span class="event_name">'.$this->eventName($event).'</span>';
                 if($event->isPunctual()){
                     echo ' à '.$formatterHeure->format($event->getStartDate()).".";
                 } else {
@@ -91,7 +106,29 @@
                     }
                 }
                 echo '</p>';
-                
+                echo '<table>';
+                echo '<tr><td></td><td>Auteur</td>';
+                echo '<td>'.$event->getAuthor()->getDisplayName().'</td></tr>';
+                echo '<tr><td></td><td>Statut</td>';
+                echo '<td>'.$event->getStatus()->getName().'</td></tr>';
+                foreach ($event->getCustomFieldsValues() as $value){
+                    if($this->customfieldvalue($value) != ''){
+                        echo '<tr>';
+                        echo '<td></td>';
+                        echo '<td>' . $value->getCustomfield()->getName().'</td>';
+                        echo '<td>'.nl2br($this->customfieldvalue($value)).'</td>';
+                        echo '</tr>';
+                    }
+                }
+                foreach ($event->getUpdates() as $update){
+                    echo '<tr>';
+                    echo '<td></td>';
+                    echo '<td>'.$this->updateAuthor($update).' le '.$formatterJour->format($update->getCreatedOn()).' à '.$formatterHeure->format($update->getCreatedOn()).' :</td>';
+                    echo '<td>'.nl2br($update->getText()).'</td>';
+                    echo '</tr>';
+                }
+                echo '</table>';
+                echo '</div>';
             }
         ?>
         </div>

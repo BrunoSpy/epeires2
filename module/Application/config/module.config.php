@@ -73,6 +73,7 @@ return array(
     	),
     	'factories' => array(
     		'eventName' => 'Application\Factories\EventNameFactory',
+                'updateAuthor' => 'Application\Factories\UpdateAuthorFactory',
     		'ipo' => 'Application\Factories\IPOFactory',
     		'opsup' => 'Application\Factories\OpSupFactory',
                 'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory'

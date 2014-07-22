@@ -64,7 +64,6 @@ class ReportController extends AbstractActionController {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $day = $this->params()->fromQuery('day', null);
         if($day){
-            error_log($day);
             $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
             $pdf = new PdfModel();
             $pdf->setVariables(array('events' => $events, 'day' => $day));
