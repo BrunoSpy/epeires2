@@ -121,9 +121,9 @@
         var i = 0;
         return $.getJSON(this.options.url + "/getimpacts", function(data) {
             $.each(data, function(key, value) {
-                impt_name[i] = value.name;
-                impt_style[i] = value.short_name;
-                impt_value[i] = value.color;
+                this.impt_name[i] = value.name;
+                this.impt_style[i] = value.short_name;
+                this.impt_value[i] = value.color;
                 i++;
             });
         });

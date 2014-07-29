@@ -1,5 +1,7 @@
 
 var categorie = new Array();
+var cat_elmt = new Array();
+var cat_nom = new Array();
 var cat_coul = new Array();
 var cat_short = new Array();
 var cat_regroup = new Array();
@@ -45,6 +47,7 @@ var cpt_journee;
 var ini_url;
 var on_drag;
 var aff_archives = 0;
+var last_update;
 
 var timeline = {
 
@@ -70,6 +73,8 @@ var timeline = {
 					cat_coul[i] = value.color;
 					cat_regroup[i] = 1;
 					cat_display[i] = 1;
+					cat_elmt[i] = new Array();
+					cat_nom[i] = new Array();
 					i ++;
 				});
 			});
@@ -105,15 +110,45 @@ var timeline = {
 						}
 						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
 						corresp[key] = i;
-						var j = 0;
 						i ++;
 					});
 					timeline.create(timeline_content, tab);
 					timeline.tri_cat(timeline_content, tab, 1);
 					timeline.timeBar(timeline_content);
+				}).done(function() {
+					last_update = new Date();
+					setTimeout(timeline.download_update, 30000);
 				});
 			});
 		},
+
+		// ajout d'historique	
+		conf_historique: function (timeline_content, h_day) {
+			nb_elmt = tab.length;
+			var i = nb_elmt;
+			var ddeb, dfin;
+			return 	$.getJSON(ini_url+"/getevents?day="+h_day.toUTCString(), function (data) {
+				$.each(data, function(key, value) {
+					ddeb = new Date(value.start_date);
+					if (value.punctual == true) {
+						dfin = ddeb;
+					} else {
+						if (value.end_date == null) { 
+							dfin = -1;
+						} else {
+							dfin = new Date(value.end_date);
+						}
+					}
+					if (!corresp[key]) {
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
+						corresp[key] = i;
+						i ++;
+					}
+				});
+				timeline.create(timeline_content, tab);
+			});
+		},
+
 		// initialisation de la timeline 6h
 		init: function(element) {
 			d_actuelle = new Date();
@@ -353,6 +388,43 @@ var timeline = {
 				elmt_compt.css({'opacity':'1'});
 				elmt_text.css({'color':'black'});
 			}			
+		},
+		// tri catégorie et compactage
+		tri_cat2: function(timeline_elmt, tableau, speed) {
+			timeline_elmt.find('.categorie').remove();
+			timeline_elmt.find('.separateur').remove();
+			tri_cat = 1;
+			tri_impt = 0;
+			tri_comp = 0;
+			tri_hdeb = 0;
+			var len = tableau.length;
+			var nb = categorie.length;
+			var len_cat;
+			var debut, fin, etat;
+			var id = 0;
+			var elmt;
+			var yy = 0;
+			y_temp = delt_ligne;
+			for (var i = 0; i<len; i++) {
+				for (var j = 0; j<nb; j++) {
+					var j = 0;
+					while (tableau[i][6] != categorie[j]) {
+						j++;
+					}
+					len_cat = cat_elmt[j].length;
+					cat_elmt[j][len_cat] = i;
+					cat_nom[j][len_cat] = tableau[i][2];
+				}
+			}
+			for (var j = 0; j<nb; j++) {
+				len_cat = cat_elmt[j].length;
+				// tri des cat_nom par nom
+				for (var i = 0; i<cat_len; i++) {
+					// code de tri_comp
+					// code de tri_cat pour taille de la catégorie à gauche
+				}
+			}
+			
 		},
 		// tri des évènements par catégorie
 		tri_cat: function(timeline_elmt, tableau, speed) {
@@ -1170,7 +1242,7 @@ var timeline = {
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			var elmt = base_element.find('.ident'+id);
-			var y = elmt.position().top;
+		//	var y = elmt.position().top;
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 		},
@@ -1204,7 +1276,7 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
-				$('#cpt_evts').text(cpt_journee.length);
+	//			$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
 				var base_element = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
@@ -1328,10 +1400,22 @@ var timeline = {
 				}
 			}
 		},
+		// mise à jour de l'extérieur
+		download_update: function() {
+			$.getJSON(ini_url+"/getevents?lastupdate="+last_update.toUTCString(), function (data) {
+				timeline.modify(data,1);
+				last_update = new Date();
+			}).always(function(){
+				setTimeout(timeline.download_update, 30000);
+			}); 
+		}
+		
 };
 
 $(document).ready(function() {	
 
+	setInterval("timeline.update($('#timeline'))",60000);
+	
 	$('#timeline').attr('unselectable','on')
     .css({'-moz-user-select':'-moz-none',
           '-moz-user-select':'none',
@@ -1342,9 +1426,6 @@ $(document).ready(function() {
           'user-select':'none'
     }).bind('selectstart', function(){ return false; });
 	
-	// mise à jour toutes les minutes 
-	setInterval("timeline.update($('#timeline'))", 60000);
-
 	// affichage enrichi d'un évènement survolé
 	$('#timeline').on('mouseenter','.elmt', function(){
 		var elmt = $(this);
@@ -1432,8 +1513,8 @@ $(document).ready(function() {
 		$(this).parent().addClass('active');
 		$('#tri_cat').parent().removeClass('active');
 		var timeline_content = timel.find('.timeline_content');
-	//	timeline.tri_hdeb(timeline_content, tab, 0);
-		timeline.tri_comp(timeline_content, tab, 1);
+		timeline.tri_hdeb(timeline_content, tab, 0);
+	//	timeline.tri_comp(timeline_content, tab, 1);
 	});
 	
 	// activation / désactivation du tri par statut
@@ -1705,17 +1786,40 @@ $(document).ready(function() {
 		$.holdReady(true);
 		base.empty();
 		timeline_content.empty();
-    	timeline.init_journee(timel, new_date);
-		timeline.base(base);	
-		timeline.create(timeline_content, tab);
-		if (tri_cat) { 
-			timeline.tri_cat(timeline_content, tab,1);
-		} else if (tri_hdeb) {
-			timeline.tri_hdeb(timeline_content, tab,1);
-		} else if (tri_comp) {
-			timeline.tri_comp(timeline_content, tab,1);
+		timeline.init_journee(timel, new_date);
+		timeline.base(base);
+		var past_date = new Date();
+		var futu_date = new Date();
+		past_date.setDate(past_date.getDate()-3);
+		futu_date.setDate(past_date.getDate()+3);
+		if (new_date < past_date || new_date > futu_date) {
+			$.when(timeline.conf_historique(timeline_content, new_date)).then(function(){
+				if (tri_cat) { 
+					timeline.tri_cat(timeline_content, tab,1);
+				} else if (tri_hdeb) {
+					timeline.tri_hdeb(timeline_content, tab,1);
+				} else if (tri_comp) {
+					timeline.tri_comp(timeline_content, tab,1);
+				}
+				timeline_content.find('.TimeBar').hide();
+			});
+		} else {
+			timeline.create(timeline_content, tab);
+			if (tri_cat) { 
+				timeline.tri_cat(timeline_content, tab,1);
+			} else if (tri_hdeb) {
+				timeline.tri_hdeb(timeline_content, tab,1);
+			} else if (tri_comp) {
+				timeline.tri_comp(timeline_content, tab,1);
+			}
 		}
-		timeline.timeBar(timeline_content);
+		var d_encours = new Date();
+		if (new_date.getFullYear() == d_encours.getFullYear() && new_date.getMonth() == d_encours.getMonth() && 
+				new_date.getDate() == d_encours.getDate()) {
+			timeline.timeBar(timeline_content);
+		} else {
+			timeline_content.find('.TimeBar').hide();
+		}
 		$.holdReady(false);
     });
 	
