@@ -19,6 +19,8 @@ class EventRepository extends ExtendedRepository {
      */
     public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false){
             	
+        $parameters = array();
+        
     	$qb = $this->getEntityManager()->createQueryBuilder();
     	$qb->select(array('e', 'f'))
     	->from('Application\Entity\Event', 'e')
@@ -27,7 +29,9 @@ class EventRepository extends ExtendedRepository {
     	
         //restriction à tous les evts modifiés depuis $lastmodified
     	if($lastmodified){
-    		$qb->andWhere($qb->expr()->gte('last_modified_on', $lastmodified));
+                $lastmodified = new \DateTime($lastmodified);
+    		$qb->andWhere($qb->expr()->gte('e.last_modified_on', '?3'));
+                $parameters[3] = $lastmodified->format("Y-m-d H:i:s");
     	}
         
         if($day) {
@@ -36,9 +40,7 @@ class EventRepository extends ExtendedRepository {
     		$dayend = new \DateTime($day);
     		$dayend->setTime(23, 59, 59);
     		$daystart = $daystart->format("Y-m-d H:i:s");
-                error_log("daystart ".$daystart);
     		$dayend = $dayend->format("Y-m-d H:i:s");
-                error_log("daystart ".$dayend);
     		//tous les évènements ayant une intersection non nulle avec $day
     		$qb->andWhere($qb->expr()->orX(
                         //evt dont la date de début est le bon jour : inclus les ponctuels
@@ -57,7 +59,9 @@ class EventRepository extends ExtendedRepository {
                                 )	
                     )
                 );
-    		$qb->setParameters(array(1 => $daystart, 2 => $dayend));    		
+                $parameters[1] = $daystart;
+                $parameters[2] = $dayend;
+    		$qb->setParameters($parameters);    		
     	} else {
     		//every open events and all events of the last 3 days
     		$now = new \DateTime('NOW');
@@ -66,8 +70,9 @@ class EventRepository extends ExtendedRepository {
     				$qb->expr()->gte('e.enddate', '?1'),
     				$qb->expr()->in('e.status', '?2')
     		));
-    		$qb->setParameters(array(1 => $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s'),
-    				2 => array(1,2)));
+                $parameters[1] = $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
+                $parameters[2] = array(1,2);
+    		$qb->setParameters($parameters);
     	}
     
     	//filtre par zone

@@ -983,7 +983,7 @@ class EventsController extends ZoneController {
      */
     public function geteventsAction(){
     	
-    	$lastmodified = $this->params()->fromQuery('lastmodified', null);
+    	$lastmodified = $this->params()->fromQuery('lastupdate', null);
     	
     	$day = $this->params()->fromQuery('day', null);
     	
@@ -991,7 +991,7 @@ class EventsController extends ZoneController {
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         
-    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified) as $event){ 		
+    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
     	
