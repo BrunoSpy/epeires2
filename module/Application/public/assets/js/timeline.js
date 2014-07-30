@@ -869,7 +869,7 @@ var timeline = {
 			if (arch == 0) { elmt_arch.append(' <i class="icon-eye-close"></i>'); 
 			} else {elmt_arch.append(' <i class="icon-eye-open"></i>'); 
 			}
-			var txt_wid = elmt_txt.outerWidth();
+			var txt_wid = elmt_txt.outerWidth()+60;
 			
 			if (ponctuel) {
 				lien.addClass('lien');
@@ -905,7 +905,7 @@ var timeline = {
 					lien.show();
 					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
 					// on place l'heure de début à gauche
-					x1 -= elmt_deb.outerWidth()+10;
+					x1 -= elmt_deb.outerWidth();
 					elmt_deb.css({'left': x1+'px'});
 					// on place l'heure de fin à droite
 					elmt_fin.css({'left': x2+5+'px'});
@@ -916,7 +916,7 @@ var timeline = {
 						lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
 					} else { // sinon on le met à gauche
 						dr = 0;
-						lien.css({'left': x1-2+'px','width':x0-x1+'px'});
+						lien.css({'left': x1-60+'px','width':x0-x1+60+'px'});
 						x1 -= txt_wid+2;
 						elmt_txt.css({'left': x1+'px'});
 					}
@@ -1231,7 +1231,7 @@ var timeline = {
 		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
-		//  dy = impt;
+		//	dy = impt;
 			dy = dy_max;
 			if (d_fin > 0) {
 				var coord = timeline.position(d_debut, d_fin);
@@ -1241,8 +1241,7 @@ var timeline = {
 			var x0 = coord[0];
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
-			var elmt = base_element.find('.ident'+id);
-		//	var y = elmt.position().top;
+	//		var elmt = base_element.find('.ident'+id);
 			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 		},
@@ -1253,7 +1252,11 @@ var timeline = {
 			var j;
 			var id = -1;
 			var len = tab.length;
+			var timel = $('#timeline');
+			var base_element = timel.find('.Base');
+			var timeline_content = timel.find('.timeline_content');
 			$.each(data, function(key, value) {
+				len = tab.length;
 				d_debut = new Date(value.start_date);
 				if (value.punctual == true) {
 					d_fin = d_debut;
@@ -1264,6 +1267,7 @@ var timeline = {
 						d_fin = new Date(value.end_date);
 					}
 				}
+				id = -1;
 				j = 0;
 				while (j < len && id == -1) {
 					if (tab[j][0] == key) { id = j; }
@@ -1275,36 +1279,39 @@ var timeline = {
 				var cat = value.category_root;
 				var impt = value.archived;
 				var mod = value.modifiable;
-				tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
+				if (id > 0) {
+					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][2].getTime() != d_fin.getTime() || tab[id][3] != ponct || tab[id][4] != label
+							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat) {
+						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
+						var elmt = timeline_content.find('.ident'+key);
+						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
+							elmt.remove();
+						} else if (d_debut > d_ref_fin) {
+							elmt.remove();
+						} else {
+							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+							elmt = timeline_content.find('.ident'+key);
+							if (!loc) {
+								elmt.addClass("changed");
+								elmt.css({'background-color':'yellow'});
+							}
+						}
+					}
+				} else {
+					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
+					corresp[key] = len;
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+				}
 	//			$('#cpt_evts').text(cpt_journee.length);
-				var timel = $('#timeline');
-				var base_element = timel.find('.Base');
-				var timeline_content = timel.find('.timeline_content');
-				var elmt = timeline_content.find('.ident'+key);
-				if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
-					elmt.remove();
-				} else if (d_debut > d_ref_fin) {
-					elmt.remove();
-				} else {
-					timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-				}
-				if (tri_cat) { 
-					timeline.tri_cat(timeline_content, tab,1);
-				} else if (tri_hdeb) {
-					timeline.tri_hdeb(timeline_content, tab,1);
-				} else if (tri_comp) {
-					timeline.tri_comp(timeline_content, tab,1);
-				}
-				elmt = timeline_content.find('.ident'+key);
-				if (loc) {
-					// elmt.effect( "highlight", 4000);
-				} else {
-					elmt.addClass("changed");
-					elmt.css({'background-color':'yellow'});
-				}
 				i ++;
 			});
-
+			if (tri_cat) { 
+				timeline.tri_cat(timeline_content, tab,1);
+			} else if (tri_hdeb) {
+				timeline.tri_hdeb(timeline_content, tab,1);
+			} else if (tri_comp) {
+				timeline.tri_comp(timeline_content, tab,1);
+			}
 		},
 		// informations d'un évènement ajouté
 		add: function (data) {
@@ -1403,7 +1410,7 @@ var timeline = {
 		// mise à jour de l'extérieur
 		download_update: function() {
 			$.getJSON(ini_url+"/getevents?lastupdate="+last_update.toUTCString(), function (data) {
-				timeline.modify(data,1);
+				timeline.modify(data,0);
 				last_update = new Date();
 			}).always(function(){
 				setTimeout(timeline.download_update, 30000);
