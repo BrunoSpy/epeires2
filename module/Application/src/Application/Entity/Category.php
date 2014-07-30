@@ -26,7 +26,8 @@ use Doctrine\Common\Collections\Collection;
 			  "frequency" = "FrequencyCategory", 
 			  "action" = "ActionCategory", 
 			  "alarm" = "AlarmCategory", 
-			  "brouillage" = "BrouillageCategory"})
+			  "brouillage" = "BrouillageCategory",
+                          "mil" = "MilCategory"})
  **/
 class Category {
 	/**
@@ -113,8 +114,8 @@ class Category {
 	/** 
 	 * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readcategories")
 	 * @ORM\JoinTable(name="roles_categories_read")
-     * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(true)
+         * @Annotation\Type("Zend\Form\Element\Select")
+         * @Annotation\Required(true)
 	 * @Annotation\Attributes({"multiple":true})
 	 * @Annotation\Options({"label":"Affichée pour :"})
 	 */
@@ -144,6 +145,7 @@ class Category {
 		$type['antenna'] = "Antenne";
 		$type['frequency'] = "Fréquence";
 		$type['brouillage'] = "Brouillage fréquence";
+                $type['mil'] = "Zone militaire";
 		return $type;
 	}
 	

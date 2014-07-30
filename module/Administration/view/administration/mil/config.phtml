@@ -1,0 +1,96 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js');
+      $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
+?>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+	<div class="span9">
+		<div class="block">
+			<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">Zones militaires </div>
+			</div>
+			<div class="block-content collapse in">
+				<div class="span12">
+				<table class="table table-striped sortable">
+                                    <thead>
+                                    <tr>
+                                        <th>id</th>
+                                        <th data-sort="string">Nom</th>
+                                        <th data-sort="string">Zones associées</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        foreach ($this->cats as $cat){
+                                            echo '<tr>';
+                                            echo '<td>'.$cat->getId().'</td>';
+                                            echo '<td>'.$cat->getName().'</td>';
+                                            echo '<td>'.$cat->getZonesRegex().'</td>';
+                                            echo '<td><a '
+                                                    . 'href="#zone-container" '
+                                                    . 'class="mod-mil" '
+                                                    . 'data-id="'.$cat->getId().'" '
+                                                    . 'data-name="'.$cat->getName().'" '
+                                                    . 'title="Modifier" '
+                                                    . 'data-toggle="modal"><i class="icon-pencil"></i></a></td>';
+                                            echo '</tr>';
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+				</div>
+			</div>
+		</div>
+	</div>
+        <div class="span3">
+            <div class="block">
+                <div class="navbar navbar-inner block-header">
+                    <div class="muted pull-left">Aide</div>
+                </div>
+                <div class="block-content collapse in">
+                    Cette page permet de configurer les zones militaires affectées aux catégories de type "Zone militaire".<br />
+                    Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+			
+<?php echo $this->modalwindow("zone-container", "<h3 id=\"zone-title\"></h3>", "", "<div id=\"zone-form\"></div>") ?>
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+mil('<?php echo $this->url('administration'); ?>');
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+$("table th:eq(1)").trigger('click');
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+                                        
+<?php $this->inlineScript()->captureEnd();?>

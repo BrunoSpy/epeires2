@@ -9,6 +9,7 @@ use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\BrouillageCategory;
+use Application\Entity\MilCategory;
 
 class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		
@@ -32,6 +33,23 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		return $this->em;
 	}
 	
+        public function createMilCategory(){
+		$em = $this->getEntityManager();
+		$milcat = new MilCategory();
+		$namefield = new CustomField();
+		$namefield->setCategory($milcat);
+		$namefield->setName('Nom');
+		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$namefield->setPlace(1);
+		$namefield->setDefaultValue("");
+		$milcat->setFieldname($namefield);
+                
+                $milcat->setZonesRegex('');
+                
+		$em->persist($namefield);
+		return $milcat;
+	}
+        
 	/**
 	 * To be persisted
 	 * @return \Application\Entity\RadarCategory

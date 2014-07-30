@@ -106,6 +106,7 @@
                                 . '">Radio</a></li>';
                         }
                         ?>
+                        <li><a id="zonesmil" href="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'index'), array('query' => array('filter' => 'zonesmil')))?>">Zones militaires</a></li>
                         </ul>
 	        	<ul class="nav pull-right">
 	        		<li>
@@ -142,9 +143,14 @@
 		setURLAlarm('<?php echo $this->url('application');?>');
 		updateAlarms();
                 
+  //              $('#timeline').timeline({
+  //                  'url': '<?php echo $this->url('application', array('controller' => 'events')); ?>'
+  //              }); 
+                
 		<?php $this->inlineScript()->captureEnd();?>
         
-        
+                                               
+                
         <?php echo $this->inlineScript() ?>
     </body>
 </html>

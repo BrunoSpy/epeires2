@@ -32,6 +32,7 @@ use Application\Entity\RadarCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
+use Application\Entity\MilCategory;
 
 /**
  * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
@@ -128,7 +129,9 @@ class CategoriesController extends FormController{
     				$form->get('type')->setValue('frequency');
     			} else if($category instanceof BrouillageCategory){
 				$form->get('type')->setValue('brouillage');
-    			}
+    			} else if($category instanceof MilCategory){
+                                $form->get('type')->setValue('mil');
+                        }
     			
     			$form->get('type')->setAttribute('disabled', true);
     			
@@ -178,14 +181,15 @@ class CategoriesController extends FormController{
 					$category = $this->getServiceLocator()->get('categoryfactory')->createFrequencyCategory();
 				} else if($post['type'] == 'brouillage') {
 					$category = $this->getServiceLocator()->get('categoryfactory')->createBrouillageCategory();
-				} else {
+				} else if($post['type'] == 'mil'){
+                                        $category = $this->getServiceLocator()->get('categoryfactory')->createMilCategory();
+                                } else {
 					$category = new Category();
 					$fieldname = new CustomField();
 					$fieldname->setCategory($category);
 					$fieldname->setName('Nom');
 					$fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 					$fieldname->setPlace(1);
-                                        $fieldname->setTooltip("");
 					$fieldname->setDefaultvalue("");
 					$objectManager->persist($fieldname);
 					$category->setFieldname($fieldname);

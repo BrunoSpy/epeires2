@@ -63,7 +63,7 @@ class CustomField {
 	protected $defaultvalue;
 	
         /** 
-         * @ORM\Column(type="text")
+         * @ORM\Column(type="text", nullable=true)
          * @Annotation\Type("Zend\Form\Element\Text")
          * @Annotation\Required(false)
          * @Annotation\Options({"label":"Popup d'aide"})
