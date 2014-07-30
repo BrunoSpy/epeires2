@@ -112,14 +112,46 @@ $(document).ready(function(){
 	   return false;
    });
    
-	$(document).ajaxStart(function(){
-		$(".loading").show();
-		})
-	.ajaxStop(function(){
-		$(".loading").hide();
-		}
-	);
+//    $(document).ajaxStart(function(){
+//            $(".loading").show();
+//            })
+//    .ajaxStop(function(){
+//            $(".loading").hide();
+//            }
+//    );
 	
+    var showSpinner = 0;
+        
+    $(document)
+    .hide()  // hide it initially
+    .ajaxSend(function(event, jqxhr, settings) {
+        if(settings.url.indexOf("events/suggestEvents") > -1 ||
+        settings.url.indexOf("events/form") > -1 ||
+        settings.url.indexOf("events/subform") > -1) {
+            $("#create-evt .loading").show();
+            showSpinner++;
+        }
+        
+        if(settings.url.indexOf("events/search") > -1 ) {
+            $("#search-results .loading").show();
+        }
+    })
+    .ajaxComplete(function(event, jqxhr, settings) {
+        if(settings.url.indexOf("events/suggestEvents") > -1 ||
+            settings.url.indexOf("events/form") > -1 ||
+            settings.url.indexOf("events/subform") > -1) {
+            showSpinner--;
+            if(showSpinner === 0){
+                $("#create-evt .loading").hide();
+            }
+        }
+        
+        if(settings.url.indexOf("events/search") > -1 ) {
+            $("#search-results .loading").hide();
+        }
+    });
+        
+        
 //    $('#timeline').on({
 //        mouseenter: function() {
 //            var id = $(this).find('.modify-evt').data('id');

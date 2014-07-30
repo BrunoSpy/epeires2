@@ -145,6 +145,14 @@ class AlarmController extends FormController {
      * Dans tous les cas : nécessite d'être identifié.
      */
     public function getalarmsAction(){
+        $formatter = \IntlDateFormatter::create(
+                            \Locale::getDefault(),
+                            \IntlDateFormatter::FULL,
+                            \IntlDateFormatter::FULL,
+                            'UTC',
+                            \IntlDateFormatter::GREGORIAN,
+                            'HH:mm');
+        
 	$alarms = array();
 	if($this->zfcUserAuthentication()->hasIdentity()) {
 		$organisation = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId();
@@ -186,7 +194,7 @@ class AlarmController extends FormController {
 					$alarmcomment = nl2br($value->getValue());
 				}
 			}
-			$alarmjson['text'] = "<b>Alerte pour ".$parentname."</b><br />"
+			$alarmjson['text'] = "<b>".$formatter->format($alarm->getStartDate())." : Alerte pour ".$parentname."</b><br />"
 					. $alarmname.(strlen($alarmcomment) > 0 ? " : <br />".$alarmcomment : "");
 			
 			$alarms[] = $alarmjson;
