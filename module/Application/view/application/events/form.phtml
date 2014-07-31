@@ -152,7 +152,14 @@
                                         } else {
                                             $diff = $child->getStartdateDelta();
                                         }
-                                        $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
+                                        if($diff > 0) {
+                                            $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
+                                        } else {
+                                            $diff = -$diff;
+                                            $interval = new DateInterval('PT'.$diff.'M');
+                                            $interval->invert;
+                                            $timeAlert->add($interval);
+                                        }
                                         
                                         foreach($child->getCustomFieldsValues() as $value){
                                             if($value->getCustomField()->getId() == $child->getCategory()->getTextfield()->getId()){
