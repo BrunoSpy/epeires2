@@ -390,7 +390,7 @@ var timeline = {
 			}			
 		},
 		// tri catégorie et compactage
-		tri_cat2: function(timeline_elmt, tableau, speed) {
+/*		tri_cat2: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
 			timeline_elmt.find('.separateur').remove();
 			tri_cat = 1;
@@ -433,7 +433,7 @@ var timeline = {
 			var temp_name;
 			var i = 0;
 			while (i < len) {
-				if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1)) {
+				if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1))) {
 					temp_cat = tableau[i][6];
 					while (i < len && tableau[i][6] == temp_cat) {
 						if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1)) {
@@ -490,7 +490,7 @@ var timeline = {
 
 
 
-		},
+		},*/
 		// tri des évènements par catégorie
 		tri_cat: function(timeline_elmt, tableau, speed) {
 			timeline_elmt.find('.categorie').remove();
