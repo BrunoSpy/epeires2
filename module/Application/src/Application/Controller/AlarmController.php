@@ -41,10 +41,27 @@ class AlarmController extends FormController {
                     $startdate->add(new \DateInterval("PT".$offset."S"));
                     $event->setStartDate($startdate);
                     $alarm = array();
+                    $alarm['id'] = $event->getId();
                     $alarm['datetime'] = $event->getStartDate()->format(DATE_RFC2822);
                     $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
                     $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
                     $json['alarm'] = $alarm;
+                    if($event->getId() > 0){
+                        foreach ($event->getCustomFieldsValues() as $value){
+                            if($value->getCustomField()->getId() == $event->getCategory()->getFieldname()->getId()){
+                                $value->setValue($alarm['name']);
+                            }
+                            if($value->getCustomField()->getId() == $event->getCategory()->getTextfield()->getId()){
+                                $value->setValue($alarm['comment']);
+                            }
+                            $objectManager->persist($value);
+                        }
+                        //mod -> save it now
+                        $objectManager->persist($event);
+                        $objectManager->flush();
+                    } else {
+                        //new : do nothing
+                    }
                 } else {
                     $this->processFormMessages($form->getMessages(), $messages);
                 }
@@ -80,15 +97,29 @@ class AlarmController extends FormController {
 	$alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; //TODO
 		
 	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
-	
         
-	if($alarmid){
-		$alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
-		if($alarm) {
-			$form->bind($alarm);
-			$form->setData($alarm->getArrayCopy());
-		}
-	} else {
+	if ($alarmid) {
+            $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
+            if ($alarm) {
+                //custom fields values
+                foreach ($objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $alarm->getCategory()->getId())) as $customfield) {
+                    $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event' => $alarm->getId(), 'customfield' => $customfield->getId()));
+                    if ($customfieldvalue) {
+                        $form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
+                    }
+                }
+                $form->bind($alarm);
+                $form->setData($alarm->getArrayCopy());
+            }
+            $form->add(array(
+                'name' => 'submit',
+                'attributes' => array(
+                    'type' => 'submit',
+                    'value' => 'Modifier',
+                    'class' => 'btn btn-primary',
+                ),
+            ));
+        } else {
             //alarm : punctual, impact : info, organisation, category : alarm, status : open (closed when aknowledged)
             //all these information are just here to validate form
             $form->get('impact')->setValue(5);
@@ -100,17 +131,16 @@ class AlarmController extends FormController {
             } else {
                 throw new \ZfcRbac\Exception\UnauthorizedException();
             }
-        }
-
-        $form->add(array(
-		'name' => 'submit',
-		'attributes' => array(
-			'type' => 'submit',
-			'value' => 'Ajouter',
-			'class' => 'btn btn-primary',
-		),
-	));
-	
+            
+            $form->add(array(
+                'name' => 'submit',
+                'attributes' => array(
+                    'type' => 'submit',
+                    'value' => 'Ajouter',
+                    'class' => 'btn btn-primary',
+                ),
+            ));
+        }	
 	return array('form' => $form, 'alarm'=>$alarm);
     }
     

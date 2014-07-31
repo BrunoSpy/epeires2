@@ -509,6 +509,9 @@ class EventsController extends ZoneController {
                                         //alertes
                                         if(isset($post['alarm']) && is_array($post['alarm'])){
                                             foreach ($post['alarm'] as $key => $alarmpost){
+                                                //les modifications d'alarmes existantes sont faites en direct
+                                                //et ne passe pas par le formulaire
+                                                //voir AlarmController.php
                                                 $alarm = new Event();
                                                 $alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]);
                                                 $alarm->setAuthor($this->zfcUserAuthentication()->getIdentity());
@@ -516,9 +519,9 @@ class EventsController extends ZoneController {
                                                 $alarm->setParent($event);
                                                 $alarm->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open'=> true, 'defaut'=>true)));
                                                 $offset = date("Z");
-    						$startdate = new \DateTime($alarmpost['date']);
-    						$startdate->setTimezone(new \DateTimeZone("UTC"));
-    						$startdate->add(new \DateInterval("PT".$offset."S"));
+                                                $startdate = new \DateTime($alarmpost['date']);
+                                                $startdate->setTimezone(new \DateTimeZone("UTC"));
+                                                $startdate->add(new \DateInterval("PT".$offset."S"));
                                                 $alarm->setStartdate($startdate);
                                                 $alarm->setPunctual(true);
                                                 $alarm->setImpact($objectManager->getRepository('Application\Entity\Impact')->find(5));

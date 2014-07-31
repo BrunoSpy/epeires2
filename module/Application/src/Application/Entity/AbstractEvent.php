@@ -201,6 +201,7 @@ class AbstractEvent {
 		$object_vars = get_object_vars($this);
 		$object_vars['category'] = ($this->category ? $this->category->getId() : null);
 		$object_vars['impact'] = ($this->impact ? $this->impact->getId() : null);
+                $object_vars['parent'] = ($this->parent ? $this->parent->getId() : null);
 		$object_vars['organisation'] = ($this->organisation ? $this->organisation->getId() : null);
 		$zonefilters = array();
 		foreach ($this->zonefilters as $zonefilter){

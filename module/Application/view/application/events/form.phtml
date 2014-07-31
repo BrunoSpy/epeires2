@@ -181,7 +181,7 @@
                                                 . '</tr>';
                                         
                                     } else {
-					$html .= '<tr data-id="'.$child->getId().'">';
+					$html .= '<tr id="tr-'.$child->getId().'" data-id="'.$child->getId().'">';
 					if($child->getStatus()->isOpen()){
 						if($child->getStartDate() < $now) {
 							$html .= '<td><i class="icon-warning-sign"></i></td>';
@@ -199,7 +199,7 @@
 					}
                                         $html .= '<td>'.$formatter->format($child->getStartDate()).'</td>';
 					$html .= '<td>'.$this->eventname($child).'</td>';
-					$html .= '<td><a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
+					$html .= '<td><a class="modify-alarm" href="#add-alarm" data-toggle="modal"><i class="icon-pencil"></i></a> <a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
 					$html .= "</tr>";
                                     }
 				}

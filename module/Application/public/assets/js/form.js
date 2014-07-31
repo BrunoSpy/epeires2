@@ -73,6 +73,24 @@ var formAddAlarm = function(alarm) {
         $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
 };
 
+var formModifyAlarm = function(alarm) {
+	var d = new Date(alarm.datetime);
+        //ajouter ligne dans le tableau
+        var tr = $('<tr id="tr-'+alarm.id+'" data-id="'+alarm.id+'"></tr>');
+	//si date est déjà passée : warning
+	var now = new Date();
+	if(now - d > 0) {
+		tr.append('<td><i class="icon-warning-sign"></i></td>');
+	} else {
+		tr.append('<td><i class="icon-bell"></i></td>');
+	}
+        tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        tr.append('<td>'+alarm.name+'</td>');
+	tr.append('<td><a href="#add-alarm" data-toggle="modal" class="modify-alarm"><i class="icon-pencil"></i></a> <a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>');
+        $('#alarm-table tr#tr-'+alarm.id).remove();
+        $('#alarm-table').append(tr);
+};
+
 var form = function(url){
 	
         urlt = url;
@@ -591,27 +609,47 @@ var form = function(url){
 	//fenêtre de création d'alarme
 	$('#event').on('click', '#addalarm', function(e){
 		e.preventDefault();
+                $('#alarm-title').html("Ajout d'une alarme");
 		$('#alarm-form').load(url+'alarm/form', function(){
-                    $("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart"});
+                    $("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart", 'init':true});
                 });
 	});
 	
+        $("#event").on('click', '.modify-alarm', function(e){
+            e.preventDefault();
+            $('#alarm-title').html("Modification d'une alarme");
+            var me = $(this);
+            var id = me.closest('tr').data('id');
+            $('#alarm-form').load(url+'alarm/form?id='+id, function(){
+                $("#alarm-form input[name=startdate]").timepickerform({"required":true, 'id':'alarmstart', 'init':true});
+            });
+        });
+        
+        
+        
 	$('#alarm-form').on('submit', function(e){
 		e.preventDefault();
 		//deux cas : nouvelle alarme ou modif
 		var me = $(this);
                 var form = $("#alarm-form form");
 		if(me.find('input[name=id]').val()){
-			
+                    $.post(form.attr('action'), form.serialize(), function(data) {
+                        if (!data.messages['error']) {
+                            $("#add-alarm").modal('hide');
+                            var alarm = data.alarm;
+                            formModifyAlarm(alarm);
+                        }
+                        displayMessages(data.messages);
+                    });
 		} else {
-			$.post(form.attr('action'), form.serialize(), function(data){
-                            if(!data.messages['error']){
-                                $("#add-alarm").modal('hide');
-                                var alarm = data.alarm;
-				formAddAlarm(alarm);
-                            }
-                            displayMessages(data.messages);
-                        });
+                    $.post(form.attr('action'), form.serialize(), function(data) {
+                        if (!data.messages['error']) {
+                            $("#add-alarm").modal('hide');
+                            var alarm = data.alarm;
+                            formAddAlarm(alarm);
+                        }
+                        displayMessages(data.messages);
+                    });
 		}
 	});
 
