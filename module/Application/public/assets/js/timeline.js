@@ -1346,30 +1346,29 @@ var timeline = {
 				var mod = value.modifiable;
 				if (id > 0) {
 					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
-							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat) {
-						if ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime())) { 
-							tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
-							var elmt = timeline_content.find('.ident'+key);
-							if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
-								elmt.remove();
-							} else if (d_debut > d_ref_fin) {
-								elmt.remove();
-							} else {
-								timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-								elmt = timeline_content.find('.ident'+key);
-								if (!loc) {
-									elmt.addClass("changed");
-									elmt.css({'background-color':'yellow'});
-								}
+							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
+							|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
+						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
+						var elmt = timeline_content.find('.ident'+key);
+						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
+							elmt.remove();
+						} else if (d_debut > d_ref_fin) {
+							elmt.remove();
+						} else {
+							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+							elmt = timeline_content.find('.ident'+key);
+							if (!loc) {
+								elmt.addClass("changed");
+								elmt.css({'background-color':'yellow'});
 							}
 						}
 					}
 				} else {
 					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
-				corresp[key] = len;
-				timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-			}
-			//			$('#cpt_evts').text(cpt_journee.length);
+					corresp[key] = len;
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+				}
+				//			$('#cpt_evts').text(cpt_journee.length);
 			i ++;
 		});
 			if (tri_cat) { 
