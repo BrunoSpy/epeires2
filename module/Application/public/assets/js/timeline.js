@@ -404,27 +404,92 @@ var timeline = {
 			var id = 0;
 			var elmt;
 			var yy = 0;
+			var occup = new Array();
+			var nb_elmt_ligne = 0;
+			var nb_lignes_occ;
+			var test;
+			var j;
+			var y_temp;
+			var y_cat;
+			var y_name;
 			y_temp = delt_ligne;
-			for (var i = 0; i<len; i++) {
-				for (var j = 0; j<nb; j++) {
-					var j = 0;
-					while (tableau[i][6] != categorie[j]) {
-						j++;
+//			tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
+//			id = tableau[i][0];
+//			corresp[id] = i;
+//			debut = tableau[i][1];
+//			fin = tableau[i][2];
+//			etat = tableau[i][8];
+//			arch = tableau[i][5];
+			tableau.sort(function(a,b){
+				if (a[6]-b[6]) {
+					return true;
+				} else if (b[6]-a[6]) {
+					return false;
+				} else if (a[6] == b[6]) {
+					return a[4]-b[4];
+				}
+			});
+			var temp_cat;
+			var temp_name;
+			var i = 0;
+			while (i < len) {
+				if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1)) {
+					temp_cat = tableau[i][6];
+					while (i < len && tableau[i][6] == temp_cat) {
+						if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1)) {
+							temp_name = tableau[i][4];
+							occup = new Array();
+							y_name = y_temp;
+							while (tableau[i][6] == temp_name) { // on met sur la même ligne
+								if (!(tableau[i][2] < d_ref_deb && tableau[i][8] == "Terminé") && tableau[i][1] <= d_ref_fin && (arch == 0 || (arch == 1 && aff_archives == 1)) {
+									elmt = timeline_elmt.find('.ident'+id);
+									// code compactage
+									nb_lignes_occ = occup.length;
+									test = 0;
+									j = 0;
+									while (j < nb_lignes_occ && test == 0) {
+										var nb_elmt_ligne = occup[j].length;
+										test = 1;
+										var k = 0;
+										while (k < nb_elmt_ligne && test == 1) {
+											if (!((elmt.position().left + elmt.width() < occup[j][k][0]) || (elmt.position().left > occup[j][k][1]))) {
+												test = 0;
+											}
+											k++;		
+										}
+										if (test == 1) {
+											occup[j][nb_elmt_ligne] = [elmt.position().left, elmt.position().left + elmt.width()];
+											y_name = y_temp + dy_max*j + delt_ligne*(j+1);
+											elmt.animate({'top':y_name+'px'});
+										}
+										j++;
+									}
+									if (test == 0) {
+										occup[nb_lignes_occ] = new Array();
+										occup[nb_lignes_occ][0] = [elmt.position().left, elmt.position().left + elmt.width()];
+										y_name = y_temp + dy_max*nb_lignes_occ + delt_ligne*(nb_lignes_occ+1);
+										elmt.animate({'top':y_name+'px'});
+									}
+									elmt.show();
+									// fin code compactage
+								}
+								i++;
+							}
+							y_temp = y_temp + dy_max*nb_lignes_occ + delt_ligne*(nb_lignes_occ+1);
+						} else {
+							i++;
+						}
 					}
-					len_cat = cat_elmt[j].length;
-					cat_elmt[j][len_cat] = i;
-					cat_nom[j][len_cat] = tableau[i][2];
+					// on augmente la catégorie
+					i++;
+				} else {
+					i++;
 				}
 			}
-			for (var j = 0; j<nb; j++) {
-				len_cat = cat_elmt[j].length;
-				// tri des cat_nom par nom
-				for (var i = 0; i<cat_len; i++) {
-					// code de tri_comp
-					// code de tri_cat pour taille de la catégorie à gauche
-				}
-			}
-			
+
+
+
+
 		},
 		// tri des évènements par catégorie
 		tri_cat: function(timeline_elmt, tableau, speed) {
@@ -1280,31 +1345,33 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				if (id > 0) {
-					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][2].getTime() != d_fin.getTime() || tab[id][3] != ponct || tab[id][4] != label
+					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
 							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat) {
-						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
-						var elmt = timeline_content.find('.ident'+key);
-						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
-							elmt.remove();
-						} else if (d_debut > d_ref_fin) {
-							elmt.remove();
-						} else {
-							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-							elmt = timeline_content.find('.ident'+key);
-							if (!loc) {
-								elmt.addClass("changed");
-								elmt.css({'background-color':'yellow'});
+						if ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime())) { 
+							tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
+							var elmt = timeline_content.find('.ident'+key);
+							if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
+								elmt.remove();
+							} else if (d_debut > d_ref_fin) {
+								elmt.remove();
+							} else {
+								timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+								elmt = timeline_content.find('.ident'+key);
+								if (!loc) {
+									elmt.addClass("changed");
+									elmt.css({'background-color':'yellow'});
+								}
 							}
 						}
 					}
 				} else {
 					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
-					corresp[key] = len;
-					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-				}
-	//			$('#cpt_evts').text(cpt_journee.length);
-				i ++;
-			});
+				corresp[key] = len;
+				timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+			}
+			//			$('#cpt_evts').text(cpt_journee.length);
+			i ++;
+		});
 			if (tri_cat) { 
 				timeline.tri_cat(timeline_content, tab,1);
 			} else if (tri_hdeb) {
