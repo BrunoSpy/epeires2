@@ -117,7 +117,7 @@ var timeline = {
 					timeline.timeBar(timeline_content);
 				}).done(function() {
 					last_update = new Date();
-					setTimeout(timeline.download_update, 30000);
+					setTimeout(timeline.download_update, 3000);
 				});
 			});
 		},
@@ -1067,6 +1067,18 @@ var timeline = {
 			var elmt_fin = elmt.find('.elmt_fin');
 			// positionnement des différents objets sur la ligne elmt
 			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
+			elmt_txt.text(label);
+			var elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b1);
+			$(elmt_b1).append('  <i class="icon-pencil"></i>');
+			// ajout du bouton "ouverture fiche réflexe"
+			var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b2);
+			$(elmt_b2).append('  <i class="icon-tasks"></i>');
+			// ajout de l'archivage
+			var elmt_arch = $('<a href="#" class="archive-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_arch);
+			$(elmt_arch).append('  <i class="icon-eye-close"></i>');
 			var h1, h2, hDeb, hFin;
 			// ajout de l'heure de début
 			if (d_debut != d_fin) {
@@ -1345,31 +1357,30 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				if (id > 0) {
-					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
-							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat) {
-						if ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime())) { 
-							tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
-							var elmt = timeline_content.find('.ident'+key);
-							if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
-								elmt.remove();
-							} else if (d_debut > d_ref_fin) {
-								elmt.remove();
-							} else {
-								timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-								elmt = timeline_content.find('.ident'+key);
-								if (!loc) {
-									elmt.addClass("changed");
-									elmt.css({'background-color':'yellow'});
-								}
+				//	if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
+				//			|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
+				//			|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
+						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
+						var elmt = timeline_content.find('.ident'+key);
+						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
+							elmt.remove();
+						} else if (d_debut > d_ref_fin) {
+							elmt.remove();
+						} else {
+							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+							elmt = timeline_content.find('.ident'+key);
+							if (!loc) {
+								elmt.addClass("changed");
+								elmt.css({'background-color':'yellow'});
 							}
 						}
-					}
+				//	}
 				} else {
 					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
-				corresp[key] = len;
-				timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
-			}
-			//			$('#cpt_evts').text(cpt_journee.length);
+					corresp[key] = len;
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+				}
+				//			$('#cpt_evts').text(cpt_journee.length);
 			i ++;
 		});
 			if (tri_cat) { 
@@ -1480,7 +1491,7 @@ var timeline = {
 				timeline.modify(data,0);
 				last_update = new Date();
 			}).always(function(){
-				setTimeout(timeline.download_update, 30000);
+				setTimeout(timeline.download_update, 3000);
 			}); 
 		}
 		
