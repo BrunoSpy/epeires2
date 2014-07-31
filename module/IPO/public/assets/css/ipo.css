@@ -4,3 +4,19 @@
 tr.child {
     display: none;
 }
+
+#calendar {
+    float:left;
+    text-align: center;
+    width: 100%;
+}
+
+#calendar p {
+    margin-bottom:0px;
+}
+
+#calendar input {
+    height: 10px;
+    margin-bottom: 0px;
+    width: 71px;
+}

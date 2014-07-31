@@ -10,9 +10,11 @@ $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span12">
-            <div class="pull-left"><p><a id="prev-day" href="#"><i class="icon-arrow-left"></i></a></p></div>
-            <div class="pull-right"><p><a id="next-day" href="#"><i class="icon-arrow-right"></i></a></p></div>
-            <p id="day" class="text-center" data-day="<?php echo $this->day->format(DateTime::RFC2822); ?>"><?php echo $formatter->format($day);?></p>
+            
+            <div id="calendar">
+                <p><a href="#" id="prev-day"><i class="icon-backward"></i></a> <input id="day" type="text" class="date input-small" value='<?php echo $formatter->format($day);?>'></input> <a href="#" id="next-day"><i class="icon-forward"></i></a> <a href="#" id="export"><i class="icon-print"></i></a></p>
+            </div>
+                       
         </div>
     </div>
     <div class="row-fluid">

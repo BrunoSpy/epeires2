@@ -36,7 +36,9 @@ class IndexController extends AbstractActionController
             foreach ($event->getChildren() as $child){
                 $children[] = $this->getEventJson($child);
             }
-            $e['children'] = $children;
+            if(!empty($children)){
+                $e['children'] = $children;
+            }
             $events[] = $e;
         }
         
