@@ -117,7 +117,7 @@ var timeline = {
 					timeline.timeBar(timeline_content);
 				}).done(function() {
 					last_update = new Date();
-					setTimeout(timeline.download_update, 30000);
+					setTimeout(timeline.download_update, 3000);
 				});
 			});
 		},
@@ -1357,9 +1357,9 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				if (id > 0) {
-					if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
-							|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
-							|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
+				//	if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
+				//			|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
+				//			|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
 						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
 						var elmt = timeline_content.find('.ident'+key);
 						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
@@ -1374,7 +1374,7 @@ var timeline = {
 								elmt.css({'background-color':'yellow'});
 							}
 						}
-					}
+				//	}
 				} else {
 					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
 					corresp[key] = len;
@@ -1491,7 +1491,7 @@ var timeline = {
 				timeline.modify(data,0);
 				last_update = new Date();
 			}).always(function(){
-				setTimeout(timeline.download_update, 30000);
+				setTimeout(timeline.download_update, 3000);
 			}); 
 		}
 		
