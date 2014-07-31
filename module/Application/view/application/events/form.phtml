@@ -157,7 +157,7 @@
                                         } else {
                                             $diff = -$diff;
                                             $interval = new DateInterval('PT'.$diff.'M');
-                                            $interval->invert;
+                                            $interval->invert = 1;
                                             $timeAlert->add($interval);
                                         }
                                         
