@@ -1067,6 +1067,18 @@ var timeline = {
 			var elmt_fin = elmt.find('.elmt_fin');
 			// positionnement des différents objets sur la ligne elmt
 			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
+			elmt_txt.text(label);
+			var elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b1);
+			$(elmt_b1).append('  <i class="icon-pencil"></i>');
+			// ajout du bouton "ouverture fiche réflexe"
+			var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_b2);
+			$(elmt_b2).append('  <i class="icon-tasks"></i>');
+			// ajout de l'archivage
+			var elmt_arch = $('<a href="#" class="archive-evt" data-id="'+id+'"data-name="'+label+'"></a>');
+			$(elmt_txt).append(elmt_arch);
+			$(elmt_arch).append('  <i class="icon-eye-close"></i>');
 			var h1, h2, hDeb, hFin;
 			// ajout de l'heure de début
 			if (d_debut != d_fin) {
