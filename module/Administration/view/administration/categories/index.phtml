@@ -34,7 +34,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo '<td>'.($category->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 					echo '<td>'.($category->isTimeline()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 					echo "<td>".$this->events[$category->getId()]."</td>";
-					echo "<td>".$this->models[$category->getId()]."</td>";
+					echo "<td>".$this->models[$category->getId()].
+									" <a href=\"#models-container\"
+								 		class=\"models-list\" 
+								 		data-id=\"".$category->getId()."\"
+										data-name=\"".$category->getName()."\"
+								 		data-toggle=\"modal\"
+								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$category->getId())))."\"><i class=\"icon-list\"></i></a>".
+						 		"</td>";
 					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
 					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
 					echo "<td>";

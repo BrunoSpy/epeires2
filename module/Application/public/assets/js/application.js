@@ -127,7 +127,11 @@ $(document).ready(function(){
     .ajaxSend(function(event, jqxhr, settings) {
         if(settings.url.indexOf("events/suggestEvents") > -1 ||
         settings.url.indexOf("events/form") > -1 ||
-        settings.url.indexOf("events/subform") > -1) {
+        settings.url.indexOf("events/subform") > -1 ||
+        settings.url.indexOf("events/getpredefinedvalues") > -1 ||
+        settings.url.indexOf("events/getactions") > -1 ||
+        settings.url.indexOf("events/getalarms") > -1 ||
+        settings.url.indexOf("events/getfiles") > -1) {
             $("#create-evt .loading").show();
             showSpinner++;
         }
@@ -139,7 +143,11 @@ $(document).ready(function(){
     .ajaxComplete(function(event, jqxhr, settings) {
         if(settings.url.indexOf("events/suggestEvents") > -1 ||
             settings.url.indexOf("events/form") > -1 ||
-            settings.url.indexOf("events/subform") > -1) {
+            settings.url.indexOf("events/subform") > -1 ||
+            settings.url.indexOf("events/getpredefinedvalues") > -1 ||
+            settings.url.indexOf("events/getactions") > -1 ||
+            settings.url.indexOf("events/getalarms") > -1 ||
+            settings.url.indexOf("events/getfiles") > -1) {
             showSpinner--;
             if(showSpinner === 0){
                 $("#create-evt .loading").hide();

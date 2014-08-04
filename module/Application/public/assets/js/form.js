@@ -519,6 +519,14 @@ var form = function(url){
                                 $("#root_categories").popover('show');
                             }
                         });
+                        //récupération des modèles
+                        $.post(
+				url+'events/subform?part=predefined_events&id='+$(this).val(),
+				function(data){
+					$("#predefined_events").html(data);
+					$("#Modèlesid").removeClass("disabled");
+				}
+			);
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
@@ -533,20 +541,21 @@ var form = function(url){
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
 		var subcat_value = $("#subcategories option:selected").val();
-		if(subcat_value > 0) {
-			$.post(
-				url+'events/subform?part=predefined_events&id='+$(this).val(),
-				function(data){
+                if (subcat_value > 0) {
+                    $("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());
+                    $("#custom_fields").html("");
+                    $("input[name='category']").val(subcat_value);
+                    $.post(
+                            url + 'events/subform?part=custom_fields&id=' + subcat_value,
+                            function(data) {
+                                $("#custom_fields").html(data);
+                            }
+                    );
+                    $.post(
+                            url + 'events/subform?part=predefined_events&id=' + $(this).val(),
+                                        function(data){
 					$("#predefined_events").html(data);
-					$("#category_title").html('Catégories : '+$("#root_categories option:selected").text()+' > '+$("#subcategories option:selected").text());
 					$("#Modèlesid").removeClass("disabled");
-					$("#custom_fields").html("");
-					$.post(
-						url+'events/subform?part=custom_fields&id='+subcat_value,
-						function(data){
-							$("#custom_fields").html(data);
-						}			
-					);
                                         //don't open model panel if there is no model
                                         if($('#predefined_events table').length > 0) {
                                             $('#Modèlesid').trigger('click');
@@ -555,7 +564,6 @@ var form = function(url){
                                         }
 				}
 			);
-			$("input[name='category']").val(subcat_value);
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');
