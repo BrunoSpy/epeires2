@@ -129,7 +129,6 @@ class UsersController extends FormController {
     				$this->flashMessenger()->addErrorMessage($e->getMessage());
     			}
     		} else {
-                    error_log(print_r($form->getMessages(), true));
     			$this->processFormMessages($form->getMessages());
     		}
     	}

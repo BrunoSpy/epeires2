@@ -47,6 +47,19 @@ class EventsController extends ZoneController {
     	$this->layout()->cds = "Nom chef de salle";
     	$this->layout()->ipo = "Nom IPO (téléphone)";
     	
+        //initialisation de la session si utilisateur connecté
+        $session = new Container('zone');
+        if($session->zoneshortname == null){
+            if($this->zfcUserAuthentication()->hasIdentity()){
+                if($this->zfcUserAuthentication()->getIdentity()->getZone()){
+                    $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getZone()->getShortname();
+                } else {
+                    $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getShortname();
+                }
+            }
+        }
+        
+        
      	$viewmodel->setVariables(array('messages'=>$return));
     	 
         return $viewmodel;
@@ -1347,9 +1360,7 @@ class EventsController extends ZoneController {
                     \IntlDateFormatter::GREGORIAN,
                     'dd LLL, HH:mm');
         if ($event->setStartdate($startdate)) {
-            error_log('test');
             if(is_array($messages)){
-                error_log('ok');
                 $messages['success'][] = "Date et heure de début modifiées au " . $formatter->format($event->getStartdate());
             }
             //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle

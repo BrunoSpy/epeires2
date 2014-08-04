@@ -126,7 +126,7 @@ class EventRepository extends ExtendedRepository {
     	
     	if($userauth->hasIdentity()){
     		$roles = $userauth->getIdentity()->getRoles();
-    		foreach ($events as $event){
+                foreach ($events as $event){
     			$eventroles = $event->getCategory()->getReadroles();
     			foreach ($roles as $role){
     				if($eventroles->contains($role)){
