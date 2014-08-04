@@ -9,6 +9,20 @@
 
     $.fn.timepickerform = function(options) {
 
+        var dayplusone = function(input, delta){
+            if(input.val()){
+                var daystring = input.val().split('-');
+                var day = new Date(daystring[2], daystring[1]-1, daystring[0], 12);
+                var newday = new Date();
+                newday.setDate(day.getDate() + delta);
+                var newdaystring = newday.getUTCDate()+'-'+(newday.getUTCMonth()+1)+'-'+newday.getUTCFullYear();
+            } else {
+                var d = new Date();
+                newdaystring = d.getUTCDate()+'-'+(d.getUTCMonth()+1)+'-'+d.getUTCFullYear();
+            }
+            return newdaystring;
+        };
+
         var hourplusone = function(input, delta) {
             if (input.val()) {
                 var hour = parseInt(input.val()) + delta;
@@ -216,12 +230,34 @@
                     $(this).trigger('change');
                 });
                 
+                div.on('mousewheel', 'td.day input', function(event, delta){
+                   event.preventDefault(); 
+                   $(this).val(dayplusone($(this), delta));
+                   $(this).trigger('change');
+                });
+                
                 div.on('click', 'a.clear-time', function(e){
                     e.preventDefault();
                     element.val('');
                     var form = $(this).closest('.timepicker-form');
                     form.find('td input').val('');
                     element.trigger('change');
+                });
+                
+                //change input if more than 2 digits are entered in the hour input
+                var charCount = 0;
+                
+                div.on('focus', 'td.hour input', function(event){
+                    event.preventDefault();
+                    this.charCount = $(this).val().length;
+                });
+                
+                div.on('keyup', 'td.hour input', function(event){
+                    var currentCharCount = $(this).val().length;
+                    if(currentCharCount === 2 && this.charCount === 1){
+                        $(this).closest('.timepicker-form').find('td.minute input').focus().select();
+                    }
+                    this.charCount = currentCharCount;
                 });
             }
         });

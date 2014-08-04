@@ -142,8 +142,13 @@ var form = function(url){
                 var end = new Date(daysplit[2], daysplit[1] - 1, daysplit[0], hourendsplit[0], hourendsplit[1]);
                 var deb = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hoursplit[0], hoursplit[1]);
                 if (deb > end) {
-                    dateDeb.val(dateFin.val());
-                    updateHours();
+                    //add a day to enddate
+                    var newend = new Date();
+                    newend.setDate(end.getDate() +1);
+                    $('#end td.day input').val(newend.getUTCDate()+'-'+(newend.getUTCMonth()+1)+'-'+newend.getUTCFullYear());
+                    //.trigger('change');
+                    //dateDeb.val(dateFin.val());
+                    //updateHours();
                 }
                 //changement du statut à terminé si :
                 //   * droits ok
@@ -210,15 +215,15 @@ var form = function(url){
 		var start = $("#inner-Horairesid #start").siblings("input[type=hidden]").val();
 		var split = start.split(' ');
 		var daysplit = split[0].split('-');
-		var text = "Horaires : "+daysplit[0]+"/"+daysplit[1]+" "+split[1];
+		var text = "Horaires : "+FormatNumberLength(daysplit[0],2)+"/"+FormatNumberLength(daysplit[1],2)+" "+split[1];
 		var punctual = $("#punctual").is(':checked');
 		if(!punctual){
-			text += " > ";
+			text += " \u2192 ";
 			var end = $("#inner-Horairesid #end").siblings("input[type=hidden]").val();
 			if(end){
 				var split = end.split(' ');
 				var daysplit = split[0].split('-');
-				text += daysplit[0]+"/"+daysplit[1]+" "+split[1];
+				text += FormatNumberLength(daysplit[0],2)+"/"+FormatNumberLength(daysplit[1],2)+" "+split[1];
 			} else {
 				text += "?";
 			}

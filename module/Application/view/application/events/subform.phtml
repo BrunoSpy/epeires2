@@ -3,7 +3,7 @@
 $this->form->prepare();
 switch ($this->part) {
 	case 'subcategories':
-		echo '<option value="-1">Choisir la sous-catégorie</option>';
+		echo '<option value="-1">Facultatif</option>';
 		foreach($this->values as $key => $value){
 			echo "<option value=\"".$key."\">".$value."</option>";
 		};
