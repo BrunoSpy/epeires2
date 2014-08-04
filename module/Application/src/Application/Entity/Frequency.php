@@ -20,7 +20,7 @@ class Frequency {
 	 */
 	protected $id;
 	
-	/**
+	/** 
 	 * @ORM\ManyToOne(targetEntity="Organisation")
 	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(true)

@@ -138,7 +138,18 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();
 				break;
 			case 'frequency':
-				$value_options = $om->getRepository('Application\Entity\Frequency')->getAllAsArray();
+                                $qb = $om->createQueryBuilder();
+                                $qb->select(array('f'))
+                                        ->from('Application\Entity\Frequency', 'f')
+                                        ->leftJoin('f.defaultsector', 's')
+                                        ->leftJoin('s.zone', 'z')
+                                        ->addOrderBy('z.name', 'DESC')
+                                        ->addOrderBy('s.name', 'ASC');
+                                $result = array();
+                                foreach ($qb->getQuery()->getResult() as $frequency){
+                                    $result[$frequency->getId()] = $frequency->getName();
+                                }   
+				$value_options = $result;
 				break;
 			case 'radar':
 				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray();
