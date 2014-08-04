@@ -16,7 +16,7 @@
 .timepicker-form > table > tbody > tr > td {
     text-align: center;
     border: 0;
-    padding: 2px;
+    padding: 0px 2px 0px 2px;
 }
 
 .timepicker-form > table > tbody > tr > td.separator {
