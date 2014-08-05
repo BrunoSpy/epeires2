@@ -69,18 +69,45 @@ class EventService implements ServiceManagerAwareInterface{
 		
 		$category = $event->getCategory();
 		
-		$titlefield = $category->getFieldname();
-		if($titlefield){
-			foreach($event->getCustomFieldsValues() as $fieldvalue){
-				if($fieldvalue->getCustomField()->getId() == $titlefield->getId()){
-					$tempname = $this->sm->get('CustomFieldService')->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
-					
-					if($tempname){
-						$name = $tempname;
-					}
-				}
-			}
-		}
+                //hack temporaire en attendant mieux
+                if($category instanceof \Application\Entity\FrequencyCategory){
+                    $freqid = 0;
+                    $otherfreqid = 0;
+                    foreach($event->getCustomFieldsValues() as $value){
+                        if($value->getCustomField()->getId() == $category->getFrequencyfield()->getId()){
+                            $freqid = $value->getValue();
+                        }
+                        if($value->getCustomField()->getId() == $category->getOtherFrequencyfield()->getId()){
+                            $otherfreqid = $value->getValue();
+                        }
+                    }
+                    if($freqid != 0){
+                        $freq = $this->em->getRepository('Application\Entity\Frequency')->find($freqid);
+                        if($freq){
+                            if($otherfreqid != 0){
+                                $otherfreq = $this->em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
+                                if($otherfreq){
+                                    $name = $freq->getName().' '.json_decode('"\u2192"').' '.$otherfreq->getName().' '.$otherfreq->getValue();
+                                }
+                            } else {
+                                $name = $freq->getName().' '.$freq->getValue();
+                            }
+                        }
+                    }
+                } else {
+                    $titlefield = $category->getFieldname();
+                    if($titlefield){
+                            foreach($event->getCustomFieldsValues() as $fieldvalue){
+                                    if($fieldvalue->getCustomField()->getId() == $titlefield->getId()){
+                                            $tempname = $this->sm->get('CustomFieldService')->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
+
+                                            if($tempname){
+                                                    $name = $tempname;
+                                            }
+                                    }
+                            }
+                    }
+                }
 		return $name;
 	}
 		
