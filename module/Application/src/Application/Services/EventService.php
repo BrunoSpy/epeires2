@@ -87,7 +87,7 @@ class EventService implements ServiceManagerAwareInterface{
                             if($otherfreqid != 0){
                                 $otherfreq = $this->em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
                                 if($otherfreq){
-                                    $name = $freq->getName().' '.json_decode('"\u2192"').' '.$otherfreq->getName().' '.$otherfreq->getValue();
+                                    $name = $freq->getName().' → '.$otherfreq->getName().' '.$otherfreq->getValue();
                                 }
                             } else {
                                 $name = $freq->getName().' '.$freq->getValue();

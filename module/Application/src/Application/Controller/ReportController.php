@@ -40,7 +40,6 @@ class ReportController extends AbstractActionController {
                 $pdf = new PdfModel();
                 $pdf->setVariable('event', $brouillage);
 
-
                 $pdf->setVariables(array('frequency' => $frequency, 'fields' => $fields));
 
                 //   $pdf->setOption('filename', 'fne-brouillage');
@@ -51,8 +50,6 @@ class ReportController extends AbstractActionController {
                 $viewmodel = new ViewModel();
                 $viewmodel->setVariable('event', $brouillage);
                 $viewmodel->setVariables(array('frequency' => $frequency, 'fields' => $fields));
-                $request = $this->getRequest();
-
                 //disable layout if request by Ajax
                 $viewmodel->setTerminal(true);
                 return $viewmodel;
@@ -60,7 +57,7 @@ class ReportController extends AbstractActionController {
         }
     }
 
-    public function dailyAction(){
+    public function dailyAction(){       
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $day = $this->params()->fromQuery('day', null);
         if($day){
