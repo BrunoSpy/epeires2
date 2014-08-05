@@ -157,8 +157,8 @@
                                         if($diff > 0) {
                                             $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
                                         } else {
-                                            $diff = -$diff;
-                                            $interval = new DateInterval('PT'.$diff.'M');
+                                            $invdiff = -$diff;
+                                            $interval = new DateInterval('PT'.$invdiff.'M');
                                             $interval->invert = 1;
                                             $timeAlert->add($interval);
                                         }
@@ -169,13 +169,13 @@
                                             }
                                         }                                       
                                         
-                                        $html .= '<tr><div id="alarm-fake-'.$countalarm.'">'
+                                        $html .= '<tr><div class="alarm-fake" data-delta="'.$diff.'" id="alarm-fake-'.$countalarm.'">'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.$formatterLong->format($timeAlert).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
                                                 . '</div></tr>';
                                         
-                                        $html .= '<tr data-id="fake-'.$countalarm.'">'
+                                        $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'">'
                                                 . '<td><i class="icon-bell"></i></td>'
                                                 . '<td>'.$formatter->format($timeAlert).'</td>'
                                                 . '<td>'.$this->eventName($child).'</td>'

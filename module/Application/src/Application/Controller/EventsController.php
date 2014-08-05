@@ -905,13 +905,14 @@ class EventsController extends ZoneController {
 			$now->setTimezone(new \DateTimeZone("UTC"));
                         $delta = intval($alarm->getStartdateDelta());
                         if($delta < 0){
-                            $delta = -$delta;
-                            $interval = new \DateInterval('PT'.$delta.'M');
+                            $invdelta = -$delta;
+                            $interval = new \DateInterval('PT'.$invdelta.'M');
                             $interval->invert = 1;
                             $now->add($interval);
                         } else {
                             $now->add(new \DateInterval('PT'.$delta.'M'));
                         }
+                        $alarmjson['delta'] = $delta;
 			$alarmjson['datetime'] = $now->format(DATE_RFC2822);
 			foreach($alarm->getCustomFieldsValues() as $value){
 				if($value->getCustomField()->getId() == $alarm->getCategory()->getFieldname()->getId()){
