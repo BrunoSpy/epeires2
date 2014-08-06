@@ -1051,7 +1051,17 @@ class EventsController extends ZoneController {
 			$fields[$value->getCustomField()->getName()] = $formattedvalue;
 		}
     	}
-    	
+        
+        $formatter = \IntlDateFormatter::create(
+                            \Locale::getDefault(),
+                            \IntlDateFormatter::FULL,
+                            \IntlDateFormatter::FULL,
+                            'UTC',
+                            \IntlDateFormatter::GREGORIAN,
+                            'dd LLL, HH:mm');
+    	foreach($event->getUpdates() as $update){
+            $fields[$formatter->format($update->getCreatedOn())] = nl2br($update->getText());
+        }
     	$json['fields'] = $fields;
     	
 //     	$actions = array();
