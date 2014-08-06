@@ -65,17 +65,15 @@ var timeline = {
 		},
 		// chargement des catégories
 		set_cat: function (url) {
-			var i = 0;
 			return $.getJSON(url+"/getcategories", function (data) {
 				$.each(data, function(key, value) {
-					categorie[i] = value.name;
-					cat_short[i] = value.short_name;
-					cat_coul[i] = value.color;
-					cat_regroup[i] = 1;
-					cat_display[i] = 1;
-					cat_elmt[i] = new Array();
-					cat_nom[i] = new Array();
-					i ++;
+					categorie[value.place] = value.name;
+					cat_short[value.place] = value.short_name;
+					cat_coul[value.place] = value.color;
+					cat_regroup[value.place] = 1;
+					cat_display[value.place] = 1;
+					cat_elmt[value.place] = new Array();
+					cat_nom[value.place] = new Array();
 				});
 			});
 		},
@@ -108,7 +106,7 @@ var timeline = {
 								dfin = new Date(value.end_date);
 							}
 						}
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name,value.fields];
 						corresp[key] = i;
 						i ++;
 					});
@@ -140,7 +138,7 @@ var timeline = {
 						}
 					}
 					if (!corresp[key]) {
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name, value.fields];
 						corresp[key] = i;
 						i ++;
 					}
@@ -266,8 +264,8 @@ var timeline = {
 				x1 = lar_unit + delta*lar_unit*2 + m_deb*lar_unit*2/60;
 				if (d_fin < 0) {	
 						wid = largeur-lar_unit-x1;
-				} else if (d_fin < d_ref_fin) {
-					if (h_fin >= h_ref) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
+				} else if (d_fin <= d_ref_fin) {
+					if (h_fin >= h_ref && d_ref_deb.getUTCDate() == d_fin.getUTCDate()) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
 					wid = lar_unit + delta*lar_unit*2 + m_fin*lar_unit*2/60 - x1;
 				} else {
 					if (d_debut < d_ref_fin) {
@@ -281,8 +279,8 @@ var timeline = {
 				} else if (d_fin < d_ref_deb) {
 					// evmt non terminé
 					wid = 40;	
-				} else if (d_fin < d_ref_fin) {
-					if (h_fin >= h_ref) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
+				} else if (d_fin <= d_ref_fin) {
+					if (h_fin >= h_ref && d_ref_deb.getUTCDate() == d_fin.getUTCDate()) { delta = h_fin - h_ref; } else { delta = 24 + h_fin - h_ref; }
 					wid = lar_unit + delta*lar_unit*2 + m_fin*lar_unit*2/60 - x1;
 
 				} else {
@@ -814,6 +812,8 @@ var timeline = {
 				'border-left':'', 'border-right':'', 'border-bottom':''});
 			elmt_txt.css({'color':'black'});
 			elmt_deb.removeClass('nodisp');
+			elmt_deb.css({'pointer-events':'', 'cursor':''});
+			elmt_fin.css({'pointer-events':'', 'cursor':''});
 			move_deb.removeClass('disp');
 			elmt_fin.removeClass('nodisp');
 			move_fin.removeClass('disp');
@@ -827,6 +827,7 @@ var timeline = {
 			lien.removeClass('lien');
 			elmt_txt.css({'background-color':'','border-style':'', 'border-color':'','border-width': '','border-radius': '', 'padding':'','text-decoration':'', 'font-style':''});
 			lien.hide();
+			
 			
 			// css permanent
 			var dy = elmt.height();
@@ -908,6 +909,7 @@ var timeline = {
 			}
 			elmt_deb.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
 			elmt_fin.find('i').removeClass("icon-question-sign icon-warning-sign icon-check");
+			
 			if (sts < 3) {
 				elmt_deb.prepend(' <i class="icon-question-sign"></i>');
 				elmt_txt.css({'font-style':'italic'});
@@ -917,6 +919,7 @@ var timeline = {
 				elmt_deb.show();
 			} else if (sts != 20) {
 				elmt_deb.prepend(' <i class="icon-check"></i>');
+				elmt_deb.css({'pointer-events':'none', 'cursor':'default'});
 			}
 			if (sts == 6) { 
 				elmt_fin.append(' <i class="icon-warning-sign"></i>'); 
@@ -925,6 +928,7 @@ var timeline = {
 				elmt_fin.append(' <i class="icon-question-sign"></i>');
 			} else if (sts < 20) {
 				elmt_fin.append(' <i class="icon-check"></i>');
+				elmt_fin.css({'pointer-events':'none', 'cursor':'default'});
 			} else if (sts == 20) {
 				elmt_deb.addClass("disabled");
 				elmt_fin.addClass("disabled");
@@ -1356,11 +1360,12 @@ var timeline = {
 				var cat = value.category_root;
 				var impt = value.archived;
 				var mod = value.modifiable;
-				if (id > 0) {
+				var fields = value.fields;
+				if (id >= 0) {
 				//	if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
 				//			|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
 				//			|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
-						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat];
+						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields];
 						var elmt = timeline_content.find('.ident'+key);
 						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
 							elmt.remove();
@@ -1376,7 +1381,7 @@ var timeline = {
 						}
 				//	}
 				} else {
-					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
+					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields];
 					corresp[key] = len;
 					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
 				}
@@ -1415,7 +1420,8 @@ var timeline = {
 				var cat = value.category_root;
 				var impt = value.archived;
 				var mod = value.modifiable;
-				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat];
+				var fields = value.fields;
+				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields];
 				corresp[key] = len;
 				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
@@ -1908,4 +1914,32 @@ $(document).ready(function() {
 		$.holdReady(false);
     });
 	
+    $('#timeline').on({
+    	mouseenter: function() {
+    		var key = $(this).find('.modify-evt').data('id');
+			var id = -1;
+			var len = tab.length;
+			id = -1;
+			var j = 0;
+			while (j < len && id == -1) {
+				if (tab[j][0] == key) { id = j; }
+				j++;
+			}
+			var text = "";
+			$.each(tab[id][9], function(nom, contenu) {
+				text += nom+" : "+contenu+'<br>';
+			});
+    		 
+    		$(this).tooltip({
+    			title: text,
+    			container: 'body',
+    			placement: 'bottom',
+    			html: 'true'
+    		}).tooltip('show');
+    	},
+    	mouseleave: function() {
+    		$(this).tooltip('hide');
+    	}
+    }, '.elmt'); 
+
 });
