@@ -1098,6 +1098,7 @@ class EventsController extends ZoneController {
     			'short_name' => $category->getShortName(),
     			'color' => $category->getColor(),
     			'compact' => $category->isCompactMode(),
+                        'place' => $category->getPlace()
     		);
     	}
     	
