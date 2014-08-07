@@ -119,7 +119,7 @@ class EventService implements ServiceManagerAwareInterface{
             $repo = $this->em->getRepository('Application\Entity\Log');
             
             $logentries = $repo->getLogEntries($eventupdate);
-            if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
+            if(count($logentries) >= 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
                 return $logentries[count($logentries)-1]->getUsername();
             } else {
                 return "Unknown";

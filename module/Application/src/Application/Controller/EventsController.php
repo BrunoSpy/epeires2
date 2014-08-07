@@ -1334,7 +1334,7 @@ class EventsController extends ZoneController {
                 $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
                 if ( ($event->getStatus()->getId() == 2 ||
                     ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now))
-                    && (($now->format('U') - $event->getEndDate()->format('U')) / 60) < 15) {
+                    && (($event->getEndDate()->format('U') - $now->format('U')) / 60) < 15) {
                     $event->setStatus($status);
                     //on ferme l'evt proprement
                     $this->closeEvent($event);
