@@ -111,14 +111,6 @@ $(document).ready(function(){
 	   window.open($(this).attr('href'));
 	   return false;
    });
-   
-//    $(document).ajaxStart(function(){
-//            $(".loading").show();
-//            })
-//    .ajaxStop(function(){
-//            $(".loading").hide();
-//            }
-//    );
 	
     var showSpinner = 0;
         
@@ -158,20 +150,6 @@ $(document).ready(function(){
             $("#search-results .loading").hide();
         }
     });
-        
-        
-//    $('#timeline').on({
-//        mouseenter: function() {
-//            var id = $(this).find('.modify-evt').data('id');
-//            $(this).tooltip({
-//                title: 'test' + id,
-//                container: 'body'
-//            }).tooltip('show');
-//        },
-//        mouseleave: function() {
-//            $(this).tooltip('hide');
-//        }
-//    }, '.elmt'); 
        
    $.noty.defaults = {
 		    layout: 'bottomRight',

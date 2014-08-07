@@ -61,5 +61,7 @@
 	display:inline;
 }
 
-
+.elmt_tooltip {
+    font-size: 12px;
+}
 

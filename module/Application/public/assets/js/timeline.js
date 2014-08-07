@@ -1931,7 +1931,7 @@ $(document).ready(function() {
 			});
     		 
     		$(this).tooltip({
-    			title: text,
+    			title: '<span class="elmt_tooltip">'+text+'</span>',
     			container: 'body',
     			placement: 'bottom',
     			html: 'true'
