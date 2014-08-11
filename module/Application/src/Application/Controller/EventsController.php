@@ -467,6 +467,7 @@ class EventsController extends ZoneController {
     						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
 						if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
 								$child = new Event();
+                                                                $child->setAuthor($event->getAuthor());
 								$child->setParent($event);
 								$child->setOrganisation($event->getOrganisation());
 								$child->createFromPredefinedEvent($action);
@@ -489,6 +490,7 @@ class EventsController extends ZoneController {
     						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
 							if($action->getCategory() instanceof \Application\Entity\ActionCategory){
 								$child = new Event();
+                                                                $child->setAuthor($event->getAuthor());
 								$child->setParent($event);
 								$child->setOrganisation($event->getOrganisation());
 								$child->setCategory($action->getCategory());
