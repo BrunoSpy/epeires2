@@ -45,12 +45,14 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$radarfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'radar')));
 		$radarfield->setPlace(1);
 		$radarfield->setDefaultValue("");
+                $radarfield->setTooltip("");
 		$statusfield = new CustomField();
 		$statusfield->setCategory($radarcat);
 		$statusfield->setName('Indisponible');
 		$statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'boolean')));
 		$statusfield->setPlace(2);
 		$statusfield->setDefaultValue("");
+                $statusfield->setTooltip("");
 		$radarcat->setFieldname($radarfield);
 		$radarcat->setRadarfield($radarfield);
 		$radarcat->setStatefield($statusfield);
@@ -73,12 +75,14 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$namefield->setPlace(1);
 		$namefield->setDefaultValue("");
+                $namefield->setTooltip("");
 		$textfield = new CustomField();
 		$textfield->setCategory($actioncat); 
 		$textfield->setName('Commentaire');
 		$textfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
 		$textfield->setPlace(2);
 		$textfield->setDefaultValue("");
+                $textfield->setTooltip("");
 		$actioncat->setFieldname($namefield);
 		$actioncat->setNamefield($namefield);
 		$actioncat->setTextfield($textfield);
@@ -96,12 +100,14 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$namefield->setPlace(1);
 		$namefield->setDefaultValue("");
+                $namefield->setTooltip("");
 		$textfield = new CustomField();
 		$textfield->setCategory($alarmcat); 
 		$textfield->setName('Commentaire');
 		$textfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
 		$textfield->setPlace(2);
 		$textfield->setDefaultValue("");
+                $textfield->setTooltip("");
 		$alarmcat->setFieldname($namefield);
 		$alarmcat->setNamefield($namefield);
 		$alarmcat->setTextfield($textfield);
@@ -119,12 +125,14 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$antennafield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'antenna')));
 		$antennafield->setPlace(1);
 		$antennafield->setDefaultValue("");
+                $antennafield->setTooltip("");
 		$statusfield = new CustomField();
 		$statusfield->setCategory($antennacat);
 		$statusfield->setName('Indisponible');
 		$statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'boolean')));
 		$statusfield->setPlace(2);
 		$statusfield->setDefaultValue("");
+                $statusfield->setTooltip("");
 		$antennacat->setFieldname($antennafield);
 		$antennacat->setAntennafield($antennafield);
 		$antennacat->setStatefield($statusfield);
@@ -147,24 +155,28 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$frequencyfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'frequency')));
 		$frequencyfield->setPlace(1);
 		$frequencyfield->setDefaultValue("");
+                $frequencyfield->setTooltip("");
 		$statefield = new CustomField();
 		$statefield->setCategory($frequencycat);
 		$statefield->setName('Indisponible');
 		$statefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'boolean')));
 		$statefield->setPlace(2);
 		$statefield->setDefaultValue("");
+                $statefield->setTooltip("");
 		$currentAntenna = new CustomField();
 		$currentAntenna->setCategory($frequencycat);
 		$currentAntenna->setName('Couverture');
 		$currentAntenna->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type' => 'select')));
 		$currentAntenna->setPlace(3);
 		$currentAntenna->setDefaultValue("Normale\nSecours");
+                $currentAntenna->setTooltip("");
 		$otherfreq = new CustomField();
 		$otherfreq->setCategory($frequencycat);
 		$otherfreq->setName('Utiliser fréquence');
 		$otherfreq->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type' => 'frequency')));
 		$otherfreq->setPlace(4);
 		$otherfreq->setDefaultValue("");
+                $otherfreq->setTooltip("");
 		$frequencycat->setFieldname($frequencyfield);
 		$frequencycat->setFrequencyfield($frequencyfield);
 		$frequencycat->setCurrentAntennafield($currentAntenna);
@@ -191,77 +203,88 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$frequencyfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'frequency')));
 		$frequencyfield->setPlace(1);
 		$frequencyfield->setDefaultValue("");
-		
+		$frequencyfield->setTooltip("");
+                
 		$levelfield = new CustomField();
 		$levelfield->setCategory($brouillagecat);
 		$levelfield->setName('Niveau');
 		$levelfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$levelfield->setPlace(2);
 		$levelfield->setDefaultValue("");
-			
+                $levelfield->setTooltip("");
+                
 		$rnavfield = new CustomField();
 		$rnavfield->setCategory($brouillagecat);
 		$rnavfield->setName('Balise');
 		$rnavfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$rnavfield->setPlace(3);
 		$rnavfield->setDefaultValue("");
-	
+                $rnavfield->setTooltip("");
+                
 		$distancefield = new CustomField();
 		$distancefield->setCategory($brouillagecat);
 		$distancefield->setName('Distance');
 		$distancefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$distancefield->setPlace(4);
 		$distancefield->setDefaultValue("");
-	
+                $distancefield->setTooltip("");
+                
 		$azimutfield = new CustomField();
 		$azimutfield->setCategory($brouillagecat);
 		$azimutfield->setName('Azimut');
 		$azimutfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$azimutfield->setPlace(5);
 		$azimutfield->setDefaultValue("");
-		
+		$azimutfield->setTooltip("");
+                
 		$originfield = new CustomField();
 		$originfield->setCategory($brouillagecat);
 		$originfield->setName('Plaignant');
 		$originfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
 		$originfield->setPlace(6);
 		$originfield->setDefaultValue("Sol\nBord\nSol+Bord");
-		
+		$originfield->setTooltip("");
+                
 		$typefield = new CustomField();
 		$typefield->setCategory($brouillagecat);
 		$typefield->setName('Type de bruit');
 		$typefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
 		$typefield->setPlace(7);
 		$typefield->setDefaultValue("Brouillage\nInterférence");
-		
+		$typefield->setTooltip("");
+                
 		$causebrouillagefield = new CustomField();
 		$causebrouillagefield->setCategory($brouillagecat);
 		$causebrouillagefield->setName('Cause du brouillage');
 		$causebrouillagefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
 		$causebrouillagefield->setPlace(8);
 		$causebrouillagefield->setDefaultValue("Radio FM\nBruit industriel\nAutre\nRien");
-			
+		$causebrouillagefield->setTooltip("");
+                
 		$causeinterferencefield = new CustomField();
 		$causeinterferencefield->setCategory($brouillagecat);
 		$causeinterferencefield->setName('Cause interférence');
 		$causeinterferencefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'select')));
 		$causeinterferencefield->setPlace(10);
 		$causeinterferencefield->setDefaultValue("Porteuse\nÉmission permanente\nAutre fréquence");
-				
+		$causeinterferencefield->setTooltip("");
+                
 		$commentairebrouillagefield = new CustomField();
 		$commentairebrouillagefield->setCategory($brouillagecat);
 		$commentairebrouillagefield->setName('Cause du brouillage (commentaire)');
 		$commentairebrouillagefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
 		$commentairebrouillagefield->setPlace(9);
 		$commentairebrouillagefield->setDefaultValue("");
-			
+		$commentairebrouillagefield->setTooltip("");
+                
 		$commentaireinterferencefield = new CustomField();
 		$commentaireinterferencefield->setCategory($brouillagecat);
 		$commentaireinterferencefield->setName('Cause interférence (commentaire)');
 		$commentaireinterferencefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'text')));
 		$commentaireinterferencefield->setPlace(11);
 		$commentaireinterferencefield->setDefaultValue("");
-				
+		$commentaireinterferencefield->setTooltip("");
+                
 		$brouillagecat->setFieldname($frequencyfield);
 		$brouillagecat->setFrequencyfield($frequencyfield);
 		$brouillagecat->setLevelField($levelfield);
