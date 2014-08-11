@@ -61,6 +61,7 @@ class Event extends AbstractEvent{
  	
  	/**
  	 * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
+         * @ORM\JoinColumn(nullable=false)
  	 */
  	protected $author;
  	
