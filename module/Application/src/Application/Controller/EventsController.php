@@ -967,12 +967,12 @@ class EventsController extends ZoneController {
                         $file->removeEvent($event);
                         $objectManager->persist($file);
                     } else {
-                        $messages['error'][] = "Impossible d'enlever le fichier de l'évènement";
+                        $messages['error'][] = "Impossible d'enlever le fichier de l'évènement.";
                     }
                 } else {
                     if($file){
                     	$objectManager->remove($file);
-                        $messages['success'][] = "Fichier correctement ajouté";
+                        $messages['success'][] = "Fichier correctement retiré.";
                     } else {
                         $messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
                     }
