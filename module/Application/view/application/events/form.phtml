@@ -307,7 +307,18 @@
                                 foreach ($children as $child){
                                     if($child->getCategory() instanceof Application\Entity\ActionCategory){
                                         $countactions++;
-					$html .= "<tr data-id=\"".$child->getId()."\">";
+					$html .= "<tr data-id=\"".$child->getId()."\"";
+                                        foreach ($child->getCustomFieldsValues() as $value){
+                                            if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
+                                                if($value->getValue() !== ''){
+                                                    $html .= ' data-container="body" '
+                                                            . 'data-html="true" '
+                                                            . 'data-toggle="tooltip" '
+                                                            . 'title="<span class=elmt_tooltip>'.nl2br($value->getValue()).'</span>"';
+                                                }
+                                            }
+                                        }
+                                        $html .= ">";
 					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
 					$html .= "<td>".$this->eventName($child)."</td>";
 					if(!$this->copy && !$this->model){ //copie d'un évènement -> pas de modif de la ficher réflexe
@@ -327,7 +338,7 @@
 			}
 		}
 		echo $this->accordionGroup("Fiche réflexe <span class=\"pull-right badge\">".$countactions."</span>", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
-		
+		              
 		?>
 
 	<div class="control-group">

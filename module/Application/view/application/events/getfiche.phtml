@@ -33,7 +33,18 @@
                 echo "<tbody>";
                 foreach ($this->event->getChildren() as $child) {
                     if ($child->getCategory() instanceof Application\Entity\ActionCategory) {
-                        echo "<tr data-id=\"" . $child->getId() . "\">";
+                        echo "<tr data-id=\"" . $child->getId()."\"";
+                        foreach ($child->getCustomFieldsValues() as $value){
+                            if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
+                                if($value->getValue() !== ''){
+                                    echo ' data-container="body" '
+                                            . 'data-html="true" '
+                                            . 'data-toggle="tooltip" '
+                                            . 'data-title="<span class=elmt_tooltip>'.nl2br($value->getValue()).'</span>"';
+                                }
+                            }
+                        }
+                        echo ">";
                         echo "<td>" . $this->eventName($child) . "</td>";
                         echo '<td><a class="fiche btn btn-small ' . 
                                 ($child->getStatus()->isOpen() ? "" : "btn-success active") . ' '

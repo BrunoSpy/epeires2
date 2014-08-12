@@ -391,6 +391,7 @@ var form = function(url){
 			updateHours();
                         updateHourTitle();
 			pauseUpdateAlarms();
+                        $('tr[data-toggle=tooltip]').tooltip();
 		});
 	});
 	
@@ -726,4 +727,10 @@ var form = function(url){
                     $("#root_categories").popover('hide');
 		};		
 	});
+        
+        //gestion des notes
+        $("#event").on('click', '#addnote', function(e){
+            e.preventDefault();
+            
+        });
 };

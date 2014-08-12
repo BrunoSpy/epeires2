@@ -52,7 +52,9 @@ var displayMessages = function(messages){
         timeline.animate({
             left: '330px'
         }, 300);
-        $('#fiche').load(url+'events/getfiche?id='+id);
+        $('#fiche').load(url+'events/getfiche?id='+id, function(){
+            $('tr[data-toggle=tooltip]').tooltip();
+        });
  };
  
  var hidePanel = function(){
@@ -71,7 +73,9 @@ var displayMessages = function(messages){
         if(panel.css('left') == '330px') {
             $('#fiche').empty();
         } else {
-            $('#fiche').load(url+'events/getfiche?id='+id);
+            $('#fiche').load(url+'events/getfiche?id='+id, function(){
+                $('tr[data-toggle=tooltip]').tooltip();
+            });
         }
         panel.animate({
             left: val
