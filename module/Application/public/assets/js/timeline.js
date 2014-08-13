@@ -48,6 +48,7 @@ var ini_url;
 var on_drag;
 var aff_archives = 0;
 var last_update;
+var tempo_maj;
 
 var timeline = {
 
@@ -115,7 +116,7 @@ var timeline = {
 					timeline.timeBar(timeline_content);
 				}).done(function() {
 					last_update = new Date();
-					setTimeout(timeline.download_update, 3000);
+					timeline.download_update();
 				});
 			});
 		},
@@ -826,8 +827,7 @@ var timeline = {
 			var dr = 1;
 			lien.removeClass('lien');
 			elmt_txt.css({'background-color':'','border-style':'', 'border-color':'','border-width': '','border-radius': '', 'padding':'','text-decoration':'', 'font-style':''});
-			lien.hide();
-			
+			lien.hide();			
 			
 			// css permanent
 			var dy = elmt.height();
@@ -972,7 +972,8 @@ var timeline = {
 				} else {
 					lien.addClass('lien');
 					lien.show();
-					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
+					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px',
+						'border-radius': '5px', 'padding':'2px'});
 					// on place l'heure de début à gauche
 					x1 -= elmt_deb.outerWidth();
 					elmt_deb.css({'left': x1+'px'});
@@ -982,25 +983,22 @@ var timeline = {
 					if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
 						dr = 1;
 						elmt_txt.css({'left': x2+'px'});
-						lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
+						lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});
+						if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
+							lien.hide(); 
+							lien.removeClass('lien');	
+						}
 					} else { // sinon on le met à gauche
 						dr = 0;
 						lien.css({'left': x1-60+'px','width':x0-x1+60+'px'});
 						x1 -= txt_wid+2;
 						elmt_txt.css({'left': x1+'px'});
+						if (elmt_deb.find('i').hasClass("icon-warning-sign")) { 
+							lien.hide(); 
+							lien.removeClass('lien');	
+						}
 					}
 				} 
-			}
-			elmt_status.css({'left': b1_pos+'px'});
-			timeline.set_status(base_element, id, type);
-			if (warn == 1) {
-				warn_content.text("Confirmer l'événement ? (début à xx:xx)");
-				warn_content.css({'font-size':'18px', 'margin':'auto'});
-				warn_buttons.css({'margin':'auto'});
-			} else if (warn == 2) {
-				warn_content.text("Confirmer la fin de l'événement ? (fin à xx:xx)");
-				warn_content.css({'font-size':'18px'});
-				warn_buttons.css({'width':'100%'});
 			}
 			elmt_opt.css({'left':x0, 'width':x2-x0});
 			elmt_write.css({'position':'relative','rows':3, 'width':'90%'});
@@ -1124,50 +1122,6 @@ var timeline = {
 			var data_fin = elmt_fin[0];
 			jQuery.data(data_fin,"d_fin",d_fin);
 			elmt_fin.css({'top':h2+'px'});
-		},
-		// affichage en fonction du statut (à modifier)
-		set_status: function (base_element, id, type) {
-			var sts = type[3];
-			var elmt = base_element.find('.ident'+id);
-			var elmt_status = elmt.find('.elmt_status');
-			switch (sts) {
-			case 0:
-				elmt_status.addClass('btn-info');
-				elmt_status.text("nouveau");
-				break;
-			case 10:
-				elmt_status.addClass('btn-success');
-				elmt_status.text("confirmé");
-				break;
-			case 11:
-				elmt_status.addClass('btn-success');
-				elmt_status.text("terminé");
-				break;
-			case 2:
-				elmt_status.addClass('btn-warning');
-				elmt_status.text("nouveau");
-				elmt_status.show();
-				break;
-			case 3:
-				elmt_status.addClass('btn-danger');
-				elmt_status.text("nouveau");
-				elmt_status.show();
-				break;
-			case 4:
-				elmt_status.addClass('btn-info');
-				elmt_status.text("confirmé");
-				break;
-			case 5:
-				elmt_status.addClass('btn-warning');
-				elmt_status.text("confirmé");
-				elmt_status.show();
-				break;
-			case 6:
-				elmt_status.addClass('btn-danger');
-				elmt_status.text("confirmé");
-				elmt_status.show();
-				break;
-			}
 		},
 		// association d'une valeur de status en fonction du statut de l'évènement et de l'heure
 		type_elmt: function (id, d_debut, d_fin, ponct, etat) {
@@ -1487,19 +1441,27 @@ var timeline = {
 				for (var i=0; i<len; i++) {
 					var n = liste_affichee[i];
 					var type = timeline.type_elmt(tab[n][0],tab[n][1], tab[n][2],tab[n][3],tab[n][8]);
-					timeline.set_status(timeline_content, tab[n][0],type);
 				}
 			}
 		},
 		// mise à jour de l'extérieur
 		download_update: function() {
-			$.getJSON(ini_url+"/getevents?lastupdate="+last_update.toUTCString(), function (data) {
-				timeline.modify(data,0);
-				last_update = new Date();
-			}).always(function(){
-				setTimeout(timeline.download_update, 3000);
-			}); 
-		}
+				$.getJSON(ini_url+"/getevents?lastupdate="+last_update.toUTCString(), function (data) {
+					timeline.modify(data,0);
+					last_update = new Date();
+				}).always(function(){
+					tempo_maj = setTimeout(timeline.download_update, 3000);
+				}); 
+		}, 
+		
+		pauseUpdateMaj: function() {
+			clearTimeout(tempo_maj);
+		},
+
+		restoreUpdateMaj: function() {
+			clearTimeout(tempo_maj);
+			timeline.download_update();
+		},
 		
 };
 
@@ -1704,6 +1666,7 @@ $(document).ready(function() {
 	
 	// Déplacement de l'heure de fin
 	$('#timeline').on('mousedown','.move_fin', function(e1){
+			timeline.pauseUpdateMaj();
 			on_drag = 2;
 			var x_ref = e1.clientX;
 			var x_temp = x_ref;
@@ -1790,10 +1753,12 @@ $(document).ready(function() {
 			}
 		}
 		on_drag = 0;
+		timeline.restoreUpdateMaj();
 	});
 
 	// Déplacement de l'heure de debut
 	$('#timeline').on('mousedown','.move_deb', function(e1){
+			timeline.pauseUpdateMaj();
 			on_drag = 1;	
 			var x_ref = e1.clientX;
 			var x_temp = x_ref;
@@ -1933,7 +1898,6 @@ $(document).ready(function() {
     		$(this).tooltip({
     			title: '<span class="elmt_tooltip">'+text+'</span>',
     			container: 'body',
-    			placement: 'bottom',
     			html: 'true'
     		}).tooltip('show');
     	},
@@ -1943,3 +1907,5 @@ $(document).ready(function() {
     }, '.elmt'); 
 
 });
+
+
