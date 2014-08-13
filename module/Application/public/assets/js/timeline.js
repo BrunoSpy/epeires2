@@ -303,7 +303,7 @@ var timeline = {
 			var yy = 0;
 			var cpt = 0;
 			var h_current;
-			for (var j = 0; j<nb; j++) {
+			$.each(categorie, function (j, value) {
 				cpt = 0;
 				for (var i = 0; i<len; i++) {
 					if (tableau[i][6] == categorie[j]) {
@@ -322,7 +322,7 @@ var timeline = {
 							if (debut < d_max) {liste_avenir.push(i);}
 						} else {
 							liste_affichee.push(i);
-							this.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8]);
+							timeline.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8]);
 							cpt ++;
 						}
 					}
@@ -343,7 +343,7 @@ var timeline = {
 					categ.css({'height':h_current+'px'});
 				}
 				yy = y_temp-4;
-			}
+			});
 		},
 		// compression des évènements affichés et qui ont le même nom
 		regroupement: function(timeline_elmt, id_list, y1) {
