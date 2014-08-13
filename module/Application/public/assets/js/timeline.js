@@ -293,7 +293,6 @@ var timeline = {
 		// création du squelette des évènements affichés sur la timeline 
 		create: function(timeline_elmt, tableau) {
 			var len = tableau.length;
-			var nb = categorie.length;
 			liste_passee = new Array();
 			liste_avenir = new Array();
 			liste_affichee = new Array();
@@ -303,7 +302,8 @@ var timeline = {
 			var yy = 0;
 			var cpt = 0;
 			var h_current;
-			$.each(categorie, function (j, value) {
+			var j;
+			for (j in categorie) {
 				cpt = 0;
 				for (var i = 0; i<len; i++) {
 					if (tableau[i][6] == categorie[j]) {
@@ -343,7 +343,7 @@ var timeline = {
 					categ.css({'height':h_current+'px'});
 				}
 				yy = y_temp-4;
-			});
+			}
 		},
 		// compression des évènements affichés et qui ont le même nom
 		regroupement: function(timeline_elmt, id_list, y1) {
