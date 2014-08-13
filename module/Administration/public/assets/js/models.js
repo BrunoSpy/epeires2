@@ -233,9 +233,9 @@ var models = function(url, urlapp){
 						'data-toggle="modal"'+
 						'data-id='+data.id+' '+
 						'data-name="'+data.name+'" '+
-						'data-parent='+data.parentid+'"> '+
+						'data-parent="'+data.parentid+'"> '+
 						'<i class="icon-pencil"></i></a> <a title="Supprimer"'+ 
-						'href="'+url+'/models/delete?id='+data.id+'&redirect=0 '+ 
+						'href="'+url+'/models/delete?id='+data.id+'&redirect=0" '+ 
 						'class="action-delete" '+ 
 						'data-id='+data.id +' '+ 
 						'data-name="'+data.name+'" '+ 
