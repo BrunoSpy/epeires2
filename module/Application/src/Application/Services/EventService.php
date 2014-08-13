@@ -126,6 +126,16 @@ class EventService implements ServiceManagerAwareInterface{
             }
         }
         
+        public function getLastUpdateAuthorName(\Application\Entity\Event $action){
+            $repo = $this->em->getRepository('Application\Entity\Log');
+            $logentries = $repo->getLogEntries($action);
+            if(count($logentries) >= 1){
+                return $logentries[0]->getUsername();
+            } else {
+                return $action->getAuthor()->getUserName();
+            }
+        }
+        
 	/**
 	 * Returns an array :
 	 * datetime => array('date' => datetime object,
@@ -272,7 +282,7 @@ class EventService implements ServiceManagerAwareInterface{
                             $entry = array();
                             $entry['date'] = $child->getLastModifiedOn();
                             $entry['changes'] = array();
-                            $entry['user'] = $child->getAuthor()->getUsername();
+                            $entry['user'] = $this->getLastUpdateAuthorName($child);
                             $history[$child->getLastModifiedOn()->format(DATE_RFC2822)] = $entry;
                         }
                         $historyentry = array();
@@ -290,6 +300,7 @@ class EventService implements ServiceManagerAwareInterface{
                             $entry = array();
                             $entry['date'] = $child->getLastModifiedOn();
                             $entry['changes'] = array();
+                            $entry['user'] = $this->getLastUpdateAuthorName($child);
                             $history[$child->getLastModifiedOn()->format(DATE_RFC2822)] = $entry;
                         }
                         $historyentry = array();

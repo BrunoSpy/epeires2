@@ -56,6 +56,7 @@ return array(
         'enable_display_name' => true,
         'enable_registration' => true,
         'login_after_registration' => false,
+        'logout_redirect_route' => 'application',
         'use_redirect_parameter_if_present' => true,
         'auth_identity_fields' => array('username', 'email'),
     ),
