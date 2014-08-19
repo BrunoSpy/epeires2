@@ -1902,7 +1902,7 @@ $(document).ready(function() {
     		}).tooltip('show');
     	},
     	mouseleave: function() {
-    		$(this).tooltip('hide');
+    		$(this).tooltip('destroy');
     	}
     }, '.elmt'); 
 
