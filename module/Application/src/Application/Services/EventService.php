@@ -102,7 +102,7 @@ class EventService implements ServiceManagerAwareInterface{
                                             $tempname = $this->sm->get('CustomFieldService')->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
 
                                             if($tempname){
-                                                    $name = $tempname;
+                                                    $name = ($category->getParent() != null ? $category->getShortName() : '').' '.$tempname;
                                             }
                                     }
                             }
