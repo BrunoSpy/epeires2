@@ -150,6 +150,16 @@ class ModelsController extends FormController
     		$pevent = $datas['pevent'];
     		$form->setData($post);
                 $form->setPreferFormInputFilter(true);
+                
+                //remove required inputfilter on custom fields (default to true for select elements...)
+                foreach($form->getInputFilter()->getInputs() as $input) {
+                    if($input instanceof \Zend\InputFilter\InputFilter){
+                        foreach ($input->getInputs() as $i){
+                            $i->setRequired(false);
+                        }
+                    }
+                }
+                
     		if($form->isValid()){
     			//category, may be disable
     			if($post['category']){
@@ -258,12 +268,12 @@ class ModelsController extends FormController
     		} else {
     			//traitement des erreurs de validation
     			$pevent = null;
-    			$this->processFormMessages($form->getMessages(),$messages);
+    			$this->processFormMessages($form->getMessages());
     		}
     		
     	}
         
-    	$json = array('messages' => $messages);
+    	$json = array();
         
     	if($pevent){
     		$json['id'] = $pevent->getId();
@@ -427,9 +437,7 @@ class ModelsController extends FormController
      	$form = $builder->createForm($pevent);
      	$form->setHydrator(new DoctrineObject($objectManager))
      	->setObject($pevent);
-     	
      	$form->add(new CustomFieldset($this->getServiceLocator(), $id));
-     	
      	$viewmodel->setVariables(array('form' =>$form));
      	return $viewmodel;
      	
