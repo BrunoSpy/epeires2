@@ -251,7 +251,7 @@ var form = function(url){
 	};
 	
 	/************************/
-	
+	        
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
@@ -509,6 +509,10 @@ var form = function(url){
 						url+'events/subform?part=custom_fields&id='+root_value,
 						function(data){
 							$("#custom_fields").html(data);
+                                                        $("#event input").on("invalid", function(event){
+                                                            $("#accordion-Descriptionid").collapse('show');
+                                                            console.log('done');
+                                                        });
 						}			
 					);
 					
@@ -569,6 +573,9 @@ var form = function(url){
                             url + 'events/subform?part=custom_fields&id=' + subcat_value,
                             function(data) {
                                 $("#custom_fields").html(data);
+                                $("#event input").on("invalid", function(event){
+                                    $("#Descriptionid-accordion").collapse('show');
+                                });
                             }
                     );
                     $.post(
