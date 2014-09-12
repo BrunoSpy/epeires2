@@ -1038,7 +1038,7 @@ class EventsController extends ZoneController {
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'category_compact' => $event->getCategory()->isCompactMode(),
-                                        'category_place' => ($event->getCategory()->getParent() ? -1 : $event->getCategory()->getPlace()),
+                                        'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : -1),
     					'status_name' => $event->getStatus()->getName(),
     					'status_id' => $event->getStatus()->getId(),
     					'impact_value' => $event->getImpact()->getValue(),

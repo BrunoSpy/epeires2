@@ -107,7 +107,7 @@ var timeline = {
 								dfin = new Date(value.end_date);
 							}
 						}
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name,value.fields];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name,value.fields, value.category_place];
 						corresp[key] = i;
 						i ++;
 					});
@@ -139,7 +139,7 @@ var timeline = {
 						}
 					}
 					if (!corresp[key]) {
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name, value.fields];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name, value.fields, value.category_place];
 						corresp[key] = i;
 						i ++;
 					}
@@ -215,8 +215,8 @@ var timeline = {
 				'background-color':'#C0C0C0'});
 			for (var i=1;i<decoup;i++) { 
 				time_obj = $('<div class="Time_obj"></div>');
-				base_elmt.append(time_obj);
-				time_obj.css({'position':'absolute', 'top': 35+'px', 'left': lar_unit*i+'px', 'width': 1, 'height':hauteur-50 ,'z-index' : -1, 
+				base_elmt.append(time_obj); 
+				time_obj.css({'position':'absolute', 'top': 35+'px', 'left': lar_unit*i+'px', 'width': 1, 'height':hauteur-50, 'z-index' : -1, 
 					'background-color':'#C0C0C0'});
 				if (i%2 == 0) {
 					time_obj = $('<div class="Time_obj">30</div>');
@@ -235,8 +235,6 @@ var timeline = {
 					}
 				}
 			}
-
-
 		},
 		// création de la timeBar
 		timeBar: function(element) {
@@ -507,12 +505,14 @@ var timeline = {
 			var yy = 0;
 			var y1;
 			y_temp = delt_ligne;
+			tableau.sort(function(a,b){return a[10]-b[10];});
 			for (var j = 0; j<nb; j++) {
 				if (cat_display[j] == 1) {
 					id_list = new Array();
 					y1 = y_temp;
 					for (var i = 0; i<len; i++) {
 						if (tableau[i][6] == categorie[j]) {
+							console.log(tableau[i][10]);
 							id = tableau[i][0];
 							debut = tableau[i][1];
 							fin = tableau[i][2];
@@ -727,15 +727,15 @@ var timeline = {
 			// ajout du bouton "ouverture fiche"
 			elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 			$(elmt_txt).append(elmt_b1);
-			$(elmt_b1).append('  <i class="icon-pencil"></i>');
+			$(elmt_b1).append('    <i class="icon-pencil"></i>');
 			// ajout du bouton "ouverture fiche réflexe"
 			elmt_b2 = $('<a href="#" class="checklist-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 			$(elmt_txt).append(elmt_b2);
-			$(elmt_b2).append('  <i class="icon-tasks"></i>');
+			$(elmt_b2).append('    <i class="icon-tasks"></i>');
 			// ajout de l'archivage
 			elmt_arch = $('<a href="#" class="archive-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 			$(elmt_txt).append(elmt_arch);
-			$(elmt_arch).append('  <i class="icon-eye-close"></i>');
+			$(elmt_arch).append('    <i class="icon-eye-close"></i>');
 			// lien entre le texte et l'événement (si texte écrit en dehors)
 			var lien = $('<div class="no_lien"></div>');
 			$(elmt).append(lien);
@@ -1315,6 +1315,7 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				var fields = value.fields;
+				var emplacement = value.category_place;
 				if (id >= 0) {
 				//	if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
 				//			|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
@@ -1335,19 +1336,22 @@ var timeline = {
 						}
 				//	}
 				} else {
-					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields];
+					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields, emplacement];
 					corresp[key] = len;
 					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
 				}
 				//			$('#cpt_evts').text(cpt_journee.length);
 			i ++;
 		});
-			if (tri_cat) { 
-				timeline.tri_cat(timeline_content, tab,1);
-			} else if (tri_hdeb) {
-				timeline.tri_hdeb(timeline_content, tab,1);
-			} else if (tri_comp) {
-				timeline.tri_comp(timeline_content, tab,1);
+		if (!(data instanceof Array)) { 
+				console.log("ok");
+				if (tri_cat) { 
+					timeline.tri_cat(timeline_content, tab,1);
+				} else if (tri_hdeb) {
+					timeline.tri_hdeb(timeline_content, tab,1);
+				} else if (tri_comp) {
+					timeline.tri_comp(timeline_content, tab,1);
+				}
 			}
 		},
 		// informations d'un évènement ajouté
@@ -1375,7 +1379,8 @@ var timeline = {
 				var impt = value.archived;
 				var mod = value.modifiable;
 				var fields = value.fields;
-				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields];
+				var emplacement = value.category_place;
+				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields, emplacement];
 				corresp[key] = len;
 				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
