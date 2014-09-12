@@ -1038,6 +1038,7 @@ class EventsController extends ZoneController {
     					'category' => $event->getCategory()->getName(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'category_compact' => $event->getCategory()->isCompactMode(),
+                                        'category_place' => ($event->getCategory()->getParent() ? -1 : $event->getCategory()->getPlace()),
     					'status_name' => $event->getStatus()->getName(),
     					'status_id' => $event->getStatus()->getId(),
     					'impact_value' => $event->getImpact()->getValue(),
@@ -1065,15 +1066,7 @@ class EventsController extends ZoneController {
             $fields[$formatter->format($update->getCreatedOn())] = nl2br($update->getText());
         }
     	$json['fields'] = $fields;
-    	
-//     	$actions = array();
-//     	foreach ($event->getChildren() as $child){
-//             if($child->getStatus() != null) { //Status is required but...
-//                 $actions[$eventservice->getName($child)] = $child->getStatus()->isOpen();
-//             }
-//     	}
-//     	$json['actions'] = $actions;
-//     	
+    	  	
     	return $json;
     }
     
