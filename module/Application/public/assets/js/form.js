@@ -511,7 +511,6 @@ var form = function(url){
 							$("#custom_fields").html(data);
                                                         $("#event input").on("invalid", function(event){
                                                             $("#accordion-Descriptionid").collapse('show');
-                                                            console.log('done');
                                                         });
 						}			
 					);
@@ -574,7 +573,7 @@ var form = function(url){
                             function(data) {
                                 $("#custom_fields").html(data);
                                 $("#event input").on("invalid", function(event){
-                                    $("#Descriptionid-accordion").collapse('show');
+                                    $("#accordion-Descriptionid").collapse('show');
                                 });
                             }
                     );
