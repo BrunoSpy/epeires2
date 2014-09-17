@@ -31,7 +31,8 @@
     margin-bottom: 0px;
 }
 
-.panel dd {
+.panel dd,
+#event dd{
     display: list-item;
     list-style-type: disc;
     margin-left: 2em;
@@ -362,4 +363,20 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
     height: 10px;
     margin-bottom: 0px;
     width: 71px;
+}
+
+#Event blockquote,
+#updates blockquote{
+    margin-bottom: 5px;
+}
+
+#Event blockquote p,
+#updates blockquote p{
+    font-size: 85%;
+    font-weight: bold;
+}
+
+#Event blockquote small,
+#updates blockquote small{
+    font-size: 80%;
 }

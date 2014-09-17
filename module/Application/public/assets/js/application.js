@@ -192,7 +192,7 @@ $(document).ready(function(){
     $(document).on('submit', '#add-note', function(e){
         e.preventDefault();
         var me = $(this);
-        $.post(url+'events/addnote?id='+$(this).data('id'), $(this).serialize(), function(data){
+        $.post(url+'events/addnote?id='+me.data('id'), me.serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
                 //mise à jour notes
@@ -206,6 +206,7 @@ $(document).ready(function(){
                 });
             }
             displayMessages(data);
+            me.parent('.modal').modal('hide');
         });
     });
     
@@ -246,15 +247,15 @@ $(document).ready(function(){
         }        
     });
 
-    $(document).on('click', '.note', function(){
+    $(document).on('click', '#updates .note', function(){
         var me = $(this).html();
-        var dd = $(this).closest('dd');
-        dd.empty();
+        var p = $(this).closest('p');
+        p.empty();
         var form = $('<form data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></form>');
         form.append('<textarea name="note">'+me+'</textarea>');
         form.append('<button class="btn btn-mini btn-primary" type="submit"><i class="icon-ok"></i></button>');
         form.append('<a href="#" class="cancel-note btn btn-mini"><i class="icon-remove"></i></a>');
-        dd.append(form);
+        p.append(form);
     });
     
     $(document).on('submit', 'form.modify-note', function(e){
@@ -262,10 +263,10 @@ $(document).ready(function(){
         var me = $(this);
         $.post($(this).attr('action'), $(this).serialize(), function(data){
             if(!data['error']){
-                var dd = me.closest('dd');
+                var p = me.closest('p');
                 var span = $('<span class="note" data-id="'+me.data('id')+'">'+me.find('textarea').val()+'</span>');
-                dd.empty();
-                dd.append(span);
+                p.empty();
+                p.append(span);
             }
             displayMessages(data);
         });
@@ -274,10 +275,10 @@ $(document).ready(function(){
     $(document).on('click', '.cancel-note', function(e){
         e.preventDefault();
         var form = $(this).closest('form');
-        var dd = $(this).closest('dd');
+        var p = $(this).closest('p');
         var span = $('<span class="note" data-id="'+form.data('id')+'">'+form.data('cancel')+'</span>');
-        dd.empty();
-        dd.append(span);
+        p.empty();
+        p.append(span);
     });
     
     //à mettre dans timeline.js ?

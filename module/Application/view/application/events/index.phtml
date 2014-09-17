@@ -62,6 +62,26 @@ echo $this->modalwindow("add-alarm",
 	"",
 	"<div id=\"alarm-form\"></div>");
     
+echo $this->modalwindow('add-note-modal',
+        "<h3>Ajout d'une note</h3>",
+        "",
+        "<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
+        . "<div class=\"modal-body\">"
+            . "<div class=\"control-group\">"
+                . "<label class=\"control-label\">Contenu : </label>"
+                . "<div class=\"controls\"><textarea name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
+            . "</div>"
+        . "</div>"
+        . "<div class=\"modal-footer\">"
+            . "<div class=\"control-group\">"
+                . "<div class=\"controls\">"
+                    . "<div style=\"display:inline-block; position:relative;\">"
+                        . "<input type=\"submit\" class=\"btn btn-small btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+                    . "</div>"
+                . "</div>"
+            . "</div>"
+        . "</div>"
+        . "</form>");
 ?>
 
 <?php $this->inlineScript()->captureStart();?>

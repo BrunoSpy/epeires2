@@ -738,6 +738,13 @@ var form = function(url){
         //gestion des notes
         $("#event").on('click', '#addnote', function(e){
             e.preventDefault();
-            
+            $("#add-note").data('id', $(this).data('id'));
+        });
+        
+        $("#add-note-modal").on('hide', function(){
+            //update notes
+            $("#form-notes").load(url+'events/updates?id='+$("#add-note").data('id'), function(){
+                $("#notesTitle").html("Notes <span class=\"pull-right badge\">"+$("#form-notes blockquote").length+"</span>");
+            });
         });
 };
