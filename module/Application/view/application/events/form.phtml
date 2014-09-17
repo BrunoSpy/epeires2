@@ -338,7 +338,36 @@
 			}
 		}
 		echo $this->accordionGroup("Fiche réflexe <span class=\"pull-right badge\">".$countactions."</span>", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
-		              
+		
+                //en cas de modif, afficher les notes
+                if($this->event){
+                    $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
+                        \IntlDateFormatter::FULL,
+                        \IntlDateFormatter::FULL,
+                        'UTC',
+                        \IntlDateFormatter::GREGORIAN,
+                        'dd LLL, HH:mm');
+                    $html = '<div id="form-notes">';
+                    foreach ($this->event->getUpdates() as $update){
+                        $html .= "<blockquote>"
+                                . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
+                                . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
+                                . "</blockquote>";
+                        
+                        //$html .= '<dt>' . $formatterNote->format($update->getCreatedOn()) . ' UTC (' . $this->updateAuthor($update) . ')</dt>';
+                        //$html .= '<dd>';
+                        //$html .= '<span class="note" data-id="' . $update->getId() . '">' . nl2br($update->getText()) . '</span>';
+                        //$html .= '</dd>';
+                    }
+                    $html .='</div>';
+                    //ajout de notes si droits ok
+                    if($mod){
+			$html .= "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
+                    }
+                    
+                    echo $this->accordionGroup('Notes <span class="pull-right badge">'.count($this->event->getUpdates()).'</span>', $html, array('data-parent' => 'form', 'title_id' => 'notesTitle'));
+                }
+                
 		?>
 
 	<div class="control-group">

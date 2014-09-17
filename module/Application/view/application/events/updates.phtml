@@ -1,24 +1,28 @@
 <?php
 
-if($this->updates){
-	
-	$history = $this->history;
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+if ($this->updates) {
+
+    $history = $this->history;
+    $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
             'UTC',
             \IntlDateFormatter::GREGORIAN,
             'dd LLL, HH:mm');
-        
-	if (count($this->updates) > 0) {
-            echo '<dl>';
-            foreach ($this->updates as $update) {
-                echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC ('.$this->updateAuthor($update).')</dt>';
-                echo '<dd>';
-                    echo '<span class="note" data-id="'.$update->getId().'">'.nl2br($update->getText()).'</span>';
-                echo '</dd>';
+
+    if (count($this->updates) > 0) {
+       // echo '<dl>';
+        foreach ($this->updates as $update) {
+            echo "<blockquote>";
+            echo "<p><span class=\"note\" data-id=\"".$update->getID()."\">". nl2br($update->getText()) ."</span></p>";
+            echo "<small>".$this->updateAuthor($update)." à ".$formatter->format($update->getCreatedOn())."</small>";
+            echo  "</blockquote>";
+        //    echo '<dt>' . $formatter->format($update->getCreatedOn()) . ' UTC (' . $this->updateAuthor($update) . ')</dt>';
+        //    echo '<dd>';
+        //    echo '<span class="note" data-id="' . $update->getId() . '">' . nl2br($update->getText()) . '</span>';
+        //    echo '</dd>';
         }
-        echo '</dl>';
+      //  echo '</dl>';
     } else {
         echo "<p>Aucune note à afficher.</p>";
     }

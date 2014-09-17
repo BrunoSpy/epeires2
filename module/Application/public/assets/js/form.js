@@ -509,9 +509,8 @@ var form = function(url){
 						url+'events/subform?part=custom_fields&id='+root_value,
 						function(data){
 							$("#custom_fields").html(data);
-                                                        $("#event input").on("invalid", function(event){
+                                                        $("#event input, #event select").on("invalid", function(event){
                                                             $("#accordion-Descriptionid").collapse('show');
-                                                            console.log('done');
                                                         });
 						}			
 					);
@@ -569,12 +568,11 @@ var form = function(url){
                     $("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());
                     $("#custom_fields").html("");
                     $("input[name='category']").val(subcat_value);
-                    $.post(
-                            url + 'events/subform?part=custom_fields&id=' + subcat_value,
+                    $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
                             function(data) {
                                 $("#custom_fields").html(data);
-                                $("#event input").on("invalid", function(event){
-                                    $("#Descriptionid-accordion").collapse('show');
+                                $("#event input, #event select").on("invalid", function(event){
+                                    $("#accordion-Descriptionid").collapse('show');
                                 });
                             }
                     );
@@ -738,6 +736,13 @@ var form = function(url){
         //gestion des notes
         $("#event").on('click', '#addnote', function(e){
             e.preventDefault();
-            
+            $("#add-note").data('id', $(this).data('id'));
+        });
+        
+        $("#add-note-modal").on('hide', function(){
+            //update notes
+            $("#form-notes").load(url+'events/updates?id='+$("#add-note").data('id'), function(){
+                $("#notesTitle").html("Notes <span class=\"pull-right badge\">"+$("#form-notes blockquote").length+"</span>");
+            });
         });
 };
