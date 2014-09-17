@@ -28,7 +28,7 @@ class IPOHelper extends AbstractHelper {
 		
 		if($zfcuserauth->hasIdentity()) {
 		
-			$ipos = $objectmanager->getRepository('Application\Entity\IPO')->findBy(array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId()));
+			$ipos = $objectmanager->getRepository('Application\Entity\IPO')->findBy(array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId()), array('name' => 'asc'));
 		
 			$currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(
 									array('organisation' => $zfcuserauth->getIdentity()->getOrganisation()->getId(),
