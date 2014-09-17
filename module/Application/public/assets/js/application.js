@@ -211,7 +211,7 @@ $(document).ready(function(){
     });
     
     //click sur une fiche reflexe
-    $(document).on("click", "a.fiche", function(){
+    $(document).on("click", "#fiche a.fiche", function(){
 		var id = $(this).data('id');
 		var me = $(this);
 		//tell the server to toggle the status
