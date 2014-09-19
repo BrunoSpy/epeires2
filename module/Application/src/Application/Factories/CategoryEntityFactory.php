@@ -96,7 +96,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$alarmcat = new AlarmCategory();
 		$namefield = new CustomField();
 		$namefield->setCategory($alarmcat);
-		$namefield->setName('Nom');
+		$namefield->setName('Titre');
 		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
 		$namefield->setPlace(1);
 		$namefield->setDefaultValue("");

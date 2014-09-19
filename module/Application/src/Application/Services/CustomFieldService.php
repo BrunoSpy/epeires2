@@ -66,9 +66,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 					$values = explode("\n", $defaultvalue);
 					if(array_key_exists($fieldvalue, $values)){
 						$name = $values[$fieldvalue];
-					} else {
-                                            error_log($customfield->getId());
-                                        }
+					}
 				}
 				break;
 			case 'stack':

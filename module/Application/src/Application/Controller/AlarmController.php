@@ -224,7 +224,7 @@ class AlarmController extends FormController {
 					$alarmcomment = nl2br($value->getValue());
 				}
 			}
-			$alarmjson['text'] = "<b>".$formatter->format($alarm->getStartDate())." : Alerte pour ".$parentname."</b><br />"
+			$alarmjson['text'] = "<div class=\"noty_big\"><b>".$formatter->format($alarm->getStartDate())." : Mémo</b> pour <b>".$parentname."</b><br />"
 					. $alarmname.(strlen($alarmcomment) > 0 ? " : <br />".$alarmcomment : "");
 			
 			$alarms[] = $alarmjson;
