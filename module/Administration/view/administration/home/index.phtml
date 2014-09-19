@@ -1,20 +1,10 @@
 <?php 
-
-    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-
-    $stringfromfile = $stringfromfile[0]; //get the string from the array
-
-    $explodedstring = explode("/", $stringfromfile); //seperate out by the "/" in the string
     
-    $branchname = $explodedstring[2]; //get the one that is always the branch name
-
-    $stringfromfile = file('.git/FETCH_HEAD', FILE_USE_INCLUDE_PATH);
-
-    $stringfromfile = $stringfromfile[0]; //get the string from the array
+    $branchname = shell_exec("git rev-parse --abbrev-ref HEAD"); //get the one that is always the branch name
     
-    $explodedstring = explode("\t", $stringfromfile);
-       
-    $revision = $explodedstring[0];
+    $revision = shell_exec("git log -n 1 --pretty=format:'%h' --abbrev-commit");
+    
+    $commit = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
 ?>
 <div class="container-fluid">
 	<div class="row-fluid">
@@ -26,7 +16,7 @@
 				<div class="block-content collapse in">
 					<div class="span12">
                                             <p> Branche : <em><?php echo $branchname; ?></em></p>
-                                            <p> Revision : <em><?php echo $revision; ?></em></p>
+                                            <p> Révision : <em><?php echo $revision." : ".$commit; ?></em></p>
 					</div>
 				</div>
 			</div>
