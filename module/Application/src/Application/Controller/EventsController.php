@@ -1057,6 +1057,7 @@ class EventsController extends ZoneController {
     					'impact_name' => $event->getImpact()->getName(),
     					'impact_style' => $event->getImpact()->getStyle(),
     					'archived' => $event->isArchived(),
+                                        'files' => count($event->getFiles())
     	);
     	
     	$fields = array();
