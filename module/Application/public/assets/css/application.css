@@ -1,5 +1,11 @@
 @CHARSET "UTF-8";
 
+/************** Mémos ********************/
+.noty_message .noty_big {
+    font-size: 110%;
+    line-height: normal;
+}
+
 /************** Slide panel **************/
 
 .panel-fixed {

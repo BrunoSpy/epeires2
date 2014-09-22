@@ -647,7 +647,7 @@ var form = function(url){
 	//fenêtre de création d'alarme
 	$('#event').on('click', '#addalarm', function(e){
 		e.preventDefault();
-                $('#alarm-title').html("Ajout d'une alarme");
+                $('#alarm-title').html("Ajout d'un mémo");
 		$('#alarm-form').load(url+'alarm/form', function(){
                     $("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart", 'init':true});
                 });
@@ -655,7 +655,7 @@ var form = function(url){
 	
         $("#event").on('click', '.modify-alarm', function(e){
             e.preventDefault();
-            $('#alarm-title').html("Modification d'une alarme");
+            $('#alarm-title').html("Modification d'un mémo");
             var me = $(this);
             var id = me.closest('tr').data('id');
             $('#alarm-form').load(url+'alarm/form?id='+id, function(){

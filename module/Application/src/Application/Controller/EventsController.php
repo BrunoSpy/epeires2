@@ -148,11 +148,12 @@ class EventsController extends ZoneController {
     			//search events
     			$results['events'] = array();
     			$qbEvents = $em->createQueryBuilder();
-    			$qbEvents->select(array('e', 'v', 'c', 't'))
+    			$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
     			->from('Application\Entity\Event', 'e')
     			->leftJoin('e.custom_fields_values', 'v')
     			->leftJoin('v.customfield', 'c')
     			->leftJoin('c.type', 't')
+                        ->leftJoin('e.category', 'cat')
                         ->andWhere($qbEvents->expr()->isNull('e.parent'))
     			->orderBy('e.startdate', 'DESC')
     			->setMaxResults( 10 );
@@ -160,16 +161,17 @@ class EventsController extends ZoneController {
     			//search models
     			$results['models'] = array();
     			$qbModels = $em->createQueryBuilder();
-    			$qbModels->select(array('m', 'v', 'c', 't'))
+    			$qbModels->select(array('m', 'v', 'c', 't', 'cat'))
     			->from('Application\Entity\PredefinedEvent', 'm')
     			->innerJoin('m.custom_fields_values', 'v')
     			->innerJoin('v.customfield', 'c')
     			->innerJoin('c.type', 't')
+                        ->innerJoin('m.category', 'cat')
                         ->andWhere($qbModels->expr()->isNull('m.parent'))
     			->andWhere($qbModels->expr()->eq('m.searchable', true));
     			
     			$this->addCustomFieldsSearch($qbEvents, $qbModels, $search);
-    			
+    			                        
     			$query = $qbEvents->getQuery();
     			$events = $query->getResult();
     			//events are loaded partially during query
@@ -240,6 +242,16 @@ class EventsController extends ZoneController {
     	
         $orModels = $qbModels->expr()->orX($qbModels->expr()->like('m.name', $qbModels->expr()->literal($search.'%')));
         $orEvents = $qbEvents->expr()->orX($qbEvents->expr()->like('v.value', $qbEvents->expr()->literal($search.'%')));
+                
+        $orModels->add($qbModels->expr()->orX(
+                    $qbModels->expr()->like('cat.name', $qbModels->expr()->literal($search.'%')),
+                    $qbModels->expr()->like('cat.shortname', $qbModels->expr()->literal($search.'%'))
+                ));
+        
+        $orEvents->add($qbEvents->expr()->orX(
+                    $qbEvents->expr()->like('cat.name', $qbEvents->expr()->literal($search.'%')),
+                    $qbEvents->expr()->like('cat.shortname', $qbEvents->expr()->literal($search.'%'))
+        ));
         
     	foreach ($antennas as $antenna){
     		$orEvents->add($qbEvents->expr()->andX(

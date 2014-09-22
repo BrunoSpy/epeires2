@@ -91,8 +91,20 @@
 	            		
 	            	</li>
 	            	<li class="divider-vertical"></li>
-	            	<li><a href="<?php echo $this->url('application', array('controller'=>'radars', 'action'=>'index')) ?>">Radars</a></li>
-	            	<li><a id="frequency" href="<?php echo $this->url('application', array('controller'=>'frequencies', 'action'=>'index')) ?>">Fréquences</a></li>
+                        <?php
+                        if($this->isGranted('radars.read')){
+                            echo '<li><a href="'
+                                . $this->url('application', array('controller'=>'radars', 'action'=>'index'))
+                                . '">Radars</a></li>';
+                        }
+                        ?>
+                        <?php
+                        if($this->isGranted('frequencies.read')){
+                            echo '<li><a id="frequency" href="'
+                                . $this->url('application', array('controller'=>'frequencies', 'action'=>'index'))
+                                . '">Radio</a></li>';
+                        }
+                        ?>
                         </ul>
 	        	<ul class="nav pull-right">
 	        		<li>

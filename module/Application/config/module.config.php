@@ -137,6 +137,24 @@ return array(
     	),
     	'Fréquences' => array(
     		'frequencies.read' => 'Lecture',
-    	),	
+    	),
+        'Radars' => array(
+                'radars.read' => 'Lecture',
+        )
+    ),
+    
+    'zfc_rbac' => array(
+    	'guards' => array(
+   		'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+                    array(
+                        'controller' => 'Application\Controller\Frequencies',
+                        'permissions' => ['frequencies.read'],
+                    ),
+                    array(
+                        'controller' => 'Application\Controller\Radars',
+                        'permissions' => ['radars.read'],
+                    ),
+    		),
+    	),
     ),
 );

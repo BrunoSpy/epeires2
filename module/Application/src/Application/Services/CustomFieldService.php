@@ -64,7 +64,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$defaultvalue = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
 				if($defaultvalue && $fieldvalue != null) {
 					$values = explode("\n", $defaultvalue);
-					if(count($values) >= $fieldvalue){
+					if(array_key_exists($fieldvalue, $values)){
 						$name = $values[$fieldvalue];
 					}
 				}
