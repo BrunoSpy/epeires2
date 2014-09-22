@@ -165,7 +165,7 @@ var form = function(url){
                     var newend = new Date();
                     newend.setDate(end.getDate() +1);
                     $('#end td.day input').val(newend.getUTCDate()+'-'+(newend.getUTCMonth()+1)+'-'+newend.getUTCFullYear());
-                    //.trigger('change');
+                    $('#end td.day input').trigger('change');
                     //dateDeb.val(dateFin.val());
                     //updateHours();
                 }
@@ -340,7 +340,7 @@ var form = function(url){
                         $("#event input[name=startdate]").timepickerform({'id':'start'});
                         $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
-			$("#Horairesid").trigger('click');
+			$("#Descriptionid").trigger('click');
 		});
 		$("#search-results").offset({top:0, left:0});
 		pauseUpdateAlarms();
@@ -441,10 +441,9 @@ var form = function(url){
 						} else if(elt.is('input')){
 							elt.prop('value', value);
 						} 
-						//TODO les autres types de champs : 
 					});
-					//open hour accordion
-					$("#Horairesid").trigger('click');
+					//open description accordion
+					$("#Descriptionid").trigger('click');
 					//prepare actions
 					$("#actionsTitle").removeClass("disabled");
 				});
@@ -547,7 +546,11 @@ var form = function(url){
 				url+'events/subform?part=predefined_events&id='+$(this).val(),
 				function(data){
 					$("#predefined_events").html(data);
-					$("#Modèlesid").removeClass("disabled");
+                                         if($('#predefined_events table').length > 0) {
+                                            $("#Modèlesid").removeClass("disabled");
+                                        } else {
+                                            $("#Descriptionid").trigger('click');
+                                        }
 				}
 			);
 		} else {
@@ -580,12 +583,12 @@ var form = function(url){
                             url + 'events/subform?part=predefined_events&id=' + $(this).val(),
                                         function(data){
 					$("#predefined_events").html(data);
-					$("#Modèlesid").removeClass("disabled");
                                         //don't open model panel if there is no model
                                         if($('#predefined_events table').length > 0) {
                                             $('#Modèlesid').trigger('click');
+                                            $("#Modèlesid").removeClass("disabled");
                                         } else {
-                                            $("#Horairesid").trigger('click');
+                                            $("#Descriptionid").trigger('click');
                                         }
 				}
 			);

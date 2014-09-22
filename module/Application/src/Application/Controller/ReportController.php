@@ -65,6 +65,15 @@ class ReportController extends AbstractActionController {
             $pdf = new PdfModel();
             $pdf->setVariables(array('events' => $events, 'day' => $day));
             $pdf->setOption('paperSize', 'a4');
+            
+            $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd_LL_yyyy');
+            $pdf->setOption('filename', 'rapport_du_'.$formatter->format(new \DateTime($day)));
+            
             return $pdf;
         } else {
             //erreur
