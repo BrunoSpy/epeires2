@@ -499,7 +499,8 @@ var form = function(url){
 		
 		if(root_value > 0) {
 			
-			$.post(url+'events/subform?part=subcategories&id='+$(this).val(),
+			$.when(
+                            $.post(url+'events/subform?part=subcategories&id='+$(this).val(),
 				function(data){
 					$('#subcategories').prop('disabled',false);
 					$("#subcategories").html(data);
@@ -513,14 +514,28 @@ var form = function(url){
                                                         });
 						}			
 					);
-					
 					$("#Horairesid").removeClass("disabled");
 					$("#Descriptionid").removeClass("disabled");
 					$("#filesTitle").removeClass("disabled");
 					$("#alarmTitle").removeClass("disabled");
-					$("input[name='submit']").prop('disabled', false);
-					
-			});
+					$("input[name='submit']").prop('disabled', false);  
+                            }),
+                            //récupération des modèles
+                            $.post(
+				url+'events/subform?part=predefined_events&id='+$(this).val(),
+				function(data){
+                                    $("#predefined_events").html(data);
+                                    if($('#predefined_events table').length > 0) {
+                                        $("#Modèlesid").removeClass("disabled");
+                                    }
+                            })
+                        ).then(function(){
+                            if($("#subcategories option").length <= 1 && $("#predefined_events table").length > 0){
+                                $("#Modèlesid").trigger('click');
+                            } else if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
+                                $("#Descriptionid").trigger('click');
+                            }
+                        });
 			$("input[name='category']").val(root_value);
                         //affichage des évts suggérés
                         $.getJSON(url+'events/suggestEvents?id='+root_value, function(data){
@@ -541,18 +556,7 @@ var form = function(url){
                                 $("#root_categories").popover('show');
                             }
                         });
-                        //récupération des modèles
-                        $.post(
-				url+'events/subform?part=predefined_events&id='+$(this).val(),
-				function(data){
-					$("#predefined_events").html(data);
-                                         if($('#predefined_events table').length > 0) {
-                                            $("#Modèlesid").removeClass("disabled");
-                                        } else {
-                                            $("#Descriptionid").trigger('click');
-                                        }
-				}
-			);
+                        
 		} else {
 			$("#category_title").html('Catégories');
 			$("#Horairesid").addClass("disabled");
@@ -588,6 +592,7 @@ var form = function(url){
                                             $('#Modèlesid').trigger('click');
                                             $("#Modèlesid").removeClass("disabled");
                                         } else {
+                                            $("#Modèlesid").addClass("disabled");
                                             $("#Descriptionid").trigger('click');
                                         }
 				}
