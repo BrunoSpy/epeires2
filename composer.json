@@ -26,10 +26,17 @@
         "mrclay/minify": "*",
         "doctrine/migrations": "dev-master",
         "murganikolay/doctrine-migrations-module": "dev-master",
-        "dino/dompdf-module": "dev-master"
+        "dino/dompdf-module": "dev-master",
+	"components/jquery": "2.1.*",
+	"components/bootstrap": "2.3.*",
+	"components/jqueryui": "1.10.*"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
         "zendframework/zftool": "dev-master"
+    },
+    "config":{
+        "component-dir": "public/components",
+	"component-baseurl": "/components"
     }
 }
