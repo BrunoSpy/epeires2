@@ -301,6 +301,7 @@ var form = function(url){
 		restoreUpdateAlarms();
 	});
 	
+        var cat_id = -1;
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
 			$("#create-evt").slideUp('fast');
@@ -320,6 +321,12 @@ var form = function(url){
                                                 $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 						updateHours();
 						updateHourTitle();
+                                                console.log('cat_id '+cat_id);
+                                                if(cat_id >= 0){
+                                                    $("#root_categories").val(cat_id);
+                                                    $('#root_categories').trigger('change');
+                                                    cat_id = -1;
+                                                }
 					}
 			);
 			$("#create-evt").slideDown('fast');
@@ -740,6 +747,14 @@ var form = function(url){
                     $("#root_categories").popover('hide');
 		};		
 	});
+        
+        //ouverture du formulaire lors d'un clic sur catégorie
+        $(document).on('click', '.categorie', function(e){
+            e.preventDefault();
+            var id = $(this).data('id');
+            $("#create-link").trigger('click');
+            cat_id = id;
+        });
         
         //gestion des notes
         $("#event").on('click', '#addnote', function(e){
