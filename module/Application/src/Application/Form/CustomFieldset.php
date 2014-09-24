@@ -52,7 +52,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 		foreach($customfields as $customfield){
 			$definition = array();
 			$definition['name'] = $customfield->getId();
-			$this->names[] = $customfield->getName();
+			$this->names[] = $customfield->getId();
 			$options = array('label' => $customfield->getName()." :");
 			
 			$customfieldservice = $sm->get('CustomFieldService');
@@ -72,10 +72,10 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 			
 			if($customfield->getId() == $category->getFieldname()->getId()){
 				$definition['attributes']['required'] = 'required';
-                                $definition['attributes']['maxlength'] = '32';
+                                $definition['attributes']['maxlength'] = '48';
 			}
                         $definition['attributes']['title'] = $customfield->getTooltip();
-                        
+                                                
 			$this->add($definition);
 		}
 		
@@ -86,7 +86,6 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 		foreach ($this->names as $name){
 			$specifications[$name] = array('required' => false);
 		}
-			
 		return $specifications;
 	}
 	
