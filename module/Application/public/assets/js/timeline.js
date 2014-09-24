@@ -109,7 +109,7 @@ var timeline = {
 								dfin = new Date(value.end_date);
 							}
 						}
-						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name,value.fields, value.category_place];
+						tab[i] = [key, ddeb, dfin, value.punctual, value.name, value.archived, value.category_root,value.modifiable, value.status_name,value.fields, value.category_place, value.files];
 						corresp[key] = i;
 						i ++;
 					});
@@ -322,7 +322,7 @@ var timeline = {
 							if (debut < d_max) {liste_avenir.push(i);}
 						} else {
 							liste_affichee.push(i);
-							timeline.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8]);
+							timeline.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8], tableau[i][11]);
 							cpt ++;
 						}
 					}
@@ -514,7 +514,6 @@ var timeline = {
 					y1 = y_temp;
 					for (var i = 0; i<len; i++) {
 						if (tableau[i][6] == categorie[j]) {
-							console.log(tableau[i][10]);
 							id = tableau[i][0];
 							debut = tableau[i][1];
 							fin = tableau[i][2];
@@ -632,8 +631,6 @@ var timeline = {
 							var k = 0;
 							while (k < nb_elmt_ligne && test == 1) {
 								if (!((elmt.position().left + elmt.width() < occup[j][k][0]) || (elmt.position().left > occup[j][k][1]))) {
-									console.log(elmt.position().left+elmt.width()+"     "+occup[j][k][0]);
-									console.log(elmt.position().left+"     "+occup[j][k][1]);
 									test = 0;
 								}
 								k++;		
@@ -878,6 +875,8 @@ var timeline = {
 				elmt_fleche2.show();
 				elmt_rect.css({'left':x0+'px', 'width':wid+'px'});				
 				elmt_compl.hide();
+				move_fin.addClass('disp');
+				move_fin.css({'left': wid-10+'px', 'width':'2px'});	
 				elmt_fleche2.css({'left': x2+'px'});
 				move_deb.css({'left': 8+'px', 'width':'2px'});
 				break;
@@ -1067,14 +1066,18 @@ var timeline = {
 			}
 		},
 		// saisie du texte des champs heure et du champ label
-		enrichir_contenu: function (base_element, id, d_debut, d_fin, label) {
+		enrichir_contenu: function (base_element, id, d_debut, d_fin, label, fichier) {
 			var elmt = base_element.find('.ident'+id);
 			var elmt_txt = elmt.find('.label_elmt');
 			var elmt_deb = elmt.find('.elmt_deb');
 			var elmt_fin = elmt.find('.elmt_fin');
 			// positionnement des différents objets sur la ligne elmt
 			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
-			elmt_txt.text(label);
+			if (fichier > 0) {
+				elmt_txt.html(label+' <span class="badge">P</span>');
+			} else {
+				elmt_txt.text(label);
+			}
 			var elmt_b1 = $('<a href="#" class="modify-evt" data-id="'+id+'"data-name="'+label+'"></a>');
 			$(elmt_txt).append(elmt_b1);
 			$(elmt_b1).append('  <i class="icon-pencil"></i>');
@@ -1095,7 +1098,7 @@ var timeline = {
 				if (d_debut < d_ref_deb && d_debut.getDate() != d_actuelle.getDate()){ 
 					
 					var dDeb = d_debut.getUTCMonth()+1;
-					if (dDeb > 10) {hDeb = '<span style="display: inline-block; vertical-align: middle;">'+d_debut.getUTCDate()+"/"+dDeb+"<br/>"+hDeb+'</span>';} 
+					if (dDeb > 9) {hDeb = '<span style="display: inline-block; vertical-align: middle;">'+d_debut.getUTCDate()+"/"+dDeb+"<br/>"+hDeb+'</span>';} 
 					else {hDeb = '<span style="display: inline-block; vertical-align: middle;">'+d_debut.getUTCDate()+"/0"+dDeb+"<br/>"+hDeb+'</span>';}
 					var h1 = 0;
 				} else {
@@ -1113,7 +1116,7 @@ var timeline = {
 				var hFin = d_fin.getUTCHours()+":"+fin_min;
 				if (d_fin.getDate() != d_actuelle.getDate()){
 					var dFin = d_fin.getUTCMonth()+1;
-					if (dFin > 10) {hFin = '<span style="display: inline-block; vertical-align: middle;">'+d_fin.getUTCDate()+"/"+dFin+"<br/>"+hFin+'</span>'; }
+					if (dFin > 9) {hFin = '<span style="display: inline-block; vertical-align: middle;">'+d_fin.getUTCDate()+"/"+dFin+"<br/>"+hFin+'</span>'; }
 					else {hFin = '<span style="display: inline-block; vertical-align: middle;">'+d_fin.getUTCDate()+"/0"+dFin+"<br/>"+hFin+'</span>'; }
 					h2 = 0;
 				} else {
@@ -1224,7 +1227,7 @@ var timeline = {
 			return [l_deb, l_fin, warn, sts];
 		},
 		// création d'un évènement timeline supplémentaire
-		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
+		create_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//	dy = impt;
@@ -1238,12 +1241,12 @@ var timeline = {
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, y_temp, dy, type, couleur);
-			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label, fichier);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 			y_temp += dy + delt_ligne;
 		},
 		// création d'un évènement timeline supplémentaire
-		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
+		add_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//	dy = impt;
@@ -1257,7 +1260,7 @@ var timeline = {
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 			timeline.creation_ligne(base_element, id, label, 0, dy, type, couleur);
-			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label, fichier);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 			if (tri_cat) { 
 				timeline.tri_cat(base_element, tab,1);
@@ -1268,7 +1271,7 @@ var timeline = {
 			elmt.effect( "highlight",4000);
 		},
 		// mise à jour d'un évènement sur la timeline 
-		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat) {
+		update_elmt: function (base_element, id, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier) {
 			var ind = categorie.indexOf(cat);
 			var couleur = cat_coul[ind];
 		//	dy = impt;
@@ -1282,7 +1285,7 @@ var timeline = {
 			var wid = coord[1];
 			var type = timeline.type_elmt(id, d_debut, d_fin, ponct, etat);
 	//		var elmt = base_element.find('.ident'+id);
-			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label);
+			timeline.enrichir_contenu(base_element, id, d_debut, d_fin, label, fichier);
 			timeline.position_ligne(base_element, id, type, x0, wid, impt, mod, couleur);
 		},
 		// informations d'un évènement modifié
@@ -1321,6 +1324,7 @@ var timeline = {
 				var mod = value.modifiable;
 				var fields = value.fields;
 				var emplacement = value.category_place;
+				var fichier = value.files;
 				if (id >= 0) {
 				//	if (tab[id][0] != key || tab[id][1].getTime() != d_debut.getTime() || tab[id][3] != ponct || tab[id][4] != label
 				//			|| tab[id][5] != impt || tab[id][6] != cat || tab[id][7] != mod || tab[id][8] != etat 
@@ -1334,7 +1338,7 @@ var timeline = {
 							elmt.tooltip('destroy');
 							elmt.remove();
 						} else {
-							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier);
 							elmt = timeline_content.find('.ident'+key);
 							if (!loc) {
 								elmt.addClass("changed");
@@ -1343,15 +1347,14 @@ var timeline = {
 						}
 				//	}
 				} else {
-					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields, emplacement];
+					tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields, emplacement, fichier];
 					corresp[key] = len;
-					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier);
 				}
 				//			$('#cpt_evts').text(cpt_journee.length);
 			i ++;
 		});
 		if (!(data instanceof Array)) { 
-				console.log("ok");
 				if (tri_cat) { 
 					timeline.tri_cat(timeline_content, tab,1);
 				} else if (tri_hdeb) {
@@ -1387,7 +1390,8 @@ var timeline = {
 				var mod = value.modifiable;
 				var fields = value.fields;
 				var emplacement = value.category_place;
-				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields, emplacement];
+				var fichier = value.files;
+				tab[len] = [key, d_debut, d_fin, ponct, label, impt, cat,mod, etat, fields, emplacement, fichier];
 				corresp[key] = len;
 				if (d_fin == -1 || (d_debut < d_now && d_fin > d_now) || 
 						(d_debut.toLocaleDateString() == d_now.toLocaleDateString()) ||
@@ -1409,7 +1413,7 @@ var timeline = {
 					}
 				} else {
 					liste_affichee.push(len);
-					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
+					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier);
 				}
 				if (tri_cat) { 
 					timeline.tri_cat(timeline_content, tab,1);
