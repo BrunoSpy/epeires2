@@ -5,6 +5,7 @@ var cat_nom = new Array();
 var cat_coul = new Array();
 var cat_short = new Array();
 var cat_regroup = new Array();
+var cat_id = new Array();
 var cat_display = new Array();
 var impt_name = new Array();
 var impt_style = new Array();
@@ -71,6 +72,7 @@ var timeline = {
 					categorie[value.place] = value.name;
 					cat_short[value.place] = value.short_name;
 					cat_coul[value.place] = value.color;
+					cat_id[value.place] = key;
 					cat_regroup[value.place] = 1;
 					cat_display[value.place] = 1;
 					cat_elmt[value.place] = new Array();
@@ -526,6 +528,7 @@ var timeline = {
 									y_temp = y_temp + elmt.height() + delt_ligne;
 									elmt.show();
 								} else if (arch == 1 && aff_archives == 0) {
+									elmt.tooltip('destroy');
 									elmt.hide();
 								}
 								timeline.affichage_arch(elmt,arch);
@@ -539,7 +542,7 @@ var timeline = {
 					for (var k = 0; k<len_cat; k++) {
 						text_cat += cat_short[j][k]+'<br>';
 					}
-					var categ = $('<div class="categorie '+j+'">'+text_cat+'</div>');
+					var categ = $('<div class="categorie" data-id="'+cat_id[j]+'">'+text_cat+'</div>');
 					timeline_elmt.append(categ);
 					categ.css({'position':'absolute', 'top':yy+'px', 'left':'-15px', 'width':30+'px', 'height':'auto', 'text-align':'center',
 						'background-color':cat_coul[j],'border-style':'solid', 'border-width': '1px', 'border-color':'grey', 'border-radius': '0px', 'z-index':1});
@@ -588,6 +591,7 @@ var timeline = {
 						y_temp += elmt.height();
 						elmt.show();
 					} else if (arch == 1 && aff_archives == 0) {
+						elmt.tooltip('destroy');
 						elmt.hide();
 					}
 					timeline.affichage_arch(elmt,arch);					
@@ -649,6 +653,7 @@ var timeline = {
 						}
 						elmt.show();
 					} else if (arch == 1 && aff_archives == 0) {
+						elmt.tooltip('destroy');
 						elmt.hide();
 					}
 					timeline.affichage_arch(elmt,arch);					
@@ -1323,8 +1328,10 @@ var timeline = {
 						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields];
 						var elmt = timeline_content.find('.ident'+key);
 						if (d_fin >0 && d_fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
+							elmt.tooltip('destroy');
 							elmt.remove();
 						} else if (d_debut > d_ref_fin) {
+							elmt.tooltip('destroy');
 							elmt.remove();
 						} else {
 							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat);
