@@ -1,6 +1,12 @@
 #ZF2 third party
 vendor/
 
+#Components
+public/components/
+
+#Assets cache
+public/assets/
+
 *.pydevproject
 .project
 .metadata
