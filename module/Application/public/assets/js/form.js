@@ -321,7 +321,6 @@ var form = function(url){
                                                 $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 						updateHours();
 						updateHourTitle();
-                                                console.log('cat_id '+cat_id);
                                                 if(cat_id >= 0){
                                                     $("#root_categories").val(cat_id);
                                                     $('#root_categories').trigger('change');
