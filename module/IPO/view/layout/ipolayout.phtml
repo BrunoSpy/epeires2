@@ -11,19 +11,21 @@
                         ->prependStylesheet($this->basePath() . '/assets/css/ipo.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/core.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-switch.css')
-                        ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
-                        ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
-                        ->prependStylesheet($this->basePath() . '/css/jquery-ui.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-default/css/bootstrap-responsive.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-default/css/bootstrap.css')
+                        ->prependStylesheet($this->basePath() . '/components/jquery-ui/themes/smoothness/jquery-ui.min.css')
         				?>
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
                                         ->prependFile($this->basePath() . '/js/bootstrap-switch.js')
         				->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-                                        ->prependFile($this->basePath() . '/js/bootstrap.min.js')
-                                        ->prependFile($this->basePath() . '/js/noty/packaged/jquery.noty.packaged.min.js')
-                                        ->prependFile($this->basePath() . '/js/jquery-ui.min.js')
-                                        ->prependFile($this->basePath() . '/js/jquery.min.js')
+                        ->prependFile($this->basePath() . '/components/bootstrap/js/bootstrap.min.js')
+                        ->prependFile($this->basePath() . '/js/noty/packaged/jquery.noty.packaged.min.js')
+                        ->prependFile($this->basePath() . '/components/jquery-ui/ui/minified/i18n/jquery.ui.datepicker-fr.min.js')
+                        ->prependFile($this->basePath() . '/components/jquery-ui/ui/minified/jquery-ui.min.js')
+                        ->prependFile($this->basePath() . '/components/jquery/jquery.min.js')
+
         							   ?>
 
     </head>
