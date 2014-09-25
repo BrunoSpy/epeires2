@@ -46,6 +46,11 @@ return array(
         'unauthorized_strategy' => array(
             'template' => 'error/custom-403'
         ),
+        'guard_manager' => array(
+            'factories' => array(
+                'Core\Guard\AutoConnectGuard' => 'Core\Factory\AutoConnectGuardFactory'
+            )
+        )
     ),
     'zfcuser' => array(
         // telling ZfcUser to use our own class
