@@ -119,6 +119,18 @@ var antenna = function(url){
             }, 'json');
         });
 
+        $(document).on('click', '.switch-freq-state', function(e){
+            var me = $(this);
+            $('a.actions-freq, a#changefreq').popover('hide');
+            $.post(url+'frequencies/switchFrequencyState?freqid='+me.data('freqid')+'&state='+me.data('state'), function(data){
+                displayMessages(data);
+                //force page refresh
+                clearTimeout(timer);
+                doPollFrequencies();
+            }, 'json');
+        });
+        
+
 	$('.antenna-switch').on('switch-change', function(e, data){
 		$('a#end-antenna-href').attr('href', $(this).data('href')+"&state="+data.value);
 		$('#antenna_name').html($(this).data('antenna'));
@@ -215,7 +227,7 @@ var antenna = function(url){
 			};
 		}, 'json');
 	});
-	
+	        
 	$(document).on('click', '.brouillage', function(e){
 		$("#frequency_name").html($(this).data('freqname'));
 		$('#form-brouillage').load(url+'frequencies/formbrouillage?id='+$(this).data('freqid'), function(){
@@ -239,6 +251,13 @@ var antenna = function(url){
 		$("a.actions-freq").each(function(index, element){
 			var sector = $(this).closest('.sector');
 			var list = $("<ul></ul>");
+                        
+                        if(currentfrequencies[$(this).data('freq')].status){
+                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+$(this).data('freq')+"\" data-state=\"false\">Fréquence indisponible</a></li>");
+                        } else {
+                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+$(this).data('freq')+"\" data-state=\"true\">Fréquence disponible</a></li>");
+                        }
+                        
 			var mainantennacolor = sector.find('.antennas .mainantenna-color');
 			var backupantennacolor = sector.find('.antennas .backupantenna-color');
 			if(mainantennacolor.filter('.background-selected').length == mainantennacolor.length && backupantennacolor.filter('.background-status-ok').length == backupantennacolor.length){

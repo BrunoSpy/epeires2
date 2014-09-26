@@ -398,6 +398,123 @@ class FrequenciesController extends ZoneController {
         return new JsonModel($json);
     }
 
+    public function switchFrequencyStateAction() {
+        $messages = array();
+        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $state = $this->params()->fromQuery('state', null);
+            $frequencyid = $this->params()->fromQuery('freqid', null);
+
+            if ($state != null && $frequencyid != null) {
+                $now = new \DateTime('NOW');
+                $now->setTimezone(new \DateTimeZone("UTC"));
+                $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+                if ($freq) {
+                    $this->switchFrequencyState($messages, $freq, $state === 'true', $now);
+                } else {
+                    $messages['error'][] = "Impossible de trouver la fréquence demandée";
+                }
+            } else {
+                $messages['error'][] = "Paramètres incorrects, impossible de créer l'évènement.";
+            }
+        } else {
+            $messages['error'][] = "Droits insuffisants";
+        }
+        return new JsonModel($messages);
+    }
+    
+        /**
+     * Create and persist a new frequency event
+     * @param unknown $cov 0=principale, 1 = secours
+     * @param Event $parent
+     */
+    private function switchFrequencyState(&$messages, Frequency $frequency, $state, $startdate, Event $parent = null) {
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        //on recherche les évènements Fréquence en cours
+        $frequencyevents = array();
+        foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+            $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
+            foreach ($event->getCustomFieldsValues() as $customvalue) {
+                if ($customvalue->getCustomField()->getId() == $frequencyfield) {
+                    if ($customvalue->getValue() == $frequency->getId()) {
+                        $frequencyevents[] = $event;
+                    }
+                }
+            }
+        }
+        //si pas d'evt et state==false -> nouvel evt
+        //si pas d'evt et state==true -> bug
+        //si un evt -> dépend des autres champs -> mise à jour ou fermeture
+        //plusieurs evts -> indécidable -> bug
+        if (count($frequencyevents) == 0) {
+            if ($state) {
+                $messages['error'][] = "Aucun évènement trouvé : impossible de rendre la fréquence indisponible.";
+            } else {
+                //on crée l'evt "passage freq indisponible"
+                $event = new Event();
+                if ($parent) {
+                    $event->setParent($parent);
+                }
+                $status = $em->getRepository('Application\Entity\Status')->find('2');
+                $impact = $em->getRepository('Application\Entity\Impact')->find('3');
+                $event->setImpact($impact);
+                $event->setStatus($status);
+                $event->setStartdate($startdate);
+                $event->setPunctual(false);
+                //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
+                if ($frequency->getDefaultsector()) {
+                    $event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
+                    $event->addZonefilter($frequency->getDefaultsector()->getZone());
+                } else {
+                    $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                }
+                $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
+                if ($categories) {
+                    $cat = $categories[0];
+                    $event->setCategory($cat);
+                    $frequencyfieldvalue = new CustomFieldValue();
+                    $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
+                    $frequencyfieldvalue->setEvent($event);
+                    $frequencyfieldvalue->setValue($frequency->getId());
+                    $event->addCustomFieldValue($frequencyfieldvalue);
+                    $statusfield = new CustomFieldValue();
+                    $statusfield->setCustomField($cat->getStatefield());
+                    $statusfield->setEvent($event);
+                    $statusfield->setValue(true); //unavailable
+                    $event->addCustomFieldValue($statusfield);
+                    $em->persist($frequencyfieldvalue);
+                    $em->persist($statusfield);
+                    $em->persist($event);
+                    try {
+                        $em->flush();
+                        $messages['success'][] = "Fréquence " . $frequency->getValue() . " passée au statut indisponible.";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                } else {
+                    $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
+                }
+            }
+        } else if (count($frequencyevents) == 1) {
+            $event = $frequencyevents[0];
+            //fermeture
+            $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+            $event->setStatus($endstatus);
+            $event->setEnddate($startdate);
+            $em->persist($event);
+            
+            try {
+                $em->flush();
+                $messages['success'][] = "Fréquence à nouveau disponible : évènement terminé.";
+            } catch (\Exception $e) {
+                $messages['error'][] = $e->getMessage();
+            }
+        } else {
+            $messages['error'][] = "Impossible de trouver l'évènement à modifier.";
+        }
+    }
+    
     public function switchCovertureAction() {
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
