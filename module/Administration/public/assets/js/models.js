@@ -53,6 +53,14 @@ var models = function(url, urlapp){
 		location.reload();
 	});
 	
+        $(".model-listable").on('click', function(e){
+            e.preventDefault();
+            var me = $(this);
+            $.post(url+'/models/listable?id='+$(this).data('modelid')+'&listable='+$(this).is(':checked'), function(data){
+                me.prop('checked', data.listable);
+                displayMessages(data.messages);
+            });
+        });
 	
 	/* **************************** */
 	/*          New model           */

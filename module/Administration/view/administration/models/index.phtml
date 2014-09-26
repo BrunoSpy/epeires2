@@ -34,7 +34,15 @@ $this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
                 echo '<td>'.$this->alerts[$model->getId()].'</td>';
                 echo '<td>'.$this->files[$model->getId()].'</td>';
 		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-		echo '<td>'.($model->isListable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+		echo '<td>';
+                    echo "<input class=\"model-listable\" 
+					data-modelid=\"".$model->getId()."\"
+					type=\"checkbox\" ";
+                            if($model->isListable()){
+				echo "checked=\"checked\"";
+                            }
+                    echo ">";
+                echo '</td>';
 		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 		echo '<td>';
 		echo "<a 

@@ -603,4 +603,35 @@ class ModelsController extends FormController
 	    }
 	    return new JsonModel($messages);
     }
+    
+    public function listableAction(){
+
+        $messages = array();
+        $json = array();
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        
+	$modelid = $this->params()->fromQuery('id', null);
+        $listable = $this->params()->fromQuery('listable', null);
+                
+        if($modelid != null && $listable != null){
+            $model = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($modelid);
+            if($model){
+                $model->setListable($listable === 'true');
+                $objectManager->persist($model);
+                try{
+                    $objectManager->flush();
+                    $json['listable'] = $model->isListable();
+                    $messages['success'][] = "Modèle correctement modifié.";
+                } catch (\Exception $ex) {
+                    $messages['error'][] = $ex->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver le modèle à modifier";
+            }
+        } else {
+            $messages['error'][] = "Impossible de modifier le modèle : paramètres incorrects.";
+        }
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
 }
