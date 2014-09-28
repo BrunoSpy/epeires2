@@ -7,12 +7,13 @@ var setURLAlarm = function(urlt){
 //stockage des timers
 var alarms = new Array();
 var alarmsnoty = new Array();
-var lastupdate;
+var lastupdate_alarm;
 var timerAlarm;
 var updateAlarms = function(){
-	$.getJSON(url+'alarm/getalarms'+(typeof lastupdate != 'undefined' ? '?lastupdate='+lastupdate.toUTCString() : ''), function(data, textStatus, jqHXR){
-		lastupdate = new Date();
+        $.getJSON(url+'alarm/getalarms'+(typeof lastupdate_alarm != 'undefined' ? '?lastupdate='+lastupdate_alarm.toUTCString() : ''),
+            function(data, textStatus, jqHXR){
 		if(jqHXR.status != 304){
+                        lastupdate_alarm = new Date(jqHXR.getResponseHeader("Last-Modified"));
 			$.each(data, function(i, item){
 				if(item.status == 3) { //alarme acquittée par ailleurs
 					//si l'alarme est ouverte et acquittée, on la ferme
@@ -50,7 +51,7 @@ var updateAlarms = function(){
 			});
 		}
 	}).always(function(){
-		timerAlarm = setTimeout(updateAlarms, 50000);
+		timerAlarm = setTimeout(updateAlarms, 10000);
 	});
 };
 

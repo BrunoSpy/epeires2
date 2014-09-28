@@ -1033,7 +1033,14 @@ class EventsController extends ZoneController {
     	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
-    	
+        
+        if(count($json) === 0){
+            $this->getResponse()->setStatusCode(304);
+            return;
+        }
+        
+        $this->getResponse()->getHeaders()->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()).' GMT');
+        
     	return new JsonModel($json);
     }
     

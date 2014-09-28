@@ -97,7 +97,9 @@ var timeline = {
 				tab = Array();
 				var i = 0;
 				var ddeb, dfin;
-				$.getJSON(url+"/getevents", function (data) {
+				$.getJSON(url+"/getevents", function (data, textStatus, jqHXR) {
+                                    if(jqHXR.status != 304){ //304 -> aucun nouvel élément
+                                        lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
 					$.each(data, function(key, value) {
 						ddeb = new Date(value.start_date);
 						if (value.punctual == true) {
@@ -116,8 +118,8 @@ var timeline = {
 					timeline.create(timeline_content, tab);
 					timeline.tri_cat(timeline_content, tab, 1);
 					timeline.timeBar(timeline_content);
-				}).done(function() {
-					last_update = new Date();
+                                    }
+				}).always(function() {
 					timeline.download_update();
 				});
 			});
@@ -1462,12 +1464,15 @@ var timeline = {
 		},
 		// mise à jour de l'extérieur
 		download_update: function() {
-				$.getJSON(ini_url+"/getevents?lastupdate="+last_update.toUTCString(), function (data) {
-					timeline.modify(data,0);
-					last_update = new Date();
-				}).always(function(){
-					tempo_maj = setTimeout(timeline.download_update, 3000);
-				}); 
+				$.getJSON(ini_url+"/getevents"+(typeof lastupdate != 'undefined' ? '?lastupdate='+lastupdate.toUTCString() : ''),
+                                    function (data, textStatus, jqHXR) {
+                                        if(jqHXR.status != 304){
+                                            timeline.modify(data,0);
+                                            lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                                        }
+                                    }).always(function(){
+					tempo_maj = setTimeout(timeline.download_update, 10000);
+                                    }); 
 		}, 
 		
 		pauseUpdateMaj: function() {

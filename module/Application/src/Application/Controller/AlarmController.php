@@ -230,10 +230,14 @@ class AlarmController extends FormController {
 			$alarms[] = $alarmjson;
 		}
 	}
+        
 	if(empty($alarms)){
 		$this->getResponse()->setStatusCode(304);
 		return;
 	}
+        
+        $this->getResponse()->getHeaders()->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()).' GMT');
+        
 	return new JsonModel($alarms);
     }
     
