@@ -127,7 +127,7 @@ class ReportController extends AbstractActionController {
 
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
-                ->setTemplate('Application/report/daily')
+                ->setTemplate('application/report/daily')
                 ->setVariables(array('events' => $events, 'day' => $day));
 
         $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
