@@ -24,7 +24,7 @@ if($this->history){
                             echo nl2br($change['newvalue']);
                         } else if($change['fieldname'] == 'alarm') {
                             if(!$change['status']->isOpen()){
-                                echo 'Alerte <em>'.$change['newvalue'].'</em> acquittée';
+                                echo 'Mémo <em>'.$change['newvalue'].'</em> acquitté';
                             }
                         } else {
 				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';

@@ -591,15 +591,15 @@ class ModelsController extends FormController
 			$objectManager->remove($alarm);
 			try {
 				$objectManager->flush();
-				$messages['success'][] = "Alarme supprimée";
+				$messages['success'][] = "Mémo supprimé";
 			} catch (\Exception $e) {
 				$messages['error'][] = $e->getMessage();
 			}
 		    } else {
-			$messages['error'][] = "Aucune alarme correspondante trouvée";    
+			$messages['error'][] = "Aucun mémo correspondant trouvé";    
 		    }
 	    } else {
-		$messages['error'][] = "Aucune alarme à supprimer";    
+		$messages['error'][] = "Aucun mémo à supprimer";    
 	    }
 	    return new JsonModel($messages);
     }

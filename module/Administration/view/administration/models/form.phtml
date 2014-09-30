@@ -99,8 +99,8 @@ if($this->form->has('custom_fields')){
 </div>
 
 <div id="alerts">
-	<h4 style="display:inline;">Alertes</h4>
-	<a class="pull-right btn btn-mini" href="#add-alert" data-toggle="modal" id="addalert">Ajouter alerte</a>
+	<h4 style="display:inline;">Mémos</h4>
+	<a class="pull-right btn btn-mini" href="#add-alert" data-toggle="modal" id="addalert">Ajouter mémo</a>
 	<table class="table table-hover alert-table">
 		<tbody>
 		<?php
@@ -110,7 +110,7 @@ if($this->form->has('custom_fields')){
 				if($alarm->getCategory() instanceof Application\Entity\AlarmCategory){
                                     $countalarms++;
                                     echo '<tr>';
-                                    echo '<td data-toggle="tooltip" data-title="Déclenchement de l\'alerte x minutes après le début de l\'évènement">'.$alarm->getStartdateDelta().' min</td>';
+                                    echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après le début de l\'évènement">'.$alarm->getStartdateDelta().' min</td>';
                                     echo '<td>'.$this->eventName($alarm).'</td>';
                                     echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><i class="icon-trash"></i></a></td>';
                                     echo '</tr>';

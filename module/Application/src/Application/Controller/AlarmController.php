@@ -155,23 +155,23 @@ class AlarmController extends FormController {
 			$objectManager->remove($alarm);
 			try {
 				$objectManager->flush();
-				$messages['success'][] = "Alarme supprimée";
+				$messages['success'][] = "Mémo supprimé";
 			} catch (\Exception $e) {
 				$messages['error'][] = $e->getMessage();
 			}
 		    } else {
-			$messages['error'][] = "Aucune alarme correspondante trouvée";    
+			$messages['error'][] = "Aucun mémo correspondant trouvé";    
 		    }
 	    } else {
-		$messages['error'][] = "Aucune alarme à supprimer";    
+		$messages['error'][] = "Aucun mémo à supprimer";    
 	    }
 	    return new JsonModel($messages);
     }
 
     /*
-     * Alarmes futures non acquittées.
-     * Seules les alarmes de l'organisation de l'utilisateur sont envoyées.
-     * Si lastupdate contient une date valide, envoit les alarmes modifiées depuis lastupdate, y compris celles acquittées
+     * Mémos futurs non acquittés.
+     * Seuls les mémos de l'organisation de l'utilisateur sont envoyés.
+     * Si lastupdate contient une date valide, envoit les mémos modifiés depuis lastupdate, y compris ceux acquittés
      * Dans tous les cas : nécessite d'être identifié.
      */
     public function getalarmsAction(){
@@ -242,7 +242,7 @@ class AlarmController extends FormController {
     }
     
     /**
-     * Change le statut d'une alarme à Terminé
+     * Change le statut d'un mémo à Terminé
      * Nécessite d'être identifié et d'avoir les droits events.status
      */
     public function confirmAction(){
@@ -261,19 +261,19 @@ class AlarmController extends FormController {
 						$objectManager->persist($alarm);
 						try {
 							$objectManager->flush();
-							$messages['success'][] = "Alarme acquittée";
+							$messages['success'][] = "Mémo acquitté";
 						} catch (\Exception $e) {
 							$messages['error'][] = $e->getMessage();
 						}
 					}
 				} else {
-					$messages['error'][] = "Aucune alarme trouvée";
+					$messages['error'][] = "Aucun mémo trouvé";
 				}
 			} else {
 				$messages['error'][] = "Argument incorrect";
 			}
 		} else {
-			$messages['error'][] = "Droits insuffisants pour acquitter l'alarme";
+			$messages['error'][] = "Droits insuffisants pour acquitter le mémo";
 		}
 	} else {
 		$messages['error'][] = "Utilisateur non identifié, modification impossible";
