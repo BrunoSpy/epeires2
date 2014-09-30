@@ -76,7 +76,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				}
 				break;
 			case 'boolean':
-				$name = ($fieldvalue ? "Vrai" : "Faux");
+				$name = ($fieldvalue ? "Oui" : "Non");
 				break;
 			default:
 				;

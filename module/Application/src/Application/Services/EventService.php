@@ -107,7 +107,7 @@ class EventService implements ServiceManagerAwareInterface{
                                     }
                             }
                     }
-                }
+                }                
 		return $name;
 	}
 		
@@ -202,8 +202,8 @@ class EventService implements ServiceManagerAwareInterface{
 								$historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($oldvalue) : '');
 								$historyentry['newvalue'] = ($newvalue ? $formatter->format($newvalue) : null);
 							} else if ($key == 'punctual') {
-								$historyentry['oldvalue'] = ($ref[$key] ? "Vrai" : "Faux") ;
-								$historyentry['newvalue'] = ($value ? "Vrai" : "Faux");
+								$historyentry['oldvalue'] = ($ref[$key] ? "Oui" : "Non") ;
+								$historyentry['newvalue'] = ($value ? "Oui" : "Non");
                                                         } else if($key == 'status') {
                                                                 $old = $this->em->getRepository('Application\Entity\Status')->find($ref[$key]['id']);
                                                                 $new = $this->em->getRepository('Application\Entity\Status')->find($value['id']);
