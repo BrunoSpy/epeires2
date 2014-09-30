@@ -27,6 +27,21 @@ return array(
             ),
         ),
     ),
+    'console' => array(
+        'router' => array (
+            'routes' => array(
+                'generate-report' => array(
+                    'options' => array(
+                        'route' => 'report [--verbose|-v] [--delta=] ',
+                        'defaults' => array(
+                            'controller' => 'Application\Controller\Report',
+                            'action' => 'report'
+                        )
+                    )
+                )
+            ),
+        ),
+    ),
     'service_manager' => array(
         'abstract_factories' => array(
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',

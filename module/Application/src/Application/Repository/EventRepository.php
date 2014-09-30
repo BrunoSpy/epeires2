@@ -78,7 +78,7 @@ class EventRepository extends ExtendedRepository {
     	//filtre par zone
     	$session = new Container('zone');
     	$zonesession = $session->zoneshortname;
-    	if($userauth->hasIdentity()){
+    	if($userauth && $userauth->hasIdentity()){
     		//on filtre soit par la valeur en session soit par l'organisation de l'utilisateur
     		//TODO gérer les evts partagés
     		if($zonesession != null){ //application d'un filtre géographique
@@ -124,7 +124,7 @@ class EventRepository extends ExtendedRepository {
     	
     	$readableEvents = array();
     	
-    	if($userauth->hasIdentity()){
+    	if($userauth != null && $userauth->hasIdentity()){
     		$roles = $userauth->getIdentity()->getRoles();
                 foreach ($events as $event){
     			$eventroles = $event->getCategory()->getReadroles();
@@ -135,7 +135,7 @@ class EventRepository extends ExtendedRepository {
     				}
     			}
     		}
-    	} else {
+    	} else if($userauth != null) {
     		//$role = $this->getServiceLocator()->get('ZfcRbac\Options\ModuleOptions')->getGuestRole();
     		$roleentity = $this->getEntityManager()->getRepository('Core\Entity\Role')->findOneBy(array('name'=>'guest'));
     		if($roleentity){
@@ -146,7 +146,9 @@ class EventRepository extends ExtendedRepository {
     				}
     			}
     		}
-    	}
+    	} else {
+            $readableEvents = $events;
+        }
         
         return $readableEvents;
     }
