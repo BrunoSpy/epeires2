@@ -279,23 +279,23 @@ var antenna = function(url){
 			//antennes
 			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(mainantenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Passer antenne principale HS</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Passer antenne principale OPE</a></li>");
 			}
 			var backupantenna = sector.find('.antennas .backupantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(backupantenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Passer antenne secours HS</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Passer antenne secours OPE</a></li>");
 			}
 			//si climax
 			var mainantennaclimax = sector.find('.antennas .mainantenna-color.antenna-climax-color');
 			if(mainantennaclimax.length > 0){
 				if(mainantennaclimax.hasClass('background-status-ok')){
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée HS</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Passer antenne principale climaxée HS</a></li>");
 				} else {
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée OPE</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Passer antenne principale climaxée OPE</a></li>");
 				}
 			}
 			var backupantennaclimax = sector.find('.antennas .backupantenna-color.antenna-climax-color');
