@@ -190,25 +190,34 @@ class AlarmController extends FormController {
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$eventservice = $this->getServiceLocator()->get('EventService');
 		$now = new \DateTime('NOW');
+                $userroles = array();
+                foreach ($this->zfcUserAuthentication()->getIdentity()->getRoles() as $role){
+                    $userroles[] = $role->getId();
+                }
+                
 		$now->setTimezone(new \DateTimeZone("UTC"));
 		$qbEvents = $objectManager->createQueryBuilder();
-		$qbEvents->select(array('e', 'cat'))
+		$qbEvents->select(array('e', 'cat', 'roles'))
 			->from('Application\Entity\Event', 'e')
 			->innerJoin('e.category', 'cat')
+                        ->innerJoin('cat.readroles', 'roles')
 			->andWhere($qbEvents->expr()->eq('e.organisation', $organisation))
 			->andWhere('cat INSTANCE OF Application\Entity\AlarmCategory')
-			->andWhere($qbEvents->expr()->in('e.status', '?2'));		//statut alarme
+			->andWhere($qbEvents->expr()->in('e.status', '?2'))		//statut alarme
+                        ->andWhere($qbEvents->expr()->in('roles.id', '?3'));
 		if($lastupdate && $lastupdate != 'undefined'){
 			$from = new \DateTime($lastupdate);
 			$from->setTimezone(new \DateTimeZone("UTC"));
 			//uniquement les alarmes créés et modifiées à partir de lastupdate
 			$qbEvents->andWhere($qbEvents->expr()->gte('e.last_modified_on', '?1'))
 			->setParameters(array(2 => array(1,2,3,4),
-					1 => $from->format('Y-m-d H:i:s')));
+					1 => $from->format('Y-m-d H:i:s'), 
+                                        3 => $userroles));
 		} else {
 			$qbEvents->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future
 			->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-					2 => array(1,2)));
+					2 => array(1,2), 
+                                        3 => $userroles));
 		}
 		$result = $qbEvents->getQuery()->getResult();
 		foreach($result as $alarm){

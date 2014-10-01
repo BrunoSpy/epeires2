@@ -5,6 +5,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span12">
+                    <h2>Catégories d'évènements</h2>
 			<table class="table table-striped">
 				<thead>
 					<tr>
@@ -94,6 +95,50 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 				?>
 				</tbody>
 			</table>
+                    <h1>Catégories système</h1>
+                    <table class="table table-striped">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>Nom</th>
+						<th>Nom court</th>
+						<th>Evts</th>
+						<th>Champs</th>
+						<th>Champ titre</th>
+						<th>Rôles</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+                                <?php 
+                                foreach ($this->categories as $category){
+                                    if($category->isSystem()){
+					echo "<tr>";
+					echo "<td>".$category->getId()."</td>";		
+					echo "<td>".$category->getName()."</td>";
+					echo "<td>".$category->getShortName()."</td>";
+					echo "<td>".$this->events[$category->getId()]."</td>";
+
+					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
+					echo "<td>";
+					foreach ($category->getReadroles() as $role){
+						echo $role->getName()."<br/>";
+					}
+					echo "</td>";
+					echo "<td>";
+						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+					echo "</td>";
+					echo "</tr>";
+					
+						
+                                    }
+                                }
+				?>
+				</tbody>
+			</table>
+                    
+                    
 		</div>
 		
 	</div>

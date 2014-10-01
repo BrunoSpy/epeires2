@@ -22,10 +22,12 @@ echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttr
 
 echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('shortname')));
-
+if($this->system){
+    echo '<div style="display:none;">';
+}
 echo $this->controlGroup($this->formLabel($this->form->get('color')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('color')->setAttribute('class', 'pick-a-color')));
-						
+		
 echo $this->controlGroup($this->formLabel($this->form->get('compactmode')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formCheckbox($this->form->get('compactmode')));
 
@@ -34,7 +36,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('timeline')->setLabel
 
 echo $this->controlGroup($this->formLabel($this->form->get('parent')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('parent')));
-
+if($this->system) {
+    echo "</div>";
+}
 echo $this->controlGroup($this->formLabel($this->form->get('fieldname')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('fieldname')));
 

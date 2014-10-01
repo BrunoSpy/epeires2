@@ -142,7 +142,7 @@ class CategoriesController extends FormController{
     			),
     	));
     	    	
-    	$viewmodel->setVariables(array('form' =>$form));
+    	$viewmodel->setVariables(array('form' =>$form, 'system' => ($category ? $category->isSystem() : false)));
     	return $viewmodel;
     }
     
