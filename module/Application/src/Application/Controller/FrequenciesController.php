@@ -29,6 +29,13 @@ class FrequenciesController extends ZoneController {
 
         parent::indexAction();
 
+        $this->layout()->iponumber = "";
+        if($this->zfcUserAuthentication()->hasIdentity()){
+            $iponumber = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getIpoNumber();
+            if($iponumber != null && strlen($iponumber) > 0) {
+                $this->layout()->iponumber = "(".$iponumber.")";
+            } 
+        }
 
         $viewmodel = new ViewModel();
 

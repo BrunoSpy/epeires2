@@ -37,8 +37,16 @@ class RadarsController extends AbstractActionController {
 		$viewmodel->setVariables(array('messages'=>$return));
 				
 		$viewmodel->setVariable('radars', $this->getRadars());
-		
-		return $viewmodel;
+
+                $this->layout()->iponumber = "";
+                if ($this->zfcUserAuthentication()->hasIdentity()) {
+                    $iponumber = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getIpoNumber();
+                    if ($iponumber != null && strlen($iponumber) > 0) {
+                        $this->layout()->iponumber = "(" . $iponumber . ")";
+                    }
+                }
+
+        return $viewmodel;
 		
 	}
 	
