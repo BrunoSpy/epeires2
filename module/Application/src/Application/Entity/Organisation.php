@@ -54,6 +54,13 @@ class Organisation {
 	 */
 	protected $address;
 	
+        /** 
+         * @ORM\Column(type="string")
+         * @Annotation\Type("Zend\Form\Element\Text")
+         * @Annotation\Options({"label":"Numéro tel IPO"})
+         */
+        protected $iponumber;
+        
 	/**
 	 * @ORM\OneToMany(targetEntity="QualificationZone", mappedBy="organisation", cascade={"remove"})
 	 */
@@ -89,6 +96,14 @@ class Organisation {
 		return $this->address;
 	}
 	
+        public function setIpoNumber($ipo){
+            $this->iponumber = $ipo;
+        }
+        
+        public function getIpoNumber(){
+            return $this->iponumber;
+        }
+        
 	public function setId($id){
 		$this->id = $id;
 	}

@@ -62,7 +62,7 @@
     				<?php if($this->zfcUserIdentity() && $this->zfcUserIdentity()->getZone()) :?>
     				<li><i class="icon-eye-open"></i><b> Chef de salle : </b><?php echo $this->opsup();?></li>
     				<?php endif;?>
-    				<li><i class="icon-warning-sign"></i><b> IPO : </b><?php echo $this->ipo();?></li>
+    				<li><i class="icon-warning-sign"></i><b> IPO <?php echo $this->iponumber; ?> : </b><?php echo $this->ipo();?></li>
     				<li id="clock" class="pull-right"></li>
     		</ul>
     		

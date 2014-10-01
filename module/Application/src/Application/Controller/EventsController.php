@@ -44,8 +44,13 @@ class EventsController extends ZoneController {
     	
     	$this->flashMessenger()->clearMessages();
     	
-    	$this->layout()->cds = "Nom chef de salle";
-    	$this->layout()->ipo = "Nom IPO (téléphone)";
+        $this->layout()->iponumber = "";
+        if($this->zfcUserAuthentication()->hasIdentity()){
+            $iponumber = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getIpoNumber();
+            if($iponumber != null && strlen($iponumber) > 0) {
+                $this->layout()->iponumber = "(".$iponumber.")";
+            } 
+        }
     	
         //initialisation de la session si utilisateur connecté
         $session = new Container('zone');
