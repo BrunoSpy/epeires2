@@ -70,6 +70,13 @@ class Event extends AbstractEvent{
  	 */
  	protected $updates;
  	
+        /** 
+         * @ORM\Column(type="boolean")
+         * @Annotation\Type("Zend\Form\Element\Checkbox")
+         * @Annotation\Options({"label":"Evènement programmé :"})
+         */
+        protected $scheduled;
+        
  	public function __construct(){
  		parent::__construct();
  		$this->updates = new \Doctrine\Common\Collections\ArrayCollection();
@@ -95,6 +102,14 @@ class Event extends AbstractEvent{
 		$this->archived = $archived;
 	}
 	
+        public function isScheduled(){
+            return $this->scheduled;
+        }
+        
+        public function setScheduled($scheduled){
+            $this->scheduled = $scheduled;
+        }
+        
 	/** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
