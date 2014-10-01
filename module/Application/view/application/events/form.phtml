@@ -69,7 +69,11 @@
 			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
 		}
 			
-		$html = $this->controlGroup(
+                $html = $this->controlGroup(
+					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'control-label'))),
+					$this->formCheckbox($this->form->get('scheduled')), array('class'=>'compact'));
+		
+		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
 		
@@ -92,7 +96,7 @@
 		$html .= $this->controlGroup(
 				$this->formLabel($formEndDate->setLabelAttributes(array('class'=>'control-label time-middle'))),
 				$this->formInput($formEndDate), array('class'=>'compact'));
-		
+		                
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
 		echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
