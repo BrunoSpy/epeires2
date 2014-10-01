@@ -340,10 +340,10 @@ class FrequenciesController extends ZoneController {
                             $em->persist($event);
                             //création des evts fils pour le passage en secours
                             foreach ($antenna->getMainfrequencies() as $frequency) {
-                                $this->switchCoverture($messages, $frequency, 1, $now, $event);
+                                $this->switchCoverture($messages, $frequency, 1, 1, $now, $event);
                             }
                             foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
-                                $this->switchCoverture($messages, $frequency, 1, $now, $event);
+                                $this->switchCoverture($messages, $frequency, 1, 1, $now, $event);
                             }
                             //création de la fiche réflexe
                             if($antenna->getModel()){
@@ -527,7 +527,7 @@ class FrequenciesController extends ZoneController {
                 $now->setTimezone(new \DateTimeZone("UTC"));
                 $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
                 if ($freq) {
-                    $this->switchCoverture($messages, $freq, intval($cov), $now);
+                    $this->switchCoverture($messages, $freq, intval($cov), false, $now);
                 } else {
                     $messages['error'][] = "Impossible de trouver la fréquence demandée";
                 }
@@ -545,7 +545,7 @@ class FrequenciesController extends ZoneController {
      * @param unknown $cov 0=principale, 1 = secours
      * @param Event $parent
      */
-    private function switchCoverture(&$messages, Frequency $frequency, $cov, $startdate, Event $parent = null) {
+    private function switchCoverture(&$messages, Frequency $frequency, $cov, $freqstatus, $startdate, Event $parent = null) {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         //on recherche les évènements Fréquence en cours
         $frequencyevents = array();
@@ -598,7 +598,7 @@ class FrequenciesController extends ZoneController {
                     $statusfield = new CustomFieldValue();
                     $statusfield->setCustomField($cat->getStatefield());
                     $statusfield->setEvent($event);
-                    $statusfield->setValue(true); //unavailable
+                    $statusfield->setValue($freqstatus);
                     $event->addCustomFieldValue($statusfield);
                     $covfield = new CustomFieldValue();
                     $covfield->setCustomField($cat->getCurrentAntennafield());

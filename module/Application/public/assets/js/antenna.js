@@ -94,11 +94,11 @@ var antenna = function(url){
 				if(me.data('cov') == '0'){
 					antennas.find('.mainantenna-color').addClass('background-selected');
 					antennas.find('.backupantenna-color').removeClass('background-selected');
-					frequency.addClass('background-status-ok');
-					frequency.removeClass('background-status-fail');
+					//frequency.addClass('background-status-ok');
+					//frequency.removeClass('background-status-fail');
 				} else {
-					frequency.addClass('background-status-fail');
-					frequency.removeClass('background-status-ok');
+					//frequency.addClass('background-status-fail');
+					//frequency.removeClass('background-status-ok');
 					antennas.find('.backupantenna-color').addClass('background-selected');
 					antennas.find('.mainantenna-color').removeClass('background-selected');
 				}
@@ -320,9 +320,9 @@ var antenna = function(url){
 			var antenna = $(this).closest('.antenna-color');
 			var list = $('<ul></ul>');
 			if(antenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+antenna.data('antennaid')+"\">Passer antenne HS</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+antenna.data('antennaid')+"\">Passer antenne OPE</a></li>");
 			}
 			if(list.find('li').length > 0){
 				$(this).popover('destroy');
