@@ -109,13 +109,13 @@
                     '</td>' +
                     '<td class="hour">' +
                     '<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>' +
-                    '<input type="text" class="input-mini"><br>' +
+                    '<input maxlength="2" type="text" class="input-mini"><br>' +
                     '<a class="previous" href="#"><i class="icon-chevron-down"></i></a>' +
                     '</td>' +
                     '<td class="separator">:</td>' +
                     '<td class="minute">' +
                     '<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>' +
-                    '<input type="text" class="input-mini"><br>' +
+                    '<input maxlength="2" type="text" class="input-mini"><br>' +
                     '<a class="previous" href="#"><i class="icon-chevron-down"></i></a>' +
                     '</td>' +
                     '<td>'+
