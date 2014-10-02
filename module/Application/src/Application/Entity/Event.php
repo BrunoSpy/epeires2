@@ -75,7 +75,7 @@ class Event extends AbstractEvent{
          * @Annotation\Type("Zend\Form\Element\Checkbox")
          * @Annotation\Options({"label":"Evènement programmé :"})
          */
-        protected $scheduled;
+        protected $scheduled = false;
         
  	public function __construct(){
  		parent::__construct();
