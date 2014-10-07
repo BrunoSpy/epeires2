@@ -97,7 +97,7 @@ class AlarmController extends FormController {
 	$alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; //TODO
 		
 	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
-        
+        $form->get('scheduled')->setValue(false);
 	if ($alarmid) {
             $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
             if ($alarm) {
