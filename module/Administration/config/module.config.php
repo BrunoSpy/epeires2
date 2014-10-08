@@ -87,10 +87,50 @@ return array(
     		),
     	),
     ),
+    'permissions' => array(
+    	'Administration' => array(
+            'admin.access' => 'Accès',
+            'admin.centre' => 'Centre',
+            'admin.users' => 'Utilisateurs',
+            'admin.categories' => 'Catégories',
+            'admin.models' => 'Modèles',
+            'admin.radio' => 'Radio'
+        ),
+    ),
     'zfc_rbac' => array(
     	'guards' => array(
-   			'ZfcRbac\Guard\RouteGuard' => array(
-    			'administration' => array('admin'),
+   		'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+    			'administration' => array('admin.access'),
+    		),
+                'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+                    array(
+                        'controller' => 'Administration\Controller\Categories',
+                        'permissions' => ['admin.categories'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\Models',
+                        'permissions' => ['admin.models'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\Users',
+                        'permissions' => ['admin.users'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\Roles',
+                        'permissions' => ['admin.users'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\IPOS',
+                        'permissions' => ['admin.users'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\OpSups',
+                        'permissions' => ['admin.users'],
+                    ),
+                    array(
+                        'controller' => 'Administration\Controller\Radio',
+                        'permissions' => ['admin.radio'],
+                    ),
     		),
     	),
     ),

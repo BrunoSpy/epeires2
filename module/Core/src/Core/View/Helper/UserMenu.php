@@ -42,7 +42,11 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface {
 			if($router->match($request) && $router->match($request)->getMatchedRouteName() == 'administration'){
 				$html .= "<li><a href=\"".$urlHelper('application')."\">Interface OPE</a></li>";
 			} else {
-				if($this->auth->getIdentity()->hasRole('admin')){
+				if($this->auth->isGranted('admin.centre')||
+                                    $this->auth->isGranted('admin.users')||
+                                    $this->auth->isGranted('admin.categories')||
+                                    $this->auth->isGranted('admin.models')||
+                                    $this->auth->isGranted('admin.radio')){
 					$html .= "<li><a href=\"".$urlHelper('administration', array('controller'=>'home', 'action'=>'index'))."\">Interface administration</a></li>";
 				}
 			}

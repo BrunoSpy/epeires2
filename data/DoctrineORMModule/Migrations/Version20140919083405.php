@@ -26,7 +26,7 @@ class Version20140919083405 extends AbstractMigration
         $stmt = $this->connection->executeQuery("SELECT `namefield_id` FROM `AlarmCategory` WHERE 1");
         $results = $stmt->fetchAll();
         foreach ($results as $id){
-            $this->connection->update('customfields', array('name' => 'Nom'), array('id' => $id));
+            $this->connection->update('customfields', array('name' => 'Nom'), array('id' => $id['namefield_id']));
         }
     }
 }
