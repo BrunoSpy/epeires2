@@ -33,7 +33,7 @@ var updateAlarms = function(){
                                             var timer = setTimeout(function(){
 						alarmsnoty[item.id] = noty({
 							text:item.text,
-							type:'warning',
+							type:'error',
 							layout:'topCenter',
 							timeout:false,
 							callback: {
