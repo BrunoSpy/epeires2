@@ -287,11 +287,10 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 	border-color:CadetBlue ;
 	border-style:solid;
 	background-color:AliceBlue;
-/*	position:relative; */
 	width: 30%; 
 	margin-left: 1%;
 	clear: both;
-/*	top: 10px; */
+	top: initial;
 	max-width:400px;
 	min-width:400px;
 }
