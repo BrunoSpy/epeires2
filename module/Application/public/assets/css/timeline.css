@@ -11,7 +11,6 @@
  }
 
  .Base {
-	position: absolute;
 	margin-left: 50px;
 	margin-right: 50px;
 	margin-top: 10px;
@@ -20,6 +19,18 @@
 	background-color:white;
 } 
 
+.Base .TimeBar {
+    z-index: 2;
+}
+
+.Time_obj {
+    z-index: 2;
+    background-color: white;
+}
+
+.Time_obj.vert_bar {
+    z-index:-1;
+}
 .timeline_content {
 	position: absolute;
 	margin-left: 50px;

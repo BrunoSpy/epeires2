@@ -88,7 +88,7 @@ var timeline = {
 		conf: function (element, url) {
 			ini_url = url;
 			timeline.init(element);
-			var base_elmt = $('<div class="Base"></div>');
+			var base_elmt = $('<div id="timeline-base" class="Base"></div>');
 			$(element).append(base_elmt);
 			timeline.base(base_elmt);
 			var timeline_content = $('<div class="timeline_content"></div>');
@@ -117,7 +117,7 @@ var timeline = {
 					});
 					timeline.create(timeline_content, tab);
 					timeline.tri_cat(timeline_content, tab, 1);
-					timeline.timeBar(timeline_content);
+					timeline.timeBar(base_elmt);
                                     }
 				}).always(function() {
 					timeline.download_update();
@@ -215,22 +215,22 @@ var timeline = {
 			var h_temp = h_ref;
 			var time_obj = $('<div class="Time_obj"></div>');
 			base_elmt.append(time_obj);
-			time_obj.css({'position':'absolute', 'top': 40+'px', 'left': lar_unit+'px', 'width': lar_unit*(decoup-2), 'height':1 ,'z-index' : -1, 
+			time_obj.css({'position':'fixed', 'top': 132+'px', 'left': lar_unit+50+'px', 'width': lar_unit*(decoup-2), 'height':1 ,
 				'background-color':'#C0C0C0'});
 			for (var i=1;i<decoup;i++) { 
-				time_obj = $('<div class="Time_obj"></div>');
+				time_obj = $('<div class="Time_obj vert_bar"></div>');
 				base_elmt.append(time_obj); 
-				time_obj.css({'position':'absolute', 'top': 35+'px', 'left': lar_unit*i+'px', 'width': 1, 'height':hauteur-50, 'z-index' : -1, 
+				time_obj.css({'position':'fixed', 'top': 127+'px', 'left': lar_unit*i+50+'px', 'width': 1, 'height':hauteur-50, 
 					'background-color':'#C0C0C0'});
 				if (i%2 == 0) {
 					time_obj = $('<div class="Time_obj">30</div>');
 					base_elmt.append(time_obj);
-					time_obj.css({'position':'absolute', 'top': 20+'px', 'left': lar_unit*i-10+'px','width':'20px', 'text-align':'center', 'z-index' : -1,'color':'#0000FF', 'font-family':'Calibri',
+					time_obj.css({'position':'fixed', 'top': 112+'px', 'left': lar_unit*i+40+'px','width':'20px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
 						'font-size':'12px'});
 				} else {
 					time_obj = $('<div class="Time_obj">'+h_temp+':00</div>');
 					base_elmt.append(time_obj);
-					time_obj.css({'position':'absolute', 'top': 10+'px', 'left': lar_unit*i-20+'px','width':'20px', 'text-align':'center','z-index' : -1,'color':'#0000FF', 'font-family':'Calibri',
+					time_obj.css({'position':'fixed', 'top': 102+'px', 'left': lar_unit*i+30+'px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
 						'font-size':'16px'});
 					if (h_temp == 23) {
 						h_temp = 0;
@@ -244,7 +244,7 @@ var timeline = {
 		timeBar: function(element) {
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
-			detail1.css({'position':'absolute', 'top': 0+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
+			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
 				'background-color':'red'});
 		},
 		// mise à jour de la timeBar
@@ -1447,9 +1447,9 @@ var timeline = {
 				timeline.init(timel);
 			}
 			var timeline_content = timel.find('.timeline_content');
-			timeline.maj_timeBar(timeline_content);
+                        var base = timel.find('.Base');
+			timeline.maj_timeBar(base);
 			if (h_ref_old != h_ref) { 
-				var base = timel.find('.Base');
 				//var other = timel.find('.timeline_other');
 				$.holdReady(true);
 				base.empty();
@@ -1462,7 +1462,7 @@ var timeline = {
 				} else if (tri_hdeb) {
 					timeline.tri_hdeb(timeline_content, tab,1);
 				}
-				timeline.timeBar(timeline_content);
+				timeline.timeBar(base);
 				$.holdReady(false);
 			} else {
 				var len = liste_affichee.length;
@@ -1579,7 +1579,7 @@ $(document).ready(function() {
 		} else if (tri_comp) {
 			timeline.tri_comp(timeline_content, tab,1);
 		}
-		timeline.timeBar(timeline_content);
+		timeline.timeBar(base);
 		$.holdReady(false);
 	});
 	
@@ -1860,7 +1860,7 @@ $(document).ready(function() {
 		} else if (tri_comp) {
 			timeline.tri_comp(timeline_content, tab,1);
 		}
-		timeline.timeBar(timeline_content);
+		timeline.timeBar(base);
 		$.holdReady(false);
 	});
 	
@@ -1889,7 +1889,7 @@ $(document).ready(function() {
 				} else if (tri_comp) {
 					timeline.tri_comp(timeline_content, tab,1);
 				}
-				timeline_content.find('.TimeBar').hide();
+				base.find('.TimeBar').hide();
 			});
 		} else {
 			timeline.create(timeline_content, tab);
@@ -1904,10 +1904,10 @@ $(document).ready(function() {
 		var d_encours = new Date();
 		if (new_date.getFullYear() == d_encours.getFullYear() && new_date.getMonth() == d_encours.getMonth() && 
 				new_date.getDate() == d_encours.getDate()) {
-			timeline.timeBar(timeline_content);
+			timeline.timeBar(base);
 			$('#timeline').css({'background-color':'white'});
 		} else {
-			timeline_content.find('.TimeBar').hide();
+			base.find('.TimeBar').hide();
 			$('#timeline').css({'background-color':'Cornsilk'});
 		}
 		$.holdReady(false);
@@ -1940,6 +1940,22 @@ $(document).ready(function() {
     	}
     }, '.elmt'); 
 
+    var prev_scroll = 0;
+    $(window).on('scroll', function(event){
+        var scrolltop = $(window).scrollTop();
+        //si scrolltop > 92, on cale la timebase en haut et on rallonge les barres d'autant
+        if(scrolltop <= 92){
+            var diff = scrolltop - prev_scroll;
+            prev_scroll = scrolltop;      
+            $('.Time_obj, .TimeBar').css('top', '-='+diff+'px');
+            $('.Time_obj.vert_bar, .TimeBar').css('height', '+='+diff+'px');
+        } else {
+            var diff = 92 - prev_scroll;
+            prev_scroll = 92;
+            $('.Time_obj, .TimeBar').css('top', '-='+diff+'px');
+            $('.Time_obj.vert_bar, .TimeBar').css('height', '+='+diff+'px');
+        }
+    });
 });
 
 
