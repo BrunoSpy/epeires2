@@ -5,7 +5,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-        <div id="create-evt" class="popover fade bottom in">
+        <div id="create-evt" class="popover fade bottom in" data-spy="affix" data-offset-top="80">
+            <div class="overflow-auto">
                 <div class="arrow"></div>
                 <div class="loading"></div>
                 <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
@@ -13,6 +14,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
                         <div>Chargement...</div>
                         <!-- formulaire createform.phtml récupéré via ajax -->
                 </div>
+            </div>
         </div>
         <div id="suggestions-container">
         </div>

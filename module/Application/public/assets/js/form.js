@@ -308,11 +308,9 @@ var form = function(url){
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
 			$("#create-evt").slideUp('fast');
-			$("#create-evt").offset({left:5});
 			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
 			restoreUpdateAlarms();
 		} else {
-			$("#create-evt").offset({left:5});
 			$("#event").html('<div>Chargement...</div>');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(

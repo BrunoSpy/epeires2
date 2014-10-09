@@ -290,9 +290,18 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 	width: 30%; 
 	margin-left: 1%;
 	clear: both;
-	top: initial;
+	top: 80px;
 	max-width:400px;
 	min-width:400px;
+}
+
+.overflow-auto {
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+#create-evt.affix {
+    top: 0px;
 }
 
 .event {
