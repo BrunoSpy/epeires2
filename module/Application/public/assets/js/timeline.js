@@ -244,13 +244,13 @@ var timeline = {
 		timeBar: function(element) {
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
-			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
+			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+50+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
 				'background-color':'red'});
 		},
 		// mise à jour de la timeBar
 		maj_timeBar: function(element) {
 			var detail1 = $(element).find('.TimeBar');
-			detail1.css({'left': x_act+'px'});
+			detail1.css({'left': x_act+50+'px'});
 		},
 		// conversion des heures de début et de fin en positionnement sur la timeline
 		position: function (d_debut, d_fin) {
