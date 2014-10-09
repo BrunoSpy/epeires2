@@ -49,6 +49,9 @@ var displayMessages = function(messages){
  
  var displayPanel = function(id){
         var timeline = $('#timeline');
+        if(timeline.css('left') !== '330px') {
+            $('.Time_obj, .TimeBar').animate({left: '+=330px'}, 300);
+        }
         timeline.animate({
             left: '330px'
         }, 300);
@@ -60,6 +63,9 @@ var displayMessages = function(messages){
  var hidePanel = function(){
         var timeline = $('#timeline');
         $('#fiche').empty();
+        if(timeline.css('left') == '330px') {
+            $('.Time_obj').animate({left: '-=330px'}, 300);
+        }
         timeline.animate({
             left: '0px'
         }, 300);
@@ -72,7 +78,9 @@ var displayMessages = function(messages){
         var val = panel.css('left') == '330px' ? '0px' : '330px';
         if(panel.css('left') == '330px') {
             $('#fiche').empty();
+            $('.Time_obj').animate({left: '-=330px'}, 300);
         } else {
+            $('.Time_obj').animate({left: '+=330px'}, 300);
             $('#fiche').load(url+'events/getfiche?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
             });

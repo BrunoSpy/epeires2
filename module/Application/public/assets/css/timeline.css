@@ -2,12 +2,11 @@
 
 #timeline {
     position: absolute;
-/*	margin-left: 0%;*/
  	width: 100%;
 	height: 100%;
 	float:left;
         z-index: 2;
-/*        background: none repeat scroll 0% 0% #fff;*/
+        background-color: white;
  }
 
  .Base {
