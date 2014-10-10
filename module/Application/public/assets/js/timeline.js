@@ -212,25 +212,27 @@ var timeline = {
 		},
 		// création des éléments de base
 		base: function(base_elmt) {
+                        //si la timeline est décalée, ajouter le décalage
+                        var left = parseInt($("#timeline").css('left'));
 			var h_temp = h_ref;
 			var time_obj = $('<div class="Time_obj"></div>');
 			base_elmt.append(time_obj);
-			time_obj.css({'position':'fixed', 'top': 132+'px', 'left': lar_unit+50+'px', 'width': lar_unit*(decoup-2), 'height':1 ,
+			time_obj.css({'position':'fixed', 'top': 132+'px', 'left': lar_unit+50+left+'px', 'width': lar_unit*(decoup-2), 'height':1 ,
 				'background-color':'#C0C0C0'});
 			for (var i=1;i<decoup;i++) { 
 				time_obj = $('<div class="Time_obj vert_bar"></div>');
 				base_elmt.append(time_obj); 
-				time_obj.css({'position':'fixed', 'top': 127+'px', 'left': lar_unit*i+50+'px', 'width': 1, 'height':hauteur-50, 
+				time_obj.css({'position':'fixed', 'top': 127+'px', 'left': lar_unit*i+50+left+'px', 'width': 1, 'height':hauteur-50, 
 					'background-color':'#C0C0C0'});
 				if (i%2 == 0) {
 					time_obj = $('<div class="Time_obj">30</div>');
 					base_elmt.append(time_obj);
-					time_obj.css({'position':'fixed', 'top': 112+'px', 'left': lar_unit*i+40+'px','width':'20px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
+					time_obj.css({'position':'fixed', 'top': 112+'px', 'left': lar_unit*i+40+left+'px','width':'20px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
 						'font-size':'12px'});
 				} else {
 					time_obj = $('<div class="Time_obj">'+h_temp+':00</div>');
 					base_elmt.append(time_obj);
-					time_obj.css({'position':'fixed', 'top': 102+'px', 'left': lar_unit*i+30+'px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
+					time_obj.css({'position':'fixed', 'top': 102+'px', 'left': lar_unit*i+30+left+'px', 'text-align':'center', 'color':'#0000FF', 'font-family':'Calibri',
 						'font-size':'16px'});
 					if (h_temp == 23) {
 						h_temp = 0;
@@ -242,15 +244,17 @@ var timeline = {
 		},
 		// création de la timeBar
 		timeBar: function(element) {
+                        var left = parseInt($("#timeline").css('left'));
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
-			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+50+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
+			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+50+left+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
 				'background-color':'red'});
 		},
 		// mise à jour de la timeBar
 		maj_timeBar: function(element) {
+                        var left = parseInt($("#timeline").css('left'));
 			var detail1 = $(element).find('.TimeBar');
-			detail1.css({'left': x_act+50+'px'});
+			detail1.css({'left': x_act+50+left+'px'});
 		},
 		// conversion des heures de début et de fin en positionnement sur la timeline
 		position: function (d_debut, d_fin) {
