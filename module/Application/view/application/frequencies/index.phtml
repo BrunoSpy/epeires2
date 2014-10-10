@@ -70,7 +70,7 @@
 								<?php 
 								foreach ($this->antennas as $antennaid => $antenna){
 									echo '<tr id="antenna-'.$antennaid.'" data-id="'.$antennaid.'" data-shortname="'.$antenna['shortname'].'">';
-									echo '<td>'.$antenna['name'].'</td>';
+									echo '<td>'.$antenna['name'].' ('.$antenna['shortname'].')</td>';
 									echo '<td>';
 									
 									echo	'<div id="switch_'.$antennaid.'"

@@ -205,6 +205,14 @@ var antenna = function(url){
 				$('.antenna-'+$(this).data('id')).closest('.sector').removeClass('background-status-test'); 
 			});
 
+        $(".antenna-color").hover(
+                function(){
+                    $("#antenna-"+$(this).data('antennaid')+" td").css({'background-color': 'yellow'});
+                }, 
+                function(){
+                    $("#antenna-"+$(this).data('antennaid')+" td").css({'background-color': ''});
+                });           
+
 	$(document).on('click', '#changefreq', function(event){
 		event.preventDefault();
 		var me = $(this);
