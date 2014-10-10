@@ -30,8 +30,8 @@ var formAddFile = function(fileId, formData, modifiable){
     modifiable = (typeof modifiable === "undefined") ? true : modifiable;
     var tr = $('<tr id="file_'+fileId+'"></tr>');
     tr.append('<td>'+formData.reference+'</td>');
-    tr.append('<td><a rel="external" href="'+urlt+formData.path+'">'+formData.name+'</a></td>');
-    tr.append('<td><a rel="external" href="'+urlt+formData.path+'"><i class="icon-download"></i></a></td>');
+    tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'">'+formData.name+'</a></td>');
+    tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'"><i class="icon-download"></i></a></td>');
     if(modifiable){
         tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
             'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
