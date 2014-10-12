@@ -1052,7 +1052,8 @@ class EventsController extends ZoneController {
     private function getEventJson(Event $event){
     	$eventservice = $this->getServiceLocator()->get('EventService');
     	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
-    	$json = array('name' => $eventservice->getName($event),
+    	$json = array('id' => $event->getId(),
+                                        'name' => $eventservice->getName($event),
     					'modifiable' => $eventservice->isModifiable($event),
     					'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
     					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
@@ -1125,6 +1126,7 @@ class EventsController extends ZoneController {
     	$readablecat = $this->filterReadableCategories($categories);
     	foreach ($readablecat as $category){
     		$json[$category->getId()] = array(
+                        'id' => $category->getId(),
     			'name' => $category->getName(),
     			'short_name' => $category->getShortName(),
     			'color' => $category->getColor(),
