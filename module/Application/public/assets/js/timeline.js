@@ -173,6 +173,11 @@ var timeline = {
 			d_min.setMinutes(0);
 			decoup = (h_aff + 1) * 2;
 			largeur = $(element).width()-60;
+                        //if scrollbar visible, width is different
+                        //TODO : do it better
+                        if ($(document).height() > $(window).height()) {
+                            largeur += timeline.getScrollbarWidth();
+                        }
 			hauteur = $(element).height();
 			lar_unit = largeur / decoup;
 			var delta;
@@ -203,6 +208,10 @@ var timeline = {
 			d_min.setMinutes(0);
 			decoup = (h_aff + 1) * 2;
 			largeur = $(element).width()-100;
+                        //if scrollbar visible, width is different
+                        if ($(document).height() > $(window).height()) {
+                            largeur += timeline.getScrollbarWidth();
+                        }
 			hauteur = $(element).height();
 			lar_unit = largeur / decoup;
 			var delta;
@@ -1445,8 +1454,7 @@ var timeline = {
 		update: function(timel) {
 			var h_ref_old = h_ref;
 			if (vue) {
-			//	temp = new Date();
-			//	timeline.init_journee(timel, temp);
+				timeline.init_journee(timel, new Date());
 			} else {
 				timeline.init(timel);
 			}
@@ -1498,6 +1506,31 @@ var timeline = {
 			timeline.download_update();
 		},
 		
+                getScrollbarWidth: function () {
+                    var outer = document.createElement("div");
+                    outer.style.visibility = "hidden";
+                    outer.style.width = "100px";
+                    outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+                    document.body.appendChild(outer);
+
+                    var widthNoScroll = outer.offsetWidth;
+                    // force scrollbars
+                    outer.style.overflow = "scroll";
+
+                    // add innerdiv
+                    var inner = document.createElement("div");
+                    inner.style.width = "100%";
+                    outer.appendChild(inner);
+
+                    var widthWithScroll = inner.offsetWidth;
+
+                    // remove divs
+                    outer.parentNode.removeChild(outer);
+
+                    return widthNoScroll - widthWithScroll;
+                }
+
 };
 
 $(document).ready(function() {	
