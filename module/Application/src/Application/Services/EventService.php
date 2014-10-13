@@ -193,23 +193,8 @@ class EventService implements ServiceManagerAwareInterface{
 								} else if($key == 'startdate') {
 									$historyentry['fieldname'] = "Début";
 								}
-								//do it in UTC
-								$offset = date("Z");
-								
-								if($ref[$key]){
-									$oldvalue = clone $ref[$key];
-									$oldvalue->setTimezone(new \DateTimeZone("UTC"));
-									$oldvalue->add(new \DateInterval("PT".$offset."S"));
-								}
-								
-                                                                $newvalue = null;
-                                                                if($value){
-                                                                    $newvalue = clone $value;
-                                                                    $newvalue->setTimezone(new \DateTimeZone("UTC"));
-                                                                    $newvalue->add(new \DateInterval("PT".$offset."S"));
-                                                                }
-								$historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($oldvalue) : '');
-								$historyentry['newvalue'] = ($newvalue ? $formatter->format($newvalue) : null);
+								$historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($ref[$key]) : '');
+								$historyentry['newvalue'] = ($value ? $formatter->format($value) : null);
 							} else if ($key == 'punctual') {
 								$historyentry['oldvalue'] = ($ref[$key] ? "Oui" : "Non") ;
 								$historyentry['newvalue'] = ($value ? "Oui" : "Non");
