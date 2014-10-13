@@ -258,6 +258,8 @@ var form = function(url){
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
+                //disable submit button to prevent double submission
+                $("#event input[name='submit']").prop('disabled', true);
                 var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",
