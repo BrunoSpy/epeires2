@@ -56,14 +56,9 @@ class EventsController extends ZoneController {
         $session = new Container('zone');
         if($session->zoneshortname == null){
             if($this->zfcUserAuthentication()->hasIdentity()){
-                if($this->zfcUserAuthentication()->getIdentity()->getZone()){
-                    $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getZone()->getShortname();
-                } else {
-                    $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getShortname();
-                }
+                $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getShortname();
             }
         }
-        
         
      	$viewmodel->setVariables(array('messages'=>$return));
     	 
