@@ -160,11 +160,20 @@ class EventService implements ServiceManagerAwareInterface{
 
         //history of event
 		$logentries = $repo->getLogEntries($event);	
-		if(count($logentries) > 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
+		if(count($logentries) >= 1 && $logentries[count($logentries)-1]->getAction() == "create" ){
 			$ref = null;
 			foreach (array_reverse($logentries) as $logentry){
 				if(!$ref){ //set up reference == "create" entry
+                                    if(!array_key_exists($logentry->getLoggedAt()->format(DATE_RFC2822), $history)){
 					$ref = $logentry->getData();
+                                        $entry = array();
+                                        $entry['date'] = $logentry->getLoggedAt();
+                                        $entry['user'] = $logentry->getUsername();
+                                        $history[$logentry->getLoggedAt()->format(DATE_RFC2822)] = $entry;
+                                    }
+                                    $historyentry = array();
+                                    $historyentry['fieldname'] = 'create';
+                                    $history[$logentry->getLoggedAt()->format(DATE_RFC2822)]['changes'][] = $historyentry;
 				} else {
 					foreach($logentry->getData() as $key => $value){
 						//sometimes log stores values that didn't changed

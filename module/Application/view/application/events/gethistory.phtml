@@ -26,6 +26,8 @@ if($this->history){
                             if(!$change['status']->isOpen()){
                                 echo 'Mémo <em>'.$change['newvalue'].'</em> acquitté';
                             }
+                        } else if($change['fieldname'] == 'create') {
+                            echo 'Evènement créé';
                         } else {
 				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
 				if(empty($change['oldvalue'])){
