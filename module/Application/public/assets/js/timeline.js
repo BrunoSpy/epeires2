@@ -215,7 +215,11 @@ var timeline = {
 			hauteur = $(element).height();
 			lar_unit = largeur / decoup;
 			var delta;
-			if (d_ref_deb.getDate() != d_actuelle.getDate()) { delta = h_act + 24 - h_ref;  } else { delta = h_act - h_ref; }
+			if (d_ref_deb.getDate() != d_actuelle.getDate()) { 
+                            delta = h_act + 24 - h_ref;  
+                        } else { 
+                            delta = h_act - h_ref; 
+                        }
 			x_act = lar_unit + 2*lar_unit*delta + m_act*(2*lar_unit)/60;
 			vue = 1;
 		},
@@ -223,6 +227,9 @@ var timeline = {
 		base: function(base_elmt) {
                         //si la timeline est décalée, ajouter le décalage
                         var left = parseInt($("#timeline").css('left'));
+                        if(isNaN(left)) {
+                            left = 0;
+                        }
 			var h_temp = h_ref;
 			var time_obj = $('<div class="Time_obj"></div>');
 			base_elmt.append(time_obj);
@@ -253,7 +260,11 @@ var timeline = {
 		},
 		// création de la timeBar
 		timeBar: function(element) {
+                    console.log('left '+$("#timeline").css('left'));
                         var left = parseInt($("#timeline").css('left'));
+                        if(isNaN(left)) {
+                            left = 0;
+                        }
 			var detail1 = $('<div class="TimeBar"></div>');
 			element.append(detail1);
 			detail1.css({'position':'fixed', 'top': 132+'px', 'left': x_act+50+left+'px', 'width': 3, 'height':hauteur-50 ,'z-index' : 10, 
@@ -262,6 +273,9 @@ var timeline = {
 		// mise à jour de la timeBar
 		maj_timeBar: function(element) {
                         var left = parseInt($("#timeline").css('left'));
+                        if(isNaN(left)) {
+                            left = 0;
+                        }
 			var detail1 = $(element).find('.TimeBar');
 			detail1.css({'left': x_act+50+left+'px'});
 		},
