@@ -548,7 +548,7 @@ var timeline = {
 							fin = tableau[i][2];
 							etat = tableau[i][8];
 							arch = tableau[i][5];
-							if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
+							if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
 								elmt = timeline_elmt.find('.ident'+id);
 								id_list.push([id, tableau[i][4]]);
 								elmt.css({'top':y_temp+'px'});
@@ -607,7 +607,7 @@ var timeline = {
 				fin = tableau[i][2];
 				etat = tableau[i][8];
 				arch = tableau[i][5];
-				if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
+				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
 					elmt = timeline_elmt.find('.ident'+id);
 					if (arch == 0 || (arch == 1 && aff_archives == 1)) {
 						y_temp += delt_ligne;
@@ -648,7 +648,7 @@ var timeline = {
 				fin = tableau[i][2];
 				etat = tableau[i][8];
 				arch = tableau[i][5];
-				if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
+				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
 					elmt = timeline_elmt.find('.ident'+id);
 					if (arch == 0 || (arch == 1 && aff_archives == 1)) {
 						nb_lignes_occ = occup.length;
@@ -704,7 +704,7 @@ var timeline = {
 				debut = tableau[i][1];
 				fin = tableau[i][2];
 				etat = tableau[i][8];
-				if (!(fin < d_ref_deb && etat == "Terminé") && debut <= d_ref_fin) {
+				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
 					y_temp += delt_ligne;
 					elmt = timeline_elmt.find('.ident'+id);
 					var elmt_rect = elmt.find('.rect_elmt');
