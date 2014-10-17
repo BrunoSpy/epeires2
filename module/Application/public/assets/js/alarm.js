@@ -17,10 +17,11 @@ var updateAlarms = function(){
 			$.each(data, function(i, item){
 				if(item.status == 3) { //alarme acquittée par ailleurs
 					//si l'alarme est ouverte et acquittée, on la ferme
-					if(alarmsnoty[item.id]){
-						alarmsnoty[item.id].close();
-						delete(alarmsnoty[item.id]);
-					}
+					//if(alarmsnoty[item.id]){
+					//	alarmsnoty[item.id].close();
+					//	delete(alarmsnoty[item.id]);
+					//}
+                                        //NON : ne pas fermer automatiquement les alarmes acquittées sur d'autres postes
 				} else {
 					//si l'alarme existe déjà, on l'annule
 					if(alarms[item.id]){
