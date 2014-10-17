@@ -345,15 +345,22 @@ var timeline = {
 								(fin.toLocaleDateString() == d_actuelle.toLocaleDateString())) {
 							cpt_journee.push(i);
 						}
-						if (fin > 0 && fin < d_ref_deb && (etat == "Terminé" || etat == "Annulé")) { 
-							if (fin > d_min) {liste_passee.push(i);}
-						} else if (debut > d_ref_fin) {
-							if (debut < d_max) {liste_avenir.push(i);}
-						} else {
-							liste_affichee.push(i);
+						if ((debut > d_ref_deb && debut < d_ref_fin)
+								|| (debut < d_ref_fin && fin < 0)
+								|| (fin > d_ref_deb && fin < d_ref_fin)) {
+console.log("ok");
 							timeline.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8], tableau[i][11]);
 							cpt ++;
 						}
+//						if (fin > 0 && fin < d_ref_deb) { //  && (etat == "Terminé" || etat == "Annulé") 
+//							if (fin > d_min) {liste_passee.push(i);}
+//						} else if (debut > d_ref_fin) {
+//							if (debut < d_max) {liste_avenir.push(i);}
+//						} else {
+//							liste_affichee.push(i);
+//							timeline.create_elmt(timeline_elmt, id, debut, fin, tableau[i][3], tableau[i][4], tableau[i][5], tableau[i][6], tableau[i][7], tableau[i][8], tableau[i][11]);
+//							cpt ++;
+//						}
 					}
 				}
 				var text_cat = "";
@@ -548,7 +555,10 @@ var timeline = {
 							fin = tableau[i][2];
 							etat = tableau[i][8];
 							arch = tableau[i][5];
-							if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
+					//		if (fin > d_ref_deb && debut <= d_ref_fin) { //  && etat == "Terminé"
+							if ((debut > d_ref_deb && debut < d_ref_fin)
+									|| (debut < d_ref_fin && fin < 0)
+									|| (fin > d_ref_deb && fin < d_ref_fin)) {
 								elmt = timeline_elmt.find('.ident'+id);
 								id_list.push([id, tableau[i][4]]);
 								elmt.css({'top':y_temp+'px'});
@@ -607,8 +617,11 @@ var timeline = {
 				fin = tableau[i][2];
 				etat = tableau[i][8];
 				arch = tableau[i][5];
-				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
-					elmt = timeline_elmt.find('.ident'+id);
+//				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
+				if ((debut > d_ref_deb && debut < d_ref_fin)
+						|| (debut < d_ref_fin && fin < 0)
+						|| (fin > d_ref_deb && fin < d_ref_fin)) {
+				elmt = timeline_elmt.find('.ident'+id);
 					if (arch == 0 || (arch == 1 && aff_archives == 1)) {
 						y_temp += delt_ligne;
 						if (speed) {
@@ -648,8 +661,11 @@ var timeline = {
 				fin = tableau[i][2];
 				etat = tableau[i][8];
 				arch = tableau[i][5];
-				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
-					elmt = timeline_elmt.find('.ident'+id);
+		//		if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
+				if ((debut > d_ref_deb && debut < d_ref_fin)
+						|| (debut < d_ref_fin && fin < 0)
+						|| (fin > d_ref_deb && fin < d_ref_fin)) {
+				elmt = timeline_elmt.find('.ident'+id);
 					if (arch == 0 || (arch == 1 && aff_archives == 1)) {
 						nb_lignes_occ = occup.length;
 						var test = 0;
@@ -704,8 +720,11 @@ var timeline = {
 				debut = tableau[i][1];
 				fin = tableau[i][2];
 				etat = tableau[i][8];
-				if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
-					y_temp += delt_ligne;
+		//		if (!(fin < d_ref_deb) && debut <= d_ref_fin) { //  && etat == "Terminé"
+				if ((debut > d_ref_deb && debut < d_ref_fin)
+						|| (debut < d_ref_fin && fin < 0)
+						|| (fin > d_ref_deb && fin < d_ref_fin)) {
+				y_temp += delt_ligne;
 					elmt = timeline_elmt.find('.ident'+id);
 					var elmt_rect = elmt.find('.rect_elmt');
 					if (tableau[i][5] == 0) {
