@@ -10,14 +10,13 @@
  * @author Jonathan Colson
  */
 
-$.widget("epeires.timeline",{
-    
+$.widget("epeires.timeline", {
     version: "0.0.1",
-    
     /**
      * List of events
      */
     events: [],
+    
     /**
      * List of categories
      */
@@ -28,6 +27,19 @@ $.widget("epeires.timeline",{
      */
     dayview: false,
     
+    /**
+     * Beginning of the timeline
+     */
+    timelineBegin: new Date(),
+    /**
+     * End of the timeline
+     */
+    timelineEnd: new Date(),
+    /**
+     * Duration of the timeline in hours
+     */
+    timelineDuration: 6,
+        
     //default options
     options: {
         eventUrl: "",
@@ -37,20 +49,20 @@ $.widget("epeires.timeline",{
     
     //Main function
     //Initialize the timeline
-    _create: function() {
+    _create: function () {
         var self = this;
         $.when(
-            $.getJSON(this.options.categoriesUrl, function(data){
-                $.each(data, function(key, value){
-                    self.categories.push(value);
-                });
-            }),
-            $.getJSON(this.options.eventUrl, function(data){
-                $.each(data, function(key, value){
-                    self.events.push(value);
-                });
-            })
-        ).then(function(){
+                $.getJSON(this.options.categoriesUrl, function (data) {
+                    $.each(data, function (key, value) {
+                        self.categories.push(value);
+                    });
+                }),
+                $.getJSON(this.options.eventUrl, function (data) {
+                    $.each(data, function (key, value) {
+                        self.events.push(value);
+                    });
+                })
+                ).then(function () {
             //unable user to select objects
             self._setUnselectable();
             //sort categories by name
@@ -62,78 +74,72 @@ $.widget("epeires.timeline",{
             //draw events
             self.applyChanges();
             //trigger event when init is finished
-            self._trigger("initComplete");});
+            self._trigger("initComplete");
+        });
     },
-    
     /* ********************** */
     /* *** Public methods *** */
     /* ********************** */
-    
+
     /*
      * 
      * @param {type} event Object
      */
-    addEvt: function(event){
-        
+    addEvt: function (event) {
+
     },
-    
-    modifyEvent: function(event){
-        
+    modifyEvent: function (event) {
+
     },
-    
     /*
      * Sort events
      * @param {type} comparator callback 
      * @returns {undefined}
      */
-    sortEvents: function(comparator){
-        if(typeof comparator === "undefined"){
-            
+    sortEvents: function (comparator) {
+        if (typeof comparator === "undefined") {
+
         } else {
             this.events.sort(comparator);
         }
     },
-    
     /**
      * Sort categories according to comparator
      * If comparator is undefined, sort alphabetically
      * @param {type} comparator
      * @returns {undefined}
      */
-    sortCategories: function(comparator){
-        if(typeof comparator === "undefined"){
-            this.categories.sort(function(a, b){
+    sortCategories: function (comparator) {
+        if (typeof comparator === "undefined") {
+            this.categories.sort(function (a, b) {
                 return a.name > b.name;
             });
         } else {
             this.categories.sort(comparator);
         }
     },
-    
-    filter: function(){
-        
+    filter: function () {
+
     },
-    
-    view: function(viewName){
-        if(viewName === "day" && !this.dayview){
+    view: function (viewName) {
+        if (viewName === "day" && !this.dayview) {
             this.dayview = true;
             this._changeView();
-        } else if(viewName === "sixhours" && this.dayview){
+        } else if (viewName === "sixhours" && this.dayview) {
             this.dayview = false;
             this._changeView();
         }
-        
+
     },
-    
     /* ********************** */
     /* *** Private methods ** */
     /* ********************** */
-    
+
     _setUnselectable: function () {
         this.element.attr('unselectable', 'on')
                 .css({'-moz-user-select': '-moz-none',
                     '-moz-user-select':'none',
-                    '-o-user-select': 'none',
+                            '-o-user-select': 'none',
                     '-khtml-user-select': 'none',
                     '-webkit-user-select': 'none',
                     '-ms-user-select': 'none',
@@ -142,25 +148,79 @@ $.widget("epeires.timeline",{
             return false;
         });
     },
-    
-    _createTimeline: function() {
-        this.element.css('height', $(window).height()-this.options.topOffset+'px');
-        
+    _createTimeline: function () {
+        this.element.css('height', $(window).height() - this.options.topOffset + 'px');
+
     },
-    
     /**
      * Draw new events and update positions
      * @returns {undefined}
      */
-    _applyChanges: function() {
-        
+    _applyChanges: function () {
+
     },
-    
     /**
      * Switch between dayview and 6-hours view
      * @returns {undefined}
      */
-    _changeView: function() {
-        
+    _changeView: function () {
+        //update local var
+        if(dayview) {
+            timelineDuration = 24;
+            var now = new Date();
+            //diff between utc and local time
+            //TODO
+            var diff = 2;
+            timelineBegin = new Date(now.getYear(), now.getMonth(), now.getDate(), diff, 0, 0);
+            timelineEnd = new Date(timelineBegin.getYear(), timelineBegin.getMonth(), timelineBegin.getDate(),
+                                    timelineBegin.getHours()+timelineDuration, 0, 0);
+        } else {
+            timelineDuration = 6;
+            var now = new Date();
+            timelineBegin = new Date(now.getYear(), now.getMonth(), now.getDate(), now.getHours()-1, 0, 0);
+            timelineBegin = new Date(now.getYear(), now.getMonth(), now.getDate(), now.getHours()-1+timelineDuration, 0, 0);
+        }
+    },
+    /**
+     * Calcule l'abscisse correspondant à une date
+     * Retourne -1 si en dehors de la timeline
+     * @param {type} date
+     * @returns {undefined}
+     */
+    _computeX: function (date) {
+        if(date < timelineBegin || date > timelineEnd){
+            return -1;
+        } else {
+            
+        }
+    },
+    
+    /**
+     * Compute width of the scrollbar
+     * @returns int Width of the scrollbar in pixels
+     */
+    _getScrollbarWidth: function () {
+        var outer = document.createElement("div");
+        outer.style.visibility = "hidden";
+        outer.style.width = "100px";
+        outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+        document.body.appendChild(outer);
+
+        var widthNoScroll = outer.offsetWidth;
+        // force scrollbars
+        outer.style.overflow = "scroll";
+
+        // add innerdiv
+        var inner = document.createElement("div");
+        inner.style.width = "100%";
+        outer.appendChild(inner);
+
+        var widthWithScroll = inner.offsetWidth;
+
+        // remove divs
+        outer.parentNode.removeChild(outer);
+
+        return widthNoScroll - widthWithScroll;
     }
 });
