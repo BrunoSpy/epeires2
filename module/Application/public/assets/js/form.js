@@ -163,14 +163,10 @@ var form = function(url){
                 var hoursplit = startsplit[1].split(':');
                 var end = new Date(daysplit[2], daysplit[1] - 1, daysplit[0], hourendsplit[0], hourendsplit[1]);
                 var deb = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hoursplit[0], hoursplit[1]);
+                //if deb > end, block enddate
                 if (deb > end) {
-                    //add a day to enddate
-                    var newend = new Date();
-                    newend.setDate(end.getDate() +1);
-                    $('#end td.day input').val(newend.getUTCDate()+'-'+(newend.getUTCMonth()+1)+'-'+newend.getUTCFullYear());
-                    $('#end td.day input').trigger('change');
-                    //dateDeb.val(dateFin.val());
-                    //updateHours();
+                    dateFin.val(dateDeb.val());
+                    updateHours();
                 }
                 //changement du statut à terminé si :
                 //   * droits ok

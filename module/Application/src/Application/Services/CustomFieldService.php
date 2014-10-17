@@ -159,7 +159,15 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$value_options = explode("\n", $input);
 				break;
 			case 'stack':
-				$value_options = $om->getRepository('Application\Entity\Stack')->getAllAsArray();
+                                $qb = $om->createQueryBuilder();
+                                $qb->select(array('s'))
+                                        ->from('Application\Entity\Stack', 's')
+                                        ->addOrderBy('s.name', 'ASC');
+                                $results = array();
+                                foreach ($qb->getQuery()->getResult() as $stack){
+                                    $results[$stack->getId()] = $stack->getName();
+                                }
+				$value_options = $results;
 				break;
 			case 'boolean':
 				break;
