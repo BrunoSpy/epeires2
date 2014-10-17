@@ -34,7 +34,7 @@ var updateAlarms = function(){
 						alarmsnoty[item.id] = noty({
 							text:item.text,
 							type:'error',
-							layout:'topCenter',
+							layout:'topMiddleCenter',
 							timeout:false,
 							callback: {
 								onClose: function(){
