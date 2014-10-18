@@ -856,9 +856,21 @@ class FrequenciesController extends ZoneController {
         $frequencies = array();
         if ($frequencyid) {
             $frequency = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
-            $frequencieslist = $em->getRepository('Application\Entity\Frequency')->findBy(array('organisation' => $frequency->getOrganisation()->getId()));
-            foreach ($frequencieslist as $freq) {
-                $frequencies[$freq->getId()] = ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue());
+            $qb = $em->createQueryBuilder();
+            $qb->select(array('f'))
+                    ->from('Application\Entity\Frequency', 'f')
+                    ->leftJoin('f.defaultsector', 'd')
+                    ->andWhere($qb->expr()->eq('f.organisation', '?1'))
+                    ->addOrderBy('d.zone', 'DESC')
+                    ->addOrderBy('d.name', 'ASC')
+                    ->setParameter('1', $frequency->getOrganisation()->getId());
+            //$frequencieslist = $em->getRepository('Application\Entity\Frequency')->findBy(array('organisation' => $frequency->getOrganisation()->getId()));
+            $place = 0;
+            foreach ($qb->getQuery()->getResult() as $freq) {
+                $frequencies[$freq->getId()] = array(
+                        'place' => $place,
+                        'data' => ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue()));
+                $place++;
             }
         }
         return new JsonModel($frequencies);

@@ -217,10 +217,20 @@ var antenna = function(url){
 		event.preventDefault();
 		var me = $(this);
 		$.post(url+'frequencies/getfrequencies?id='+me.data('freqid'), function(data){
-			var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
-			$.each(data, function(key, value){
-				list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+key+"\">"+value+"</a></li>");
-			});
+                    //convert json into array to sort it
+                    var dataArray = [];
+                    $.each(data, function(key, value){
+                        dataArray.push([key, data[key]]);
+                    });
+                    dataArray.sort(function(a, b){
+                        return a[1]['place'] > b[1]['place'] ? 1 : a[1]['place'] < b[1]['place'] ? -1 : 0;
+                    });
+                    var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
+                    for(var i = 0; i < dataArray.length; i++){
+			//$.each(data, function(key, value){
+			list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
+			//});
+                    }
 			if(list.find('li').length > 0 ){
 				var div = $('<div class="vertical-scroll"></div>');
 				div.append(list);
