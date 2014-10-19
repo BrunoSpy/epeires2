@@ -256,6 +256,13 @@ var form = function(url){
 		event.preventDefault();
                 //disable submit button to prevent double submission
                 $("#event input[name='submit']").prop('disabled', true);
+                //fill missing minute inputs
+                if($('#start .hour input').val().length > 0 && $('#start .minute input').val().length === 0){
+                    $('#start .minute input').val('00').trigger('change');
+                }
+                if($('#end .hour input').val().length > 0 && $('#end .minute input').val().length === 0){
+                    $('#end .minute input').val('00').trigger('change');
+                }
                 var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",

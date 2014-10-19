@@ -151,6 +151,9 @@
                         dateFormat: "dd-mm-yy",
                     });
                 });
+                div.on('click', 'i.icon-calendar', function(e){
+                    div.find('input[type=text].date').trigger('focus');
+                });
 
                 //init fields if original field contains a date
                 // else init with current date
