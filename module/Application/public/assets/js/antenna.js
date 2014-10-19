@@ -37,6 +37,7 @@ var togglefiche = function(){
 var closeFiche = function() {
     $("#fiche").animate({'margin-left': '-23%'}, '1000', function() {
         $(this).hide();
+        $(this).data('id', '');
     });
     $("#frequencies").animate({
         'margin-left': '0px',
@@ -52,7 +53,7 @@ var openFiche = function() {
             'margin-left': '2.56%',
             'width': '48.7%'
         }, '1000');
-    }
+    } 
 };
 
 var antenna = function(url){
@@ -68,7 +69,12 @@ var antenna = function(url){
         $(document).on('click', '.open-fiche', function(){
             openFiche();
             if($("#fiche").is(':visible')){
-                $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'));
+                if($('#fiche').data('id') === $(this).data('id')){
+                    closeFiche();
+                } else {
+                    $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'))
+                        .data('id', $(this).data('id'));
+                }
             } else {
                 $("#fiche").empty();
             }
