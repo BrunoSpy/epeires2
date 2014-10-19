@@ -21,7 +21,7 @@ var headerbar = function (url) {
         }, 'json');
     });
 
-    //update IPO every 60s
+    //update IPO every minute
     setInterval(function () {
         $.getJSON(url + '/getIPO', function (data) {
             $.each(data, function (key, value) {
@@ -32,7 +32,7 @@ var headerbar = function (url) {
                     $('.header select[name=nameipo] option[value=' + key + ']').prop('selected', true);
                 }
             });
-        })
-    }, 5000);
+        });
+    }, 60000);
 
 };
