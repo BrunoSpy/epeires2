@@ -60,7 +60,7 @@ class IPOHelper extends AbstractHelper {
 				$html .= "</li>";
 			} else {
 				if($currentipo) {
-					$html .= $currentipo->getName();
+					$html .= '<span id="iponame">'.$currentipo->getName().'</span>';
 				} else {
 					$html .= "<em>Aucun IPO configuré</em>";
 				}
