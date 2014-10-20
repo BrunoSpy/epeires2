@@ -134,6 +134,7 @@ class OpSupsController extends FormController
     	if($opsupid){
     		$opsup = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
     		if($opsup){   			
+                        $form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray($opsup->getOrganisation()));
     			$form->bind($opsup);
     			$form->setData($opsup->getArrayCopy());
     		}
