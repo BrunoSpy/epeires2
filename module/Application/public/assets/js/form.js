@@ -163,14 +163,10 @@ var form = function(url){
                 var hoursplit = startsplit[1].split(':');
                 var end = new Date(daysplit[2], daysplit[1] - 1, daysplit[0], hourendsplit[0], hourendsplit[1]);
                 var deb = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hoursplit[0], hoursplit[1]);
+                //if deb > end, block enddate
                 if (deb > end) {
-                    //add a day to enddate
-                    var newend = new Date();
-                    newend.setDate(end.getDate() +1);
-                    $('#end td.day input').val(newend.getUTCDate()+'-'+(newend.getUTCMonth()+1)+'-'+newend.getUTCFullYear());
-                    $('#end td.day input').trigger('change');
-                    //dateDeb.val(dateFin.val());
-                    //updateHours();
+                    dateFin.val(dateDeb.val());
+                    updateHours();
                 }
                 //changement du statut à terminé si :
                 //   * droits ok
@@ -260,6 +256,13 @@ var form = function(url){
 		event.preventDefault();
                 //disable submit button to prevent double submission
                 $("#event input[name='submit']").prop('disabled', true);
+                //fill missing minute inputs
+                if($('#start .hour input').val().length > 0 && $('#start .minute input').val().length === 0){
+                    $('#start .minute input').val('00').trigger('change');
+                }
+                if($('#end .hour input').val().length > 0 && $('#end .minute input').val().length === 0){
+                    $('#end .minute input').val('00').trigger('change');
+                }
                 var formData = new FormData($("#Event")[0]);
 		$.ajax({
 			type: "POST",

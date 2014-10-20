@@ -65,6 +65,7 @@ class EventsController extends ZoneController {
         return $viewmodel;
     }
     
+    //TODO move to IPOController
     public function saveipoAction(){
     	$messages = array();
     	if($this->getRequest()->isPost()){
@@ -92,6 +93,23 @@ class EventsController extends ZoneController {
     		}
     	}
     	return new JsonModel($messages);
+    }
+        
+    //TODO move to IPOController
+    public function getIPOAction(){
+        $json = array();
+        $objectmanager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+				
+            $currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(
+									array('organisation' => $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId(),
+											'current' => true));
+            
+            $json[$currentipo->getId()] = $currentipo->getName();
+        }
+        
+        return new JsonModel($json);
+        
     }
     
     public function saveopsupAction(){

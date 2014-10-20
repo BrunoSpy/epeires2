@@ -49,34 +49,40 @@ var displayMessages = function(messages){
  
  var displayPanel = function(id){
         var timeline = $('#timeline');
-        if(timeline.css('left') !== '330px') {
-            $('.Time_obj, .TimeBar').animate({left: '+=330px'}, 300);
+        if(timeline.css('left') === '330px' && $("#fiche").data('id') === id) {
+            //panneau ouvert avec la fiche actuelle : fermeture du panneau
+            hidePanel();
+        } else {
+            if(timeline.css('left') !== '330px'){
+                //panneau fermé : on l'ouvre
+                $('.Time_obj, .TimeBar').animate({left: '+=330px'}, 300);
+                timeline.animate({
+                    left: '330px'
+                }, 300);
+            }
+            $('#fiche').load(url+'events/getfiche?id='+id, function(){
+                $('tr[data-toggle=tooltip]').tooltip();
+            }).data('id', id);
         }
-        timeline.animate({
-            left: '330px'
-        }, 300);
-        $('#fiche').load(url+'events/getfiche?id='+id, function(){
-            $('tr[data-toggle=tooltip]').tooltip();
-        });
  };
  
  var hidePanel = function(){
         var timeline = $('#timeline');
         $('#fiche').empty();
-        if(timeline.css('left') == '330px') {
+        if(timeline.css('left') === '330px') {
             $('.Time_obj, .TimeBar').animate({left: '-=330px'}, 300);
         }
         timeline.animate({
             left: '0px'
         }, 300);
         
- }
+ };
  
  var togglePanel = function(id){
         var panel = $('#timeline');
         //on détermine si on affiche ou si on cache
-        var val = panel.css('left') == '330px' ? '0px' : '330px';
-        if(panel.css('left') == '330px') {
+        var val = panel.css('left') === '330px' ? '0px' : '330px';
+        if(panel.css('left') === '330px') {
             $('#fiche').empty();
             $('.Time_obj, .TimeBar').animate({left: '-=330px'}, 300);
         } else {
@@ -88,7 +94,7 @@ var displayMessages = function(messages){
         panel.animate({
             left: val
         }, 300);
- }
+ };
  
  var url;
  
