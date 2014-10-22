@@ -97,6 +97,21 @@ class ReportController extends AbstractActionController {
 
         $j = $request->getParam('delta');
         
+        $email = $request->getParam('email');
+        
+        $org = $request->getParam('orgshortname');
+        
+        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findBy(array('shortname' => $org));
+        
+        if(!$organisation){
+            throw new \RuntimeException('Unable to find organisation.');
+        } else {
+            $email = $organisation[0]->getIpoEmail();
+            if(empty($email)){
+                throw new \RuntimeException('Unable to find IPO email.');
+            }
+        }
+        
         $day = new \DateTime('now');
         if($j){
             if($j > 0){
@@ -142,6 +157,35 @@ class ReportController extends AbstractActionController {
         }
         
         file_put_contents('data/reports/rapport_du_' . $formatter->format(new \DateTime($day)) . '.pdf', $engine->output());
+        
+        if($email){
+            //prepare body with file attachment
+            $text = new \Zend\Mime\Part('Veuillez trouver ci-joint le rapport automatique de la journée du '.$formatter->format(new \DateTime($day)));
+            $text->type = \Zend\Mime\Mime::TYPE_TEXT;
+            $text->charset = 'utf-8';
+            
+            $fileContents = fopen('data/reports/rapport_du_' . $formatter->format(new \DateTime($day)) . '.pdf', 'r');
+            $attachment = new \Zend\Mime\Part($fileContents);
+            $attachment->type = 'application/pdf';
+            $attachment->filename = 'rapport_du_' . $formatter->format(new \DateTime($day)) . '.pdf';
+            $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
+            $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
+
+            $mimeMessage = new \Zend\Mime\Message();
+            $mimeMessage->setParts(array($text, $attachment));
+            
+            $config = $this->serviceLocator->get('config');
+            $message = new \Zend\Mail\Message();
+            $message->addTo($organisation[0]->getIpoEmail())
+                    ->addFrom($config['emailfrom'])
+                    ->setSubject('Rapport automatique du '. $formatter->format(new \DateTime($day)))
+                    ->setBody($mimeMessage);
+            
+            $transport = new \Zend\Mail\Transport\Smtp();
+            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
+            $transport->setOptions($transportOptions);
+            $transport->send($message);
+        }
     }
 
 }

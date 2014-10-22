@@ -32,7 +32,7 @@ return array(
             'routes' => array(
                 'generate-report' => array(
                     'options' => array(
-                        'route' => 'report [--verbose|-v] [--delta=] ',
+                        'route' => 'report [--email] [--delta=] <orgshortname>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Report',
                             'action' => 'report'

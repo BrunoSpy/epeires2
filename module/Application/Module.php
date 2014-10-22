@@ -12,8 +12,10 @@ use Zend\Mvc\MvcEvent;
 use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\ModuleManager\ModuleManager;
+use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
 
-class Module
+class Module implements ConsoleUsageProviderInterface
 {
     public function onBootstrap(MvcEvent $e)
     {
@@ -116,4 +118,13 @@ class Module
     	);
     }
     
+    public function getConsoleUsage(Console $console){
+        return array(
+            'report [--email] [--delta=] orgshortname' => 'Generate a daily report for an organisation',
+            array('--email', 'Send an email to IPO'),
+            array('--delta', '(optional) Delta to add to the current day (-1=yesterday)'),
+            array('orgshortname', 'Shortname of the organisation as configured in the database'),
+            
+        );
+    }
 }

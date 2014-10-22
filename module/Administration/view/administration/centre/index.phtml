@@ -47,6 +47,7 @@
 								<th data-sort="string">Nom abrégé</th>
 								<th>Adresse</th>
                                                                 <th>Numéro IPO</th>
+                                                                <th>Email IPO</th>
 								<th><a href="#organisation-container" id="add-organisation" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
 							</tr>
 						</thead>
@@ -59,6 +60,7 @@
 									echo '<td>'.$centre->getShortname().'</td>';
 									echo '<td>'.nl2br($centre->getAddress()).'</td>';
                                                                         echo '<td>'.$centre->getIpoNumber().'</td>';
+                                                                        echo '<td>'.$centre->getIpoEmail().'</td>';
 									echo "<td>";
 										echo "<a 
 												title=\"Modifier\"
