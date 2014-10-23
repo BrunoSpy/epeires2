@@ -443,11 +443,11 @@ var form = function(url){
 					$.each(data.customvalues, function(key, value){
 						var elt = $("#custom_fields [name='custom_fields["+key+"]']");
 						if(elt.is("select")){
+                                                    if(value.length > 0) {
 							$("#custom_fields [name='custom_fields["+key+"]'] option[value="+value+"]").prop('selected', true);
+                                                    }
 						} else if(elt.is('textarea')){
 							elt.html(value);
-						} else if(elt.is(':hidden')){
-							//do nothing
 						} else if (elt.is(':checkbox')){
 							elt.attr('checked', (value == 1));
 						} else if(elt.is('input')){
