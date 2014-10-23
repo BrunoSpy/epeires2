@@ -550,24 +550,24 @@ var form = function(url){
                         });
 			$("input[name='category']").val(root_value);
                         //affichage des évts suggérés
-                        $.getJSON(url+'events/suggestEvents?id='+root_value, function(data){
-                            var dl = $("<dl></dl>");
-                            $.each(data, function(key, value){
-                                dl.append(createEventSuggest(key, value));
-                            });
-                            //add suggestions
-                            $('#root_categories').popover('destroy');
-                            if(dl.find('div.result').length > 0){
-                                $('#root_categories').popover({
-                                    html: true,
-                                    trigger: "manual",
-                                    title: "Suggestions : ",
-                                    content: dl.html(),
-                                    container: "#suggestions-container"
-                                });
-                                $("#root_categories").popover('show');
-                            }
-                        });
+//                        $.getJSON(url+'events/suggestEvents?id='+root_value, function(data){
+//                            var dl = $("<dl></dl>");
+//                            $.each(data, function(key, value){
+//                                dl.append(createEventSuggest(key, value));
+//                            });
+//                            //add suggestions
+//                            $('#root_categories').popover('destroy');
+//                            if(dl.find('div.result').length > 0){
+//                                $('#root_categories').popover({
+//                                    html: true,
+//                                    trigger: "manual",
+//                                    title: "Suggestions : ",
+//                                    content: dl.html(),
+//                                    container: "#suggestions-container"
+//                                });
+//                                $("#root_categories").popover('show');
+//                            }
+//                        });
                         
 		} else {
 			$("#category_title").html('Catégories');
