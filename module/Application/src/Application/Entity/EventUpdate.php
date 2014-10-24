@@ -56,8 +56,8 @@ class EventUpdate {
 	 */
 	public function doCorrectUTC(){
 		if($this->created_on){
+                        $offset = $this->created_on->getTimezone()->getOffset($this->created_on);
 			$this->created_on->setTimezone(new \DateTimeZone("UTC"));
-			$offset = date("Z");
 			$this->created_on->add(new \DateInterval("PT".$offset."S"));
 		}
 	}

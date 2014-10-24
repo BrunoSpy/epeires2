@@ -27,8 +27,8 @@ class Log extends AbstractLogEntry{
 	 */
 	public function doCorrectUTC(){
 		if($this->loggedAt){
+                        $offset = $this->loggedAt->getTimezone()->getOffset($this->loggedAt);
 			$this->loggedAt->setTimezone(new \DateTimeZone("UTC"));
-			$offset = date("Z");
 			$this->loggedAt->add(new \DateInterval("PT".$offset."S"));
 		}
 	}

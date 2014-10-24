@@ -190,21 +190,24 @@ class Event extends AbstractEvent{
 	public function doCorrectUTC(){
 		//les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
 		//mais à la création php les crée en temps local, il faut donc les corriger
-		$offset = date("Z");
 		if($this->enddate){
+                        $offset = $this->enddate->getTimezone()->getOffset($this->enddate);
 			$this->enddate->setTimezone(new \DateTimeZone("UTC"));
 			$this->enddate->add(new \DateInterval("PT".$offset."S"));
 		}
 		if($this->startdate){
+                        $offset = $this->startdate->getTimezone()->getOffset($this->startdate);
 			$this->startdate->setTimezone(new \DateTimeZone("UTC"));
 			$this->startdate->add(new \DateInterval("PT".$offset."S"));
 		}
 		if($this->created_on){
+                        $offset = $this->created_on->getTimezone()->getOffset($this->created_on);
 			$this->created_on->setTimezone(new \DateTimeZone("UTC"));
 			$this->created_on->add(new \DateInterval("PT".$offset."S"));
 		}
 		if($this->last_modified_on){
-			$this->last_modified_on->setTimezone(new \DateTimeZone("UTC"));
+			$offset = $this->last_modified_on->getTimezone()->getOffset($this->last_modified_on);
+                        $this->last_modified_on->setTimezone(new \DateTimeZone("UTC"));
 			$this->last_modified_on->add(new \DateInterval("PT".$offset."S"));
 		}
 	}
