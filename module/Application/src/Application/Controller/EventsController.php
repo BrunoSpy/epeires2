@@ -423,12 +423,13 @@ class EventsController extends ZoneController {
                                         
                                         //hydrator can't guess timezone, force UTC of end and start dates
     					if(isset($post['startdate']) && !empty($post['startdate'])){
-    						$offset = date("Z");
     						$startdate = new \DateTime($post['startdate']);
+                                                $offset = $startdate->getTimezone()->getOffset($startdate);
     						$startdate->setTimezone(new \DateTimeZone("UTC"));
     						$startdate->add(new \DateInterval("PT".$offset."S"));
                                                 if(isset($post['enddate']) && !empty($post['enddate'])) {
                                                     $enddate = new \DateTime($post['enddate']);
+                                                    $offset = $enddate->getTimezone()->getOffset($enddate);
                                                     $enddate->setTimezone(new \DateTimeZone("UTC"));
                                                     $enddate->add(new \DateInterval("PT".$offset."S"));
                                                     //on change les deux dates d'un coup pour éviter les incohérences temporaires
@@ -563,8 +564,8 @@ class EventsController extends ZoneController {
                                                 $alarm->setOrganisation($event->getOrganisation());
                                                 $alarm->setParent($event);
                                                 $alarm->setStatus($objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open'=> true, 'defaut'=>true)));
-                                                $offset = date("Z");
                                                 $startdate = new \DateTime($alarmpost['date']);
+                                                $offset = $startdate->getTimezone()->getOffset($startdate);
                                                 $startdate->setTimezone(new \DateTimeZone("UTC"));
                                                 $startdate->add(new \DateInterval("PT".$offset."S"));
                                                 $alarm->setStartdate($startdate);
