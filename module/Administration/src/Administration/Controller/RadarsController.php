@@ -88,10 +88,10 @@ class RadarsController extends AbstractActionController
     	$form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')->getAllAsArray());
     	
     	if($id){
-    		$radar = $objectManager->getRepository('Application\Entity\Radar')->find(id);
+    		$radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
     		if($radar){
-     			$form->bind($user);
-    			$form->setData($user->getArrayCopy());
+     			$form->bind($radar);
+    			$form->setData($radar->getArrayCopy());
     		}
     	}
     
