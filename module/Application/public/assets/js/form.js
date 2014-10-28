@@ -118,8 +118,9 @@ var form = function(url){
 			var enddaysplit = endsplit[0].split('-');
 			var hoursplit = endsplit[1].split(':');
 			var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
+                        //if deb > end, block startdate
                         if(deb > end){
-				datefin.val(dateDeb.val());
+				dateDeb.val(datefin.val());
 				datefin.trigger('change');
 				updateHours();
 			}
@@ -163,9 +164,16 @@ var form = function(url){
                 var hoursplit = startsplit[1].split(':');
                 var end = new Date(daysplit[2], daysplit[1] - 1, daysplit[0], hourendsplit[0], hourendsplit[1]);
                 var deb = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hoursplit[0], hoursplit[1]);
-                //if deb > end, block enddate
+                //if deb > end
+                //first : try to just change the date
+                //if not enough, take date and time
                 if (deb > end) {
-                    dateFin.val(dateDeb.val());
+                    var newEnd = new Date(startdaysplit[2], startdaysplit[1] - 1, startdaysplit[0], hourendsplit[0], hourendsplit[1]);
+                    if(deb > newEnd){
+                        dateFin.val(dateDeb.val());
+                    } else {
+                        dateFin.val(startsplit[0]+" "+endsplit[1]);
+                    }
                     updateHours();
                 }
                 //changement du statut à terminé si :
