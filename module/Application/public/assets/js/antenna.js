@@ -282,12 +282,12 @@ var antenna = function(url){
                             list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+$(this).data('freq')+"\" data-state=\"true\">Fréquence disponible</a></li>");
                         }
                         
-			var mainantennacolor = sector.find('.antennas .mainantenna-color');
+                        var mainantennacolor = sector.find('.antennas .mainantenna-color');
 			var backupantennacolor = sector.find('.antennas .backupantenna-color');
-			if(mainantennacolor.filter('.background-selected').length == mainantennacolor.length && backupantennacolor.filter('.background-status-ok').length == backupantennacolor.length){
+			if(mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length){
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture secours</a></li>");
 			}
-			if (backupantennacolor.filter('.background-selected').length == backupantennacolor.length && mainantennacolor.filter('.background-status-ok').length == mainantennacolor.length) {
+			if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
 			}
                         //retour à la fréquence nominale
