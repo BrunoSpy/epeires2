@@ -146,6 +146,7 @@ return array(
     		'events.create' => 'Création',
     		'events.write' => 'Modification',
     		'events.status' => 'Modification statut',
+                'events.schedule' => 'Programmer évènements',
     		'events.mod-files' => 'Ajouter/Modifier fichiers',
     		'events.mod-ipo' => 'Modifier IPO',
     		'events.mod-opsup' => 'Modifier Chef Op',

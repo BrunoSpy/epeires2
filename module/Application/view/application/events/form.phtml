@@ -68,11 +68,12 @@
 		if(!$this->event && !$this->model){
 			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
 		}
-			
+                
                 $html = $this->controlGroup(
 					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formCheckbox($this->form->get('scheduled')), array('class'=>'compact'));
-		
+					$this->formCheckbox($this->form->get('scheduled')), 
+                                                            array('class'=>'compact' . ($this->isGranted('events.schedule') ? '' :' unvisible')));
+                
 		$html .= $this->controlGroup(
 					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
 					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
