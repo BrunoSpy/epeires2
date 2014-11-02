@@ -74,6 +74,7 @@ return array(
             'Application\Controller\Report' => 'Application\Controller\ReportController',
             'Application\Controller\File' => 'Application\Controller\FileController',
             'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
+            'Application\Controller\Mil' => 'Application\Controller\MilController',
     	),
     ),
     'view_helpers' => array(

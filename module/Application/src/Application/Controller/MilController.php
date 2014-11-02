@@ -1,0 +1,45 @@
+<?php
+/**
+ * Epeires 2
+ *
+ * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+ */
+
+namespace Application\Controller;
+
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
+
+
+class MilController extends AbstractActionController {
+	
+	
+	public function indexAction(){
+	
+		$viewmodel = new ViewModel();
+		 
+		$return = array();
+		 
+		if($this->flashMessenger()->hasErrorMessages()){
+			$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+		}
+		 
+		if($this->flashMessenger()->hasSuccessMessages()){
+			$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+		}
+		
+		$this->flashMessenger()->clearMessages();
+		 
+		$viewmodel->setVariables(array('messages'=>$return));
+				
+		$nmservice = $this->serviceLocator->get('nmb2b');
+                
+                $nmservice->getEAUPRSA();
+
+        return $viewmodel;
+		
+	}
+	
+	
+	
+}
