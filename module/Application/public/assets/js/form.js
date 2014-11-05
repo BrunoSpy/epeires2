@@ -55,10 +55,12 @@ var formAddFile = function(fileId, formData, modifiable){
 var formAddAlarm = function(alarm, alter) {
         alter = typeof alter !== 'undefined' ? alter : false;
     
-	var d = new Date(alarm.datetime);
+	var d = computeDateAlarm(alarm);
 	var count = Math.floor($("#inner-alarmTitle input").length / 3);
         //ajouter ligne dans le tableau
         var tr = $('<tr '+(alter ? 'class="fake-alarm" id="tr-fake-'+count+'"' : '')+' data-id="fake-'+count+'"></tr>');
+        tr.data('deltabegin', alarm.deltabegin);
+        tr.data('deltaend', alarm.deltaend);
 	//si date est déjà passée : warning
 	var now = new Date();
 	if(now - d > 0) {
@@ -66,25 +68,89 @@ var formAddAlarm = function(alarm, alter) {
 	} else {
 		tr.append('<td><i class="icon-bell"></i></td>');
 	}
-        tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        if(d === -1){ //unable to compute alarm time at this point
+            tr.append("<td>TBC</td>");
+        } else {
+            tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        }
         tr.append('<td>'+alarm.name+'</td>');
 	tr.append('<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>');
         $('#alarm-table').append(tr);
         //ajouter fieldset caché
         var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
         var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
-	var div = $('<div '+(alter ? 'class="fake-alarm"' : '')+' data-delta="'+alarm.delta+'" id="alarm-fake-'+count+'" data-alarm="fake-'+count+'"></div>');
+	var div = $('<div '+(alter ? 'class="fake-alarm"' : '')+' id="alarm-fake-'+count+'" data-alarm="fake-'+count+'"></div>');
         div.append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
         div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
         div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
+        div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+alarm.deltabegin+'"></input>');
+        div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+alarm.deltaend+'"></input>');
 	$('#inner-alarmTitle').append(div);
         $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
 };
 
+var convertInputIntoDate = function(input){
+  var split = input.split(' ');
+  var daysplit = split[0].split('-');
+  var hoursplit = split[1].split(':');
+  return new Date(Date.UTC(daysplit[2], daysplit[1]-1, daysplit[0], hoursplit[0], hoursplit[1]));
+};
+
+var computeDateAlarm = function(alarm){
+    var end = $('#event input[name=enddate]').val();
+    var start = $('#event input[name=startdate]').val();
+    var deltaend = parseInt(alarm.deltaend);
+    var deltabegin = parseInt(alarm.deltabegin);
+    if(!isNaN(deltaend)){
+      if(end !== ""){
+          var d = convertInputIntoDate(end);
+          return new Date(d.getTime()+(deltaend*60*1000));
+      } else {
+          return -1;
+      }
+    } else if(!isNaN(deltabegin)) {
+        var d = convertInputIntoDate(start);
+        return new Date(d.getTime()+(deltabegin*60*1000));
+    } else {
+        return new Date(alarm.datetime);
+    }
+};
+
+/**
+ * Mettre à jour l'affichage du tableau d'alarme en fonction des
+ * heures de début et de fin de l'evt.
+ * La mise à jour effective de la date des alarmes est faite à l'enregistrement
+ * de l'évènement.
+ */
+var updateAlarmForms = function(){
+    var end = $("#event input[name=enddate]").val();
+    var start = $("#event input[name=startdate]").val();
+    $('#alarm-table tr').each(function(){
+        var deltaend = parseInt($(this).data('deltaend'));
+        var deltabegin = parseInt($(this).data('deltabegin'));
+        var newdate;
+        if(!isNaN(deltaend)){
+            if(end !== ""){
+                var d = convertInputIntoDate(end);
+                newdate = new Date(d.getTime() + (deltaend*60*1000));
+            }
+        } else if(!isNaN(deltabegin)){
+            var d = convertInputIntoDate(start);
+            newdate = new Date(d.getTime()+(deltabegin*60*1000));
+        }
+        if(typeof(newdate) !== 'undefined'){
+            $(this).find('td:nth-child(2)').text(FormatNumberLength(newdate.getUTCHours(),2)+':'+FormatNumberLength(newdate.getUTCMinutes(),2));
+        }
+    });
+ 
+}
+
 var formModifyAlarm = function(alarm) {
-	var d = new Date(alarm.datetime);
+	var d = computeDateAlarm(alarm);
         //ajouter ligne dans le tableau
         var tr = $('<tr id="tr-'+alarm.id+'" data-id="'+alarm.id+'"></tr>');
+        tr.data('deltabegin', alarm.deltabegin);
+        tr.data('deltaend', alarm.deltaend);
 	//si date est déjà passée : warning
 	var now = new Date();
 	if(now - d > 0) {
@@ -92,7 +158,11 @@ var formModifyAlarm = function(alarm) {
 	} else {
 		tr.append('<td><i class="icon-bell"></i></td>');
 	}
-        tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        if(d == -1){
+            tr.append("<td>TBC</td>");
+        } else {
+            tr.append("<td>"+FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2)+"</td>");
+        }
         tr.append('<td>'+alarm.name+'</td>');
 	tr.append('<td><a href="#add-alarm" data-toggle="modal" class="modify-alarm"><i class="icon-pencil"></i></a> <a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>');
         $('#alarm-table tr#tr-'+alarm.id).remove();
@@ -136,19 +206,8 @@ var form = function(url){
                 }
 		updateHourTitle();
                 
-                //mise à jour des alarmes en fonction de la date de début pour les modèles et les copies
-                $('div.fake-alarm').each(function(index){
-                    var delta = $(this).data('delta');
-                    var id = $(this).data('alarm');
-                    if(delta && delta != ''){
-                        delta = parseInt(delta);
-                        var alarmTime = new Date(deb.getTime() + delta*60000  - now.getTimezoneOffset()*60000);
-                        var daystring = alarmTime.getUTCDate()+'-'+(alarmTime.getUTCMonth()+1)+'-'+alarmTime.getUTCFullYear();
-                        var hourstring = FormatNumberLength(alarmTime.getUTCHours(),2)+':'+FormatNumberLength(alarmTime.getUTCMinutes(),2);
-                        $(this).find('input:first-child').val(daystring+' '+hourstring);
-                        $('tr#tr-'+id+' td:nth-child(2)').text(hourstring);
-                    }
-                });
+                //mise à jour des alarmes
+                updateAlarmForms();
 	});
 	
         $('#event').on('change', 'input[name=enddate]', function() {
@@ -197,6 +256,8 @@ var form = function(url){
                         $('#event select[name=status] option[value=2]').prop('selected', true);
                     }
                 }
+                //mise à jour des alarmes
+                updateAlarmForms();
             }
             updateHourTitle();
 

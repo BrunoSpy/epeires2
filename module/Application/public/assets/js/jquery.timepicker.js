@@ -166,17 +166,17 @@
                     div.find('.minute input').val(hoursplit[1]);
                 } else if(parameters.init){
                     var d = new Date();
-                    $(".day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
+                    div.find(".day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
                     var hour = ""+d.getUTCHours();
                     if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
 			hour = "0"+d.getUTCHours();
                     }
-                    $(".hour input").val(hour);
+                    div.find(".hour input").val(hour);
                     var minute = ""+d.getUTCMinutes();
                     if(d.getUTCMinutes()>=0 && d.getUTCMinutes()<=9){
 			minute = "0"+d.getUTCMinutes();
                     }
-                    $(".minute input").val(minute);
+                    div.find(".minute input").val(minute);
                     element.val(div.find('.day input').val() + " " + div.find('.hour input').val() + ":" + div.find('.minute input').val());
                 }
 

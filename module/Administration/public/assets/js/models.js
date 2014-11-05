@@ -308,13 +308,16 @@ var models = function(url, urlapp){
 				$('#add-alert').modal('hide');
 				var count = Math.floor($("#alerts input").length / 3);
 				var tr = $('<tr id=fake-"'+count+'"></tr>');
-				tr.append('<td>'+data.alarm.delta+' min.</td>');
+				tr.append('<td>'+data.alarm.deltabegin+' min</td>');
+                                tr.append('<td>'+data.alarm.deltaend+' min</td>');
 				tr.append('<td>'+data.alarm.name+'</td>');
 				tr.append('<td><a href="#" class="delete-fake-alarm"><i class="icon-trash"></i></a></td>');
 				var div = $('<div id="alarm-fake"'+count+'></div>');
 				div.append('<input type="hidden" name="alarm['+count+'][delta]" value="'+data.alarm.delta+'"></input>');
                                 div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+data.alarm.name+'"></input>');
                                 div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+data.alarm.comment+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+data.alarm.deltabegin+'"></input>');
+                                div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+data.alarm.deltaend+'"></input>');
 				$("#alerts").append(div);
 				$('#alerts tbody').append(tr);
 			}

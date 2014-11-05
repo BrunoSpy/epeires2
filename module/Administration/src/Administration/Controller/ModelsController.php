@@ -211,7 +211,6 @@ class ModelsController extends FormController
 					$alarm->setParent($pevent);
 					$alarm->setListable(false);
 					$alarm->setSearchable(false);
-					$alarm->setStartdateDelta($alarmpost['delta']);
 					$alarm->setPunctual(true);
 					$alarm->setImpact($objectManager->getRepository('Application\Entity\Impact')->find(5));
 					$name = new CustomFieldValue();
@@ -224,8 +223,20 @@ class ModelsController extends FormController
 					$comment->setValue($alarmpost['comment']);
 					$comment->setEvent($alarm);
 					$alarm->addCustomFieldValue($comment);
+                                        $deltabegin = new CustomFieldValue();
+                                        $deltabegin->setCustomField($alarm->getCategory()->getDeltaBeginField());
+                                        $deltabegin->setValue($alarmpost['deltabegin']);
+                                        $deltabegin->setEvent($alarm);
+                                        $alarm->addCustomFieldValue($deltabegin);
+                                        $deltaend = new CustomFieldValue();
+                                        $deltaend->setCustomField($alarm->getCategory()->getDeltaEndField());
+                                        $deltaend->setValue($alarmpost['deltaend']);
+                                        $deltaend->setEvent($alarm);
+                                        $alarm->addCustomFieldValue($deltaend);
 					$objectManager->persist($name);
 					$objectManager->persist($comment);
+                                        $objectManager->persist($deltabegin);
+                                        $objectManager->persist($deltaend);
 					$objectManager->persist($alarm);
 				}
                         }
@@ -493,7 +504,6 @@ class ModelsController extends FormController
     }
 
   public function validatealarmAction() {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $json = array();
         $messages = array();
         if($this->getRequest()->isPost()){
@@ -506,9 +516,10 @@ class ModelsController extends FormController
                 if($form->isValid()){
                     $event = $form->getData();
                     $alarm = array();
-                    $alarm['delta'] = $event->getStartdateDelta();
                     $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
                     $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
+                    $alarm['deltabegin'] = $post['custom_fields'][$event->getCategory()->getDeltaBeginField()->getId()];
+                    $alarm['deltaend'] = $post['custom_fields'][$event->getCategory()->getDeltaEndField()->getId()];
                     $json['alarm'] = $alarm;
                 } else {
                     $this->processFormMessages($form->getMessages(), $messages);
@@ -544,10 +555,7 @@ class ModelsController extends FormController
 	
 	$alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; //TODO
 		
-	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
-        
-        $form->get('startdatedelta')->setAttributes(array('required'=> 'required', 'placeholder'=>'Durée en minutes'));
-        
+	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));        
         
 	if($alarmid){
 		$alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);

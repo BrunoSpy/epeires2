@@ -12,15 +12,12 @@ namespace Application\Entity;
 
 use Zend\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  **/
 class AlarmCategory extends Category{
 	
 	/**
-	 * Ref to the field used to store the state of a radar
 	 * @ORM\OneToOne(targetEntity="CustomField")
 	 */
 	protected $namefield;
@@ -30,7 +27,20 @@ class AlarmCategory extends Category{
 	 */
 	protected $textfield;
 	
-	public function getNamefield(){
+        /**
+         * Field used to store delta relative to start date
+         * @ORM\OneToOne(targetEntity="CustomField")
+         */
+        protected $deltabeginField;
+        
+        /**
+         * Field used to store delta relative to end date
+         * @ORM\OneToOne(targetEntity="CustomField")
+         */
+        protected $deltaendField;
+
+
+        public function getNamefield(){
 		return $this->namefield;
 	}
 	
@@ -46,4 +56,19 @@ class AlarmCategory extends Category{
 		$this->textfield = $textfield;
 	}
 	
+        public function setDeltaBeginField($deltafield){
+            $this->deltabeginField = $deltafield;
+        }
+        
+        public function getDeltaBeginField(){
+            return $this->deltabeginField;
+        }
+        
+        public function setDeltaEndField($deltafield){
+            $this->deltaendField = $deltafield;
+        }
+        
+        public function getDeltaEndField(){
+            return $this->deltaendField;
+        }
 }

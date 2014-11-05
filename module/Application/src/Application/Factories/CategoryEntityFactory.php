@@ -108,11 +108,32 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$textfield->setPlace(2);
 		$textfield->setDefaultValue("");
                 $textfield->setTooltip("");
+                
+                $deltabeginfield = new CustomField();
+		$deltabeginfield->setCategory($alarmcat);
+		$deltabeginfield->setName("Delta relatif à l'heure de début");
+		$deltabeginfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$deltabeginfield->setPlace(3);
+		$deltabeginfield->setDefaultValue("");
+                $deltabeginfield->setTooltip("");
+                
+                $deltaendfield = new CustomField();
+		$deltaendfield->setCategory($alarmcat);
+		$deltaendfield->setName("Delta relatif à l'heure de fin");
+		$deltaendfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$deltaendfield->setPlace(4);
+		$deltaendfield->setDefaultValue("");
+                $deltaendfield->setTooltip("");
+                
 		$alarmcat->setFieldname($namefield);
 		$alarmcat->setNamefield($namefield);
 		$alarmcat->setTextfield($textfield);
+                $alarmcat->setDeltaBeginField($deltabeginfield);
+                $alarmcat->setDeltaEndField($deltaendfield);
 		$em->persist($namefield);
 		$em->persist($textfield);
+                $em->persist($deltabeginfield);
+                $em->persist($deltaendfield);
 		return $alarmcat;
 	}
         

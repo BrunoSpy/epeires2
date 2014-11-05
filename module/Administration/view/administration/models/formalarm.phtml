@@ -27,9 +27,6 @@ echo $this->formHidden($this->form->get('listable')->setAttribute('value', false
 
 echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
 
-echo $this->controlGroup($this->formLabel($this->form->get('startdatedelta')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-			$this->formInput($this->form->get('startdatedelta')), array('class'=>'compact'));
-
 foreach ($this->form->get('custom_fields')->getElements() as $element){
 	echo $this->customFieldGroup($element);
 }

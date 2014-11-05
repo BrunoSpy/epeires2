@@ -37,14 +37,6 @@ class PredefinedEvent extends AbstractEvent{
 	 * @Annotation\Options({"label":"Recherche :"})
 	 */
  	protected $searchable;
-
- 	/** 
- 	 * @ORM\Column(type="integer", nullable=true)
- 	 * @Annotation\Type("Zend\Form\Element\Text")
- 	 * @Annotation\Required(false)
- 	 * @Annotation\Options({"label":"Début après :"})
- 	 */
- 	protected $startdatedelta;
  	
         public function __construct(){
  		parent::__construct();
@@ -56,14 +48,6 @@ class PredefinedEvent extends AbstractEvent{
 	
 	public function getName(){
 		return $this->name;
-	}
-	
-	public function setStartdateDelta($startdatedelta){
-		$this->startdatedelta = $startdatedelta;
-	}
-	
-	public function getStartdateDelta(){
-		return $this->startdatedelta;
 	}
 	
 	public function isListable(){

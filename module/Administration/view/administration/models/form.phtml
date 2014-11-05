@@ -108,9 +108,20 @@ if($this->form->has('custom_fields')){
 		if($this->childs){
 			foreach($this->childs as $alarm){
 				if($alarm->getCategory() instanceof Application\Entity\AlarmCategory){
+                                    $deltabegin = "";
+                                    $deltaend = "";
+                                    foreach ($alarm->getCustomFieldsValues() as $value){
+                                        if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()){
+                                            $deltabegin = $value->getValue();
+                                        }
+                                        if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaEndField()->getId()){
+                                            $deltaend = $value->getValue();
+                                        }
+                                    }
                                     $countalarms++;
                                     echo '<tr>';
-                                    echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après le début de l\'évènement">'.$alarm->getStartdateDelta().' min</td>';
+                                    echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après le début de l\'évènement">'.(strlen($deltabegin) > 0 ? $deltabegin : "0").' min</td>';
+                                    echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après la fin de l\'évènement">'.(strlen($deltaend) > 0 ? $deltaend : "0").' min</td>';
                                     echo '<td>'.$this->eventName($alarm).'</td>';
                                     echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><i class="icon-trash"></i></a></td>';
                                     echo '</tr>';

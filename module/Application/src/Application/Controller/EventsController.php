@@ -581,8 +581,22 @@ class EventsController extends ZoneController {
                                                 $comment->setValue($alarmpost['comment']);
                                                 $comment->setEvent($alarm);
                                                 $alarm->addCustomFieldValue($comment);
+                                                $deltabegin = new CustomFieldValue();
+                                                $deltabegin->setCustomField($alarm->getCategory()->getDeltaBeginField());
+                                                $deltabegin->setValue($alarmpost['deltabegin']);
+                                                $deltabegin->setEvent($alarm);
+                                                $alarm->addCustomFieldValue($deltabegin);
+                                                $deltaend = new CustomFieldValue();
+                                                $deltaend->setCustomField($alarm->getCategory()->getDeltaEndField());
+                                                $deltaend->setValue($alarmpost['deltaend']);
+                                                $deltaend->setEvent($alarm);
+                                                $alarm->addCustomFieldValue($deltaend);
+                                                //set start date according to deltas
+                                                $this->updateAlarmDate($alarm);
                                                 $objectManager->persist($name);
                                                 $objectManager->persist($comment);
+                                                $objectManager->persist($deltabegin);
+                                                $objectManager->persist($deltaend);
                                                 $objectManager->persist($alarm);
                                             }
                                         }
@@ -590,6 +604,13 @@ class EventsController extends ZoneController {
     						$this->closeEvent($event);
     					}
     					
+                                        //mise à jour des alarmes en cas de modif des heures de début ou de fin
+                                        foreach ($event->getChildren() as $child){
+                                            if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
+                                                $this->updateAlarmDate($child);
+                                            }
+                                        }
+                                        
     					$objectManager->persist($event);
     					try{
     						$objectManager->flush();
@@ -934,25 +955,16 @@ class EventsController extends ZoneController {
 	foreach($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $eventid)) as $alarm){
 		if($alarm->getCategory() instanceof \Application\Entity\AlarmCategory){
 			$alarmjson = array();
-			$now = new \DateTime('NOW');
-			$now->setTimezone(new \DateTimeZone("UTC"));
-                        $delta = intval($alarm->getStartdateDelta());
-                        if($delta < 0){
-                            $invdelta = -$delta;
-                            $interval = new \DateInterval('PT'.$invdelta.'M');
-                            $interval->invert = 1;
-                            $now->add($interval);
-                        } else {
-                            $now->add(new \DateInterval('PT'.$delta.'M'));
-                        }
-                        $alarmjson['delta'] = $delta;
-			$alarmjson['datetime'] = $now->format(DATE_RFC2822);
 			foreach($alarm->getCustomFieldsValues() as $value){
 				if($value->getCustomField()->getId() == $alarm->getCategory()->getFieldname()->getId()){
 					$alarmjson['name'] = $value->getValue();
 				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getTextField()->getId()) {
 					$alarmjson['comment'] = $value->getValue();
-				}
+				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()) {
+					$alarmjson['deltabegin'] = $value->getValue();
+				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaEndField()->getId()) {
+					$alarmjson['deltaend'] = $value->getValue();
+				} 
 			}
 			$json[] = $alarmjson;
 		}
@@ -1360,6 +1372,9 @@ class EventsController extends ZoneController {
                 if($child->getCategory() instanceof FrequencyCategory){
                     $child->setEnddate($enddate);
                     $objectManager->persist($child);
+                } else if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
+                    $this->updateAlarmDate($child);
+                    $objectManager->persist($child);
                 }
             }
             
@@ -1389,7 +1404,47 @@ class EventsController extends ZoneController {
         }
     }
     
-    
+    private function updateAlarmDate(Event &$alarm) {
+        $deltaend = "";
+        $deltabegin = "";
+        foreach ($alarm->getCustomFieldsValues() as $value){
+            if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()){
+                $deltabegin = $value->getValue();
+            }
+            if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaEndField()->getId()){
+                $deltaend = $value->getValue();
+            }
+        }
+        $event = $alarm->getParent();
+        if ($event != null) {
+            if (strlen(trim($deltaend)) > 0 && $event->getEnddate() != null) {
+                $delta = intval($deltaend);
+                $startdatealarm = clone $event->getEnddate();
+                if ($delta > 0) {
+                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
+                } else {
+                    $invdiff = -$delta;
+                    $interval = new \DateInterval('PT' . $invdiff . 'M');
+                    $interval->invert = 1;
+                    $startdatealarm->add($interval);
+                }
+                $alarm->setStartdate($startdatealarm);
+            } else if (strlen(trim($deltabegin)) > 0) {
+                $delta = intval($deltabegin);
+                $startdatealarm = clone $event->getStartdate();
+                if ($delta > 0) {
+                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
+                } else {
+                    $invdiff = -$delta;
+                    $interval = new \DateInterval('PT' . $invdiff . 'M');
+                    $interval->invert = 1;
+                    $startdatealarm->add($interval);
+                }
+                $alarm->setStartdate($startdatealarm);
+            }
+        }
+    }
+
     /**
      * Change la date de début d'un evt et 
      * - vérifie la cohérence des évènements fils
@@ -1428,6 +1483,9 @@ class EventsController extends ZoneController {
             foreach($event->getChildren() as $child){
                 if($child->getCategory() instanceof FrequencyCategory){
                     $child->setStartdate($startdate);
+                    $objectManager->persist($child);
+                } else if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
+                    $this->updateAlarmDate($child);
                     $objectManager->persist($child);
                 }
             }

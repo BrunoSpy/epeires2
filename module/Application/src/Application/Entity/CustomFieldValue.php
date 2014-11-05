@@ -25,7 +25,7 @@ class CustomFieldValue {
 	protected $id;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="custom_fields_values")
+	 * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="custom_fields_values", cascade={"persist"})
 	 */
 	protected $event;
 	
@@ -63,4 +63,12 @@ class CustomFieldValue {
 	public function getValue(){
 		return $this->value;
 	}
+        
+        /** 
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist 
+	 */
+        public function updateEvent(){
+            $this->event->setLastModifiedOn();
+        }
 }

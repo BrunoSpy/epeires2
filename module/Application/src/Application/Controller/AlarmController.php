@@ -28,7 +28,6 @@ class AlarmController extends FormController {
         $messages = array();
         if($this->getRequest()->isPost()){
     		$post = $this->getRequest()->getPost();
-                
                 $datas = $this->getForm();
                 $form = $datas['form'];
                 $form->setData($post);
@@ -45,6 +44,8 @@ class AlarmController extends FormController {
                     $alarm['datetime'] = $event->getStartDate()->format(DATE_RFC2822);
                     $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
                     $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
+                    $alarm['deltabegin'] = $post['custom_fields'][$event->getCategory()->getDeltaBeginField()->getId()];
+                    $alarm['deltaend'] = $post['custom_fields'][$event->getCategory()->getDeltaEndField()->getId()];
                     $json['alarm'] = $alarm;
                     if($event->getId() > 0){
                         foreach ($event->getCustomFieldsValues() as $value){
@@ -53,6 +54,12 @@ class AlarmController extends FormController {
                             }
                             if($value->getCustomField()->getId() == $event->getCategory()->getTextfield()->getId()){
                                 $value->setValue($alarm['comment']);
+                            }
+                            if($value->getCustomField()->getId() == $event->getCategory()->getDeltaBeginField()->getId()){
+                                $value->setValue($alarm['deltabegin']);
+                            }
+                            if($value->getCustomField()->getId() == $event->getCategory()->getDeltaEndField()->getId()){
+                                $value->setValue($alarm['deltaend']);
                             }
                             $objectManager->persist($value);
                         }
@@ -172,6 +179,7 @@ class AlarmController extends FormController {
      * Mémos futurs non acquittés.
      * Seuls les mémos de l'organisation de l'utilisateur sont envoyés.
      * Si lastupdate contient une date valide, envoit les mémos modifiés depuis lastupdate, y compris ceux acquittés
+     * Si deltaend existe mais pas de parent, ou avec un parent sans date de fin : l'alarme n'est pas renvoyée
      * Dans tous les cas : nécessite d'être identifié.
      */
     public function getalarmsAction(){
@@ -189,13 +197,11 @@ class AlarmController extends FormController {
 		$lastupdate = $this->params()->fromQuery('lastupdate', null);
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$eventservice = $this->getServiceLocator()->get('EventService');
-		$now = new \DateTime('NOW');
+		
                 $userroles = array();
                 foreach ($this->zfcUserAuthentication()->getIdentity()->getRoles() as $role){
                     $userroles[] = $role->getId();
                 }
-                
-		$now->setTimezone(new \DateTimeZone("UTC"));
 		$qbEvents = $objectManager->createQueryBuilder();
 		$qbEvents->select(array('e', 'cat', 'roles'))
 			->from('Application\Entity\Event', 'e')
@@ -214,29 +220,47 @@ class AlarmController extends FormController {
 					1 => $from->format('Y-m-d H:i:s'), 
                                         3 => $userroles));
 		} else {
-			$qbEvents->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le future
+                        $now = new \DateTime('NOW');
+                        $now->setTimezone(new \DateTimeZone("UTC"));
+                        $interval = new \DateInterval("PT60M");
+                        $interval->invert = 1;
+                        $now->add($interval);
+                        //toutes les alarmes non acquittées vielles de moins d'une heure
+                        //afin de ne pas perdre les alarmes non acquittées en cas de refresh
+			$qbEvents->andWhere($qbEvents->expr()->gte('e.startdate', '?1')) //date de début dans le futur
 			->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
 					2 => array(1,2), 
                                         3 => $userroles));
 		}
 		$result = $qbEvents->getQuery()->getResult();
 		foreach($result as $alarm){
-			$alarmjson = array();
-			$alarmjson['id'] = $alarm->getId();
-			$alarmjson['datetime'] = $alarm->getStartDate()->format(DATE_RFC2822);
-			$alarmjson['status'] = $alarm->getStatus()->getId();
-			$parentname = $eventservice->getName($alarm->getParent());
-			$alarmname = $eventservice->getName($alarm);
-			$alarmcomment = "";
-			foreach($alarm->getCustomFieldsValues() as $value){
-				if($value->getCustomField()->getId() == $alarm->getCategory()->getTextfield()->getId()){
-					$alarmcomment = nl2br($value->getValue());
-				}
-			}
-			$alarmjson['text'] = "<div class=\"noty_big\"><b>".$formatter->format($alarm->getStartDate())." : Mémo</b> pour <b>".$parentname."</b><br />"
+                    $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarm->getId());
+                    if($alarm->getParent()){ //les alarmes ont forcément un parent
+                        $deltaend = "";
+                        $alarmcomment = "";
+                        foreach ($alarm->getCustomFieldsValues() as $value){
+                            if($value->getCustomField()->getId() === $alarm->getCategory()->getDeltaEndField()->getId()){
+                                $deltaend = $value->getValue();
+                            } else if($value->getCustomField()->getId() == $alarm->getCategory()->getTextfield()->getId()){
+				$alarmcomment = nl2br($value->getValue());
+                            }
+                        }
+                        if(strlen(trim($deltaend)) > 0 && !$alarm->getParent()->getEnddate()) {
+                            //do nothing : start date inaccurate
+                        } else {
+                            $startdate = $alarm->getStartDate();
+                            $alarmjson = array();
+                            $alarmjson['id'] = $alarm->getId();
+                            $alarmjson['datetime'] = $startdate->format(DATE_RFC2822);
+                            $alarmjson['status'] = $alarm->getStatus()->getId();
+                            $parentname = $eventservice->getName($alarm->getParent());
+                            $alarmname = $eventservice->getName($alarm);
+						$alarmjson['text'] = "<div class=\"noty_big\"><b>".$formatter->format($alarm->getStartDate())." : Mémo</b> pour <b>".$parentname."</b><br />"
 					. $alarmname.(strlen($alarmcomment) > 0 ? " : <br />".$alarmcomment : "");
 			
-			$alarms[] = $alarmjson;
+                            $alarms[] = $alarmjson;
+                        }
+                    }
 		}
 	}
         

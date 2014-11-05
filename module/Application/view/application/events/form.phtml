@@ -149,35 +149,54 @@
                                     $countalarm++;
                                     $now = new \DateTime();
                                     $now->setTimezone(new \DateTimeZone("UTC"));
+                                    $deltabegin = "";
+                                    $deltaend = "";
+                                    foreach ($child->getCustomFieldsValues() as $value){
+                                        if($value->getCustomField()->getId() == $child->getCategory()->getDeltaBeginField()->getId()){
+                                            $deltabegin = $value->getValue();
+                                        }
+                                        if($value->getCustomField()->getId() == $child->getCategory()->getDeltaEndField()->getId()){
+                                            $deltaend = $value->getValue();
+                                        }
+                                        if($value->getCustomField()->getId() == $child->getCategory()->getTextfield()->getId()){
+                                            $alarmcomment = nl2br($value->getValue());
+                                        }
+                                    }
                                     if($this->copy || $this->model) {
                                         $timeAlert = clone $now;
                                         
                                         //diff in minutes
                                         $diff = 0;
-                                        if($this->copy){
+                                        if($this->copy && strlen(trim($deltabegin)) == 0 && strlen(trim($deltaend)) == 0){ //calculate delta relative to startdate
+                                            
                                             $diff = (int)(($child->getStartdate()->getTimestamp() - $this->event->getStartDate()->getTimestamp())/60);
-                                        } else {
-                                            $diff = $child->getStartdateDelta();
+                                        } else {//use deltas
+                                            if(strlen(trim($deltaend)) > 0 && $this->event->getEnddate() != null) {
+                                                $timeAlert = clone $this->event->getEnddate();
+                                                $diff = $deltaend;
+                                            } else if(strlen(trim($deltabegin)) > 0) {
+                                                $timeAlert = clone $this->event->getStartdate();
+                                                $diff = $deltabegin;
+                                            }
                                         }
                                         if($diff > 0) {
                                             $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
                                         } else {
                                             $invdiff = -$diff;
-                                            $interval = new DateInterval('PT'.$invdiff.'M');
+                                            $interval = new \DateInterval('PT'.$invdiff.'M');
                                             $interval->invert = 1;
                                             $timeAlert->add($interval);
-                                        }
+                                        }                                      
                                         
-                                        foreach($child->getCustomFieldsValues() as $value){
-                                            if($value->getCustomField()->getId() == $child->getCategory()->getTextfield()->getId()){
-                                                $alarmcomment = nl2br($value->getValue());
-                                            }
-                                        }                                       
-                                        
-                                        $html .= '<tr><div class="alarm-fake" data-delta="'.$diff.'" id="alarm-fake-'.$countalarm.'">'
+                                        $html .= '<tr><div class="alarm-fake" '
+                                                    . 'data-deltabegin="'.$deltabegin.'" '
+                                                    . 'data-deltaend="'.$deltaend.'" '
+                                                    . 'id="alarm-fake-'.$countalarm.'">'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.$formatterLong->format($timeAlert).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltabegin]" value="'.$deltabegin.'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$deltaend.'"></input>'
                                                 . '</div></tr>';
                                         
                                         $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'">'
@@ -188,7 +207,10 @@
                                                 . '</tr>';
                                         
                                     } else {
-					$html .= '<tr id="tr-'.$child->getId().'" data-id="'.$child->getId().'">';
+					$html .= '<tr id="tr-'.$child->getId().'" data-id="'.$child->getId().'" '
+                                                . 'data-deltabegin="'.$deltabegin.'" '
+                                                . 'data-deltaend="'.$deltaend.'" '
+                                                .'>';
 					if($child->getStatus()->isOpen()){
 						if($child->getStartDate() < $now) {
 							$html .= '<td><i class="icon-warning-sign"></i></td>';
