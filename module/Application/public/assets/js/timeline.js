@@ -1378,7 +1378,7 @@ var timeline = {
 				//			|| ((tab[id][2] != -1 || value.end_date != null) || (tab[id][2] != -1 && d_fin != null && tab[id][2].getTime() != d_fin.getTime()))) {
 						tab[id] = [key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fields];
 						var elmt = timeline_content.find('.ident'+key);
-						if ((debut >= d_ref_deb && debut <= d_ref_fin) || (debut < d_ref_fin && (fin < 0 || fin > d_ref_deb))) {
+						if ((d_debut >= d_ref_deb && debut <= d_ref_fin) || (d_debut < d_ref_fin && (d_fin < 0 || d_fin > d_ref_deb))) {
 							timeline.update_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier);
 							elmt = timeline_content.find('.ident'+key);
 							if (!loc) {
@@ -1442,12 +1442,10 @@ var timeline = {
 						(d_fin.toLocaleDateString() == d_now.toLocaleDateString())) {
 					cpt_journee.push(i);
 				}
-				$('#cpt_evts').text(cpt_journee.length);
 				var timel = $('#timeline');
-				var base = timel.find('.Base');
 				var timeline_content = timel.find('.timeline_content');
 				//var other = timel.find('.timeline_other');
-				if ((debut >= d_ref_deb && debut <= d_ref_fin) || (debut < d_ref_fin && (fin < 0 || fin > d_ref_deb))) {
+				if ((d_debut >= d_ref_deb && debut <= d_ref_fin) || (d_debut < d_ref_fin && (d_fin < 0 || d_fin > d_ref_deb))) {
 					timeline.add_elmt(timeline_content, key, d_debut, d_fin, ponct, label, impt, cat, mod, etat, fichier);
 				}
 				if (tri_cat) { 
