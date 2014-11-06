@@ -41,7 +41,7 @@ class Version20141104081541 extends AbstractMigration
      * @param Schema $schema
      */
     public function postUp(Schema $schema){
-        $stmt = $this->connection->executeQuery("SELECT * FROM alarmcategory");
+        $stmt = $this->connection->executeQuery("SELECT * FROM AlarmCategory");
         $categories = $stmt->fetchAll();
         $catid;
         $deltabeginid;
