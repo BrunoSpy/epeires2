@@ -18,8 +18,8 @@ class Version20141104081541 extends AbstractMigration
         $this->addSql('ALTER TABLE AlarmCategory ADD deltabeginField_id INT DEFAULT NULL, ADD deltaendField_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE AlarmCategory ADD CONSTRAINT FK_16E5F175C923DCF3 FOREIGN KEY (deltabeginField_id) REFERENCES customfields (id)');
         $this->addSql('ALTER TABLE AlarmCategory ADD CONSTRAINT FK_16E5F17528A13DD2 FOREIGN KEY (deltaendField_id) REFERENCES customfields (id)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F175C923DCF3 ON alarmcategory (deltabeginField_id)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F17528A13DD2 ON alarmcategory (deltaendField_id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F175C923DCF3 ON AlarmCategory (deltabeginField_id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F17528A13DD2 ON AlarmCategory (deltaendField_id)');
         
     }
 
