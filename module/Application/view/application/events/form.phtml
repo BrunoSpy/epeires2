@@ -171,28 +171,34 @@
                                             
                                             $diff = (int)(($child->getStartdate()->getTimestamp() - $this->event->getStartDate()->getTimestamp())/60);
                                         } else {//use deltas
-                                            if(strlen(trim($deltaend)) > 0 && $this->event->getEnddate() != null) {
-                                                $timeAlert = clone $this->event->getEnddate();
-                                                $diff = $deltaend;
+                                            if(strlen(trim($deltaend)) > 0) {
+                                                if($this->event->getEnddate() != null){
+                                                    $timeAlert = clone $this->event->getEnddate();
+                                                    $diff = $deltaend;
+                                                } else {
+                                                    //pas d'heure de fin encore positionnée et alarme en fonction de la fin
+                                                    $timeAlert = -1;
+                                                }
                                             } else if(strlen(trim($deltabegin)) > 0) {
                                                 $timeAlert = clone $this->event->getStartdate();
                                                 $diff = $deltabegin;
                                             }
                                         }
-                                        if($diff > 0) {
-                                            $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
-                                        } else {
-                                            $invdiff = -$diff;
-                                            $interval = new \DateInterval('PT'.$invdiff.'M');
-                                            $interval->invert = 1;
-                                            $timeAlert->add($interval);
-                                        }                                      
-                                        
+                                        if($timeAlert !== -1){ // -1 => impossible de calculer une heure
+                                            if($diff > 0) {
+                                                $timeAlert->add(new \DateInterval('PT'.$diff.'M'));
+                                            } else {
+                                                $invdiff = -$diff;
+                                                $interval = new \DateInterval('PT'.$invdiff.'M');
+                                                $interval->invert = 1;
+                                                $timeAlert->add($interval);
+                                            }                                      
+                                        }
                                         $html .= '<tr><div class="alarm-fake" '
                                                     . 'data-deltabegin="'.$deltabegin.'" '
                                                     . 'data-deltaend="'.$deltaend.'" '
                                                     . 'id="alarm-fake-'.$countalarm.'">'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.$formatterLong->format($timeAlert).'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.($timeAlert === -1 ? $formatterLong->format(new DateTime('now')): $formatterLong->format($timeAlert)).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][deltabegin]" value="'.$deltabegin.'"></input>'
@@ -201,7 +207,7 @@
                                         
                                         $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'">'
                                                 . '<td><i class="icon-bell"></i></td>'
-                                                . '<td>'.$formatter->format($timeAlert).'</td>'
+                                                . '<td>'.($timeAlert === -1 ? "TDC" : $formatter->format($timeAlert)).'</td>'
                                                 . '<td>'.$this->eventName($child).'</td>'
                                                 . '<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>'
                                                 . '</tr>';
@@ -226,7 +232,11 @@
 							$html .= '<td><i class="icon-warning-sign"></i></td>';
 						}
 					}
-                                        $html .= '<td>'.$formatter->format($child->getStartDate()).'</td>';
+                                        $timeAlert = $formatter->format($child->getStartDate());
+                                        if(strlen(trim($deltaend)) > 0 && $this->event->getEnddate() == NULL){
+                                            $timeAlert = "TBC";
+                                        }
+                                        $html .= '<td>'.$timeAlert.'</td>';
 					$html .= '<td>'.$this->eventname($child).'</td>';
 					$html .= '<td><a class="modify-alarm" href="#add-alarm" data-toggle="modal"><i class="icon-pencil"></i></a> <a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
 					$html .= "</tr>";

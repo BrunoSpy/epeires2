@@ -1407,6 +1407,7 @@ class EventsController extends ZoneController {
     private function updateAlarmDate(Event &$alarm) {
         $deltaend = "";
         $deltabegin = "";
+        $previousstart = $alarm->getStartdate();
         foreach ($alarm->getCustomFieldsValues() as $value){
             if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()){
                 $deltabegin = $value->getValue();
@@ -1428,7 +1429,9 @@ class EventsController extends ZoneController {
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
                 }
-                $alarm->setStartdate($startdatealarm);
+                if($startdatealarm != $previousstart){
+                    $alarm->setStartdate($startdatealarm);
+                }
             } else if (strlen(trim($deltabegin)) > 0) {
                 $delta = intval($deltabegin);
                 $startdatealarm = clone $event->getStartdate();
@@ -1440,7 +1443,9 @@ class EventsController extends ZoneController {
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
                 }
-                $alarm->setStartdate($startdatealarm);
+                if($startdatealarm != $previousstart){
+                    $alarm->setStartdate($startdatealarm);
+                }
             }
         }
     }
@@ -1497,22 +1502,26 @@ class EventsController extends ZoneController {
         }
     }
 
+    /**
+     * Cloture d'un evt : terminé ou annulé (statut 3 ou 4)
+     * @param Event $event
+     */
     private function closeEvent(Event $event){
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        //on termine les évènements fils de type fréquence
+        $cancelStatus = $objectManager->getRepository('Application\Entity\Status')->find(4);
         foreach ($event->getChildren() as $child) {
             if ($child->getCategory() instanceof FrequencyCategory) {
+                //on termine les évènements fils de type fréquence
                 if ($event->getStatus()->getId() == 3) {
                     //date de fin uniquement pour les fermetures
                     $child->setEnddate($event->getEnddate());
                 }
                 $child->setStatus($event->getStatus());
             } else if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
-                //on annule les alarmes non acquittées dont la fin est postèrieure à la fin de l'evt
-                if ($child->getStatus()->getId() != 3 && $child->getStartDate() > $event->getEnddate()) {
-                    $cancelStatus = $objectManager->getRepository('Application\Entity\Status')->find(4);
+                //si evt annulé uniquement : on annule toutes les alarmes
+                if($event->getStatus()->getId() == 4){
                     $child->setStatus($cancelStatus);
-                }
+                } 
             }
             $objectManager->persist($child);
         }

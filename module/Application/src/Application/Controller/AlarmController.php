@@ -48,20 +48,21 @@ class AlarmController extends FormController {
                     $alarm['deltaend'] = $post['custom_fields'][$event->getCategory()->getDeltaEndField()->getId()];
                     $json['alarm'] = $alarm;
                     if($event->getId() > 0){
-                        foreach ($event->getCustomFieldsValues() as $value){
-                            if($value->getCustomField()->getId() == $event->getCategory()->getFieldname()->getId()){
-                                $value->setValue($alarm['name']);
+                        foreach ($post['custom_fields'] as $key => $value) {
+                            //génération des customvalues si un customfield dont le nom est $key est trouvé
+                            $customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id' => $key));
+                            if ($customfield) {
+                                $customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
+                                        ->findOneBy(array('customfield' => $customfield->getId(), 'event' => $event->getId()));
+                                if (!$customvalue) {
+                                    $customvalue = new \Application\Entity\CustomFieldValue();
+                                    $customvalue->setEvent($event);
+                                    $customvalue->setCustomField($customfield);
+                                    $event->addCustomFieldValue($customvalue);
+                                }
+                                $customvalue->setValue($value);
+                                $objectManager->persist($customvalue);
                             }
-                            if($value->getCustomField()->getId() == $event->getCategory()->getTextfield()->getId()){
-                                $value->setValue($alarm['comment']);
-                            }
-                            if($value->getCustomField()->getId() == $event->getCategory()->getDeltaBeginField()->getId()){
-                                $value->setValue($alarm['deltabegin']);
-                            }
-                            if($value->getCustomField()->getId() == $event->getCategory()->getDeltaEndField()->getId()){
-                                $value->setValue($alarm['deltaend']);
-                            }
-                            $objectManager->persist($value);
                         }
                         //mod -> save it now
                         $objectManager->persist($event);
@@ -255,7 +256,7 @@ class AlarmController extends FormController {
                             $alarmjson['status'] = $alarm->getStatus()->getId();
                             $parentname = $eventservice->getName($alarm->getParent());
                             $alarmname = $eventservice->getName($alarm);
-						$alarmjson['text'] = "<div class=\"noty_big\"><b>".$formatter->format($alarm->getStartDate())." : Mémo</b> pour <b>".$parentname."</b><br />"
+						$alarmjson['text'] = "<div id=\"alarmnoty-".$alarm->getId()."\" class=\"noty_big\"><b>".$formatter->format($alarm->getStartDate())." : Mémo</b> pour <b>".$parentname."</b><br />"
 					. $alarmname.(strlen($alarmcomment) > 0 ? " : <br />".$alarmcomment : "");
 			
                             $alarms[] = $alarmjson;

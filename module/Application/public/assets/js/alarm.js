@@ -28,6 +28,15 @@ var updateAlarms = function(){
 						clearTimeout(alarms[item.id]);
 						delete(alarms[item.id]);
 					}
+                                        //si l'alarme est affichée, on la ferme : 
+                                        // * pour éviter les doublons 
+                                        // * pour enlever les alarmes annulées
+                                        if(alarmsnoty[item.id]){
+                                            //on ne peut pas utiliser .close à cause du callback
+                                            //par conséquent, on supprimer à la main l'élément
+                                            $('div#alarmnoty-'+item.id).closest('li').remove();
+                                            delete(alarmsnoty[item.id]);
+                                        }
                                         //on ajoute l'alarme si statut nouveau ou en cours
                                         if(item.status == 1 || item.status == 2) {
                                             var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme

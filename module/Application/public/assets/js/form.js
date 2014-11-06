@@ -60,7 +60,9 @@ var formAddAlarm = function(alarm, alter) {
         //ajouter ligne dans le tableau
         var tr = $('<tr '+(alter ? 'class="fake-alarm" id="tr-fake-'+count+'"' : '')+' data-id="fake-'+count+'"></tr>');
         tr.data('deltabegin', alarm.deltabegin);
-        tr.data('deltaend', alarm.deltaend);
+        if(alarm.deltaend) { 
+            tr.data('deltaend', alarm.deltaend);
+        }
 	//si date est déjà passée : warning
 	var now = new Date();
 	if(now - d > 0) {
@@ -77,14 +79,18 @@ var formAddAlarm = function(alarm, alter) {
 	tr.append('<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>');
         $('#alarm-table').append(tr);
         //ajouter fieldset caché
+        var div = $('<div '+(alter ? 'class="fake-alarm"' : '')+' id="alarm-fake-'+count+'" data-alarm="fake-'+count+'"></div>');
+        if(d === -1) {
+            //alarm creation needs a date, even if it is inaccurate
+            d = new Date();
+        }
         var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
         var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
-	var div = $('<div '+(alter ? 'class="fake-alarm"' : '')+' id="alarm-fake-'+count+'" data-alarm="fake-'+count+'"></div>');
         div.append('<input type="hidden" name="alarm['+count+'][date]" value="'+datestring+" "+timestring+'"></input>');
         div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+alarm.name+'"></input>');
         div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+alarm.comment+'"></input>');
         div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+alarm.deltabegin+'"></input>');
-        div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+alarm.deltaend+'"></input>');
+        div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+(alarm.deltaend ? alarm.deltaend : '')+'"></input>');
 	$('#inner-alarmTitle').append(div);
         $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
 };
