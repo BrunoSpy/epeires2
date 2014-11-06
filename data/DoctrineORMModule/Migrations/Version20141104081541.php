@@ -15,9 +15,9 @@ class Version20141104081541 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
         
-        $this->addSql('ALTER TABLE alarmcategory ADD deltabeginField_id INT DEFAULT NULL, ADD deltaendField_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE alarmcategory ADD CONSTRAINT FK_16E5F175C923DCF3 FOREIGN KEY (deltabeginField_id) REFERENCES customfields (id)');
-        $this->addSql('ALTER TABLE alarmcategory ADD CONSTRAINT FK_16E5F17528A13DD2 FOREIGN KEY (deltaendField_id) REFERENCES customfields (id)');
+        $this->addSql('ALTER TABLE AlarmCategory ADD deltabeginField_id INT DEFAULT NULL, ADD deltaendField_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE AlarmCategory ADD CONSTRAINT FK_16E5F175C923DCF3 FOREIGN KEY (deltabeginField_id) REFERENCES customfields (id)');
+        $this->addSql('ALTER TABLE AlarmCategory ADD CONSTRAINT FK_16E5F17528A13DD2 FOREIGN KEY (deltaendField_id) REFERENCES customfields (id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F175C923DCF3 ON alarmcategory (deltabeginField_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_16E5F17528A13DD2 ON alarmcategory (deltaendField_id)');
         
@@ -57,7 +57,7 @@ class Version20141104081541 extends AbstractMigration
                             'defaultvalue' => "",
                             'tooltip' => "Optionnel. Si présent, la date de début n'est pas prise en compte."));
                 $deltabeginid = $this->connection->lastInsertId();
-                $this->connection->update('alarmcategory', array('deltabeginField_id' => $deltabeginid), array('id' => $cat['id']));
+                $this->connection->update('AlarmCategory', array('deltabeginField_id' => $deltabeginid), array('id' => $cat['id']));
             }
             if($cat['deltaendField_id'] == NULL){
                 $this->connection->insert('customfields', 
@@ -68,7 +68,7 @@ class Version20141104081541 extends AbstractMigration
                             'defaultvalue' => "",
                             'tooltip' => "Optionnel. Si présent, la date de début et le delta pr/ au début ne sont pas pris en compte."));
                 $deltaendid = $this->connection->lastInsertId();
-                $this->connection->update('alarmcategory', array('deltaendField_id' => $deltaendid), array('id' => $cat['id']));
+                $this->connection->update('AlarmCategory', array('deltaendField_id' => $deltaendid), array('id' => $cat['id']));
             }
             $this->connection->update('customfields', array('place' => 3), array('id' => $cat['namefield_id']));
             $this->connection->update('customfields', array('place' => 4), array('id' => $cat['textfield_id']));
