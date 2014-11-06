@@ -77,9 +77,9 @@ class Version20141104081541 extends AbstractMigration
         //now transform startdatedelta into customfield
         $stmt = $this->connection->executeQuery("SELECT * from events WHERE `category_id` = ? AND `discr` = 'model'", array($catid));
         foreach ($stmt->fetchAll() as $model){
-            $predefinedrow = $this->connection->fetchArray('SELECT * FROM predefinedevent WHERE `id` = ?', array($model['id']));
+            $predefinedrow = $this->connection->fetchArray('SELECT * FROM PredefinedEvent WHERE `id` = ?', array($model['id']));
             $this->connection->insert('customfieldvalues', array('event_id' => $model['id'], 'customfield_id' => $deltabeginid, 'value' => $predefinedrow[4]));
         }
-         $this->addSql('ALTER TABLE predefinedevent DROP startdatedelta');
+         $this->addSql('ALTER TABLE PredefinedEvent DROP startdatedelta');
     }
 }
