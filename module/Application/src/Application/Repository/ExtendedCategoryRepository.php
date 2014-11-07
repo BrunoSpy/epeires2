@@ -4,12 +4,9 @@ namespace Application\Repository;
 class ExtendedCategoryRepository extends CategoryRepository {
 	
 	/**
-	 * Tous les évènements antenne dont à la fois :
+	 * Tous les évènements dont à la fois :
 	 * la date début est antèrieure à maintenant
-         * et
-	 *      la date de fin est nulle ou postèrieure à maintenant et le statut est confirmé ou terminé
-         *      ou
-         *      la date de fin est antèrieure à maintenant et le statut est confirmé
+         * et la date de fin est nulle ou postèrieure à maintenant
 	 */
 	public function getCurrentEvents($category){
 		$now = new \DateTime('NOW');
@@ -22,19 +19,10 @@ class ExtendedCategoryRepository extends CategoryRepository {
                 ->andWhere($qbEvents->expr()->eq('e.punctual', 'false'))
 		->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
 		->andWhere($qbEvents->expr()->orX(
-                     $qbEvents->expr()->andX(
-                        $qbEvents->expr()->orX(
 				$qbEvents->expr()->isNull('e.enddate'),
-				$qbEvents->expr()->gte('e.enddate', '?2')),
-                        $qbEvents->expr()->in('e.status', array(2,3))),
-                     $qbEvents->expr()->andX(
-                            $qbEvents->expr()->lte('e.enddate', '?3') ,
-                            $qbEvents->expr()->in('e.status', array(2)))
-                        )
-                    )
+				$qbEvents->expr()->gte('e.enddate', '?2')))
 		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-                                      2 => $now->format('Y-m-d H:i:s'),
-                                      3 => $now->format('Y-m-d H:i:s')));
+                                      2 => $now->format('Y-m-d H:i:s')));
 					
 		$query = $qbEvents->getQuery();
 					
@@ -43,8 +31,6 @@ class ExtendedCategoryRepository extends CategoryRepository {
 	
 	/**
 	 * Tous les éléments prévus :
-	 * - Date de début passée et état nouveau
-	 * ou
 	 * - Date de début dans les 12h
 	 */
 	public function getPlannedEvents($category){
@@ -55,17 +41,11 @@ class ExtendedCategoryRepository extends CategoryRepository {
 		->from('Application\Entity\Event', 'e')
 		->innerJoin('e.category', 'cat')
 		->andWhere('cat INSTANCE OF '.$category)
-		->andWhere(
-				$qbEvents->expr()->orX(
-					$qbEvents->expr()->andX(
-						$qbEvents->expr()->eq('e.status', 1),
-						$qbEvents->expr()->lte('e.startdate', '?1')),
-					$qbEvents->expr()->andX(
-							$qbEvents->expr()->gte('e.startdate', '?2'),
-							$qbEvents->expr()->lte('e.startdate', '?3'))))
+		->andWhere($qbEvents->expr()->andX(
+                                            $qbEvents->expr()->gte('e.startdate', '?1'),
+                                            $qbEvents->expr()->lte('e.startdate', '?2')))
 		->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-							2 => $now->format('Y-m-d H:i:s'),
-							3 => $now->add(new \DateInterval('PT12H'))->format('Y-m-d H:i:s')));
+					2 => $now->add(new \DateInterval('PT12H'))->format('Y-m-d H:i:s')));
 					
 		$query = $qbEvents->getQuery();
 					
