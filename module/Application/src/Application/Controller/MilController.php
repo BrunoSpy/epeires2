@@ -34,7 +34,11 @@ class MilController extends AbstractActionController {
 				
 		$nmservice = $this->serviceLocator->get('nmb2b');
                 
-                $nmservice->getEAUPRSA();
+                //$viewmodel->setVariables(array('rsas' => $nmservice->getEAUPRSA(array('LFCB*'), new \DateTime('2014-10-28'))));
+                
+                $eaupChain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPChain(new \DateTime('2014-10-28')));
+                
+                $viewmodel->setVariable('number', $eaupChain->getLastSequenceNumber());
 
         return $viewmodel;
 		

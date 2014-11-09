@@ -2,8 +2,7 @@
 /** 
  * Epeires 2
 *
-* Catégorie d'évènements.
-* Peut avoir une catégorie parente.
+* Catégorie d'évènements : zones militaires.
 *
 * @copyright Copyright (c) 2013 Bruno Spyckerelle
 * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
@@ -23,6 +22,47 @@ class MilCategory extends Category{
      * @Annotation\Options({"label":"Zones associées :"})
      */
     protected $zonesRegex;
+    
+    /** 
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Actualiser avec AUP :"})
+     */
+    protected $aup;
+    
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $lastUpdateDate;
+    
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $lastUpdateSequence;
+    
+    public function setAUP($aup){
+        $this->aup = $aup;
+    }
+    
+    public function isAUP(){
+        return $this->aup;
+    }
+    
+    public function setLastUpdateDate($update){
+        $this->lastUpdateDate = $update;
+    }
+    
+    public function getLastUpdateDate(){
+        return $this->lastUpdateDate;
+    }
+    
+    public function setLastUpdateSequence($sequence){
+        $this->lastUpdateSequence = $sequence;
+    }
+    
+    public function getLastUpdateSequence(){
+        $this->lastUpdateSequence;
+    }
     
     public function setZonesRegex($regex){
         $this->zonesRegex = $regex;

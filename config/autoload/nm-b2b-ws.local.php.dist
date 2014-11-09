@@ -3,7 +3,8 @@ return array(
     'nm_b2b' => array(
         'cert_path' => 'path_to_certificate_file',
         'cert_password' => 'password',
-        'wsdl_path' => 'path to wsdl directory'
+        'wsdl_path' => 'path to wsdl directory',
+        'airspace_wsdl_filename' => 'filename'
     ),
 );
 

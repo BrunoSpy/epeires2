@@ -4,14 +4,15 @@ namespace Core\Service;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\Soap\Client as SoapClient;
-
+/**
+ * @author Bruno Spyckerelle
+ */
 class NMB2BService implements ServiceLocatorAwareInterface {
     
     private $sl;
     
     private $nmb2b;
-    
+        
     public function getServiceLocator() {
         return $this->sl;
     }
@@ -27,27 +28,59 @@ class NMB2BService implements ServiceLocatorAwareInterface {
     }
     
     private function getSoapClient(){
-        return new SoapClient(ROOT_PATH.$this->nmb2b['wsdl_path'].'/AirspaceServices_PREOPS_18.5.0.wsdl', array(
-            'local_cert' => ROOT_PATH.$this->nmb2b['cert_path'],
-            'passphrase' => $this->nmb2b['cert_password']
-        ));
+        try {
+        $client = new \SoapClient(ROOT_PATH.$this->nmb2b['wsdl_path'].$this->nmb2b['airspace_wsdl_filename'],
+                array(
+                    'trace' => 1,
+                    'connection_timeout' => 2000,
+                    'exceptions' =>true, 
+                    'cache_wsdl' => WSDL_CACHE_NONE,
+                    'local_cert' => ROOT_PATH.$this->nmb2b['cert_path'],
+                    'passphrase' => $this->nmb2b['cert_password']));
+        } catch (\SoapFault $e){
+            error_log(print_r($e, true));
+        }
+        return $client;
     }
     
-    public function getEAUPRSA(){
-        error_log('test');
+    /**
+     * Retrieve RSAs for a specific date
+     * @param type $designators
+     * @param \DateTime $date
+     * @return type
+     */
+    public function getEAUPRSA($designators, \DateTime $date, $sequencenumber){
         $client = $this->getSoapClient();
                        
         $now = new \DateTime('now');
         
         $params = array(
             'sendTime' => $now->format('Y-m-d H:i:s'),
-            'rsaDesignators' => 'LF*',
+            'rsaDesignators' => $designators,
             'eaupId'=> array(
-                'chainDate' => '2014-10-28',
-                'sequenceNumber' => '1'
+                'chainDate' => $date->format('Y-m-d'),
+                'sequenceNumber' => $sequencenumber
             ));
-        $result = $client->retrieveEAUPRSAs($params);
-        error_log(print_r($result));
+        
+        $client->retrieveEAUPRSAs($params);
+        
+        return $client->__getLastResponse();
+    }
+    
+    /**
+     * 
+     * @param \DateTime $date
+     */
+    public function getEAUPChain(\DateTime $date){
+        $client = $this->getSoapClient();
+        $now = new \DateTime('now');
+        
+        $params = array(
+            'sendTime' => $now->format('Y-m-d H:i:s'),
+            'chainDate' => $date->format('Y-m-d')
+        );
+        $client->retrieveEAUPChain($params);
+        return $client->__getLastResponse();
     }
 }
 
