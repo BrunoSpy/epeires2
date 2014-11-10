@@ -28,15 +28,23 @@ class NMB2BService implements ServiceLocatorAwareInterface {
     }
     
     private function getSoapClient(){
+        $options=array();
+        $options['trace'] = 1;
+        $options['connection_timeout'] = 2000;
+        $options['exceptions'] = true; 
+        $options['cache_wsdl'] = WSDL_CACHE_NONE;
+        $options['local_cert'] = ROOT_PATH.$this->nmb2b['cert_path'];
+        $options['passphrase'] = $this->nmb2b['cert_password'];
+        
+        if($this->nmb2b['proxy_host']){
+            $options['proxy_host'] = $this->nmb2b['proxy_host'];
+        }
+        if($this->nmb2b['proxy_port']){
+            $options['proxy_port'] = $this->nmb2b['proxy_port'];
+        }
+        
         try {
-        $client = new \SoapClient(ROOT_PATH.$this->nmb2b['wsdl_path'].$this->nmb2b['airspace_wsdl_filename'],
-                array(
-                    'trace' => 1,
-                    'connection_timeout' => 2000,
-                    'exceptions' =>true, 
-                    'cache_wsdl' => WSDL_CACHE_NONE,
-                    'local_cert' => ROOT_PATH.$this->nmb2b['cert_path'],
-                    'passphrase' => $this->nmb2b['cert_password']));
+            $client = new \SoapClient(ROOT_PATH.$this->nmb2b['wsdl_path'].$this->nmb2b['airspace_wsdl_filename'],$options);
         } catch (\SoapFault $e){
             error_log(print_r($e, true));
         }

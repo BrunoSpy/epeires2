@@ -1,10 +1,12 @@
 <?php
 return array(
     'nm_b2b' => array(
-        'cert_path' => 'path_to_certificate_file',
-        'cert_password' => 'password',
-        'wsdl_path' => 'path to wsdl directory',
-        'airspace_wsdl_filename' => 'filename'
+        'cert_path' => 'path_to_certificate_file',//mandatory
+        'cert_password' => 'password',//mandatory
+        'wsdl_path' => 'path to wsdl directory',//mandatory
+        'airspace_wsdl_filename' => 'filename',//mandatory
+        'proxy_host' => 'http or https proxy', //optional
+        'proxy_port' => 'proxy port' //optional
     ),
 );
 
