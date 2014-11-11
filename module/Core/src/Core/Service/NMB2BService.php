@@ -36,10 +36,10 @@ class NMB2BService implements ServiceLocatorAwareInterface {
         $options['local_cert'] = ROOT_PATH.$this->nmb2b['cert_path'];
         $options['passphrase'] = $this->nmb2b['cert_password'];
         
-        if($this->nmb2b['proxy_host']){
+        if(array_key_exists('proxy_host', $this->nmb2b)){
             $options['proxy_host'] = $this->nmb2b['proxy_host'];
         }
-        if($this->nmb2b['proxy_port']){
+        if(array_key_exists('proxy_port', $this->nmb2b)){
             $options['proxy_port'] = $this->nmb2b['proxy_port'];
         }
         

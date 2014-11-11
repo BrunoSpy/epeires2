@@ -264,6 +264,10 @@ class CategoriesController extends FormController{
 			$category->setCommentaireBrouillageField(null);
 			$category->setCommentaireInterferenceField(null);
     		}
+                if($category instanceof MilCategory){
+                    $category->setLowerLevelField(null);
+                    $category->setUpperLevelField(null);
+                }
     		$objectManager->persist($category);
     		$objectManager->flush();
     		//suppression des evts associés par cascade

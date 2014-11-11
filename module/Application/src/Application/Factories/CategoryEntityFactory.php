@@ -34,18 +34,39 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 	}
 	
         public function createMilCategory(){
-		$em = $this->getEntityManager();
-		$milcat = new MilCategory();
+                $em = $this->getEntityManager();
+            
+                $stringtype = $em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string'));
+		
+		$milcat = new MilCategory();                
 		$namefield = new CustomField();
 		$namefield->setCategory($milcat);
 		$namefield->setName('Nom');
-		$namefield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'string')));
+		$namefield->setType($stringtype);
 		$namefield->setPlace(1);
 		$namefield->setDefaultValue("");
 		$milcat->setFieldname($namefield);
                 
+                $lower = new CustomField();
+                $lower->setCategory($milcat);
+                $lower->setName('Plancher');
+                $lower->setType($stringtype);
+                $lower->setPlace(2);
+                $lower->setDefaultValue("");
+                $milcat->setLowerLevelField($lower);
+                
+                $upper = new CustomField();
+                $upper->setCategory($milcat);
+                $upper->setName("Plafond");
+                $upper->setType($stringtype);
+                $upper->setPlace(3);
+                $upper->setDefaultValue("");
+                $milcat->setUpperLevelField($upper);
+                
                 $milcat->setZonesRegex('');
                 
+                $em->persist($upper);
+                $em->persist($lower);
 		$em->persist($namefield);
 		return $milcat;
 	}

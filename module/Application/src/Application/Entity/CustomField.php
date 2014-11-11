@@ -70,6 +70,14 @@ class CustomField {
          */
         protected $tooltip;
         
+        /** 
+         * @ORM\Column(type="boolean")
+         * @Annotation\Type("Zend\Form\Element\Checkbox")
+         * @Annotation\Options({"label":"Visible formulaire :"})
+         * Is field visible in user form
+         */
+        protected $visible = true; 
+                
 	/**
 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
 	 */
@@ -112,6 +120,14 @@ class CustomField {
 		$this->place = $place;
 	}
 	
+        public function isVisible(){
+            return $this->visible;
+        }
+        
+        public function setVisible($visible){
+            $this->visible = $visible;
+        }
+        
 	public function getDefaultValue(){
 		return $this->defaultvalue;
 	}

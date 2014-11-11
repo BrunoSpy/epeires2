@@ -25,10 +25,11 @@ class MilCategory extends Category{
     
     /** 
      * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Actualiser avec AUP :"})
+     * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
      */
-    protected $aup;
+    protected $nmB2B = false;
     
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -36,16 +37,44 @@ class MilCategory extends Category{
     protected $lastUpdateDate;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $lastUpdateSequence;
     
-    public function setAUP($aup){
-        $this->aup = $aup;
+    /** 
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Page Zones Mil :"})
+     */
+    protected $onMilPage = false;
+    
+    /**
+    * 
+    * @ORM\OneToOne(targetEntity="CustomField")
+    */
+    protected $upperLevelField;
+    
+    /**
+    * 
+    * @ORM\OneToOne(targetEntity="CustomField")
+    */
+    protected $lowerLevelField;
+    
+    public function setNMB2B($nmb2b){
+        $this->nmB2B = $nmb2b;
     }
     
-    public function isAUP(){
-        return $this->aup;
+    public function isNMB2B(){
+        return $this->nmB2B;
+    }
+    
+    public function isOnMilPage(){
+        return $this->onMilPage;
+    }
+    
+    public function setOnMilPage($onmilpage){
+        $this->onMilPage = $onmilpage;
     }
     
     public function setLastUpdateDate($update){
@@ -70,6 +99,22 @@ class MilCategory extends Category{
     
     public function getZonesRegex(){
         return $this->zonesRegex;
+    }
+    
+    public function setUpperLevelField($upperlevelfield){
+        $this->upperLevelField = $upperlevelfield;
+    }
+    
+    public function getUpperLevelField(){
+        return $this->upperLevelField;
+    }
+    
+    public function setLowerLevelField($lowerlevelfield){
+        $this->lowerLevelField = $lowerlevelfield;
+    }
+    
+    public function getLowerLevelField(){
+        return $this->lowerLevelField;
     }
     
     public function getArrayCopy() {

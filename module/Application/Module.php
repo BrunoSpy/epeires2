@@ -124,7 +124,10 @@ class Module implements ConsoleUsageProviderInterface
             array('--email', 'Send an email to IPO'),
             array('--delta', '(optional) Delta to add to the current day (-1=yesterday)'),
             array('orgshortname', 'Shortname of the organisation as configured in the database'),
-            
+            'import-nmb2b [--delta=] orgshortname username' => 'Import RSAs from NM B2B WS',
+            array('--delta', '(optional) Delta to add to the current day (-1=yesterday)'),
+            array('orgshortname', 'Shortname of the organisation as configured in the database'),
+            array('username', 'User Name of the author of created events')
         );
     }
 }

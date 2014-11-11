@@ -8,6 +8,8 @@ use Application\Entity\Frequency;
 use Application\Core\User;
 use Zend\Session\Container;
 
+use \Core\NMB2B\EAUPRSAs;
+
 /**
  * Description of EventRepository
  *
@@ -386,6 +388,146 @@ class EventRepository extends ExtendedRepository {
                 $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
             }
         }
+    }
+        
+    /*
+     * Add events from <code>$eauprsas</code> to the corresponding <code>$cat</code>
+     * @param \Core\NMB2B\EAUPRSAs $eauprsas
+     * @param \Application\Entity\MilCategory $cat
+     */
+    public function addZoneMilEvents(EAUPRSAs $eauprsas, 
+            \Application\Entity\MilCategory $cat, 
+            \Application\Entity\Organisation $organisation, 
+            \Core\Entity\User $user,
+            &$messages = null){
+        foreach ($eauprsas->getAirspacesWithDesignator($cat->getZonesRegex()) as $airspace){
+            $designator = (string)EAUPRSAs::getAirspaceDesignator($airspace);
+            $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace);
+            $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
+            $lowerlevel = (string)EAUPRSAs::getAirspaceLowerLimit($airspace);
+            $upperlevel = (string)EAUPRSAs::getAirspaceUpperLimit($airspace);
+            $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
+            if(count($previousEvents) > 0){
+                if(count($previousEvents) == 1){
+                    //change begin and start
+                    //TODO dont change anything if already modified by user
+                    $event = $previousEvents[0];
+                    $event->setStartdate($timeBegin);
+                    $event->setEnddate($timeEnd);
+                    $this->getEntityManager()->persist($event);
+                    $this->getEntityManager()->flush();
+                } else {
+                    //TODO throw error
+                }
+            } else {
+                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
+            }
+        }
+    }
+    
+    private function doAddMilEvent(\Application\Entity\MilCategory $cat,
+            \Application\Entity\Organisation $organisation,
+            \Core\Entity\User $user,
+            $designator, 
+            \DateTime $timeBegin, 
+            \DateTime $timeEnd, 
+            $upperLevel, 
+            $lowerLevel,
+            &$messages){
+        $event = new \Application\Entity\Event();
+        $event->setOrganisation($organisation);
+        $event->setAuthor($user);
+        $event->setCategory($cat);
+        $event->setScheduled(false);
+        $event->setPunctual(false);
+        $event->setStartdate($timeBegin);
+        $status = $this->getEntityManager()->getRepository('Application\Entity\Status')->find('1');
+        $event->setStatus($status);
+        $impact = $this->getEntityManager()->getRepository('Application\Entity\Impact')->find('2');
+        $event->setImpact($impact);
+        $event->setEnddate($timeEnd);
+        //name
+        $name = new \Application\Entity\CustomFieldValue();
+        $name->setCustomField($cat->getFieldname());
+        $name->setEvent($event);
+        $name->setValue($designator);
+        //upperlevel
+        $upper = new \Application\Entity\CustomFieldValue();
+        $upper->setCustomField($cat->getUpperLevelField());
+        $upper->setEvent($event);
+        $upper->setValue($upperLevel);
+        //lowerlevel
+        $lower = new \Application\Entity\CustomFieldValue();
+        $lower->setCustomField($cat->getLowerLevelField());
+        $lower->setEvent($event);
+        $lower->setValue($lowerLevel);
+        
+        try{
+            $this->getEntityManager()->persist($name);
+            $this->getEntityManager()->persist($upper);
+            $this->getEntityManager()->persist($lower);
+            $this->getEntityManager()->persist($event);
+            $this->getEntityManager()->flush();
+        } catch (\Exception $ex) {
+            error_log($ex->getMessage());
+            if($messages != null){
+                $messages['error'][] = $ex->getMessage();
+            }
+        }
+    }
+    
+    /**
+     * Tries to find an event called <code>$designator</code>
+     * intersecting with <code>$timeBegin</code> and <code>$timeEnd</code>
+     * @param type $designator
+     * @param type $timeBegin
+     * @param type $timeEnd
+     */
+    private function findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperLevel, $lowerLevel) {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select(array('e', 'v', 'cat'))
+                ->from('Application\Entity\Event', 'e')
+                ->leftJoin('e.custom_fields_values', 'v')
+                ->leftJoin('e.category', 'cat')
+                ->andWhere($qb->expr()->eq('v.customfield', 'cat.fieldname'))
+                ->andWhere('cat INSTANCE OF Application\Entity\MilCategory')
+                ->andWhere($qb->expr()->eq('v.value','?1'))
+                ->andWhere($qb->expr()->orX(
+                        $qb->expr()->andX(
+                                $qb->expr()->lte('e.startdate', '?2'),
+                                $qb->expr()->isNotNull('e.enddate'),
+                                $qb->expr()->gte('e.enddate', '?3')),
+                        $qb->expr()->andX(
+                                $qb->expr()->gte('e.startdate', '?4'),
+                                $qb->expr()->isNotNull('e.enddate'),
+                                $qb->expr()->lte('e.startdate', '?5'))))
+            ->setParameters(array(1 => $designator,
+                                2 => $timeBegin->format('Y-m-d H:i:s'),
+                                3 => $timeBegin->format('Y-m-d H:i:s'),
+                                4 => $timeBegin->format('Y-m-d H:i:s'),
+                                5 => $timeEnd->format('Y-m-d H:i:s')));
+        $tempresults = $qb->getQuery()->getResult();
+        //then match lowerlimit and upper limit
+        $results = array();
+        foreach ($tempresults as $event){
+            $this->getEntityManager()->refresh($event);
+            $lowerLevelMatch = false;
+            $upperLevelMatch = false;
+            //reload event because left joins stripped of events from some customfield values
+            $tempevent = $this->getEntityManager()->getRepository('Application\Entity\Event')->find($event->getId());
+            foreach ($tempevent->getCustomFieldsValues() as $value){
+                if($value->getCustomField()->getId() == $tempevent->getCategory()->getLowerLevelField()->getId()){
+                    $lowerLevelMatch = (strcmp($value->getValue(), $lowerLevel) == 0);
+                }
+                if($value->getCustomField()->getId() == $tempevent->getCategory()->getUpperLevelField()->getId()){
+                    $upperLevelMatch = (strcmp($value->getValue(), $upperLevel) == 0);
+                }
+            }
+            if($lowerLevelMatch && $upperLevelMatch){
+                $results[] = $tempevent;
+            }
+        }
+        return $results;
     }
 
 }

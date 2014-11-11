@@ -3,7 +3,9 @@ var mil = function(url){
 	
 	$(".mod-mil").on('click', function(){
 		$("#zone-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#zone-form").load(url+'/mil/form?id='+$(this).data('id'));
+		$("#zone-form").load(url+'/mil/form?id='+$(this).data('id'), function(){
+                    $(this).find(".pick-a-color").pickAColor();
+                });
 	});
 	
 	$("#zone-container").on('click', 'input[type=submit]', function(event){

@@ -58,12 +58,15 @@ class MilController extends \Application\Controller\FormController {
     		$milcat = $datas['milcat'];
     		
     		if($form->isValid()){
+                        if(!(strpos($milcat->getColor(),"#") === 0)){
+                            $milcat->setColor("#".$milcat->getColor());
+			}
     			$objectManager->persist($milcat);	
     			try {
     				$objectManager->flush();
     				$this->flashMessenger()->addSuccessMessage("Catégorie modifée.");
     				$mil = array('id' => $milcat->getId(), 'name' => $milcat->getName(), 'regex' => $milcat->getZonesRegex());
-    				$json['milcat'] = $milcat;
+    				$json['milcat'] = $mil;
     				$json['success'] = true;
     			} catch (\Exception $e) {
                             error_log(print_r($e->getMessage(), true));

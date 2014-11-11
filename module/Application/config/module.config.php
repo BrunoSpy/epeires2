@@ -38,7 +38,16 @@ return array(
                             'action' => 'report'
                         )
                     )
-                )
+                ),
+                'import-nmb2b' => array(
+                    'options' => array(
+                        'route' => 'import-nmb2b [--delta=] <orgshortname> <username>',
+                        'defaults' => array(
+                            'controller' => 'Application\Controller\Mil',
+                            'action' => 'importNMB2B'
+                        ),
+                    ),
+                ),
             ),
         ),
     ),
@@ -157,7 +166,10 @@ return array(
     	),
         'Radars' => array(
                 'radars.read' => 'Lecture',
-        )
+        ),
+        'Zones militaires' => array(
+                'zonesmil.read' => 'Lecture',
+        ),
     ),
     
     'zfc_rbac' => array(

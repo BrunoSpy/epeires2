@@ -24,7 +24,7 @@ use Zend\Form\Element;
 use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 
-class EventsController extends ZoneController {
+class EventsController extends TabController {
 	
     public function indexAction(){    	
     	
@@ -43,22 +43,6 @@ class EventsController extends ZoneController {
     	}
     	
     	$this->flashMessenger()->clearMessages();
-    	
-        $this->layout()->iponumber = "";
-        if($this->zfcUserAuthentication()->hasIdentity()){
-            $iponumber = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getIpoNumber();
-            if($iponumber != null && strlen($iponumber) > 0) {
-                $this->layout()->iponumber = "(".$iponumber.")";
-            } 
-        }
-    	
-        //initialisation de la session si utilisateur connecté
-        $session = new Container('zone');
-        if($session->zoneshortname == null){
-            if($this->zfcUserAuthentication()->hasIdentity()){
-                $session->zoneshortname = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getShortname();
-            }
-        }
         
      	$viewmodel->setVariables(array('messages'=>$return));
     	 

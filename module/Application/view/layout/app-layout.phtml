@@ -106,7 +106,13 @@
                                 . '">Radio</a></li>';
                         }
                         ?>
-                        <li><a id="zonesmil" href="<?php echo $this->url('application', array('controller' => 'mil', 'action' => 'index'))?>">Zones militaires</a></li>
+                        <?php
+                        if($this->isGranted('zonesmil.read') && $this->zonesmil){
+                            echo '<li><a id="zonesmil" href="';
+                            echo $this->url('application', array('controller' => 'mil', 'action' => 'index'));
+                            echo '">Zones militaires</a></li>';
+                        }
+                        ?>
                         </ul>
 	        	<ul class="nav pull-right">
 	        		<li>
