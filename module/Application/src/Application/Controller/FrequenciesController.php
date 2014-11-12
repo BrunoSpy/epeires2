@@ -1,10 +1,21 @@
 <?php
 
-/**
- * Epeires 2
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
  *
- * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  */
+ 
 
 namespace Application\Controller;
 
@@ -23,6 +34,9 @@ use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
 use Application\Form\CustomFieldset;
 
+/**
+ * @author Bruno Spyckerelle
+ */
 class FrequenciesController extends ZoneController {
 
     public function indexAction() {
@@ -137,116 +151,75 @@ class FrequenciesController extends ZoneController {
                     //1 evt : on modifie
                     //2 ou + : indécidable -> erreur
                     if (count($frequencyEvents) == 0) {
-                        //on crée l'evt "passage en couv secours"
-                        $event = new Event();
-                        $status = $em->getRepository('Application\Entity\Status')->find('2');
-                        $impact = $em->getRepository('Application\Entity\Impact')->find('3');
-                        $event->setImpact($impact);
-                        $event->setStatus($status);
-                        $event->setStartdate($now);
-                        $event->setPunctual(false);
-                        //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
-                        if ($fromfreq->getDefaultsector()) {
-                            $event->setOrganisation($fromfreq->getDefaultsector()->getZone()->getOrganisation());
-                            $event->addZonefilter($fromfreq->getDefaultsector()->getZone());
-                        } else {
-                            $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
-                        }
-                        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                        $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
-                        if ($categories) {
-                            $cat = $categories[0];
-                            $event->setCategory($cat);
-                            $frequencyfieldvalue = new CustomFieldValue();
-                            $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
-                            $frequencyfieldvalue->setEvent($event);
-                            $frequencyfieldvalue->setValue($fromfreq->getId());
-                            $event->addCustomFieldValue($frequencyfieldvalue);
-                            $statusfield = new CustomFieldValue();
-                            $statusfield->setCustomField($cat->getStatefield());
-                            $statusfield->setEvent($event);
-                            $statusfield->setValue(true); //unavailable
-                            $event->addCustomFieldValue($statusfield);
-                            $freqfield = new CustomFieldValue();
-                            $freqfield->setCustomField($cat->getOtherFrequencyField());
-                            $freqfield->setEvent($event);
-                            $freqfield->setValue($tofreq->getId());
-                            $event->addCustomFieldValue($freqfield);
-                            $em->persist($frequencyfieldvalue);
-                            $em->persist($statusfield);
-                            $em->persist($freqfield);
-                            $em->persist($event);
-                            try {
-                                $em->flush();
-                                $messages['success'][] = "Changement de fréquence pour " . $fromfreq->getName() . " enregistré.";
-                            } catch (\Exception $e) {
-                                $messages['error'][] = $e->getMessage();
-                            }
-                        } else {
-                            $messages['error'][] = "Erreur : aucune catégorie trouvée.";
-                        }
+                        $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, null, $messages);
                     } else if (count($frequencyEvents) == 1) {
                         $event = $frequencyEvents[0];
-                        //deux cas : changement de fréquence ou retour à la fréquence nominale
-                        //dans le deuxième cas, il faut fermer l'évènement si couv normale et freq dispo
-                        if($fromid == $toid) {
-                            //on vérifie que l'évènement existant a bien un champ changement de fréquence
-                            $previousfield = null;
-                            $otherfields = false;
-                            foreach ($event->getCustomFieldsValues() as $value){
-                                if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
-                                    $previousfield = $value;
-                                } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
-                                    if($value->getValue() == 1){
-                                        $otherfields = true;
+                        //une exception : si l'évènement a un parent, il faut créer un nouvel évènement
+                        //sinon il sera fermé automatiquement à la fermeture du parent
+                        if($event->getParent() != null) {
+                            $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, null, $messages);
+                        } else {
+                            //deux cas : changement de fréquence ou retour à la fréquence nominale
+                            //dans le deuxième cas, il faut fermer l'évènement si couv normale et freq dispo
+                            if($fromid == $toid) {
+                                //on vérifie que l'évènement existant a bien un champ changement de fréquence
+                                $previousfield = null;
+                                $otherfields = false;
+                                foreach ($event->getCustomFieldsValues() as $value){
+                                    if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
+                                        $previousfield = $value;
+                                    } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
+                                        if($value->getValue() == 1){
+                                            $otherfields = true;
+                                        }
                                     }
                                 }
-                            }
-                            if($previousfield){
-                                //si il y a d'autres champs autre que le champ "indisponible", on ne ferme pas l'évènement
-                                //sinon on ferme
-                                if($otherfields) {
+                                if($previousfield){
+                                    //si il y a d'autres champs autre que le champ "indisponible", on ne ferme pas l'évènement
+                                    //sinon on ferme
+                                    if($otherfields) {
+                                        $previousfield->setValue($toid);
+                                        $em->persist($previousfield);
+                                    } else {
+                                        $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                                        $event->setEnddate($now);
+                                        $event->setStatus($endstatus);
+                                    }
+                                    $em->persist($event);
+                                    try {
+                                        $em->flush();
+                                        $messages['success'][] = "Fréquence mise à jour";
+                                    } catch (\Exception $ex) {
+                                        $messages['error'][] = $ex->getMessage();
+                                    }
+                                } else {
+                                    $messages['error'][] = "Erreur : fréquence identique.";
+                                }
+                            } else {
+                                $previousfield = null;
+                                foreach ($event->getCustomFieldsValues() as $value){
+                                    if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
+                                        $previousfield = $value;
+                                    }
+                                }
+                                if($previousfield){
                                     $previousfield->setValue($toid);
                                     $em->persist($previousfield);
                                 } else {
-                                    $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
-                                    $event->setEnddate($now);
-                                    $event->setStatus($endstatus);
+                                    $customvalue = new CustomFieldValue();
+                                    $customvalue->setEvent($event);
+                                    $customvalue->setCustomField($event->getCategory()->getOtherFrequencyField());
+                                    $customvalue->setValue($toid);
+                                    $event->addCustomFieldValue($customvalue);
+                                    $em->persist($customvalue);
+                                    $em->persist($event);
                                 }
-                                $em->persist($event);
                                 try {
                                     $em->flush();
-                                    $messages['success'][] = "Fréquence mise à jour";
+                                    $messages['success'][] = "Evénement modifié";
                                 } catch (\Exception $ex) {
                                     $messages['error'][] = $ex->getMessage();
                                 }
-                            } else {
-                                $messages['error'][] = "Erreur : fréquence identique.";
-                            }
-                        } else {
-                            $previousfield = null;
-                            foreach ($event->getCustomFieldsValues() as $value){
-                                if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
-                                    $previousfield = $value;
-                                }
-                            }
-                            if($previousfield){
-                                $previousfield->setValue($toid);
-                                $em->persist($previousfield);
-                            } else {
-                                $customvalue = new CustomFieldValue();
-                                $customvalue->setEvent($event);
-                                $customvalue->setCustomField($event->getCategory()->getOtherFreqField());
-                                $customvalue->setValue($toid);
-                                $event->addCustomFieldValue($customfieldvalue);
-                                $em->persist($customvalue);
-                                $em->persist($event);
-                            }
-                            try {
-                                $em->flush();
-                                $messages['success'][] = "Evénement modifié";
-                            } catch (\Exception $ex) {
-                                $messages['error'][] = $e->getMessage();
                             }
                         }
                     } else {
@@ -864,7 +837,6 @@ class FrequenciesController extends ZoneController {
                     ->addOrderBy('d.zone', 'DESC')
                     ->addOrderBy('d.name', 'ASC')
                     ->setParameter('1', $frequency->getOrganisation()->getId());
-            //$frequencieslist = $em->getRepository('Application\Entity\Frequency')->findBy(array('organisation' => $frequency->getOrganisation()->getId()));
             $place = 0;
             foreach ($qb->getQuery()->getResult() as $freq) {
                 $frequencies[$freq->getId()] = array(

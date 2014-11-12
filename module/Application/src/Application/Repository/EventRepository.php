@@ -153,4 +153,58 @@ class EventRepository extends ExtendedRepository {
         return $readableEvents;
     }
     
+    
+    public function addSwitchFrequencyEvent(Frequency $from, Frequency $to, Event $parent = null, &$messages = null){
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+        $em = $this->getEntityManager();
+        $event = new Event();
+        $event->setParent($parent);        
+        $status = $em->getRepository('Application\Entity\Status')->find('2');
+        $impact = $em->getRepository('Application\Entity\Impact')->find('3');
+        $event->setImpact($impact);
+        $event->setStatus($status);
+        $event->setStartdate($now);
+        $event->setPunctual(false);
+        //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
+        if ($from->getDefaultsector()) {
+            $event->setOrganisation($from->getDefaultsector()->getZone()->getOrganisation());
+            $event->addZonefilter($from->getDefaultsector()->getZone());
+        } else {
+            $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+        }
+        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+        $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
+        if ($categories) {
+            $cat = $categories[0];
+            $event->setCategory($cat);
+            $frequencyfieldvalue = new CustomFieldValue();
+            $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
+            $frequencyfieldvalue->setEvent($event);
+            $frequencyfieldvalue->setValue($from->getId());
+            $event->addCustomFieldValue($frequencyfieldvalue);
+            $statusfield = new CustomFieldValue();
+            $statusfield->setCustomField($cat->getStatefield());
+            $statusfield->setEvent($event);
+            $statusfield->setValue(true); //unavailable
+            $event->addCustomFieldValue($statusfield);
+            $freqfield = new CustomFieldValue();
+            $freqfield->setCustomField($cat->getOtherFrequencyField());
+            $freqfield->setEvent($event);
+            $freqfield->setValue($to->getId());
+            $event->addCustomFieldValue($freqfield);
+            $em->persist($frequencyfieldvalue);
+            $em->persist($statusfield);
+            $em->persist($freqfield);
+            $em->persist($event);
+            try {
+                $em->flush();
+                $messages['success'][] = "Changement de fréquence pour " . $from->getName() . " enregistré.";
+            } catch (\Exception $e) {
+                $messages['error'][] = $e->getMessage();
+            }
+        } else {
+            $messages['error'][] = "Erreur : aucune catégorie trouvée.";
+        }
+    }
 }
