@@ -400,27 +400,17 @@ class EventRepository extends ExtendedRepository {
             \Application\Entity\Organisation $organisation, 
             \Core\Entity\User $user,
             &$messages = null){
-        foreach ($eauprsas->getAirspacesWithDesignator($cat->getZonesRegex()) as $airspace){
+        foreach ($eauprsas->getAirspacesWithDesignator($cat->getFilter()) as $airspace){
             $designator = (string)EAUPRSAs::getAirspaceDesignator($airspace);
-            $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace);
-            $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
-            $lowerlevel = (string)EAUPRSAs::getAirspaceLowerLimit($airspace);
-            $upperlevel = (string)EAUPRSAs::getAirspaceUpperLimit($airspace);
-            $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
-            if(count($previousEvents) > 0){
-                if(count($previousEvents) == 1){
-                    //change begin and start
-                    //TODO dont change anything if already modified by user
-                    $event = $previousEvents[0];
-                    $event->setStartdate($timeBegin);
-                    $event->setEnddate($timeEnd);
-                    $this->getEntityManager()->persist($event);
-                    $this->getEntityManager()->flush();
-                } else {
-                    //TODO throw error
+            if(preg_match($cat->getZonesRegex(), $designator)){
+                $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace);
+                $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
+                $lowerlevel = (string)EAUPRSAs::getAirspaceLowerLimit($airspace);
+                $upperlevel = (string)EAUPRSAs::getAirspaceUpperLimit($airspace);
+                $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
+                if(count($previousEvents) == 0) {
+                    $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
                 }
-            } else {
-                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
             }
         }
     }
@@ -478,7 +468,7 @@ class EventRepository extends ExtendedRepository {
     
     /**
      * Tries to find an event called <code>$designator</code>
-     * intersecting with <code>$timeBegin</code> and <code>$timeEnd</code>
+     * with same <code>$timeBegin</code>, <code>$timeEnd</code>, <code>$upperLevel</code> and <code>$lowerLevel</code>
      * @param type $designator
      * @param type $timeBegin
      * @param type $timeEnd
@@ -492,20 +482,27 @@ class EventRepository extends ExtendedRepository {
                 ->andWhere($qb->expr()->eq('v.customfield', 'cat.fieldname'))
                 ->andWhere('cat INSTANCE OF Application\Entity\MilCategory')
                 ->andWhere($qb->expr()->eq('v.value','?1'))
-                ->andWhere($qb->expr()->orX(
+                ->andWhere(
                         $qb->expr()->andX(
-                                $qb->expr()->lte('e.startdate', '?2'),
-                                $qb->expr()->isNotNull('e.enddate'),
-                                $qb->expr()->gte('e.enddate', '?3')),
-                        $qb->expr()->andX(
-                                $qb->expr()->gte('e.startdate', '?4'),
-                                $qb->expr()->isNotNull('e.enddate'),
-                                $qb->expr()->lte('e.startdate', '?5'))))
+                            $qb->expr()->eq('e.startdate', '?2'),
+                            $qb->expr()->eq('e.enddate', '?3')
+                        )
+//                        $qb->expr()->orX(
+//                        $qb->expr()->andX(
+//                                $qb->expr()->lte('e.startdate', '?2'),
+//                                $qb->expr()->isNotNull('e.enddate'),
+//                                $qb->expr()->gte('e.enddate', '?3')),
+//                        $qb->expr()->andX(
+//                                $qb->expr()->gte('e.startdate', '?4'),
+//                                $qb->expr()->isNotNull('e.enddate'),
+//                                $qb->expr()->lte('e.startdate', '?5')))
+                        )
             ->setParameters(array(1 => $designator,
                                 2 => $timeBegin->format('Y-m-d H:i:s'),
-                                3 => $timeBegin->format('Y-m-d H:i:s'),
-                                4 => $timeBegin->format('Y-m-d H:i:s'),
-                                5 => $timeEnd->format('Y-m-d H:i:s')));
+                                3 => $timeEnd->format('Y-m-d H:i:s')
+                    //            4 => $timeBegin->format('Y-m-d H:i:s'),
+                    //            5 => $timeEnd->format('Y-m-d H:i:s'))
+                    ));
         $tempresults = $qb->getQuery()->getResult();
         //then match lowerlimit and upper limit
         $results = array();

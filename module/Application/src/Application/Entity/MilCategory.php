@@ -20,8 +20,17 @@ class MilCategory extends Category{
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Options({"label":"Zones associées :"})
+     * Displayed zones, must be included in <$filter>*
      */
     protected $zonesRegex;
+    
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"Filtre d'import :"})
+     * Filter applied at import
+     */
+    protected $filter;
     
     /** 
      * @ORM\Column(type="boolean")
@@ -99,6 +108,14 @@ class MilCategory extends Category{
     
     public function getZonesRegex(){
         return $this->zonesRegex;
+    }
+    
+    public function setFilter($filter){
+        $this->filter = $filter;
+    }
+    
+    public function getFilter(){
+        return $this->filter;
     }
     
     public function setUpperLevelField($upperlevelfield){

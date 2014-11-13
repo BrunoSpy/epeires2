@@ -19,6 +19,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttr
 echo $this->controlGroup($this->formLabel($this->form->get('color')->setLabelAttributes(array('class' => 'control-label'))),
 						$this->formInput($this->form->get('color')->setAttribute('class', 'pick-a-color')));
 
+echo $this->controlGroup($this->formLabel($this->form->get('filter')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formInput($this->form->get('filter')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('zonesRegex')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formInput($this->form->get('zonesRegex')));
 

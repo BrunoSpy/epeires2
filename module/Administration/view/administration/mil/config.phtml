@@ -17,6 +17,7 @@
                                         <th>id</th>
                                         <th data-sort="string">Nom</th>
                                         <th>Couleur</th>
+                                        <th>Filtre d'import</th>
                                         <th data-sort="string">Zones associées</th>
                                         <th>NM B2B</th>
                                         <th>Page Zones Mil</th>
@@ -30,6 +31,7 @@
                                             echo '<td>'.$cat->getId().'</td>';
                                             echo '<td>'.$cat->getName().'</td>';
                                             echo "<td><span class=\"label\" style=\"background-color:".$cat->getColor()."\">".$cat->getColor()."</span></td>";
+                                            echo '<td>'.$cat->getFilter().'</td>';
                                             echo '<td>'.$cat->getZonesRegex().'</td>';
                                             echo '<td>'.($cat->isNMB2B()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
                                             echo '<td>'.($cat->isOnMilPage()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';

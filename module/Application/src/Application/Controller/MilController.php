@@ -86,12 +86,12 @@ class MilController extends AbstractActionController {
         $eaupchain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPCHain($day));
         $lastSequence = $eaupchain->getLastSequenceNumber();
         $milcats = $objectManager->getRepository('Application\Entity\MilCategory')->findBy(array('nmB2B' => true));
-        //for ($i = 1; $i <= $lastSequence; $i++) {
-            $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA('LF*', $day, 1));
+        for ($i = 1; $i <= $lastSequence; $i++) {
+            $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA('LF*', $day, $i));
             foreach ($milcats as $cat) {
                 $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
             }
-       // }
+        }
     }
 	
 }
