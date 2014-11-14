@@ -92,6 +92,7 @@ var antenna = function(url){
 	
 	$(document).on('click','.switch-coverture', function(){
 		var me = $(this);
+                $('a.actions-freq, a#changefreq').popover('hide');
 		$.post(url+'frequencies/switchcoverture?frequencyid='+me.data("freqid")+'&cov='+me.data('cov'), function(data){
 			displayMessages(data);
 			if(!data['error']){
@@ -100,15 +101,12 @@ var antenna = function(url){
 				if(me.data('cov') == '0'){
 					antennas.find('.mainantenna-color').addClass('background-selected');
 					antennas.find('.backupantenna-color').removeClass('background-selected');
-					//frequency.addClass('background-status-ok');
-					//frequency.removeClass('background-status-fail');
 				} else {
-					//frequency.addClass('background-status-fail');
-					//frequency.removeClass('background-status-ok');
 					antennas.find('.backupantenna-color').addClass('background-selected');
 					antennas.find('.mainantenna-color').removeClass('background-selected');
 				}
-				updateActions();
+                                clearTimeout(timer);
+                                doFullUpdate();
 			};
 		}, 'json');
 	});
@@ -121,7 +119,7 @@ var antenna = function(url){
                 displayMessages(data.messages);
                 //force page refresh
                 clearTimeout(timer);
-                doPollFrequencies();
+                doFullUpdate();
             }, 'json');
         });
 
@@ -132,7 +130,7 @@ var antenna = function(url){
                 displayMessages(data);
                 //force page refresh
                 clearTimeout(timer);
-                doPollFrequencies();
+                doFullUpdate();
             }, 'json');
         });
         
@@ -436,22 +434,32 @@ var antenna = function(url){
 				antenna.addClass('background-status-fail');
 			}
 		});
-                //delay update if a popover is opened
-                if($("body").find('.popover').length == 0) {
-                    updateActions();
-                } 
 	}
 	
 	var updatefrequencies = function() {
 		$.each(currentfrequencies, function(key, value){
 			var sector = $('.sector-color.frequency-'+key);
-			if(value.status == 1 && value.otherfreq == 0){
+                        var $failAntennas = sector.closest('.sector').find('.antenna-color.background-status-fail').length;
+			if(value.status != 0 && value.otherfreq == 0 && value.cov == 0 && $failAntennas == 0){
 				sector.removeClass('background-status-fail');
+                                sector.removeClass('background-status-warning');
 				sector.addClass('background-status-ok');
 			} else {
-				sector.removeClass('background-status-ok');
+                            if(value.status == 0){
+                                sector.removeClass('background-status-ok');
+                                sector.removeClass('background-status-warning');
 				sector.addClass('background-status-fail');
+                            } else {
+                                //une au moins des antennes est HS -> warning
+                                //changement de fréquence -> warning
+                                if($failAntennas >= 1 || value.otherfreq != 0 || value.cov != 0){
+                                    sector.removeClass('background-status-ok');
+                                    sector.addClass('background-status-warning');
+                                    sector.removeClass('background-status-fail');
+                                } 
+                            }				
 			}
+                        //changement de couverture
 			if(value.cov == 1){ //principale = 0
 				sector.closest('.sector').find('.mainantenna-color').removeClass('background-selected');
 				sector.closest('.sector').find('.backupantenna-color').addClass('background-selected');
@@ -459,6 +467,7 @@ var antenna = function(url){
 				sector.closest('.sector').find('.backupantenna-color').removeClass('background-selected');
 				sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 			}
+                        //changement de fréquence
 			if(value.otherfreq != 0 && value.otherfreqid != sector.closest('.sector').data('freq')){
 				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
                                 sector.find('.sector-name span').remove();
@@ -495,7 +504,7 @@ var antenna = function(url){
                             sector.closest('.sector').find('.antennas:last-child').remove();
                         }
                         
-			if(value.status == 1){
+			if(value.status != 0 && value.otherfreq == 0 && value.cov == 0 && $failAntennas == 0){
 				//prise en compte des évts planifiés uniquement si pas d'evt en cours => statut ok
 				if(value.planned){
 					sector.addClass('background-status-planned');
@@ -508,28 +517,34 @@ var antenna = function(url){
 		});
 	}
 	//refresh page every 30s
-	function doPollAntenna(){
+	function doFullUpdate(){
 		$.post(url+'frequencies/getantennastate')
 		.done(function(data) {
 			currentantennas = data;
-			updateantennas();
-		});
+		})
+                .always(function(){
+                    doPollFrequencies();
+                    timer = setTimeout(doFullUpdate, 30000);
+                });
 	};
 
 	function doPollFrequencies(){
 		$.post(url+'frequencies/getfrequenciesstate')
 		.done(function(data) {
 			currentfrequencies = data;
+                        updateantennas();
 			updatefrequencies();
-		})
-		.always(function() {
-			doPollAntenna();
-			timer = setTimeout(doPollFrequencies, 30000);
+                        //double passe sur les couleurs antennes en cas de changement de fréquence
+                        updateantennas();
+                        //delay update if a popover is opened
+                        if($("body").find('.popover').length == 0) {
+                            updateActions();
+                        } 
 		});
 	};
         
         //refresh page every 30s
-        doPollFrequencies();
+        doFullUpdate();
         
 
 };

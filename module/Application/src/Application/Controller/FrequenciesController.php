@@ -135,7 +135,7 @@ class FrequenciesController extends ZoneController {
                 if ($fromfreq && $tofreq) {
 
                     //recherche des évènements sur la fréquence d'origine
-                    $events = $em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory');
+                    $events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory');
                     $frequencyEvents = array();
                     foreach ($events as $event) {
                         $frequencyfield = $event->getCategory()->getFrequencyField();
@@ -151,13 +151,23 @@ class FrequenciesController extends ZoneController {
                     //1 evt : on modifie
                     //2 ou + : indécidable -> erreur
                     if (count($frequencyEvents) == 0) {
-                        $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, null, $messages);
+                        $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent(
+                                $fromfreq, 
+                                $tofreq,
+                                $this->zfcUserAuthentication()->getIdentity(), 
+                                null, 
+                                $messages);
                     } else if (count($frequencyEvents) == 1) {
                         $event = $frequencyEvents[0];
                         //une exception : si l'évènement a un parent, il faut créer un nouvel évènement
                         //sinon il sera fermé automatiquement à la fermeture du parent
                         if($event->getParent() != null) {
-                            $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, null, $messages);
+                            $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent(
+                                    $fromfreq, 
+                                    $tofreq, 
+                                    $this->zfcUserAuthentication()->getIdentity(), 
+                                    null, 
+                                    $messages);
                         } else {
                             //deux cas : changement de fréquence ou retour à la fréquence nominale
                             //dans le deuxième cas, il faut fermer l'évènement si couv normale et freq dispo
@@ -168,7 +178,7 @@ class FrequenciesController extends ZoneController {
                                 foreach ($event->getCustomFieldsValues() as $value){
                                     if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
                                         $previousfield = $value;
-                                    } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
+                                    } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennaField()->getId()){
                                         if($value->getValue() == 1){
                                             $otherfields = true;
                                         }
@@ -248,7 +258,7 @@ class FrequenciesController extends ZoneController {
             $now->setTimezone(new \DateTimeZone("UTC"));
 
             if ($state != null && $antennaid) {
-                $events = $em->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory');
+                $events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
                 //on récupère les évènements de l'antenne
                 $antennaEvents = array();
                 foreach ($events as $event) {
@@ -310,7 +320,7 @@ class FrequenciesController extends ZoneController {
                             $antennafieldvalue->setEvent($event);
                             $event->addCustomFieldValue($antennafieldvalue);
                             $statusvalue = new CustomFieldValue();
-                            $statusvalue->setCustomField($cat->getStatefield());
+                            $statusvalue->setCustomField($cat->getStateField());
                             $statusvalue->setValue(true);
                             $statusvalue->setEvent($event);
                             $event->addCustomFieldValue($statusvalue);
@@ -320,10 +330,24 @@ class FrequenciesController extends ZoneController {
                             $em->persist($event);
                             //création des evts fils pour le passage en secours
                             foreach ($antenna->getMainfrequencies() as $frequency) {
-                                $this->switchCoverture($messages, $frequency, 1, 1, $now, $event);
+                                $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                        $frequency,
+                                        1,//couv secours
+                                        0,//toujours dispo
+                                        $now,
+                                        $this->zfcUserAuthentication()->getIdentity(),
+                                        $event,
+                                        $messages);
                             }
                             foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
-                                $this->switchCoverture($messages, $frequency, 1, 1, $now, $event);
+                                $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                        $frequency,
+                                        1,//couv secours
+                                        0,//toujours dispo
+                                        $now,
+                                        $this->zfcUserAuthentication()->getIdentity(),
+                                        $event,
+                                        $messages);
                             }
                             //création de la fiche réflexe
                             if($antenna->getModel()){
@@ -390,7 +414,70 @@ class FrequenciesController extends ZoneController {
                 $now->setTimezone(new \DateTimeZone("UTC"));
                 $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
                 if ($freq) {
-                    $this->switchFrequencyState($messages, $freq, $state === 'true', $now);
+                    $frequencyevents = array();
+                    foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+                        if($event->getCustomFieldValue($event->getCategory()->getFrequencyField())->getValue() == $freq->getId()){
+                            $frequencyevents[] = $event;
+                        }
+                    }
+                    if(count($frequencyevents) == 0 && $state === 'true'){
+                        //cas impossible : nouvel evt freq disponible...
+                        $messages['error'][] = "Impossible de trouver l'évènement correspondant.";
+                    } else if($state != 'true' &&
+                            (count($frequencyevents) == 0 ||
+                            (count($frequencyevents) == 1 && $frequencyevents[0]->getParent() != null))) {
+                        //passage en indisponible : création si :
+                        //- pas d'evt
+                        //- 1 evt : création si il y a un parent
+                        //          pour éviter la fermeture inopinée
+                        $em->getRepository('Application\Entity\Event')->addSwitchFrequencyStateEvent(
+                                $freq,
+                                $now,
+                                $this->zfcUserAuthentication()->getIdentity(),
+                                null,
+                                $messages);
+                        try {
+                            $em->flush();
+                            $messages['success'][] = "Nouvel évènement fréquence créé.";
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    } else {
+                        //reste les autres cas (count > 0), on fait la mise à jour ou la fermeture si possible
+                        foreach ($frequencyevents as $freqEvent){
+                            $statefield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getStateField());
+                            $stateva = ($statefield == null ? null : $statefield->getValue());
+                            $antennafield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getCurrentAntennaField());
+                            $antenna = ($antennafield == null ? null : $antennafield->getValue());
+                            $otherfreqfield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getOtherFrequencyField());
+                            $otherfreq = ($otherfreqfield == null ? null : $otherfreqfield->getValue());
+                            if(($otherfreq == null || $otherfreq == 0) 
+                                    && ($antenna == null || $antenna == 0)
+                                    && $stateva != null && $stateva == true
+                                    && $state == 'true'){
+                                //passage en disponible
+                                //les autres champs sont vides -> fermeture
+                                $freqEvent->close($em->getRepository('Application\Entity\Status')->find(3), $now);
+                            } else {
+                                //on met à jour le champ correspondant sans fermer l'évènement
+                                if($statefield == null){
+                                    $statefield = new CustomFieldValue();
+                                    $statefield->setCustomField($freqEvent->getCategory()->getStateField());
+                                    $statefield->setEvent($freqEvent);
+                                }
+                                $statefield->setValue(($state != 'true'));
+                                $em->persist($statefield);
+                            }
+                            $em->persist($freqEvent);
+                        }
+                        try {
+                            $em->flush();
+                            $messages['success'][] = "Evènement fréquence modifié.";
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    }
+                    
                 } else {
                     $messages['error'][] = "Impossible de trouver la fréquence demandée";
                 }
@@ -401,98 +488,6 @@ class FrequenciesController extends ZoneController {
             $messages['error'][] = "Droits insuffisants";
         }
         return new JsonModel($messages);
-    }
-    
-        /**
-     * Create and persist a new frequency event
-     * @param unknown $cov 0=principale, 1 = secours
-     * @param Event $parent
-     */
-    private function switchFrequencyState(&$messages, Frequency $frequency, $state, $startdate, Event $parent = null) {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        //on recherche les évènements Fréquence en cours
-        $frequencyevents = array();
-        foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
-            $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
-            foreach ($event->getCustomFieldsValues() as $customvalue) {
-                if ($customvalue->getCustomField()->getId() == $frequencyfield) {
-                    if ($customvalue->getValue() == $frequency->getId()) {
-                        $frequencyevents[] = $event;
-                    }
-                }
-            }
-        }
-        //si pas d'evt et state==false -> nouvel evt
-        //si pas d'evt et state==true -> bug
-        //si un evt -> dépend des autres champs -> mise à jour ou fermeture
-        //plusieurs evts -> indécidable -> bug
-        if (count($frequencyevents) == 0) {
-            if ($state) {
-                $messages['error'][] = "Aucun évènement trouvé : impossible de rendre la fréquence indisponible.";
-            } else {
-                //on crée l'evt "passage freq indisponible"
-                $event = new Event();
-                if ($parent) {
-                    $event->setParent($parent);
-                }
-                $status = $em->getRepository('Application\Entity\Status')->find('2');
-                $impact = $em->getRepository('Application\Entity\Impact')->find('3');
-                $event->setImpact($impact);
-                $event->setStatus($status);
-                $event->setStartdate($startdate);
-                $event->setPunctual(false);
-                //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
-                if ($frequency->getDefaultsector()) {
-                    $event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
-                    $event->addZonefilter($frequency->getDefaultsector()->getZone());
-                } else {
-                    $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
-                }
-                $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
-                if ($categories) {
-                    $cat = $categories[0];
-                    $event->setCategory($cat);
-                    $frequencyfieldvalue = new CustomFieldValue();
-                    $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
-                    $frequencyfieldvalue->setEvent($event);
-                    $frequencyfieldvalue->setValue($frequency->getId());
-                    $event->addCustomFieldValue($frequencyfieldvalue);
-                    $statusfield = new CustomFieldValue();
-                    $statusfield->setCustomField($cat->getStatefield());
-                    $statusfield->setEvent($event);
-                    $statusfield->setValue(true); //unavailable
-                    $event->addCustomFieldValue($statusfield);
-                    $em->persist($frequencyfieldvalue);
-                    $em->persist($statusfield);
-                    $em->persist($event);
-                    try {
-                        $em->flush();
-                        $messages['success'][] = "Fréquence " . $frequency->getValue() . " passée au statut indisponible.";
-                    } catch (\Exception $e) {
-                        $messages['error'][] = $e->getMessage();
-                    }
-                } else {
-                    $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
-                }
-            }
-        } else if (count($frequencyevents) == 1) {
-            $event = $frequencyevents[0];
-            //fermeture
-            $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
-            $event->setStatus($endstatus);
-            $event->setEnddate($startdate);
-            $em->persist($event);
-            
-            try {
-                $em->flush();
-                $messages['success'][] = "Fréquence à nouveau disponible : évènement terminé.";
-            } catch (\Exception $e) {
-                $messages['error'][] = $e->getMessage();
-            }
-        } else {
-            $messages['error'][] = "Impossible de trouver l'évènement à modifier.";
-        }
     }
     
     public function switchCovertureAction() {
@@ -506,8 +501,71 @@ class FrequenciesController extends ZoneController {
                 $now = new \DateTime('NOW');
                 $now->setTimezone(new \DateTimeZone("UTC"));
                 $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+                $cov = intval($cov);
                 if ($freq) {
-                    $this->switchCoverture($messages, $freq, intval($cov), false, $now);
+                    //there's only two possibilities on a switch cov action : open a new event or close the previous one
+                    //on recherche les évènements Fréquence en cours
+                    $frequencyevents = array();
+                    foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+                        if($event->getCustomFieldValue($event->getCategory()->getFrequencyField())->getValue() == $freq->getId()){
+                            $frequencyevents[] = $event;
+                        }
+                    }
+                    if($cov == 0 && count($frequencyevents) == 0){
+                        //cas impossible
+                        //impossible de repasser en couv normale si il n'existe aucun evt
+                        $messages['error'][] = "Impossible de passer en couverture normale : pas d'évènement précédent trouvé.";
+                    } else if($cov == 1 &&
+                            (count($frequencyevents) == 0 ||
+                            (count($frequencyevents) == 1 && $frequencyevents[0]->getParent() != null))) {
+                        //passage en couv secours
+                        //création d'un nouvel evt si :
+                        // - 0 evt en cours
+                        // - 1 evt en cours mais avec parent, pour éviter fermeture inopinée
+                        //création d'un nouvel évènement
+                        $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                    $freq,
+                                    $cov,
+                                    false, //sur un changement de couverture, la fréquence reste disponible
+                                    $now,
+                                    $this->zfcUserAuthentication()->getIdentity(),
+                                    null,
+                                    $messages);
+                    } else {
+                        //reste autre les cas count > 0
+                        foreach ($frequencyevents as $freqEvent){
+                            $statefield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getStateField());
+                            $state = ($statefield == null ? null : $statefield->getValue());
+                            $antennafield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getCurrentAntennaField());
+                            $antenna = ($antennafield == null ? null : $antennafield->getValue());
+                            $otherfreqfield = $freqEvent->getCustomFieldValue($freqEvent->getCategory()->getOtherFrequencyField());
+                            $otherfreq = ($otherfreqfield == null ? null : $otherfreqfield->getValue());
+                            if(($otherfreq == null || $otherfreq == 0) //pas sur une autre freq
+                                    && ($state == null || $state == false) //disponible
+                                    && $antenna != null && $antenna == 1 //sur couv secours
+                                    && $cov == 0){ //prochaine couv : normale
+                                //retour en couv normale
+                                //les autres champs sont vides -> fermeture
+                                $freqEvent->close($em->getRepository('Application\Entity\Status')->find(3), $now);
+                            } else {
+                                //on met à jour le champ correspondant
+                                if($antennafield == null){
+                                    $antennafield = new CustomFieldValue();
+                                    $antennafield->setEvent($freqEvent);
+                                    $antennafield->setCustomField($freqEvent->getCategory()->getCurrentAntennaField());
+                                }
+                                $antennafield->setValue($cov);
+                                $em->persist($antennafield);
+                            }
+                            $em->persist($freqEvent);
+                        }
+                    }
+                    try{
+                        $em->flush();
+                        $messages['success'][] = 'Evènement correctement mis à jour.';
+                    } catch (\Exception $ex) {
+                        $messages['error'][] = $ex->getMessage();
+                    }
                 } else {
                     $messages['error'][] = "Impossible de trouver la fréquence demandée";
                 }
@@ -518,127 +576,6 @@ class FrequenciesController extends ZoneController {
             $messages['error'][] = "Droits insuffisants";
         }
         return new JsonModel($messages);
-    }
-
-    /**
-     * Create and persist a new frequency event
-     * @param unknown $cov 0=principale, 1 = secours
-     * @param Event $parent
-     */
-    private function switchCoverture(&$messages, Frequency $frequency, $cov, $freqstatus, $startdate, Event $parent = null) {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        //on recherche les évènements Fréquence en cours
-        $frequencyevents = array();
-        foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
-            $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
-            foreach ($event->getCustomFieldsValues() as $customvalue) {
-                if ($customvalue->getCustomField()->getId() == $frequencyfield) {
-                    if ($customvalue->getValue() == $frequency->getId()) {
-                        $frequencyevents[] = $event;
-                    }
-                }
-            }
-        }
-        //si pas d'evt et couv secours -> nouvel evt
-        //si pas d'evt et couv normal -> bug
-        //si un evt -> dépend des autres champs -> mise à jour ou fermetur
-        //plusieurs evts -> indécidable -> bug
-        if (count($frequencyevents) == 0) {
-            if ($cov == 0) {
-                $messages['error'][] = "Aucun évènement trouvé : impossible de passer la couverture sur normal.";
-            } else {
-                //on crée l'evt "passage en couv secours"
-                $event = new Event();
-                if ($parent) {
-                    $event->setParent($parent);
-                }
-                $status = $em->getRepository('Application\Entity\Status')->find('2');
-                $impact = $em->getRepository('Application\Entity\Impact')->find('3');
-                $event->setImpact($impact);
-                $event->setStatus($status);
-                $event->setStartdate($startdate);
-                $event->setPunctual(false);
-                //TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
-                if ($frequency->getDefaultsector()) {
-                    $event->setOrganisation($frequency->getDefaultsector()->getZone()->getOrganisation());
-                    $event->addZonefilter($frequency->getDefaultsector()->getZone());
-                } else {
-                    $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
-                }
-                $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                $categories = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array('defaultfrequencycategory' => true));
-                if ($categories) {
-                    $cat = $categories[0];
-                    $event->setCategory($cat);
-                    $frequencyfieldvalue = new CustomFieldValue();
-                    $frequencyfieldvalue->setCustomField($cat->getFrequencyfield());
-                    $frequencyfieldvalue->setEvent($event);
-                    $frequencyfieldvalue->setValue($frequency->getId());
-                    $event->addCustomFieldValue($frequencyfieldvalue);
-                    $statusfield = new CustomFieldValue();
-                    $statusfield->setCustomField($cat->getStatefield());
-                    $statusfield->setEvent($event);
-                    $statusfield->setValue($freqstatus);
-                    $event->addCustomFieldValue($statusfield);
-                    $covfield = new CustomFieldValue();
-                    $covfield->setCustomField($cat->getCurrentAntennafield());
-                    $covfield->setEvent($event);
-                    $covfield->setValue($cov);
-                    $event->addCustomFieldValue($covfield);
-                    $em->persist($frequencyfieldvalue);
-                    $em->persist($statusfield);
-                    $em->persist($covfield);
-                    $em->persist($event);
-                    try {
-                        $em->flush();
-                        $messages['success'][] = "Changement de couverture de la fréquence " . $frequency->getValue() . " enregistré.";
-                    } catch (\Exception $e) {
-                        $messages['error'][] = $e->getMessage();
-                    }
-                } else {
-                    $messages['error'][] = "Impossible de passer les couvertures en secours : aucune catégorie trouvée.";
-                }
-            }
-        } else if (count($frequencyevents) == 1) {
-            $event = $frequencyevents[0];
-            //otherfrequencyfield vide ou égal à la fréquence -> fermeture de l'evt 
-            $otherfreqfield = null;
-            $previousfield = null;
-            foreach ($event->getCustomFieldsValues() as $value){
-                if($value->getCustomField()->getId() == $event->getCategory()->getOtherFrequencyField()->getId()){
-                    $otherfreqfield = $value;
-                } else if($value->getCustomField()->getId() == $event->getCategory()->getCurrentAntennafield()->getId()){
-                    $previousfield = $value;
-                }
-            }
-            if($previousfield && ($otherfreqfield == null || $otherfreqfield->getValue() == null || $otherfreqfield->getValue() == $frequency->getId())){
-                //fermeture
-                $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
-                $event->setStatus($endstatus);
-                $event->setEnddate($startdate);
-                $em->persist($event);
-            } else if($previousfield) {
-                //cas improbable
-                $previousfield->setValue($cov);
-                $em->persist($previousfield);
-            } else {
-                $newfield = new CustomFieldValue();
-                $newfield->setEvent($event);
-                $newfield->setCustomField($event->getCategory()->getCurrentAntennafield());
-                $newfield->setValue($cov);
-                $event->addCustomFieldValue($newfield);
-                $em->persist($newfield);
-                $em->persist($event);
-            }
-            try {
-                $em->flush();
-                $messages['success'][] = "Evènement correctement mis à jour";
-            } catch (\Exception $e) {
-                $messages['error'][] = $e->getMessage();
-            }
-        } else {
-            $messages['error'][] = "Impossible de trouver l'évènement à modifier.";
-        }
     }
 
     public function getAntennaStateAction() {
@@ -666,7 +603,7 @@ class FrequenciesController extends ZoneController {
             if ($full) {
                 $frequencies[$frequency->getId()] = array();
                 $frequencies[$frequency->getId()]['name'] = $frequency->getValue();
-                $frequencies[$frequency->getId()]['status'] = true;
+                $frequencies[$frequency->getId()]['status'] = 0;
                 $frequencies[$frequency->getId()]['cov'] = 0;
                 $frequencies[$frequency->getId()]['otherfreq'] = 0;
                 $frequencies[$frequency->getId()]['otherfreqid'] = 0;
@@ -684,18 +621,32 @@ class FrequenciesController extends ZoneController {
                 $frequencies[$frequency->getId()] = true;
             }
 
+            //état de la fréquence : indispo uniquement si toutes antennes en panne
             if ($full) {
-                $frequencies[$frequency->getId()]['status'] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
+                $frequencies[$frequency->getId()]['status'] += 
+                        $antennas[$frequency->getMainAntenna()->getId()] + $antennas[$frequency->getBackupAntenna()->getId()];
+                if ($frequency->getMainantennaclimax()) {
+                        $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getMainAntennaclimax()->getId()];
+                }
+                if ($frequency->getBackupantennaclimax()) {
+                    $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupantennaclimax()->getId()];
+                }
             } else {
-                $frequencies[$frequency->getId()] *= $antennas[$frequency->getMainAntenna()->getId()] * $antennas[$frequency->getBackupAntenna()->getId()];
+                $frequencies[$frequency->getId()] += $antennas[$frequency->getMainAntenna()->getId()] + $antennas[$frequency->getBackupAntenna()->getId()];
+                if ($frequency->getMainantennaclimax()) {
+                        $frequencies[$frequency->getId()] += $antennas[$frequency->getMainAntennaclimax()->getId()];
+                }
+                if ($frequency->getBackupantennaclimax()) {
+                    $frequencies[$frequency->getId()] += $antennas[$frequency->getBackupantennaclimax()->getId()];
+                }
             }
         }
 
-        foreach ($em->getRepository('Application\Entity\Frequency')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
-            $statefield = $event->getCategory()->getStatefield()->getId();
-            $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
-            $covfield = $event->getCategory()->getCurrentAntennafield()->getId();
-            $otherfreqfield = $event->getCategory()->getOtherFrequencyfield()->getId();
+        foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+            $statefield = $event->getCategory()->getStateField()->getId();
+            $frequencyfield = $event->getCategory()->getFrequencyField()->getId();
+            $covfield = $event->getCategory()->getCurrentAntennaField()->getId();
+            $otherfreqfield = $event->getCategory()->getOtherFrequencyField()->getId();
             $frequencyid = 0;
             $otherfreqid = 0;
             $available = true;
@@ -745,20 +696,11 @@ class FrequenciesController extends ZoneController {
         }
         
         if ($full) { //en format complet, on donne aussi les evènements dans les 12h
-            foreach ($em->getRepository('Application\Entity\Frequency')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
-                $statefield = $event->getCategory()->getStatefield()->getId();
-                $frequencyfield = $event->getCategory()->getFrequencyfield()->getId();
-                $frequencyid = 0;
-                $planned = false;
-                foreach ($event->getCustomFieldsValues() as $customvalue) {
-                    if ($customvalue->getCustomField()->getId() == $statefield) {
-                        $planned = $customvalue->getValue();
-                    } else if ($customvalue->getCustomField()->getId() == $frequencyfield) {
-                        $frequencyid = $customvalue->getValue();
-                    }
-                }
+            foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
+                $frequencyidfield = $event->getCustomFieldValue($event->getCategory()->getFrequencyField());
+                $frequencyid = ($frequencyidfield == null ? null : $frequencyidfield->getValue());
                 if (array_key_exists($frequencyid, $frequencies)) { //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
-                    $frequencies[$frequencyid]['planned'] = $planned;
+                    $frequencies[$frequencyid]['planned'] = true;
                 }
             }
         }
@@ -784,8 +726,8 @@ class FrequenciesController extends ZoneController {
             }
         }
 
-        foreach ($em->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
-            $statefield = $result->getCategory()->getStatefield()->getId();
+        foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
+            $statefield = $result->getCategory()->getStateField()->getId();
             $antennafield = $result->getCategory()->getAntennafield()->getId();
             $antennaid = 0;
             $available = true;
@@ -804,8 +746,8 @@ class FrequenciesController extends ZoneController {
         }
 
         if ($full) {
-            foreach ($em->getRepository('Application\Entity\Antenna')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
-                $statefield = $result->getCategory()->getStatefield()->getId();
+            foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
+                $statefield = $result->getCategory()->getStateField()->getId();
                 $antennafield = $result->getCategory()->getAntennafield()->getId();
                 $antennaid = 0;
                 $planned = false;
@@ -865,7 +807,7 @@ class FrequenciesController extends ZoneController {
     	$fiche = null;
         $history = null;
     	if($antenna){
-    		$events = $objectManager->getRepository('Application\Entity\Antenna')->getCurrentEvents('Application\Entity\AntennaCategory');
+    		$events = $objectManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
                 $antennaEvents = array();
                 foreach ($events as $event){
                     foreach ($event->getCustomFieldsValues() as $value){
@@ -877,7 +819,7 @@ class FrequenciesController extends ZoneController {
                     }
                 }
                 //recherche aussi sur les evts planifiés
-                $events = $objectManager->getRepository('Application\Entity\Antenna')->getPlannedEvents('Application\Entity\AntennaCategory');
+                $events = $objectManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory');
                 foreach ($events as $event){
                     foreach ($event->getCustomFieldsValues() as $value){
                         if($value->getCustomField()->getId() == $event->getCategory()->getAntennafield()->getId()){

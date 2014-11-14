@@ -244,6 +244,13 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
 }
 
+.background-status-warning {
+	background-image: linear-gradient(to bottom, #FBB450, #F89406);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+}
+
 .background-status-test {
 	box-shadow: 10px 5px 10px rgba(255, 255, 0, 1);
 }

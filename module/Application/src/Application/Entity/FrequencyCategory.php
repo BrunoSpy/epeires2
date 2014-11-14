@@ -59,11 +59,11 @@ class FrequencyCategory extends Category{
          * False : avalaible
          * @return type
          */
-	public function getStatefield(){
+	public function getStateField(){
 		return $this->statefield;
 	}
 	
-	public function setStatefield($statefield){
+	public function setStateField($statefield){
 		$this->statefield = $statefield;
 	}
 	
@@ -71,7 +71,7 @@ class FrequencyCategory extends Category{
 		return $this->frequencyfield;
 	}
 	
-	public function setFrequencyfield($frequencyfield){
+	public function setFrequencyField($frequencyfield){
 		$this->frequencyfield = $frequencyfield;
 	}
 	
@@ -79,11 +79,11 @@ class FrequencyCategory extends Category{
          * 0 : normale
          * 1 : secours
          */
-	public function getCurrentAntennafield(){
+	public function getCurrentAntennaField(){
 		return $this->currentcovfield;
 	}
 	
-	public function setCurrentAntennafield($currentcovfield){
+	public function setCurrentAntennaField($currentcovfield){
 		$this->currentcovfield = $currentcovfield;
 	}
 	
@@ -91,7 +91,7 @@ class FrequencyCategory extends Category{
 		return $this->otherfrequencyfield;
 	}
 	
-	public function setOtherFrequencyfield($otherfrequencyfield){
+	public function setOtherFrequencyField($otherfrequencyfield){
 		$this->otherfrequencyfield = $otherfrequencyfield;
 	}
 }

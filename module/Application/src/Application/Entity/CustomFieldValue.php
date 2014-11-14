@@ -14,6 +14,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * @ORM\Entity
  * @ORM\Table(name="customfieldvalues")
+ * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
 class CustomFieldValue {
@@ -26,6 +27,7 @@ class CustomFieldValue {
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="custom_fields_values", cascade={"persist"})
+ 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	protected $event;
 	

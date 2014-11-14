@@ -48,7 +48,7 @@ class AbstractEvent {
  	 */
  	protected $parent;
 	
- 	/** @ORM\OneToMany(targetEntity="AbstractEvent", mappedBy="parent", cascade={"remove"}) */
+ 	/** @ORM\OneToMany(targetEntity="AbstractEvent", mappedBy="parent", cascade={"persist", "remove"}) */
  	protected $children;
  	
  	/**
@@ -164,6 +164,24 @@ class AbstractEvent {
  		$this->custom_fields_values->add($customfieldvalue);
  	}
  	
+        /**
+         * Return the CustomFieldValue corresponding to a given <code>$customfield</code>
+         * Return null if event doesn't has a matching <code>$customfield</code>
+         * @param \Application\Entity\CustomField $customfield
+         * @return type
+         */
+        public function getCustomFieldValue(CustomField $customfield){
+            $cid = $customfield->getId();
+            $fields =  $this->custom_fields_values->filter(function($c) use ($cid) {
+                return $c->getCustomField()->getId() == $cid;
+            });
+            if(count($fields) == 1){
+                return $fields->first();
+            } else {
+                return null;
+            }
+        }
+        
  	public function getId(){
  		return $this->id;
  	}

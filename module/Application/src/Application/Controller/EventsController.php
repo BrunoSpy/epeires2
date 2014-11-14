@@ -1504,6 +1504,7 @@ class EventsController extends ZoneController {
 
     /**
      * Cloture d'un evt : terminé ou annulé (statut 3 ou 4)
+     * TODO : use $event->close or $event->cancel
      * @param Event $event
      */
     private function closeEvent(Event $event){

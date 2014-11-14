@@ -242,10 +242,10 @@ class CategoriesController extends FormController{
     			$category->setStatefield(null);
     		}
     		if($category instanceof FrequencyCategory){
-    			$category->setCurrentAntennafield(null);
-    			$category->setStatefield(null);
-    			$category->setFrequencyfield(null);
-    			$category->setOtherFrequencyfield(null);
+    			$category->setCurrentAntennaField(null);
+    			$category->setStateField(null);
+    			$category->setFrequencyField(null);
+    			$category->setOtherFrequencyField(null);
     		}
     		if($category instanceof BrouillageCategory){
 			$category->setFrequencyField(null);

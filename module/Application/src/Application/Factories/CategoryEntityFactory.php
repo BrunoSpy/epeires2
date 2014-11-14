@@ -199,10 +199,10 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$otherfreq->setDefaultValue("");
                 $otherfreq->setTooltip("");
 		$frequencycat->setFieldname($frequencyfield);
-		$frequencycat->setFrequencyfield($frequencyfield);
-		$frequencycat->setCurrentAntennafield($currentAntenna);
-		$frequencycat->setStatefield($statefield);
-		$frequencycat->setOtherFrequencyfield($otherfreq);
+		$frequencycat->setFrequencyField($frequencyfield);
+		$frequencycat->setCurrentAntennaField($currentAntenna);
+		$frequencycat->setStateField($statefield);
+		$frequencycat->setOtherFrequencyField($otherfreq);
 		$em->persist($frequencyfield);
 		$em->persist($statefield);
 		$em->persist($currentAntenna);

@@ -74,10 +74,10 @@ class EventService implements ServiceManagerAwareInterface{
                     $freqid = 0;
                     $otherfreqid = 0;
                     foreach($event->getCustomFieldsValues() as $value){
-                        if($value->getCustomField()->getId() == $category->getFrequencyfield()->getId()){
+                        if($value->getCustomField()->getId() == $category->getFrequencyField()->getId()){
                             $freqid = $value->getValue();
                         }
-                        if($value->getCustomField()->getId() == $category->getOtherFrequencyfield()->getId()){
+                        if($value->getCustomField()->getId() == $category->getOtherFrequencyField()->getId()){
                             $otherfreqid = $value->getValue();
                         }
                     }

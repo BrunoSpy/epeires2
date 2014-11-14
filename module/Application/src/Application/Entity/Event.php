@@ -219,7 +219,57 @@ class Event extends AbstractEvent{
 		$this->setPunctual($predefined->isPunctual());
 	}
 	
-	
+	/**
+         * Cloture l'évènement ains que l'ensemble de ses fils.
+         * @param \Application\Entity\Status $status
+         * @param \DateTime $enddate
+         * @throws \RuntimeException
+         */
+        public function close(Status $status, \DateTime $enddate = null){
+            if($enddate == null && !$this->isPunctual()){
+                throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
+            } 
+            if($status->getId() != 3){
+                throw new \RuntimeException("Statut terminé attendu, un autre statut a été fourni.");
+            }
+
+            if(!$this->isPunctual()){
+                $this->setEnddate($enddate);
+            }
+            $this->setStatus($status);
+            foreach ($this->getChildren() as $child){
+                //cloturer tous les évènements sauf les alarmes et les actions
+                if(!$child->getCategory() instanceof AlarmCategory && !$child->getCategory() instanceof ActionCategory){
+                    $child->close($status, $enddate);
+                }
+            }
+            
+        }
+        
+        /**
+         * Annule l'évènement et tous ses enfants
+         * Si pas d'heure de fin programmée, utilisation de l'heure actuelle
+         * @param \Application\Entity\Status $status
+         * @throws \RuntimeException
+         */
+        public function cancelEvent(Status $status){
+            if($status->getId() != 4){
+                throw new \RuntimeException("Statut annulé attendu, un autre statut a été fourni.");
+            }
+            $this->setStatus($status);
+            if(!$this->isPunctual()){
+                $now = new \DateTime('now');
+                $now->setTimezone(new \DateTimeZone('UTC'));
+                $this->setEnddate($now);
+            }
+            foreach ($this->getChildren() as $child){
+                //annuler tous les évènement sauf les actions
+                if(!$child instanceof ActionCategory){
+                    $child->cancel($status);
+                }
+            }
+        }
+        
 	public function getArrayCopy() {
 		$object_vars = array_merge(get_object_vars($this), parent::getArrayCopy());
 		$object_vars['status'] = ($this->status ? $this->status->getId() : null);

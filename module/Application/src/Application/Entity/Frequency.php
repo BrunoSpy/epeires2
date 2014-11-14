@@ -9,7 +9,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedCategoryRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\Table(name="frequencies")
  **/
 class Frequency {
