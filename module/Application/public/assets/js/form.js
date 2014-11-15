@@ -510,7 +510,7 @@ var form = function(url){
                 $("#actionsTitle span").html("0");
                 //mémos
                 $("#alarmTitle span").html("0");
-                ("#inner-alarmTitle table").html('');
+                $("#inner-alarmTitle table").html('');
                 //files
                 $("#filesTitle span").html("0");
                 $('#inner-filesTitle tbody').html('');
