@@ -504,6 +504,16 @@ var form = function(url){
 	$("#event").on("click", "a.predefined", function(){
 		$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 		var me = $(this);
+                //reinit
+                //actions
+                $("#inner-actionsTitle").html("");
+                $("#actionsTitle span").html("0");
+                //mémos
+                $("#alarmTitle span").html("0");
+                ("#inner-alarmTitle table").html('');
+                //files
+                $("#filesTitle span").html("0");
+                $('#inner-filesTitle tbody').html('');
 		$.getJSON(
 				url+'events/getpredefinedvalues?id='+me.data('id'),
 				function(data){
@@ -539,7 +549,6 @@ var form = function(url){
 				url+'events/getactions?id='+me.data('id'),
 				function(data){
 					var container = $("#inner-actionsTitle");
-					container.html("");
 					//save id of model
 					var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
 					//then the table of actions
@@ -577,7 +586,7 @@ var form = function(url){
 		$('#subcategories option[value=-1]').prop('selected', true);
 		$('#subcategories').prop('disabled',true);
 		//suppression des champs liés à une sous-catégorie
-		$("#Modèlesid").html('Modèles').addClass("disabled");
+		$("#Modèlesid").html('Modèles <span class=\"badge pull-right\">0</span>').addClass("disabled");
 		$("#actionsTitle").addClass("disabled");
 		$("#inner-Ficheréflexe").html("");
 		$("#custom_fields").html("");
@@ -613,6 +622,7 @@ var form = function(url){
 				function(data){
                                     $("#predefined_events").html(data);
                                     if($('#predefined_events table').length > 0) {
+                                        $("#Modèlesid span").text($('#predefined_events table tr').length);
                                         $("#Modèlesid").removeClass("disabled");
                                     }
                             })
@@ -676,6 +686,7 @@ var form = function(url){
 					$("#predefined_events").html(data);
                                         //don't open model panel if there is no model
                                         if($('#predefined_events table').length > 0) {
+                                            $("#Modèlesid span").text($('#predefined_events table tr').length);
                                             $('#Modèlesid').trigger('click');
                                             $("#Modèlesid").removeClass("disabled");
                                         } else {

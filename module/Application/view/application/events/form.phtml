@@ -66,7 +66,7 @@
  
 		//Modèles uniquement si création
 		if(!$this->event && !$this->model){
-			echo $this->accordionGroup("Modèles", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events'));
+			echo $this->accordionGroup("Modèles <span class=\"badge pull-right\">0</span>", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events', 'title_id' => 'Modèlesid'));
 		}
                 
                 $html = $this->controlGroup(

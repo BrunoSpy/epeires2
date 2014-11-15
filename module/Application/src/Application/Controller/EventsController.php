@@ -1562,7 +1562,7 @@ class EventsController extends ZoneController {
         if($id && $this->getRequest()->isPost()){
             $post = $this->getRequest()->getPost();
             $event = $em->getRepository('Application\Entity\Event')->find($id);
-            if($event){
+            if($event && strlen(trim($post['new-update'])) > 0){
                 $eventupdate = new \Application\Entity\EventUpdate();
                 $eventupdate->setText($post['new-update']);
                 $eventupdate->setEvent($event);
