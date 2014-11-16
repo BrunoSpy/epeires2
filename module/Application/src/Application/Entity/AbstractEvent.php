@@ -156,6 +156,10 @@ class AbstractEvent {
  		$this->category = $category;
  	}
  	
+        public function getPlace(){
+            return $this->place;
+        }
+        
  	public function getCustomFieldsValues(){
  		return $this->custom_fields_values;
  	}

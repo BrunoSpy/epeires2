@@ -548,20 +548,28 @@ var form = function(url){
 		$.getJSON(
 				url+'events/getactions?id='+me.data('id'),
 				function(data){
-					var container = $("#inner-actionsTitle");
-					//save id of model
-					var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
-					//then the table of actions
-					content += '<table class="table table-hover"><tbody>';
-					$.each(data, function(key, value){
-						content += "<tr data-id=\""+key+"\">";
-						content += "<td><span class=\"label label-"+value.impactstyle+"\">"+value.impactname+"</span></td>";
-						content += "<td>"+value.name+"</td>";
-						content += '</tr>';
-                                                $("#actionsTitle span").html(parseInt($("#actionsTitle span").html())+1);
-					});						
-					content += '</tbody></table>';
-					container.html(content);
+                                    var actions = [];
+                                    //transform data into array to sort it by value.place
+                                    $.each(data, function (key, value) {
+                                        actions.push(value);
+                                    });
+                                    actions.sort(function(a,b){
+                                        return a.place > b.place;
+                                    });
+                                    var container = $("#inner-actionsTitle");
+                                    //save id of model
+                                    var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
+                                    //then the table of actions
+                                    content += '<table class="table table-hover"><tbody>';
+                                    for (index = 0; index < actions.length; ++index) {
+                                        content += "<tr data-id=\"" + actions[index].id + "\">";
+                                        content += "<td><span class=\"label label-" + actions[index].impactstyle + "\">" + actions[index].impactname + "</span></td>";
+                                        content += "<td>" + actions[index].name + "</td>";
+                                        content += '</tr>';
+                                        $("#actionsTitle span").html(parseInt($("#actionsTitle span").html()) + 1);
+                                    }						
+                                    content += '</tbody></table>';
+                                    container.html(content);
 				}
 		);
                 //getfiles

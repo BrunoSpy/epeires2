@@ -295,7 +295,9 @@ class ModelsController extends FormController
     			$json['parentid'] = $pevent->getParent()->getId(); 			
     		}
     	}         
-    	
+    	       
+        $json['messages'] = $messages;
+        
     	return new JsonModel($json);
     }
     

@@ -495,7 +495,7 @@ class EventsController extends ZoneController {
     					if(isset($post['modelid'])){
     						$parentID = $post['modelid'];
     						//get actions
-    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID), array('place' => 'DESC')) as $action){
 						if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
 								$child = new Event();
                                                                 $child->setAuthor($event->getAuthor());
@@ -518,7 +518,7 @@ class EventsController extends ZoneController {
     					//associated actions to be copied
     					if(isset($post['fromeventid'])){
     						$parentID = $post['fromeventid'];
-    						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
+    						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID), array('place' => 'DESC')) as $action){
 							if($action->getCategory() instanceof \Application\Entity\ActionCategory){
 								$child = new Event();
                                                                 $child->setAuthor($event->getAuthor());
@@ -916,7 +916,9 @@ class EventsController extends ZoneController {
     	
     	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
             if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
-    		$json[$action->getId()] = array('name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
+    		$json[$action->getId()] = array('id' => $action->getId(),
+                                                'name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
+                                                'place' => $action->getPlace(),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
             }
