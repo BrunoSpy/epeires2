@@ -29,7 +29,7 @@ class EventUpdate {
 	 */
 	protected $text;
 	
-	/**
+	/** 
 	 * @ORM\ManyToOne(targetEntity="Event", inversedBy="updates")
 	 */
 	protected $event;
@@ -41,7 +41,7 @@ class EventUpdate {
             return $this->id;
         }
 
-                /** @ORM\PrePersist */
+        /** @ORM\PrePersist */
 	public function setCreatedOn(){
 		$this->created_on = new \DateTime('NOW');
 		$this->created_on->setTimeZone(new \DateTimeZone("UTC"));
@@ -50,7 +50,7 @@ class EventUpdate {
 	public function getCreatedOn(){
 		return $this->created_on;
 	}
-	
+        
 	/**
 	 * @ORM\PostLoad
 	 */
@@ -72,5 +72,9 @@ class EventUpdate {
         
         public function setEvent($event){
             $this->event = $event;
+        }
+        
+        public function getEvent(){
+            return $this->event;
         }
 }

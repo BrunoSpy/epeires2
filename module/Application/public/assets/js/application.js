@@ -211,13 +211,15 @@ $(document).ready(function(){
                 me.find('textarea').val('');
                 //mise à jour notes
                 $("#updates").load(url+'events/updates?id='+me.data('id'), function(){
-                    $("#updates").parent().find("span.badge").html($("#updates dt").size());
+                    $("#updates").parent().find("span.badge").html($("#updates blockquote").size());
                 });
                 $("#updates").show();
                 //mise à jour histo
                 $("#history").load(url+'events/gethistory?id='+me.data('id'), function(){
                     $("#history").parent().find("span.badge").html($("#history dd").size());
                 });
+                //mise à jour timeline
+                timeline.modify(data.events, 0);
             }
             displayMessages(data);
             me.parent('.modal').modal('hide');
@@ -281,6 +283,7 @@ $(document).ready(function(){
                 var span = $('<span class="note" data-id="'+me.data('id')+'">'+me.find('textarea').val()+'</span>');
                 p.empty();
                 p.append(span);
+                timeline.modify(data.events, 0);
             }
             displayMessages(data);
         });

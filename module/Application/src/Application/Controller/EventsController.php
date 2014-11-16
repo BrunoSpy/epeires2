@@ -1060,7 +1060,7 @@ class EventsController extends ZoneController {
     	$json = array();
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+                
     	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
@@ -1566,10 +1566,13 @@ class EventsController extends ZoneController {
                 $eventupdate = new \Application\Entity\EventUpdate();
                 $eventupdate->setText($post['new-update']);
                 $eventupdate->setEvent($event);
+                $event->setLastModifiedOn();
                 $em->persist($eventupdate);
+                $em->persist($event);
                 try{
                     $em->flush();
                     $messages['success'][] = "Note correctement ajoutée.";
+                    $messages['events'] = array($event->getId() => $this->getEventJson($event));
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }
@@ -1595,9 +1598,12 @@ class EventsController extends ZoneController {
             if($note){
                 $note->setText($post['note']);
                 $em->persist($note);
+                $note->getEvent()->setLastModifiedOn();
+                $em->persist($note->getEvent());
                 try{
                     $em->flush();
                     $messages['success'][] = "Note correctement mise à jour.";
+                    $messages['events'] = array($note->getEvent()->getId() => $this->getEventJson($note->getEvent()));
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }
