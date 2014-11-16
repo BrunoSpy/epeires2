@@ -40,7 +40,7 @@
                                     echo ' data-container="body" '
                                             . 'data-html="true" '
                                             . 'data-toggle="tooltip" '
-                                            . 'data-title="<span class=elmt_tooltip>'.nl2br($value->getValue()).'</span>"';
+                                            . 'data-title="<span class=elmt_tooltip>'.nl2br(htmlspecialchars($value->getValue())).'</span>"';
                                 }
                             }
                         }

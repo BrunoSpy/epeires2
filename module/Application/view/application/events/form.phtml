@@ -358,7 +358,7 @@
                                                     $html .= ' data-container="body" '
                                                             . 'data-html="true" '
                                                             . 'data-toggle="tooltip" '
-                                                            . 'title="<span class=elmt_tooltip>'.nl2br($value->getValue()).'</span>"';
+                                                            . 'title="<span class=elmt_tooltip>'.nl2br(htmlspecialchars($value->getValue())).'</span>"';
                                                 }
                                             }
                                         }
