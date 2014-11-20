@@ -554,7 +554,7 @@ var form = function(url){
                                         actions.push(value);
                                     });
                                     actions.sort(function(a,b){
-                                        return a.place > b.place;
+                                        return (a.place > b.place ? 1 : a.place < b.place ? -1 : 0);
                                     });
                                     var container = $("#inner-actionsTitle");
                                     //save id of model
