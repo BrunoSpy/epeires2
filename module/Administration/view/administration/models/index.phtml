@@ -3,7 +3,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js');
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
 ?>
 
-<table class="table table-striped sortable">
+<table class="table table-striped sortable" id="models-table">
 <thead>
 	<tr>
 		<th>id</th>
@@ -24,7 +24,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
 <tbody>
 	<?php 
 	foreach ($this->models as $model){
-		echo '<tr>';
+		echo '<tr id="model-'.$model->getId().'">';
 		echo '<td>'.$model->getId().'</td>';
 		echo '<td>'.$model->getOrganisation()->getName().'</td>';
 		echo '<td>'.$model->getName().'</td>';

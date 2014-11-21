@@ -18,7 +18,7 @@
 		foreach ($this->models as $model){
 		$i++;
 		//Warning : rows are also created with jquery
-		echo "<tr id=\"".$model->getId()."\">";
+		echo "<tr id=\"model-".$model->getId()."\">";
 			echo "<td>".$model->getName()."</td>";
 			echo '<td>
 				<a

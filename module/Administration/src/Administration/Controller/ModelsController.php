@@ -70,20 +70,31 @@ class ModelsController extends FormController
     }
     
     public function deleteAction(){
+        $messages = array();
     	$id = $this->params()->fromQuery('id', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
+                    //cas particulier des antennes
+                    $antenna = $objectManager->getRepository('Application\Entity\Antenna')->findOneBy(array('model' => $pevent));
+                    if($antenna){
+                        $antenna->setModel(null);
+                    }
     			$objectManager->remove($pevent);
-    			$objectManager->flush();
+                        try{
+                            $objectManager->flush();
+                            $messages['success'][] = "Modèle correctement supprimé.";
+                        } catch (\Exception $ex) {
+                            $messages['error'][] = $ex->getMessage();
+                        }
     		}
     	}
-    	$redirect = $this->params()->fromQuery('redirect', true);
+    	$redirect = $this->params()->fromQuery('redirect', false);
     	if($redirect){
     		return $this->redirect()->toRoute('administration', array('controller'=>'models'));
     	} else {
-    		return new JsonModel();
+    		return new JsonModel($messages);
     	}
     }
     
