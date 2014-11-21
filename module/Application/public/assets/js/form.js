@@ -341,6 +341,7 @@ var form = function(url){
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
+                $("#event input[type=submit]").tooltip('destroy');
                 //disable submit button to prevent double submission
                 $("#event input[name='submit']").prop('disabled', true);
                 //fill missing minute inputs
@@ -391,7 +392,6 @@ var form = function(url){
 	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-evt").slideUp('fast');
-		$("#create-evt").offset({left:5});
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
 		restoreUpdateAlarms();
 	});
