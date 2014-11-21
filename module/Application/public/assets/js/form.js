@@ -325,7 +325,19 @@ var form = function(url){
 	};
 	
 	/************************/
-	        
+	       
+        var initModel = function(){
+                //actions
+                $("#inner-actionsTitle").html("");
+                $("#actionsTitle span").html("0");
+                //mémos
+                $("#alarmTitle span").html("0");
+                $("#inner-alarmTitle table").html('');
+                //files
+                $("#filesTitle span").html("0");
+                $('#inner-filesTitle tbody').html('');  
+        };
+    
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
@@ -504,16 +516,7 @@ var form = function(url){
 	$("#event").on("click", "a.predefined", function(){
 		$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 		var me = $(this);
-                //reinit
-                //actions
-                $("#inner-actionsTitle").html("");
-                $("#actionsTitle span").html("0");
-                //mémos
-                $("#alarmTitle span").html("0");
-                $("#inner-alarmTitle table").html('');
-                //files
-                $("#filesTitle span").html("0");
-                $('#inner-filesTitle tbody').html('');
+                initModel();
 		$.getJSON(
 				url+'events/getpredefinedvalues?id='+me.data('id'),
 				function(data){
@@ -598,7 +601,7 @@ var form = function(url){
 		$("#actionsTitle").addClass("disabled");
 		$("#inner-Ficheréflexe").html("");
 		$("#custom_fields").html("");
-		
+		initModel();
 		var root_value = $("#root_categories option:selected").val();
 		
 		if(root_value > 0) {
@@ -675,6 +678,7 @@ var form = function(url){
 
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
+                initModel();
 		var subcat_value = $("#subcategories option:selected").val();
                 if (subcat_value > 0) {
                     $("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());

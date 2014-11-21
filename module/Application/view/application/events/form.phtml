@@ -343,7 +343,7 @@
 				$html .= '<tbody>';
                                 //sort by place
                                 $arrayChildren = $children->toArray();
-                                function cmp(Application\Entity\Event $a, Application\Entity\Event $b){
+                                function cmp(Application\Entity\AbstractEvent $a, Application\Entity\AbstractEvent $b){
                                     return $a->getPlace() > $b->getPlace();
                                 }
                                 usort($arrayChildren, "cmp");                                
