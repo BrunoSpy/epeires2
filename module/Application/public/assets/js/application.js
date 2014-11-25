@@ -47,7 +47,7 @@ var displayMessages = function(messages){
 	}
 };
  
- var displayPanel = function(id){
+ var displayPanel = function(id, files){
         var timeline = $('#timeline');
         if(timeline.css('left') === '330px' && $("#fiche").data('id') === id) {
             //panneau ouvert avec la fiche actuelle : fermeture du panneau
@@ -62,6 +62,9 @@ var displayMessages = function(messages){
             }
             $('#fiche').load(url+'events/getfiche?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
+                if(files){
+                    $("#files-panel").trigger('click');
+                }
             }).data('id', id);
         }
  };
@@ -357,6 +360,18 @@ $(document).ready(function(){
         e.preventDefault();
         displayPanel($(this).data('id'));
     });
+    
+    /**
+     * Ouverture des protections via le label
+     */
+    $("#timeline").on('click', ".label_elmt span.badge", function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = parseInt(me.closest(".elmt").data('ident'));
+        if(!isNaN(id)){
+            displayPanel(id, true);
+        }
+    })
 });
 
 
