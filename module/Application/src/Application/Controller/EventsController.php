@@ -15,7 +15,6 @@ use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Form\Annotation\AnnotationBuilder;
-use Application\Form\FileFieldset;
 use Doctrine\ORM\Query\Expr\Join;
 use Application\Entity\PredefinedEvent;
 use Doctrine\ORM\QueryBuilder;
@@ -495,7 +494,7 @@ class EventsController extends ZoneController {
     					if(isset($post['modelid'])){
     						$parentID = $post['modelid'];
     						//get actions
-    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID), array('place' => 'DESC')) as $action){
+    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID), array('place' => 'ASC')) as $action){
 						if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
 								$child = new Event();
                                                                 $child->setAuthor($event->getAuthor());
