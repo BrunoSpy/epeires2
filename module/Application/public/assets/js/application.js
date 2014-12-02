@@ -47,7 +47,7 @@ var displayMessages = function(messages){
 	}
 };
  
- var displayPanel = function(id){
+ var displayPanel = function(id, files){
         var timeline = $('#timeline');
         if(timeline.css('left') === '330px' && $("#fiche").data('id') === id) {
             //panneau ouvert avec la fiche actuelle : fermeture du panneau
@@ -62,6 +62,9 @@ var displayMessages = function(messages){
             }
             $('#fiche').load(url+'events/getfiche?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
+                if(files){
+                    $("#files-panel").trigger('click');
+                }
             }).data('id', id);
         }
  };
@@ -211,13 +214,15 @@ $(document).ready(function(){
                 me.find('textarea').val('');
                 //mise à jour notes
                 $("#updates").load(url+'events/updates?id='+me.data('id'), function(){
-                    $("#updates").parent().find("span.badge").html($("#updates dt").size());
+                    $("#updates").parent().find("span.badge").html($("#updates blockquote").size());
                 });
                 $("#updates").show();
                 //mise à jour histo
                 $("#history").load(url+'events/gethistory?id='+me.data('id'), function(){
                     $("#history").parent().find("span.badge").html($("#history dd").size());
                 });
+                //mise à jour timeline
+                timeline.modify(data.events, 0);
             }
             displayMessages(data);
             me.parent('.modal').modal('hide');
@@ -281,6 +286,7 @@ $(document).ready(function(){
                 var span = $('<span class="note" data-id="'+me.data('id')+'">'+me.find('textarea').val()+'</span>');
                 p.empty();
                 p.append(span);
+                timeline.modify(data.events, 0);
             }
             displayMessages(data);
         });
@@ -354,6 +360,18 @@ $(document).ready(function(){
         e.preventDefault();
         displayPanel($(this).data('id'));
     });
+    
+    /**
+     * Ouverture des protections via le label
+     */
+    $("#timeline").on('click', ".label_elmt span.badge", function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = parseInt(me.closest(".elmt").data('ident'));
+        if(!isNaN(id)){
+            displayPanel(id, true);
+        }
+    })
 });
 
 

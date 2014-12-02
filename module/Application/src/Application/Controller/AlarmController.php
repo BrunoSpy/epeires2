@@ -42,8 +42,8 @@ class AlarmController extends FormController {
                     $alarm = array();
                     $alarm['id'] = $event->getId();
                     $alarm['datetime'] = $event->getStartDate()->format(DATE_RFC2822);
-                    $alarm['name'] = $post['custom_fields'][$event->getCategory()->getFieldname()->getId()];
-                    $alarm['comment'] = $post['custom_fields'][$event->getCategory()->getTextfield()->getId()];
+                    $alarm['name'] = htmlspecialchars($post['custom_fields'][$event->getCategory()->getFieldname()->getId()]);
+                    $alarm['comment'] = htmlspecialchars($post['custom_fields'][$event->getCategory()->getTextfield()->getId()]);
                     $alarm['deltabegin'] = $post['custom_fields'][$event->getCategory()->getDeltaBeginField()->getId()];
                     $alarm['deltaend'] = $post['custom_fields'][$event->getCategory()->getDeltaEndField()->getId()];
                     $json['alarm'] = $alarm;

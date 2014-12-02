@@ -325,10 +325,23 @@ var form = function(url){
 	};
 	
 	/************************/
-	        
+	       
+        var initModel = function(){
+                //actions
+                $("#inner-actionsTitle").html("");
+                $("#actionsTitle span").html("0");
+                //mémos
+                $("#alarmTitle span").html("0");
+                $("#inner-alarmTitle table").html('');
+                //files
+                $("#filesTitle span").html("0");
+                $('#inner-filesTitle tbody').html('');  
+        };
+    
 	//submit form
 	$("#event").on('submit', function(event){
 		event.preventDefault();
+                $("#event input[type=submit]").tooltip('destroy');
                 //disable submit button to prevent double submission
                 $("#event input[name='submit']").prop('disabled', true);
                 //fill missing minute inputs
@@ -379,7 +392,6 @@ var form = function(url){
 	
 	$("#event").on("click", "#cancel-form", function(){
 		$("#create-evt").slideUp('fast');
-		$("#create-evt").offset({left:5});
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
 		restoreUpdateAlarms();
 	});
@@ -504,16 +516,7 @@ var form = function(url){
 	$("#event").on("click", "a.predefined", function(){
 		$("#Modèlesid").html('Modèle : '+$(this).parent().prev().html());
 		var me = $(this);
-                //reinit
-                //actions
-                $("#inner-actionsTitle").html("");
-                $("#actionsTitle span").html("0");
-                //mémos
-                $("#alarmTitle span").html("0");
-                $("#inner-alarmTitle table").html('');
-                //files
-                $("#filesTitle span").html("0");
-                $('#inner-filesTitle tbody').html('');
+                initModel();
 		$.getJSON(
 				url+'events/getpredefinedvalues?id='+me.data('id'),
 				function(data){
@@ -548,20 +551,28 @@ var form = function(url){
 		$.getJSON(
 				url+'events/getactions?id='+me.data('id'),
 				function(data){
-					var container = $("#inner-actionsTitle");
-					//save id of model
-					var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
-					//then the table of actions
-					content += '<table class="table table-hover"><tbody>';
-					$.each(data, function(key, value){
-						content += "<tr data-id=\""+key+"\">";
-						content += "<td><span class=\"label label-"+value.impactstyle+"\">"+value.impactname+"</span></td>";
-						content += "<td>"+value.name+"</td>";
-						content += '</tr>';
-                                                $("#actionsTitle span").html(parseInt($("#actionsTitle span").html())+1);
-					});						
-					content += '</tbody></table>';
-					container.html(content);
+                                    var actions = [];
+                                    //transform data into array to sort it by value.place
+                                    $.each(data, function (key, value) {
+                                        actions.push(value);
+                                    });
+                                    actions.sort(function(a,b){
+                                        return (a.place > b.place ? 1 : a.place < b.place ? -1 : 0);
+                                    });
+                                    var container = $("#inner-actionsTitle");
+                                    //save id of model
+                                    var content = "<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >";
+                                    //then the table of actions
+                                    content += '<table class="table table-hover"><tbody>';
+                                    for (index = 0; index < actions.length; ++index) {
+                                        content += "<tr data-id=\"" + actions[index].id + "\">";
+                                        content += "<td><span class=\"label label-" + actions[index].impactstyle + "\">" + actions[index].impactname + "</span></td>";
+                                        content += "<td>" + actions[index].name + "</td>";
+                                        content += '</tr>';
+                                        $("#actionsTitle span").html(parseInt($("#actionsTitle span").html()) + 1);
+                                    }						
+                                    content += '</tbody></table>';
+                                    container.html(content);
 				}
 		);
                 //getfiles
@@ -590,7 +601,7 @@ var form = function(url){
 		$("#actionsTitle").addClass("disabled");
 		$("#inner-Ficheréflexe").html("");
 		$("#custom_fields").html("");
-		
+		initModel();
 		var root_value = $("#root_categories option:selected").val();
 		
 		if(root_value > 0) {
@@ -667,6 +678,7 @@ var form = function(url){
 
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
+                initModel();
 		var subcat_value = $("#subcategories option:selected").val();
                 if (subcat_value > 0) {
                     $("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());

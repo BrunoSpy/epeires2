@@ -1121,7 +1121,7 @@ var timeline = {
 			// positionnement des différents objets sur la ligne elmt
 			elmt_txt.css({'position': 'absolute', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
 			if (fichier > 0) {
-				elmt_txt.html(label+' <span class="badge">P</span>');
+				elmt_txt.html(label+' <a href="#"><span class="badge">P</span></a>');
 			} else {
 				elmt_txt.text(label);
 			}

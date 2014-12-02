@@ -15,7 +15,6 @@ use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Zend\Form\Annotation\AnnotationBuilder;
-use Application\Form\FileFieldset;
 use Doctrine\ORM\Query\Expr\Join;
 use Application\Entity\PredefinedEvent;
 use Doctrine\ORM\QueryBuilder;
@@ -479,7 +478,7 @@ class EventsController extends TabController {
     					if(isset($post['modelid'])){
     						$parentID = $post['modelid'];
     						//get actions
-    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID)) as $action){
+    						foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent'=>$parentID), array('place' => 'ASC')) as $action){
 						if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
 								$child = new Event();
                                                                 $child->setAuthor($event->getAuthor());
@@ -502,7 +501,7 @@ class EventsController extends TabController {
     					//associated actions to be copied
     					if(isset($post['fromeventid'])){
     						$parentID = $post['fromeventid'];
-    						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID)) as $action){
+    						foreach ($objectManager->getRepository('Application\Entity\Event')->findBy(array('parent'=>$parentID), array('place' => 'DESC')) as $action){
 							if($action->getCategory() instanceof \Application\Entity\ActionCategory){
 								$child = new Event();
                                                                 $child->setAuthor($event->getAuthor());
@@ -900,7 +899,9 @@ class EventsController extends TabController {
     	
     	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
             if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
-    		$json[$action->getId()] = array('name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
+    		$json[$action->getId()] = array('id' => $action->getId(),
+                                                'name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
+                                                'place' => $action->getPlace(),
     										'impactname' => $action->getImpact()->getName(),
     										'impactstyle' => $action->getImpact()->getStyle());
             }
@@ -1044,7 +1045,7 @@ class EventsController extends TabController {
     	$json = array();
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+                
     	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
@@ -1550,10 +1551,13 @@ class EventsController extends TabController {
                 $eventupdate = new \Application\Entity\EventUpdate();
                 $eventupdate->setText($post['new-update']);
                 $eventupdate->setEvent($event);
+                $event->setLastModifiedOn();
                 $em->persist($eventupdate);
+                $em->persist($event);
                 try{
                     $em->flush();
                     $messages['success'][] = "Note correctement ajoutée.";
+                    $messages['events'] = array($event->getId() => $this->getEventJson($event));
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }
@@ -1579,9 +1583,12 @@ class EventsController extends TabController {
             if($note){
                 $note->setText($post['note']);
                 $em->persist($note);
+                $note->getEvent()->setLastModifiedOn();
+                $em->persist($note->getEvent());
                 try{
                     $em->flush();
                     $messages['success'][] = "Note correctement mise à jour.";
+                    $messages['events'] = array($note->getEvent()->getId() => $this->getEventJson($note->getEvent()));
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }

@@ -92,9 +92,13 @@ var models = function(url, urlapp){
 	$("#confirm-delete-model").on('click', '#delete-model-href', function(event){
 		event.preventDefault();
 		var me = $(this);
-		$("#confirm-delete-model").modal('hide');
-		$.post($("#delete-model-href").attr('href'), function(){
-			$('#models-table').find('tr#'+me.data('id')).remove();
+                $("#confirm-delete-model").modal('hide');
+		$.post($("#delete-model-href").attr('href'), function(data){
+                    if(!data['error']){
+                        $('#models-table tr#model-'+me.data('id')).remove();
+                    }
+                    displayMessages(data);
+                    
 		});
 	});
 	

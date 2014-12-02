@@ -341,9 +341,16 @@
 			if(count($children) > 0){
 				$html .= '<table class="table table-hover" >';
 				$html .= '<tbody>';
-                                foreach ($children as $child){
+                                //sort by place
+                                $arrayChildren = $children->toArray();
+                                function cmp(Application\Entity\AbstractEvent $a, Application\Entity\AbstractEvent $b){
+                                    return $a->getPlace() > $b->getPlace();
+                                }
+                                usort($arrayChildren, "cmp");                                
+                                foreach ($arrayChildren as $child){
                                     if($child->getCategory() instanceof Application\Entity\ActionCategory){
                                         $countactions++;
+                                        error_log($child->getPlace());
 					$html .= "<tr data-id=\"".$child->getId()."\"";
                                         foreach ($child->getCustomFieldsValues() as $value){
                                             if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
@@ -351,7 +358,7 @@
                                                     $html .= ' data-container="body" '
                                                             . 'data-html="true" '
                                                             . 'data-toggle="tooltip" '
-                                                            . 'title="<span class=elmt_tooltip>'.nl2br($value->getValue()).'</span>"';
+                                                            . 'title="<span class=elmt_tooltip>'.nl2br(htmlspecialchars($value->getValue())).'</span>"';
                                                 }
                                             }
                                         }
