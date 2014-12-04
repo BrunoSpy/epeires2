@@ -312,9 +312,11 @@ $(document).ready(function(){
             var year = now.getUTCFullYear();
             var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
             $("#calendar input[type=text].date").val(nowString);
+            $('#timeline').timeline("view", "day");
         } else {
             $("#calendar").hide();
             $("#export").hide();
+            $("#timeline").timeline('view', 'sixhours');
         }
     });
 

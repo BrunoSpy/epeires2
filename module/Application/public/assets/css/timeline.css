@@ -7,8 +7,13 @@
 	float:left;
         z-index: 2;
         background-color: white;
+        top:80px;
  }
 
+#timeline.affix {
+    top: 0px;
+}
+ 
  .Base {
 	margin-left: 50px;
 	margin-right: 50px;
@@ -64,6 +69,38 @@
 	text-decoration:none;
 } 
 
+.elmt_deb {
+    position: absolute;
+    top: 6px;
+    left: 0px;
+    width: 54px;
+    text-align: right;
+    font-style: italic;
+    background-color: transparent;
+    z-index: 3;
+}
+
+.elmt_fin {
+    position: absolute;
+    top: 6px;
+    left: 0px;
+    width: 54px;
+    text-align: left;
+    font-style: italic;
+    background-color: transparent;
+    z-index: 3;
+}
+
+.move_deb, .move_fin {
+    position: absolute;
+    top: 4px;
+    z-index: 2;
+    background-color: transparent;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-width: 2px;
+    display: none;
+}
 
 .warn_elmt .btn {
 	height : 22px;
