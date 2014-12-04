@@ -65,20 +65,17 @@ class EventRepository extends ExtendedRepository {
         } else {
             //every events of the last 3 days :
             // * no enddate and not punctual
-            // * startdate > now - 3days && (enddate == null || (enddate != null && enddate <= now))
+            // * startdate > now - 3days && startdate < now + 1 day
             $now = new \DateTime('NOW');
             $qb->andWhere($qb->expr()->orX(
                     $qb->expr()->andX($qb->expr()->isNull('e.enddate'), $qb->expr()->eq('e.punctual', 'false')),
                     $qb->expr()->andX(
                             $qb->expr()->gte('e.startdate', '?1'),
-                            $qb->expr()->orX(
-                                    $qb->expr()->isNull('e.enddate'),
-                                    $qb->expr()->lte('e.enddate', '?2')
-                            )
+                            $qb->expr()->lte('e.startdate', '?2')
                     )
             ));
             $parameters[1] = $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
-            $parameters[2] = $now->format('Y-m-d H:i:s');
+            $parameters[2] = $now->add(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
             $qb->setParameters($parameters);
         }
 
