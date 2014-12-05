@@ -75,7 +75,7 @@ class EventRepository extends ExtendedRepository {
                     )
             ));
             $parameters[1] = $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
-            $parameters[2] = $now->add(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
+            $parameters[2] = $now->add(new \DateInterval('P5D'))->format('Y-m-d H:i:s');
             $qb->setParameters($parameters);
         }
 
