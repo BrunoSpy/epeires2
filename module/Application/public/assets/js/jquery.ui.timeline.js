@@ -4,7 +4,11 @@
  * Usage :
  * $('element').timeline({
  *      eventUrl: "url to get events",
- *      categoriesUrl: "url to get categories"
+ *      categoriesUrl: "url to get categories",
+ *      topOffset: vertical offset in pixels,
+ *      leftOffset: left offset in pixels,
+ *      rightOffset: right offset in pixels,
+ *      eventHeight: height of an event in pixels
  * });
  * 
  * @author Jonathan Colson
@@ -25,6 +29,10 @@ $.widget("epeires.timeline", {
      */
     dayview: true,
     /**
+     * Display or not root categories
+     */
+    showCategories: true,
+    /**
      * Beginning of the timeline
      */
     timelineBegin: new Date(),
@@ -40,6 +48,18 @@ $.widget("epeires.timeline", {
      * Intervalle entre deux barres "heure"
      */
     intervalle: 0,
+    /**
+     * Memorize current scroll position
+     */
+    prev_scroll: 0,
+    /**
+     * Last download of events
+     */
+    lastupdate: 0,
+    /**
+     * 
+     */
+    timerUpdate:0,
     //default options
     options: {
         eventUrl: "",
@@ -53,15 +73,11 @@ $.widget("epeires.timeline", {
     //Initialize the timeline
     _create: function () {
         var self = this;
+        //first : draw categories
         $.when(
                 $.getJSON(self.options.categoriesUrl, function (data) {
                     $.each(data, function (key, value) {
                         self.categories.push(value);
-                    });
-                }),
-                $.getJSON(self.options.eventUrl, function (data) {
-                    $.each(data, function (key, value) {
-                        self.events.push(value);
                     });
                 })
             ).then(function () {
@@ -75,13 +91,36 @@ $.widget("epeires.timeline", {
             self.sortEvents();
             // ini params
             self.view("sixhours");
-
-            for (var i = 0; i < self.events.length; i++) {
-                self._drawEvent(self.events[i]);
-            }
-            //trigger event when init is finished
-            //     self._trigger("initComplete");
+            //get events and display them
+            $.when(self._updateEvents()).then(
+                    //trigger event when init is finished
+                    function(){self._trigger("initComplete");}
+            );
         });
+        
+        //manage scrolling
+        $(window).on('scroll', function (event) {
+            var scrolltop = $(window).scrollTop();
+            var offset = self.options.topOffset + 12;
+            if(scrolltop === 0) {
+                //reinit positions and height
+                $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + 50 + 'px');
+                $("#TimeBar").css('height', self.element.height() - 50 );
+                $('.Time_obj.vert_bar').css({'height': self.element.height() - 50,
+                        'top': self.options.topOffset + 45 + 'px'});
+                $('.Time_obj.halfhour').css('top', self.options.topOffset + 30 + 'px');
+                $('.Time_obj.roundhour').css('top', self.options.topOffset + 20 + 'px');
+            } else if (scrolltop <= offset) {
+                var diff = scrolltop - self.prev_scroll;
+                $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
+                $('.Time_obj.vert_bar, #TimeBar').css('height', '+=' + diff + 'px');
+            } else {
+                var diff = offset - self.prev_scroll;
+                $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
+            }
+            self.prev_scroll = scrolltop;
+        });
+        
     },
     /* ********************** */
     /* *** Public methods *** */
@@ -110,8 +149,15 @@ $.widget("epeires.timeline", {
             this._changeView();
         }
     },
+    /**
+     * Change the day, only avalaible if dayview == true
+     * @param {type} date
+     * @returns {undefined}
+     */
     day: function (date) {
-
+        if(this.dayview){
+            
+        }
     },
     /*
      * Sort events
@@ -121,10 +167,10 @@ $.widget("epeires.timeline", {
     sortEvents: function (comparator) {
         if (typeof comparator === "undefined") {
             this.events.sort(function (a, b) {
-                if (a.category_place == b.category_place) {
-                    return a.start_date > b.start_date;
+                if (a.category_place === b.category_place) {
+                    return (a.start_date > b.start_date ? 1 : a.start_date < b.start_date ? -1 : 0);
                 } else {
-                    return a.category_place > b.category_place;
+                    return a.category_place - b.category_place;
                 }
             });
         } else {
@@ -140,7 +186,7 @@ $.widget("epeires.timeline", {
     sortCategories: function (comparator) {
         if (typeof comparator === "undefined") {
             this.categories.sort(function (a, b) {
-                return a.name > b.name;
+                return (a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
             });
         } else {
             this.categories.sort(comparator);
@@ -154,26 +200,6 @@ $.widget("epeires.timeline", {
     /* *** Private methods ** */
     /* ********************** */
 
-    _setUnselectable: function () {
-        this.element.attr('unselectable', 'on')
-                .css({'-moz-user-select': '-moz-none',
-                    '-moz-user-select':'none',
-                            '-o-user-select': 'none',
-                    '-khtml-user-select': 'none',
-                    '-webkit-user-select': 'none',
-                    '-ms-user-select': 'none',
-                    'user-select': 'none'
-                }).bind('selectstart', function () {
-            return false;
-        });
-    },
-    /**
-     * Draw new events and update positions
-     * @returns {undefined}
-     */
-    _applyChanges: function () {
-
-    },
     /**
      * Switch between dayview and 6-hours view
      * @returns {undefined}
@@ -189,20 +215,33 @@ $.widget("epeires.timeline", {
             this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), diff, 0, 0);
             this.timelineEnd = new Date(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
             this.timelineBegin.getHours() + this.timelineDuration, 0, 0);
-            // draw base
-            this._drawBase();
-            // draw timeBar
-            this._drawTimeBar();
         } else {
             this.timelineDuration = 6;
             var now = new Date();
             this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
             this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
-            // draw base
-            this._drawBase();
-            // draw timeBar
-            this._drawTimeBar();
         }
+        // draw base
+        this._drawBase();
+        // draw timeBar
+        this._drawTimeBar();
+        //TODO update events
+    },
+    _getCategory: function (id) {
+        for (var i = 0; i < this.categories.length; i++) {
+            if (this.categories[i].id == id) {
+                return this.categories[i];
+            }
+        }
+        return null;
+    },
+    _getEvent: function (id) {
+        for(var i = 0; i < this.events.length; i++) {
+            if(this.events[i].id == id) {
+                return this.events[i];
+            }
+        }
+        return null;
     },
     /**
      * Calcule l'abscisse correspondant à une date
@@ -259,7 +298,7 @@ $.widget("epeires.timeline", {
             left = 0;
         }
         var h_temp = this.timelineBegin.getUTCHours();
-        var time_obj = $('<div id="Time_obj"></div>');
+        var time_obj = $('<div class="Time_obj horiz_bar"></div>');
         var base_elmt = $('<div id="timeline-base" class="Base"></div>');
         this.element.append(base_elmt);
         base_elmt.append(time_obj);
@@ -279,14 +318,14 @@ $.widget("epeires.timeline", {
                 'height': this.element.height() - 50,
                 'background-color': '#C0C0C0'});
             if (i % 2 == 1) {
-                var halfHour = $('<div>30</div>');
+                var halfHour = $('<div class="Time_obj halfhour">30</div>');
                 base_elmt.append(halfHour);
                 halfHour.css({'position': 'fixed',
                     'top': this.options.topOffset + 30 + 'px',
                     'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px',
                     'width': '20px', 'text-align': 'center', 'color': '#0000FF', 'font-family': 'Calibri', 'font-size': '12px'});
             } else {
-                var roundHour = $('<div class="Time_obj">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
+                var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
                 base_elmt.append(roundHour);
                 roundHour.css({'position': 'fixed',
                     'top': this.options.topOffset + 20 + 'px',
@@ -301,27 +340,14 @@ $.widget("epeires.timeline", {
         }
     },
     _drawTimeBar: function () {
-        var TimeBar = $('<div class="TimeBar"></div>');
+        var TimeBar = $('<div id="TimeBar"></div>');
         this.element.append(TimeBar);
         TimeBar.css({'position': 'fixed', 'top': this.options.topOffset + 50 + 'px',
             'left': this._computeX(new Date()) + 'px', 'width': 3, 'height': this.element.height() - 50, 'z-index': 10,
             'background-color': 'red'});
     },
-    _getCategory: function (id) {
-        for (var i = 0; i < this.categories.length; i++) {
-            if (this.categories[i].id == id) {
-                return this.categories[i];
-            }
-        }
-        return null;
-    },
-    _getEvent: function (id) {
-        for(var i = 0; i < this.events.length; i++) {
-            if(this.events[i].id == id) {
-                return this.events[i];
-            }
-        }
-        return null;
+    _drawCategory:function(category){
+        
     },
     /**
      * Draw an event if necessary
@@ -372,6 +398,37 @@ $.widget("epeires.timeline", {
         
     },
     /**
+     * Get new and modified events every 10 seconds
+     * @returns {undefined}
+     */
+    _updateEvents: function () {
+        var self = this;
+        return $.getJSON(self.options.eventUrl + (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : ''),
+                function (data, textStatus, jqHXR) {
+                    if (jqHXR.status != 304) {
+                        $.each(data, function(key, value){
+                            var tempEvents = self.events.filter(function(val){
+                                return val.id == key;
+                            });
+                            if(tempEvents.length === 0){
+                                self.events.push(value);
+                            }
+                            self._drawEvent(value);
+                        });
+                        self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    }
+                }).always(function () {
+                    self.timerUpdate = setTimeout(self._updateEvents, 10000);
+                });
+    },
+    _pauseUpdate: function() {
+        clearTimeout(this.timerUpdate);
+    },
+    _restoreUpdate: function() {
+        clearTimeout(this.timerUpdate);
+        this._updateEvents();
+    },
+    /**
      * Draw an event for the first time
      * @param {type} event
      * @returns {undefined}
@@ -412,34 +469,7 @@ $.widget("epeires.timeline", {
         //ajout à la timeline
         this.element.append(elmt);
     },
-    /**
-     * Compute width of the scrollbar
-     * @returns int Width of the scrollbar in pixels
-     */
-    _getScrollbarWidth: function () {
-        var outer = document.createElement("div");
-        outer.style.visibility = "hidden";
-        outer.style.width = "100px";
-        outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
 
-        document.body.appendChild(outer);
-
-        var widthNoScroll = outer.offsetWidth;
-        // force scrollbars
-        outer.style.overflow = "scroll";
-
-        // add innerdiv
-        var inner = document.createElement("div");
-        inner.style.width = "100%";
-        outer.appendChild(inner);
-
-        var widthWithScroll = inner.offsetWidth;
-
-        // remove divs
-        outer.parentNode.removeChild(outer);
-
-        return widthNoScroll - widthWithScroll;
-    },
     /**
      * Create a skeleton for an event.
      * @param {type} event
@@ -504,6 +534,12 @@ $.widget("epeires.timeline", {
         });
         return elmt;
     },
+    
+    /* *********************** */
+    /* ** Utilitary methods ** */
+    /* *********************** */
+    
+    
     /**
      * Format a number into a string with a predefined length
      * @param {type} num
@@ -516,6 +552,51 @@ $.widget("epeires.timeline", {
             r = "0" + r;
         }
         return r;
-    }
+    },
+        
+    /**
+     * Compute width of the scrollbar
+     * @returns int Width of the scrollbar in pixels
+     */
+    _getScrollbarWidth: function () {
+        var outer = document.createElement("div");
+        outer.style.visibility = "hidden";
+        outer.style.width = "100px";
+        outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
 
+        document.body.appendChild(outer);
+
+        var widthNoScroll = outer.offsetWidth;
+        // force scrollbars
+        outer.style.overflow = "scroll";
+
+        // add innerdiv
+        var inner = document.createElement("div");
+        inner.style.width = "100%";
+        outer.appendChild(inner);
+
+        var widthWithScroll = inner.offsetWidth;
+
+        // remove divs
+        outer.parentNode.removeChild(outer);
+
+        return widthNoScroll - widthWithScroll;
+    },
+    /**
+     * Do not allow selection of objects on the timeline
+     * @returns {undefined}
+     */
+    _setUnselectable: function () {
+        this.element.attr('unselectable', 'on')
+                .css({'-moz-user-select': '-moz-none',
+                    '-moz-user-select':'none',
+                    '-o-user-select': 'none',
+                    '-khtml-user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
+                    'user-select': 'none'
+                }).bind('selectstart', function () {
+            return false;
+        });
+    }
 });
