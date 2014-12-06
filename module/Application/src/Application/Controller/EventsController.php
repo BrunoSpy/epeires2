@@ -1,7 +1,19 @@
 <?php
-/**
- * Epeires 2
- * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 namespace Application\Controller;
@@ -23,6 +35,9 @@ use Zend\Form\Element;
 use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 
+/**
+ * @author Bruno Spyckerelle
+ */
 class EventsController extends ZoneController {
 	
     public function indexAction(){    	
@@ -1086,8 +1101,10 @@ class EventsController extends ZoneController {
     					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
     					'punctual' => $event->isPunctual(),
     					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
-    					'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
+    					'category_root_id' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getId() : $event->getCategory()->getId()),
+                                        'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
     					'category' => $event->getCategory()->getName(),
+                                        'category_id' => $event->getCategory()->getId(),
     					'category_short' => $event->getCategory()->getShortName(),
     					'category_compact' => $event->getCategory()->isCompactMode(),
                                         'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : -1),
