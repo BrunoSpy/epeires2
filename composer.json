@@ -29,7 +29,7 @@
         "dino/dompdf-module": "dev-master",
 	"components/jquery": "2.1.*",
 	"components/bootstrap": "2.3.*",
-	"components/jqueryui": "1.10.*",
+	"components/jqueryui": "1.11.*",
         "components/bootstrap-default": "2.3.*"
     },
     "require-dev":{
