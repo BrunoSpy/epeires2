@@ -25,6 +25,10 @@ $.widget("epeires.timeline", {
      */
     categories: [],
     /**
+     * Table id => cat position
+     */
+    catPositions: [],
+    /**
      * Current view
      */
     dayview: true,
@@ -60,12 +64,25 @@ $.widget("epeires.timeline", {
      * 
      */
     timerUpdate:0,
+    //paramètres pour les dessins
+    params: {
+        //espace entre les catégories
+        catSpace: 5,
+        //espace entre les évènements
+        eventSpace: 5,
+        //espace entre le haut et la barre horizontale
+        topSpace: 50,
+        //espace entre le haut et les heures
+        topHourSpace: 20,
+        //espace entre le haut et les demi-heures
+        topHalfHourSpace: 30
+    },
     //default options
     options: {
         eventUrl: "",
         categoriesUrl: "",
         topOffset: 0,
-        leftOffset: 80,
+        leftOffset: 95,
         rightOffset: 40,
         eventHeight: 30
     },
@@ -73,28 +90,41 @@ $.widget("epeires.timeline", {
     //Initialize the timeline
     _create: function () {
         var self = this;
+        var height = $(window).height() - this.options.topOffset+'px';
+        this.element.css('height', height);
         //first : draw categories
         $.when(
                 $.getJSON(self.options.categoriesUrl, function (data) {
+                    var pos = 0;
                     $.each(data, function (key, value) {
                         self.categories.push(value);
+                        self.catPositions[value.id] = pos;
+                        pos++;
                     });
                 })
             ).then(function () {
             //unable user to select objects
             self._setUnselectable();
-            //sort categories by name
+            //sort categories by place
             self.sortCategories(function (a, b) {
                 return a.place - b.place;
             });
-            //sort events by categories
-            self.sortEvents();
-            // ini params
-            self.view("sixhours");
             //get events and display them
-            $.when(self._updateEvents()).then(
-                    //trigger event when init is finished
-                    function(){self._trigger("initComplete");}
+            $.when($.getJSON(self.options.eventUrl, function (data) {
+                    $.each(data, function (key, value) {
+                        self.events.push(value);
+                    });
+                })).then(
+                    function() {
+                        //sort events by categories
+                        self.sortEvents();
+                        // ini params
+                        self.view("sixhours");
+                        //update timebar every minute
+                        setInterval(function(){self._updateTimebar();}, 60000);
+                        //trigger event when init is finished
+                        self._trigger("initComplete")
+                    ;}
             );
         });
         
@@ -104,12 +134,12 @@ $.widget("epeires.timeline", {
             var offset = self.options.topOffset + 12;
             if(scrolltop === 0) {
                 //reinit positions and height
-                $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + 50 + 'px');
-                $("#TimeBar").css('height', self.element.height() - 50 );
-                $('.Time_obj.vert_bar').css({'height': self.element.height() - 50,
-                        'top': self.options.topOffset + 45 + 'px'});
-                $('.Time_obj.halfhour').css('top', self.options.topOffset + 30 + 'px');
-                $('.Time_obj.roundhour').css('top', self.options.topOffset + 20 + 'px');
+                $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + self.params.topSpace + 'px');
+                $("#TimeBar").css('height', self.element.height() - self.params.topSpace);
+                $('.Time_obj.vert_bar').css({'height': self.element.height() - self.params.topSpace,
+                        'top': self.options.topOffset + self.params.topSpace - 5 + 'px'});
+                $('.Time_obj.halfhour').css('top', self.options.topOffset + self.params.topHalfHourSpace + 'px');
+                $('.Time_obj.roundhour').css('top', self.options.topOffset + self.params.topHourSpace + 'px');
             } else if (scrolltop <= offset) {
                 var diff = scrolltop - self.prev_scroll;
                 $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
@@ -165,13 +195,28 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     sortEvents: function (comparator) {
+        var self = this;
+        //comparateur par défaut : catégorie racine, puis place dans la catégorie, puis date de début
         if (typeof comparator === "undefined") {
             this.events.sort(function (a, b) {
-                if (a.category_place === b.category_place) {
-                    return (a.start_date > b.start_date ? 1 : a.start_date < b.start_date ? -1 : 0);
-                } else {
-                    return a.category_place - b.category_place;
+                if(self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
+                    return -1;
+                } else if (self.catPositions[a.category_root_id] > self.catPositions[b.category_root_id]){
+                    return 1;
                 }
+                if(a.category_place < b.category_place){
+                    return -1;
+                } else if(a.category_place > b.category_place) {
+                    return 1;
+                }
+                var aStartdate = new Date(a.start_date);
+                var bStartdate = new Date(b.start_date);
+                if(aStartdate < bStartdate){
+                    return -1;
+                } else if (aStartdate > bStartdate){
+                    return 1;
+                }
+                return 0;
             });
         } else {
             this.events.sort(comparator);
@@ -191,7 +236,10 @@ $.widget("epeires.timeline", {
         } else {
             this.categories.sort(comparator);
         }
-
+        //update cat positions
+        for(var i = 0; i < this.categories.length; i++){
+            this.catPositions[this.categories[i].id] = i;
+        }
     },
     filter: function () {
 
@@ -225,23 +273,40 @@ $.widget("epeires.timeline", {
         this._drawBase();
         // draw timeBar
         this._drawTimeBar();
-        //TODO update events
+        //update events
+        for(var i = 0; i < this.events.length; i++){
+            this._drawEvent(this.events[i]);
+        }
+        //draw categories
+        if(this.showCategories){
+            this._drawCategories();
+        }
     },
     _getCategory: function (id) {
         for (var i = 0; i < this.categories.length; i++) {
-            if (this.categories[i].id == id) {
+            if (this.categories[i].id === id) {
                 return this.categories[i];
             }
         }
         return null;
     },
+    _getCategoryPosition: function(id){
+        return this.catPositions[id];
+    },
     _getEvent: function (id) {
         for(var i = 0; i < this.events.length; i++) {
-            if(this.events[i].id == id) {
+            if(this.events[i].id === id) {
                 return this.events[i];
             }
         }
         return null;
+    },
+    _getEventPosition: function(id){
+        for(var i = 0; i < this.events.length; i++){
+            if(this.events[i].id === id){
+                return i;
+            }
+        }
     },
     /**
      * Calcule l'abscisse correspondant à une date
@@ -263,12 +328,98 @@ $.widget("epeires.timeline", {
         }
     },
     /**
-     * Calcule l'ordonnée correspondant à un évènement
-     * @param {type} event
+     * Calcule l'ordonnée correspondant à un évènement à la place i dans le tableau
+     * @param {type} i Position de l'évènement dans le tableau
      * @returns {undefined}
      */
-    _computeY: function (event) {
-        return 150;
+    _computeY: function (i) {
+        var event = this.events[i];
+        if(this.showCategories){
+            var catPos = this._getCategoryPosition(event.category_root_id);
+            var cat = this.categories[catPos];
+            if(i === 0){
+                //premier élément : somme des hauteurs min des cat précédentes (vides par conséquent)
+                //                  + offset entre chaque catégorie (5px à rendre paramétrable)
+                var top = this.params.topSpace + this.params.catSpace;
+                for(var j = 0; j < catPos; j++){
+                    top += this._getCategoryMinHeight(cat) + this.params.catSpace;
+                }
+                return top;
+            } else {
+                var prevEvent = this.events[i-1];
+                var catOffset = 0;
+                //deux cas selon si l'évènement appartient à la même catégorie que le précédent
+                //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
+                if(prevEvent.category_root_id !== event.category_root_id){
+                    //calcul du bas de la catégorie non vide précédente
+                    var prevCatPos = this._getCategoryPosition(prevEvent.category_root_id);
+                    catOffset += this._getCategoryBottom(prevCatPos);
+                    //si la cat précédente est celle juste avant : rien à faire
+                    if(prevCatPos < catPos -1){
+                        for(var j = prevCatPos + 1 ; j < catPos; j++){
+                            catOffset += this._getCategoryMinHeight(this.categories[j]) + this.params.catSpace ;
+                        }
+                    }
+                    return catOffset + this.params.catSpace;
+                } else {
+                    var topPrevEvent = parseInt($('#event'+prevEvent.id).css('top'), 10);
+                    return topPrevEvent + this.options.eventHeight + this.params.eventSpace;
+                }
+            }
+        } else {
+            //les catégories ne sont pas affichées
+            return 150;
+        }
+    },
+    /**
+     * Calcul le bas d'une catégorie en fonction des évènements réellement affichés
+     * @param {type} i Place de la catégorie dans le tableau
+     * @returns {undefined}
+     */
+    _getCategoryBottom: function(i){
+        var cat = this.categories[i];
+        var catEvents = this.events.filter(function(val){return val.category_root_id === cat.id;});
+        var top = this.element.height();
+        var bottom = 0;
+        for(var j = 0; j < catEvents.length; j++){
+            var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
+            if(topEvent < top) {
+                top = topEvent;
+            }
+            if(topEvent > bottom){
+                bottom = topEvent;
+            }
+        }
+        var height = bottom - top + this.options.eventHeight;
+        var minHeight = this._getCategoryMinHeight(cat);
+        if(minHeight > height) {
+            return top + minHeight;
+        } else {
+            return top + height;
+        }
+    },
+    /**
+     * Calcul la hauteur d'une catégorie en fonction des évènements réellement affichés
+     * @param {type} i Place de la catégorie dans le tableau
+     * @returns {undefined}
+     */
+    _getCategoryHeight: function(i){
+        var cat = this.categories[i];
+        var catEvents = this.events.filter(function(val){return val.category_root_id === cat.id});
+        var top = this.element.height();
+        var bottom = 0;
+        for(var j = 0; j < catEvents.length; j++){
+            var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
+            if(topEvent < top) {
+                top = topEvent;
+            }
+            if(topEvent > bottom){
+                bottom = topEvent;
+            }
+        }
+        var height = bottom - top + this.options.eventHeight;
+        var minHeight = this._getCategoryMinHeight(cat);
+        return (minHeight > height ? minHeight : height);
     },
     /**
      * Calcule le nouvel intervalle lorsque timelineDuration a été modifié
@@ -302,36 +453,33 @@ $.widget("epeires.timeline", {
         var base_elmt = $('<div id="timeline-base" class="Base"></div>');
         this.element.append(base_elmt);
         base_elmt.append(time_obj);
-        time_obj.css({'position': 'fixed',
-            'top': this.options.topOffset + 50 + 'px',
+        time_obj.css({
+            'top': this.options.topOffset + this.params.topSpace + 'px',
             'left': this.options.leftOffset + left + 'px',
             'width': this.intervalle * this.timelineDuration * 2 + 'px',
-            'height': 1,
-            'background-color': '#C0C0C0'});
+            'height': 1});
         for (var i = 0; i < this.timelineDuration * 2 + 1; i++) {
             var vert_bar = $('<div class="Time_obj vert_bar"></div>');
             base_elmt.append(vert_bar);
-            vert_bar.css({'position': 'fixed',
-                'top': this.options.topOffset + 45 + 'px',
+            vert_bar.css({
+                'top': this.options.topOffset + this.params.topSpace - 5 + 'px',
                 'left': this.intervalle * i + this.options.leftOffset + left + 'px',
                 'width': 1,
-                'height': this.element.height() - 50,
+                'height': this.element.height() - this.params.topSpace,
                 'background-color': '#C0C0C0'});
             if (i % 2 == 1) {
                 var halfHour = $('<div class="Time_obj halfhour">30</div>');
                 base_elmt.append(halfHour);
-                halfHour.css({'position': 'fixed',
-                    'top': this.options.topOffset + 30 + 'px',
-                    'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px',
-                    'width': '20px', 'text-align': 'center', 'color': '#0000FF', 'font-family': 'Calibri', 'font-size': '12px'});
+                halfHour.css({
+                    'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
+                    'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
             } else {
                 var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
                 base_elmt.append(roundHour);
-                roundHour.css({'position': 'fixed',
-                    'top': this.options.topOffset + 20 + 'px',
-                    'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px',
-                    'text-align': 'center', 'color': '#0000FF', 'font-family': 'Calibri', 'font-size': '16px'});
-                if (h_temp == 23) {
+                roundHour.css({
+                    'top': this.options.topOffset + this.params.topHourSpace + 'px',
+                    'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
+                if (h_temp === 23) {
                     h_temp = 0;
                 } else {
                     h_temp++;
@@ -340,14 +488,69 @@ $.widget("epeires.timeline", {
         }
     },
     _drawTimeBar: function () {
-        var TimeBar = $('<div id="TimeBar"></div>');
-        this.element.append(TimeBar);
-        TimeBar.css({'position': 'fixed', 'top': this.options.topOffset + 50 + 'px',
-            'left': this._computeX(new Date()) + 'px', 'width': 3, 'height': this.element.height() - 50, 'z-index': 10,
-            'background-color': 'red'});
+        if($('#TimeBar').length > 0 ){
+            //Timebar exists : update
+            this._updateTimebar();
+        } else {
+            var TimeBar = $('<div id="TimeBar"></div>');
+            this.element.append(TimeBar);
+            TimeBar.css({
+                'top': this.options.topOffset + this.params.topSpace + 'px',
+                'left': this._computeX(new Date()) + 'px',
+                'height': this.element.height() - this.params.topSpace});
+        }
     },
-    _drawCategory:function(category){
-        
+    _updateTimebar: function(){var now = new Date();
+        var diff = now - this.timelineBegin;
+        //si vue six heures et diff > 2 heures : décaler d'une heure
+        if(this.dayview === false && (nowHour - beginHour > 1)){
+            this._changeView();
+        //TODO si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
+        } else if(true) {
+            
+        }
+        var x = this._computeX(new Date());
+        $('#TimeBar').css('left', x+'px');
+    },
+    /**
+     * Draw or update categories
+     * Events have to be drawn before in order to compute size of categories
+     */
+    _drawCategories: function(){
+        if($('#category').length === 0){
+            this.element.append($('<div id="category"></div>'));
+        }
+        var y = this.params.topSpace + this.params.catSpace;
+        for(var i = 0;i < this.categories.length; i++){
+            var curCat = this.categories[i];
+            var text_cat = "";
+            for (var k = 0; k < curCat.short_name.length; k++) {
+                text_cat += curCat.short_name[k]+'<br>';
+            }
+            if($('#category'+curCat.id).length === 0){
+                var cat = $('<div class="category" id="cat'+curCat.id+'" data-id="'+curCat.id+'">'+text_cat+'</div>');
+                $('#category').append(cat);
+                cat.css({'background-color':curCat.color,'height':'auto',
+                        'left':'15px',
+                        'top': y+'px'}); 
+                var minHeight = this._getCategoryMinHeight(curCat);
+                var height = this._getCategoryHeight(i);
+                var trueHeight = (minHeight > height ? minHeight : height);
+                y += trueHeight  + this.params.catSpace;
+                cat.css('height', trueHeight+'px');
+            }
+        }
+    },
+    /**
+     * Compute minimum height of a category
+     * Usefull to compute size to reserve for an empty category
+     * Basically : each letter takes 20px
+     * TODO do it better, should depend on font size
+     * @param {type} category
+     * @returns {undefined}
+     */
+    _getCategoryMinHeight: function(category){
+        return category.short_name.length * 20;
     },
     /**
      * Draw an event if necessary
@@ -394,9 +597,6 @@ $.widget("epeires.timeline", {
     _modifyEvent: function(event){
         
     },
-    _drawCategories: function(){
-        
-    },
     /**
      * Get new and modified events every 10 seconds
      * @returns {undefined}
@@ -418,7 +618,7 @@ $.widget("epeires.timeline", {
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                     }
                 }).always(function () {
-                    self.timerUpdate = setTimeout(self._updateEvents, 10000);
+                    self.timerUpdate = setTimeout(function(){self._updateEvents();}, 10000);
                 });
     },
     _pauseUpdate: function() {
@@ -450,22 +650,31 @@ $.widget("epeires.timeline", {
         var categ = this._getCategory(event.category_root_id);
         var couleur = categ.color;
         var startdate = new Date(event.start_date);
+        var x = this._computeX(startdate);
+        var y = this._computeY(this._getEventPosition(event.id));
         //cas 1 : évènement ponctuel
         if (event.punctual) {
-            var x = this._computeX(startdate);
             var haut = this.options.eventHeight * 2 / 3;
             var larg = haut * 5 / 8;
-            elmt_rect.css({'position': 'absolute', 'left': -larg + 'px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
-                'border-right': larg + 'px solid transparent', 'border-bottom': haut + 'px solid ' + couleur, 'z-index': 1});
+            elmt_rect.css({'position': 'absolute', 
+                'left': -larg + 'px', 
+                'width': 0, 
+                'height': 0, 
+                'border-left': larg + 'px solid transparent',
+                'border-right': larg + 'px solid transparent', 
+                'border-bottom': haut + 'px solid ' + couleur, 
+                'z-index': 1});
             elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
                 'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
             elmt_rect.css({'left': '+=' + x});
             elmt_compl.css({'left': x + 'px'});
-        //cas 2 : date antèrieure au débit de la timeline
-        } else if (startdate < this.timelineBegin) {
-            
+        //cas 2 : date antèrieure au début de la timeline
+        } else {
+            if (startdate < this.timelineBegin) {
+                
+            }
         }
-
+        elmt.css('top', y+'px');
         //ajout à la timeline
         this.element.append(elmt);
     },
@@ -516,7 +725,7 @@ $.widget("epeires.timeline", {
         elmt_rect.append(move_fin);
         var dy = this.options.eventHeight;
         var largeur = 300;
-        elmt.css({'position': 'absolute', 'top': 150 + 'px', 'left': '0px', 'width': largeur, 'height': dy});
+        elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy});
         elmt_flecheG.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
         elmt_flecheD.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
         elmt_b1.css({'z-index': 1});
