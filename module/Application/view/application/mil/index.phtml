@@ -1,4 +1,107 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeline.js');
+$this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
+?>
+
+<?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
+        <div id="create-evt" class="popover fade bottom in" data-spy="affix" data-offset-top="80">
+            <div class="overflow-auto">
+                <div class="arrow"></div>
+                <div class="loading"></div>
+                <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
+                <div id="event">
+                        <div>Chargement...</div>
+                        <!-- formulaire createform.phtml récupéré via ajax -->
+                </div>
+            </div>
+        </div>
+        <div id="suggestions-container">
+        </div>
+<?php endif; ?>
+
+<div id="search-results" class="popover fade bottom in">
+        <div class="arrow"></div>
+        <div class="loading"></div>
+        <div id="results">
+                <div>Chargement...</div>
+        </div>
+</div>
+
+<div id="fiche" class="panel panel-fixed">
+</div>
+<div id="timeline">
+    <div class="loading"></div>
+    <div id="calendar">
+        <p><a href="#" id="day-backward"><i class="icon-backward"></i></a> <input id="date" type="text" class="date input-small"></input> <a href="#" id="day-forward"><i class="icon-forward"></i></a> <a href="#" id="export"><i class="icon-print"></i></a></p>
+    </div>
+</div>
+
+
+<?php 
+//modal windows to modify or delete file
+echo $this->modalwindow("confirm-delete-file",
+					"<h3>Confirmer la suppression du fichier ?</h3>",
+					"",
+					null,
+					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
+					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
+					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+?>
+
 <?php
 
-echo $this->number;
+echo $this->modalwindow(
+    "add-file",
+    "<h3>Ajout d'un fichier</h3>",
+    "",
+    "<div id=\"file-upload-form\"></div>"
+    );
+
+echo $this->modalwindow("add-alarm",
+	"<h3 id=\"alarm-title\">Ajout d'un mémo</h3>",
+	"",
+	"<div id=\"alarm-form\"></div>");
+    
+echo $this->modalwindow('add-note-modal',
+        "<h3>Ajout d'une note</h3>",
+        "",
+        "<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
+        . "<div class=\"modal-body\">"
+            . "<div class=\"control-group\">"
+                . "<label class=\"control-label\">Contenu : </label>"
+                . "<div class=\"controls\"><textarea name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
+            . "</div>"
+        . "</div>"
+        . "<div class=\"modal-footer\">"
+            . "<div class=\"control-group\">"
+                . "<div class=\"controls\">"
+                    . "<div style=\"display:inline-block; position:relative;\">"
+                        . "<input type=\"submit\" class=\"btn btn-small btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+                    . "</div>"
+                . "</div>"
+            . "</div>"
+        . "</div>"
+        . "</form>");
 ?>
+
+<?php $this->inlineScript()->captureStart();?>
+
+
+$('#timeline').timeline({
+    eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
+    categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories?rootonly=false',
+    topOffset: 82,
+    showOnlyRootCategories: false,
+    initComplete: function(){$("#timeline .loading").hide();}
+});
+
+//init form
+form('<?php echo $this->url('application');?>');
+
+fileupload('<?php echo $this->url('application')?>');
+
+//search
+search('<?php echo $this->url('application', array('controller'=>'events'));?>');
+
+<?php $this->inlineScript()->captureEnd();?>

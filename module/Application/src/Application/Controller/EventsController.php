@@ -1146,9 +1146,27 @@ class EventsController extends TabController {
      */
     public function getcategoriesAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $criteria = Criteria::create();
+        $rootonly = $this->params()->fromQuery('rootonly', true);
+        $timeline = $this->params()->fromQuery('timeline', true);
+        error_log($rootonly);
+        $cat = $this->params()->fromQuery('cat', null);
+        if($cat){
+            $category = $objectManager->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
+            if($category){
+                $criteria->andWhere(Criteria::expr()->orX(
+                        Criteria::expr()->eq('id', $category->getId()),
+                        Criteria::expr()->eq('parent', $category)));
+            }
+        }
     	$json = array();
-    	$criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
-    	$criteria->andWhere(Criteria::expr()->eq('timeline', true));
+        if($rootonly === true){
+            error_log('test');
+            $criteria->andWhere(Criteria::expr()->isNull('parent'));
+        }
+        if($timeline === true){
+            $criteria->andWhere(Criteria::expr()->eq('timeline', true));
+        }
         $criteria->orderBy(array("place" => Criteria::ASC));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
     	$readablecat = $this->filterReadableCategories($categories);
@@ -1159,7 +1177,9 @@ class EventsController extends TabController {
     			'short_name' => $category->getShortName(),
     			'color' => $category->getColor(),
     			'compact' => $category->isCompactMode(),
-                        'place' => $category->getPlace()
+                        'place' => $category->getPlace(),
+                        'parent_id' => ($category->getParent() ? $category->getParent()->getId() : -1),
+                        'parent_place' => ($category->getParent() ? $category->getParent()->getPlace() : -1)
     		);
     	}
     	

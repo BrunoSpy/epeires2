@@ -1,3 +1,19 @@
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /* 
  * Timeline - JQuery UI Widget
  * 
@@ -8,7 +24,8 @@
  *      topOffset: vertical offset in pixels,
  *      leftOffset: left offset in pixels,
  *      rightOffset: right offset in pixels,
- *      eventHeight: height of an event in pixels
+ *      eventHeight: height of an event in pixels,
+ *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true)
  * });
  * 
  * @author Jonathan Colson
@@ -84,7 +101,9 @@ $.widget("epeires.timeline", {
         topOffset: 0,
         leftOffset: 95,
         rightOffset: 40,
-        eventHeight: 30
+        eventHeight: 30,
+        showOnlyRootCategories: true,
+        category: ""
     },
     //Main function
     //Initialize the timeline
@@ -107,7 +126,32 @@ $.widget("epeires.timeline", {
             self._setUnselectable();
             //sort categories by place
             self.sortCategories(function (a, b) {
-                return a.place - b.place;
+                if (self.options.showOnlyRootCategories){
+                    return a.place - b.place;
+                } else {
+                    if(a.parent_id === -1 && b.parent_id !== -1){
+                        if(b.parent_id === a.id){
+                            return -1;
+                        } else {
+                            return a.place - b.parent_place;
+                        }
+                    } else if(a.parent_id !== -1 && b.parent_id === -1) {
+                        if(a.parent_id === b.id){
+                            return 1;
+                        } else {
+                            return a.parent_place - b.place;
+                        }
+                    } else if(a.parent_id === -1 && b.parent_id === -1){
+                        return a.place - b.place;
+                    } else if(a.parent_id !== -1 && b.parent_id !== -1){
+                        if(a.parent_id === b.parent_id) {
+                            return a.place - b.place;
+                        } else {
+                            return a.parent_place - b.parent_place;
+                        }
+                    }
+                    return 0;
+                }
             });
             //get events and display them
             $.when($.getJSON(self.options.eventUrl, function (data) {
@@ -151,6 +195,10 @@ $.widget("epeires.timeline", {
             self.prev_scroll = scrolltop;
         });
         
+        //retracé de la timeline en cas de changement de taille de fenêtre
+	$(window).resize(function () {
+		
+	});
     },
     /* ********************** */
     /* *** Public methods *** */
@@ -350,9 +398,13 @@ $.widget("epeires.timeline", {
                 var catOffset = 0;
                 //deux cas selon si l'évènement appartient à la même catégorie que le précédent
                 //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
-                if(prevEvent.category_root_id !== event.category_root_id){
+                //le calcul de la catégorie précédente est différent si on affiche les cat non racines ou pas
+                if((this.options.showOnlyRootCategories && prevEvent.category_root_id !== event.category_root_id) ||
+                    (!this.options.showOnlyRootCategories && prevEvent.category_id !== event.category_id)){
                     //calcul du bas de la catégorie non vide précédente
-                    var prevCatPos = this._getCategoryPosition(prevEvent.category_root_id);
+                    var prevCatPos = (this.options.showOnlyRootCategories ?
+                                        this._getCategoryPosition(prevEvent.category_root_id) :
+                                        this._getCategoryPosition(prevEvent.category_id) );
                     catOffset += this._getCategoryBottom(prevCatPos);
                     //si la cat précédente est celle juste avant : rien à faire
                     if(prevCatPos < catPos -1){
@@ -378,7 +430,9 @@ $.widget("epeires.timeline", {
      */
     _getCategoryBottom: function(i){
         var cat = this.categories[i];
-        var catEvents = this.events.filter(function(val){return val.category_root_id === cat.id;});
+        var catEvents = (this.options.showOnlyRootCategories ? 
+                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.events.filter(function(val){return val.category_id === cat.id;}));
         var top = this.element.height();
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
@@ -405,7 +459,9 @@ $.widget("epeires.timeline", {
      */
     _getCategoryHeight: function(i){
         var cat = this.categories[i];
-        var catEvents = this.events.filter(function(val){return val.category_root_id === cat.id});
+        var catEvents = (this.options.showOnlyRootCategories ? 
+                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.events.filter(function(val){return val.category_id === cat.id;}));
         var top = this.element.height();
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
@@ -634,49 +690,53 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     _doDrawEvent: function (event) {
-        var elmt = this._getSkeleton(event);
-        var elmt_rect = elmt.find('.rect_elmt');
-        var elmt_compl = elmt.find('.complement');
-        var elmt_flecheG = elmt.find('.elmt_flecheG');
-        var elmt_flecheD = elmt.find('.elmt_flecheD');
-        var elmt_mod = elmt.find('.modify-evt');
-        var elmt_check = elmt.find('.checklist-evt');
-        var elmt_txt = elmt.find('.label_elmt');
-        var elmt_deb = elmt.find('.elmt_deb');
-        var elmt_fin = elmt.find('.elmt_fin');
-        var move_deb = elmt.find('.move_deb');
-        var move_fin = elmt.find('.move_fin');
-        var lien = elmt.find('.no_lien');
-        var categ = this._getCategory(event.category_root_id);
-        var couleur = categ.color;
-        var startdate = new Date(event.start_date);
-        var x = this._computeX(startdate);
-        var y = this._computeY(this._getEventPosition(event.id));
-        //cas 1 : évènement ponctuel
-        if (event.punctual) {
-            var haut = this.options.eventHeight * 2 / 3;
-            var larg = haut * 5 / 8;
-            elmt_rect.css({'position': 'absolute', 
-                'left': -larg + 'px', 
-                'width': 0, 
-                'height': 0, 
-                'border-left': larg + 'px solid transparent',
-                'border-right': larg + 'px solid transparent', 
-                'border-bottom': haut + 'px solid ' + couleur, 
-                'z-index': 1});
-            elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
-                'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
-            elmt_rect.css({'left': '+=' + x});
-            elmt_compl.css({'left': x + 'px'});
-        //cas 2 : date antèrieure au début de la timeline
-        } else {
-            if (startdate < this.timelineBegin) {
-                
+        var categ = (this.options.showOnlyRootCategories ? 
+                        this._getCategory(event.category_root_id) : 
+                        this._getCategory(event.category_id));
+        if(categ !== null) { //if no category : do not draw this event
+            var elmt = this._getSkeleton(event);
+            var elmt_rect = elmt.find('.rect_elmt');
+            var elmt_compl = elmt.find('.complement');
+            var elmt_flecheG = elmt.find('.elmt_flecheG');
+            var elmt_flecheD = elmt.find('.elmt_flecheD');
+            var elmt_mod = elmt.find('.modify-evt');
+            var elmt_check = elmt.find('.checklist-evt');
+            var elmt_txt = elmt.find('.label_elmt');
+            var elmt_deb = elmt.find('.elmt_deb');
+            var elmt_fin = elmt.find('.elmt_fin');
+            var move_deb = elmt.find('.move_deb');
+            var move_fin = elmt.find('.move_fin');
+            var lien = elmt.find('.no_lien');
+            var couleur = categ.color;
+            var startdate = new Date(event.start_date);
+            var x = this._computeX(startdate);
+            var y = this._computeY(this._getEventPosition(event.id));
+            //cas 1 : évènement ponctuel
+            if (event.punctual) {
+                var haut = this.options.eventHeight * 2 / 3;
+                var larg = haut * 5 / 8;
+                elmt_rect.css({'position': 'absolute', 
+                    'left': -larg + 'px', 
+                    'width': 0, 
+                    'height': 0, 
+                    'border-left': larg + 'px solid transparent',
+                    'border-right': larg + 'px solid transparent', 
+                    'border-bottom': haut + 'px solid ' + couleur, 
+                    'z-index': 1});
+                elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
+                    'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
+                elmt_rect.css({'left': '+=' + x});
+                elmt_compl.css({'left': x + 'px'});
+            //cas 2 : date antèrieure au début de la timeline
+            } else {
+                if (startdate < this.timelineBegin) {
+
+                }
             }
+            elmt.css('top', y+'px');
+            //ajout à la timeline
+            this.element.append(elmt);
         }
-        elmt.css('top', y+'px');
-        //ajout à la timeline
-        this.element.append(elmt);
     },
 
     /**
