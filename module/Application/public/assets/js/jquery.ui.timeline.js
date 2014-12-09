@@ -154,10 +154,13 @@ $.widget("epeires.timeline", {
                 }
             });
             //get events and display them
-            $.when($.getJSON(self.options.eventUrl, function (data) {
-                    $.each(data, function (key, value) {
-                        self.events.push(value);
-                    });
+            $.when($.getJSON(self.options.eventUrl, 
+                    function (data, textStatus, jqHXR) {
+                        if (jqHXR.status !== 304) {
+                            $.each(data, function (key, value) {
+                                self.events.push(value);
+                            });
+                        }
                 })).then(
                     function() {
                         //sort events by categories
@@ -197,7 +200,9 @@ $.widget("epeires.timeline", {
         
         //retracé de la timeline en cas de changement de taille de fenêtre
 	$(window).resize(function () {
-		
+            var height = $(window).height() - self.options.topOffset+'px';
+            self.element.css('height', height);
+            self._changeView();
 	});
     },
     /* ********************** */
@@ -556,10 +561,12 @@ $.widget("epeires.timeline", {
                 'height': this.element.height() - this.params.topSpace});
         }
     },
-    _updateTimebar: function(){var now = new Date();
+    _updateTimebar: function(){
+        var now = new Date();
         var diff = now - this.timelineBegin;
         //si vue six heures et diff > 2 heures : décaler d'une heure
-        if(this.dayview === false && (nowHour - beginHour > 1)){
+        //calcul faux, tenir compte du changement de jour
+        if(this.dayview === false && (now.getUTCHours() - this.timelineBegin.getUTCHours() > 1)){
             this._changeView();
         //TODO si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
         } else if(true) {
@@ -661,7 +668,7 @@ $.widget("epeires.timeline", {
         var self = this;
         return $.getJSON(self.options.eventUrl + (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : ''),
                 function (data, textStatus, jqHXR) {
-                    if (jqHXR.status != 304) {
+                    if (jqHXR.status !== 304) {
                         $.each(data, function(key, value){
                             var tempEvents = self.events.filter(function(val){
                                 return val.id == key;
