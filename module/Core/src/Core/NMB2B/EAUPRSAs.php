@@ -36,12 +36,20 @@ class EAUPRSAs {
      */
     public static function getAirspaceDesignator(\SimpleXMLElement $airspace){
         if($airspace->getName() === 'Airspace'){
-            return $airspace
+            $timeslices = $airspace
                         ->children('http://www.aixm.aero/schema/5.1')
-                        ->timeSlice[0]
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceTimeSlice
-                        ->children('http://www.aixm.aero/schema/5.1')->designator;
+                        ->timeSlice;
+            foreach ($timeslices as $timeslice){
+                $airspacetimeslice = $timeslice
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->AirspaceTimeSlice;
+                foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child){
+                    if($child->getName() === 'designator'){
+                        return $child;
+                    }
+                }
+            }
+            return "";
         } else {
             throw new \UnexpectedValueException("Airspace Element expected.");
         }
@@ -58,16 +66,22 @@ class EAUPRSAs {
             $timeslices = $airspace
                         ->children('http://www.aixm.aero/schema/5.1')
                         ->timeSlice;
-            if(count($timeslices) === 2 ){
-                return $timeslices[1]
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceTimeSlice
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->validTime
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->TimePeriod
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->beginPosition;
+            if(count($timeslices) >= 2 ){
+                foreach ($timeslices as $timeslice){
+                    $validtime = $timeslice
+                            ->children('http://www.aixm.aero/schema/5.1')
+                            ->AirspaceTimeSlice
+                            ->children('http://www.opengis.net/gml/3.2')
+                            ->validTime;
+                    foreach ($validtime->children('http://www.opengis.net/gml/3.2') as $child) {
+                        if($child->getName() === 'TimePeriod'){
+                            return $child
+                                    ->children('http://www.opengis.net/gml/3.2')
+                                    ->beginPosition;
+                        }
+                    }
+                }
+                
             } else {
                 throw new \UnexpectedValueException("Not a valid Airspace.");
             }
@@ -98,15 +112,20 @@ class EAUPRSAs {
                         ->children('http://www.aixm.aero/schema/5.1')
                         ->timeSlice;
             if(count($timeslices) === 2 ){
-                return $timeslices[1]
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceTimeSlice
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->validTime
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->TimePeriod
-                        ->children('http://www.opengis.net/gml/3.2')
-                        ->endPosition;
+                foreach ($timeslices as $timeslice){
+                    $validtime = $timeslice
+                            ->children('http://www.aixm.aero/schema/5.1')
+                            ->AirspaceTimeSlice
+                            ->children('http://www.opengis.net/gml/3.2')
+                            ->validTime;
+                    foreach ($validtime->children('http://www.opengis.net/gml/3.2') as $child) {
+                        if($child->getName() === 'TimePeriod'){
+                            return $child
+                                    ->children('http://www.opengis.net/gml/3.2')
+                                    ->endPosition;
+                        }
+                    }
+                }
             } else {
                 throw new \UnexpectedValueException("Not a valid Airspace.");
             }
@@ -137,19 +156,23 @@ class EAUPRSAs {
                         ->children('http://www.aixm.aero/schema/5.1')
                         ->timeSlice;
             if(count($timeslices) === 2 ){
-                return $timeslices[1]
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceTimeSlice
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->activation
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceActivation
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->levels
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceLayer
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->upperLimit;
+                foreach ($timeslices as $timeslice){
+                    $airspacetimeslice = $timeslice
+                            ->children('http://www.aixm.aero/schema/5.1')
+                            ->AirspaceTimeSlice;
+                    foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child){
+                        if($child->getName() === 'activation'){
+                            return $child->children('http://www.aixm.aero/schema/5.1')
+                                        ->AirspaceActivation
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->levels
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->AirspaceLayer
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->upperLimit;
+                        }
+                    }
+                }                        
             }
         } else {
             throw new \UnexpectedValueException("Airspace Element expected.");
@@ -168,19 +191,23 @@ class EAUPRSAs {
                         ->children('http://www.aixm.aero/schema/5.1')
                         ->timeSlice;
             if(count($timeslices) === 2 ){
-                return $timeslices[1]
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceTimeSlice
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->activation
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceActivation
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->levels
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->AirspaceLayer
-                        ->children('http://www.aixm.aero/schema/5.1')
-                        ->lowerLimit;
+                foreach ($timeslices as $timeslice){
+                    $airspacetimeslice = $timeslice
+                            ->children('http://www.aixm.aero/schema/5.1')
+                            ->AirspaceTimeSlice;
+                    foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child){
+                        if($child->getName() === 'activation'){
+                            return $child->children('http://www.aixm.aero/schema/5.1')
+                                        ->AirspaceActivation
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->levels
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->AirspaceLayer
+                                        ->children('http://www.aixm.aero/schema/5.1')
+                                        ->lowerLimit;
+                        }
+                    }
+                } 
             }
         } else {
             throw new \UnexpectedValueException("Airspace Element expected.");

@@ -48,7 +48,7 @@ $.widget("epeires.timeline", {
     /**
      * Current view
      */
-    dayview: true,
+    dayview: false,
     /**
      * Display or not root categories
      */
@@ -165,8 +165,6 @@ $.widget("epeires.timeline", {
                     function() {
                         //sort events by categories
                         self.sortEvents();
-                        // ini params
-                        self.view("sixhours");
                         //update timebar every minute
                         setInterval(function(){self._updateTimebar();}, 60000);
                         //trigger event when init is finished
@@ -202,7 +200,7 @@ $.widget("epeires.timeline", {
 	$(window).resize(function () {
             var height = $(window).height() - self.options.topOffset+'px';
             self.element.css('height', height);
-            self._changeView();
+            self._updateView();
 	});
     },
     /* ********************** */
@@ -224,12 +222,12 @@ $.widget("epeires.timeline", {
         this._trigger("erase", event, {eventId: event.id});
     },
     view: function (viewName) {
-        if (viewName == "day" && !this.dayview) {
+        if (viewName === "day" && !this.dayview) {
             this.dayview = true;
-            this._changeView();
-        } else if (viewName == "sixhours" && this.dayview) {
+            this._updateView();
+        } else if (viewName === "sixhours" && this.dayview) {
             this.dayview = false;
-            this._changeView();
+            this._updateView();
         }
     },
     /**
@@ -274,6 +272,7 @@ $.widget("epeires.timeline", {
         } else {
             this.events.sort(comparator);
         }
+        this._updateView();
     },
     /**
      * Sort categories according to comparator
@@ -303,9 +302,10 @@ $.widget("epeires.timeline", {
 
     /**
      * Switch between dayview and 6-hours view
+     * @param full If true, redrawe base and timebar
      * @returns {undefined}
      */
-    _changeView: function () {
+    _updateView: function (full) {
         //update local var
         if (this.dayview) {
             this.timelineDuration = 24;
@@ -322,10 +322,12 @@ $.widget("epeires.timeline", {
             this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
             this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
         }
-        // draw base
-        this._drawBase();
-        // draw timeBar
-        this._drawTimeBar();
+        if(full !== false){
+            // draw base
+            this._drawBase();
+            // draw timeBar
+            this._drawTimeBar();
+        }
         //update events
         for(var i = 0; i < this.events.length; i++){
             this._drawEvent(this.events[i]);
@@ -563,13 +565,12 @@ $.widget("epeires.timeline", {
     },
     _updateTimebar: function(){
         var now = new Date();
-        var diff = now - this.timelineBegin;
+        var diff = (now - this.timelineBegin)/(1000*60*60); //différence en heure
         //si vue six heures et diff > 2 heures : décaler d'une heure
-        //calcul faux, tenir compte du changement de jour
-        if(this.dayview === false && (now.getUTCHours() - this.timelineBegin.getUTCHours() > 1)){
-            this._changeView();
-        //TODO si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
-        } else if(true) {
+        if(this.dayview === false && diff > 2){
+            this._updateView();
+        //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
+        } else if(this.dayview === true) {
             
         }
         var x = this._computeX(new Date());

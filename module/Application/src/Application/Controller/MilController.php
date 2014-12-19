@@ -12,7 +12,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
 
-class MilController extends TabController {
+class MilController extends AbstractActionController {
 	
 	
 	public function indexAction(){
