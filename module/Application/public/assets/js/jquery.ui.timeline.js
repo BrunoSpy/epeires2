@@ -31,12 +31,17 @@
  * @author Jonathan Colson
  */
 
+(function( $, undefined ) {
 $.widget("epeires.timeline", {
     version: "0.0.1",
     /**
      * List of events
      */
     events: [],
+    /**
+     * Table id => event position
+     */
+    eventsPosition: [],
     /**
      * List of categories
      */
@@ -49,6 +54,10 @@ $.widget("epeires.timeline", {
      * Current view
      */
     dayview: false,
+    /**
+     * Day to display if dayview === true
+     */
+    currentDay: new Date(),
     /**
      * Display or not root categories
      */
@@ -155,12 +164,15 @@ $.widget("epeires.timeline", {
             });
             //get events and display them
             $.when($.getJSON(self.options.eventUrl, 
-                    function (data, textStatus, jqHXR) {
-                        if (jqHXR.status !== 304) {
-                            $.each(data, function (key, value) {
-                                self.events.push(value);
-                            });
-                        }
+                function (data, textStatus, jqHXR) {
+                    if (jqHXR.status !== 304) {
+                        var pos = 0;
+                        $.each(data, function (key, value) {
+                            self.events.push(value);
+                            self.eventsPosition[pos] = value.id;
+                            pos++;
+                        });
+                    }
                 })).then(
                     function() {
                         //sort events by categories
@@ -168,9 +180,9 @@ $.widget("epeires.timeline", {
                         //update timebar every minute
                         setInterval(function(){self._updateTimebar();}, 60000);
                         //trigger event when init is finished
-                        self._trigger("initComplete")
-                    ;}
-            );
+                        self._trigger("initComplete");
+                    }
+                );
         });
         
         //manage scrolling
@@ -212,7 +224,15 @@ $.widget("epeires.timeline", {
      * @param {type} event Object
      */
     addEvent: function (event) {
-
+        //ne pas ajouter une évènement déjà existant
+        if(event.id in this.eventsPositions && this.events[this.eventsPositions[event.id]]) {
+            this.modifyEvent(event);
+        } else {
+            //insertion de l'évènement dans le tableau
+            //mise à jour de la position verticale de tous les évènements
+            //puis redessin des catégories si besoin
+            var formerPositions = this.eventsPosition.slice(0);
+        }
     },
     modifyEvent: function (event) {
 
@@ -221,12 +241,22 @@ $.widget("epeires.timeline", {
         this._eraseEvent(event);
         this._trigger("erase", event, {eventId: event.id});
     },
-    view: function (viewName) {
+    view: function (viewName, day) {
         if (viewName === "day" && !this.dayview) {
             this.dayview = true;
             this._updateView();
         } else if (viewName === "sixhours" && this.dayview) {
             this.dayview = false;
+            if(day === undefined) {
+                this.currentDay = new Date(); //now
+            } else {
+                var tempday = new Date(day);
+                if(this._isValidDate(tempday)){
+                    this.currentDay = tempday;
+                } else {
+                    this.currentDay = new Date();
+                }
+            }
             this._updateView();
         }
     },
@@ -237,8 +267,15 @@ $.widget("epeires.timeline", {
      */
     day: function (date) {
         if(this.dayview){
-            
+            var tempday = new Date(date);
+            if(this._isValidDate(tempday)){
+                this.currentDay = tempday;
+            } else {
+                this.currentDay = new Date();
+            }
+            this._changeView();
         }
+        //else : do nothing
     },
     /*
      * Sort events
@@ -271,6 +308,9 @@ $.widget("epeires.timeline", {
             });
         } else {
             this.events.sort(comparator);
+        }
+        for(var i = 0; i < this.events.length; i++){
+            this.eventsPosition[this.events[i].id] = i;
         }
         this._updateView();
     },
@@ -309,11 +349,8 @@ $.widget("epeires.timeline", {
         //update local var
         if (this.dayview) {
             this.timelineDuration = 24;
-            var now = new Date();
-            //diff between utc and local time
-            //TODO
-            var diff = 2;
-            this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), diff, 0, 0);
+            var diff = this.currentDay.getTimezoneOffset()/(-60);
+            this.timelineBegin = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), diff, 0, 0);
             this.timelineEnd = new Date(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
             this.timelineBegin.getHours() + this.timelineDuration, 0, 0);
         } else {
@@ -338,10 +375,8 @@ $.widget("epeires.timeline", {
         }
     },
     _getCategory: function (id) {
-        for (var i = 0; i < this.categories.length; i++) {
-            if (this.categories[i].id === id) {
-                return this.categories[i];
-            }
+        if(id in this.catPositions){
+            return this.categories[this.catPositions[id]];
         }
         return null;
     },
@@ -421,6 +456,10 @@ $.widget("epeires.timeline", {
                     }
                     return catOffset + this.params.catSpace;
                 } else {
+                    //l'évènement n'est pas le premier : soit on compacte soit on crée une nouvelle ligne
+                    if(cat.compact){
+                        
+                    }
                     var topPrevEvent = parseInt($('#event'+prevEvent.id).css('top'), 10);
                     return topPrevEvent + this.options.eventHeight + this.params.eventSpace;
                 }
@@ -642,7 +681,14 @@ $.widget("epeires.timeline", {
             this._eraseEvent(event);
         }
     },
-    
+    /**
+     * Surligne un évènement pour le mettre en valeur
+     * @param {type} event
+     * @returns {undefined}
+     */
+    _highlightEvent: function(event){
+        
+    },
     /**
      * Erase an event if displayed
      * @param {type} event
@@ -875,5 +921,11 @@ $.widget("epeires.timeline", {
                 }).bind('selectstart', function () {
             return false;
         });
+    },
+    _isValidDate: function (d) {
+        if ( Object.prototype.toString.call(d) !== "[object Date]" )
+            return false;
+        return !isNaN(d.getTime());
     }
-});
+  });
+})( jQuery );
