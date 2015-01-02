@@ -43,6 +43,11 @@ $.widget("epeires.timeline", {
      */
     eventsPosition: [],
     /**
+     * Evènements affichés
+     */
+    eventsDisplayed: [],
+    eventsDiplayedPosition: [],
+    /**
      * List of categories
      */
     categories: [],
@@ -90,6 +95,10 @@ $.widget("epeires.timeline", {
      * 
      */
     timerUpdate:0,
+    
+    lastCategoriesComparator: undefined,
+    lastEventComparator: undefined,
+    lastFilter: undefined,
     //paramètres pour les dessins
     params: {
         //espace entre les catégories
@@ -168,17 +177,23 @@ $.widget("epeires.timeline", {
                     if (jqHXR.status !== 304) {
                         var pos = 0;
                         $.each(data, function (key, value) {
+                            //ajout des attributs aux évènements
+                            value.display = true;
+                            value.shade = false;
                             self.events.push(value);
                             self.eventsPosition[pos] = value.id;
                             pos++;
                         });
+                        self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                     }
                 })).then(
                     function() {
-                        //sort events by categories
+                        //sort events by categories which will trigger events' drawing
                         self.sortEvents();
                         //update timebar every minute
                         setInterval(function(){self._updateTimebar();}, 60000);
+                        //update events every 10s
+                        setTimeout(function(){self._updateEvents();}, 10000);
                         //trigger event when init is finished
                         self._trigger("initComplete");
                     }
@@ -225,21 +240,28 @@ $.widget("epeires.timeline", {
      */
     addEvent: function (event) {
         //ne pas ajouter une évènement déjà existant
-        if(event.id in this.eventsPositions && this.events[this.eventsPositions[event.id]]) {
+        if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]) {
             this.modifyEvent(event);
         } else {
-            //insertion de l'évènement dans le tableau
-            //mise à jour de la position verticale de tous les évènements
-            //puis redessin des catégories si besoin
-            var formerPositions = this.eventsPosition.slice(0);
+            //ajout de l'évènement en fin de tableau
+            //la relance du tri forcera le dessin et la mise à jour des évènements
+            var pos = this.events.length;
+            event.display = true;
+            event.shade = false;
+            this.events.push(event);
+            this.eventsPosition[pos] = event.id;
+            this.sortEvents();
         }
     },
-    modifyEvent: function (event) {
-
+    addEvents: function(eventsList){
+        var self = this;
+        $.each(eventsList, function(key,value){
+            self.addEvent(value);
+        });
     },
     removeEvent: function (event) {
-        this._eraseEvent(event);
-        this._trigger("erase", event, {eventId: event.id});
+        this._hideEvent(event);
+        this._trigger("hide", event, {eventId: event.id});
     },
     view: function (viewName, day) {
         if (viewName === "day" && !this.dayview) {
@@ -266,6 +288,7 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     day: function (date) {
+        var self = this;
         if(this.dayview){
             var tempday = new Date(date);
             if(this._isValidDate(tempday)){
@@ -273,7 +296,14 @@ $.widget("epeires.timeline", {
             } else {
                 this.currentDay = new Date();
             }
-            this._changeView();
+            //on récupère les évènements
+            this._pauseUpdate();
+            $.when($.getJSON(self.options.eventUrl+'?day='+self.currentDay.toUTCString(), function(data){
+                self.addEvents(data);
+            })).then(function(){
+                self._updateView();    
+                self._restoreUpdate();
+            });
         }
         //else : do nothing
     },
@@ -285,7 +315,7 @@ $.widget("epeires.timeline", {
     sortEvents: function (comparator) {
         var self = this;
         //comparateur par défaut : catégorie racine, puis place dans la catégorie, puis date de début
-        if (typeof comparator === "undefined") {
+        if (comparator === undefined && this.lastEventComparator === undefined) {
             this.events.sort(function (a, b) {
                 if(self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
                     return -1;
@@ -306,8 +336,11 @@ $.widget("epeires.timeline", {
                 }
                 return 0;
             });
+        } else if(comparator === undefined && this.lastEventComparator !== undefined){
+            this.events.sort(this.lastEventComparator);
         } else {
-            this.events.sort(comparator);
+            this.lastEventComparator = comparator;
+            this.events.sort(this.lastEventComparator);
         }
         for(var i = 0; i < this.events.length; i++){
             this.eventsPosition[this.events[i].id] = i;
@@ -333,8 +366,26 @@ $.widget("epeires.timeline", {
             this.catPositions[this.categories[i].id] = i;
         }
     },
-    filter: function () {
-
+    filter: function (callback) {
+        var cb = callback;
+        if(cb === undefined && this.lastFilter === undefined){
+            cb = function(event){return true;};
+        } else if(cb === undefined && this.lastFilter !== undefined){
+            cb = this.lastFilter;
+        } else {
+            this.lastFilter = cb;
+        }
+        this.events.forEach(function(element, index){
+            var elt = element;
+            elt.display = cb(elt);
+            this[index] = elt;
+        }, this.events);
+    },
+    /**
+     * Force an update of the view
+     */
+    forceUpdate: function(){
+        this._updateView(true);
     },
     /* ********************** */
     /* *** Private methods ** */
@@ -366,6 +417,17 @@ $.widget("epeires.timeline", {
             this._drawTimeBar();
         }
         //update events
+        //reapply filter and determine wich events are to be displayed
+        this.filter();
+        for(var i = 0; i < this.events.length ; i++){
+            var evt = this.events[i];
+            evt.display = evt.display && this._isEventInTimeline(evt);
+        }
+        this.eventsDisplayed = this.events.filter(function(event){return event.display;});
+        for(var i = 0; i < this.eventsDisplayed.length; i++){
+            var id = this.eventsDisplayed[i].id;
+            this.eventsDiplayedPosition[id] = i;
+        }
         for(var i = 0; i < this.events.length; i++){
             this._drawEvent(this.events[i]);
         }
@@ -418,14 +480,16 @@ $.widget("epeires.timeline", {
         }
     },
     /**
-     * Calcule l'ordonnée correspondant à un évènement à la place i dans le tableau
-     * @param {type} i Position de l'évènement dans le tableau
+     * Calcule l'ordonnée correspondant à un évènement
+     * @param {type} event Evènement
      * @returns {undefined}
      */
-    _computeY: function (i) {
-        var event = this.events[i];
+    _computeY: function (event) {
+        var i = this.eventsDiplayedPosition[event.id];
         if(this.showCategories){
-            var catPos = this._getCategoryPosition(event.category_root_id);
+            var catPos = (this.options.showOnlyRootCategories ?
+                                this._getCategoryPosition(event.category_root_id) :
+                                this._getCategoryPosition(event.category_id) );
             var cat = this.categories[catPos];
             if(i === 0){
                 //premier élément : somme des hauteurs min des cat précédentes (vides par conséquent)
@@ -436,7 +500,7 @@ $.widget("epeires.timeline", {
                 }
                 return top;
             } else {
-                var prevEvent = this.events[i-1];
+                var prevEvent = this.eventsDisplayed[i-1];
                 var catOffset = 0;
                 //deux cas selon si l'évènement appartient à la même catégorie que le précédent
                 //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
@@ -477,13 +541,13 @@ $.widget("epeires.timeline", {
     _getCategoryBottom: function(i){
         var cat = this.categories[i];
         var catEvents = (this.options.showOnlyRootCategories ? 
-                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
-                            this.events.filter(function(val){return val.category_id === cat.id;}));
-        var top = this.element.height();
+                            this.eventsDisplayed.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.eventsDisplayed.filter(function(val){return val.category_id === cat.id;}));
+        var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
             var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
-            if(topEvent < top) {
+            if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
             if(topEvent > bottom){
@@ -506,13 +570,13 @@ $.widget("epeires.timeline", {
     _getCategoryHeight: function(i){
         var cat = this.categories[i];
         var catEvents = (this.options.showOnlyRootCategories ? 
-                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
-                            this.events.filter(function(val){return val.category_id === cat.id;}));
-        var top = this.element.height();
+                            this.eventsDisplayed.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.eventsDisplayed.filter(function(val){return val.category_id === cat.id;}));
+        var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
             var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
-            if(topEvent < top) {
+            if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
             if(topEvent > bottom){
@@ -596,10 +660,16 @@ $.widget("epeires.timeline", {
         } else {
             var TimeBar = $('<div id="TimeBar"></div>');
             this.element.append(TimeBar);
+            var x = this._computeX(new Date());
             TimeBar.css({
                 'top': this.options.topOffset + this.params.topSpace + 'px',
-                'left': this._computeX(new Date()) + 'px',
                 'height': this.element.height() - this.params.topSpace});
+            if(x > 0){
+                TimeBar.css('left', x+'px');
+                TimeBar.show();
+            } else {
+                TimeBar.hide();
+            }
         }
     },
     _updateTimebar: function(){
@@ -613,7 +683,13 @@ $.widget("epeires.timeline", {
             
         }
         var x = this._computeX(new Date());
-        $('#TimeBar').css('left', x+'px');
+        var timeBar = $('#TimeBar');
+        if(x > 0){
+            timeBar.css('left', x+'px');
+            timeBar.show();
+        } else {
+            timeBar.hide();
+        }
     },
     /**
      * Draw or update categories
@@ -630,18 +706,18 @@ $.widget("epeires.timeline", {
             for (var k = 0; k < curCat.short_name.length; k++) {
                 text_cat += curCat.short_name[k]+'<br>';
             }
+            var cat = $('#category'+curCat.id);
             if($('#category'+curCat.id).length === 0){
-                var cat = $('<div class="category" id="cat'+curCat.id+'" data-id="'+curCat.id+'">'+text_cat+'</div>');
+                var cat = $('<div class="category" id="category'+curCat.id+'" data-id="'+curCat.id+'">'+text_cat+'</div>');
                 $('#category').append(cat);
                 cat.css({'background-color':curCat.color,'height':'auto',
-                        'left':'15px',
-                        'top': y+'px'}); 
-                var minHeight = this._getCategoryMinHeight(curCat);
-                var height = this._getCategoryHeight(i);
-                var trueHeight = (minHeight > height ? minHeight : height);
-                y += trueHeight  + this.params.catSpace;
-                cat.css('height', trueHeight+'px');
+                        'left':'15px'}); 
             }
+            var minHeight = this._getCategoryMinHeight(curCat);
+            var height = this._getCategoryHeight(i);
+            var trueHeight = (minHeight > height ? minHeight : height);
+            cat.animate({'top': y+'px','height': trueHeight+'px'});
+            y += trueHeight  + this.params.catSpace;
         }
     },
     /**
@@ -659,17 +735,8 @@ $.widget("epeires.timeline", {
      * Draw an event if necessary
      */
     _drawEvent: function(event){
-        var startdate = new Date(event.start_date);
-        var enddate = null;
-        if(event.end_date !== null){
-            enddate = new Date(event.end_date);
-        }
         //détermine si l'evt est dans la période affichée
-        if((event.punctual && startdate >= this.timelineBegin && startdate < this.timelineEnd) ||
-            (!event.punctual && startdate <= this.timelineBegin && enddate === null) ||
-            (!event.punctual && enddate !== null && 
-                ((startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
-                 (startdate <= this.timelineBegin && enddate >= this.timelineBegin)))){
+        if(event.display){
             //si oui, déterminer si il existe déjà ou non
             if(this.element.find('#event'+event.id).length > 0){
                 this._modifyEvent(event);
@@ -678,23 +745,33 @@ $.widget("epeires.timeline", {
             }
         } else {
             //suppression de l'évènement
-            this._eraseEvent(event);
+            this._hideEvent(event);
         }
     },
     /**
      * Surligne un évènement pour le mettre en valeur
      * @param {type} event
+     * @param {boolean} highlight true to highlight, false to get back to normal
      * @returns {undefined}
      */
-    _highlightEvent: function(event){
+    _highlightEvent: function(event, highlight){
         
     },
     /**
-     * Erase an event if displayed
+     * 
+     * @param {type} event
+     * @param {boolean} shade true to shade an event, false to get back to normal
+     * @returns {undefined}
+     */
+    _shadeEvent: function(event, shade){
+        
+    },
+    /**
+     * Hide an event if displayed
      * @param {type} event
      * @returns {undefined}
      */
-    _eraseEvent: function(event){
+    _hideEvent: function(event){
         //TODO : destroy popups
         //TODO : animate ?
         this.element.find('#event'+event.id).remove();
@@ -705,7 +782,12 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     _modifyEvent: function(event){
-        
+        //modification de sa position
+        var evt = this.element.find('#event'+event.id);
+        var startdate = new Date(event.start_date);
+        var x = this._computeX(startdate);
+        var y = this._computeY(event);
+        evt.css('top', y+'px');
     },
     /**
      * Get new and modified events every 10 seconds
@@ -716,15 +798,7 @@ $.widget("epeires.timeline", {
         return $.getJSON(self.options.eventUrl + (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : ''),
                 function (data, textStatus, jqHXR) {
                     if (jqHXR.status !== 304) {
-                        $.each(data, function(key, value){
-                            var tempEvents = self.events.filter(function(val){
-                                return val.id == key;
-                            });
-                            if(tempEvents.length === 0){
-                                self.events.push(value);
-                            }
-                            self._drawEvent(value);
-                        });
+                        self.addEvents(data);
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                     }
                 }).always(function () {
@@ -764,7 +838,7 @@ $.widget("epeires.timeline", {
             var couleur = categ.color;
             var startdate = new Date(event.start_date);
             var x = this._computeX(startdate);
-            var y = this._computeY(this._getEventPosition(event.id));
+            var y = this._computeY(event);
             //cas 1 : évènement ponctuel
             if (event.punctual) {
                 var haut = this.options.eventHeight * 2 / 3;
@@ -926,6 +1000,28 @@ $.widget("epeires.timeline", {
         if ( Object.prototype.toString.call(d) !== "[object Date]" )
             return false;
         return !isNaN(d.getTime());
+    },
+    /**
+     * 
+     * @param {type} event
+     * @returns {boolean}
+     */
+    _isEventInTimeline: function (event) {
+        var startdate = new Date(event.start_date);
+        var enddate = null;
+        if(event.end_date !== null){
+            enddate = new Date(event.end_date);
+        }
+        // si l'evt intersecte la timeline
+        if ((event.punctual && startdate >= this.timelineBegin && startdate < this.timelineEnd) ||
+            (!event.punctual && startdate <= this.timelineEnd && enddate === null) ||
+            (!event.punctual && enddate !== null &&
+                ((startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
+                (enddate >= this.timelineBegin && enddate <= this.timelineEnd)))) {
+            return true;
+        } else {
+            return false;
+        }
     }
   });
 })( jQuery );

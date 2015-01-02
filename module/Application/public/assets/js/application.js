@@ -301,7 +301,11 @@ $(document).ready(function(){
         p.append(span);
     });
     
-    //à mettre dans timeline.js ?
+
+    /* ******************************* */
+    /* *** Contrôle de la timeline *** */
+    /* ******************************* */
+
     $('#zoom').on('switch-change', function(e, data) {
         if (data.value) {
             $("#calendar").show();
@@ -323,6 +327,12 @@ $(document).ready(function(){
     $("#date").datepicker({
             dateFormat: "dd/mm/yy",
             showButtonPanel: true
+    });
+    
+    $("#date").on('change', function(){
+        var temp = $('#calendar input[type=text].date').val().split('/');
+        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+        $("#timeline").timeline("day", date.toString());
     });
     
     $("#day-backward").on('click', function(e) {
@@ -374,6 +384,9 @@ $(document).ready(function(){
             displayPanel(id, true);
         }
     })
+    
+    /* ******************************* */
+
 });
 
 

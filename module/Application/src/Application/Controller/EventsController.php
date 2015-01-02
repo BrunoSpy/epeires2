@@ -1069,7 +1069,7 @@ class EventsController extends TabController {
             $this->getResponse()->setStatusCode(304);
             return;
         }
-        
+                
         $this->getResponse()->getHeaders()->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()).' GMT');
         
     	return new JsonModel($json);
@@ -1149,7 +1149,6 @@ class EventsController extends TabController {
         $criteria = Criteria::create();
         $rootonly = $this->params()->fromQuery('rootonly', true);
         $timeline = $this->params()->fromQuery('timeline', true);
-        error_log($rootonly);
         $cat = $this->params()->fromQuery('cat', null);
         if($cat){
             $category = $objectManager->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
@@ -1161,7 +1160,6 @@ class EventsController extends TabController {
         }
     	$json = array();
         if($rootonly === true){
-            error_log('test');
             $criteria->andWhere(Criteria::expr()->isNull('parent'));
         }
         if($timeline === true){
