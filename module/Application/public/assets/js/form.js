@@ -375,7 +375,7 @@ var form = function(url){
 				if(id>0){
 					//modification
 					if(data['events']){
-						timeline.modify(data.events, 0);
+						$('#timeline').timeline('addEvents', data.events);
 					}
 					displayMessages(data.messages);
 				} else {

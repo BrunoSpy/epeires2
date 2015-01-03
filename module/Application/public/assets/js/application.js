@@ -306,6 +306,35 @@ $(document).ready(function(){
     /* *** Contrôle de la timeline *** */
     /* ******************************* */
 
+    $('#tri_deb').on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+	$('#tri_cat').parent().removeClass('active');
+        $('#timeline').timeline('pauseUpdateView');
+        $('#timeline').timeline('option', 'showCategories', false);
+        $('#timeline').timeline('sortEvents', function(a, b){
+            var aStartdate = new Date(a.start_date);
+            var bStartdate = new Date(b.start_date);
+            if(aStartdate < bStartdate){
+                return -1;
+            } else if (aStartdate > bStartdate){
+                return 1;
+            }
+            return 0;
+        });
+        $('#timeline').timeline('forceUpdateView');
+    });
+    
+    $('#tri_cat').on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+	$('#tri_deb').parent().removeClass('active');
+        $('#timeline').timeline('pauseUpdateView');
+        $('#timeline').timeline('option', 'showCategories', true);
+        $('#timeline').timeline('sortEvents', "default");
+        $('#timeline').timeline('forceUpdateView');
+    });
+
     $('#zoom').on('switch-change', function(e, data) {
         if (data.value) {
             $("#calendar").show();

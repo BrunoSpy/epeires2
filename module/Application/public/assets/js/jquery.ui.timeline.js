@@ -64,10 +64,6 @@ $.widget("epeires.timeline", {
      */
     currentDay: new Date(),
     /**
-     * Display or not root categories
-     */
-    showCategories: true,
-    /**
      * Beginning of the timeline
      */
     timelineBegin: new Date(),
@@ -99,6 +95,10 @@ $.widget("epeires.timeline", {
     lastCategoriesComparator: undefined,
     lastEventComparator: undefined,
     lastFilter: undefined,
+    /**
+     * Is update of the view allowed ?
+     */
+    update: true,
     //paramètres pour les dessins
     params: {
         //espace entre les catégories
@@ -120,6 +120,7 @@ $.widget("epeires.timeline", {
         leftOffset: 95,
         rightOffset: 40,
         eventHeight: 30,
+        showCategories: true,
         showOnlyRootCategories: true,
         category: ""
     },
@@ -230,6 +231,18 @@ $.widget("epeires.timeline", {
             self._updateView();
 	});
     },
+    _setOption: function (key, value){
+        if(key === "showCategories"){
+            if(this.options.showCategories !== value){
+                this._super(key, value);
+                if(!this.update){
+                    this._updateView(false);
+                }
+            }
+        } else {        
+            this._super(key, value);
+        }
+    },
     /* ********************** */
     /* *** Public methods *** */
     /* ********************** */
@@ -251,6 +264,17 @@ $.widget("epeires.timeline", {
             this.events.push(event);
             this.eventsPosition[pos] = event.id;
             this.sortEvents();
+        }
+    },
+    modifyEvent: function (event){
+        if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]){
+            var old = this.events[this.eventsPosition[event.id]];
+            event.display = old.display;
+            event.shade = old.shade;
+            this.events[this.eventsPosition[event.id]] = event;
+            this.sortEvents();
+        } else {
+            //event does'nt exist : add it ???
         }
     },
     addEvents: function(eventsList){
@@ -298,11 +322,13 @@ $.widget("epeires.timeline", {
             }
             //on récupère les évènements
             this._pauseUpdate();
+            this.element.find(".loading").show();
             $.when($.getJSON(self.options.eventUrl+'?day='+self.currentDay.toUTCString(), function(data){
                 self.addEvents(data);
             })).then(function(){
                 self._updateView();    
                 self._restoreUpdate();
+                self.element.find('.loading').hide();
             });
         }
         //else : do nothing
@@ -315,7 +341,7 @@ $.widget("epeires.timeline", {
     sortEvents: function (comparator) {
         var self = this;
         //comparateur par défaut : catégorie racine, puis place dans la catégorie, puis date de début
-        if (comparator === undefined && this.lastEventComparator === undefined) {
+        if (comparator === "default" || (comparator === undefined && this.lastEventComparator === undefined)) {
             this.events.sort(function (a, b) {
                 if(self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
                     return -1;
@@ -382,9 +408,17 @@ $.widget("epeires.timeline", {
         }, this.events);
     },
     /**
-     * Force an update of the view
+     * Pause updates of the view
+     * Useful when many options are to be changed to avoid flicker
      */
-    forceUpdate: function(){
+    pauseUpdateView: function(){
+        this.update = false;
+    },
+    /**
+     * Force an update of the view or cancel pause
+     */
+    forceUpdateView: function(){
+        this.update = true;
         this._updateView(true);
     },
     /* ********************** */
@@ -410,6 +444,9 @@ $.widget("epeires.timeline", {
             this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
             this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
         }
+        if(!this.update){
+            return;
+        }
         if(full !== false){
             // draw base
             this._drawBase();
@@ -432,8 +469,10 @@ $.widget("epeires.timeline", {
             this._drawEvent(this.events[i]);
         }
         //draw categories
-        if(this.showCategories){
+        if(this.options.showCategories){
             this._drawCategories();
+        } else {
+            this._hideCategories();
         }
     },
     _getCategory: function (id) {
@@ -486,7 +525,7 @@ $.widget("epeires.timeline", {
      */
     _computeY: function (event) {
         var i = this.eventsDiplayedPosition[event.id];
-        if(this.showCategories){
+        if(this.options.showCategories){
             var catPos = (this.options.showOnlyRootCategories ?
                                 this._getCategoryPosition(event.category_root_id) :
                                 this._getCategoryPosition(event.category_id) );
@@ -496,7 +535,7 @@ $.widget("epeires.timeline", {
                 //                  + offset entre chaque catégorie (5px à rendre paramétrable)
                 var top = this.params.topSpace + this.params.catSpace;
                 for(var j = 0; j < catPos; j++){
-                    top += this._getCategoryMinHeight(cat) + this.params.catSpace;
+                    top += this._getCategoryMinHeight(this.categories[j]) + this.params.catSpace;
                 }
                 return top;
             } else {
@@ -529,8 +568,12 @@ $.widget("epeires.timeline", {
                 }
             }
         } else {
-            //les catégories ne sont pas affichées
-            return 150;
+            if(this.options.compact) {
+                
+            } else {
+                //pas de compactage
+                return this.params.topSpace + i*(this.options.eventHeight + this.params.eventSpace);
+            }
         }
     },
     /**
@@ -698,6 +741,8 @@ $.widget("epeires.timeline", {
     _drawCategories: function(){
         if($('#category').length === 0){
             this.element.append($('<div id="category"></div>'));
+        } else {
+            $('#category').show();
         }
         var y = this.params.topSpace + this.params.catSpace;
         for(var i = 0;i < this.categories.length; i++){
@@ -719,6 +764,9 @@ $.widget("epeires.timeline", {
             cat.animate({'top': y+'px','height': trueHeight+'px'});
             y += trueHeight  + this.params.catSpace;
         }
+    },
+    _hideCategories: function(){
+        $('#category').hide();
     },
     /**
      * Compute minimum height of a category
@@ -866,7 +914,6 @@ $.widget("epeires.timeline", {
             this.element.append(elmt);
         }
     },
-
     /**
      * Create a skeleton for an event.
      * @param {type} event
