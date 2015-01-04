@@ -205,6 +205,7 @@ $.widget("epeires.timeline", {
         $(window).on('scroll', function (event) {
             var scrolltop = $(window).scrollTop();
             var offset = self.options.topOffset + 12;
+            var diff = 0;
             if(scrolltop === 0) {
                 //reinit positions and height
                 $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + self.params.topSpace + 'px');
@@ -213,15 +214,18 @@ $.widget("epeires.timeline", {
                         'top': self.options.topOffset + self.params.topSpace - 5 + 'px'});
                 $('.Time_obj.halfhour').css('top', self.options.topOffset + self.params.topHalfHourSpace + 'px');
                 $('.Time_obj.roundhour').css('top', self.options.topOffset + self.params.topHourSpace + 'px');
-            } else if (scrolltop <= offset) {
-                var diff = scrolltop - self.prev_scroll;
+                self.prev_scroll = 0;
+            } else { 
+                if (scrolltop <= offset) {
+                    diff = scrolltop - self.prev_scroll;
+                    self.prev_scroll = scrolltop;
+                } else {
+                    diff = offset - self.prev_scroll;
+                    self.prev_scroll = offset;
+                }
                 $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
                 $('.Time_obj.vert_bar, #TimeBar').css('height', '+=' + diff + 'px');
-            } else {
-                var diff = offset - self.prev_scroll;
-                $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
-            }
-            self.prev_scroll = scrolltop;
+            }            
         });
         
         //retracé de la timeline en cas de changement de taille de fenêtre
@@ -230,6 +234,32 @@ $.widget("epeires.timeline", {
             self.element.css('height', height);
             self._updateView();
 	});
+        
+        //gestion des évènements souris
+        this.element.on({
+            mouseenter: function(){
+                //affichage du tooltip
+                var id = $(this).data('ident');
+                var event = self.events[self.eventsPosition[id]];
+                var text = "";
+                $.each(event.fields, function(nom, contenu){
+                    text += nom + " : " + contenu + "<br />";
+                });
+                $(this).tooltip({
+                    title: '<span class="elmt_tooltip">'+text+'</span',
+                    container: 'body',
+                    html: 'true'
+                }).tooltip('show');
+                //affichage heure et boutons
+                //TODO
+            },
+            mouseleave: function(){
+                //suppression tooltip
+                $(this).tooltip('destroy');
+                //suppression heure et boutons
+                //TODO
+            }
+        }, '.elmt');
     },
     _setOption: function (key, value){
         if(key === "showCategories"){
@@ -459,6 +489,10 @@ $.widget("epeires.timeline", {
         for(var i = 0; i < this.events.length ; i++){
             var evt = this.events[i];
             evt.display = evt.display && this._isEventInTimeline(evt);
+            //ne pas afficher les évènements dont on n'a pas la catégorie
+            evt.display = evt.display && (this.options.showOnlyRootCategories ? 
+                                            evt.category_root_id in this.catPositions :
+                                            evt.category_id in this.catPositions);
         }
         this.eventsDisplayed = this.events.filter(function(event){return event.display;});
         for(var i = 0; i < this.eventsDisplayed.length; i++){
@@ -820,9 +854,11 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     _hideEvent: function(event){
-        //TODO : destroy popups
+        var elmt = this.element.find('#event'+event.id);
+        //destroy popups
+        elmt.tooltip('destroy');
         //TODO : animate ?
-        this.element.find('#event'+event.id).remove();
+        elmt.remove();
     },
     /**
      * Modify an event already displayed
@@ -836,6 +872,10 @@ $.widget("epeires.timeline", {
         var x = this._computeX(startdate);
         var y = this._computeY(event);
         evt.css('top', y+'px');
+        //TODO déplacement horizontal
+        
+        //suppression du tooltip en cas de déplacement en dehors de la souris
+        
     },
     /**
      * Get new and modified events every 10 seconds

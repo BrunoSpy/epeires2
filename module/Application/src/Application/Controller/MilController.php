@@ -7,7 +7,6 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
@@ -33,11 +32,6 @@ class MilController extends TabController {
         $this->flashMessenger()->clearMessages();
 
         $viewmodel->setVariables(array('messages' => $return));
-
-        $nmservice = $this->serviceLocator->get('nmb2b');
-
-        $viewmodel->setVariables(array('rsas' => $nmservice->getEAUPRSA(array('LFTSA*'), new \DateTime('2014-10-28'), 7)));
-
 
         return $viewmodel;
     }
