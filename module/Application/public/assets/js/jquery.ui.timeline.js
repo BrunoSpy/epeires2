@@ -716,29 +716,49 @@ $.widget("epeires.timeline", {
             var lien = elmt.find('.no_lien');
             var couleur = categ.color;
             var startdate = new Date(event.start_date);
+            var enddate;
+            if (event.end_date != null) {
+            	enddate = new Date(event.end_date);
+            } else {
+            	enddate = -1;
+            }
             var x = this._computeX(startdate);
             var y = this._computeY(this._getEventPosition(event.id));
+            var x_end; 
             //cas 1 : évènement ponctuel
             if (event.punctual) {
-                var haut = this.options.eventHeight * 2 / 3;
-                var larg = haut * 5 / 8;
-                elmt_rect.css({'position': 'absolute', 
-                    'left': -larg + 'px', 
-                    'width': 0, 
-                    'height': 0, 
-                    'border-left': larg + 'px solid transparent',
-                    'border-right': larg + 'px solid transparent', 
-                    'border-bottom': haut + 'px solid ' + couleur, 
-                    'z-index': 1});
-                elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
-                    'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
-                elmt_rect.css({'left': '+=' + x});
-                elmt_compl.css({'left': x + 'px'});
-            //cas 2 : date antèrieure au début de la timeline
+            	var haut = this.options.eventHeight * 2 / 3;
+            	var larg = haut * 5 / 8;
+            	elmt_rect.css({'position': 'absolute', 
+            		'left': -larg + 'px', 
+            		'width': 0, 
+            		'height': 0, 
+            		'border-left': larg + 'px solid transparent',
+            		'border-right': larg + 'px solid transparent', 
+            		'border-bottom': haut + 'px solid ' + couleur, 
+            		'z-index': 1});
+            	elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
+            		'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
+            	elmt_rect.css({'left': '+=' + x});
+            	elmt_compl.css({'left': x + 'px'});
+            	elmt_flecheG.hide();
+            	elmt_flecheD.hide();
+            	//cas 2 : date antérieure au début de la timeline
             } else {
-                if (startdate < this.timelineBegin) {
-
-                }
+            	if (startdate < this.timelineBegin) { 
+            		x = this.options.leftOffset;
+            	} else {
+            		x = this._computeX(startdate);
+            	}
+            	if (enddate > this.timelineEnd) {
+            		x_end = this.element.width - this.options.rightOffset;
+            	} else if (enddate > 0) {
+            		x_end = this._computeX(enddate);
+            	} else {
+            		x_end = this.element.width - this.options.rightOffset;
+            	}
+            	elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x+'px', 'width': (x_end-x)+'px', 'height':this.options.eventHeight ,'z-index' : 2, 
+            		'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
             }
             elmt.css('top', y+'px');
             //ajout à la timeline
