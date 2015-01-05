@@ -44,7 +44,6 @@ class EventRepository extends ExtendedRepository {
             $dayend = new \DateTime($day);
             $dayend->setTime(23, 59, 59);
             $daystart = $daystart->format("Y-m-d H:i:s");
-            error_log($daystart);
             $dayend = $dayend->format("Y-m-d H:i:s");
             //tous les évènements ayant une intersection non nulle avec $day
             $qb->andWhere($qb->expr()->orX(
