@@ -44,6 +44,7 @@ class EventRepository extends ExtendedRepository {
             $dayend = new \DateTime($day);
             $dayend->setTime(23, 59, 59);
             $daystart = $daystart->format("Y-m-d H:i:s");
+            error_log($daystart);
             $dayend = $dayend->format("Y-m-d H:i:s");
             //tous les évènements ayant une intersection non nulle avec $day
             $qb->andWhere($qb->expr()->orX(
@@ -63,19 +64,27 @@ class EventRepository extends ExtendedRepository {
             $parameters[2] = $dayend;
             $qb->setParameters($parameters);
         } else {
-            //every events of the last 3 days :
-            // * no enddate and not punctual
-            // * startdate > now - 3days && startdate < now + 1 day
+            //every events of the last 3 days
             $now = new \DateTime('NOW');
+            $start = clone $now;
+            $start->sub(new \DateInterval('P3D'));
+            $end = clone $now;
+            $end->add(new \DateInterval('P1D'));
             $qb->andWhere($qb->expr()->orX(
+                    //sans date de fin et non ponctuel
                     $qb->expr()->andX($qb->expr()->isNull('e.enddate'), $qb->expr()->eq('e.punctual', 'false')),
+                    //date de début antèrieure au début => date de fin postèrieure au début
+                    $qb->expr()->andX(
+                            $qb->expr()->lte('e.startdate', '?1'),
+                            $qb->expr()->gte('e.enddate', '?1')
+                    ),
+                    //date de début antèrieure au début =>  date de début antérieure à la fin
                     $qb->expr()->andX(
                             $qb->expr()->gte('e.startdate', '?1'),
-                            $qb->expr()->lte('e.startdate', '?2')
-                    )
+                            $qb->expr()->lte('e.startdate', '?2'))
             ));
-            $parameters[1] = $now->sub(new \DateInterval('P3D'))->format('Y-m-d H:i:s');
-            $parameters[2] = $now->add(new \DateInterval('P5D'))->format('Y-m-d H:i:s');
+            $parameters[1] = $start->format("Y-m-d H:i:s");
+            $parameters[2] = $end->format("Y-m-d H:i:s");  
             $qb->setParameters($parameters);
         }
 
