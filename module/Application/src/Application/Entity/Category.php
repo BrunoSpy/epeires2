@@ -161,6 +161,7 @@ class Category {
         $type['antenna'] = "Antenne";
         $type['frequency'] = "Fréquence";
         $type['brouillage'] = "Brouillage fréquence";
+        $type['mil'] = "Zone militaire";
         return $type;
     }
 

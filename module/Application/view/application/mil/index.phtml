@@ -87,10 +87,13 @@ echo $this->modalwindow('add-note-modal',
 
 <?php $this->inlineScript()->captureStart();?>
 
+$("#home").removeClass("dropdown-toggle")
+		  .attr('data-toggle', '')
+		  .html('<i class="icon-home"></i> Évènements');
 
 $('#timeline').timeline({
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
-    categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories?rootonly=false',
+    categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories?rootonly=false&cat=mil',
     topOffset: 82,
     showOnlyRootCategories: false,
     initComplete: function(){$("#timeline .loading").hide();}

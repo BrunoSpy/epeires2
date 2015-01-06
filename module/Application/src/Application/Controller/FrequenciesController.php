@@ -37,19 +37,11 @@ use Application\Form\CustomFieldset;
 /**
  * @author Bruno Spyckerelle
  */
-class FrequenciesController extends ZoneController {
+class FrequenciesController extends TabController {
 
     public function indexAction() {
 
         parent::indexAction();
-
-        $this->layout()->iponumber = "";
-        if($this->zfcUserAuthentication()->hasIdentity()){
-            $iponumber = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getIpoNumber();
-            if($iponumber != null && strlen($iponumber) > 0) {
-                $this->layout()->iponumber = "(".$iponumber.")";
-            } 
-        }
 
         $viewmodel = new ViewModel();
 

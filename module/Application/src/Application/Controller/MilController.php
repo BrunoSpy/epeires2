@@ -7,42 +7,36 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
 
 class MilController extends TabController {
-	
-	
-	public function indexAction(){
-	
-		$viewmodel = new ViewModel();
-		 
-		$return = array();
-		 
-		if($this->flashMessenger()->hasErrorMessages()){
-			$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
-		}
-		 
-		if($this->flashMessenger()->hasSuccessMessages()){
-			$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
-		}
-		
-		$this->flashMessenger()->clearMessages();
-		 
-		$viewmodel->setVariables(array('messages'=>$return));
-				
-		$nmservice = $this->serviceLocator->get('nmb2b');
-                
-                $viewmodel->setVariables(array('rsas' => $nmservice->getEAUPRSA(array('LFTSA*'), new \DateTime('2014-10-28'), 7)));
-                
+
+    public function indexAction() {
+
+        parent::indexAction();
+
+        $viewmodel = new ViewModel();
+
+        $return = array();
+
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $return['errorMessages'] = $this->flashMessenger()->getErrorMessages();
+        }
+
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $return['successMessages'] = $this->flashMessenger()->getSuccessMessages();
+        }
+
+        $this->flashMessenger()->clearMessages();
+
+        $viewmodel->setVariables(array('messages' => $return));
 
         return $viewmodel;
-		
-	}
-	
-	public function importNMB2BAction(){
+    }
+
+    public function importNMB2BAction(){
         $request = $this->getRequest();
 
         if (!$request instanceof ConsoleRequest) {

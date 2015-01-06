@@ -69,12 +69,10 @@ class MilController extends \Application\Controller\FormController {
     				$json['milcat'] = $mil;
     				$json['success'] = true;
     			} catch (\Exception $e) {
-                            error_log(print_r($e->getMessage(), true));
     				$messages['error'][] = $e->getMessage();
     			}
     			
     		} else {
-                    error_log("marche pas");
     			$this->processFormMessages($form->getMessages());
     			$this->flashMessenger()->addErrorMessage("Impossible de modifier la catégorie.");
     		}

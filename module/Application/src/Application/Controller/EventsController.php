@@ -1069,7 +1069,7 @@ class EventsController extends TabController {
             $this->getResponse()->setStatusCode(304);
             return;
         }
-        
+                
         $this->getResponse()->getHeaders()->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()).' GMT');
         
     	return new JsonModel($json);
@@ -1080,26 +1080,26 @@ class EventsController extends TabController {
     	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
     	$json = array('id' => $event->getId(),
                                         'name' => $eventservice->getName($event),
-    					'modifiable' => $eventservice->isModifiable($event),
+    					'modifiable' => $eventservice->isModifiable($event) ? true : false,
     					'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
     					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
-    					'punctual' => $event->isPunctual(),
+    					'punctual' => $event->isPunctual() ? true : false,
     					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
     					'category_root_id' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getId() : $event->getCategory()->getId()),
                                         'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
     					'category' => $event->getCategory()->getName(),
                                         'category_id' => $event->getCategory()->getId(),
     					'category_short' => $event->getCategory()->getShortName(),
-    					'category_compact' => $event->getCategory()->isCompactMode(),
+    					'category_compact' => $event->getCategory()->isCompactMode() ? true : false,
                                         'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : -1),
     					'status_name' => $event->getStatus()->getName(),
     					'status_id' => $event->getStatus()->getId(),
     					'impact_value' => $event->getImpact()->getValue(),
     					'impact_name' => $event->getImpact()->getName(),
     					'impact_style' => $event->getImpact()->getStyle(),
-    					'archived' => $event->isArchived(),
+    					'archived' => $event->isArchived() ? true : false,
                                         'files' => count($event->getFiles()),
-                                        'scheduled' => $event->isScheduled()
+                                        'scheduled' => $event->isScheduled() ? true : false
     	);
     	
     	$fields = array();
@@ -1149,7 +1149,6 @@ class EventsController extends TabController {
         $criteria = Criteria::create();
         $rootonly = $this->params()->fromQuery('rootonly', true);
         $timeline = $this->params()->fromQuery('timeline', true);
-        error_log($rootonly);
         $cat = $this->params()->fromQuery('cat', null);
         if($cat){
             $category = $objectManager->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
@@ -1161,7 +1160,6 @@ class EventsController extends TabController {
         }
     	$json = array();
         if($rootonly === true){
-            error_log('test');
             $criteria->andWhere(Criteria::expr()->isNull('parent'));
         }
         if($timeline === true){

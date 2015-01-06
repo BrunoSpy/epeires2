@@ -31,12 +31,22 @@
  * @author Jonathan Colson
  */
 
+(function( $, undefined ) {
 $.widget("epeires.timeline", {
     version: "0.0.1",
     /**
      * List of events
      */
     events: [],
+    /**
+     * Table id => event position
+     */
+    eventsPosition: [],
+    /**
+     * Evènements affichés
+     */
+    eventsDisplayed: [],
+    eventsDiplayedPosition: [],
     /**
      * List of categories
      */
@@ -48,11 +58,11 @@ $.widget("epeires.timeline", {
     /**
      * Current view
      */
-    dayview: true,
+    dayview: false,
     /**
-     * Display or not root categories
+     * Day to display if dayview === true
      */
-    showCategories: true,
+    currentDay: new Date(),
     /**
      * Beginning of the timeline
      */
@@ -81,6 +91,14 @@ $.widget("epeires.timeline", {
      * 
      */
     timerUpdate:0,
+    
+    lastCategoriesComparator: undefined,
+    lastEventComparator: undefined,
+    lastFilter: undefined,
+    /**
+     * Is update of the view allowed ?
+     */
+    update: true,
     //paramètres pour les dessins
     params: {
         //espace entre les catégories
@@ -102,6 +120,7 @@ $.widget("epeires.timeline", {
         leftOffset: 95,
         rightOffset: 40,
         eventHeight: 30,
+        showCategories: true,
         showOnlyRootCategories: true,
         category: ""
     },
@@ -155,30 +174,38 @@ $.widget("epeires.timeline", {
             });
             //get events and display them
             $.when($.getJSON(self.options.eventUrl, 
-                    function (data, textStatus, jqHXR) {
-                        if (jqHXR.status !== 304) {
-                            $.each(data, function (key, value) {
-                                self.events.push(value);
-                            });
-                        }
+                function (data, textStatus, jqHXR) {
+                    if (jqHXR.status !== 304) {
+                        var pos = 0;
+                        $.each(data, function (key, value) {
+                            //ajout des attributs aux évènements
+                            value.display = true;
+                            value.shade = false;
+                            self.events.push(value);
+                            self.eventsPosition[pos] = value.id;
+                            pos++;
+                        });
+                        self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    }
                 })).then(
                     function() {
-                        //sort events by categories
+                        //sort events by categories which will trigger events' drawing
                         self.sortEvents();
-                        // ini params
-                        self.view("sixhours");
                         //update timebar every minute
                         setInterval(function(){self._updateTimebar();}, 60000);
+                        //update events every 10s
+                        setTimeout(function(){self._updateEvents();}, 10000);
                         //trigger event when init is finished
-                        self._trigger("initComplete")
-                    ;}
-            );
+                        self._trigger("initComplete");
+                    }
+                );
         });
         
         //manage scrolling
         $(window).on('scroll', function (event) {
             var scrolltop = $(window).scrollTop();
             var offset = self.options.topOffset + 12;
+            var diff = 0;
             if(scrolltop === 0) {
                 //reinit positions and height
                 $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + self.params.topSpace + 'px');
@@ -187,23 +214,64 @@ $.widget("epeires.timeline", {
                         'top': self.options.topOffset + self.params.topSpace - 5 + 'px'});
                 $('.Time_obj.halfhour').css('top', self.options.topOffset + self.params.topHalfHourSpace + 'px');
                 $('.Time_obj.roundhour').css('top', self.options.topOffset + self.params.topHourSpace + 'px');
-            } else if (scrolltop <= offset) {
-                var diff = scrolltop - self.prev_scroll;
+                self.prev_scroll = 0;
+            } else { 
+                if (scrolltop <= offset) {
+                    diff = scrolltop - self.prev_scroll;
+                    self.prev_scroll = scrolltop;
+                } else {
+                    diff = offset - self.prev_scroll;
+                    self.prev_scroll = offset;
+                }
                 $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
                 $('.Time_obj.vert_bar, #TimeBar').css('height', '+=' + diff + 'px');
-            } else {
-                var diff = offset - self.prev_scroll;
-                $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
-            }
-            self.prev_scroll = scrolltop;
+            }            
         });
         
         //retracé de la timeline en cas de changement de taille de fenêtre
 	$(window).resize(function () {
             var height = $(window).height() - self.options.topOffset+'px';
             self.element.css('height', height);
-            self._changeView();
+            self._updateView();
 	});
+        
+        //gestion des évènements souris
+        this.element.on({
+            mouseenter: function(){
+                //affichage du tooltip
+                var id = $(this).data('ident');
+                var event = self.events[self.eventsPosition[id]];
+                var text = "";
+                $.each(event.fields, function(nom, contenu){
+                    text += nom + " : " + contenu + "<br />";
+                });
+                $(this).tooltip({
+                    title: '<span class="elmt_tooltip">'+text+'</span',
+                    container: 'body',
+                    html: 'true'
+                }).tooltip('show');
+                //affichage heure et boutons
+                //TODO
+            },
+            mouseleave: function(){
+                //suppression tooltip
+                $(this).tooltip('destroy');
+                //suppression heure et boutons
+                //TODO
+            }
+        }, '.elmt');
+    },
+    _setOption: function (key, value){
+        if(key === "showCategories"){
+            if(this.options.showCategories !== value){
+                this._super(key, value);
+                if(!this.update){
+                    this._updateView(false);
+                }
+            }
+        } else {        
+            this._super(key, value);
+        }
     },
     /* ********************** */
     /* *** Public methods *** */
@@ -214,22 +282,58 @@ $.widget("epeires.timeline", {
      * @param {type} event Object
      */
     addEvent: function (event) {
-
+        //ne pas ajouter une évènement déjà existant
+        if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]) {
+            this.modifyEvent(event);
+        } else {
+            //ajout de l'évènement en fin de tableau
+            //la relance du tri forcera le dessin et la mise à jour des évènements
+            var pos = this.events.length;
+            event.display = true;
+            event.shade = false;
+            this.events.push(event);
+            this.eventsPosition[pos] = event.id;
+            this.sortEvents();
+        }
     },
-    modifyEvent: function (event) {
-
+    modifyEvent: function (event){
+        if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]){
+            var old = this.events[this.eventsPosition[event.id]];
+            event.display = old.display;
+            event.shade = old.shade;
+            this.events[this.eventsPosition[event.id]] = event;
+            this.sortEvents();
+        } else {
+            //event does'nt exist : add it ???
+        }
+    },
+    addEvents: function(eventsList){
+        var self = this;
+        $.each(eventsList, function(key,value){
+            self.addEvent(value);
+        });
     },
     removeEvent: function (event) {
-        this._eraseEvent(event);
-        this._trigger("erase", event, {eventId: event.id});
+        this._hideEvent(event);
+        this._trigger("hide", event, {eventId: event.id});
     },
-    view: function (viewName) {
-        if (viewName == "day" && !this.dayview) {
+    view: function (viewName, day) {
+        if (viewName === "day" && !this.dayview) {
             this.dayview = true;
-            this._changeView();
-        } else if (viewName == "sixhours" && this.dayview) {
+            this._updateView();
+        } else if (viewName === "sixhours" && this.dayview) {
             this.dayview = false;
-            this._changeView();
+            if(day === undefined) {
+                this.currentDay = new Date(); //now
+            } else {
+                var tempday = new Date(day);
+                if(this._isValidDate(tempday)){
+                    this.currentDay = tempday;
+                } else {
+                    this.currentDay = new Date();
+                }
+            }
+            this._updateView();
         }
     },
     /**
@@ -238,9 +342,26 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     day: function (date) {
+        var self = this;
         if(this.dayview){
-            
+            var tempday = new Date(date);
+            if(this._isValidDate(tempday)){
+                this.currentDay = tempday;
+            } else {
+                this.currentDay = new Date();
+            }
+            //on récupère les évènements
+            this._pauseUpdate();
+            this.element.find(".loading").show();
+            $.when($.getJSON(self.options.eventUrl+'?day='+self.currentDay.toUTCString(), function(data){
+                self.addEvents(data);
+            })).then(function(){
+                self._updateView();    
+                self._restoreUpdate();
+                self.element.find('.loading').hide();
+            });
         }
+        //else : do nothing
     },
     /*
      * Sort events
@@ -250,7 +371,7 @@ $.widget("epeires.timeline", {
     sortEvents: function (comparator) {
         var self = this;
         //comparateur par défaut : catégorie racine, puis place dans la catégorie, puis date de début
-        if (typeof comparator === "undefined") {
+        if (comparator === "default" || (comparator === undefined && this.lastEventComparator === undefined)) {
             this.events.sort(function (a, b) {
                 if(self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
                     return -1;
@@ -271,9 +392,16 @@ $.widget("epeires.timeline", {
                 }
                 return 0;
             });
+        } else if(comparator === undefined && this.lastEventComparator !== undefined){
+            this.events.sort(this.lastEventComparator);
         } else {
-            this.events.sort(comparator);
+            this.lastEventComparator = comparator;
+            this.events.sort(this.lastEventComparator);
         }
+        for(var i = 0; i < this.events.length; i++){
+            this.eventsPosition[this.events[i].id] = i;
+        }
+        this._updateView();
     },
     /**
      * Sort categories according to comparator
@@ -294,8 +422,34 @@ $.widget("epeires.timeline", {
             this.catPositions[this.categories[i].id] = i;
         }
     },
-    filter: function () {
-
+    filter: function (callback) {
+        var cb = callback;
+        if(cb === undefined && this.lastFilter === undefined){
+            cb = function(event){return true;};
+        } else if(cb === undefined && this.lastFilter !== undefined){
+            cb = this.lastFilter;
+        } else {
+            this.lastFilter = cb;
+        }
+        this.events.forEach(function(element, index){
+            var elt = element;
+            elt.display = cb(elt);
+            this[index] = elt;
+        }, this.events);
+    },
+    /**
+     * Pause updates of the view
+     * Useful when many options are to be changed to avoid flicker
+     */
+    pauseUpdateView: function(){
+        this.update = false;
+    },
+    /**
+     * Force an update of the view or cancel pause
+     */
+    forceUpdateView: function(){
+        this.update = true;
+        this._updateView(true);
     },
     /* ********************** */
     /* *** Private methods ** */
@@ -303,17 +457,15 @@ $.widget("epeires.timeline", {
 
     /**
      * Switch between dayview and 6-hours view
+     * @param full If true, redrawe base and timebar
      * @returns {undefined}
      */
-    _changeView: function () {
+    _updateView: function (full) {
         //update local var
         if (this.dayview) {
             this.timelineDuration = 24;
-            var now = new Date();
-            //diff between utc and local time
-            //TODO
-            var diff = 2;
-            this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), diff, 0, 0);
+            var diff = this.currentDay.getTimezoneOffset()/(-60);
+            this.timelineBegin = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), diff, 0, 0);
             this.timelineEnd = new Date(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
             this.timelineBegin.getHours() + this.timelineDuration, 0, 0);
         } else {
@@ -322,24 +474,44 @@ $.widget("epeires.timeline", {
             this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
             this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
         }
-        // draw base
-        this._drawBase();
-        // draw timeBar
-        this._drawTimeBar();
+        if(!this.update){
+            return;
+        }
+        if(full !== false){
+            // draw base
+            this._drawBase();
+            // draw timeBar
+            this._drawTimeBar();
+        }
         //update events
+        //reapply filter and determine wich events are to be displayed
+        this.filter();
+        for(var i = 0; i < this.events.length ; i++){
+            var evt = this.events[i];
+            evt.display = evt.display && this._isEventInTimeline(evt);
+            //ne pas afficher les évènements dont on n'a pas la catégorie
+            evt.display = evt.display && (this.options.showOnlyRootCategories ? 
+                                            evt.category_root_id in this.catPositions :
+                                            evt.category_id in this.catPositions);
+        }
+        this.eventsDisplayed = this.events.filter(function(event){return event.display;});
+        for(var i = 0; i < this.eventsDisplayed.length; i++){
+            var id = this.eventsDisplayed[i].id;
+            this.eventsDiplayedPosition[id] = i;
+        }
         for(var i = 0; i < this.events.length; i++){
             this._drawEvent(this.events[i]);
         }
         //draw categories
-        if(this.showCategories){
+        if(this.options.showCategories){
             this._drawCategories();
+        } else {
+            this._hideCategories();
         }
     },
     _getCategory: function (id) {
-        for (var i = 0; i < this.categories.length; i++) {
-            if (this.categories[i].id === id) {
-                return this.categories[i];
-            }
+        if(id in this.catPositions){
+            return this.categories[this.catPositions[id]];
         }
         return null;
     },
@@ -381,25 +553,27 @@ $.widget("epeires.timeline", {
         }
     },
     /**
-     * Calcule l'ordonnée correspondant à un évènement à la place i dans le tableau
-     * @param {type} i Position de l'évènement dans le tableau
+     * Calcule l'ordonnée correspondant à un évènement
+     * @param {type} event Evènement
      * @returns {undefined}
      */
-    _computeY: function (i) {
-        var event = this.events[i];
-        if(this.showCategories){
-            var catPos = this._getCategoryPosition(event.category_root_id);
+    _computeY: function (event) {
+        var i = this.eventsDiplayedPosition[event.id];
+        if(this.options.showCategories){
+            var catPos = (this.options.showOnlyRootCategories ?
+                                this._getCategoryPosition(event.category_root_id) :
+                                this._getCategoryPosition(event.category_id) );
             var cat = this.categories[catPos];
             if(i === 0){
                 //premier élément : somme des hauteurs min des cat précédentes (vides par conséquent)
                 //                  + offset entre chaque catégorie (5px à rendre paramétrable)
                 var top = this.params.topSpace + this.params.catSpace;
                 for(var j = 0; j < catPos; j++){
-                    top += this._getCategoryMinHeight(cat) + this.params.catSpace;
+                    top += this._getCategoryMinHeight(this.categories[j]) + this.params.catSpace;
                 }
                 return top;
             } else {
-                var prevEvent = this.events[i-1];
+                var prevEvent = this.eventsDisplayed[i-1];
                 var catOffset = 0;
                 //deux cas selon si l'évènement appartient à la même catégorie que le précédent
                 //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
@@ -419,13 +593,21 @@ $.widget("epeires.timeline", {
                     }
                     return catOffset + this.params.catSpace;
                 } else {
+                    //l'évènement n'est pas le premier : soit on compacte soit on crée une nouvelle ligne
+                    if(cat.compact){
+                        
+                    }
                     var topPrevEvent = parseInt($('#event'+prevEvent.id).css('top'), 10);
                     return topPrevEvent + this.options.eventHeight + this.params.eventSpace;
                 }
             }
         } else {
-            //les catégories ne sont pas affichées
-            return 150;
+            if(this.options.compact) {
+                
+            } else {
+                //pas de compactage
+                return this.params.topSpace + i*(this.options.eventHeight + this.params.eventSpace);
+            }
         }
     },
     /**
@@ -436,13 +618,13 @@ $.widget("epeires.timeline", {
     _getCategoryBottom: function(i){
         var cat = this.categories[i];
         var catEvents = (this.options.showOnlyRootCategories ? 
-                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
-                            this.events.filter(function(val){return val.category_id === cat.id;}));
-        var top = this.element.height();
+                            this.eventsDisplayed.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.eventsDisplayed.filter(function(val){return val.category_id === cat.id;}));
+        var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
             var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
-            if(topEvent < top) {
+            if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
             if(topEvent > bottom){
@@ -465,13 +647,13 @@ $.widget("epeires.timeline", {
     _getCategoryHeight: function(i){
         var cat = this.categories[i];
         var catEvents = (this.options.showOnlyRootCategories ? 
-                            this.events.filter(function(val){return val.category_root_id === cat.id;}) :
-                            this.events.filter(function(val){return val.category_id === cat.id;}));
-        var top = this.element.height();
+                            this.eventsDisplayed.filter(function(val){return val.category_root_id === cat.id;}) :
+                            this.eventsDisplayed.filter(function(val){return val.category_id === cat.id;}));
+        var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
             var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
-            if(topEvent < top) {
+            if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
             if(topEvent > bottom){
@@ -555,25 +737,36 @@ $.widget("epeires.timeline", {
         } else {
             var TimeBar = $('<div id="TimeBar"></div>');
             this.element.append(TimeBar);
+            var x = this._computeX(new Date());
             TimeBar.css({
                 'top': this.options.topOffset + this.params.topSpace + 'px',
-                'left': this._computeX(new Date()) + 'px',
                 'height': this.element.height() - this.params.topSpace});
+            if(x > 0){
+                TimeBar.css('left', x+'px');
+                TimeBar.show();
+            } else {
+                TimeBar.hide();
+            }
         }
     },
     _updateTimebar: function(){
         var now = new Date();
-        var diff = now - this.timelineBegin;
+        var diff = (now - this.timelineBegin)/(1000*60*60); //différence en heure
         //si vue six heures et diff > 2 heures : décaler d'une heure
-        //calcul faux, tenir compte du changement de jour
-        if(this.dayview === false && (now.getUTCHours() - this.timelineBegin.getUTCHours() > 1)){
-            this._changeView();
-        //TODO si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
-        } else if(true) {
+        if(this.dayview === false && diff > 2){
+            this._updateView();
+        //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
+        } else if(this.dayview === true) {
             
         }
         var x = this._computeX(new Date());
-        $('#TimeBar').css('left', x+'px');
+        var timeBar = $('#TimeBar');
+        if(x > 0){
+            timeBar.css('left', x+'px');
+            timeBar.show();
+        } else {
+            timeBar.hide();
+        }
     },
     /**
      * Draw or update categories
@@ -582,6 +775,8 @@ $.widget("epeires.timeline", {
     _drawCategories: function(){
         if($('#category').length === 0){
             this.element.append($('<div id="category"></div>'));
+        } else {
+            $('#category').show();
         }
         var y = this.params.topSpace + this.params.catSpace;
         for(var i = 0;i < this.categories.length; i++){
@@ -590,19 +785,22 @@ $.widget("epeires.timeline", {
             for (var k = 0; k < curCat.short_name.length; k++) {
                 text_cat += curCat.short_name[k]+'<br>';
             }
+            var cat = $('#category'+curCat.id);
             if($('#category'+curCat.id).length === 0){
-                var cat = $('<div class="category" id="cat'+curCat.id+'" data-id="'+curCat.id+'">'+text_cat+'</div>');
+                var cat = $('<div class="category" id="category'+curCat.id+'" data-id="'+curCat.id+'">'+text_cat+'</div>');
                 $('#category').append(cat);
                 cat.css({'background-color':curCat.color,'height':'auto',
-                        'left':'15px',
-                        'top': y+'px'}); 
-                var minHeight = this._getCategoryMinHeight(curCat);
-                var height = this._getCategoryHeight(i);
-                var trueHeight = (minHeight > height ? minHeight : height);
-                y += trueHeight  + this.params.catSpace;
-                cat.css('height', trueHeight+'px');
+                        'left':'15px'}); 
             }
+            var minHeight = this._getCategoryMinHeight(curCat);
+            var height = this._getCategoryHeight(i);
+            var trueHeight = (minHeight > height ? minHeight : height);
+            cat.animate({'top': y+'px','height': trueHeight+'px'});
+            y += trueHeight  + this.params.catSpace;
         }
+    },
+    _hideCategories: function(){
+        $('#category').hide();
     },
     /**
      * Compute minimum height of a category
@@ -619,17 +817,8 @@ $.widget("epeires.timeline", {
      * Draw an event if necessary
      */
     _drawEvent: function(event){
-        var startdate = new Date(event.start_date);
-        var enddate = null;
-        if(event.end_date !== null){
-            enddate = new Date(event.end_date);
-        }
         //détermine si l'evt est dans la période affichée
-        if((event.punctual && startdate >= this.timelineBegin && startdate < this.timelineEnd) ||
-            (!event.punctual && startdate <= this.timelineBegin && enddate === null) ||
-            (!event.punctual && enddate !== null && 
-                ((startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
-                 (startdate <= this.timelineBegin && enddate >= this.timelineBegin)))){
+        if(event.display){
             //si oui, déterminer si il existe déjà ou non
             if(this.element.find('#event'+event.id).length > 0){
                 this._modifyEvent(event);
@@ -638,19 +827,38 @@ $.widget("epeires.timeline", {
             }
         } else {
             //suppression de l'évènement
-            this._eraseEvent(event);
+            this._hideEvent(event);
         }
     },
-    
     /**
-     * Erase an event if displayed
+     * Surligne un évènement pour le mettre en valeur
+     * @param {type} event
+     * @param {boolean} highlight true to highlight, false to get back to normal
+     * @returns {undefined}
+     */
+    _highlightEvent: function(event, highlight){
+        
+    },
+    /**
+     * 
+     * @param {type} event
+     * @param {boolean} shade true to shade an event, false to get back to normal
+     * @returns {undefined}
+     */
+    _shadeEvent: function(event, shade){
+        
+    },
+    /**
+     * Hide an event if displayed
      * @param {type} event
      * @returns {undefined}
      */
-    _eraseEvent: function(event){
-        //TODO : destroy popups
+    _hideEvent: function(event){
+        var elmt = this.element.find('#event'+event.id);
+        //destroy popups
+        elmt.tooltip('destroy');
         //TODO : animate ?
-        this.element.find('#event'+event.id).remove();
+        elmt.remove();
     },
     /**
      * Modify an event already displayed
@@ -658,6 +866,15 @@ $.widget("epeires.timeline", {
      * @returns {undefined}
      */
     _modifyEvent: function(event){
+        //modification de sa position
+        var evt = this.element.find('#event'+event.id);
+        var startdate = new Date(event.start_date);
+        var x = this._computeX(startdate);
+        var y = this._computeY(event);
+        evt.css('top', y+'px');
+        //TODO déplacement horizontal
+        
+        //suppression du tooltip en cas de déplacement en dehors de la souris
         
     },
     /**
@@ -669,15 +886,7 @@ $.widget("epeires.timeline", {
         return $.getJSON(self.options.eventUrl + (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : ''),
                 function (data, textStatus, jqHXR) {
                     if (jqHXR.status !== 304) {
-                        $.each(data, function(key, value){
-                            var tempEvents = self.events.filter(function(val){
-                                return val.id == key;
-                            });
-                            if(tempEvents.length === 0){
-                                self.events.push(value);
-                            }
-                            self._drawEvent(value);
-                        });
+                        self.addEvents(data);
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                     }
                 }).always(function () {
@@ -747,15 +956,22 @@ $.widget("epeires.timeline", {
             } else {
             	if (startdate < this.timelineBegin) { 
             		x = this.options.leftOffset;
+            		elmt_flecheG.show();
             	} else {
             		x = this._computeX(startdate);
+            		elmt_flecheG.hide();
             	}
             	if (enddate > this.timelineEnd) {
             		x_end = this.element.width - this.options.rightOffset;
+            		elmt_flecheD.show();
             	} else if (enddate > 0) {
             		x_end = this._computeX(enddate);
+            		elmt_flecheD.hide();
             	} else {
             		x_end = this.element.width - this.options.rightOffset;
+            		elmt_flecheD.hide();
+            		elmt_compl.css({'position':'absolute','left':'0px' , 'width':0, 'height':0, 'border-left':dy+'px solid '+couleur, 
+    					'border-top':dy/2+1+'px solid transparent', 'border-bottom': dy/2+1+'px solid transparent' });
             	}
             	elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x+'px', 'width': (x_end-x)+'px', 'height':this.options.eventHeight ,'z-index' : 2, 
             		'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
@@ -765,7 +981,6 @@ $.widget("epeires.timeline", {
             this.element.append(elmt);
         }
     },
-
     /**
      * Create a skeleton for an event.
      * @param {type} event
@@ -894,5 +1109,33 @@ $.widget("epeires.timeline", {
                 }).bind('selectstart', function () {
             return false;
         });
+    },
+    _isValidDate: function (d) {
+        if ( Object.prototype.toString.call(d) !== "[object Date]" )
+            return false;
+        return !isNaN(d.getTime());
+    },
+    /**
+     * 
+     * @param {type} event
+     * @returns {boolean}
+     */
+    _isEventInTimeline: function (event) {
+        var startdate = new Date(event.start_date);
+        var enddate = null;
+        if(event.end_date !== null){
+            enddate = new Date(event.end_date);
+        }
+        // si l'evt intersecte la timeline
+        if ((event.punctual && startdate >= this.timelineBegin && startdate < this.timelineEnd) ||
+            (!event.punctual && startdate <= this.timelineEnd && enddate === null) ||
+            (!event.punctual && enddate !== null &&
+                ((startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
+                (enddate >= this.timelineBegin && enddate <= this.timelineEnd)))) {
+            return true;
+        } else {
+            return false;
+        }
     }
-});
+  });
+})( jQuery );

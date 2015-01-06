@@ -375,13 +375,13 @@ var form = function(url){
 				if(id>0){
 					//modification
 					if(data['events']){
-						timeline.modify(data.events, 0);
+						$('#timeline').timeline('addEvents', data.events);
 					}
 					displayMessages(data.messages);
 				} else {
 					//new event
 					if(data['events']){
-						timeline.add(data.events);
+						$('#timeline').timeline('addEvents', data.events);
 					}
 					displayMessages(data.messages);
 				}
@@ -852,7 +852,7 @@ var form = function(url){
 	});
         
         //ouverture du formulaire lors d'un clic sur catégorie
-        $(document).on('click', '.categorie', function(e){
+        $(document).on('click', '.category', function(e){
             e.preventDefault();
             var id = $(this).data('id');
             $("#create-link").trigger('click');
