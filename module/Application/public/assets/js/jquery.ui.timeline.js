@@ -930,10 +930,21 @@ $.widget("epeires.timeline", {
             	enddate = new Date(event.end_date);
             } else {
             	enddate = -1;
-            }
+            }        
+            
+            ////// réini
+            elmt.children().removeClass('disp');
+        	elmt_flecheG.hide();
+        	elmt_flecheD.hide();
+        	move_deb.hide();
+        	move_fin.hide();
+        	elmt_deb.show();
+        	elmt_fin.show();
+            //////   
+      
             var x = this._computeX(startdate);
-            var y = this._computeY(this._getEventPosition(event.id));
-            var x_end; 
+
+            var x_end = -1;     
             //cas 1 : évènement ponctuel
             if (event.punctual) {
             	var haut = this.options.eventHeight * 2 / 3;
@@ -950,33 +961,132 @@ $.widget("epeires.timeline", {
             		'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
             	elmt_rect.css({'left': '+=' + x});
             	elmt_compl.css({'left': x + 'px'});
-            	elmt_flecheG.hide();
-            	elmt_flecheD.hide();
-            	//cas 2 : date antérieure au début de la timeline
+            	elmt_fin.addClass('disp');
             } else {
+            	elmt_deb.addClass('disp');
+            	//cas 2 : date début antérieure au début de la timeline
             	if (startdate < this.timelineBegin) { 
             		x = this.options.leftOffset;
             		elmt_flecheG.show();
+            		elmt_flecheG.css({'left': x-12+'px'});
+            		elmt_fin.addClass('disp');
             	} else {
             		x = this._computeX(startdate);
-            		elmt_flecheG.hide();
+            		move_deb.addClass('disp');
+            		move_deb.css({'left': 8+'px', 'width':'2px'});
+            		elmt_fin.addClass('disp');
             	}
+            	//cas 3 : date fin postérieure à la fin de la timeline
             	if (enddate > this.timelineEnd) {
-            		x_end = this.element.width - this.options.rightOffset;
+            		x_end = this._computeX(this.timelineEnd);
             		elmt_flecheD.show();
+            		elmt_flecheD.css({'left': x_end+'px'});
+            		elmt_fin.addClass('disp');
+            	//cas 4 : date fin dans la timeline
             	} else if (enddate > 0) {
             		x_end = this._computeX(enddate);
-            		elmt_flecheD.hide();
+            		move_fin.addClass('disp');
+            		move_fin.css({'left': x_end-x-10+'px', 'width':'2px'});
+            		elmt_fin.addClass('disp');
+            	//cas 5 : pas de fin
             	} else {
-            		x_end = this.element.width - this.options.rightOffset;
-            		elmt_flecheD.hide();
-            		elmt_compl.css({'position':'absolute','left':'0px' , 'width':0, 'height':0, 'border-left':dy+'px solid '+couleur, 
-    					'border-top':dy/2+1+'px solid transparent', 'border-bottom': dy/2+1+'px solid transparent' });
+            		x_end = this._computeX(this.timelineEnd);
+            		move_fin.addClass('disp');
+            		move_fin.css({'left': x_end-x-10+'px', 'width':'2px'});
+            		var haut = this.options.eventHeight;
+            		elmt_compl.css({'position':'absolute','left': x_end+4+'px' , 'width':0, 'height':0, 'border-left':haut+'px solid '+couleur, 
+    					'border-top':haut/2+1+'px solid transparent', 'border-bottom': haut/2+1+'px solid transparent' });
             	}
             	elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x+'px', 'width': (x_end-x)+'px', 'height':this.options.eventHeight ,'z-index' : 2, 
             		'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
             }
+            
+            /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
+            var x1 = x;
+            var x2 = x_end;
+			var txt_wid = elmt_txt.outerWidth()+60;
+			var largeur = this._computeX(this.timelineEnd);
+			if (event.punctual) {
+				lien.addClass('lien');
+				lien.show();
+				x2 = x1+elmt_rect.outerWidth();
+				x1 -= 30;
+				// on place l'heure à droite
+				elmt_fin.css({'left': x2+'px'});
+				elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
+				x2 += elmt_fin.outerWidth()+10;
+				if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+					elmt_txt.css({'left': x2+'px'});
+					lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
+					x2 += txt_wid;
+					if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
+						lien.hide(); 
+						lien.removeClass('lien');	
+					}
+				} else { // sinon on le met à gauche
+					x1 -= txt_wid+2;
+					elmt_txt.css({'left': x1+'px'});
+					lien.css({'left': x1+'px','width':x0-x1+'px'});
+				}
+			} else {
+				var lar_nec = txt_wid + 50;
+				var x_left = x1+18;
+				if (x_end-x > lar_nec) {
+					elmt_txt.css({'left': x_left+2+'px'});
+					// on place l'heure de début à gauche
+					x1 -= elmt_deb.outerWidth()+20;
+					elmt_deb.css({'left': x1+'px'});
+					// on place l'heure de fin à droite
+					elmt_fin.css({'left': x2+5+'px'});
+					x2 += elmt_fin.outerWidth()+20;
+				} else {
+					lien.addClass('lien');
+					lien.show();
+					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px',
+						'border-radius': '5px', 'padding':'2px'});
+					// on place l'heure de début à gauche
+					x1 -= elmt_deb.outerWidth();
+					elmt_deb.css({'left': x1+'px'});
+				//	if (bord_gauche) {
+				//		elmt_deb.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px',
+				//			'border-radius': '5px', 'padding':'2px'});
+				//	}
+					// on place l'heure de fin à droite
+					elmt_fin.css({'left': x2+5+'px'});
+					x2 += elmt_fin.outerWidth()+20;
+					if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+					//	dr = 1;
+						elmt_txt.css({'left': x2+'px'});
+						lien.css({'left': x2-(elmt_fin.outerWidth()+20)+'px','width':elmt_fin.outerWidth()+20+'px'});
+						if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
+							lien.hide(); 
+							lien.removeClass('lien');	
+						}
+					} else { // sinon on le met à gauche
+					//	dr = 0;
+						lien.css({'left': x1-60+'px','width':x0-x1+60+'px'});
+						x1 -= txt_wid+2;
+						elmt_txt.css({'left': x1+'px'});
+						if (elmt_deb.find('i').hasClass("icon-warning-sign")) { 
+							lien.hide(); 
+							lien.removeClass('lien');	
+						}
+					}
+				} 
+			}
+            
+            
+            elmt_deb.prepend(' <i class="icon-check"></i>');
+            elmt_fin.append(' <i class="icon-check"></i>');
+            if (event.status_id === 1) {
+            	elmt_txt.css({'font-style':'italic'});
+            } else {
+            	elmt_txt.css({'font-style':'normal'});
+            }
+            
+            var y = this._computeY(event);
             elmt.css('top', y+'px');
+            
             //ajout à la timeline
             this.element.append(elmt);
         }
@@ -1032,7 +1142,7 @@ $.widget("epeires.timeline", {
         elmt_flecheD.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
         elmt_b1.css({'z-index': 1});
         elmt_b2.css({'z-index': 1});
-        elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'font-weight': 'normal', 'z-index': 2});
+        elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'font-weight': 'normal', 'z-index': 2, 'color':'black'});
         lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
         
         move_deb.css({'height': dy - 8});
