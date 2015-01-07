@@ -48,6 +48,10 @@ $.widget("epeires.timeline", {
     eventsDisplayed: [],
     eventsDiplayedPosition: [],
     /**
+     * Y position of displayed events
+     */
+    eventsYPosition: [],
+    /**
      * List of categories
      */
     categories: [],
@@ -265,7 +269,7 @@ $.widget("epeires.timeline", {
         if(key === "showCategories"){
             if(this.options.showCategories !== value){
                 this._super(key, value);
-                if(!this.update){
+                if(this.update){
                     this._updateView(false);
                 }
             }
@@ -278,13 +282,17 @@ $.widget("epeires.timeline", {
     /* ********************** */
 
     /*
-     * 
+     * Add or modify an event
      * @param {type} event Object
      */
     addEvent: function (event) {
         //ne pas ajouter une évènement déjà existant
         if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]) {
-            this.modifyEvent(event);
+            var old = this.events[this.eventsPosition[event.id]];
+            event.display = old.display;
+            event.shade = old.shade;
+            this.events[this.eventsPosition[event.id]] = event;
+            this.sortEvents();
         } else {
             //ajout de l'évènement en fin de tableau
             //la relance du tri forcera le dessin et la mise à jour des évènements
@@ -296,22 +304,19 @@ $.widget("epeires.timeline", {
             this.sortEvents();
         }
     },
-    modifyEvent: function (event){
-        if(event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]){
-            var old = this.events[this.eventsPosition[event.id]];
-            event.display = old.display;
-            event.shade = old.shade;
-            this.events[this.eventsPosition[event.id]] = event;
-            this.sortEvents();
-        } else {
-            //event does'nt exist : add it ???
-        }
-    },
+    /**
+     * Add or modify multiple events at once
+     * @param {type} eventsList
+     * @returns {undefined}
+     */
     addEvents: function(eventsList){
         var self = this;
+        this.update = false;
         $.each(eventsList, function(key,value){
             self.addEvent(value);
         });
+        this.update = true;
+        this._updateView(false);
     },
     removeEvent: function (event) {
         this._hideEvent(event);
@@ -333,7 +338,7 @@ $.widget("epeires.timeline", {
                     this.currentDay = new Date();
                 }
             }
-            this._updateView();
+            this._updateView(true);
         }
     },
     /**
@@ -401,7 +406,9 @@ $.widget("epeires.timeline", {
         for(var i = 0; i < this.events.length; i++){
             this.eventsPosition[this.events[i].id] = i;
         }
-        this._updateView();
+        if(this.update){
+            this._updateView();
+        }
     },
     /**
      * Sort categories according to comparator
@@ -499,9 +506,12 @@ $.widget("epeires.timeline", {
             var id = this.eventsDisplayed[i].id;
             this.eventsDiplayedPosition[id] = i;
         }
+        //for each event, update attributes
         for(var i = 0; i < this.events.length; i++){
             this._drawEvent(this.events[i]);
         }
+        //then update y position
+        this._updateYPosition(true);
         //draw categories
         if(this.options.showCategories){
             this._drawCategories();
@@ -555,9 +565,10 @@ $.widget("epeires.timeline", {
     /**
      * Calcule l'ordonnée correspondant à un évènement
      * @param {type} event Evènement
+     * @param {array} eventsYPosition 
      * @returns {undefined}
      */
-    _computeY: function (event) {
+    _computeY: function (event, eventsYPosition) {
         var i = this.eventsDiplayedPosition[event.id];
         if(this.options.showCategories){
             var catPos = (this.options.showOnlyRootCategories ?
@@ -597,7 +608,7 @@ $.widget("epeires.timeline", {
                     if(cat.compact){
                         
                     }
-                    var topPrevEvent = parseInt($('#event'+prevEvent.id).css('top'), 10);
+                    var topPrevEvent = this.eventsYPosition[prevEvent.id];
                     return topPrevEvent + this.options.eventHeight + this.params.eventSpace;
                 }
             }
@@ -607,6 +618,25 @@ $.widget("epeires.timeline", {
             } else {
                 //pas de compactage
                 return this.params.topSpace + i*(this.options.eventHeight + this.params.eventSpace);
+            }
+        }
+    },
+    /**
+     * Update vertical position of each displayed event
+     * @param {boolean} Animate modification of position
+     * @returns {undefined}
+     */
+    _updateYPosition: function(animate) {
+        this.eventsYPosition = [];
+        for(var i = 0; i < this.eventsDisplayed.length; i++){
+            var y = this._computeY(this.eventsDisplayed[i]);
+            this.eventsYPosition[this.eventsDisplayed[i].id] = y;
+            var eventID = this.eventsDisplayed[i].id;
+            var elmt = this.element.find('#event'+eventID);
+            if(animate === true) {
+                elmt.animate({top: y+'px'});
+            } else {
+                elmt.css('top', y+'px');
             }
         }
     },
@@ -623,7 +653,7 @@ $.widget("epeires.timeline", {
         var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
-            var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
+            var topEvent = this.eventsYPosition[catEvents[j].id];
             if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
@@ -652,7 +682,7 @@ $.widget("epeires.timeline", {
         var top = 0;
         var bottom = 0;
         for(var j = 0; j < catEvents.length; j++){
-            var topEvent = parseInt($('#event'+catEvents[j].id).css('top'),10);
+            var topEvent = this.eventsYPosition[catEvents[j].id];
             if(top === 0 || topEvent < top) {
                 top = topEvent;
             }
@@ -817,13 +847,22 @@ $.widget("epeires.timeline", {
      * Draw an event if necessary
      */
     _drawEvent: function(event){
-        //détermine si l'evt est dans la période affichée
-        if(event.display){
+        var cat = (this.options.showOnlyRootCategories ? 
+                        this._getCategory(event.category_root_id) : 
+                        this._getCategory(event.category_id));
+        //si l'evt est affiché et que la catégorie existe
+        if(event.display && cat !== null){
             //si oui, déterminer si il existe déjà ou non
-            if(this.element.find('#event'+event.id).length > 0){
-                this._modifyEvent(event);
+            if(this.element.find('#event'+event.id).length === 0){
+                //création de l'évènement
+                var elmt = this._getSkeleton(event);
+                //mise à jour des attributs
+                this._doDrawEvent(event, elmt, cat);
+                //ajout à la timeline
+                this.element.append(elmt);
             } else {
-                this._doDrawEvent(event);
+                //mise à jour des attributs
+                this._doDrawEvent(event, this.element.find('#event'+event.id), cat);
             }
         } else {
             //suppression de l'évènement
@@ -861,23 +900,6 @@ $.widget("epeires.timeline", {
         elmt.remove();
     },
     /**
-     * Modify an event already displayed
-     * @param {type} event
-     * @returns {undefined}
-     */
-    _modifyEvent: function(event){
-        //modification de sa position
-        var evt = this.element.find('#event'+event.id);
-        var startdate = new Date(event.start_date);
-        var x = this._computeX(startdate);
-        var y = this._computeY(event);
-        evt.css('top', y+'px');
-        //TODO déplacement horizontal
-        
-        //suppression du tooltip en cas de déplacement en dehors de la souris
-        
-    },
-    /**
      * Get new and modified events every 10 seconds
      * @returns {undefined}
      */
@@ -901,16 +923,11 @@ $.widget("epeires.timeline", {
         this._updateEvents();
     },
     /**
-     * Draw an event for the first time
+     * Updates all attributes of an event, except top
      * @param {type} event
      * @returns {undefined}
      */
-    _doDrawEvent: function (event) {
-        var categ = (this.options.showOnlyRootCategories ? 
-                        this._getCategory(event.category_root_id) : 
-                        this._getCategory(event.category_id));
-        if(categ !== null) { //if no category : do not draw this event
-            var elmt = this._getSkeleton(event);
+    _doDrawEvent: function (event, elmt, categ) {
             var elmt_rect = elmt.find('.rect_elmt');
             var elmt_compl = elmt.find('.complement');
             var elmt_flecheG = elmt.find('.elmt_flecheG');
@@ -934,12 +951,12 @@ $.widget("epeires.timeline", {
             
             ////// réini
             elmt.children().removeClass('disp');
-        	elmt_flecheG.hide();
-        	elmt_flecheD.hide();
-        	move_deb.hide();
-        	move_fin.hide();
-        	elmt_deb.show();
-        	elmt_fin.show();
+            elmt_flecheG.hide();
+            elmt_flecheD.hide();
+            move_deb.hide();
+            move_fin.hide();
+            elmt_deb.show();
+            elmt_fin.show();
             //////   
       
             var x = this._computeX(startdate);
@@ -998,11 +1015,12 @@ $.widget("epeires.timeline", {
     					'border-top':haut/2+1+'px solid transparent', 'border-bottom': haut/2+1+'px solid transparent' });
             	}
             	elmt_rect.css({'position':'absolute', 'top':'0px', 'left': x+'px', 'width': (x_end-x)+'px', 'height':this.options.eventHeight ,'z-index' : 2, 
-            		'background-color':couleur,'border-style':'solid','border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
+            		'background-color':couleur,'border-color':'transparent',  'border-width': '1px', 'border-radius': '5px'});
             }
             
             /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
             var x1 = x;
+            var x0 = x;
             var x2 = x_end;
 			var txt_wid = elmt_txt.outerWidth()+60;
 			var largeur = this._computeX(this.timelineEnd);
@@ -1084,12 +1102,23 @@ $.widget("epeires.timeline", {
             	elmt_txt.css({'font-style':'normal'});
             }
             
-            var y = this._computeY(event);
-            elmt.css('top', y+'px');
-            
-            //ajout à la timeline
-            this.element.append(elmt);
-        }
+    },
+    /**
+     * Update an event according to its status and dates
+     * @param {type} event
+     * @returns {undefined}
+     */
+    _updateStatus: function(event){
+            switch (event.status_id) {
+                case 1: //nouveau
+                    break;
+                case 2: //confirmé
+                    break;
+                case 3: //terminé
+                    break;
+                case 4: //annulé
+                    break;
+            }
     },
     /**
      * Create a skeleton for an event.
