@@ -169,11 +169,12 @@ var categories = function(url){
 				tr.find('td:eq(0)').html(data.id);
 				tr.find('td:eq(1)').html(data.name);
 				tr.find('td:eq(2)').html(data.type);
-				tr.find('td:eq(3)').html(data.defaut);
-                                tr.find('td:eq(4)').html(data.help);
-				tr.find('td:eq(5)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
+                                tr.find('td:eq(3)').html(data.multiple ? '<i class="icon-ok"></i>' : '<i class="icon-remove"></i>');
+				tr.find('td:eq(4)').html(data.defaut);
+                                tr.find('td:eq(5)').html(data.help);
+				tr.find('td:eq(6)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
-				tr.find('td:eq(6)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
+				tr.find('td:eq(7)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
 							' class="delete-field" '+ 
@@ -187,6 +188,7 @@ var categories = function(url){
 				newhtml.append('<td>'+data.id+'</td>');
 				newhtml.append('<td>'+data.name+'</td>');
 				newhtml.append('<td>'+data.type+'</td>');
+                                newhtml.append('<td>'+(data.multiple ? '<i class="icon-ok"></i>' : '<i class="icon-remove"></i>')+'</td>');
 				newhtml.append('<td>'+data.defaut+'</td>');
                                 newhtml.append('<td>'+data.help+'</td>');
 				newhtml.append('<td>'+'<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+

@@ -15,46 +15,19 @@
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Entity;
+namespace Application\Factories;
 
-use Doctrine\ORM\Mapping as ORM;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="customfieldtypes")
  * @author Bruno Spyckerelle
- **/
-class CustomFieldType {
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\Column(type="integer")
-	 */
-	protected $id;
-	
-	/** @ORM\Column(type="string") */
-	protected $name;
-	
-	/** @ORM\Column(type="string") */
-	protected $type;
-        
-	public function getId(){
-		return $this->id;
+ */
+class CustomFieldMultipleAllowedFactory implements FactoryInterface{
+		
+	public function createService(ServiceLocatorInterface $serviceLocator){
+    	$customHelper = new \Application\View\Helper\CustomFieldMultipleAllowed();
+    	$customHelper->setServiceManager($serviceLocator->getServiceLocator());
+    	return $customHelper;
 	}
 	
-	public function setName($name){
-		$this->name = $name;
-	}
-	
-	public function getName(){
-		return $this->name;
-	}
-	
-	public function setType($type){
-		$this->type = $type;
-	}
-	
-	public function getType(){
-		return $this->type;
-	}
-
 }

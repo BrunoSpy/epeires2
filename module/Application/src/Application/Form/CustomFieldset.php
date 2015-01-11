@@ -67,7 +67,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
                         }
                         
 			$definition['type'] = $customfieldservice->getZendType($customfield->getType());
-						
+					
+                        foreach($customfieldservice->getFormAttributes($customfield) as $key => $attribute){
+                            $definition['attributes'][$key] = $attribute;
+                        }
+                        
 			$definition['options'] = $options;
 			
 			if($customfield->getId() == $category->getFieldname()->getId()){

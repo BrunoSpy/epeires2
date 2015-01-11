@@ -85,10 +85,10 @@ var antenna = function(url){
             closeFiche();
         });
         
-	$(document).on('click', '.switch-antenna', function(){
-		var state = $("#switch_"+$(this).data('antenna')).bootstrapSwitch('status');
-		$("#switch_"+$(this).data('antenna')).bootstrapSwitch('setState', !state);
-	});
+//	$(document).on('click', '.switch-antenna', function(){
+//		var state = $("#switch_"+$(this).data('antenna')).bootstrapSwitch('status');
+//		$("#switch_"+$(this).data('antenna')).bootstrapSwitch('setState', !state);
+//	});
 	
 	$(document).on('click','.switch-coverture', function(){
 		var me = $(this);
@@ -195,8 +195,14 @@ var antenna = function(url){
 		}, 'json');
 	});
 
-	$(document).on('click', '.switch-antenna', function(){
-		$("#switch_"+$(this).data('antennaid')).bootstrapSwitch('setState', $(this).data('state'));
+	$(document).on('click', '.switch-antenna', function(event){
+                var me = $(this);
+                $.post(url+'frequencies/switchantenna?antennaid='+me.data('antennaid')+'&state='+me.data('state')+'&freq='+me.data('freqid'), function(data){
+                    displayMessages(data);
+                    //force page refresh
+                    clearTimeout(timer);
+                    doFullUpdate();
+                }, 'json');
 	});
 	
 	$("#antennas tr").hover(
@@ -273,11 +279,11 @@ var antenna = function(url){
 		$("a.actions-freq").each(function(index, element){
 			var sector = $(this).closest('.sector');
 			var list = $("<ul></ul>");
-                        
-                        if(currentfrequencies[$(this).data('freq')].status){
-                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+$(this).data('freq')+"\" data-state=\"false\">Fréquence indisponible</a></li>");
+                        var freqid = $(this).data('freq');
+                        if(currentfrequencies[freqid].status){
+                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+freqid+"\" data-state=\"false\">Fréquence indisponible</a></li>");
                         } else {
-                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+$(this).data('freq')+"\" data-state=\"true\">Fréquence disponible</a></li>");
+                            list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+freqid+"\" data-state=\"true\">Fréquence disponible</a></li>");
                         }
                         
                         var mainantennacolor = sector.find('.antennas .mainantenna-color');
@@ -301,31 +307,31 @@ var antenna = function(url){
 			//antennes
 			var mainantenna = sector.find('.antennas .mainantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(mainantenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Passer antenne principale HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale HS (uniquement cette fréq.)</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Passer antenne principale OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale OPE (uniquement cette fréq.)</a></li>");
 			}
 			var backupantenna = sector.find('.antennas .backupantenna-color.antenna-color:not(.antenna-climax-color)');
 			if(backupantenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Passer antenne secours HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours HS (uniquement cette fréq.)</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Passer antenne secours OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours OPE (uniquement cette fréq.)</a></li>");
 			}
 			//si climax
 			var mainantennaclimax = sector.find('.antennas .mainantenna-color.antenna-climax-color');
 			if(mainantennaclimax.length > 0){
 				if(mainantennaclimax.hasClass('background-status-ok')){
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Passer antenne principale climaxée HS</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée HS (uniquement cette fréq.)</a></li>");
 				} else {
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Passer antenne principale climaxée OPE</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée OPE (uniquement cette fréq.)</a></li>");
 				}
 			}
 			var backupantennaclimax = sector.find('.antennas .backupantenna-color.antenna-climax-color');
 			if(backupantennaclimax.length > 0){
 				if(backupantennaclimax.hasClass('background-status-ok')){
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée HS</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée HS (uniquement cette fréq.)</a></li>");
 				} else {
-					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée OPE</a></li>");
+					list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée OPE (uniquement cette fréq.)</a></li>");
 				}
 			}
 			if(list.find('li').length > 0 ){
@@ -340,11 +346,12 @@ var antenna = function(url){
 		});
 		$("a.actions-antenna").each(function(){
 			var antenna = $(this).closest('.antenna-color');
+                        var freqid = $(this).closest('.sector').find('.actions-freq').data('freq');
 			var list = $('<ul></ul>');
 			if(antenna.hasClass('background-status-ok')){
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"false\" data-antennaid=\""+antenna.data('antennaid')+"\">Passer antenne HS</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne HS (uniquement cette fréq.)</a></li>");
 			} else {
-				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-state=\"true\" data-antennaid=\""+antenna.data('antennaid')+"\">Passer antenne OPE</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+antenna.data('antennaid')+"\">Antenne OPE (uniquement cette fréq.)</a></li>");
 			}
 			if(list.find('li').length > 0){
 				$(this).popover('destroy');
@@ -413,26 +420,41 @@ var antenna = function(url){
 		$.each(currentantennas, function(key, value){
 			$('#switch_'+key).bootstrapSwitch('setState', value.status, true);
                         var antennatd = $("#antenna-"+key+" td:first");
-			var antenna = $('.antenna-color.antenna-'+key);
-                        antennatd.find('a').remove();
-			if(value.status){
-                                
-				antenna.removeClass('background-status-fail');
-				antenna.addClass('background-status-ok');
-				//evts planifiés ?
-				if(value.planned){
-                                        antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
-					antenna.removeClass('background-status-ok');
-					antenna.addClass('background-status-planned');
-				} else {
-					antenna.removeClass('background-status-planned');
-					antenna.addClass('background-status-ok');
-				}
-			} else {
-                                antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
-				antenna.removeClass('background-status-ok');
-				antenna.addClass('background-status-fail');
-			}
+                        if(value.frequencies.length === 0 || (value.frequencies.length === 1 && value.frequencies[0] === "")) { //tous les fréquences impactées
+                            var antenna = $('.antenna-color.antenna-'+key);
+                            antennatd.find('a').remove();
+                            if(value.status){
+                                    antenna.removeClass('background-status-fail');
+                                    antenna.addClass('background-status-ok');
+                                    //evts planifiés ?
+                                    if(value.planned){
+                                            antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
+                                            antenna.removeClass('background-status-ok');
+                                            antenna.addClass('background-status-planned');
+                                    } else {
+                                            antenna.removeClass('background-status-planned');
+                                            antenna.addClass('background-status-ok');
+                                    }
+                            } else {
+                                    antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
+                                    antenna.removeClass('background-status-ok');
+                                    antenna.addClass('background-status-fail');
+                            }
+                        } else {
+                            $('.antenna-color.antenna-'+key).removeClass('background-status-fail').addClass('background-status-ok');
+                            $('.antenna-color.antenna-'+key).each(function(i){
+                                var freqid = $(this).closest('.sector').find('.actions-freq').data('freq')+"";
+                                if($.inArray(freqid,value.frequencies) !== -1 ){
+                                    if(value.status){
+                                        $(this).removeClass('background-status-fail');
+                                        $(this).addClass('background-status-ok');
+                                    } else {
+                                        $(this).removeClass('background-status-ok');
+                                        $(this).addClass('background-status-fail');
+                                    }
+                                } 
+                            });
+                        }
 		});
 	}
 	

@@ -1146,11 +1146,11 @@ $.widget("epeires.timeline", {
         var elmt_txt = $('<p class="label_elmt">' + event.name + '</p>');
         elmt.append(elmt_txt);
         // ajout du bouton "ouverture fiche"
-        var elmt_b1 = $('<a href="#" class="modify-evt data-id="' + event.id + '"data-name="' + event.name + '"></a>');
+        var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
         elmt_txt.append(elmt_b1);
         elmt_b1.append('    <i class="icon-pencil"></i>');
         // ajout du bouton "ouverture fiche réflexe"
-        var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '"data-name="' + event.name + '"></a>');
+        var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
         elmt_txt.append(elmt_b2);
         elmt_b2.append('    <i class="icon-tasks"></i>');
         // lien entre le texte et l'événement (si texte écrit en dehors)

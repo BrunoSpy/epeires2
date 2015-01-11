@@ -18,6 +18,8 @@ $this->form->prepare();
 
 <td><?php echo $this->formSelect($this->form->get('type'));?></td>
 
+<td><?php echo $this->formCheckbox($this->form->get('multiple')); ?></td>
+
 <td><?php echo $this->formTextarea($this->form->get('defaultvalue'));?></td>
 
 <td><?php echo $this->formInput($this->form->get('tooltip'));?></td>

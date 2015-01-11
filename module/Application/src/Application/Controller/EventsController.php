@@ -476,6 +476,13 @@ class EventsController extends TabController {
     							//génération des customvalues si un customfield dont le nom est $key est trouvé
     							$customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array('id'=>$key));
     							if($customfield){
+                                                                if(is_array($value)){
+                                                                    $temp = "";
+                                                                    foreach ($value as $v){
+                                                                        $temp .= (string)$v."\r";
+                                                                    }
+                                                                    $value = trim($temp);
+                                                                }
     								$customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
     								->findOneBy(array('customfield'=>$customfield->getId(), 'event'=>$id));
     								if(!$customvalue){
@@ -805,7 +812,12 @@ class EventsController extends TabController {
     		foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$cat->getId())) as $customfield){
     			$customfieldvalue = $em->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array('event'=>$event->getId(), 'customfield'=>$customfield->getId()));
     			if($customfieldvalue){
-    				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
+                            if($customfield->isMultiple()){
+                                $values = explode("\r", $customfieldvalue->getValue());
+                                $form->get('custom_fields')->get($customfield->getId())->setValue($values);
+                            } else {
+                                $form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
+                            }
     			}
     		}
     		

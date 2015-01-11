@@ -139,6 +139,7 @@ class FieldsController extends FormController {
     									'name' => $customfield->getName(), 
     									'type' => $customfield->getType()->getName(), 
                                                                         'help' => $customfield->getTooltip(),
+                                                                        'multiple' => $customfield->isMultiple() ? true : false,
     									'defaut'=>$customfield->getDefaultValue()));
     	}
     }

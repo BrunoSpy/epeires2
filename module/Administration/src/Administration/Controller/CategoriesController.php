@@ -241,6 +241,11 @@ class CategoriesController extends FormController{
     		}
     		//delete fieldname to avoid loop
     		$category->setFieldname(null);
+                if($category instanceof AntennaCategory){
+                    $category->setAntennafield(null);
+                    $category->setFrequenciesField(null);
+                    $category->setStatefield(null);
+                }
     		if($category instanceof RadarCategory){
     			$category->setRadarfield(null);
     			$category->setStatefield(null);

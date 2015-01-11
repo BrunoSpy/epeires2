@@ -101,7 +101,8 @@ return array(
                 'updateAuthor' => 'Application\Factories\UpdateAuthorFactory',
     		'ipo' => 'Application\Factories\IPOFactory',
     		'opsup' => 'Application\Factories\OpSupFactory',
-                'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory'
+                'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory',
+                'ismultipleallowed' => 'Application\Factories\CustomFieldMultipleAllowedFactory'
     	),
     ),
     'view_manager' => array(

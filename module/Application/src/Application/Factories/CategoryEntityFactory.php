@@ -193,12 +193,23 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface{
 		$statusfield->setPlace(2);
 		$statusfield->setDefaultValue("");
                 $statusfield->setTooltip("");
+                
+                $frequenciesfield = new CustomField();
+		$frequenciesfield->setCategory($antennacat);
+		$frequenciesfield->setName('Fréquences impactées');
+		$frequenciesfield->setType($em->getRepository('Application\Entity\CustomFieldType')->findOneBy(array('type'=>'frequency')));
+		$frequenciesfield->setPlace(3);
+		$frequenciesfield->setDefaultValue("");
+                $frequenciesfield->setMultiple(true);
+                $frequenciesfield->setTooltip("Pas de valeur = toutes.");
+                
+                $antennacat->setFrequenciesField($frequenciesfield);
 		$antennacat->setFieldname($antennafield);
 		$antennacat->setAntennafield($antennafield);
 		$antennacat->setStatefield($statusfield);
 		$em->persist($antennafield);
 		$em->persist($statusfield);
-                
+                $em->persist($frequenciesfield);
                 //si aucune cat par défaut --> nouvelle catégorie par défaut
                 $cats = $em->getRepository('Application\Entity\AntennaCategory')->findBy(array('defaultantennacategory' => true));
                 $antennacat->setDefaultAntennaCategory((count($cats) == 0));

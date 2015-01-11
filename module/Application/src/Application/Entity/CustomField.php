@@ -85,15 +85,14 @@ class CustomField {
          * @Annotation\Options({"label":"Popup d'aide"})
          */
         protected $tooltip;
-        
+                
         /** 
          * @ORM\Column(type="boolean")
          * @Annotation\Type("Zend\Form\Element\Checkbox")
-         * @Annotation\Options({"label":"Visible formulaire :"})
-         * Is field visible in user form
+         * @Annotation\Options({"label":"Sélection multiple :"})
          */
-        protected $visible = true; 
-                
+        protected $multiple = false;
+        
 	/**
 	 * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
 	 */
@@ -135,13 +134,13 @@ class CustomField {
 	public function setPlace($place){
 		$this->place = $place;
 	}
-	
-        public function isVisible(){
-            return $this->visible;
+        
+        public function isMultiple(){
+            return $this->multiple;
         }
         
-        public function setVisible($visible){
-            $this->visible = $visible;
+        public function setMultiple($multiple){
+            $this->multiple = $multiple;
         }
         
 	public function getDefaultValue(){

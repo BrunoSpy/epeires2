@@ -1,9 +1,27 @@
 <?php
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 namespace Application\Services;
 
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
-
+/**
+ * @author Bruno Spyckerelle
+ */
 class CustomFieldService implements ServiceManagerAwareInterface {
 	/**
 	 * Service Manager
@@ -49,10 +67,24 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				}
 				break;
 			case 'frequency':
+                            if($customfield->isMultiple()){
+                                $frequencies = explode("\r", $fieldvalue);
+                                $name = "";
+                                foreach($frequencies as $freq){
+                                    $frequency = $this->em->getRepository('Application\Entity\Frequency')->find($freq);
+                                    if($frequency){
+                                        if(strlen($name) > 0){
+                                            $name .= "+ ";
+                                        }
+                                        $name .= $frequency->getName()." ";
+                                    }
+                                }
+                            } else {
 				$frequency = $this->em->getRepository('Application\Entity\Frequency')->find($fieldvalue);
 				if($frequency){
 					$name = $frequency->getName() . ' ' . $frequency->getValue();
 				}
+                            }
 				break;
 			case 'radar':
 				$radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
@@ -86,6 +118,34 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 		return $name;
 	}
 	
+        /**
+         * 
+         * @param \Application\Entity\CustomFieldType $customfieldtype
+         */
+        public function getFormAttributes(\Application\Entity\CustomField $customfield){
+            $customfieldtype = $customfield->getType();
+            $attributes = [];
+            switch ($customfieldtype->getType()) {
+			case 'string':
+			case 'text':
+                        case 'boolean':    
+                            break;
+			case 'frequency':
+			case 'sector':
+			case 'antenna':
+			case 'select':
+			case 'stack':
+			case 'radar':
+                            if($customfield->isMultiple()){
+                                $attributes['multiple'] = 'multiple';
+                            }
+                            break;
+			default:
+                            break;
+		}
+		return $attributes;
+        }
+        
 	/**
 	 * Returns the corresponding Zend Form Type
 	 * @param \Application\Entity\CustomFieldType $customfieldtype
@@ -118,6 +178,27 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 		return $type;
 	}
 	
+        public function isMultipleAllowed(\Application\Entity\CustomField $customfield) {
+            $multiple = false;
+            switch ($customfield->getType()->getType()) {
+			case 'string':
+			case 'text':
+                        case 'boolean':
+				break;    
+			case 'sector':
+			case 'antenna':
+			case 'frequency':
+			case 'radar':
+			case 'select':
+			case 'stack':
+                            $multiple = true;
+                            break;
+			default:
+                            break;
+		}
+		return $multiple;
+        }
+        
 	/**
 	 * 
 	 * @param \Application\Entity\CustomFieldType $customfieldtype
@@ -185,21 +266,41 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 			case 'text':
 				break;
 			case 'sector':
-				$empty_option = "Choisissez le secteur.";
-				break;
+                            if($customfield->isMultiple()){
+                                $empty_option = "Tous les secteurs.";
+                            } else {
+                                $empty_option = "Choisissez le secteur.";
+                            }
+                            break;
 			case 'antenna':
-				$empty_option = "Choisissez l'antenne.";
+                            if($customfield->isMultiple()){
+                                $empty_option = "Toutes les antennes.";
+                            } else {
+                                $empty_option = "Choisissez l'antenne.";
+                            }
 				break;
 			case 'frequency':
-				$empty_option = "Choisissez la fréquence.";
+                            if($customfield->isMultiple()){
+                                $empty_option = "Toutes les fréquences.";
+                            } else {
+                                $empty_option = "Choisissez la fréquence.";
+                            }
 				break;
 			case 'radar':
-				$empty_option = "Choisissez le radar.";
+                            if($customfield->isMultiple()){
+                                $empty_option = "Tous les radars";
+                            } else {
+                                $empty_option = "Choisissez le radar.";
+                            }
 				break;
 			case 'select':
 				break;
 			case 'stack':
-				$empty_option = "Choisissez l'attente.";
+                            if($customfield->isMultiple()){
+                                $empty_option = "Toutes les attentes.";
+                            } else {
+                                $empty_option = "Choisissez l'attente.";
+                            }
 				break;
 			case 'boolean':
 				break;

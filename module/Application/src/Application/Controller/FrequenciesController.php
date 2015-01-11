@@ -245,7 +245,7 @@ class FrequenciesController extends TabController {
             $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $state = $this->params()->fromQuery('state', null);
             $antennaid = $this->params()->fromQuery('antennaid', null);
-
+            $freqid = $this->params()->fromQuery('freq', null);
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
@@ -268,23 +268,75 @@ class FrequenciesController extends TabController {
                     //recherche de l'evt à fermer
                     if (count($antennaEvents) == 1) {
                         $event = $antennaEvents[0];
-                        $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
-                        $event->setStatus($endstatus);
-                        //ferme evts fils de type frequencycategory
-                        foreach ($event->getChildren() as $child) {
-                            if ($child->getCategory() instanceof FrequencyCategory) {
-                                $child->setEnddate($now);
-                                $child->setStatus($endstatus);
-                                $em->persist($child);
+                        if($freqid){
+                            $freqidEventValue = $event->getCustomFieldValue($event->getCategory()->getFrequenciesField());
+                            if($freqidEventValue){
+                                $freqids = explode("\r", $freqidEventValue->getValue());
+                                if(in_array($freqid, $freqids)) {
+                                    $newfreqvalue = "";
+                                    foreach ($freqids as $freq){
+                                        error_log("freq ".$freq);
+                                        error_log("freqid ".$freqid);
+                                        if($freq != $freqid){
+                                            $newfreqvalue .= $freq."\r";
+                                        }
+                                    }
+                                    $newfreqvalue = trim($newfreqvalue);
+                                    if(strlen($newfreqvalue) === 0){
+                                        //fermer l'evt
+                                        $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                                        $event->setStatus($endstatus);
+                                        //ferme evts fils de type frequencycategory
+                                        foreach ($event->getChildren() as $child) {
+                                            if ($child->getCategory() instanceof FrequencyCategory) {
+                                                $child->setEnddate($now);
+                                                $child->setStatus($endstatus);
+                                                $em->persist($child);
+                                            }
+                                        }
+                                        $event->setEnddate($now);
+                                        $em->persist($event);
+                                        try {
+                                            $em->flush();
+                                            $messages['success'][] = "Evènement antenne correctement terminé.";
+                                        } catch (\Exception $e) {
+                                            $messages['error'][] = $e->getMessage();
+                                        }
+                                    } else {
+                                        $freqidEventValue->setValue(trim($newfreqvalue));
+                                        $em->persist($freqidEventValue);
+                                        try {
+                                            $em->flush();
+                                            $messages['success'][] = "Evènement antenne correctement terminé.";
+                                        } catch (\Exception $e) {
+                                            $messages['error'][] = $e->getMessage();
+                                        }
+                                    }
+                                } else {
+                                    $messages['error'][] = "Evènement en cours incompatible.";
+                                }
+                            } else {
+                                $messages['error'][] = "Evènement en cours incompatible.";
                             }
-                        }
-                        $event->setEnddate($now);
-                        $em->persist($event);
-                        try {
-                            $em->flush();
-                            $messages['success'][] = "Evènement antenne correctement terminé.";
-                        } catch (\Exception $e) {
-                            $messages['error'][] = $e->getMessage();
+                        } else {
+                            $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                            $event->setStatus($endstatus);
+                            //ferme evts fils de type frequencycategory
+                            foreach ($event->getChildren() as $child) {
+                                if ($child->getCategory() instanceof FrequencyCategory) {
+                                    $child->setEnddate($now);
+                                    $child->setStatus($endstatus);
+                                    $em->persist($child);
+                                }
+                            }
+                            $event->setEnddate($now);
+                            $em->persist($event);
+                            try {
+                                $em->flush();
+                                $messages['success'][] = "Evènement antenne correctement terminé.";
+                            } catch (\Exception $e) {
+                                $messages['error'][] = $e->getMessage();
+                            }
                         }
                     } else {
                         $messages['error'][] = "Impossible de déterminer l'évènement à terminer";
@@ -390,7 +442,7 @@ class FrequenciesController extends TabController {
             $messages['error'][] = 'Droits insuffisants pour modifier l\'état de l\'antenne.';
         }
         $json['messages'] = $messages;
-        $json['frequencies'] = $this->getFrequencies(true);
+        $json['frequencies'] = $this->getFrequencies();
         return new JsonModel($json);
     }
 
@@ -579,59 +631,74 @@ class FrequenciesController extends TabController {
      * @return \Zend\View\Model\JsonModel
      */
     public function getFrequenciesStateAction() {
-        return new JsonModel($this->getFrequencies(true));
+        return new JsonModel($this->getFrequencies());
     }
 
-    private function getFrequencies($full = true) {
+    private function getFrequencies() {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $frequencies = array();
         $results = $em->getRepository('Application\Entity\Frequency')->findAll();
 
         //retrieve antennas state once and for all
-        $antennas = $this->getAntennas(false);
+        $antennas = $this->getAntennas(true);
 
         foreach ($results as $frequency) {
-            if ($full) {
-                $frequencies[$frequency->getId()] = array();
-                $frequencies[$frequency->getId()]['name'] = $frequency->getValue();
-                $frequencies[$frequency->getId()]['status'] = 0;
-                $frequencies[$frequency->getId()]['cov'] = 0;
-                $frequencies[$frequency->getId()]['otherfreq'] = 0;
-                $frequencies[$frequency->getId()]['otherfreqid'] = 0;
-                $frequencies[$frequency->getId()]['otherfreqname'] = '';
-                $frequencies[$frequency->getId()]['planned'] = false;
-                $frequencies[$frequency->getId()]['main'] = $frequency->getMainantenna()->getId();
-                $frequencies[$frequency->getId()]['backup'] = $frequency->getBackupAntenna()->getId();
-                if ($frequency->getMainantennaclimax()) {
-                    $frequencies[$frequency->getId()]['mainclimax'] = $frequency->getMainantennaclimax()->getId();
-                }
-                if ($frequency->getBackupantennaclimax()) {
-                    $frequencies[$frequency->getId()]['backupclimax'] = $frequency->getBackupantennaclimax()->getId();
-                }
-            } else {
-                $frequencies[$frequency->getId()] = true;
+            $frequencies[$frequency->getId()] = array();
+            $frequencies[$frequency->getId()]['name'] = $frequency->getValue();
+            $frequencies[$frequency->getId()]['status'] = 0;
+            $frequencies[$frequency->getId()]['cov'] = 0;
+            $frequencies[$frequency->getId()]['otherfreq'] = 0;
+            $frequencies[$frequency->getId()]['otherfreqid'] = 0;
+            $frequencies[$frequency->getId()]['otherfreqname'] = '';
+            $frequencies[$frequency->getId()]['planned'] = false;
+            $frequencies[$frequency->getId()]['main'] = $frequency->getMainantenna()->getId();
+            $frequencies[$frequency->getId()]['backup'] = $frequency->getBackupAntenna()->getId();
+            $frequencies[$frequency->getId()]['mainstatus'] = 1;
+            $frequencies[$frequency->getId()]['backupstatus'] = 1;
+            if ($frequency->getMainantennaclimax()) {
+                $frequencies[$frequency->getId()]['mainclimax'] = $frequency->getMainantennaclimax()->getId();
+                $frequencies[$frequency->getId()]['mainclimaxstatus'] = 1;
+            }
+            if ($frequency->getBackupantennaclimax()) {
+                $frequencies[$frequency->getId()]['backupclimax'] = $frequency->getBackupantennaclimax()->getId();
+                $frequencies[$frequency->getId()]['backupclimaxstatus'] = 1;
             }
 
             //état de la fréquence : indispo uniquement si toutes antennes en panne
-            if ($full) {
-                $frequencies[$frequency->getId()]['status'] += 
-                        $antennas[$frequency->getMainAntenna()->getId()] + $antennas[$frequency->getBackupAntenna()->getId()];
-                if ($frequency->getMainantennaclimax()) {
-                        $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getMainAntennaclimax()->getId()];
-                }
-                if ($frequency->getBackupantennaclimax()) {
-                    $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupantennaclimax()->getId()];
-                }
+            if(count($antennas[$frequency->getMainAntenna()->getId()]['frequencies']) == 0 ||
+                    in_array($frequency->getId(), $antennas[$frequency->getMainAntenna()->getId()]['frequencies'])) {
+                $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getMainAntenna()->getId()]['status'];
+                $frequencies[$frequency->getId()]['mainstatus'] *= $antennas[$frequency->getMainAntenna()->getId()]['status'];
             } else {
-                $frequencies[$frequency->getId()] += $antennas[$frequency->getMainAntenna()->getId()] + $antennas[$frequency->getBackupAntenna()->getId()];
-                if ($frequency->getMainantennaclimax()) {
-                        $frequencies[$frequency->getId()] += $antennas[$frequency->getMainAntennaclimax()->getId()];
-                }
-                if ($frequency->getBackupantennaclimax()) {
-                    $frequencies[$frequency->getId()] += $antennas[$frequency->getBackupantennaclimax()->getId()];
+                $frequencies[$frequency->getId()]['status'] += 1;
+            }
+            if(count($antennas[$frequency->getBackupAntenna()->getId()]['frequencies']) == 0 ||
+                    in_array($frequency->getId(), $antennas[$frequency->getBackupAntenna()->getId()]['frequencies'])) {
+                $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupAntenna()->getId()]['status'];
+                $frequencies[$frequency->getId()]['backupstatus'] *= $antennas[$frequency->getBackupAntenna()->getId()]['status'];
+            } else {
+                $frequencies[$frequency->getId()]['status'] += 1;
+            }
+            if ($frequency->getMainantennaclimax()) {
+                if(count($antennas[$frequency->getMainAntennaclimax()->getId()]['frequencies']) == 0 ||
+                    in_array($frequency->getId(), $antennas[$frequency->getMainAntennaclimax()->getId()]['frequencies'])) {
+                    $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getMainAntennaclimax()->getId()]['status'];
+                    $frequencies[$frequency->getId()]['mainclimaxstatus'] *= $antennas[$frequency->getMainAntennaclimax()->getId()]['status'];
+                } else {
+                    $frequencies[$frequency->getId()]['status'] += 1;
                 }
             }
+            if ($frequency->getBackupantennaclimax()){
+                if(count($antennas[$frequency->getBackupantennaclimax()->getId()]['frequencies']) == 0 ||
+                        in_array($frequency->getId(), $antennas[$frequency->getBackupantennaclimax()->getId()]['frequencies'])) {
+                    $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupantennaclimax()->getId()]['status'];
+                    $frequencies[$frequency->getId()]['backupclimaxstatus'] *= $antennas[$frequency->getBackupantennaclimax()->getId()]['status'];
+                } else {
+                    $frequencies[$frequency->getId()]['status'] += 1;
+                }
+            }
+
         }
 
         foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
@@ -655,27 +722,24 @@ class FrequenciesController extends TabController {
                 }
             }
             if (array_key_exists($frequencyid, $frequencies)) { //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
-                if ($full) {
-                    $frequencies[$frequencyid]['status'] *= $available;
-                    $frequencies[$frequencyid]['cov'] = $cov;
-                    $otherfreq = $em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
-                    if ($otherfreq) {
-                        $frequencies[$frequencyid]['otherfreq'] = $otherfreq->getValue();
-                        $frequencies[$frequencyid]['otherfreqname'] = $otherfreq->getName();
-                        $frequencies[$frequencyid]['otherfreqid'] = $otherfreq->getId();
-                        $frequencies[$frequencyid]['main'] = $otherfreq->getMainantenna()->getId();
-                        $frequencies[$frequencyid]['backup'] = $otherfreq->getBackupantenna()->getId();
-                        if ($otherfreq->getMainantennaclimax()) {
-                            $frequencies[$frequencyid]['mainclimax'] = $otherfreq->getMainantennaclimax()->getId();
-                        }
-                        if ($otherfreq->getBackupantennaclimax()) {
-                            $frequencies[$frequencyid]['backupclimax'] = $otherfreq->getBackupantennaclimax()->getId();
-                        }
-                    } else {
-                        
+                
+                $frequencies[$frequencyid]['status'] *= $available;
+                $frequencies[$frequencyid]['cov'] = $cov;
+                $otherfreq = $em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
+                if ($otherfreq) {
+                    $frequencies[$frequencyid]['otherfreq'] = $otherfreq->getValue();
+                    $frequencies[$frequencyid]['otherfreqname'] = $otherfreq->getName();
+                    $frequencies[$frequencyid]['otherfreqid'] = $otherfreq->getId();
+                    $frequencies[$frequencyid]['main'] = $otherfreq->getMainantenna()->getId();
+                    $frequencies[$frequencyid]['backup'] = $otherfreq->getBackupantenna()->getId();
+                    if ($otherfreq->getMainantennaclimax()) {
+                        $frequencies[$frequencyid]['mainclimax'] = $otherfreq->getMainantennaclimax()->getId();
+                    }
+                    if ($otherfreq->getBackupantennaclimax()) {
+                        $frequencies[$frequencyid]['backupclimax'] = $otherfreq->getBackupantennaclimax()->getId();
                     }
                 } else {
-                    $frequencies[$frequencyid] *= $available;
+
                 }
             }
         }
@@ -687,13 +751,12 @@ class FrequenciesController extends TabController {
             }
         }
         
-        if ($full) { //en format complet, on donne aussi les evènements dans les 12h
-            foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
-                $frequencyidfield = $event->getCustomFieldValue($event->getCategory()->getFrequencyField());
-                $frequencyid = ($frequencyidfield == null ? null : $frequencyidfield->getValue());
-                if (array_key_exists($frequencyid, $frequencies)) { //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
-                    $frequencies[$frequencyid]['planned'] = true;
-                }
+        //on donne aussi les evènements dans les 12h
+        foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
+            $frequencyidfield = $event->getCustomFieldValue($event->getCategory()->getFrequencyField());
+            $frequencyid = ($frequencyidfield == null ? null : $frequencyidfield->getValue());
+            if (array_key_exists($frequencyid, $frequencies)) { //peut être inexistant si la fréquence a été supprimée alors que des évènements existent
+                $frequencies[$frequencyid]['planned'] = true;
             }
         }
 
@@ -702,7 +765,7 @@ class FrequenciesController extends TabController {
 
     private function getAntennas($full = true) {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
+        
         $antennas = array();
 
         foreach ($em->getRepository('Application\Entity\Antenna')->findAll() as $antenna) {
@@ -713,6 +776,7 @@ class FrequenciesController extends TabController {
                 $antennas[$antenna->getId()]['shortname'] = $antenna->getShortname();
                 $antennas[$antenna->getId()]['status'] = true;
                 $antennas[$antenna->getId()]['planned'] = false;
+                $antennas[$antenna->getId()]['frequencies'] = [];
             } else {
                 $antennas[$antenna->getId()] = true;
             }
@@ -721,17 +785,22 @@ class FrequenciesController extends TabController {
         foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
             $statefield = $result->getCategory()->getStateField()->getId();
             $antennafield = $result->getCategory()->getAntennafield()->getId();
+            $frequenciesfield = $result->getCategory()->getFrequenciesField()->getId();
             $antennaid = 0;
             $available = true;
+            $frequencies = [];
             foreach ($result->getCustomFieldsValues() as $customvalue) {
                 if ($customvalue->getCustomField()->getId() == $statefield) {
                     $available = !$customvalue->getValue();
                 } else if ($customvalue->getCustomField()->getId() == $antennafield) {
                     $antennaid = $customvalue->getValue();
+                } else if ($customvalue->getCustomField()->getId() == $frequenciesfield){
+                    $frequencies = explode("\r", $customvalue->getValue());
                 }
             }
             if ($full) {
                 $antennas[$antennaid]['status'] *= $available;
+                $antennas[$antennaid]['frequencies'] = $frequencies;
             } else {
                 $antennas[$antennaid] *= $available;
             }
@@ -741,16 +810,21 @@ class FrequenciesController extends TabController {
             foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
                 $statefield = $result->getCategory()->getStateField()->getId();
                 $antennafield = $result->getCategory()->getAntennafield()->getId();
+                $frequenciesfield = $result->getCategory()->getFrequenciesField()->getId();
                 $antennaid = 0;
                 $planned = false;
+                $frequencies = [];
                 foreach ($result->getCustomFieldsValues() as $customvalue) {
                     if ($customvalue->getCustomField()->getId() == $statefield) {
                         $planned = $customvalue->getValue();
                     } else if ($customvalue->getCustomField()->getId() == $antennafield) {
                         $antennaid = $customvalue->getValue();
+                    } else if ($customvalue->getCustomField()->getId() == $frequenciesfield){
+                        $frequencies = explode("\r", $customvalue->getValue());
                     }
                 }
                 $antennas[$antennaid]['planned'] = $planned;
+                $antennas[$antennaid]['frequencies'] = $frequencies;
             }
         }
 

@@ -7,6 +7,7 @@
 				<th>id</th>
 				<th>Nom</th>
 				<th>Type</th>
+                                <th>Multiple</th>
 				<th>Défaut</th>
                                 <th>Aide</th>
 				<th style="width:20px;"> </th>
@@ -23,6 +24,17 @@
 			echo "<td>".$field->getId()."</td>";
 			echo "<td>".$field->getName()."</td>";
 			echo "<td>".$field->getType()->getName()."</td>";
+                        echo "<td>";
+                        if(!$this->isMultipleAllowed($field)){
+                            echo '<i class="icon-grey icon-remove"></i>';
+                        } else {
+                            if($field->isMultiple()){
+                                echo '<i class="icon-ok"></i>';
+                            } else {
+                                echo '<i class="icon-remove"></i>';
+                            }
+                        }                        
+                        echo "</td>";
 			echo "<td>".nl2br($field->getDefaultValue())."</td>";
                         echo "<td>".$field->getTooltip()."</td>";
 			echo "<td>";
