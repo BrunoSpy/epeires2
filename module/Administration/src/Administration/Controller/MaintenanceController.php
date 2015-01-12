@@ -37,21 +37,30 @@ class MaintenanceController extends AbstractActionController {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         
         $org = $request->getParam('orgshortname');
-
-        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findBy(array('shortname' => $org));
+       
+        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findOneBy(array('shortname' => $org));
 
         if(!$organisation){
             throw new \RuntimeException('Unable to find organisation.');
         }
 
-        $events = $objectManager->getRepository('Application\Entity\Event')->findBy(array('organisation' => $organisation));
-        $number = count($events);
-        foreach ($events as $event) {
-            $objectManager->remove($event);
+        $batchSize = 20;
+        $i = 0;
+        $q = $objectManager->createQuery('select e from Application\Entity\Event e where e.organisation = ?1');
+        $q->setParameter(1, $organisation->getId());
+        
+        $iterable = $q->iterate();
+        while(($row = $iterable->next()) !== false){
+            $objectManager->remove($row[0]);
+            if(($i % $batchSize) === 0) {
+                $objectManager->flush();
+                $objectManager->clear();
+            }
+            ++$i;
         }
         try{
             $objectManager->flush();
-            return "Suppression des évènements réussie : "+$number+" évènements supprimés";
+            return "Suppression des évènements réussie.";
         } catch (\Exception $ex) {
             error_log($ex->getMessage());
         }
