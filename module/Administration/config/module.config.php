@@ -25,6 +25,21 @@ return array(
             ),
         ),
     ),
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'delete-events' => array(
+                    'options' => array(
+                        'route' => 'delete-events <orgshortname>',
+                        'defaults' => array (
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'deleteEvents'
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
     'service_manager' => array(
         'abstract_factories' => array(
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
