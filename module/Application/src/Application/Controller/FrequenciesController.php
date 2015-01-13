@@ -356,6 +356,10 @@ class FrequenciesController extends TabController {
                         $event->setOrganisation($antenna->getOrganisation()); //TODO et si une antenne appartient à plusieurs orga ?
                         $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
                         $categories = $em->getRepository('Application\Entity\AntennaCategory')->findBy(array('defaultantennacategory' => true));
+                        $frequency= null;
+                        if($freqid){
+                            $frequency = $em->getRepository('Application\Entity\Frequency')->find($freqid);
+                        }
                         if ($categories) {
                             $cat = $categories[0];
                             $antennafieldvalue = new CustomFieldValue();
@@ -368,60 +372,83 @@ class FrequenciesController extends TabController {
                             $statusvalue->setValue(true);
                             $statusvalue->setEvent($event);
                             $event->addCustomFieldValue($statusvalue);
+                            if($frequency && $frequency->hasAntenna($antenna)){
+                                $freqvalue = new CustomFieldValue();
+                                $freqvalue->setCustomField($cat->getFrequenciesField());
+                                $freqvalue->setValue($frequency->getId());
+                                $freqvalue->setEvent($event);
+                                $event->addCustomFieldValue($freqvalue);
+                                $em->persist($freqvalue);
+                            }
                             $event->setCategory($categories[0]);
                             $em->persist($antennafieldvalue);
                             $em->persist($statusvalue);
                             $em->persist($event);
                             //création des evts fils pour le passage en secours
-                            foreach ($antenna->getMainfrequencies() as $frequency) {
-                                $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
-                                        $frequency,
-                                        1,//couv secours
-                                        0,//toujours dispo
-                                        $now,
-                                        $this->zfcUserAuthentication()->getIdentity(),
-                                        $event,
-                                        $messages);
-                            }
-                            foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
-                                $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
-                                        $frequency,
-                                        1,//couv secours
-                                        0,//toujours dispo
-                                        $now,
-                                        $this->zfcUserAuthentication()->getIdentity(),
-                                        $event,
-                                        $messages);
-                            }
-                            //création de la fiche réflexe
-                            if($antenna->getModel()){
-                                foreach($em->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $antenna->getModel()->getId())) as $action){
-                                    $child = new Event();
-                                    $child->setParent($event);
-                                    $child->setAuthor($event->getAuthor());
-                                    $child->setOrganisation($event->getOrganisation());
-                                    $child->createFromPredefinedEvent($action);
-                                    $child->setStatus($em->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
-                                    foreach($action->getCustomFieldsValues() as $value){
-                                        $newvalue = new CustomFieldValue();
-                                        $newvalue->setEvent($child);
-                                        $newvalue->setCustomField($value->getCustomField());
-                                        $newvalue->setValue($value->getValue());
-                                        $em->persist($newvalue);
-                                    }
-                                    //si alert
-                                    if($action->getCategory() instanceof \Application\Entity\AlarmCategory){
-                                        $now = new \DateTime('now');
-                                        $now->setTimezone(new \DateTimeZone('UTC'));
-                                        $now->add(new \DateInterval('PT'.$action->getStartdateDelta().'M'));
-                                        $child->setStartdate($now);
-                                    }
-                                    $em->persist($child);
+                            if($frequency && $frequency->hasAntenna($antenna)){
+                                //une seule fréquence impactée
+                                if($frequency->hasMainAntenna($antenna) || $frequency->hasMainClimaxAntenna($antenna)){
+                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                            $frequency,
+                                            1,//couv secours
+                                            0,//toujours dispo
+                                            $now,
+                                            $this->zfcUserAuthentication()->getIdentity(),
+                                            $event,
+                                            $messages);
                                 }
-                                //ajout des fichiers
-                                foreach ($antenna->getModel()->getFiles() as $file){
-                                    $file->addEvent($event);
-                                    $em->persist($file);
+                            } else {
+                                //toutes les fréquences impactées
+                                foreach ($antenna->getMainfrequencies() as $frequency) {
+                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                            $frequency,
+                                            1,//couv secours
+                                            0,//toujours dispo
+                                            $now,
+                                            $this->zfcUserAuthentication()->getIdentity(),
+                                            $event,
+                                            $messages);
+                                }
+                                foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
+                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                            $frequency,
+                                            1,//couv secours
+                                            0,//toujours dispo
+                                            $now,
+                                            $this->zfcUserAuthentication()->getIdentity(),
+                                            $event,
+                                            $messages);
+                                }
+                                //création de la fiche réflexe
+                                if($antenna->getModel()){
+                                    foreach($em->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $antenna->getModel()->getId())) as $action){
+                                        $child = new Event();
+                                        $child->setParent($event);
+                                        $child->setAuthor($event->getAuthor());
+                                        $child->setOrganisation($event->getOrganisation());
+                                        $child->createFromPredefinedEvent($action);
+                                        $child->setStatus($em->getRepository('Application\Entity\Status')->findOneBy(array('defaut'=>true, 'open'=> true)));
+                                        foreach($action->getCustomFieldsValues() as $value){
+                                            $newvalue = new CustomFieldValue();
+                                            $newvalue->setEvent($child);
+                                            $newvalue->setCustomField($value->getCustomField());
+                                            $newvalue->setValue($value->getValue());
+                                            $em->persist($newvalue);
+                                        }
+                                        //si alert
+                                        if($action->getCategory() instanceof \Application\Entity\AlarmCategory){
+                                            $now = new \DateTime('now');
+                                            $now->setTimezone(new \DateTimeZone('UTC'));
+                                            $now->add(new \DateInterval('PT'.$action->getStartdateDelta().'M'));
+                                            $child->setStartdate($now);
+                                        }
+                                        $em->persist($child);
+                                    }
+                                    //ajout des fichiers
+                                    foreach ($antenna->getModel()->getFiles() as $file){
+                                        $file->addEvent($event);
+                                        $em->persist($file);
+                                    }
                                 }
                             }
                             try {

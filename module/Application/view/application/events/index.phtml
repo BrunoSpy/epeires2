@@ -87,10 +87,6 @@ echo $this->modalwindow('add-note-modal',
 
 <?php $this->inlineScript()->captureStart();?>
 
-//$('#timeline').css('height', $(window).height()-82+'px');
-//init timeline
-//timeline.conf($('#timeline'), '<?php echo $this->url('application', array('controller' => 'events', ''))?>');
-
 $('#timeline').timeline({
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
     categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories',

@@ -197,8 +197,9 @@ var antenna = function(url){
 
 	$(document).on('click', '.switch-antenna', function(event){
                 var me = $(this);
+                $('a.actions-antenna').popover('hide');
                 $.post(url+'frequencies/switchantenna?antennaid='+me.data('antennaid')+'&state='+me.data('state')+'&freq='+me.data('freqid'), function(data){
-                    displayMessages(data);
+                    displayMessages(data.messages);
                     //force page refresh
                     clearTimeout(timer);
                     doFullUpdate();

@@ -160,6 +160,33 @@ class Frequency {
 		return $this->backupantennaclimax;
 	}
 	
+        public function hasAntenna(Antenna $antenna){
+            if(($this->mainantenna && $antenna->getId() === $this->mainantenna->getId())
+                    || ($this->backupantenna && $antenna->getId() === $this->backupantenna->getId())
+                    || ($this->mainantennaclimax && $antenna->getId() === $this->mainantennaclimax->getId())
+                    || ($this->backupantennaclimax && $antenna->getId() === $this->backupantennaclimax->getId())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        public function hasMainAntenna(Antenna $antenna){
+            if($this->mainantenna && $antenna->getId() === $this->mainantenna->getId()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        public function hasMainClimaxAntenna(Antenna $antenna){
+            if($this->mainantennaclimax && $antenna->getId() === $this->mainantennaclimax->getId()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);
 		$object_vars['mainantenna'] = ($this->mainantenna ? $this->mainantenna->getId() : null);

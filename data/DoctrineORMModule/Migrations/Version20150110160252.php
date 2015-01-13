@@ -38,7 +38,7 @@ class Version20150110160252 extends AbstractMigration
         foreach ($categories as $cat){
             $this->connection->insert('customfields', 
                         array('category_id' => $cat['id'],
-                            'type_id' => 9,
+                            'type_id' => 5,
                             'name' => "Fréquences impactées",
                             'place' => 3,
                             'defaultvalue' => "",
