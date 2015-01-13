@@ -55,16 +55,44 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$name = $fieldvalue;
 				break;
 			case 'sector':
+                            if($customfield->isMultiple()){
+                                $sectors = explode("\r", $$fieldvalue);
+                                $name = "";
+                                foreach ($sectors as $s){
+                                    $sector = $this->em->getRepository('Application\Entity\Sector')->find($s);
+                                    if($sector){
+                                        if(strlen($name) > 0){
+                                            $name .= "+ ";
+                                        }
+                                        $name .= $sector->getName()." ";
+                                    }
+                                }
+                            } else {
 				$sector = $this->em->getRepository('Application\Entity\Sector')->find($fieldvalue);
 				if($sector){
 					$name = $sector->getName();
 				}
+                            }
 				break;
 			case 'antenna':
+                            if($customfield->isMultiple()){
+                                $antennas = explode("\r", $$fieldvalue);
+                                $name = "";
+                                foreach ($antennas as $a){
+                                    $antenna = $this->em->getRepository('Application\Entity\Antenna')->find($a);
+                                    if($antenna){
+                                        if(strlen($name) > 0){
+                                            $name .= "+ ";
+                                        }
+                                        $name .= $antenna->getName()." ";
+                                    }
+                                }
+                            } else {
 				$antenna = $this->em->getRepository('Application\Entity\Antenna')->find($fieldvalue);
 				if($antenna){
 					$name = $antenna->getName();
 				}
+                            }
 				break;
 			case 'frequency':
                             if($customfield->isMultiple()){
@@ -87,10 +115,24 @@ class CustomFieldService implements ServiceManagerAwareInterface {
                             }
 				break;
 			case 'radar':
+                            if($customfield->isMultiple()){
+                                $radars = explode("\r", $fieldvalue);
+                                $name = "";
+                                foreach($radars as $r){
+                                    $radar = $this->em->getRepository('Application\Entity\Radar')->find($r);
+                                    if($radar){
+                                        if(strlen($name) > 0){
+                                            $name .= "+ ";
+                                        }
+                                        $name .= $radar->getName()." ";
+                                    }
+                                }
+                            } else {
 				$radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
 				if($radar){
 					$name = $radar->getName();
 				}
+                            }
 				break;
 			case 'select':
 				$defaultvalue = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
@@ -102,10 +144,24 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				}
 				break;
 			case 'stack':
+                            if($customfield->isMultiple()){
+                                $stacks = explode("\r", $fieldvalue);
+                                $name = "";
+                                foreach($stacks as $s){
+                                    $stack = $this->em->getRepository('Application\Entity\Stack')->find($s);
+                                    if($stack){
+                                        if(strlen($name) > 0){
+                                            $name .= "+ ";
+                                        }
+                                        $name .= $stack->getName()." ";
+                                    }
+                                }
+                            } else {
 				$stack = $this->em->getRepository('Application\Entity\Stack')->find($fieldvalue);
 				if($stack){
 					$name = $stack->getName();
 				}
+                            }
 				break;
 			case 'boolean':
 				$name = ($fieldvalue ? "Oui" : "Non");
