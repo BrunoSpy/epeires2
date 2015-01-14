@@ -229,7 +229,7 @@ $.widget("epeires.timeline", {
                 }
                 $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
                 $('.Time_obj.vert_bar, #TimeBar').css('height', '+=' + diff + 'px');
-            }            
+            }
         });
         
         //retracé de la timeline en cas de changement de taille de fenêtre
@@ -255,13 +255,15 @@ $.widget("epeires.timeline", {
                     html: 'true'
                 }).tooltip('show');
                 //affichage heure et boutons
-                //TODO
+                $(this).find('.disp').show();
+                $(this).find('.lien.disp').hide();
             },
             mouseleave: function(){
                 //suppression tooltip
                 $(this).tooltip('destroy');
                 //suppression heure et boutons
-                //TODO
+                $(this).find('.disp').hide();
+                $(this).find('.lien.disp').show();
             }
         }, '.elmt');
     },
@@ -939,7 +941,7 @@ $.widget("epeires.timeline", {
             var elmt_fin = elmt.find('.elmt_fin');
             var move_deb = elmt.find('.move_deb');
             var move_fin = elmt.find('.move_fin');
-            var lien = elmt.find('.no_lien');
+            var lien = elmt.find('.lien');
             var couleur = categ.color;
             var startdate = new Date(event.start_date);
             var enddate;
@@ -955,10 +957,58 @@ $.widget("epeires.timeline", {
             elmt_flecheD.hide();
             move_deb.hide();
             move_fin.hide();
-            elmt_deb.show();
-            elmt_fin.show();
+            elmt_deb.hide();
+            elmt_fin.hide();
+            lien.hide();
+            elmt_txt.css({'background-color':'','border-style':''});
             //////   
       
+            // libellé de l'évènement à mettre à jour
+			if (event.files > 0) {
+				elmt_txt.find('span').html(event.name+' <a href="#"><span class="badge">P</span></a>');
+			} else {
+				elmt_txt.find('span').text(event.name);
+			}
+			var yDeb, yEnd, hDeb, hEnd;
+			// ajout de l'heure de début
+			var hDeb = this._formatNumberLength(startdate.getUTCHours(),2)+":"+this._formatNumberLength(startdate.getMinutes(),2);						
+			var d_actuelle = new Date();
+			if (startdate.getDate() != d_actuelle.getDate()){ 
+				hDeb = '<span style="display: inline-block; vertical-align: middle;">'+this._formatNumberLength(startdate.getUTCDate(),2)+"/"+
+						this._formatNumberLength(startdate.getUTCMonth()+1,2)+"<br/>"+hDeb+'</span>'; 
+				yDeb = 0;
+			} else {
+				yDeb = 6;
+			}
+			elmt_deb.html(" "+hDeb);
+			var data_deb = elmt_deb[0];
+			jQuery.data(data_deb,"d_deb",startdate);
+			elmt_deb.css({'top':yDeb+'px'});
+			
+			// ajout de l'heure de fin
+			if (this._isValidDate(enddate)) {
+				var hEnd = this._formatNumberLength(enddate.getUTCHours(),2)+":"+this._formatNumberLength(enddate.getMinutes(),2);
+				if (enddate.getDate() != d_actuelle.getDate()){
+					hEnd = '<span style="display: inline-block; vertical-align: middle;">'+this._formatNumberLength(enddate.getUTCDate(),2)+"/"+
+					this._formatNumberLength(enddate.getUTCMonth()+1,2)+"<br/>"+hEnd+'</span>';
+					yEnd = 0;
+				} else {
+					yEnd = 6;
+				}
+			} else { 
+				yEnd = 4;
+				hEnd = ""; 
+			}
+			elmt_fin.html(hEnd+" ");
+			var data_fin = elmt_fin[0];
+			jQuery.data(data_fin,"d_fin",enddate);
+			elmt_fin.css({'top':yEnd+'px'});
+			
+			if (event.modifiable) {
+				elmt_mod.addClass('disp');
+	            elmt_check.addClass('disp');
+			}
+			
             var x = this._computeX(startdate);
 
             var x_end = -1;     
@@ -978,7 +1028,7 @@ $.widget("epeires.timeline", {
             		'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
             	elmt_rect.css({'left': '+=' + x});
             	elmt_compl.css({'left': x + 'px'});
-            	elmt_fin.addClass('disp');
+            	elmt_deb.addClass('disp');
             } else {
             	elmt_deb.addClass('disp');
             	//cas 2 : date début antérieure au début de la timeline
@@ -1023,24 +1073,26 @@ $.widget("epeires.timeline", {
             var x0 = x;
             var x2 = x_end;
 			var txt_wid = elmt_txt.outerWidth()+60;
+
 			var largeur = this._computeX(this.timelineEnd);
 			if (event.punctual) {
-				lien.addClass('lien');
+				lien.addClass('disp');
 				lien.show();
 				x2 = x1+elmt_rect.outerWidth();
 				x1 -= 30;
 				// on place l'heure à droite
-				elmt_fin.css({'left': x2+'px'});
+				elmt_deb.css({'left': x2+'px'});
 				elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px','border-radius': '0px', 'padding':'2px'});
-				x2 += elmt_fin.outerWidth()+10;
+				x2 += elmt_deb.outerWidth()+10;
 				if (x2+txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
 					elmt_txt.css({'left': x2+'px'});
-					lien.css({'left': x2-(elmt_fin.outerWidth()+10)+'px','width':elmt_fin.outerWidth()+10+'px'});	
+					lien.css({'left': x2-(elmt_deb.outerWidth()+10)+'px','width':elmt_deb.outerWidth()+10+'px'});	
 					x2 += txt_wid;
-					if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
+					// A transférer dans update status
+					/*					if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
 						lien.hide(); 
-						lien.removeClass('lien');	
-					}
+						lien.removeClass('disp');	
+					}*/
 				} else { // sinon on le met à gauche
 					x1 -= txt_wid+2;
 					elmt_txt.css({'left': x1+'px'});
@@ -1058,7 +1110,7 @@ $.widget("epeires.timeline", {
 					elmt_fin.css({'left': x2+5+'px'});
 					x2 += elmt_fin.outerWidth()+20;
 				} else {
-					lien.addClass('lien');
+					lien.addClass('disp');
 					lien.show();
 					elmt_txt.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px',
 						'border-radius': '5px', 'padding':'2px'});
@@ -1076,32 +1128,23 @@ $.widget("epeires.timeline", {
 					//	dr = 1;
 						elmt_txt.css({'left': x2+'px'});
 						lien.css({'left': x2-(elmt_fin.outerWidth()+20)+'px','width':elmt_fin.outerWidth()+20+'px'});
-						if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
+						// idem
+/*						if (elmt_fin.find('i').hasClass("icon-warning-sign")) { 
 							lien.hide(); 
 							lien.removeClass('lien');	
-						}
+						}*/
 					} else { // sinon on le met à gauche
 					//	dr = 0;
 						lien.css({'left': x1-60+'px','width':x0-x1+60+'px'});
 						x1 -= txt_wid+2;
 						elmt_txt.css({'left': x1+'px'});
-						if (elmt_deb.find('i').hasClass("icon-warning-sign")) { 
+/*						if (elmt_deb.find('i').hasClass("icon-warning-sign")) { 
 							lien.hide(); 
 							lien.removeClass('lien');	
-						}
+						}*/
 					}
 				} 
-			}
-            
-            
-            elmt_deb.prepend(' <i class="icon-check"></i>');
-            elmt_fin.append(' <i class="icon-check"></i>');
-            if (event.status_id === 1) {
-            	elmt_txt.css({'font-style':'italic'});
-            } else {
-            	elmt_txt.css({'font-style':'normal'});
-            }
-            
+			}        
     },
     /**
      * Update an event according to its status and dates
@@ -1143,7 +1186,7 @@ $.widget("epeires.timeline", {
         elmt.append(elmt_flecheD);
         elmt_flecheD.append('<i class="icon-arrow-right"></i>');
         // ajout du nom de l'événement
-        var elmt_txt = $('<p class="label_elmt">' + event.name + '</p>');
+        var elmt_txt = $('<p class="label_elmt"><span>' + event.name + '</span></p>');
         elmt.append(elmt_txt);
         // ajout du bouton "ouverture fiche"
         var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
@@ -1154,7 +1197,7 @@ $.widget("epeires.timeline", {
         elmt_txt.append(elmt_b2);
         elmt_b2.append('    <i class="icon-tasks"></i>');
         // lien entre le texte et l'événement (si texte écrit en dehors)
-        var lien = $('<div class="no_lien"></div>');
+        var lien = $('<div class="lien"></div>');
         elmt.append(lien);
         var elmt_deb = $('<a href="#" class="elmt_deb"></a>');
         elmt.append(elmt_deb);
@@ -1165,13 +1208,13 @@ $.widget("epeires.timeline", {
         var move_fin = $('<p class="move_fin"></p>');
         elmt_rect.append(move_fin);
         var dy = this.options.eventHeight;
-        var largeur = 300;
+        var largeur = this.element.width();
         elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy});
         elmt_flecheG.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
         elmt_flecheD.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
         elmt_b1.css({'z-index': 1});
         elmt_b2.css({'z-index': 1});
-        elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'font-weight': 'normal', 'z-index': 2, 'color':'black'});
+        elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 2, 'color':'black', 'white-space': 'nowrap', 'font-weight':'bold', 'width':'auto'});
         lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
         
         move_deb.css({'height': dy - 8});
@@ -1275,6 +1318,9 @@ $.widget("epeires.timeline", {
         } else {
             return false;
         }
-    }
+    },
+    
+    _computeTextSize: function (){}
+    
   });
 })( jQuery );
