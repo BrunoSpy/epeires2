@@ -46,7 +46,7 @@ $.widget("epeires.timeline", {
      * Evènements affichés
      */
     eventsDisplayed: [],
-    eventsDiplayedPosition: [],
+    eventsDisplayedPosition: [],
     /**
      * Y position of displayed events
      */
@@ -103,6 +103,10 @@ $.widget("epeires.timeline", {
      * Is update of the view allowed ?
      */
     update: true,
+    /**
+     * ongoing drag event
+     */
+    on_drag: false,
     //paramètres pour les dessins
     params: {
         //espace entre les catégories
@@ -266,6 +270,124 @@ $.widget("epeires.timeline", {
                 $(this).find('.lien.disp').show();
             }
         }, '.elmt');
+        
+        // Déplacement de l'heure de debut
+        this.element.on('mousedown', '.move_deb', function (e1) {
+            self._pauseUpdate();
+            self.on_drag = 1;
+            var x_ref = e1.clientX;
+            var x_temp = x_ref;
+            var delt, delt2;
+            var elmt = $(this).closest('.elmt');
+            elmt.addClass('on_drag');
+            var move_fin = elmt.find('.move_fin');
+            var rect_elmt = elmt.find('.rect_elmt');
+            var elmt_compl = elmt.find('.complement');
+            var rect_width = rect_elmt.width();
+            var elmt_deb = elmt.find('.elmt_deb');
+            elmt_deb.show();
+            var pix_time = 30 * 60000 / self.intervalle;
+            var elmt_fin = elmt.find('.elmt_fin');
+            var d_deb = elmt_deb.data("d_deb");
+            var temp_deb = new Date();
+            temp_deb.setTime(d_deb.getTime());
+            var aff_deb = new Date();
+            aff_deb.setTime(d_deb.getTime());
+            self.element.mousemove(function (e2) {
+                delt = e2.clientX - x_temp;
+                delt2 = e2.clientX - x_ref;
+                if (delt2 + 40 < rect_width) {
+                    temp_deb.setTime(d_deb.getTime() + delt2 * pix_time);
+                    
+                    aff_deb.setTime(d_deb.getTime() + delt2 * pix_time);
+                    aff_deb.setHours(aff_deb.getUTCHours());
+                    elmt_deb.text(" " + aff_deb.toLocaleTimeString().substr(0, 5));
+                    x_temp = e2.clientX;
+                    elmt.css({'left': '+=' + delt, 'width': '-=' + delt});
+                    rect_elmt.css({'width': '-=' + delt});
+                    elmt_compl.css({'left': '-=' + delt});
+                    elmt_fin.css({'left': '-=' + delt});
+                    move_fin.css({'left': '-=' + delt});
+                }
+            });
+        });
+        
+        // Déplacement de l'heure de fin
+        this.element.on('mousedown', '.move_fin', function (e1) {
+            self._pauseUpdate();
+            self.on_drag = 2;
+            var x_ref = e1.clientX;
+            var x_temp = x_ref;
+            var delt, delt2;
+            var elmt = $(this).closest('.elmt');
+            elmt.addClass('on_drag');
+
+            var rect_elmt = elmt.find('.rect_elmt');
+            elmt.find('.complement').hide();
+            var rect_width = rect_elmt.width();
+            var move_fin = $(this);
+            var pix_time = 30 * 60000 / self.intervalle;
+            var elmt_fin = elmt.find('.elmt_fin');
+            elmt_fin.show();
+
+            var id = elmt.data('ident');
+            var event = self.eventsDisplayed[self.eventsDisplayedPosition[id]];
+            var enddate = new Date(event.end_date);
+            var d_fin = new Date();
+            if(event.end_date !== null && self._isValidDate(enddate)){
+                d_fin = enddate;
+            } else {
+                d_fin = self.timelineEnd;
+            }
+            var temp_fin = new Date();
+            var aff_fin = new Date();
+
+            self.element.mousemove(function (e2) {
+                delt = e2.clientX - x_temp;
+                delt2 = e2.clientX - x_ref;
+                if (rect_width + delt2 > 40) {
+                    temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
+                    aff_fin.setTime(d_fin.getTime() + delt2 * pix_time);
+                    var txtHour = self._formatNumberLength(aff_fin.getUTCHours(), 2)+":"+self._formatNumberLength(aff_fin.getMinutes(), 2);
+                    elmt_fin.text(txtHour + " ");
+                    x_temp = e2.clientX;
+                    elmt.css({'width': '+=' + delt});
+                    rect_elmt.css({'width': '+=' + delt});
+                    elmt_fin.css({'left': '+=' + delt});
+                    move_fin.css({'left': '+=' + delt});
+                }
+            });
+        });
+
+        // enregistrement des heure de début ou fin
+        this.element.on('mouseup', function () {
+            self.element.unbind('mousemove');
+            var elmt = self.element.find('.on_drag');
+            if (elmt[0] !== null) {
+                elmt.removeClass('on_drag');
+                var id = elmt.data("ident");
+                if (self.on_drag === 1) {
+                    $.post(self.eventUrl + '/changefield?id=' + id + '&field=startdate&value=' + temp_deb.toUTCString(),
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            });
+                } else if (self.on_drag === 2) {
+                    $.post(self.eventUrl + '/changefield?id=' + id + '&field=enddate&value=' + temp_fin.toUTCString(),
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            });
+
+                }
+            }
+            self.on_drag = 0;
+            self._restoreUpdate();
+        });
     },
     _setOption: function (key, value){
         if(key === "showCategories"){
@@ -294,7 +416,6 @@ $.widget("epeires.timeline", {
             event.display = old.display;
             event.shade = old.shade;
             this.events[this.eventsPosition[event.id]] = event;
-            this.sortEvents();
         } else {
             //ajout de l'évènement en fin de tableau
             //la relance du tri forcera le dessin et la mise à jour des évènements
@@ -303,8 +424,8 @@ $.widget("epeires.timeline", {
             event.shade = false;
             this.events.push(event);
             this.eventsPosition[pos] = event.id;
-            this.sortEvents();
         }
+        this.sortEvents();
     },
     /**
      * Add or modify multiple events at once
@@ -506,7 +627,7 @@ $.widget("epeires.timeline", {
         this.eventsDisplayed = this.events.filter(function(event){return event.display;});
         for(var i = 0; i < this.eventsDisplayed.length; i++){
             var id = this.eventsDisplayed[i].id;
-            this.eventsDiplayedPosition[id] = i;
+            this.eventsDisplayedPosition[id] = i;
         }
         //for each event, update attributes
         for(var i = 0; i < this.events.length; i++){
@@ -570,8 +691,8 @@ $.widget("epeires.timeline", {
      * @param {array} eventsYPosition 
      * @returns {undefined}
      */
-    _computeY: function (event, eventsYPosition) {
-        var i = this.eventsDiplayedPosition[event.id];
+    _computeY: function (event) {
+        var i = this.eventsDisplayedPosition[event.id];
         if(this.options.showCategories){
             var catPos = (this.options.showOnlyRootCategories ?
                                 this._getCategoryPosition(event.category_root_id) :
@@ -607,7 +728,28 @@ $.widget("epeires.timeline", {
                     return catOffset + this.params.catSpace;
                 } else {
                     //l'évènement n'est pas le premier : soit on compacte soit on crée une nouvelle ligne
+                    //règle de compactage : cat.compact == true : compactage sans critère
+                    //cat.compact == false : compactage si le nom est identique uniquement
+                    var catEvents = [];
                     if(cat.compact){
+                        catEvents = (this.options.showOnlyRootCategories ? 
+                            this.eventsDisplayed.filter(function(val){
+                                return val.category_root_id === cat.id;
+                            }) :
+                            this.eventsDisplayed.filter(function(val){
+                                return val.category_id === cat.id;
+                            }));
+                    } else {
+                        catEvents = (this.options.showOnlyRootCategories ? 
+                            this.eventsDisplayed.filter(function(val){
+                                return val.category_root_id === cat.id && val.name === event.name;
+                            }) :
+                            this.eventsDisplayed.filter(function(val){
+                                return val.category_id === cat.id && val.name === event.name;
+                            }));
+                    }
+                    //on cherche si il y a de la place sur une ligne parmi les évènements de la catégorie
+                    for(var i = 0; i < catEvents.length; i++){
                         
                     }
                     var topPrevEvent = this.eventsYPosition[prevEvent.id];
@@ -742,7 +884,7 @@ $.widget("epeires.timeline", {
                 'width': 1,
                 'height': this.element.height() - this.params.topSpace,
                 'background-color': '#C0C0C0'});
-            if (i % 2 == 1) {
+            if (i % 2 === 1) {
                 var halfHour = $('<div class="Time_obj halfhour">30</div>');
                 base_elmt.append(halfHour);
                 halfHour.css({
@@ -790,6 +932,11 @@ $.widget("epeires.timeline", {
         //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
         } else if(this.dayview === true) {
             
+        } else {
+            //dans tous les cas : mise à jour des évènements en fonction du statut
+            for(var i = 0; i < this.eventsDisplayed.length; i++){
+                this._updateStatus(this.eventsDisplayed[i]);
+            }
         }
         var x = this._computeX(new Date());
         var timeBar = $('#TimeBar');
@@ -847,6 +994,7 @@ $.widget("epeires.timeline", {
     },
     /**
      * Draw an event if necessary
+     * @param {object} event
      */
     _drawEvent: function(event){
         var cat = (this.options.showOnlyRootCategories ? 
@@ -899,7 +1047,7 @@ $.widget("epeires.timeline", {
         //destroy popups
         elmt.tooltip('destroy');
         //TODO : animate ?
-        elmt.remove();
+        elmt.fadeOut(function(){$(this).remove();});
     },
     /**
      * Get new and modified events every 10 seconds
@@ -945,7 +1093,7 @@ $.widget("epeires.timeline", {
             var couleur = categ.color;
             var startdate = new Date(event.start_date);
             var enddate;
-            if (event.end_date != null) {
+            if (event.end_date !== null) {
             	enddate = new Date(event.end_date);
             } else {
             	enddate = -1;
@@ -1073,7 +1221,6 @@ $.widget("epeires.timeline", {
             var x0 = x;
             var x2 = x_end;
 			var txt_wid = elmt_txt.outerWidth()+60;
-
 			var largeur = this._computeX(this.timelineEnd);
 			if (event.punctual) {
 				lien.addClass('disp');
@@ -1144,22 +1291,74 @@ $.widget("epeires.timeline", {
 						}*/
 					}
 				} 
-			}        
+			}
+            
+            //mise à jour des attributs en fonction du statut
+            this._updateStatus(event);
+
     },
     /**
-     * Update an event according to its status and dates
+     * Update an event according to its status and dates :
+     *  - start date and icon
+     *  - end date and icon
+     *  - label
+     *  - color
      * @param {type} event
      * @returns {undefined}
      */
     _updateStatus: function(event){
+        var elmt = this.element.find('#event'+event.id);
+        var elmt_txt = elmt.find('.label_elmt');
+        var now = new Date();
+        var start = new Date(event.start_date);
+        var end = new Date(event.end_date);
             switch (event.status_id) {
                 case 1: //nouveau
+                    //label en italique
+                    elmt_txt.css({'font-style':'italic'});
+                    elmt_txt.css({'text-decoration':''});
+                    //heure de début
+                    if(now > start){
+                        //afficher heure de début avec warning + enlever lien
+                    } else {
+                        //affichage sur hover avec (?)
+                    }
+                    if(this._isValidDate(end) && now > end){
+                        //afficher heure de fin avec warning
+                    } else {
+                        //affichage sur hover avec (?)
+                    }
+                    //couleur normale
                     break;
                 case 2: //confirmé
+                    //label normal
+                    elmt_txt.css({'font-style':'normal'});
+                    elmt_txt.css({'text-decoration':''});
+                    //heure de début : sur demande avec case cochée
+                    
+                    //heure de fin
+                    if(this._isValidDate(end) && now > end){
+                        //afficher heure de fin avec warning
+                    } else {
+                        //affichage sur hover avec (?)
+                    }
+                    //couleur normale
                     break;
                 case 3: //terminé
+                    //label normal
+                    elmt_txt.css({'font-style':'normal'});
+                    elmt_txt.css({'text-decoration':''});
+                    //heure de début et heure de fin : sur demande avec case cochée
+                    
+                    //couleur normale
                     break;
                 case 4: //annulé
+                    //label barré
+                    elmt_txt.css({'font-style':'normal'});
+                    elmt_txt.css({'text-decoration':'line-through'});
+                    //heure de début et heure de fin : sur demande sans icone
+                    
+                    //couleur estompée
                     break;
             }
     },
@@ -1320,7 +1519,13 @@ $.widget("epeires.timeline", {
         }
     },
     
-    _computeTextSize: function (){}
+    _computeTextSize: function (str, font){
+        var fakeEl = $('<span>').hide().appendTo(document.body);
+        fakeEl.text(str).css('font', font);
+        var size = fakeEl.width();
+        fakeEl.remove();
+        return size;
+    }
     
   });
 })( jQuery );
