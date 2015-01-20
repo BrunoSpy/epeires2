@@ -88,9 +88,12 @@ echo $this->modalwindow('add-note-modal',
 <?php $this->inlineScript()->captureStart();?>
 
 $('#timeline').timeline({
+    controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
     categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories',
     topOffset: 82,
+    leftOffset: 120,
+    rightOffset: 75,
     initComplete: function(){$("#timeline .loading").hide();}
 });
 
