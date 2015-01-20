@@ -698,13 +698,11 @@
             if (date < this.timelineBegin || date > this.timelineEnd) {
                 return -1;
             } else {
-                var delta;
-                if (date.getUTCHours() >= this.timelineBegin.getUTCHours()) {
-                    delta = date.getUTCHours() - this.timelineBegin.getUTCHours();
-                } else {
-                    delta = 24 + date.getUTCHours() - this.timelineBegin.getUTCHours();
-                }
-                return this.options.leftOffset + delta * this.intervalle * 2 + date.getMinutes() * this.intervalle * 2 / 60;
+                return this.options.leftOffset 
+                        + (24 * (date.getUTCDate() - this.timelineBegin.getUTCDate()) //days
+                            + date.getUTCHours() - this.timelineBegin.getUTCHours()) //hours
+                            * this.intervalle * 2 
+                        + date.getMinutes() * this.intervalle * 2 / 60; //minutes
             }
         },
         /**
@@ -712,7 +710,6 @@
          * Les abscisses de l'évènement ainsi que des précédents doivent être calculées avant
          * pour décider si il y a de la place pour le compactage
          * @param {type} event Evènement
-         * @param {array} eventsYPosition 
          * @returns {undefined}
          */
         _computeY: function (event) {
@@ -1252,7 +1249,7 @@
             elmt_deb.css({'top': yDeb + 'px'});
 
             // ajout de l'heure de fin
-            if (this._isValidDate(enddate)) {
+            if (enddate !== -1) {
                 var hEnd = this._formatNumberLength(enddate.getUTCHours(), 2) + ":" + this._formatNumberLength(enddate.getMinutes(), 2);
                 if (enddate.getDate() !== d_actuelle.getDate()) {
                     hEnd = '<span style="display: inline-block; vertical-align: middle;">' 
@@ -1312,6 +1309,8 @@
                 //cas 3 : date fin postérieure à la fin de la timeline
                 if (enddate > this.timelineEnd) {
                     x_end = this._computeX(this.timelineEnd);
+                    console.log(this.timelineEnd);
+                    console.log(x_end);
                     elmt_flecheD.show();
                     elmt_flecheD.css({'left': x_end + 'px'});
                     elmt_fin.addClass('disp');
