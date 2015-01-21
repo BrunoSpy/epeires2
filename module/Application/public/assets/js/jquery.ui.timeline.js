@@ -348,6 +348,7 @@
                 var event = self.eventsDisplayed[self.eventsDisplayedPosition[id]];
                 var enddate = new Date(event.end_date);
                 var d_fin = new Date();
+                elmt.data('end', d_fin.getTime());
                 if (event.end_date !== null && self._isValidDate(enddate)) {
                     d_fin = enddate;
                 } else {
@@ -821,7 +822,7 @@
                                 max = ypos;
                             }
                         }
-                        return ypos + this.options.eventHeight + this.params.eventSpace;
+                        return max + this.options.eventHeight + this.params.eventSpace;
                     }
                 }
             } else {
@@ -1244,7 +1245,7 @@
             if (startdate.getDate() !== d_actuelle.getDate()) {
                 hDeb = '<span style="display: inline-block; vertical-align: middle;">' + this._formatNumberLength(startdate.getUTCDate(), 2) + "/" +
                         this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
-                yDeb = 0;
+                yDeb = -5;
             } else {
                 yDeb = 6;
             }
@@ -1259,7 +1260,7 @@
                             + this._formatNumberLength(enddate.getUTCDate(), 2) + "/" 
                             + this._formatNumberLength(enddate.getUTCMonth() + 1, 2) 
                             + "<br/>" + hEnd + '</span>';
-                    yEnd = 0;
+                    yEnd = -5;
                 } else {
                     yEnd = 6;
                 }
@@ -1302,27 +1303,21 @@
                     x_deb = this.options.leftOffset;
                     elmt_flecheG.show();
                     elmt_flecheG.css({'left': x_deb - 12 + 'px'});
-                    elmt_fin.addClass('disp');
                 } else {
                     x_deb = this._computeX(startdate);
                     move_deb.addClass('disp');
                     move_deb.css({'left': 8 + 'px', 'width': '2px'});
-                    elmt_fin.addClass('disp');
                 }
                 //cas 3 : date fin postérieure à la fin de la timeline
                 if (enddate > this.timelineEnd) {
                     x_end = this._computeX(this.timelineEnd);
-                    console.log(this.timelineEnd);
-                    console.log(x_end);
                     elmt_flecheD.show();
                     elmt_flecheD.css({'left': x_end + 'px'});
-                    elmt_fin.addClass('disp');
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
                     move_fin.addClass('disp');
                     move_fin.css({'left': x_end - x_deb - 10 + 'px', 'width': '2px'});
-                    elmt_fin.addClass('disp');
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
@@ -1341,7 +1336,8 @@
             var x1 = x_deb;
             var x0 = x_deb;
             var x2 = x_end;
-            var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial") + 60;
+            //taille du texte + place pour l'heure + place des boutons
+            var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial") + 60 + 18*2;
             var largeur = this._computeX(this.timelineEnd);
             if (event.punctual) {
                 lien.addClass('disp');
@@ -1361,57 +1357,57 @@
                 if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                     elmt_txt.css({'left': x2 + 'px'});
                     lien.css({'left': x2 - (elmt_deb.outerWidth() + 10) + 'px', 'width': elmt_deb.outerWidth() + 10 + 'px'});
+                    lien.addClass('rightlink');
                     x2 += txt_wid;
                 } else { // sinon on le met à gauche
                     x1 -= txt_wid + 2;
                     elmt_txt.css({'left': x1 + 'px'});
                     lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
+                    lien.addClass('leftlink');
                 }
             } else {
                 var lar_nec = txt_wid + 50;
                 var x_left = x1 + 18;
                 if (x_end - x_deb > lar_nec) {
-                    elmt_txt.css({'left': x_left + 2 + 'px'});
+                    elmt_txt.css({'left': x_left + 2 + 'px',
+                                   'top': (this.options.eventHeight/2-11)+'px'});
                     // on place l'heure de début à gauche
-                    x1 -= elmt_deb.outerWidth() + 20;
+                    x1 -= elmt_deb.outerWidth() + 18;
                     elmt_deb.css({'left': x1 + 'px'});
                     // on place l'heure de fin à droite
                     elmt_fin.css({'left': x2 + 5 + 'px'});
-                    x2 += elmt_fin.outerWidth() + 20;
+                    x2 += elmt_fin.outerWidth() + 18;
                 } else {
                     lien.addClass('disp');
                     lien.show();
-                    elmt_txt.css({'background-color': 'white', 'border-style': 'solid', 'border-color': 'gray', 'border-width': '1px',
-                        'border-radius': '5px', 'padding': '2px'});
+                    elmt_txt.css({'background-color': 'white', 
+                        'border-style': 'solid', 'border-color': 'gray', 'border-width': '1px',
+                        'border-radius': '5px', 'padding': '2px',
+                        'top': (this.options.eventHeight/2-13)+'px'});
                     // on place l'heure de début à gauche
-                    x1 -= elmt_deb.outerWidth();
+                    x1 -= elmt_deb.outerWidth()+18;
                     elmt_deb.css({'left': x1 + 'px'});
-                    //	if (bord_gauche) {
-                    //		elmt_deb.css({'background-color':'white','border-style':'solid', 'border-color':'gray','border-width': '1px',
-                    //			'border-radius': '5px', 'padding':'2px'});
-                    //	}
                     // on place l'heure de fin à droite
                     elmt_fin.css({'left': x2 + 5 + 'px'});
                     x2 += elmt_fin.outerWidth() + 20;
                     if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-                        //	dr = 1;
                         elmt_txt.css({'left': x2 + 'px'});
                         lien.css({'left': x2 - (elmt_fin.outerWidth() + 20) + 'px', 'width': elmt_fin.outerWidth() + 20 + 'px'});
                         x2 += txt_wid + 2;
+                        lien.addClass('rightlink');
                     } else { // sinon on le met à gauche
-                        //	dr = 0;
                         lien.css({'left': x1 - 60 + 'px', 'width': x0 - x1 + 60 + 'px'});
                         x1 -= txt_wid + 2;
                         elmt_txt.css({'left': x1 + 'px'});
+                        lien.addClass('leftlink');
                     }
                 }
-                //mise à jour du conteneur global
-                elmt.css({'left': x1+'px', 'width': x2 - x1});
-                elmt.children().css({'left':'-='+x1+'px'});
-                event.xleft = x1;
-                event.xright = x2;
             }
-
+            //mise à jour du conteneur global
+            elmt.css({'left': x1+'px', 'width': x2 - x1});
+            elmt.children().css({'left':'-='+x1+'px'});
+            event.xleft = x1;
+            event.xright = x2;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
 
@@ -1430,6 +1426,7 @@
             var elmt_txt = elmt.find('.label_elmt');
             var elmt_deb = elmt.find('.elmt_deb');
             var elmt_fin = elmt.find('.elmt_fin');
+            var elmt_compl = elmt.find('.complement');
             var lien = elmt.find('.lien');
             var now = new Date();
             var start = new Date(event.start_date);
@@ -1444,25 +1441,28 @@
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('i').removeClass().addClass('icon-warning-sign');
                         elmt_deb.removeClass('disp').show();
-                        lien.removeClass().hide();
+                        lien.filter('.leftlink').removeClass('disp').hide();
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('i').removeClass().addClass('icon-question-sign');
                         elmt_deb.addClass('disp');
-                        
+                        lien.filter('.leftlink').addClass('disp').show();
                     }
                     //heure de fin
-                    if(event.end_date === null){
+                    if(event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
                     } else {
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
                             elmt_fin.removeClass('disp').show();
+                            lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('i').removeClass().addClass('icon-question-sign');
                             elmt_fin.addClass('disp').hide();
+                            lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
                     //couleur normale
@@ -1474,18 +1474,22 @@
                     //heure de début : sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
                     elmt_deb.addClass('disp').hide();
+                    lien.filter('.leftlink').addClass('disp').show();
                     //heure de fin
-                    if(event.end_date === null){
+                    if(event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
                     } else {
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
                             elmt_fin.removeClass('disp').show();
+                            lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('i').removeClass().addClass('icon-check');
                             elmt_fin.addClass('disp').hide();
+                            lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
                     //couleur normale
@@ -1497,12 +1501,15 @@
                     //heure de début et heure de fin : sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
                     elmt_deb.addClass('disp').hide();
-                    if(event.end_date === null){
+                    lien.filter('.leftlink').addClass('disp').show();
+                    if (event.punctual || event.end_date === null) {
                         elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
                     } else {
                         elmt_fin.find('i').removeClass().addClass('icon-check');
                         elmt_fin.addClass('disp').hide();
                     }
+                    lien.filter('.rightlink').addClass('disp').show();
                     //couleur normale
                     break;
                 case 4: //annulé
@@ -1511,11 +1518,16 @@
                     elmt_txt.css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : sur demande sans icone
                     elmt_deb.find('i').removeClass();
-                    if(event.end_date === null){
+                    elmt_deb.addClass('disp').hide();
+                    lien.filter('.leftlink').addClass('disp').show();
+                    if (event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
                     } else {
                         elmt_fin.find('i').removeClass();
+                        elmt_fin.addClass('disp').hide();
                     }
+                    lien.filter('.rightlink').addClass('disp').show();
                     //couleur estompée
                     break;
             }
@@ -1567,8 +1579,8 @@
             var dy = this.options.eventHeight;
             var largeur = this.element.width();
             elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy, 'top': this.options.topOffset+'px'});
-            elmt_flecheG.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
-            elmt_flecheD.css({'position': 'absolute', 'top': dy - 22 + 'px', 'left': '0px'});
+            elmt_flecheG.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
+            elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
             elmt_b2.css({'z-index': 1});
             elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 2, 'color': 'black', 'white-space': 'nowrap', 'font-weight': 'bold', 'width': 'auto'});
