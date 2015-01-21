@@ -427,7 +427,7 @@
          * Add or modify an event
          * @param {type} event Object
          */
-        addEvent: function (event) {
+        addEvent: function (event, sort) {
             //ne pas ajouter une évènement déjà existant
             if (event.id in this.eventsPosition && this.events[this.eventsPosition[event.id]]) {
                 var old = this.events[this.eventsPosition[event.id]];
@@ -443,7 +443,9 @@
                 this.events.push(event);
                 this.eventsPosition[pos] = event.id;
             }
-            this.sortEvents();
+            if (sort === undefined || sort === true) {
+                this.sortEvents();
+            }
         },
         /**
          * Add or modify multiple events at once
@@ -452,12 +454,11 @@
          */
         addEvents: function (eventsList) {
             var self = this;
-            this.update = false;
             $.each(eventsList, function (key, value) {
-                self.addEvent(value);
+                self.addEvent(value, false);
             });
-            this.update = true;
-            this._updateView(false);
+            //sort events and refresh view
+            this.sortEvents();
         },
         removeEvent: function (event) {
             this._hideEvent(event);
@@ -499,13 +500,18 @@
                 //on récupère les évènements
                 this._pauseUpdate();
                 this.element.find(".loading").show();
-                $.when($.getJSON(self.options.eventUrl + '?day=' + self.currentDay.toUTCString(), function (data) {
-                    self.addEvents(data);
-                })).then(function () {
-                    self._updateView();
-                    self._restoreUpdate();
-                    self.element.find('.loading').hide();
-                });
+                $.when($.getJSON(self.options.eventUrl + '?day=' + self.currentDay.toUTCString(),
+                        function (data, textStatus, jqHXR) {
+                            if (jqHXR.status !== 304) {
+                                self.pauseUpdateView();
+                                self.addEvents(data);
+                            }
+                        }))
+                        .then(function () {
+                            self.forceUpdateView();
+                            self._restoreUpdate();
+                            self.element.find('.loading').hide();
+                        });
             }
             //else : do nothing
         },
@@ -699,10 +705,7 @@
                 return -1;
             } else {
                 return this.options.leftOffset 
-                        + (24 * (date.getUTCDate() - this.timelineBegin.getUTCDate()) //days
-                            + date.getUTCHours() - this.timelineBegin.getUTCHours()) //hours
-                            * this.intervalle * 2 
-                        + date.getMinutes() * this.intervalle * 2 / 60; //minutes
+                        +  ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
             }
         },
         /**
@@ -1157,10 +1160,10 @@
          */
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
-            //destroy popups
-            elmt.tooltip('destroy');
-            //TODO : animate ?
             elmt.fadeOut(function () {
+                //destroy popups
+                $(this).tooltip('destroy');
+                //remove from DOM
                 $(this).remove();
             });
         },
