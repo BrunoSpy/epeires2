@@ -545,6 +545,7 @@
                     }
                     return 0;
                 });
+                this.lastEventComparator = undefined;
             } else if (comparator === undefined && this.lastEventComparator !== undefined) {
                 this.events.sort(this.lastEventComparator);
             } else {
@@ -654,6 +655,7 @@
             this.eventsDisplayed = this.events.filter(function (event) {
                 return event.display;
             });
+            this.eventsDisplayedPosition.length = 0;
             for (var i = 0; i < this.eventsDisplayed.length; i++) {
                 var id = this.eventsDisplayed[i].id;
                 this.eventsDisplayedPosition[id] = i;
@@ -874,11 +876,11 @@
          * @returns {undefined}
          */
         _updateYPosition: function (animate) {
-            this.eventsYPosition = [];
+            this.eventsYPosition.length = 0;
             for (var i = 0; i < this.eventsDisplayed.length; i++) {
                 var y = this._computeY(this.eventsDisplayed[i]);
-                this.eventsYPosition[this.eventsDisplayed[i].id] = y;
                 var eventID = this.eventsDisplayed[i].id;
+                this.eventsYPosition[eventID] = y;
                 var elmt = this.element.find('#event' + eventID);
                 if (animate === true) {
                     elmt.animate({top: y + 'px'});
@@ -1232,7 +1234,7 @@
             //////   
 
             // libellé de l'évènement à mettre à jour
-            if (event.files > 0) {
+            if (event.scheduled > 0) {
                 elmt_txt.find('span').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
             } else {
                 elmt_txt.find('span').text(event.name);
@@ -1288,13 +1290,21 @@
                     'left': -larg + 'px',
                     'width': 0,
                     'height': 0,
+                    'border-width':'',
+                    'border-color':'',
+                    'background-color':'',
                     'border-left': larg + 'px solid transparent',
                     'border-right': larg + 'px solid transparent',
                     'border-bottom': haut + 'px solid ' + couleur,
-                    'z-index': 1});
+                    'z-index': 1,
+                    'top' :'',
+                    'border-radius':''});
                 elmt_compl.show();
-                elmt_compl.css({'position': 'absolute', 'left': '0px', 'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
-                    'border-right': larg + 'px solid transparent', 'border-top': haut + 'px solid ' + couleur, 'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
+                elmt_compl.css({'position': 'absolute', 'left': '0px', 
+                    'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
+                    'border-right': larg + 'px solid transparent', 
+                    'border-top': haut + 'px solid ' + couleur, 
+                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
             } else {
@@ -1324,12 +1334,19 @@
                     move_fin.addClass('disp');
                     move_fin.css({'left': x_end - x_deb - 10 + 'px', 'width': '2px'});
                     var haut = this.options.eventHeight;
-                    elmt_compl.css({'position': 'absolute', 'left': x_end + 4 + 'px', 'width': 0, 'height': 0, 'border-left': haut + 'px solid ' + couleur,
-                        'border-top': haut / 2 + 1 + 'px solid transparent', 'border-bottom': haut / 2 + 1 + 'px solid transparent'});
+                    elmt_compl.css({'position': 'absolute', 'left': x_end + 4 + 'px', 'width': 0, 'height': 0,
+                        'border-left': haut + 'px solid ' + couleur,
+                        'border-top': haut / 2 + 1 + 'px solid transparent',
+                        'border-bottom': haut / 2 + 1 + 'px solid transparent'});
                     elmt_compl.show();
                 }
-                elmt_rect.css({'position': 'absolute', 'top': '0px', 'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px', 'height': this.options.eventHeight, 'z-index': 2,
-                    'background-color': couleur, 'border-color': 'transparent', 'border-width': '1px', 'border-radius': '5px'});
+                elmt_rect.css({'position': 'absolute', 
+                    'top': '0px', 'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
+                    'height': this.options.eventHeight, 'z-index': 2,
+                    'background-color': couleur,
+                    'border-color': 'transparent',
+                    'border-width': '1px',
+                    'border-radius': '5px'});
             }
 
             /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
@@ -1337,8 +1354,12 @@
             var x0 = x_deb;
             var x2 = x_end;
             //taille du texte + place pour l'heure + place des boutons
-            var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial") + 60 + 18*2;
+            var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial")
+                    + 28 + 18*2 
+                    + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
             var largeur = this._computeX(this.timelineEnd);
+            var debWidth = this._outerWidth(elmt_deb);
+            var endWidth = this._outerWidth(elmt_fin);
             if (event.punctual) {
                 lien.addClass('disp');
                 lien.show();
@@ -1353,10 +1374,10 @@
                     'border-radius': '5px', 
                     'top': '0px',
                     'padding': '2px'});
-                x2 += elmt_deb.outerWidth() + 10;
+                x2 += debWidth + 10;
                 if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                     elmt_txt.css({'left': x2 + 'px'});
-                    lien.css({'left': x2 - (elmt_deb.outerWidth() + 10) + 'px', 'width': elmt_deb.outerWidth() + 10 + 'px'});
+                    lien.css({'left': x2 - (debWidth + 10) + 'px', 'width': debWidth + 10 + 'px'});
                     lien.addClass('rightlink');
                     x2 += txt_wid;
                 } else { // sinon on le met à gauche
@@ -1372,11 +1393,11 @@
                     elmt_txt.css({'left': x_left + 2 + 'px',
                                    'top': (this.options.eventHeight/2-11)+'px'});
                     // on place l'heure de début à gauche
-                    x1 -= elmt_deb.outerWidth() + 18;
+                    x1 -= debWidth + 18;
                     elmt_deb.css({'left': x1 + 'px'});
                     // on place l'heure de fin à droite
                     elmt_fin.css({'left': x2 + 5 + 'px'});
-                    x2 += elmt_fin.outerWidth() + 18;
+                    x2 += endWidth + 18;
                 } else {
                     lien.addClass('disp');
                     lien.show();
@@ -1385,19 +1406,19 @@
                         'border-radius': '5px', 'padding': '2px',
                         'top': (this.options.eventHeight/2-13)+'px'});
                     // on place l'heure de début à gauche
-                    x1 -= elmt_deb.outerWidth()+18;
+                    x1 -= debWidth + 18;
                     elmt_deb.css({'left': x1 + 'px'});
                     // on place l'heure de fin à droite
                     elmt_fin.css({'left': x2 + 5 + 'px'});
-                    x2 += elmt_fin.outerWidth() + 20;
+                    x2 += endWidth + 20;
                     if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': x2 + 'px'});
-                        lien.css({'left': x2 - (elmt_fin.outerWidth() + 20) + 'px', 'width': elmt_fin.outerWidth() + 20 + 'px'});
+                        lien.css({'left': x2 - (endWidth + 20) + 'px', 'width': endWidth + 20 + 'px'});
                         x2 += txt_wid + 2;
                         lien.addClass('rightlink');
                     } else { // sinon on le met à gauche
                         lien.css({'left': x1 - 60 + 'px', 'width': x0 - x1 + 60 + 'px'});
-                        x1 -= txt_wid - 18 * 2;
+                        x1 -= txt_wid;
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
                     }
@@ -1691,7 +1712,14 @@
             var size = fakeEl.width();
             fakeEl.remove();
             return size;
+        },
+        _outerWidth: function(object){
+            var fakediv = $('<div>').hide().appendTo(document.body);
+            var newobj = object.clone();
+            fakediv.append(newobj);
+            var width = newobj.outerWidth();
+            fakediv.remove();
+            return width;
         }
-
     });
 })(jQuery);
