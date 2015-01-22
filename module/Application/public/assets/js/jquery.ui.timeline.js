@@ -1350,7 +1350,7 @@
                     'border-style': 'solid', 
                     'border-color': 'gray', 
                     'border-width': '1px', 
-                    'border-radius': '0px', 
+                    'border-radius': '5px', 
                     'top': '0px',
                     'padding': '2px'});
                 x2 += elmt_deb.outerWidth() + 10;
@@ -1397,7 +1397,7 @@
                         lien.addClass('rightlink');
                     } else { // sinon on le met à gauche
                         lien.css({'left': x1 - 60 + 'px', 'width': x0 - x1 + 60 + 'px'});
-                        x1 -= txt_wid + 2;
+                        x1 -= txt_wid - 18 * 2;
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
                     }
