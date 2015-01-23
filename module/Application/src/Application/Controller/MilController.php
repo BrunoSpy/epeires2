@@ -81,7 +81,7 @@ class MilController extends TabController {
         $lastSequence = $eaupchain->getLastSequenceNumber();
         $milcats = $objectManager->getRepository('Application\Entity\MilCategory')->findBy(array('nmB2B' => true));
         for ($i = 1; $i <= $lastSequence; $i++) {
-            $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA('LF*', $day, $i));
+            $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA(NULL, $day, $i));
             foreach ($milcats as $cat) {
                 $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
             }

@@ -61,14 +61,17 @@ class NMB2BService implements ServiceLocatorAwareInterface {
         $client = $this->getSoapClient();
                        
         $now = new \DateTime('now');
-        
+                
         $params = array(
             'sendTime' => $now->format('Y-m-d H:i:s'),
-            'rsaDesignators' => $designators,
             'eaupId'=> array(
                 'chainDate' => $date->format('Y-m-d'),
                 'sequenceNumber' => $sequencenumber
             ));
+        
+        if($designators !== null && strlen($designators) > 0){
+            $params['rsaDesignators'] = $designators;
+        }
         
         $client->retrieveEAUPRSAs($params);
         
