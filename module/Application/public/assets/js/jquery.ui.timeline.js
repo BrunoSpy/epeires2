@@ -1228,7 +1228,7 @@
             elmt_flecheD.hide();
             move_deb.hide();
             move_fin.hide();
-            lien.hide();
+            lien.removeClass('disp leftlink rightlink').hide();
             elmt_compl.hide();
             elmt_txt.css({'background-color': '', 'border-style': ''});
             //////   
@@ -1361,8 +1361,7 @@
             var debWidth = this._outerWidth(elmt_deb);
             var endWidth = this._outerWidth(elmt_fin);
             if (event.punctual) {
-                lien.addClass('disp');
-                lien.show();
+                lien.addClass('disp').show();
                 x2 = x1 + elmt_rect.outerWidth();
                 x1 -= 30;
                 // on place l'heure à droite
@@ -1399,8 +1398,7 @@
                     elmt_fin.css({'left': x2 + 5 + 'px'});
                     x2 += endWidth + 18;
                 } else {
-                    lien.addClass('disp');
-                    lien.show();
+                    lien.addClass('disp').show();
                     elmt_txt.css({'background-color': 'white', 
                         'border-style': 'solid', 'border-color': 'gray', 'border-width': '1px',
                         'border-radius': '5px', 'padding': '2px',
