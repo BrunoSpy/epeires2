@@ -1068,12 +1068,14 @@ class EventsController extends TabController {
     	$lastmodified = $this->params()->fromQuery('lastupdate', null);
     	
     	$day = $this->params()->fromQuery('day', null);
+        
+        $onlytimeline = $this->params()->fromQuery('onlytimeline', null);
     	
     	$json = array();
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                 
-    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true) as $event){ 		
+    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true, $onlytimeline) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
         

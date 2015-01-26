@@ -89,7 +89,7 @@ echo $this->modalwindow('add-note-modal',
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
-    eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
+    eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents?onlytimeline=true',
     categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories',
     topOffset: 82,
     leftOffset: 120,

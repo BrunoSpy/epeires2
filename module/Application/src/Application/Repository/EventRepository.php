@@ -20,18 +20,22 @@ class EventRepository extends ExtendedRepository {
     /**
      * Get all events readable by <code>$userauth</code>
      * intersecting <code>$day</code>
+     * @param type $userauth
      * @param type $day If null : use current day
      * @param type $lastmodified If not null : only events modified since <code>$lastmodified</code>
+     * @param type $orderbycat
+     * @param type $onlytimeline
      * @return type
      */
-    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false) {
+    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false, $onlytimeline = false) {
 
         $parameters = array();
 
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select(array('e', 'f'))
+        $qb->select(array('e', 'f', 'c'))
                 ->from('Application\Entity\Event', 'e')
                 ->leftJoin('e.zonefilters', 'f')
+                ->leftJoin('e.category', 'c')
                 ->andWhere($qb->expr()->isNull('e.parent')); //display only root events
         //restriction à tous les evts modifiés depuis $lastmodified
         if ($lastmodified) {
@@ -40,6 +44,10 @@ class EventRepository extends ExtendedRepository {
             $parameters[3] = $lastmodified->format("Y-m-d H:i:s");
         }
 
+        if($onlytimeline) {
+            $qb->andWhere($qb->expr()->eq('c.timeline', true));
+        }
+        
         if ($day) {
             $daystart = new \DateTime($day);
             $daystart->setTime(0, 0, 0);
