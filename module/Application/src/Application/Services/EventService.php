@@ -113,6 +113,15 @@ class EventService implements ServiceManagerAwareInterface{
                             }
                         }
                     }
+                } if($category instanceof \Application\Entity\MilCategory) {
+                    $name = $event->getCustomFieldValue($category->getFieldname())->getValue();
+                    $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
+                    $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
+                    $name .= ' ('
+                            . ($plancherfield !== null ? $plancherfield->getValue() : '--')
+                            . '/'
+                            . ($plafondfield !== null ? $plafondfield->getValue() : '--')
+                            . ')';
                 } else {
                     $titlefield = $category->getFieldname();
                     if($titlefield){
