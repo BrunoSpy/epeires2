@@ -92,6 +92,7 @@ $("#home").removeClass("dropdown-toggle")
 		  .html('<i class="icon-home"></i> Évènements');
 
 $('#timeline').timeline({
+    controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
     categoriesUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getcategories?rootonly=false&cat=zones&timeline=false',
     topOffset: 82,
