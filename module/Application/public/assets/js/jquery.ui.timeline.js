@@ -34,7 +34,7 @@
 
 (function ($, undefined) {
     $.widget("epeires.timeline", {
-        version: "0.0.1",
+        version: "0.9.0",
         /**
          * List of events
          */
@@ -1085,7 +1085,9 @@
                 }
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
-                    var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '">' + text_cat + '</div>');
+                    var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'
+                            + text_cat
+                            + '</div>');
                     $('#category').append(cat);
                     cat.css({'background-color': curCat.color, 'height': 'auto',
                         'left': '15px'});

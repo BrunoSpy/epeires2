@@ -397,6 +397,7 @@ var form = function(url){
 	});
 	
         var cat_id = -1;
+        var cat_parent_id = -1;
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
 			$("#create-evt").slideUp('fast');
@@ -414,10 +415,9 @@ var form = function(url){
                                                 $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 						updateHours();
 						updateHourTitle();
-                                                if(cat_id >= 0){
-                                                    $("#root_categories").val(cat_id);
+                                                if(cat_parent_id >= 0){
+                                                    $("#root_categories").val(cat_parent_id);
                                                     $('#root_categories').trigger('change');
-                                                    cat_id = -1;
                                                 }
 					}
 			);
@@ -642,7 +642,14 @@ var form = function(url){
                                 $("#Modèlesid").trigger('click');
                             } else if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
                                 $("#Descriptionid").trigger('click');
+                            } else {
+                                if(cat_parent_id !== cat_id){
+                                    $("#subcategories").val(cat_id);
+                                    $("#subcategories").trigger('change');
+                                }
                             }
+                            cat_parent_id = -1;
+                            cat_id = -1;
                         });
 			$("input[name='category']").val(root_value);
                         //affichage des évts suggérés
@@ -855,8 +862,10 @@ var form = function(url){
         $(document).on('click', '.category', function(e){
             e.preventDefault();
             var id = $(this).data('id');
+            var parentId = $(this).data('parentid');
             $("#create-link").trigger('click');
             cat_id = id;
+            cat_parent_id = parentId;
         });
         
         //gestion des notes
