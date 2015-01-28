@@ -180,7 +180,9 @@
                                                     $timeAlert = -1;
                                                 }
                                             } else if(strlen(trim($deltabegin)) > 0) {
-                                                $timeAlert = clone $this->event->getStartdate();
+                                                if($this->copy){
+                                                    $timeAlert = clone $this->event->getStartdate();
+                                                }
                                                 $diff = $deltabegin;
                                             }
                                         }
@@ -194,18 +196,20 @@
                                                 $timeAlert->add($interval);
                                             }                                      
                                         }
-                                        $html .= '<tr><div class="alarm-fake" '
-                                                    . 'data-deltabegin="'.$deltabegin.'" '
-                                                    . 'data-deltaend="'.$deltaend.'" '
+                                        $html .= '<tr><div class="fake-alarm" '
+                                                    . 'data-alarm="fake-'.$countalarm.'"'
                                                     . 'id="alarm-fake-'.$countalarm.'">'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.($timeAlert === -1 ? $formatterLong->format(new DateTime('now')): $formatterLong->format($timeAlert)).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][deltabegin]" value="'.$deltabegin.'"></input>'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$deltaend.'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltaend]" value="'.$deltaend.'"></input>'
                                                 . '</div></tr>';
                                         
-                                        $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'">'
+                                        $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'"'
+                                                    . 'data-deltabegin="'.$deltabegin.'" '
+                                                    . 'data-deltaend="'.$deltaend.'" '
+                                                . '>'
                                                 . '<td><i class="icon-bell"></i></td>'
                                                 . '<td>'.($timeAlert === -1 ? "TDC" : $formatter->format($timeAlert)).'</td>'
                                                 . '<td>'.$this->eventName($child).'</td>'
