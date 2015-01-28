@@ -114,7 +114,8 @@ class EventService implements ServiceManagerAwareInterface{
                         }
                     }
                 } if($category instanceof \Application\Entity\MilCategory) {
-                    $name = $event->getCustomFieldValue($category->getFieldname())->getValue();
+                    $namefield = $event->getCustomFieldValue($category->getFieldname());
+                    $name = ($namefield ? $namefield->getValue() : "???"); //TODO $namefield ne peut jamais être vide !!
                     $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
                     $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
                     $name .= ' ('
@@ -135,7 +136,8 @@ class EventService implements ServiceManagerAwareInterface{
                                     }
                             }
                     }
-                }                
+                }       
+                error_log($name);
 		return $name;
 	}
 		
