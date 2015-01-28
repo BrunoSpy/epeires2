@@ -119,9 +119,9 @@ class EventService implements ServiceManagerAwareInterface{
                     $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
                     $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
                     $name .= ' ('
-                            . ($plancherfield !== null ? $plancherfield->getValue() : '--')
+                            . ($plancherfield !== null ? str_pad($plancherfield->getValue(), 3, '0', STR_PAD_LEFT) : '--')
                             . '/'
-                            . ($plafondfield !== null ? $plafondfield->getValue() : '--')
+                            . ($plafondfield !== null ? str_pad($plafondfield->getValue(), 3, '0', STR_PAD_LEFT) : '--')
                             . ')';
                 } else {
                     $titlefield = $category->getFieldname();

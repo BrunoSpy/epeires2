@@ -1181,6 +1181,13 @@ class EventsController extends TabController {
         }
         $criteria->orderBy(array("place" => Criteria::ASC));
     	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+        //TODO gros hack moisi, rendre ce filtrage générique
+        if($cat === 'zones'){
+            $categories = array_filter($categories->toArray(),function($c){
+                return !$c instanceof \Application\Entity\MilCategory ||
+                        ($c instanceof \Application\Entity\MilCategory && $c->isOnMilPage());
+            });
+        }
     	$readablecat = $this->filterReadableCategories($categories);
     	foreach ($readablecat as $category){
     		$json[$category->getId()] = array(
