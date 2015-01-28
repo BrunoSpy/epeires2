@@ -172,7 +172,7 @@
                                             $diff = (int)(($child->getStartdate()->getTimestamp() - $this->event->getStartDate()->getTimestamp())/60);
                                         } else {//use deltas
                                             if(strlen(trim($deltaend)) > 0) {
-                                                if($this->event->getEnddate() != null){
+                                                if($this->copy && $this->event->getEnddate() != null){
                                                     $timeAlert = clone $this->event->getEnddate();
                                                     $diff = $deltaend;
                                                 } else {

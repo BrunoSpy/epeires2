@@ -137,7 +137,6 @@ class EventService implements ServiceManagerAwareInterface{
                             }
                     }
                 }       
-                error_log($name);
 		return $name;
 	}
 		

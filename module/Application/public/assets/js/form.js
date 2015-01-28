@@ -418,6 +418,10 @@ var form = function(url){
                                                 if(cat_parent_id >= 0){
                                                     $("#root_categories").val(cat_parent_id);
                                                     $('#root_categories').trigger('change');
+                                                } else {
+                                                    //pas de parent : cat_parent_id === -1
+                                                    $("#root_categories").val(cat_id);
+                                                    $('#root_categories').trigger('change');
                                                 }
 					}
 			);
@@ -643,7 +647,7 @@ var form = function(url){
                             } else if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
                                 $("#Descriptionid").trigger('click');
                             } else {
-                                if(cat_parent_id !== cat_id){
+                                if(cat_parent_id >= 0){
                                     $("#subcategories").val(cat_id);
                                     $("#subcategories").trigger('change');
                                 }
