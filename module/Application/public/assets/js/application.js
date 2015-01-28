@@ -222,7 +222,7 @@ $(document).ready(function(){
                     $("#history").parent().find("span.badge").html($("#history dd").size());
                 });
                 //mise à jour timeline
-                timeline.modify(data.events, 0);
+                $('#timeline').timeline('addEvents',data.events);
             }
             displayMessages(data);
             me.parent('.modal').modal('hide');
@@ -286,7 +286,7 @@ $(document).ready(function(){
                 var span = $('<span class="note" data-id="'+me.data('id')+'">'+me.find('textarea').val()+'</span>');
                 p.empty();
                 p.append(span);
-                timeline.modify(data.events, 0);
+                $('#timeline').timeline('addEvents',data.events);
             }
             displayMessages(data);
         });
