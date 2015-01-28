@@ -523,19 +523,37 @@
          */
         sortEvents: function (comparator) {
             var self = this;
-            //comparateur par défaut : catégorie racine, puis place dans la catégorie, puis date de début
+            //comparateur par défaut 
             if (comparator === "default" || (comparator === undefined && this.lastEventComparator === undefined)) {
-                this.events.sort(function (a, b) {
-                    if (self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
-                        return -1;
-                    } else if (self.catPositions[a.category_root_id] > self.catPositions[b.category_root_id]) {
-                        return 1;
-                    }
-                    if (a.category_place < b.category_place) {
-                        return -1;
-                    } else if (a.category_place > b.category_place) {
-                        return 1;
-                    }
+                if (this.options.showCategories === true) {
+                    //catégorie racine, puis catégorie, puis nom, puis date de début
+                    this.events.sort(function (a, b) {
+                        if (self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
+                            return -1;
+                        } else if (self.catPositions[a.category_root_id] > self.catPositions[b.category_root_id]) {
+                            return 1;
+                        }
+                        if (a.category_place < b.category_place) {
+                            return -1;
+                        } else if (a.category_place > b.category_place) {
+                            return 1;
+                        }
+                        if (a.name < b.name) {
+                            return -1;
+                        } else if (a.name > b.name) {
+                            return 1;
+                        }
+                        var aStartdate = new Date(a.start_date);
+                        var bStartdate = new Date(b.start_date);
+                        if (aStartdate < bStartdate) {
+                            return -1;
+                        } else if (aStartdate > bStartdate) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                } else {
+                    //tri par date de début uniquement
                     var aStartdate = new Date(a.start_date);
                     var bStartdate = new Date(b.start_date);
                     if (aStartdate < bStartdate) {
@@ -544,7 +562,7 @@
                         return 1;
                     }
                     return 0;
-                });
+                }
                 this.lastEventComparator = undefined;
             } else if (comparator === undefined && this.lastEventComparator !== undefined) {
                 this.events.sort(this.lastEventComparator);
