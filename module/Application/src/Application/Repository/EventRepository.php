@@ -446,6 +446,8 @@ class EventRepository extends ExtendedRepository {
                 $lowerlevel = (string)EAUPRSAs::getAirspaceLowerLimit($airspace);
                 $upperlevel = (string)EAUPRSAs::getAirspaceUpperLimit($airspace);
                 $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
+                //si aucun evt pour la même zone (= même nom, même niveaux) existe ou inclus le nouvel evt
+                //on en crée un nouveau
                 if(count($previousEvents) == 0) {
                     $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
                 }
@@ -506,7 +508,8 @@ class EventRepository extends ExtendedRepository {
     
     /**
      * Tries to find an event called <code>$designator</code>
-     * with same <code>$timeBegin</code>, <code>$timeEnd</code>, <code>$upperLevel</code> and <code>$lowerLevel</code>
+     * with same <code>$upperLevel</code> and <code>$lowerLevel</code>
+     * and including <code>$timeBegin</code>, <code>$timeEnd</code>,
      * @param type $designator
      * @param type $timeBegin
      * @param type $timeEnd
@@ -522,8 +525,8 @@ class EventRepository extends ExtendedRepository {
                 ->andWhere($qb->expr()->eq('v.value','?1'))
                 ->andWhere(
                         $qb->expr()->andX(
-                            $qb->expr()->eq('e.startdate', '?2'),
-                            $qb->expr()->eq('e.enddate', '?3')
+                            $qb->expr()->lte('e.startdate', '?2'),
+                            $qb->expr()->gte('e.enddate', '?3')
                         )
 //                        $qb->expr()->orX(
 //                        $qb->expr()->andX(
