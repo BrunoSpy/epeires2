@@ -596,8 +596,6 @@ class EventsController extends TabController {
                                                 $deltaend->setValue($alarmpost['deltaend']);
                                                 $deltaend->setEvent($alarm);
                                                 $alarm->addCustomFieldValue($deltaend);
-                                                //set start date according to deltas
-                                                $this->updateAlarmDate($alarm);
                                                 $objectManager->persist($name);
                                                 $objectManager->persist($comment);
                                                 $objectManager->persist($deltabegin);
@@ -609,12 +607,6 @@ class EventsController extends TabController {
     						$this->closeEvent($event);
     					}
     					
-                                        //mise à jour des alarmes en cas de modif des heures de début ou de fin
-                                        foreach ($event->getChildren() as $child){
-                                            if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
-                                                $this->updateAlarmDate($child);
-                                            }
-                                        }
                                         
     					$objectManager->persist($event);
     					try{
@@ -1413,9 +1405,6 @@ class EventsController extends TabController {
                 if($child->getCategory() instanceof FrequencyCategory){
                     $child->setEnddate($enddate);
                     $objectManager->persist($child);
-                } else if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
-                    $this->updateAlarmDate($child);
-                    $objectManager->persist($child);
                 }
             }
             
@@ -1441,52 +1430,6 @@ class EventsController extends TabController {
         } else {
             if(is_array($messages)){
                 $messages['error'][] = "Impossible de changer la date de fin.";
-            }
-        }
-    }
-    
-    private function updateAlarmDate(Event &$alarm) {
-        $deltaend = "";
-        $deltabegin = "";
-        $previousstart = $alarm->getStartdate();
-        foreach ($alarm->getCustomFieldsValues() as $value){
-            if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()){
-                $deltabegin = $value->getValue();
-            }
-            if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaEndField()->getId()){
-                $deltaend = $value->getValue();
-            }
-        }
-        $event = $alarm->getParent();
-        if ($event != null) {
-            if (strlen(trim($deltaend)) > 0 && $event->getEnddate() != null) {
-                $delta = intval($deltaend);
-                $startdatealarm = clone $event->getEnddate();
-                if ($delta > 0) {
-                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
-                } else {
-                    $invdiff = -$delta;
-                    $interval = new \DateInterval('PT' . $invdiff . 'M');
-                    $interval->invert = 1;
-                    $startdatealarm->add($interval);
-                }
-                if($startdatealarm != $previousstart){
-                    $alarm->setStartdate($startdatealarm);
-                }
-            } else if (strlen(trim($deltabegin)) > 0) {
-                $delta = intval($deltabegin);
-                $startdatealarm = clone $event->getStartdate();
-                if ($delta > 0) {
-                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
-                } else {
-                    $invdiff = -$delta;
-                    $interval = new \DateInterval('PT' . $invdiff . 'M');
-                    $interval->invert = 1;
-                    $startdatealarm->add($interval);
-                }
-                if($startdatealarm != $previousstart){
-                    $alarm->setStartdate($startdatealarm);
-                }
             }
         }
     }
@@ -1530,10 +1473,7 @@ class EventsController extends TabController {
                 if($child->getCategory() instanceof FrequencyCategory){
                     $child->setStartdate($startdate);
                     $objectManager->persist($child);
-                } else if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
-                    $this->updateAlarmDate($child);
-                    $objectManager->persist($child);
-                }
+                } 
             }
             $objectManager->persist($event);
         } else {

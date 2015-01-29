@@ -455,15 +455,8 @@ class EventRepository extends ExtendedRepository {
         }
     }
     
-    private function doAddMilEvent(\Application\Entity\MilCategory $cat,
-            \Application\Entity\Organisation $organisation,
-            \Core\Entity\User $user,
-            $designator, 
-            \DateTime $timeBegin, 
-            \DateTime $timeEnd, 
-            $upperLevel, 
-            $lowerLevel,
-            &$messages){
+    private function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, &$messages) {
+        
         $event = new \Application\Entity\Event();
         $event->setOrganisation($organisation);
         $event->setAuthor($user);
@@ -491,8 +484,60 @@ class EventRepository extends ExtendedRepository {
         $lower->setCustomField($cat->getLowerLevelField());
         $lower->setEvent($event);
         $lower->setValue($lowerLevel);
-        
-        try{
+
+        //recherche d'un modèle existant
+        $models = $this->getEntityManager()->getRepository('Application\Entity\PredefinedEvent')->findBy(array('name' => $designator, 'organisation' => $organisation, 'category' => $cat));
+        if (count($models) === 1) {
+            $model = $models[0];
+            //ajout des mémos
+            foreach ($model->getChildren() as $child){
+                if($child->getCategory() instanceof \Application\Entity\AlarmCategory){
+                    $alarm = new Event();
+                    $alarm->setCategory($this->getEntityManager()->getRepository('Application\Entity\AlarmCategory')->findAll()[0]);
+                    $alarm->setAuthor($user);
+                    $alarm->setOrganisation($organisation);
+                    $alarm->setParent($event);
+                    $alarm->setStatus($status);
+                    $alarm->setPunctual(true);
+                    $alarm->setImpact($impact);
+                    $startdate = $timeBegin;
+                    $alarm->setStartdate($startdate);
+                    
+                    $namememo = new CustomFieldValue();
+                    $namefield = $alarm->getCategory()->getNamefield();
+                    $namememo->setCustomField($namefield);
+                    $namememo->setValue($child->getCustomFieldValue($namefield)->getValue());
+                    $namememo->setEvent($alarm);
+                    $alarm->addCustomFieldValue($namememo);
+                    $comment = new CustomFieldValue();
+                    $commentfield = $alarm->getCategory()->getTextfield();
+                    $comment->setCustomField($commentfield);
+                    $comment->setValue($child->getCustomFieldValue($commentfield)->getValue());
+                    $comment->setEvent($alarm);
+                    $alarm->addCustomFieldValue($comment);
+                    $deltabegin = new CustomFieldValue();
+                    $beginfield = $alarm->getCategory()->getDeltaBeginField();
+                    $deltabegin->setCustomField($beginfield);
+                    $deltabegin->setValue($child->getCustomFieldValue($beginfield)->getValue());
+                    $deltabegin->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltabegin);
+                    $deltaend = new CustomFieldValue();
+                    $endfield = $alarm->getCategory()->getDeltaEndField();
+                    $deltaend->setCustomField($endfield);
+                    $deltaend->setValue($child->getCustomFieldValue($endfield)->getValue());
+                    $deltaend->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltaend);
+                    
+                    $this->getEntityManager()->persist($namememo);
+                    $this->getEntityManager()->persist($comment);
+                    $this->getEntityManager()->persist($deltabegin);
+                    $this->getEntityManager()->persist($deltaend);
+                    $this->getEntityManager()->persist($alarm);
+                }
+            }
+        }  
+
+        try {
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($upper);
             $this->getEntityManager()->persist($lower);
@@ -500,10 +545,11 @@ class EventRepository extends ExtendedRepository {
             $this->getEntityManager()->flush();
         } catch (\Exception $ex) {
             error_log($ex->getMessage());
-            if($messages != null){
+            if ($messages != null) {
                 $messages['error'][] = $ex->getMessage();
             }
         }
+        
     }
     
     /**
@@ -528,21 +574,10 @@ class EventRepository extends ExtendedRepository {
                             $qb->expr()->lte('e.startdate', '?2'),
                             $qb->expr()->gte('e.enddate', '?3')
                         )
-//                        $qb->expr()->orX(
-//                        $qb->expr()->andX(
-//                                $qb->expr()->lte('e.startdate', '?2'),
-//                                $qb->expr()->isNotNull('e.enddate'),
-//                                $qb->expr()->gte('e.enddate', '?3')),
-//                        $qb->expr()->andX(
-//                                $qb->expr()->gte('e.startdate', '?4'),
-//                                $qb->expr()->isNotNull('e.enddate'),
-//                                $qb->expr()->lte('e.startdate', '?5')))
-                        )
+                    )
             ->setParameters(array(1 => $designator,
                                 2 => $timeBegin->format('Y-m-d H:i:s'),
                                 3 => $timeEnd->format('Y-m-d H:i:s')
-                    //            4 => $timeBegin->format('Y-m-d H:i:s'),
-                    //            5 => $timeEnd->format('Y-m-d H:i:s'))
                     ));
         $tempresults = $qb->getQuery()->getResult();
         //then match lowerlimit and upper limit
