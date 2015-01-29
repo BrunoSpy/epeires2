@@ -280,12 +280,10 @@ class Event extends AbstractEvent {
         }
     }
 
-    /**
+    /** 
      * Update alarms if case of modification of startdate and enddate
-     * @ORM\PreUpdate
-     * @ORM\PrePersist 
      */
-    protected function updateAlarms(){
+    public function updateAlarms(){
         foreach ($this->getChildren() as $child){
             if($child->getCategory() instanceof AlarmCategory){
                 $child->updateAlarmDate();
@@ -298,8 +296,6 @@ class Event extends AbstractEvent {
      * Update alarm date according to parent dates and deltas
      * Only available if category is instance of AlarmCategory
      * @param Event $alarm
-     * @ORM\PreUpdate
-     * @ORM\PrePersist 
      */
     public function updateAlarmDate() {
         if(!($this->getCategory() instanceof AlarmCategory)){

@@ -607,6 +607,7 @@ class EventsController extends TabController {
     						$this->closeEvent($event);
     					}
     					
+                                        $event->updateAlarms();
                                         
     					$objectManager->persist($event);
     					try{
@@ -1408,6 +1409,8 @@ class EventsController extends TabController {
                 }
             }
             
+            $event->updateAlarms();
+            
             //passage au statut terminé si 
             //- evt confirmé ou (evt nouveau et heure de début passée)
             //et
@@ -1475,6 +1478,7 @@ class EventsController extends TabController {
                     $objectManager->persist($child);
                 } 
             }
+            $event->updateAlarms();
             $objectManager->persist($event);
         } else {
             if(is_array($messages)){
