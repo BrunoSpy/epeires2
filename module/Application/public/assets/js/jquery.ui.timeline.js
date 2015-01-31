@@ -498,6 +498,12 @@
                 } else {
                     this.currentDay = new Date();
                 }
+                var now = new Date();
+                if(Math.ceil((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
+                    this.element.css({'background-color':'Cornsilk'});
+                } else {
+                    this.element.css({'background-color':'white'});
+                }
                 //on récupère les évènements
                 this._pauseUpdate();
                 this.element.find(".loading").show();
