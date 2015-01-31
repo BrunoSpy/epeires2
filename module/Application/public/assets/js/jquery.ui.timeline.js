@@ -95,6 +95,7 @@
         /**
          * 
          */
+        lastUpdateTimebar: undefined,
         timerUpdate: 0,
         lastCategoriesComparator: undefined,
         lastEventComparator: undefined,
@@ -1068,7 +1069,14 @@
                 this._updateView();
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
-
+                if(lastUpdateTimebar !== undefined
+                        //changement de jour depuis la dernière mise à jour
+                        && Math.ceil((now.getTime() - lastUpdateTimebar.getTime()) / (1000 * 60 * 60 * 24)) !== 0
+                        //si le jour affiché est la veille
+                        && Math.ceil((now.getTime() - this.currentDay.getTime()) / (1000 * 60 * 60 * 24)) === 1){
+                    this.day(now);
+                    return;
+                }
             } else {
                 //dans tous les cas : mise à jour des évènements en fonction du statut
                 for (var i = 0; i < this.eventsDisplayed.length; i++) {
@@ -1077,7 +1085,7 @@
                     this._updateStatus(event, elmt);
                 }
             }
-            var x = this._computeX(new Date());
+            var x = this._computeX(now);
             var timeBar = $('#TimeBar');
             if (x > 0) {
                 var left = parseInt($("#timeline").css('left'));
@@ -1089,6 +1097,7 @@
             } else {
                 timeBar.hide();
             }
+            lastUpdateTimebar = now;
         },
         /**
          * Draw or update categories
