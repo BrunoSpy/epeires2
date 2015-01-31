@@ -209,7 +209,7 @@
                                 self._updateTimebar();
                             }, 60000);
                             //update events every 10s
-                            setTimeout(function () {
+                            self.timerUpdate = setTimeout(function () {
                                 self._updateEvents();
                             }, 10000);
                             //trigger event when init is finished
@@ -508,7 +508,13 @@
                 //on récupère les évènements
                 this._pauseUpdate();
                 this.element.find(".loading").show();
-                $.when($.getJSON(self.options.eventUrl + '?day=' + self.currentDay.toUTCString(),
+                var url = self.options.eventUrl;
+                if(url.indexOf('?') > 0){
+                	url += '&day=' + self.currentDay.toUTCString();
+                } else {
+                	url += '?day=' + self.currentDay.toUTCString();
+                }
+                $.when($.getJSON(url,
                         function (data, textStatus, jqHXR) {
                             if (jqHXR.status !== 304) {
                                 self.pauseUpdateView();
@@ -1069,7 +1075,7 @@
                 this._updateView();
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
-                if(lastUpdateTimebar !== undefined
+                if(this.lastUpdateTimebar !== undefined
                         //changement de jour depuis la dernière mise à jour
                         && Math.ceil((now.getTime() - lastUpdateTimebar.getTime()) / (1000 * 60 * 60 * 24)) !== 0
                         //si le jour affiché est la veille
@@ -1185,11 +1191,23 @@
         /**
          * 
          * @param {type} event
-         * @param {boolean} shade true to shade an event, false to get back to normal
          * @returns {undefined}
          */
-        _shadeEvent: function (event, shade) {
-
+        _shadeEvent: function (event, elmt) {
+        	var rect = elmt.find('.rect_elmt');
+        	var compl = elmt.find('.complement');
+        	var cat = (this.options.showOnlyRootCategories ?
+                    this._getCategory(event.category_root_id) :
+                    this._getCategory(event.category_id));
+        	var color = cat.color;
+        	var newcolor = this._shadeHexColor(color, 0.5);
+        	if(event.punctual){
+        		rect.css('border-bottom-color', newcolor);
+        		compl.css('border-top-color', newcolor);
+        	} else {
+        		rect.css('background-color', newcolor);
+        		compl.css('border-left-color', newcolor);
+        	}
         },
         /**
          * Hide an event if displayed
@@ -1211,7 +1229,14 @@
          */
         _updateEvents: function () {
             var self = this;
-            return $.getJSON(self.options.eventUrl + (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : ''),
+            var url = self.options.eventUrl;
+            if(url.indexOf('?') > 0){
+            	url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
+            } else {
+            	url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+            }
+            clearTimeout(this.timerUpdate);
+            return $.getJSON(url,
                     function (data, textStatus, jqHXR) {
                         if (jqHXR.status !== 304) {
                             self.addEvents(data);
@@ -1258,7 +1283,7 @@
             }
 
             ////// réini
-            elmt.children().removeClass('disp');
+            elmt.find('.disp').removeClass('disp');
             elmt_flecheG.hide();
             elmt_flecheD.hide();
             move_deb.hide();
@@ -1330,15 +1355,19 @@
                     'background-color':'',
                     'border-left': larg + 'px solid transparent',
                     'border-right': larg + 'px solid transparent',
-                    'border-bottom': haut + 'px solid ' + couleur,
+                    'border-bottom': haut + 'px solid ',
+                    'border-bottom-color': couleur,
                     'z-index': 1,
                     'top' :'',
                     'border-radius':''});
                 elmt_compl.show();
                 elmt_compl.css({'position': 'absolute', 'left': '0px', 
-                    'width': 0, 'height': 0, 'border-left': larg + 'px solid transparent',
+                    'width': 0, 'height': 0,
+                    'border-color':'',
+                    'border-left': larg + 'px solid transparent',
                     'border-right': larg + 'px solid transparent', 
-                    'border-top': haut + 'px solid ' + couleur, 
+                    'border-top': haut + 'px solid', 
+                    'border-top-color': couleur,
                     'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
@@ -1488,7 +1517,7 @@
             switch (event.status_id) {
                 case 1: //nouveau
                     //label en italique
-                    elmt_txt.css({'font-style': 'italic'});
+                    elmt_txt.css({'font-style': 'italic', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
                     //heure de début
                     if (now > start) {
@@ -1519,11 +1548,11 @@
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
-                    //couleur normale
+                    //couleur normale : rien à faire
                     break;
                 case 2: //confirmé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal'});
+                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
                     //heure de début : sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
@@ -1550,7 +1579,7 @@
                     break;
                 case 3: //terminé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal'});
+                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
                     //heure de début et heure de fin : sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
@@ -1568,7 +1597,7 @@
                     break;
                 case 4: //annulé
                     //label barré
-                    elmt_txt.css({'font-style': 'normal'});
+                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : sur demande sans icone
                     elmt_deb.find('i').removeClass();
@@ -1583,6 +1612,7 @@
                     }
                     lien.filter('.rightlink').addClass('disp').show();
                     //couleur estompée
+                    this._shadeEvent(event, elmt);
                     break;
             }
         },
@@ -1753,6 +1783,18 @@
             var width = newobj.outerWidth();
             fakediv.remove();
             return width;
+        },
+        /**
+         * @param color Hex color (with #)
+         * @param percent Value between -1.0 and 1.0. Negative : darker, positive : lighter
+         */
+        _shadeHexColor: function(color, percent) {   
+            var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+            return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+        },
+        _shadeRGBColor:function (color, percent) {
+            var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+            return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
         }
     });
 })(jQuery);
