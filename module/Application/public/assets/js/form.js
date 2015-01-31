@@ -474,27 +474,27 @@ var form = function(url){
 	
 	//click sur modification d'un évènement
 	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #suggestions-container a.modify-evt", function(e){
+		e.preventDefault();
 		var me = $(this);
 		$("#form-title").html(me.data('name'));
-                //formulaire déjà ouvert si clic via suggestion
+		//formulaire déjà ouvert si clic via suggestion
 		if($("#suggestions-container").has(e.target).length === 0){	
-                    $("#event").html('<div>Chargement...</div>');
-                    $("#create-evt").slideDown('fast');
-                } else {
-                    $("#root_categories").popover('hide');
-                }
-                
+			$("#event").html('<div>Chargement...</div>');
+			$("#create-evt").slideDown('fast');
+		} else {
+			$("#root_categories").popover('hide');
+		}
 		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
 
 		$("#event").load(url+'events/form?id='+me.data('id'), function(){
-                        $("#event input[name=startdate]").timepickerform({'id':'start'});
-                        $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
-                        //mise à jour en fonction du statut ponctuel
-                        $('#event #punctual').trigger('change');
+			$("#event input[name=startdate]").timepickerform({'id':'start'});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			//mise à jour en fonction du statut ponctuel
+			$('#event #punctual').trigger('change');
 			updateHours();
-                        updateHourTitle();
+			updateHourTitle();
 			pauseUpdateAlarms();
-                        $('tr[data-toggle=tooltip]').tooltip();
+			$('tr[data-toggle=tooltip]').tooltip();
 		});
 	});
 	
@@ -855,12 +855,12 @@ var form = function(url){
         });
         
         //hide popover if click outside
-	$(document).mousedown(function(e){
-		var container = $(".popover, #root_categories").not("#create-evt");
-		if(!container.is(e.target) && container.has(e.target).length === 0){
-                    $("#root_categories").popover('hide');
-		};		
-	});
+//	$(document).mousedown(function(e){
+//		var container = $(".popover, #root_categories").not("#create-evt");
+//		if(!container.is(e.target) && container.has(e.target).length === 0){
+//                    $("#root_categories").popover('hide');
+//		};		
+//	});
         
         //ouverture du formulaire lors d'un clic sur catégorie
         $(document).on('click', '.category', function(e){

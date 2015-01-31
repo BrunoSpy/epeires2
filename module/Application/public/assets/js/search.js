@@ -47,8 +47,10 @@ var search = function(url){
 	   $(document).mouseup(function(e){
 		   var container = $("#search-results");
 		   if(!container.is(e.target) && container.has(e.target).length === 0){
-			   container.slideUp('fast');
-			   $("#search-results").offset({top:0, left:0});
+			   if($('#search-results').is(':visible')){
+				   container.slideUp('fast');
+				   $("#search-results").offset({top:0, left:0});
+			   }
 		   }
 	   });
 	   
