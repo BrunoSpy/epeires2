@@ -1319,7 +1319,7 @@ class EventsController extends TabController {
                             break;
                         case "status" :
                             if ($this->isGranted('events.status')) {
-                                $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('name' => $value));
+                                $status = $objectManager->getRepository('Application\Entity\Status')->find($value);
                                 if ($status) {
                                     
                                     //si statut terminé et (pas d'heure de fin + pas ponctuel) -> heure de fin = now

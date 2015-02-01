@@ -33,8 +33,14 @@
  */
 
 (function ($, undefined) {
+	
     $.widget("epeires.timeline", {
-        version: "0.9.0",
+    	
+    	/**
+    	 * 
+    	 * @memberOf $
+    	 */
+        version: "0.9.1",
         /**
          * List of events
          */
@@ -249,7 +255,7 @@
             $(window).resize(function () {
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
-                self._updateView();
+                self._updateView(true);
             });
 
             //gestion des évènements souris
@@ -291,7 +297,7 @@
                 elmt.addClass('on_drag');
                 elmt.find('.elmt_deb').show();
 
-                var elmt_deb = elmt.find('.elmt_deb');
+                var elmt_deb = elmt.find('.elmt_deb span');
                 var move_fin = elmt.find('.move_fin');
                 var rect_elmt = elmt.find('.rect_elmt');
                 var elmt_compl = elmt.find('.complement');
@@ -363,7 +369,7 @@
                         var temp_fin = new Date();
                         temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
                         var txtHour = self._formatNumberLength(temp_fin.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_fin.getMinutes(), 2);
-                        elmt_fin.text(txtHour + " ");
+                        elmt_fin.find('span').text(txtHour + " ");
                         elmt.data('end', temp_fin.getTime());
                         x_temp = e2.clientX;
                         elmt.css({'width': '+=' + delt});
@@ -378,6 +384,7 @@
             //enregistrement des heure de début ou fin
             this.element.on('mouseup', '.move_fin, .move_deb', function () {
                 self.element.unbind('mousemove');
+                self.pauseUpdateView();
                 var elmt = self.element.find('.on_drag');
                 if (elmt[0] !== null) {
                     elmt.removeClass('on_drag');
@@ -391,6 +398,8 @@
                                     if (data['event']) {
                                         self.addEvents(data.event);
                                     }
+                                }).always(function(){
+                                	self.forceUpdateView(false);
                                 });
                     } else if (self.on_drag === 2) {
                         var time = new Date();
@@ -401,14 +410,54 @@
                                     if (data['event']) {
                                         self.addEvents(data.event);
                                     }
+                                }).always(function(){
+                                	self.forceUpdateView(false);
                                 });
-
                     }
-                    
                 }
                 self.on_drag = 0;
                 self._restoreUpdate();
             });
+            //clic sur les heures de début => passage à confirmé
+            this.element.on('click', '.elmt_deb', function(e){
+            	e.preventDefault();
+            	self.pauseUpdateView();
+            	var me = $(this);
+            	var elmt = me.parent('.elmt');
+            	var id = elmt.data('ident');
+            	var newstatus = 2;
+            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus, 
+            			function(data){
+            				displayMessages(data.messages);
+            				if(data['event']){
+            					self.addEvents(data.event);
+            				}
+            			}
+            	).always(function(){
+            		self.forceUpdateView(false);
+            	});
+            });
+            
+            //clic sur heure de fin => passage à terminé
+            this.element.on('click', '.elmt_fin', function(e){
+            	e.preventDefault();
+            	self.pauseUpdateView();
+            	var me = $(this);
+            	var elmt = me.parent('.elmt');
+            	var id = elmt.data('ident');
+            	var newstatus = 3;
+            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
+            			function(data){
+            				displayMessages(data.messages);
+            				if(data['event']){
+            					self.addEvents(data.event);
+            				}
+            			}
+            	).always(function(){
+    				self.forceUpdateView(false);
+    			});
+            });
+            
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -636,10 +685,11 @@
         },
         /**
          * Force an update of the view or cancel pause
+         * @param full
          */
-        forceUpdateView: function () {
+        forceUpdateView: function (full) {
             this.update = true;
-            this._updateView(true);
+            this._updateView(full);
         },
         /* ********************** */
         /* *** Private methods ** */
@@ -647,7 +697,7 @@
 
         /**
          * Switch between dayview and 6-hours view
-         * @param full If true, redrawe base and timebar
+         * @param full If true, redraw base and timebar
          * @returns {undefined}
          */
         _updateView: function (full) {
@@ -1229,6 +1279,7 @@
          * @returns {undefined}
          */
         _updateEvents: function () {
+        	clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
             if(url.indexOf('?') > 0){
@@ -1244,17 +1295,24 @@
                             self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                         }
                     }).always(function () {
-                self.timerUpdate = setTimeout(function () {
-                    self._updateEvents();
+                    	self.timerUpdate = setTimeout(function () {
+                    		self._updateEvents();
                 }, 10000);
             });
         },
         _pauseUpdate: function () {
             clearTimeout(this.timerUpdate);
         },
+        /**
+         * Restore automatic update of events.
+         * Wait 10s before next download
+         */
         _restoreUpdate: function () {
             clearTimeout(this.timerUpdate);
-            this._updateEvents();
+            var self = this;
+            this.timerUpdate = setTimeout(function(){
+            	self._updateEvents();
+            }, 10000);
         },
         /**
          * Updates all attributes of an event, except top
@@ -1520,7 +1578,8 @@
                     //label en italique
                     elmt_txt.css({'font-style': 'italic', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
-                    //heure de début
+                    //heure de début cliquable
+                    elmt_deb.removeClass('disabled');
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('i').removeClass().addClass('icon-warning-sign');
@@ -1532,7 +1591,8 @@
                         elmt_deb.addClass('disp');
                         lien.filter('.leftlink').addClass('disp').show();
                     }
-                    //heure de fin
+                    //heure de fin cliquable
+                    elmt_fin.removeClass('disabled');
                     if(event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
@@ -1555,11 +1615,12 @@
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
-                    //heure de début : sur demande avec case cochée
+                    //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
-                    elmt_deb.addClass('disp').hide();
+                    elmt_deb.addClass('disp disabled').hide();
                     lien.filter('.leftlink').addClass('disp').show();
-                    //heure de fin
+                    //heure de fin cliquable
+                    elmt_fin.removeClass('disabled');
                     if(event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
@@ -1571,7 +1632,7 @@
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
-                            elmt_fin.find('i').removeClass().addClass('icon-check');
+                            elmt_fin.find('i').removeClass().addClass('icon-question-sign');
                             elmt_fin.addClass('disp').hide();
                             lien.filter('.rightlink').addClass('disp').show();
                         }
@@ -1582,10 +1643,11 @@
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.css({'text-decoration': ''});
-                    //heure de début et heure de fin : sur demande avec case cochée
+                    //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
-                    elmt_deb.addClass('disp').hide();
+                    elmt_deb.addClass('disp disabled').hide();
                     lien.filter('.leftlink').addClass('disp').show();
+                    elmt_fin.addClass('disabled');
                     if (event.punctual || event.end_date === null) {
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
@@ -1600,9 +1662,10 @@
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.css({'text-decoration': 'line-through'});
-                    //heure de début et heure de fin : sur demande sans icone
+                    //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('i').removeClass();
-                    elmt_deb.addClass('disp').hide();
+                    elmt_deb.addClass('disp disabled').hide();
+                    elmt_fin.addClass('disabled');
                     lien.filter('.leftlink').addClass('disp').show();
                     if (event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
