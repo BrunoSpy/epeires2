@@ -269,7 +269,7 @@
                         text += nom + " : " + contenu + "<br />";
                     });
                     $(this).tooltip({
-                        title: '<span class="elmt_tooltip">' + text + '</span',
+                        title: '<span class="elmt_tooltip">' + text + '</span>',
                         container: 'body',
                         html: 'true'
                     }).tooltip('show');
@@ -283,6 +283,8 @@
                     //suppression heure et boutons
                     $(this).find('.disp').hide();
                     $(this).find('.lien.disp').show();
+                    //suppression menu
+                    $(this).find('.tooltip-evt').popover('destroy');
                 }
             }, '.elmt');
 
@@ -302,7 +304,7 @@
                 var rect_elmt = elmt.find('.rect_elmt');
                 var elmt_compl = elmt.find('.complement');
                 var rect_width = rect_elmt.width();
-
+                var elmt_txt = elmt.find('.label_elmt');
                 var pix_time = 30 * 60000 / self.intervalle;
                 var elmt_fin = elmt.find('.elmt_fin');
 
@@ -312,6 +314,9 @@
                 var temp_deb = new Date();
 
                 self.element.mousemove(function (e2) {
+                	e2.preventDefault();
+                	//désactivaton de tous les liens des boutons
+                	elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if (delt2 + 40 < rect_width) {
@@ -325,6 +330,9 @@
                         elmt_compl.css({'left': '-=' + delt});
                         elmt_fin.css({'left': '-=' + delt});
                         move_fin.css({'left': '-=' + delt});
+                        if(elmt.find('.lien').hasClass('rightlink')){
+                        	elmt_txt.css({'left':'-='+delt});
+                        }
                     }
                 });
             });
@@ -335,7 +343,6 @@
                 self._pauseUpdate();
                 //type de mouvement : changement de fin
                 self.on_drag = 2;
-                
                 var x_ref = e1.clientX;
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
@@ -347,7 +354,7 @@
                 var rect_width = rect_elmt.width();
                 var elmt_fin = elmt.find('.elmt_fin');
                 var move_fin = $(this);
-
+                var elmt_txt = elmt.find('.label_elmt');
                 var pix_time = 30 * 60000 / self.intervalle;
 
                 //récupération de l'heure de fin
@@ -363,6 +370,9 @@
                 }
                 //à chaque mouvement, calcul et mise à jour de l'heure
                 self.element.mousemove(function (e2) {
+                	e2.preventDefault();
+                    //désactivaton de tous les liens des boutons
+                	elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if (rect_width + delt2 > 40) {
@@ -376,6 +386,9 @@
                         rect_elmt.css({'width': '+=' + delt});
                         elmt_fin.css({'left': '+=' + delt});
                         move_fin.css({'left': '+=' + delt});
+                        if(elmt.find('.lien').hasClass('rightlink')) {
+                        	elmt_txt.css({'left':'+='+delt});
+                        }
                     }
                 });
             });
@@ -458,6 +471,60 @@
     			});
             });
             
+            //clic sur ouverture de tooltip
+            this.element.on('click', '.tooltip-evt', function(e){
+            	e.preventDefault();
+            	var me = $(this);
+            	var id = me.data('id');
+            	var txt = '<p class="elmt_tooltip">'
+                	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
+//                	+ '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+            	if(self.events[self.eventsPosition[id]].status_id !== 4){
+            		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
+            	}
+            	txt += '</p>';
+            	me.popover({
+                    content: txt,
+                    trigger:'click',
+                    placement:'top',
+                    html: 'true'
+                }).popover('show');
+            });
+            
+//            this.element.on('click', '.evt-important', function(e){
+//            	e.preventDefault();
+//           	
+//            });
+            
+            this.element.on('click', '.send-evt', function(e){
+            	e.preventDefault();
+            	var me = $(this);
+            	var id = me.data('id');
+            	$.post(self.options.controllerUrl+'/sendevent?id='+id,
+            			function(data){
+            				displayMessages(data.messages);
+            			}
+            	);
+            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+            
+            this.element.on('click', '.cancel-evt', function(e){
+            	e.preventDefault();
+            	var me = $(this);
+            	var id = me.data('id');
+            	self.pauseUpdateView();
+            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value=4',
+            			function(data){
+            				displayMessages(data.messages);
+            				if(data['event']){
+            					self.addEvents(data.event);
+            				}
+            			}
+            	).always(function(){
+    				self.forceUpdateView(false);
+    			});
+            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -1326,6 +1393,7 @@
             var elmt_flecheD = elmt.find('.elmt_flecheD');
             var elmt_mod = elmt.find('.modify-evt');
             var elmt_check = elmt.find('.checklist-evt');
+            var elmt_tooltip = elmt.find('.tooltip-evt');
             var elmt_txt = elmt.find('.label_elmt');
             var elmt_deb = elmt.find('.elmt_deb');
             var elmt_fin = elmt.find('.elmt_fin');
@@ -1350,6 +1418,7 @@
             lien.removeClass('disp leftlink rightlink').hide();
             elmt_compl.hide();
             elmt_txt.css({'background-color': '', 'border-style': ''});
+            elmt_txt.find('a').removeClass('disabled');
             //////   
 
             // libellé de l'évènement à mettre à jour
@@ -1397,6 +1466,7 @@
                 elmt_mod.addClass('disp');
                 elmt_check.addClass('disp');
             }
+            elmt_tooltip.addClass('disp');
 
             var x_deb, x_end;
             
@@ -1438,8 +1508,10 @@
                     elmt_flecheG.css({'left': x_deb - 12 + 'px'});
                 } else {
                     x_deb = this._computeX(startdate);
-                    move_deb.addClass('disp');
-                    move_deb.css({'left': 8 + 'px', 'width': '2px'});
+                    if(event.modifiable){
+                    	move_deb.addClass('disp');
+                    	move_deb.css({'left': 8 + x_deb + 'px', 'width': '2px'});
+                    }
                 }
                 //cas 3 : date fin postérieure à la fin de la timeline
                 if (enddate > this.timelineEnd) {
@@ -1449,13 +1521,17 @@
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
-                    move_fin.addClass('disp');
-                    move_fin.css({'left': x_end - x_deb - 10 + 'px', 'width': '2px'});
+                    if(event.modifiable){
+                    	move_fin.addClass('disp');
+                    	move_fin.css({'left': x_end - 14 + 'px', 'width': '2px'});
+                    }
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
-                    move_fin.addClass('disp');
-                    move_fin.css({'left': x_end - x_deb - 10 + 'px', 'width': '2px'});
+                    if(event.modifiable){
+                    	move_fin.addClass('disp');
+                    	move_fin.css({'left': x_end - 14 + 'px', 'width': '2px'});
+                    }
                     var haut = this.options.eventHeight;
                     elmt_compl.css({'position': 'absolute', 'left': x_end + 4 + 'px', 'width': 0, 'height': 0,
                         'border-left': haut + 'px solid ' + couleur,
@@ -1478,7 +1554,7 @@
             var x2 = x_end;
             //taille du texte + place pour l'heure + place des boutons
             var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial")
-                    + 28 + 18*2 
+                    + 18*3 
                     + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
             var largeur = this._computeX(this.timelineEnd);
             var debWidth = this._outerWidth(elmt_deb);
@@ -1486,9 +1562,8 @@
             if (event.punctual) {
                 lien.addClass('disp').show();
                 x2 = x1 + elmt_rect.outerWidth();
-                x1 -= 30;
                 // on place l'heure à droite
-                elmt_deb.css({'left': x2 + 'px'});
+                elmt_deb.css({'left': x2 + 'px', 'top':'4px'});
                 elmt_txt.css({'background-color': 'white', 
                     'border-style': 'solid', 
                     'border-color': 'gray', 
@@ -1496,50 +1571,50 @@
                     'border-radius': '5px', 
                     'top': '0px',
                     'padding': '2px'});
-                x2 += debWidth + 10;
+                x2 += debWidth + 5; //+5 pour décoller l'encart de l'heure
                 if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                     elmt_txt.css({'left': x2 + 'px'});
-                    lien.css({'left': x2 - (debWidth + 10) + 'px', 'width': debWidth + 10 + 'px'});
+                    lien.css({'left': x2 - debWidth - 10 + 'px', 'width': debWidth + 10 + 'px'}); //+10 = moitié de l'étoile
                     lien.addClass('rightlink');
                     x2 += txt_wid;
                 } else { // sinon on le met à gauche
-                    x1 -= txt_wid + 2;
+                    x1 -= txt_wid + 5; //+5 pour décoller l'encart de l'étoile
                     elmt_txt.css({'left': x1 + 'px'});
                     lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
                     lien.addClass('leftlink');
                 }
             } else {
-                var lar_nec = txt_wid + 50;
-                var x_left = x1 + 18;
-                if (x_end - x_deb > lar_nec) {
-                    elmt_txt.css({'left': x_left + 2 + 'px',
+                var lar_nec = txt_wid + 44; //+44 : place pour les barres de changement d'heure
+                // on place l'heure de début à gauche
+                x1 -= debWidth + 5; //+5 pour décoller l'heure de l'évènement
+                if(startdate < this.timelineBegin){
+                	//flèche gauche à prendre en compte
+                	x1 -= 10;
+                }
+                elmt_deb.css({'left': x1 + 'px'});
+                // on place l'heure de fin à droite
+                elmt_fin.css({'left': x2 + 5 + 'px'});
+                if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
+                	var x_left = x0 + 22;
+                    elmt_txt.css({'left': x_left + 'px',
                                    'top': (this.options.eventHeight/2-11)+'px'});
-                    // on place l'heure de début à gauche
-                    x1 -= debWidth + 18;
-                    elmt_deb.css({'left': x1 + 'px'});
-                    // on place l'heure de fin à droite
-                    elmt_fin.css({'left': x2 + 5 + 'px'});
-                    x2 += endWidth + 18;
+                    
+                    x2 += endWidth + 5;
                 } else {
                     lien.addClass('disp').show();
                     elmt_txt.css({'background-color': 'white', 
                         'border-style': 'solid', 'border-color': 'gray', 'border-width': '1px',
                         'border-radius': '5px', 'padding': '2px',
                         'top': (this.options.eventHeight/2-13)+'px'});
-                    // on place l'heure de début à gauche
-                    x1 -= debWidth + 18;
-                    elmt_deb.css({'left': x1 + 'px'});
-                    // on place l'heure de fin à droite
-                    elmt_fin.css({'left': x2 + 5 + 'px'});
-                    x2 += endWidth + 20;
+                    x2 += endWidth + 10;
                     if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': x2 + 'px'});
-                        lien.css({'left': x2 - (endWidth + 20) + 'px', 'width': endWidth + 20 + 'px'});
-                        x2 += txt_wid + 2;
+                        lien.css({'left': x2 - (endWidth + 10) + 'px', 'width': endWidth + 10 + 'px'});
+                        x2 += txt_wid;
                         lien.addClass('rightlink');
                     } else { // sinon on le met à gauche
-                        lien.css({'left': x1 - 60 + 'px', 'width': x0 - x1 + 60 + 'px'});
-                        x1 -= txt_wid;
+                    	x1 -= txt_wid +15;
+                        lien.css({'left': x1 + 'px', 'width': x0 - x1+ 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
                     }
@@ -1569,6 +1644,8 @@
             var elmt_deb = elmt.find('.elmt_deb');
             var elmt_fin = elmt.find('.elmt_fin');
             var elmt_compl = elmt.find('.complement');
+            var move_deb = elmt.find('.move_deb');
+            var move_fin = elmt.find('.move_fin');
             var lien = elmt.find('.lien');
             var now = new Date();
             var start = new Date(event.start_date);
@@ -1661,7 +1738,7 @@
                 case 4: //annulé
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
-                    elmt_txt.css({'text-decoration': 'line-through'});
+                    elmt_txt.find('span').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('i').removeClass();
                     elmt_deb.addClass('disp disabled').hide();
@@ -1675,6 +1752,9 @@
                         elmt_fin.addClass('disp').hide();
                     }
                     lien.filter('.rightlink').addClass('disp').show();
+                    //ne pas permettre la modification des heures
+                    move_deb.removeClass('disp');
+                    move_fin.removeClass('disp');
                     //couleur estompée
                     this._shadeEvent(event, elmt);
                     break;
@@ -1713,6 +1793,10 @@
             var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
             elmt_txt.append(elmt_b2);
             elmt_b2.append('    <i class="icon-tasks"></i>');
+            //ajout bouton ouverture menu tooltip
+            var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
+            elmt_b3.append('    <i class="icon-chevron-up"></i>');
+            elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
             var lien = $('<div class="lien"></div>');
             elmt.append(lien);
@@ -1721,9 +1805,9 @@
             var elmt_fin = $('<a href="#" class="elmt_fin"><span></span><i></i></a>');
             elmt.append(elmt_fin);
             var move_deb = $('<p class="move_deb"></p>');
-            elmt_rect.append(move_deb);
+            elmt.append(move_deb);
             var move_fin = $('<p class="move_fin"></p>');
-            elmt_rect.append(move_fin);
+            elmt.append(move_fin);
             var dy = this.options.eventHeight;
             var largeur = this.element.width();
             elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy, 'top': this.options.topOffset+'px'});

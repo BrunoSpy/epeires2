@@ -69,10 +69,12 @@
 }
 
 
-.elmt .checklist-evt, .elmt .modify-evt, .elmt .archive-evt, .elmt .elmt_star {
+.elmt .checklist-evt, .elmt .modify-evt, .elmt .tooltip-evt {
 	height : 22px;
 	width : 27px;
 	display:none;
+	z-index: 2;
+	text-decoration: none;
 }
 
 .elmt_qm_but {
@@ -85,6 +87,14 @@
 	display:none;
 	text-decoration:none;
 } 
+
+.label_elmt .popover {
+	min-width: 150px;
+}
+
+.label_elmt .popover-content {
+	padding-bottom: 0px;
+}
 
 .elmt_deb {
     position: absolute;
@@ -111,7 +121,7 @@
 .move_deb, .move_fin {
     position: absolute;
     top: 4px;
-    z-index: 2;
+    z-index: 200;
     background-color: transparent;
     border-right-style: solid;
     border-left-style: solid;
@@ -119,14 +129,8 @@
     display: none;
 }
 
-.warn_elmt .btn {
-	height : 22px;
-	width : 27px;
-	display:inline;
-}
-
 .elmt_tooltip {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .category {

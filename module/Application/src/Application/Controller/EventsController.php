@@ -1337,9 +1337,10 @@ class EventsController extends TabController {
                                         if(!$status->isOpen()){
                                             $this->closeEvent($event);
                                         }
-                                    } else if(!$status->isOpen() && !$status->isDefault() && !$event->getEnddate() && !$event->isPunctual()){
-                                        //si statut annulé, non ponctuel et pas d'heure de fin
-                                        // -> impossible                                    
+                                    } else if(!$status->isOpen() && !$status->isDefault()){
+                                        //si statut annulé
+                                        $event->cancelEvent($status);     
+                                        $messages['success'][] = "Evènement passé au statut ".$status->getName();
                                     } else {
                                         $event->setStatus($status);
                                         $messages['success'][] = "Evènement passé au statut ".$status->getName();
@@ -1374,6 +1375,69 @@ class EventsController extends TabController {
         return new JsonModel($json);
     }
 
+    /**
+     * Send an event by email to the corresponding IPO
+     */
+    public function sendEventAction(){
+    	$id = $this->params()->fromQuery('id', 0);
+    	$messages = array();
+    	if($id) {
+    		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    		$eventservice = $this->getServiceLocator()->get('EventService');
+    		$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
+    		$event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+    		$formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+    				\IntlDateFormatter::FULL,
+    				\IntlDateFormatter::FULL,
+    				'UTC',
+    				\IntlDateFormatter::GREGORIAN,
+    				'dd LLL, HH:mm');
+    		if($event){
+    			$content = 'Nom : '.$eventservice->getName($event).'\n';
+    			$content .= 'Début : '.$formatter->format($event->getStartdate()).'\n';
+    			$content .= 'Fin : '.($event->getEnddate() ? $formatter->format($event->getEnddate()) : 'Inconnu').'\n';
+    			foreach ($event->getCustomFieldsValues() as $value){
+    				$content .= $value->getCustomField()->getName() . ' : ' . $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()).'\n';
+    			}
+    			
+    			$text = new \Zend\Mime\Part ( '');
+				$text->type = \Zend\Mime\Mime::TYPE_TEXT;
+				$text->charset = 'utf-8';
+				
+				$mimeMessage = new \Zend\Mime\Message();
+				$mimeMessage->setParts(array($text));
+				
+				$config = $this->serviceLocator->get ( 'config' );
+				$message = new \Zend\Mail\Message ();
+				$message->addTo($event->getOrganisation()->getIpoEmail())
+						->addFrom($config['emailfrom'])
+						->setSubject("Envoi d'un évènement par le CDS : ".$eventservice->getName($event))
+						->setBody($mimeMessage);
+				
+				$transport = new \Zend\Mail\Transport\Smtp ();
+				$transportOptions = new \Zend\Mail\Transport\SmtpOptions ( $config ['smtp'] );
+				$transport->setOptions ( $transportOptions );
+				try {
+					$transport->send ( $message );
+					$messages['success'][] = "Evènement correctement envoyé à ".$event->getOrganisation()->getIpoEmail();
+				} catch ( \Exception $e ) {
+					$messages ['error'] [] = $e->getMessage ();
+				}
+    		} else {
+    			$messages['error'][] = "Envoi d'email impossible : évènement non trouvé.";
+    		}
+    	} else {
+    		$messages['error'][] = "Envoi d'email impossible : évènement non trouvé.";
+    	}
+    	
+    	$json = array();
+    	
+    	
+    	
+    	$json['messages'] = $messages;
+    	return new JsonModel($json);
+    }
+    
     /**
      * 
      * @param \Application\Entity\Event $event
