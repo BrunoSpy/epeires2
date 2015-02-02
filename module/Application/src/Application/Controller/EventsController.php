@@ -1393,36 +1393,40 @@ class EventsController extends TabController {
     				\IntlDateFormatter::GREGORIAN,
     				'dd LLL, HH:mm');
     		if($event){
-    			$content = 'Nom : '.$eventservice->getName($event).'\n';
-    			$content .= 'Début : '.$formatter->format($event->getStartdate()).'\n';
-    			$content .= 'Fin : '.($event->getEnddate() ? $formatter->format($event->getEnddate()) : 'Inconnu').'\n';
+    			$content = 'Nom : '.$eventservice->getName($event).'<br />';
+    			$content .= 'Début : '.$formatter->format($event->getStartdate()).'<br />';
+    			$content .= 'Fin : '.($event->getEnddate() ? $formatter->format($event->getEnddate()) : 'Inconnu').'<br />';
     			foreach ($event->getCustomFieldsValues() as $value){
-    				$content .= $value->getCustomField()->getName() . ' : ' . $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()).'\n';
+    				$content .= $value->getCustomField()->getName() . ' : ' . $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()).'<br />';
     			}
     			
-    			$text = new \Zend\Mime\Part ( '');
-				$text->type = \Zend\Mime\Mime::TYPE_TEXT;
+    			$text = new \Zend\Mime\Part ($content);
+				$text->type = \Zend\Mime\Mime::TYPE_HTML;
 				$text->charset = 'utf-8';
 				
 				$mimeMessage = new \Zend\Mime\Message();
 				$mimeMessage->setParts(array($text));
 				
 				$config = $this->serviceLocator->get ( 'config' );
-				$message = new \Zend\Mail\Message ();
-				$message->addTo($event->getOrganisation()->getIpoEmail())
-						->addFrom($config['emailfrom'])
-						->setSubject("Envoi d'un évènement par le CDS : ".$eventservice->getName($event))
-						->setBody($mimeMessage);
-				
-				$transport = new \Zend\Mail\Transport\Smtp ();
-				$transportOptions = new \Zend\Mail\Transport\SmtpOptions ( $config ['smtp'] );
-				$transport->setOptions ( $transportOptions );
-				try {
-					$transport->send ( $message );
-					$messages['success'][] = "Evènement correctement envoyé à ".$event->getOrganisation()->getIpoEmail();
-				} catch ( \Exception $e ) {
-					$messages ['error'] [] = $e->getMessage ();
-				}
+                                if(!$config['emailfrom'] || !$config ['smtp']){
+                                    $messages ['error'] [] = "Envoi d'email non configuré, contactez votre administrateur.";
+                                } else {
+                                    $message = new \Zend\Mail\Message ();
+                                    $message->addTo($event->getOrganisation()->getIpoEmail())
+                                                    ->addFrom($config['emailfrom'])
+                                                    ->setSubject("Envoi d'un évènement par le CDS : ".$eventservice->getName($event))
+                                                    ->setBody($mimeMessage);
+
+                                    $transport = new \Zend\Mail\Transport\Smtp ();
+                                    $transportOptions = new \Zend\Mail\Transport\SmtpOptions ( $config ['smtp'] );
+                                    $transport->setOptions ( $transportOptions );
+                                    try {
+                                            $transport->send ( $message );
+                                            $messages['success'][] = "Evènement correctement envoyé à ".$event->getOrganisation()->getIpoEmail();
+                                    } catch ( \Exception $e ) {
+                                            $messages ['error'] [] = $e->getMessage ();
+                                    }
+                                }
     		} else {
     			$messages['error'][] = "Envoi d'email impossible : évènement non trouvé.";
     		}
