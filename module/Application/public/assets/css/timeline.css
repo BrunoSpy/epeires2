@@ -131,6 +131,7 @@
 
 .elmt_tooltip {
     font-size: 14px;
+    text-shadow :initial;
 }
 
 .category {

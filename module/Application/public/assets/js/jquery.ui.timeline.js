@@ -117,9 +117,9 @@
         //paramètres pour les dessins, en pixels
         params: {
             //espace entre les catégories
-            catSpace: 5,
+            catSpace: 7,
             //espace entre les évènements
-            eventSpace: 7,
+            eventSpace: 6,
             //espace entre le haut et la barre horizontale
             topSpace: 50,
             //espace entre le haut et les heures
@@ -478,12 +478,12 @@
             	var id = me.data('id');
             	var txt = '<p class="elmt_tooltip">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
-            	if(self.events[self.eventsPosition[id]].star === true){
-            		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
-            	} else {
-            		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
-            	}
             	if(self.events[self.eventsPosition[id]].status_id !== 4){
+            		if(self.events[self.eventsPosition[id]].star === true){
+                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
+                	} else {
+                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+                	}
             		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
             	}
             	txt += '</p>';
@@ -1651,7 +1651,7 @@
                 }
             }
             //highlight ?
-            if(event.star === true) {
+            if(event.star === true && event.status_id !== 4) {
             	elmt_rect.css({'border-style':'solid',
             					'border-color':'black',
             					'box-shadow': '0px 2px 2px 0px'});
