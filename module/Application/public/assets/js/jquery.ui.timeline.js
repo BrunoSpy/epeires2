@@ -479,11 +479,13 @@
             	var txt = '<p class="elmt_tooltip">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
             	if(self.events[self.eventsPosition[id]].status_id !== 4){
-            		if(self.events[self.eventsPosition[id]].star === true){
-                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
-                	} else {
-                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
-                	}
+            		if(event.punctual === false){
+	            		if(self.events[self.eventsPosition[id]].star === true){
+	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
+	                	} else {
+	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+	                	}
+            		}
             		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
             	}
             	txt += '</p>';
@@ -1531,6 +1533,19 @@
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
             } else {
+                //highlight ? //TODO : highlight pour les evts ponctuels
+                if(event.star === true && event.status_id !== 4) {
+                	elmt_rect.css({'border-style':'solid',
+                					'border-color':'black',
+                					'box-shadow': '0px 2px 2px 0px'});
+                	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
+                } else {
+                	elmt_rect.css({'border-style':'',
+    					'border-color':'transparent',
+    					'box-shadow': ''});
+                	elmt_txt.css({'text-shadow':''});
+                }
+            	
                 //cas 2 : date début antérieure au début de la timeline
                 if (startdate < this.timelineBegin) {
                     x_deb = this.options.leftOffset;
@@ -1650,18 +1665,6 @@
                     }
                 }
             }
-            //highlight ?
-            if(event.star === true && event.status_id !== 4) {
-            	elmt_rect.css({'border-style':'solid',
-            					'border-color':'black',
-            					'box-shadow': '0px 2px 2px 0px'});
-            	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
-            } else {
-            	elmt_rect.css({'border-style':'',
-					'border-color':'transparent',
-					'box-shadow': ''});
-            	elmt_txt.css({'text-shadow':''});
-            }
             
             //mise à jour du conteneur global
             elmt.css({'left': x1+'px', 'width': x2 - x1});
@@ -1697,7 +1700,7 @@
                 case 1: //nouveau
                     //label en italique
                     elmt_txt.css({'font-style': 'italic', 'color': 'black'});
-                    elmt_txt.css({'text-decoration': ''});
+                    elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début cliquable
                     elmt_deb.removeClass('disabled');
                     if (now > start) {
@@ -1734,7 +1737,7 @@
                 case 2: //confirmé
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
-                    elmt_txt.css({'text-decoration': ''});
+                    elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
                     elmt_deb.addClass('disp disabled').hide();
@@ -1762,7 +1765,7 @@
                 case 3: //terminé
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
-                    elmt_txt.css({'text-decoration': ''});
+                    elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
                     elmt_deb.addClass('disp disabled').hide();
