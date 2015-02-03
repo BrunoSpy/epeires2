@@ -342,7 +342,7 @@
                 //pas de mise à jour des évènements pendant le mouvement
                 self._pauseUpdate();
                 //type de mouvement : changement de fin
-                self.on_drag = 2;
+                self.on_drag = -2;
                 var x_ref = e1.clientX;
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
@@ -375,6 +375,10 @@
                 	elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
+                    if(delt !== 0){
+                    	//mouvement effectif
+                    	self.on_drag = 2;
+                    }
                     if (rect_width + delt2 > 40) {
                         var temp_fin = new Date();
                         temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
@@ -418,6 +422,18 @@
                         var time = new Date();
                         time.setTime(elmt.data('end'));
                         $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
+                                function (data) {
+                                    displayMessages(data.messages);
+                                    if (data['event']) {
+                                        self.addEvents(data.event);
+                                    }
+                                }).always(function(){
+                                	self.forceUpdateView(false);
+                                });
+                    } else if (self.on_drag === -2){
+                    	//clic simple : heure de fin = heure actuelle
+                    	var time = new Date();
+                    	$.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
                                 function (data) {
                                     displayMessages(data.messages);
                                     if (data['event']) {
@@ -478,9 +494,10 @@
             	var id = me.data('id');
             	var txt = '<p class="elmt_tooltip">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
-            	if(self.events[self.eventsPosition[id]].status_id !== 4){
+            	var event = self.events[self.eventsPosition[id]];
+            	if(event.status_id !== 4){
             		if(event.punctual === false){
-	            		if(self.events[self.eventsPosition[id]].star === true){
+	            		if(event.star === true){
 	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
 	                	} else {
 	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
@@ -1533,19 +1550,6 @@
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
             } else {
-                //highlight ? //TODO : highlight pour les evts ponctuels
-                if(event.star === true && event.status_id !== 4) {
-                	elmt_rect.css({'border-style':'solid',
-                					'border-color':'black',
-                					'box-shadow': '0px 2px 2px 0px'});
-                	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
-                } else {
-                	elmt_rect.css({'border-style':'',
-    					'border-color':'transparent',
-    					'box-shadow': ''});
-                	elmt_txt.css({'text-shadow':''});
-                }
-            	
                 //cas 2 : date début antérieure au début de la timeline
                 if (startdate < this.timelineBegin) {
                     x_deb = this.options.leftOffset;
@@ -1588,9 +1592,20 @@
                     'top': '0px', 'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
                     'height': this.options.eventHeight, 'z-index': 2,
                     'background-color': couleur,
-                    'border-color': 'transparent',
                     'border-width': '1px',
                     'border-radius': '5px'});
+                //highlight ? //TODO : highlight pour les evts ponctuels
+                if(event.star === true && event.status_id !== 4) {
+                	elmt_rect.css({'border-style':'solid',
+                					'border-color':'black',
+                					'box-shadow': '0px 2px 2px 0px'});
+                	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
+                } else {
+                	elmt_rect.css({'border-style':'',
+    					'border-color':'transparent',
+    					'box-shadow': ''});
+                	elmt_txt.css({'text-shadow':''});
+                }
             }
 
             /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
