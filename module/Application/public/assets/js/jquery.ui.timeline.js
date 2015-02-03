@@ -478,7 +478,11 @@
             	var id = me.data('id');
             	var txt = '<p class="elmt_tooltip">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
-//                	+ '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+            	if(self.events[self.eventsPosition[id]].star === true){
+            		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
+            	} else {
+            		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+            	}
             	if(self.events[self.eventsPosition[id]].status_id !== 4){
             		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
             	}
@@ -489,12 +493,38 @@
                     placement:'top',
                     html: 'true'
                 }).popover('show');
+            	me.parents('.elmt').tooltip('hide');
             });
             
-//            this.element.on('click', '.evt-important', function(e){
-//            	e.preventDefault();
-//           	
-//            });
+            this.element.on('click', '.evt-important', function(e){
+            	e.preventDefault();
+            	var me = $(this);
+            	var id = me.data('id');
+            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=1',
+            			function(data){
+            				displayMessages(data.messages);
+            				if(data['event']){
+            					self.addEvents(data.event);
+            				}
+            			}
+            	);
+            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+            
+            this.element.on('click', '.evt-non-important', function(e){
+            	e.preventDefault();
+            	var me = $(this);
+            	var id = me.data('id');
+            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=0',
+            			function(data){
+            				displayMessages(data.messages);
+            				if(data['event']){
+            					self.addEvents(data.event);
+            				}
+            			}
+            	);
+            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
             
             this.element.on('click', '.send-evt', function(e){
             	e.preventDefault();
@@ -1620,6 +1650,19 @@
                     }
                 }
             }
+            //highlight ?
+            if(event.star === true) {
+            	elmt_rect.css({'border-style':'solid',
+            					'border-color':'black',
+            					'box-shadow': '0px 2px 2px 0px'});
+            	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
+            } else {
+            	elmt_rect.css({'border-style':'',
+					'border-color':'transparent',
+					'box-shadow': ''});
+            	elmt_txt.css({'text-shadow':''});
+            }
+            
             //mise à jour du conteneur global
             elmt.css({'left': x1+'px', 'width': x2 - x1});
             elmt.children().css({'left':'-='+x1+'px'});

@@ -71,6 +71,11 @@ class Event extends AbstractEvent {
      */
     protected $archived = false;
 
+    /** 
+     * @ORM\Column(type="boolean")
+     */
+    protected $star = false;
+    
     /**
      * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
@@ -149,6 +154,14 @@ class Event extends AbstractEvent {
         return $this->status;
     }
 
+    public function setStar($star){
+    	$this->star = $star;
+    }
+    
+    public function isStar(){
+    	return $this->star;
+    }
+    
     /**
      * 
      * @param \DateTime $startdate Warning : Timezone == UTC !
@@ -267,7 +280,7 @@ class Event extends AbstractEvent {
             throw new \RuntimeException("Statut annulé attendu, un autre statut a été fourni.");
         }
         $this->setStatus($status);
-        if (!$this->isPunctual()) {
+        if ($this->isPunctual() || (!$this->isPunctual() && $this->getEnddate() === null) ) {
             $now = new \DateTime('now');
             $now->setTimezone(new \DateTimeZone('UTC'));
             $this->setEnddate($now);

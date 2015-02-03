@@ -1106,6 +1106,7 @@ class EventsController extends TabController {
     					'impact_style' => $event->getImpact()->getStyle(),
     					'archived' => $event->isArchived() ? true : false,
                                         'files' => count($event->getFiles()),
+    					'star' => $event->isStar() ? true : false,
                                         'scheduled' => $event->isScheduled() ? true : false
     	);
     	
@@ -1352,6 +1353,15 @@ class EventsController extends TabController {
                                 $messages['error'][] = "Droits insuffisants pour changer le statut.";
                             }
                             break;
+                        case 'star':
+                        	$event->setStar($value);
+                        	$objectManager->persist($event);
+                        	if($value){
+                        		$messages['success'][] = "Evènement marqué important.";
+                        	} else {
+                        		$messages['success'][] = "Evènement marqué non important.";
+                        	}
+                        	break;
                         default :
                             break;
                     }
