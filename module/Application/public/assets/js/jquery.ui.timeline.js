@@ -399,7 +399,7 @@
 
             //on rélache la souris :
             //enregistrement des heure de début ou fin
-            this.element.on('mouseup', '.move_fin, .move_deb', function () {
+            this.element.on('mouseup', function () {
                 self.element.unbind('mousemove');
                 self.pauseUpdateView();
                 var elmt = self.element.find('.on_drag');
