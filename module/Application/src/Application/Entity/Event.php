@@ -288,7 +288,7 @@ class Event extends AbstractEvent {
         foreach ($this->getChildren() as $child) {
             //annuler tous les évènement sauf les actions
             if (!$child instanceof ActionCategory) {
-                $child->cancel($status);
+                $child->cancelEvent($status);
             }
         }
     }
