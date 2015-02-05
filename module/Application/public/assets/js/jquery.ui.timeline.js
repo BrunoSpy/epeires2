@@ -752,7 +752,7 @@
             for (var i = 0; i < this.events.length; i++) {
                 this.eventsPosition[this.events[i].id] = i;
             }
-            if (this.update) {
+            if (this.update === true) {
                 this._updateView();
             }
         },
@@ -1408,6 +1408,7 @@
                     function (data, textStatus, jqHXR) {
                         if (jqHXR.status !== 304) {
                             self.addEvents(data);
+                            self.forceUpdateView();
                             self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                         }
                     }).always(function () {

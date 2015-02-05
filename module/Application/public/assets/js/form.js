@@ -376,12 +376,14 @@ var form = function(url){
 					//modification
 					if(data['events']){
 						$('#timeline').timeline('addEvents', data.events);
+						$('#timeline').timeline('forceUpdateView');
 					}
 					displayMessages(data.messages);
 				} else {
 					//new event
 					if(data['events']){
 						$('#timeline').timeline('addEvents', data.events);
+						$('#timeline').timeline('forceUpdateView');
 					}
 					displayMessages(data.messages);
 				}
