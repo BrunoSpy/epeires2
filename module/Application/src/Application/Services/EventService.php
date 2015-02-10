@@ -88,8 +88,8 @@ class EventService implements ServiceManagerAwareInterface{
 		
 		$category = $event->getCategory();
 		
-                //hack temporaire en attendant mieux
                 if($category instanceof \Application\Entity\FrequencyCategory){
+                	error_log('frequence');
                     $freqid = 0;
                     $otherfreqid = 0;
                     foreach($event->getCustomFieldsValues() as $value){
@@ -113,7 +113,7 @@ class EventService implements ServiceManagerAwareInterface{
                             }
                         }
                     }
-                } if($category instanceof \Application\Entity\MilCategory) {
+                } else if($category instanceof \Application\Entity\MilCategory) {
                     $namefield = $event->getCustomFieldValue($category->getFieldname());
                     $name = ($namefield ? $namefield->getValue() : "???"); //TODO $namefield ne peut jamais être vide !!
                     $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
