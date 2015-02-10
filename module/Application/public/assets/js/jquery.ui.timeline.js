@@ -604,7 +604,6 @@
                 this.events[this.eventsPosition[event.id]] = event;
             } else {
                 //ajout de l'évènement en fin de tableau
-                //la relance du tri forcera le dessin et la mise à jour des évènements
                 var pos = this.events.length;
                 event.display = true;
                 event.shade = false;
@@ -625,7 +624,7 @@
             $.each(eventsList, function (key, value) {
                 self.addEvent(value, false);
             });
-            //sort events and refresh view
+            //sort events
             this.sortEvents();
         },
         removeEvent: function (event) {
@@ -635,7 +634,7 @@
         view: function (viewName, day) {
             if (viewName === "day" && !this.dayview) {
                 this.dayview = true;
-                this._updateView();
+                this.forceUpdateView(true);
             } else if (viewName === "sixhours" && this.dayview) {
                 this.dayview = false;
                 if (day === undefined) {
@@ -648,7 +647,7 @@
                         this.currentDay = new Date();
                     }
                 }
-                this._updateView(true);
+                this.forceUpdateView(true);
             }
         },
         /**

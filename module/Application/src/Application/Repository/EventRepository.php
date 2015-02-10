@@ -150,7 +150,7 @@ class EventRepository extends ExtendedRepository {
             //aucun filtre autre que les rôles
         }
 
-        //deprecated : sort is done by the view
+        //used by ReportController
         if ($orderbycat) {
             $qb->addOrderBy('e.category')
                     ->addOrderBy('e.startdate');
