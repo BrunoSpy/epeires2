@@ -319,10 +319,10 @@ class Event extends AbstractEvent {
         $previousstart = $this->getStartdate();
         foreach ($this->getCustomFieldsValues() as $value) {
             if ($value->getCustomField()->getId() == $this->getCategory()->getDeltaBeginField()->getId()) {
-                $deltabegin = $value->getValue();
+                $deltabegin = preg_replace('/\s+/', '', $value->getValue());
             }
             if ($value->getCustomField()->getId() == $this->getCategory()->getDeltaEndField()->getId()) {
-                $deltaend = $value->getValue();
+                $deltaend = preg_replace('/\s+/', '', $value->getValue());
             }
         }
         $event = $this->getParent();

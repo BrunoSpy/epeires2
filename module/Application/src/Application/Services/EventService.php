@@ -89,7 +89,6 @@ class EventService implements ServiceManagerAwareInterface{
 		$category = $event->getCategory();
 		
                 if($category instanceof \Application\Entity\FrequencyCategory){
-                	error_log('frequence');
                     $freqid = 0;
                     $otherfreqid = 0;
                     foreach($event->getCustomFieldsValues() as $value){

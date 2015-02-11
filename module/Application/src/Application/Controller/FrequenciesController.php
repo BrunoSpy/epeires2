@@ -383,7 +383,6 @@ class FrequenciesController extends TabController {
                             $event->setCategory($categories[0]);
                             $em->persist($antennafieldvalue);
                             $em->persist($statusvalue);
-                            $em->persist($event);
                             //création des evts fils pour le passage en secours
                             if($frequency && $frequency->hasAntenna($antenna)){
                                 //une seule fréquence impactée
@@ -433,15 +432,10 @@ class FrequenciesController extends TabController {
                                             $newvalue->setEvent($child);
                                             $newvalue->setCustomField($value->getCustomField());
                                             $newvalue->setValue($value->getValue());
+                                            $child->addCustomFieldValue($newvalue);
                                             $em->persist($newvalue);
                                         }
-                                        //si alert
-                                        if($action->getCategory() instanceof \Application\Entity\AlarmCategory){
-                                            $now = new \DateTime('now');
-                                            $now->setTimezone(new \DateTimeZone('UTC'));
-                                            $now->add(new \DateInterval('PT'.$action->getStartdateDelta().'M'));
-                                            $child->setStartdate($now);
-                                        }
+                                        $child->updateAlarmDate();
                                         $em->persist($child);
                                     }
                                     //ajout des fichiers
@@ -452,6 +446,8 @@ class FrequenciesController extends TabController {
                                 }
                             }
                             try {
+                            	$event->updateAlarms();
+                            	$em->persist($event);
                                 $em->flush();
                                 $messages['success'][] = "Nouvel évènement antenne créé.";
                             } catch (\Exception $e) {

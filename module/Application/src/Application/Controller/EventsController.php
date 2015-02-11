@@ -966,9 +966,9 @@ class EventsController extends TabController {
 				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getTextField()->getId()) {
 					$alarmjson['comment'] = $value->getValue();
 				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaBeginField()->getId()) {
-					$alarmjson['deltabegin'] = $value->getValue();
+					$alarmjson['deltabegin'] = preg_replace('/\s+/', '', $value->getValue());
 				} else if($value->getCustomField()->getId() == $alarm->getCategory()->getDeltaEndField()->getId()) {
-					$alarmjson['deltaend'] = $value->getValue();
+					$alarmjson['deltaend'] = preg_replace('/\s+/', '', $value->getValue());
 				} 
 			}
 			$json[] = $alarmjson;

@@ -236,12 +236,12 @@ class ModelsController extends FormController
 					$alarm->addCustomFieldValue($comment);
                                         $deltabegin = new CustomFieldValue();
                                         $deltabegin->setCustomField($alarm->getCategory()->getDeltaBeginField());
-                                        $deltabegin->setValue($alarmpost['deltabegin']);
+                                        $deltabegin->setValue(preg_replace('/\s+/', '', $alarmpost['deltabegin']));
                                         $deltabegin->setEvent($alarm);
                                         $alarm->addCustomFieldValue($deltabegin);
                                         $deltaend = new CustomFieldValue();
                                         $deltaend->setCustomField($alarm->getCategory()->getDeltaEndField());
-                                        $deltaend->setValue($alarmpost['deltaend']);
+                                        $deltaend->setValue(preg_replace('/\s+/', '', $alarmpost['deltaend']));
                                         $deltaend->setEvent($alarm);
                                         $alarm->addCustomFieldValue($deltaend);
 					$objectManager->persist($name);
