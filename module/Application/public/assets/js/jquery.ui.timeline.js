@@ -40,7 +40,7 @@
     	 * 
     	 * @memberOf $
     	 */
-        version: "0.9.1",
+        version: "0.9.2",
         /**
          * List of events
          */
@@ -492,7 +492,7 @@
             	e.preventDefault();
             	var me = $(this);
             	var id = me.data('id');
-            	var txt = '<p class="elmt_tooltip">'
+            	var txt = '<p class="elmt_tooltip actions">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
             	var event = self.events[self.eventsPosition[id]];
             	if(event.status_id !== 4){
@@ -1876,7 +1876,7 @@
             elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
             elmt_b2.css({'z-index': 1});
-            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 2, 'color': 'black', 'white-space': 'nowrap', 'font-weight': 'bold', 'width': 'auto'});
+            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 20, 'color': 'black', 'white-space': 'nowrap', 'font-weight': 'bold', 'width': 'auto'});
             lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
 
             move_deb.css({'height': dy - 8});
