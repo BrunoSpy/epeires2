@@ -1081,57 +1081,52 @@ class EventsController extends TabController {
         
     	return new JsonModel($json);
     }
-    
-    private function getEventJson(Event $event){
-    	$eventservice = $this->getServiceLocator()->get('EventService');
-    	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
-    	$json = array('id' => $event->getId(),
-                                        'name' => $eventservice->getName($event),
-    					'modifiable' => $eventservice->isModifiable($event) ? true : false,
-    					'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
-    					'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
-    					'punctual' => $event->isPunctual() ? true : false,
-    					'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getName() : $event->getCategory()->getName()),
-    					'category_root_id' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getId() : $event->getCategory()->getId()),
-                                        'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getShortName() : $event->getCategory()->getShortName()),
-    					'category' => $event->getCategory()->getName(),
-                                        'category_id' => $event->getCategory()->getId(),
-    					'category_short' => $event->getCategory()->getShortName(),
-    					'category_compact' => $event->getCategory()->isCompactMode() ? true : false,
-                                        'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : -1),
-    					'status_name' => $event->getStatus()->getName(),
-    					'status_id' => $event->getStatus()->getId(),
-    					'impact_value' => $event->getImpact()->getValue(),
-    					'impact_name' => $event->getImpact()->getName(),
-    					'impact_style' => $event->getImpact()->getStyle(),
-    					'archived' => $event->isArchived() ? true : false,
-                                        'files' => count($event->getFiles()),
-    					'star' => $event->isStar() ? true : false,
-                                        'scheduled' => $event->isScheduled() ? true : false
-    	);
-    	
-    	$fields = array();
-    	foreach($event->getCustomFieldsValues() as $value){
-		$formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-		if($formattedvalue != null) {
-			$fields[$value->getCustomField()->getName()] = $formattedvalue;
+	private function getEventJson(Event $event) {
+		$eventservice = $this->getServiceLocator ()->get ( 'EventService' );
+		$customfieldservice = $this->getServiceLocator ()->get ( 'CustomFieldService' );
+		$json = array (
+				'id' => $event->getId (),
+				'name' => $eventservice->getName ( $event ),
+				'modifiable' => $eventservice->isModifiable ( $event ) ? true : false,
+				'start_date' => ($event->getStartdate () ? $event->getStartdate ()->format ( DATE_RFC2822 ) : null),
+				'end_date' => ($event->getEnddate () ? $event->getEnddate ()->format ( DATE_RFC2822 ) : null),
+				'punctual' => $event->isPunctual () ? true : false,
+				'category_root' => ($event->getCategory ()->getParent () ? $event->getCategory ()->getParent ()->getName () : $event->getCategory ()->getName ()),
+				'category_root_id' => ($event->getCategory ()->getParent () ? $event->getCategory ()->getParent ()->getId () : $event->getCategory ()->getId ()),
+				'category_root_short' => ($event->getCategory ()->getParent () ? $event->getCategory ()->getParent ()->getShortName () : $event->getCategory ()->getShortName ()),
+				'category' => $event->getCategory ()->getName (),
+				'category_id' => $event->getCategory ()->getId (),
+				'category_short' => $event->getCategory ()->getShortName (),
+				'category_compact' => $event->getCategory ()->isCompactMode () ? true : false,
+				'category_place' => ($event->getCategory ()->getParent () ? $event->getCategory ()->getPlace () : - 1),
+				'status_name' => $event->getStatus ()->getName (),
+				'status_id' => $event->getStatus ()->getId (),
+				'impact_value' => $event->getImpact ()->getValue (),
+				'impact_name' => $event->getImpact ()->getName (),
+				'impact_style' => $event->getImpact ()->getStyle (),
+				'archived' => $event->isArchived () ? true : false,
+				'files' => count ( $event->getFiles () ),
+				'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
+				'star' => $event->isStar () ? true : false,
+				'scheduled' => $event->isScheduled () ? true : false 
+		);
+		
+		$fields = array ();
+		foreach ( $event->getCustomFieldsValues () as $value ) {
+			$formattedvalue = $customfieldservice->getFormattedValue ( $value->getCustomField (), $value->getValue () );
+			if ($formattedvalue != null) {
+				$fields [$value->getCustomField ()->getName ()] = $formattedvalue;
+			}
 		}
-    	}
-        
-        $formatter = \IntlDateFormatter::create(
-                            \Locale::getDefault(),
-                            \IntlDateFormatter::FULL,
-                            \IntlDateFormatter::FULL,
-                            'UTC',
-                            \IntlDateFormatter::GREGORIAN,
-                            'dd LLL, HH:mm');
-    	foreach($event->getUpdates() as $update){
-            $fields[$formatter->format($update->getCreatedOn())] = nl2br($update->getText());
-        }
-    	$json['fields'] = $fields;
-    	  	
-    	return $json;
-    }
+		
+		$formatter = \IntlDateFormatter::create ( \Locale::getDefault (), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm' );
+		foreach ( $event->getUpdates () as $update ) {
+			$fields [$formatter->format ( $update->getCreatedOn () )] = nl2br ( $update->getText () );
+		}
+		$json ['fields'] = $fields;
+		
+		return $json;
+	}
     
     private function getModelJson(PredefinedEvent $model){
 	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');

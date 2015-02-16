@@ -410,7 +410,16 @@ $(document).ready(function(){
         var me = $(this);
         var id = parseInt(me.closest(".elmt").data('ident'));
         if(!isNaN(id)){
-            displayPanel(id, true);
+        	var event = $("#timeline").timeline('getEvent', id);
+        	if(event !== null){
+        		if(event.files === 1){
+        			window.open(url+event.url_file1);
+        		} else {
+        			displayPanel(id, true);
+        		}
+        	} else {
+        		displayPanel(id, true);
+        	}
         }
     })
     

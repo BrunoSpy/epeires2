@@ -627,6 +627,17 @@
             //sort events
             this.sortEvents();
         },
+        /**
+         * Return an event
+         * @param id
+         */
+        getEvent:function (id) {
+        	if(id in this.eventsPosition) {
+        		return this.events[this.eventsPosition[id]];
+        	} else {
+        		return null;
+        	}
+        },
         removeEvent: function (event) {
             this._hideEvent(event);
             this._trigger("hide", event, {eventId: event.id});
