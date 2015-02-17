@@ -413,7 +413,7 @@ $(document).ready(function(){
         	var event = $("#timeline").timeline('getEvent', id);
         	if(event !== null){
         		if(event.files === 1){
-        			window.open(url+event.url_file1);
+        			window.open(window.location.origin+url+event.url_file1);
         		} else {
         			displayPanel(id, true);
         		}
