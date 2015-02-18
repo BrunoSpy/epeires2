@@ -405,7 +405,7 @@ class EventsController extends TabController {
     			                        
     			if($credentials){
     				
-    				$form = $this->getSkeletonForm($event);
+    				$form = $this->getSkeletonForm(null, $event);
     				$form->setPreferFormInputFilter(true);
     				$form->setData($post);
     				 
@@ -667,13 +667,14 @@ class EventsController extends TabController {
     	 
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	 
-    	$form = $this->getSkeletonForm();
-    	
+    	$form = $this->getSkeletonForm(null);
+    	    	
     	if($part){
     		switch ($part) {
     			case 'subcategories':
     				$id = $this->params()->fromQuery('id');
-    				$subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getChilds($id));
+    				$onlytimeline = $this->params()->fromQuery('onlytimeline', false);
+    				$subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getChilds($onlytimeline, $id));
     				$subcatarray = array();
     				foreach ($subcat as $cat){
     					$subcatarray[$cat->getId()] = $cat->getName();
@@ -720,14 +721,17 @@ class EventsController extends TabController {
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	//création du formulaire : identique en cas de modif ou création
-    	$form = $this->getSkeletonForm();
+    	    	
+    	$cat = $this->params()->fromQuery('cat', null);
+    	
+    	$form = $this->getSkeletonForm($cat);
     	 
     	$id = $this->params()->fromQuery('id', null);
     	
     	$copy = $this->params()->fromQuery('copy', null);
     	
     	$model = $this->params()->fromQuery('model', null);
-    	
+    	    	
     	$event = null;
     	
     	$pevent = null;
@@ -833,7 +837,7 @@ class EventsController extends TabController {
     	 
     }
     
-    private function getSkeletonForm($event = null){
+    private function getSkeletonForm($cat, $event = null){
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	if(!$event){
@@ -854,7 +858,13 @@ class EventsController extends TabController {
     	$form->get('organisation')->setValueOptions($em->getRepository('Application\Entity\Organisation')->getAllAsArray());
     	
     	//add default fieldsets
-    	$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
+    	$rootCategories = array();
+    	if($cat === 'timeline' || $cat === null) {
+    		$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
+    	} else {
+    		$catObject = $em->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
+    		$rootCategories[] = $catObject;
+    	}
     	$rootarray = array();
     	foreach ($rootCategories as $cat){
     		$rootarray[$cat->getId()] = $cat->getName();

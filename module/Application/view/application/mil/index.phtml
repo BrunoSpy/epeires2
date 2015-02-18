@@ -102,7 +102,7 @@ $('#timeline').timeline({
     initComplete: function(){$("#timeline .loading").hide();}
 });
 //init form
-form('<?php echo $this->url('application');?>');
+form('<?php echo $this->url('application');?>', 'zones');
 
 fileupload('<?php echo $this->url('application')?>');
 

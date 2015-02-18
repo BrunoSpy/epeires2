@@ -523,7 +523,7 @@
             			function(data){
             				displayMessages(data.messages);
             				if(data['event']){
-            					self.addEvents(data.event);
+            					self._highlightEvent(id, true);
             				}
             			}
             	);
@@ -538,7 +538,7 @@
             			function(data){
             				displayMessages(data.messages);
             				if(data['event']){
-            					self.addEvents(data.event);
+            					self._highlightEvent(id, false);
             				}
             			}
             	);
@@ -1358,12 +1358,23 @@
         },
         /**
          * Surligne un évènement pour le mettre en valeur
-         * @param {type} event
+         * @param {type} eventid
          * @param {boolean} highlight true to highlight, false to get back to normal
          * @returns {undefined}
          */
-        _highlightEvent: function (event, highlight) {
-
+        _highlightEvent: function (eventid, highlight) {
+        	var elmt = this.element.find('#event'+eventid);
+        	if(highlight !== undefined && highlight === true){
+        		if(eventid in this.eventsPosition){
+        			this.events[this.eventsPosition[eventid]].star = true;
+        		}
+        		elmt.addClass('star');
+        	} else {
+        		if(eventid in this.eventsPosition){
+        			this.events[this.eventsPosition[eventid]].star = false;
+        		}
+        		elmt.removeClass('star');
+        	}
         },
         /**
          * 
@@ -1535,32 +1546,25 @@
                 x_deb = this._computeX(startdate);
                 var haut = this.options.eventHeight * 2 / 3;
                 var larg = haut * 5 / 8;
-                elmt_rect.css({'position': 'absolute',
-                    'left': -larg + 'px',
-                    'width': 0,
-                    'height': 0,
-                    'border-width':'',
-                    'border-color':'',
-                    'background-color':'',
-                    'border-left': larg + 'px solid transparent',
-                    'border-right': larg + 'px solid transparent',
-                    'border-bottom': haut + 'px solid ',
-                    'border-bottom-color': couleur,
-                    'z-index': 1,
-                    'top' :'',
-                    'border-radius':''});
+                elmt.addClass('punctual');
+                elmt.removeClass('notpunctual');
+                elmt_rect.css({'left': -larg + 'px',
+                    'border-left-width': larg + 'px',
+                    'border-right-width': larg + 'px',
+                    'border-bottom-width': haut + 'px',
+                    'border-bottom-color': couleur});
                 elmt_compl.show();
-                elmt_compl.css({'position': 'absolute', 'left': '0px', 
-                    'width': 0, 'height': 0,
-                    'border-color':'',
-                    'border-left': larg + 'px solid transparent',
-                    'border-right': larg + 'px solid transparent', 
-                    'border-top': haut + 'px solid', 
+                elmt_compl.css({
+                    'border-left-width': larg + 'px',
+                    'border-right-width': larg + 'px', 
+                    'border-top-width': haut + 'px', 
                     'border-top-color': couleur,
-                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px', 'z-index': 2});
+                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px'});
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
             } else {
+            	elmt.removeClass('punctual');
+            	elmt.addClass('notpunctual');
                 //cas 2 : date début antérieure au début de la timeline
                 if (startdate < this.timelineBegin) {
                     x_deb = this.options.leftOffset;
@@ -1570,7 +1574,7 @@
                     x_deb = this._computeX(startdate);
                     if(event.modifiable){
                     	move_deb.addClass('disp');
-                    	move_deb.css({'left': 8 + x_deb + 'px', 'width': '2px'});
+                    	move_deb.css({'left': 8 + x_deb + 'px'});
                     }
                 }
                 //cas 3 : date fin postérieure à la fin de la timeline
@@ -1583,39 +1587,31 @@
                     x_end = this._computeX(enddate);
                     if(event.modifiable){
                     	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px', 'width': '2px'});
+                    	move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
                     if(event.modifiable){
                     	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px', 'width': '2px'});
+                    	move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     var haut = this.options.eventHeight;
-                    elmt_compl.css({'position': 'absolute', 'left': x_end + 4 + 'px', 'width': 0, 'height': 0,
-                        'border-left': haut + 'px solid ' + couleur,
-                        'border-top': haut / 2 + 1 + 'px solid transparent',
-                        'border-bottom': haut / 2 + 1 + 'px solid transparent'});
+                    elmt_compl.css({'left': x_end + 4 + 'px',
+                        'border-left-width': haut + 'px',
+                        'border-left-color' : couleur,
+                        'border-top-width': haut / 2 + 1 + 'px',
+                        'border-bottom-width': haut / 2 + 1 + 'px'});
                     elmt_compl.show();
                 }
-                elmt_rect.css({'position': 'absolute', 
-                    'top': '0px', 'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
-                    'height': this.options.eventHeight, 'z-index': 2,
-                    'background-color': couleur,
-                    'border-width': '1px',
-                    'border-radius': '5px'});
+                elmt_rect.css({'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
+                    'height': this.options.eventHeight,
+                    'background-color': couleur});
                 //highlight ? //TODO : highlight pour les evts ponctuels
-                if(event.star === true && event.status_id !== 4) {
-                	elmt_rect.css({'border-style':'solid',
-                					'border-color':'black',
-                					'box-shadow': '0px 2px 2px 0px'});
-                	elmt_txt.css({'text-shadow':'darkgray 1px 1px 1px'});
+                if(event.star === true) {
+                	elmt.addClass('star');
                 } else {
-                	elmt_rect.css({'border-style':'',
-    					'border-color':'transparent',
-    					'box-shadow': ''});
-                	elmt_txt.css({'text-shadow':''});
+                	elmt.removeClass('star');
                 }
             }
 

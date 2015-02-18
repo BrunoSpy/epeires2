@@ -1,55 +1,53 @@
 @CHARSET "UTF-8";
 
 #timeline {
-    position: absolute;
- 	width: 100%;
-//	height: 100%;
-	float:left;
-        z-index: 2;
-        background-color: white;
-//        top:80px;
- }
- 
- #TimeBar {
-    position: fixed;
-    width: 3px;
-    z-index: 10;
-    background-color: red;
- }
- 
- .Base {
+	position: absolute;
+	width: 100%;
+	float: left;
+	z-index: 2;
+	background-color: white;
+}
+
+#TimeBar {
+	position: fixed;
+	width: 3px;
+	z-index: 10;
+	background-color: red;
+}
+
+.Base {
 	margin-left: 50px;
 	margin-right: 50px;
 	margin-top: 10px;
-	margin-bottom: 0px;	
-	z-index:-1;
-	background-color:white;
-} 
+	margin-bottom: 0px;
+	z-index: -1;
+	background-color: white;
+}
 
 .Time_obj {
-    position: fixed;
-    z-index: 2;
-    background-color: white;
+	position: fixed;
+	z-index: 2;
+	background-color: white;
 }
 
 .Time_obj.roundhour {
-    text-align: center;
-    color: #0000FF;
-    font-family: Calibri;
-    font-size: 16px;
+	text-align: center;
+	color: #0000FF;
+	font-family: Calibri;
+	font-size: 16px;
 }
 
 .Time_obj.halfhour {
-    text-align: center;
-    color: #0000FF;
-    font-family: Calibri;
-    font-size: 12px;
-    width: 20px;
+	text-align: center;
+	color: #0000FF;
+	font-family: Calibri;
+	font-size: 12px;
+	width: 20px;
 }
 
 .Time_obj.vert_bar, .Time_obj.horiz_bar {
-    z-index:-1;
-    background-color: #C0C0C0;
+	z-index: -1;
+	background-color: #C0C0C0;
 }
 
 .timeline_content {
@@ -68,25 +66,76 @@
 	height: 100%;
 }
 
-
 .elmt .checklist-evt, .elmt .modify-evt, .elmt .tooltip-evt {
-	height : 22px;
-	width : 27px;
-	display:none;
+	height: 22px;
+	width: 27px;
+	display: none;
 	z-index: 2;
 	text-decoration: none;
 }
 
-.elmt_qm_but {
-	height : 22px;
-	width : 27px;
+/* Dessin d'un événement */
+
+.elmt .rect_elmt {
+	position: absolute;
 }
 
+.elmt .complement {
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	border-left-style: solid;
+	border-top-style: solid;
+}
+
+.elmt.punctual .rect_elmt {
+	width: 0px !important;
+	height: 0px !important;
+	border-left-style: solid;
+	border-left-color: transparent;
+	border-right-style: solid;
+	border-right-color: transparent;
+	border-bottom-style: solid;
+	z-index: 1;
+	background-color: transparent !important;
+}
+
+.elmt.punctual .complement {
+	border-right-style: solid;
+	z-index: 2;
+	border-left-color: transparent;
+	border-right-color: transparent;
+}
+
+.elmt.notpunctual .rect_elmt {
+	top: 0px;
+	z-index: 2;
+	border-width: 1px;
+	border-radius: 5px;
+	border-color: transparent;
+}
+
+.elmt.notpunctual .complement {
+	border-top-width: 16px;
+	border-top-color: transparent;
+	border-bottom-style: solid;
+	border-bottom-color: transparent;
+}
+
+.elmt.star.notpunctual .rect_elmt {
+	border-style: solid;
+	border-color: black;
+	box-shadow: 0px 2px 2px 0px;
+}
+
+.elmt.star.notpunctual .label_elmt {
+	text-shadow: darkgray 1px 1px 1px;
+}
 
 .elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
-	display:none;
-	text-decoration:none;
-} 
+	display: none;
+	text-decoration: none;
+}
 
 .label_elmt .popover {
 	min-width: 150px;
@@ -98,53 +147,53 @@
 }
 
 .elmt_deb {
-    position: absolute;
-    top: 6px;
-    left: 0px;
-    width: 54px;
-    text-align: right;
-    font-style: italic;
-    background-color: transparent;
-    z-index: 3;
+	position: absolute;
+	top: 6px;
+	left: 0px;
+	width: 54px;
+	text-align: right;
+	font-style: italic;
+	background-color: transparent;
+	z-index: 3;
 }
 
 .elmt_fin {
-    position: absolute;
-    top: 6px;
-    left: 0px;
-    width: 54px;
-    text-align: left;
-    font-style: italic;
-    background-color: transparent;
-    z-index: 3;
+	position: absolute;
+	top: 6px;
+	left: 0px;
+	width: 54px;
+	text-align: left;
+	font-style: italic;
+	background-color: transparent;
+	z-index: 3;
 }
 
 .move_deb, .move_fin {
-    position: absolute;
-    top: 4px;
-    z-index: 200;
-    background-color: transparent;
-    border-right-style: solid;
-    border-left-style: solid;
-    border-width: 2px;
-    display: none;
+	position: absolute;
+	top: 4px;
+	z-index: 200;
+	background-color: transparent;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-width: 2px;
+	display: none;
+	width : 2px;
 }
 
 .elmt_tooltip {
-    font-size: 14px;
-    text-shadow :initial;
+	font-size: 14px;
+	text-shadow: initial;
 }
 
 .category {
-    position:absolute;
-    border-style:solid;
-    border-width: 1px;
-    border-color:grey;
-    border-radius: 5px;
-    z-index:1;
-    cursor: pointer;
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
+	position: absolute;
+	border-style: solid;
+	border-width: 1px;
+	border-color: grey;
+	border-radius: 5px;
+	z-index: 1;
+	cursor: pointer;
+	width: 30px;
+	text-align: center;
+	font-weight: bold;
 }
-

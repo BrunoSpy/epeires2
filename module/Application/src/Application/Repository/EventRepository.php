@@ -52,66 +52,68 @@ class EventRepository extends ExtendedRepository {
                 ->leftJoin('e.zonefilters', 'f')
                 ->leftJoin('e.category', 'c')
                 ->andWhere($qb->expr()->isNull('e.parent')); //display only root events
-        //restriction à tous les evts modifiés depuis $lastmodified
-        if ($lastmodified) {
-            $lastmodified = new \DateTime($lastmodified);
-            $qb->andWhere($qb->expr()->gte('e.last_modified_on', '?3'));
-            $parameters[3] = $lastmodified->format("Y-m-d H:i:s");
-        }
-
+        
         if($onlytimeline) {
             $qb->andWhere($qb->expr()->eq('c.timeline', true));
         }
         
-        if ($day) {
-            $daystart = new \DateTime($day);
-            $daystart->setTime(0, 0, 0);
-            $dayend = new \DateTime($day);
-            $dayend->setTime(23, 59, 59);
-            $daystart = $daystart->format("Y-m-d H:i:s");
-            $dayend = $dayend->format("Y-m-d H:i:s");
-            //tous les évènements ayant une intersection non nulle avec $day
-            $qb->andWhere($qb->expr()->orX(
-                            //evt dont la date de début est le bon jour : inclus les ponctuels
-                            $qb->expr()->andX(
-                                    $qb->expr()->gte('e.startdate', '?1'), $qb->expr()->lte('e.startdate', '?2')
-                            ),
-                            //evt dont la date de début est passée : forcément non ponctuels
-                            $qb->expr()->andX(
-                                    $qb->expr()->eq('e.punctual', 'false'), $qb->expr()->lt('e.startdate', '?1'), $qb->expr()->orX(
-                                            $qb->expr()->isNull('e.enddate'), $qb->expr()->gte('e.enddate', '?1')
-                                    )
-                            )
-                    )
-            );
-            $parameters[1] = $daystart;
-            $parameters[2] = $dayend;
+        //restriction à tous les evts modifiés depuis $lastmodified qqsoit la date de l'évènement
+        if ($lastmodified) {
+            $lastmodified = new \DateTime($lastmodified);
+            $qb->andWhere($qb->expr()->gte('e.last_modified_on', '?1'));
+            $parameters[1] = $lastmodified->format("Y-m-d H:i:s");
             $qb->setParameters($parameters);
         } else {
-            //every events of the last 3 days
-            $now = new \DateTime('NOW');
-            $start = clone $now;
-            $start->sub(new \DateInterval('P3D'));
-            $end = clone $now;
-            $end->add(new \DateInterval('P1D'));
-            $qb->andWhere($qb->expr()->orX(
-                    //sans date de fin et non ponctuel
-                    $qb->expr()->andX($qb->expr()->isNull('e.enddate'), $qb->expr()->eq('e.punctual', 'false')),
-                    //date de début antèrieure au début => date de fin postèrieure au début
-                    $qb->expr()->andX(
-                            $qb->expr()->lte('e.startdate', '?1'),
-                            $qb->expr()->gte('e.enddate', '?1')
-                    ),
-                    //date de début antèrieure au début =>  date de début antérieure à la fin
-                    $qb->expr()->andX(
-                            $qb->expr()->gte('e.startdate', '?1'),
-                            $qb->expr()->lte('e.startdate', '?2'))
-            ));
-            $parameters[1] = $start->format("Y-m-d H:i:s");
-            $parameters[2] = $end->format("Y-m-d H:i:s");  
-            $qb->setParameters($parameters);
+			 if ($day) { //restriction aux evts intersectant le jour spécifié
+	            $daystart = new \DateTime($day);
+	            $daystart->setTime(0, 0, 0);
+	            $dayend = new \DateTime($day);
+	            $dayend->setTime(23, 59, 59);
+	            $daystart = $daystart->format("Y-m-d H:i:s");
+	            $dayend = $dayend->format("Y-m-d H:i:s");
+	            //tous les évènements ayant une intersection non nulle avec $day
+	            $qb->andWhere($qb->expr()->orX(
+	                            //evt dont la date de début est le bon jour : inclus les ponctuels
+	                            $qb->expr()->andX(
+	                                    $qb->expr()->gte('e.startdate', '?1'), $qb->expr()->lte('e.startdate', '?2')
+	                            ),
+	                            //evt dont la date de début est passée : forcément non ponctuels
+	                            $qb->expr()->andX(
+	                                    $qb->expr()->eq('e.punctual', 'false'), $qb->expr()->lt('e.startdate', '?1'), $qb->expr()->orX(
+	                                            $qb->expr()->isNull('e.enddate'), $qb->expr()->gte('e.enddate', '?1')
+	                                    )
+	                            )
+	                    )
+	            );
+	            $parameters[1] = $daystart;
+	            $parameters[2] = $dayend;
+	            $qb->setParameters($parameters);
+	        } else {
+	        	//sinon restriction aux evts autour du jour présent
+	            $now = new \DateTime('NOW');
+	            $start = clone $now;
+	            $start->sub(new \DateInterval('P3D'));
+	            $end = clone $now;
+	            $end->add(new \DateInterval('P1D'));
+	            $qb->andWhere($qb->expr()->orX(
+	                    //sans date de fin et non ponctuel
+	                    $qb->expr()->andX($qb->expr()->isNull('e.enddate'), $qb->expr()->eq('e.punctual', 'false')),
+	                    //date de début antèrieure au début => date de fin postèrieure au début
+	                    $qb->expr()->andX(
+	                            $qb->expr()->lte('e.startdate', '?1'),
+	                            $qb->expr()->gte('e.enddate', '?1')
+	                    ),
+	                    //date de début antèrieure au début =>  date de début antérieure à la fin
+	                    $qb->expr()->andX(
+	                            $qb->expr()->gte('e.startdate', '?1'),
+	                            $qb->expr()->lte('e.startdate', '?2'))
+	            ));
+	            $parameters[1] = $start->format("Y-m-d H:i:s");
+	            $parameters[2] = $end->format("Y-m-d H:i:s");  
+	            $qb->setParameters($parameters);
+	        }
         }
-
+        
         //filtre par zone
         $session = new Container('zone');
         $zonesession = $session->zoneshortname;

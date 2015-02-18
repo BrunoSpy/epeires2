@@ -93,56 +93,63 @@ class FieldsController extends FormController {
     		return new JsonModel($messages);
     	}
     }
-    
-    public function saveAction(){
-    	$returnRoute = $this->params()->fromQuery('return', null);
-    	
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	if($this->getRequest()->isPost()){
-    		$post = $this->getRequest()->getPost();
-    		$id = $post['id'];
- 		    		
-    		$datas = $this->getForm($id);
-    		$form = $datas['form'];
-    		$customfield = $datas['customfield'];
-    		$form->setData($post);
-    		
-    		if($form->isValid()){
-    			$customfield->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
-                        if($id){
-                            //modification d'un champ
-                            //si changement de type de champ, il faut vérifier la cohérence pour éviter un crash futur
-                            $fieldtype = $customfield->getType();
-                            if($fieldtype->getId() != $post['type']){
-                                
-                            }
-                        } else {
-                            $customfield->setType($objectManager->getRepository('Application\Entity\CustomFieldType')->find($post['type']));
-                        }
-			$objectManager->persist($customfield);
-                        try{
-                            $objectManager->flush();
-                            $this->flashMessenger()->addSuccessMessage("Champ enregistré");
-                        } catch (\Exception $ex) {
-                            $this->flashMessenger()->addErrorMessage($ex->getMessage());
-                        }
-    		} else {
-    			$this->flashMessenger()->addErrorMessage("Impossible de modifier le champ.");
-    			//traitement des erreurs de validation
-    			$this->processFormMessages($form->getMessages());
-    		}
-    	}
-    	if($returnRoute){
-    		return $this->redirect()->toRoute('administration', array('controller'=>$returnRoute));
-    	} else {
-    		return new JsonModel(array('id'=>$customfield->getId(), 
-    									'name' => $customfield->getName(), 
-    									'type' => $customfield->getType()->getName(), 
-                                                                        'help' => $customfield->getTooltip(),
-                                                                        'multiple' => $customfield->isMultiple() ? true : false,
-    									'defaut'=>$customfield->getDefaultValue()));
-    	}
-    }
+	public function saveAction() {
+		$returnRoute = $this->params ()->fromQuery ( 'return', null );
+		
+		$objectManager = $this->getServiceLocator ()->get ( 'Doctrine\ORM\EntityManager' );
+		$customfieldservice = $this->getServiceLocator ()->get ( 'CustomFieldService' );
+		if ($this->getRequest ()->isPost ()) {
+			$post = $this->getRequest ()->getPost ();
+			$id = $post ['id'];
+			
+			$datas = $this->getForm ( $id );
+			$form = $datas ['form'];
+			$customfield = $datas ['customfield'];
+			$form->setData ( $post );
+			
+			if ($form->isValid ()) {
+				$customfield->setCategory ( $objectManager->getRepository ( 'Application\Entity\Category' )->find ( $post ['category'] ) );
+				if ($id) {
+					// modification d'un champ
+					// TODO si changement de type de champ, il faut vérifier la cohérence pour éviter un crash futur
+					$fieldtype = $customfield->getType ();
+					if ($fieldtype->getId () != $post ['type']) {
+						
+					}
+				} else {
+					$customfield->setType ( $objectManager->getRepository ( 'Application\Entity\CustomFieldType' )->find ( $post ['type'] ) );
+				}
+				if(!$customfieldservice->isMultipleAllowed($customfield)){
+					$customfield->setMultiple(false);
+				}
+				$objectManager->persist($customfield);
+				try {
+					$objectManager->flush ();
+					$this->flashMessenger ()->addSuccessMessage ( "Champ enregistré" );
+				} catch ( \Exception $ex ) {
+					$this->flashMessenger ()->addErrorMessage ( $ex->getMessage () );
+				}
+			} else {
+				$this->flashMessenger ()->addErrorMessage ( "Impossible de modifier le champ." );
+				// traitement des erreurs de validation
+				$this->processFormMessages ( $form->getMessages () );
+			}
+		}
+		if ($returnRoute) {
+			return $this->redirect ()->toRoute ( 'administration', array (
+					'controller' => $returnRoute 
+			) );
+		} else {
+			return new JsonModel ( array (
+					'id' => $customfield->getId (),
+					'name' => $customfield->getName (),
+					'type' => $customfield->getType ()->getName (),
+					'help' => $customfield->getTooltip (),
+					'multiple' => $customfield->isMultiple () ? true : false,
+					'defaut' => $customfield->getDefaultValue () 
+			) );
+		}
+	}
     
     public function formAction(){
 
@@ -154,10 +161,15 @@ class FieldsController extends FormController {
     	$id = $this->params()->fromQuery('id', null);
     //	$return = $this->params()->fromQuery('return', null);
     	$categoryid = $this->params()->fromQuery('categoryid', null);
-     	
+     	    	
     	$getform = $this->getForm($id, $categoryid);
-    	
-    	$viewmodel->setVariables(array('form' => $getform['form'],'id'=>$id));
+    	$form = $getform['form'];
+    	$customfield = $getform['customfield'];
+    	$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
+    	if(!$customfieldservice->isMultipleAllowed($customfield)){
+    		$form->get('multiple')->setAttribute('disabled','disabled');
+    	}
+    	$viewmodel->setVariables(array('form' => $form,'id'=>$id));
     	return $viewmodel;
     }
     
