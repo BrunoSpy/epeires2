@@ -218,6 +218,9 @@ class AbstractEvent {
 		return $this->children;
 	}
 	
+	public function addChild(Event $event){
+		$this->children->add($event);
+	}
 	
 	public function getArrayCopy() {
 		$object_vars = get_object_vars($this);

@@ -596,19 +596,20 @@ class EventsController extends TabController {
                                                 $deltaend->setValue($alarmpost['deltaend']);
                                                 $deltaend->setEvent($alarm);
                                                 $alarm->addCustomFieldValue($deltaend);
+                                                $event->addChild($alarm);
                                                 $objectManager->persist($name);
                                                 $objectManager->persist($comment);
                                                 $objectManager->persist($deltabegin);
                                                 $objectManager->persist($deltaend);
                                                 $objectManager->persist($alarm);
+                                                
                                             }
                                         }
     					if($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { //passage au statut terminé ou annulé
     						$this->closeEvent($event);
     					}
     					
-                                        $event->updateAlarms();
-                                        
+                        $event->updateAlarms();
     					$objectManager->persist($event);
     					try{
     						$objectManager->flush();

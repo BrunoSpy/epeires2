@@ -27,7 +27,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $id;
 
-    /**
+    /** 
      * @var string
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Text")
@@ -36,7 +36,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $username;
 
-    /**
+    /** 
      * @var string
      * @ORM\Column(type="string", unique=true,  length=255)
      * @Annotation\Type("Zend\Form\Element\Email")
@@ -45,7 +45,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $email;
 
-    /**
+    /** 
      * @var string
      * @ORM\Column(type="string", length=50, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Text")
@@ -54,7 +54,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $displayName;
 
-    /**
+    /** 
      * @var string
      * @ORM\Column(type="string", length=128)
      * @Annotation\Type("Zend\Form\Element\Password")
@@ -67,7 +67,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $state;
 
-    /**
+    /** 
      * @var \Doctrine\Common\Collections\Collection
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
      * @ORM\JoinTable(name="users_roles",

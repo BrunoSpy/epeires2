@@ -529,7 +529,7 @@ class EventRepository extends ExtendedRepository {
                     $deltaend->setValue($child->getCustomFieldValue($endfield)->getValue());
                     $deltaend->setEvent($alarm);
                     $alarm->addCustomFieldValue($deltaend);
-                    
+                    $event->addChild($alarm);
                     $this->getEntityManager()->persist($namememo);
                     $this->getEntityManager()->persist($comment);
                     $this->getEntityManager()->persist($deltabegin);
@@ -537,6 +537,7 @@ class EventRepository extends ExtendedRepository {
                     $this->getEntityManager()->persist($alarm);
                 }
             }
+            $event->updateAlarms();
         }  
 
         try {

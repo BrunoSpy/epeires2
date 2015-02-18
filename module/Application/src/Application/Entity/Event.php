@@ -327,13 +327,22 @@ class Event extends AbstractEvent {
         }
         $event = $this->getParent();
         if ($event != null) {
-            if (strlen(trim($deltaend)) > 0 && $event->getEnddate() != null) {
-                $delta = intval($deltaend);
+        	if(strlen(trim($deltaend)) > 0) {
+        		$deltaend = intval($deltaend);
+        	} else {
+        		$deltaend = 0;
+        	}
+        	if(strlen(trim($deltabegin)) > 0){
+        		$deltabegin = intval($deltabegin);
+        	} else {
+        		$deltabegin = 0;
+        	}
+            if ($deltaend !== 0 && $event->getEnddate() != null) {
                 $startdatealarm = clone $event->getEnddate();
-                if ($delta > 0) {
-                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
+                if ($deltaend > 0) {
+                    $startdatealarm->add(new \DateInterval("PT" . $deltaend . "M"));
                 } else {
-                    $invdiff = -$delta;
+                    $invdiff = -$deltaend;
                     $interval = new \DateInterval('PT' . $invdiff . 'M');
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
@@ -341,13 +350,12 @@ class Event extends AbstractEvent {
                 if ($startdatealarm != $previousstart) {
                     $this->setStartdate($startdatealarm);
                 }
-            } else if (strlen(trim($deltabegin)) > 0) {
-                $delta = intval($deltabegin);
+            } else {
                 $startdatealarm = clone $event->getStartdate();
-                if ($delta > 0) {
-                    $startdatealarm->add(new \DateInterval("PT" . $delta . "M"));
+                if ($deltabegin > 0) {
+                    $startdatealarm->add(new \DateInterval("PT" . $deltabegin . "M"));
                 } else {
-                    $invdiff = -$delta;
+                    $invdiff = -$deltabegin;
                     $interval = new \DateInterval('PT' . $invdiff . 'M');
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
