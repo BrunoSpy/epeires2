@@ -1392,12 +1392,36 @@
         		if(eventid in this.eventsPosition){
         			this.events[this.eventsPosition[eventid]].star = true;
         		}
-        		elmt.addClass('star');
         	} else {
         		if(eventid in this.eventsPosition){
         			this.events[this.eventsPosition[eventid]].star = false;
         		}
+        	}
+        	this._highlightElmt(elmt, highlight);
+        },
+        _highlightElmt: function(elmt, highlight){
+        	var rect = elmt.find('.rect_elmt');
+        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+        			function(){
+		        		var me = $(this);
+		        		me.removeClass('animated rubberBand');
+		        		if(elmt.hasClass('star')){
+		        			setTimeout(function(){
+		        				//check again : star can be removed during interval
+		        				if(elmt.hasClass('star')){
+		        					me.addClass('animated rubberBand');
+		        				}
+		        			}, 10000);
+		        		}
+        	});
+        	if(highlight !== undefined && highlight === true){
+        		if(!elmt.hasClass('star')){
+        			elmt.addClass('star');
+        			rect.addClass('animated rubberBand');
+        		}
+        	} else {
         		elmt.removeClass('star');
+        		rect.removeClass('animated rubberBand');
         	}
         },
         /**
@@ -1635,11 +1659,7 @@
                     'height': this.options.eventHeight,
                     'background-color': couleur});
                 //highlight ? //TODO : highlight pour les evts ponctuels
-                if(event.star === true) {
-                	elmt.addClass('star');
-                } else {
-                	elmt.removeClass('star');
-                }
+                this._highlightElmt(elmt, event.star);
             }
 
             /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
@@ -1657,7 +1677,7 @@
             var endWidth = this._outerWidth(elmt_fin);
             if (event.punctual) {
                 lien.addClass('disp').show();
-                x2 = x1 + elmt_rect.outerWidth();
+                x2 = x1 + elmt_rect.outerWidth() - 10;
                 // on place l'heure à droite
                 if (startdate.getDate() !== d_actuelle.getDate()) {
                 	elmt_deb.css({'top':'-6px'});
@@ -1675,7 +1695,7 @@
                     x2 += txt_wid;
                     event.outside = 2;
                 } else { // sinon on le met à gauche
-                    x1 -= txt_wid + 5; //+5 pour décoller l'encart de l'étoile
+                    x1 -= debWidth + txt_wid - 10;
                     elmt_txt.css({'left': x1 + 'px'});
                     lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
                     lien.addClass('leftlink');
@@ -2069,10 +2089,10 @@
                 enddate = new Date(event.end_date);
             }
             // si l'evt intersecte la timeline
-            if ((event.punctual && startdate >= this.timelineBegin && startdate < this.timelineEnd) ||
-                    (!event.punctual && startdate <= this.timelineEnd && enddate === null) ||
+            if ((event.punctual && startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
+                    (!event.punctual && startdate < this.timelineEnd && enddate === null) ||
                     (!event.punctual && enddate !== null &&
-                            (enddate >= this.timelineBegin && startdate <= this.timelineEnd))) {
+                            (enddate > this.timelineBegin && startdate < this.timelineEnd))) {
                 return true;
             } else {
                 return false;

@@ -75,7 +75,6 @@
 }
 
 /* Dessin d'un événement */
-
 .elmt .rect_elmt {
 	position: absolute;
 }
@@ -136,15 +135,20 @@
 .elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
 	display: none;
 	text-decoration: none;
+	background-color: white;
+	border-radius: 5px;
+	border-color: grey;
+	border-width: 1px;
+	z-index: 30;
 }
 
-.elmt .label_elmt.outside{
+.elmt .label_elmt.outside {
 	background-color: white;
-    border-style: solid;
-    border-color: gray;
-    border-width: 1px;
-    border-radius: 5px;
-    padding: 2px;
+	border-style: solid;
+	border-color: gray;
+	border-width: 1px;
+	border-radius: 5px;
+	padding: 2px;
 }
 
 .label_elmt .popover {
@@ -187,7 +191,7 @@
 	border-left-style: solid;
 	border-width: 2px;
 	display: none;
-	width : 2px;
+	width: 2px;
 }
 
 .elmt_tooltip {
