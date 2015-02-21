@@ -1748,17 +1748,20 @@
             //mise à jour du conteneur global
             elmt.css({'left': x1+'px', 'width': x2 - x1});
             elmt.children().css({'left':'-='+x1+'px'});
-            if(event.outside === 0){
-            	event.xleft = x1 + debWidth;
-            	event.xright = x2 - debWidth;
-            } else if(event.outside === 1){
-            	event.xleft = x1;
-            	event.xright = x2 - debWidth;
-            } else if(event.outside === 2){
-            	event.xleft = x1 + debWidth;
-            	event.xright = x2;
-            }
-            
+//cette optimisation de fonctionne pas si les heures sont forcées en visu
+//TODO trouver une solution...
+//            if(event.outside === 0){
+//            	event.xleft = x1 + debWidth;
+//            	event.xright = x2 - endWidth;
+//            } else if(event.outside === 1){
+//            	event.xleft = x1;
+//            	event.xright = x2 - endWidth;
+//            } else if(event.outside === 2){
+//            	event.xleft = x1 + debWidth;
+//            	event.xright = x2;
+//            }
+            event.xleft = x1;
+            event.xright = x2;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
 
