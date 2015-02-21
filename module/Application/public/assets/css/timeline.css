@@ -103,7 +103,7 @@
 .elmt.punctual .complement {
 	border-right-style: solid;
 	z-index: 2;
-	border-left-color: transparent;
+	border-left-color: transparent !important;
 	border-right-color: transparent;
 }
 
@@ -116,8 +116,9 @@
 }
 
 .elmt.notpunctual .complement {
-	border-top-width: 16px;
-	border-top-color: transparent;
+	border-top-width: 16px !important;
+	border-top-color: transparent !important;
+	margin: 0px !important;
 	border-bottom-style: solid;
 	border-bottom-color: transparent;
 }
@@ -135,6 +136,15 @@
 .elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
 	display: none;
 	text-decoration: none;
+}
+
+.elmt .label_elmt.outside{
+	background-color: white;
+    border-style: solid;
+    border-color: gray;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 2px;
 }
 
 .label_elmt .popover {

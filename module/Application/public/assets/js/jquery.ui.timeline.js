@@ -40,9 +40,14 @@
     	 * 
     	 * @memberOf $
     	 */
-        version: "0.9.2",
+        version: "0.9.3",
         /**
          * List of events
+         * Some properties are added during drawing:
+         * - event.outside : label inside -> 0; label left -> 1; label right -> 2
+         * - event.xleft
+         * - event.xright
+         * - event.label : label affiché ou non
          */
         events: [],
         /**
@@ -127,7 +132,7 @@
             //espace entre le haut et les demi-heures
             topHalfHourSpace: 30,
             //espace horizontal entre deux évènements
-            eventHorizSpace:20
+            eventHorizSpace:10
         },
         //default options
         options: {
@@ -1002,16 +1007,35 @@
                                 }
                             }
                             var place = true;
+                            var eventRemoveLabel = [];
                             for(var k = 0; k < eventsLine.length; k++){
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[k]]];
                                 if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
-                                    (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                                    //intersection
-                                    place = false;
-                                    break; //inutile de continuer la vérification
+                                        (evt.xleft - this.params.eventHorizSpace > event.xright))){
+                                	//pas de place
+                                	//si compactage sur nom uniquement, on tente de supprimer le label
+                                	if(cat.compact === false){
+                                		var sizeWithoutLabel = this._tryRemoveLabel(evt);
+                                		if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) || 
+                                				(sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
+                                			//pas de place sans label non plus
+                                			place = false;
+                                    		break; //inutile de continuer la vérification
+                                		} else {
+                                			//on met l'evt de côté pour suppression du label si compactage effectif
+                                			eventRemoveLabel.push(evt);
+                                		}
+                                	} else {
+                                		//pas de place
+                                		place = false;
+                                		break; //inutile de continuer la vérification
+                                	}
                                 }
                             }
                             if(place === true){
+                            	for(var l = 0; l < eventRemoveLabel.length; l++){
+                            		this._removeLabel(eventRemoveLabel[l]);
+                            	}
                                 return lines[j];
                             }
                         }
@@ -1059,12 +1083,12 @@
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[j]]];
                                 if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
                                     (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                                    //intersection
-                                    hasPlace = false;
-                                    break; //inutile de continuer la vérification
+                            		//pas de place
+                            		hasPlace = false;
+                            		break; //inutile de continuer la vérification
                                 }
                             }
-                            if(hasPlace === true){
+                            if(hasPlace === true){                            	
                                 return lines[index];
                             }
                         }
@@ -1481,6 +1505,7 @@
             }
 
             ////// réini
+            event.label = true;
             elmt.find('.disp').removeClass('disp');
             elmt_flecheG.hide();
             elmt_flecheD.hide();
@@ -1488,8 +1513,10 @@
             move_fin.hide();
             lien.removeClass('disp leftlink rightlink').hide();
             elmt_compl.hide();
+            elmt_txt.show();
             elmt_txt.css({'background-color': '', 'border-style': ''});
             elmt_txt.find('a').removeClass('disabled');
+            elmt_txt.find('span').removeClass('unvisible');
             //////   
 
             // libellé de l'évènement à mettre à jour
@@ -1620,7 +1647,9 @@
             var x0 = x_deb;
             var x2 = x_end;
             //taille du texte + place pour l'heure + place des boutons
-            var txt_wid = this._computeTextSize(elmt_txt.text(), "Arial")
+            var txtSize = this._computeTextSize(elmt_txt.text(), "Arial");
+            event.txtSize = txtSize;
+            var txt_wid = txtSize +
                     + 18*3 
                     + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
             var largeur = this._computeX(this.timelineEnd);
@@ -1630,25 +1659,27 @@
                 lien.addClass('disp').show();
                 x2 = x1 + elmt_rect.outerWidth();
                 // on place l'heure à droite
-                elmt_deb.css({'left': x2 + 'px', 'top':'4px'});
-                elmt_txt.css({'background-color': 'white', 
-                    'border-style': 'solid', 
-                    'border-color': 'gray', 
-                    'border-width': '1px', 
-                    'border-radius': '5px', 
-                    'top': '0px',
-                    'padding': '2px'});
+                if (startdate.getDate() !== d_actuelle.getDate()) {
+                	elmt_deb.css({'top':'-6px'});
+                } else {
+                	elmt_deb.css({'top':'4px'});
+                }
+                elmt_deb.css({'left': x2 + 'px'});
+                elmt_txt.addClass('outside');
+                elmt_txt.css({'top': '0px'});
                 x2 += debWidth + 5; //+5 pour décoller l'encart de l'heure
                 if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                     elmt_txt.css({'left': x2 + 'px'});
                     lien.css({'left': x2 - debWidth - 10 + 'px', 'width': debWidth + 10 + 'px'}); //+10 = moitié de l'étoile
                     lien.addClass('rightlink');
                     x2 += txt_wid;
+                    event.outside = 2;
                 } else { // sinon on le met à gauche
                     x1 -= txt_wid + 5; //+5 pour décoller l'encart de l'étoile
                     elmt_txt.css({'left': x1 + 'px'});
                     lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
                     lien.addClass('leftlink');
+                    event.outside = 1;
                 }
             } else {
                 var lar_nec = txt_wid + 44; //+44 : place pour les barres de changement d'heure
@@ -1658,32 +1689,38 @@
                 	//flèche gauche à prendre en compte
                 	x1 -= 10;
                 }
+                if(enddate > this.timelineEnd) {
+                	//décalage cause flèche droite
+                	x2 += 10;
+                }
                 elmt_deb.css({'left': x1 + 'px'});
                 // on place l'heure de fin à droite
                 elmt_fin.css({'left': x2 + 5 + 'px'});
                 if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
                 	var x_left = x0 + 22;
+                	elmt_txt.removeClass('outside');
+                	event.outside = 0;
                     elmt_txt.css({'left': x_left + 'px',
                                    'top': (this.options.eventHeight/2-11)+'px'});
                     
                     x2 += endWidth + 5;
                 } else {
                     lien.addClass('disp').show();
-                    elmt_txt.css({'background-color': 'white', 
-                        'border-style': 'solid', 'border-color': 'gray', 'border-width': '1px',
-                        'border-radius': '5px', 'padding': '2px',
-                        'top': (this.options.eventHeight/2-13)+'px'});
+                    elmt_txt.addClass('outside');
+                    elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
                     x2 += endWidth + 10;
                     if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': x2 + 'px'});
                         lien.css({'left': x2 - (endWidth + 10) + 'px', 'width': endWidth + 10 + 'px'});
                         x2 += txt_wid;
                         lien.addClass('rightlink');
+                        event.outside = 2;
                     } else { // sinon on le met à gauche
                     	x1 -= txt_wid +15;
                         lien.css({'left': x1 + 'px', 'width': x0 - x1+ 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
+                        event.outside = 1;
                     }
                 }
             }
@@ -1691,11 +1728,67 @@
             //mise à jour du conteneur global
             elmt.css({'left': x1+'px', 'width': x2 - x1});
             elmt.children().css({'left':'-='+x1+'px'});
-            event.xleft = x1;
-            event.xright = x2;
+            if(event.outside === 0){
+            	event.xleft = x1 + debWidth;
+            	event.xright = x2 - debWidth;
+            } else if(event.outside === 1){
+            	event.xleft = x1;
+            	event.xright = x2 - debWidth;
+            } else if(event.outside === 2){
+            	event.xleft = x1 + debWidth;
+            	event.xright = x2;
+            }
+            
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
 
+        },
+        /** 
+         * Remove label and update size
+         * Only if label is outside
+         */
+        _removeLabel: function(event){
+        	var elmt = this.element.find('#event'+event.id);
+        	var elmt_txt = elmt.find('.label_elmt.outside');
+        	if(elmt_txt.length > 0 && event.label === true){
+        		event.label = false;
+        		var lien = elmt.find('.lien');
+        		//mise à jour des dimensions 
+        		var txt_width = this._computeTextSize(elmt_txt.text(), "Arial");
+        		if(lien.hasClass('leftlink')){
+        			var x1 = event.xleft;
+        			x1 += txt_width;
+        			elmt.css({'left': x1+'px'});
+        			elmt.children().css({'left':'+='+txt_width+'px'});
+        			event.xleft = x1;
+        		} else if(lien.hasClass('rightlink')){
+        			var x1 = event.xleft;
+        			var x2 = event.xright;
+        			x2 -= txt_width;
+        			elmt.css({'width':x2-x1});
+        			event.xright = x2;
+        		}
+        		//suppression du lien
+        		elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
+        		//on cache le txt
+        		elmt_txt.find('span').addClass('unvisible');
+        		elmt_txt.addClass('disp').hide();
+        	}
+        },
+        /**
+         * Compute size of an event if label removed
+         * But do not remove the label at this point
+         * @param event
+         * @return array [x1, x2]
+         */
+        _tryRemoveLabel: function(event){
+        	var result = [event.xleft, event.xright];
+    		if(event.outside === 1){
+    			result[0] = event.xleft + event.txtSize;
+    		} else if(event.outside === 2){
+    			result[1] = event.xright - event.txtSize;
+        	}
+        	return result;
         },
         /**
          * Update an event according to its status and dates :
