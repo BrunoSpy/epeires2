@@ -972,12 +972,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/migrations.git",
-                "reference": "1ac14fac3ced533047d8feae8edc7c283d5b8a67"
+                "reference": "058a4635ac9b80a5b1997df28a754e64b1425a1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/migrations/zipball/1ac14fac3ced533047d8feae8edc7c283d5b8a67",
-                "reference": "1ac14fac3ced533047d8feae8edc7c283d5b8a67",
+                "url": "https://api.github.com/repos/doctrine/migrations/zipball/058a4635ac9b80a5b1997df28a754e64b1425a1d",
+                "reference": "058a4635ac9b80a5b1997df28a754e64b1425a1d",
                 "shasum": ""
             },
             "require": {
@@ -1022,7 +1022,7 @@
                 "database",
                 "migrations"
             ],
-            "time": "2015-01-19 02:26:02"
+            "time": "2015-02-19 08:13:05"
         },
         {
             "name": "doctrine/orm",
@@ -1620,17 +1620,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.4",
+            "version": "2.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b"
+                "reference": "886063aa5aee7476b77c380e25ecfacb2ee5ff4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-c878e047ab1c5dcfb201974bdff607be54ccb54b-zip-991680.zip",
-                "reference": "2.3.4",
-                "shasum": "45535093807295917206dd98173a704c8eaa5da9"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-886063aa5aee7476b77c380e25ecfacb2ee5ff4c-zip-d4c183.zip",
+                "reference": "2.3.5",
+                "shasum": "07830613ab28cd5e08bb731393bab8cd32e3ec81"
             },
             "require": {
                 "php": ">=5.3.23",
@@ -1734,10 +1734,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.3.4",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.3.5",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-02-18 19:48:16"
         },
         {
             "name": "zendframework/zendxml",
@@ -2107,13 +2107,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "ca3b38c4dbd27db4c203c096cc4c2b916a2ee415"
+                "reference": "55432ef26445ce522cb2b146a0f0ea110d499f81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-ca3b38c4dbd27db4c203c096cc4c2b916a2ee415-zip-9e7ef4.zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-55432ef26445ce522cb2b146a0f0ea110d499f81-zip-caf931.zip",
                 "reference": "dev-master",
-                "shasum": "df0fe1f444f740d615a4227dcee49096522330fa"
+                "shasum": "795444f23aee99cbebb5642ba0a05fda07bc1a7e"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -2126,9 +2126,13 @@
                 "zendframework/zend-view": "2.*"
             },
             "suggest": {
+                "aist/aist-git-tools": "Show you informations about current GIT repository",
                 "bjyoungblood/bjy-profiler": "Version: dev-master, allows the usage of the (Zend) Db collector.",
+                "doctrine/doctrine-orm-module": "Profile DoctrineORM queries",
+                "jhuet/zdt-logger-module": "Show you log data from Zend\\Log",
                 "ocramius/ocra-service-manager": "OcraServiceManager can help you track dependencies within your application.",
-                "san/san-session-toolbar": "SanSessionToolbar can help you see current Zend\\Session data you're using within your application."
+                "san/san-session-toolbar": "SanSessionToolbar can help you see current Zend\\Session data you're using within your application.",
+                "snapshotpl/zf-snap-event-debugger": "ZfSnapEventDebugger can help you debug events from Zend\\EventManager"
             },
             "type": "zf-module",
             "autoload": {
@@ -2165,7 +2169,7 @@
                 "source": "https://github.com/zendframework/ZendDeveloperTools/tree/master",
                 "issues": "https://github.com/zendframework/ZendDeveloperTools/issues"
             },
-            "time": "2015-02-14 22:27:18"
+            "time": "2015-02-18 12:23:54"
         },
         {
             "name": "zendframework/zenddiagnostics",
