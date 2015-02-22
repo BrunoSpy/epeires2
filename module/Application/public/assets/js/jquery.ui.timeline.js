@@ -1401,27 +1401,28 @@
         },
         _highlightElmt: function(elmt, highlight){
         	var rect = elmt.find('.rect_elmt');
-        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-        			function(){
-		        		var me = $(this);
-		        		me.removeClass('animated rubberBand');
-		        		if(elmt.hasClass('star')){
-		        			setTimeout(function(){
-		        				//check again : star can be removed during interval
-		        				if(elmt.hasClass('star')){
-		        					me.addClass('animated rubberBand');
-		        				}
-		        			}, 10000);
-		        		}
-        	});
+//        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+//        			function(){
+//		        		var me = $(this);
+//		        		me.removeClass('animated rubberBand');
+//		        		if(elmt.hasClass('star')){
+//		        			setTimeout(function(){
+//		        				//check again : star can be removed during interval
+//		        				if(elmt.hasClass('star')){
+//		        					me.addClass('animated rubberBand');
+//		        				}
+//		        			}, 10000);
+//		        		}
+//        	});
         	if(highlight !== undefined && highlight === true){
         		if(!elmt.hasClass('star')){
         			elmt.addClass('star');
-        			rect.addClass('animated rubberBand');
+        			rect.addClass('pulseshadow');
         		}
         	} else {
         		elmt.removeClass('star');
-        		rect.removeClass('animated rubberBand');
+        		elmt.find('.rect_shadow').remove();
+        		rect.removeClass('pulseshadow');
         	}
         },
         /**
@@ -1658,8 +1659,6 @@
                 elmt_rect.css({'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
                     'height': this.options.eventHeight,
                     'background-color': couleur});
-                //highlight ? //TODO : highlight pour les evts ponctuels
-                this._highlightElmt(elmt, event.star);
             }
 
             /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
@@ -1744,7 +1743,8 @@
                     }
                 }
             }
-            
+            //highlight
+            this._highlightElmt(elmt, event.star);
             //mise à jour du conteneur global
             elmt.css({'left': x1+'px', 'width': x2 - x1});
             elmt.children().css({'left':'-='+x1+'px'});
@@ -1764,6 +1764,7 @@
             event.xright = x2;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
+            
 
         },
         /** 
@@ -1941,6 +1942,8 @@
                     move_fin.removeClass('disp');
                     //couleur estompée
                     this._shadeEvent(event, elmt);
+                    //un évènement annulé ne peut pas être important
+                    this._highlightElmt(elmt, false);
                     break;
             }
         },
@@ -1999,17 +2002,11 @@
             elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
             elmt_b2.css({'z-index': 1});
-            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 20, 'color': 'black', 'white-space': 'nowrap', 'font-weight': 'bold', 'width': 'auto'});
+            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 20});
             lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
 
             move_deb.css({'height': dy - 8});
             move_fin.css({'height': dy - 8});
-            move_deb.hover(function () {
-                $(this).css({'cursor': 'e-resize'});
-            });
-            move_fin.hover(function () {
-                $(this).css({'cursor': 'e-resize'});
-            });
             return elmt;
         },
         /* *********************** */
