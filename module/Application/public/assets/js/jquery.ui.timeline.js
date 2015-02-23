@@ -983,10 +983,10 @@
                         } else {
                             catEvents = (this.options.showOnlyRootCategories ?
                                     catEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id && val.name === event.name;
+                                        return val.category_root_id === cat.id && trim(val.name) === trim(event.name);
                                     }) :
                                     catEvents.filter(function (val) {
-                                        return val.category_id === cat.id && val.name === event.name;
+                                        return val.category_id === cat.id && trim(val.name) === trim(event.name);
                                     }));
                         }
                         //pour toutes les lignes dessinées de la catégorie, on cherche si il y a de la place
@@ -998,6 +998,7 @@
                                 lines.push(line);
                             }
                         }
+                        console.log(lines.length);
                         for(var j = 0; j < lines.length; j++){
                             //liste des ids des evts sur la ligne                               
                             var eventsLine = [];
@@ -1401,28 +1402,28 @@
         },
         _highlightElmt: function(elmt, highlight){
         	var rect = elmt.find('.rect_elmt');
-//        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-//        			function(){
-//		        		var me = $(this);
-//		        		me.removeClass('animated rubberBand');
-//		        		if(elmt.hasClass('star')){
-//		        			setTimeout(function(){
-//		        				//check again : star can be removed during interval
-//		        				if(elmt.hasClass('star')){
-//		        					me.addClass('animated rubberBand');
-//		        				}
-//		        			}, 10000);
-//		        		}
-//        	});
+        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+        			function(){
+		        		var me = $(this);
+		        		me.removeClass('animated shake');
+		        		if(elmt.hasClass('star')){
+		        			setTimeout(function(){
+		        				//check again : star can be removed during interval
+		        				if(elmt.hasClass('star')){
+		        					me.addClass('animated shake');
+		        				}
+		        			}, 10000);
+		        		}
+        	});
         	if(highlight !== undefined && highlight === true){
         		if(!elmt.hasClass('star')){
         			elmt.addClass('star');
-        			rect.addClass('pulseshadow');
+        			rect.addClass('animated shake');
         		}
         	} else {
         		elmt.removeClass('star');
         		elmt.find('.rect_shadow').remove();
-        		rect.removeClass('pulseshadow');
+        		rect.removeClass('animated shake');
         	}
         },
         /**
@@ -1806,6 +1807,8 @@
          * @return array [x1, x2]
          */
         _tryRemoveLabel: function(event){
+        	console.log('test');
+        	console.log(event.txtSize);
         	var result = [event.xleft, event.xright];
     		if(event.outside === 1){
     			result[0] = event.xleft + event.txtSize;
