@@ -1716,6 +1716,11 @@
                 elmt_deb.css({'left': x1 + 'px'});
                 // on place l'heure de fin à droite
                 elmt_fin.css({'left': x2 + 5 + 'px'});
+                if(x_end - x_deb <= 40){
+                	//pas assez de place pour les poignées
+                	move_deb.removeClass('disp');
+                	move_fin.removeClass('disp');
+                }
                 if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
                 	var x_left = x0 + 22;
                 	elmt_txt.removeClass('outside');
