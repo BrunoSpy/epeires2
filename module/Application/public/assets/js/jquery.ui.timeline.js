@@ -983,10 +983,10 @@
                         } else {
                             catEvents = (this.options.showOnlyRootCategories ?
                                     catEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id && trim(val.name) === trim(event.name);
+                                        return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
                                     }) :
                                     catEvents.filter(function (val) {
-                                        return val.category_id === cat.id && trim(val.name) === trim(event.name);
+                                        return val.category_id === cat.id && val.name.trim() === event.name.trim();
                                     }));
                         }
                         //pour toutes les lignes dessinées de la catégorie, on cherche si il y a de la place
