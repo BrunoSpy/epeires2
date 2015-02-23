@@ -335,7 +335,7 @@ class Event extends AbstractEvent {
         	if(strlen(trim($deltabegin)) > 0){
         		$deltabegin = intval($deltabegin);
         	} else {
-        		$deltabegin = 0;
+        		$deltabegin = null;
         	}
             if ($deltaend !== 0 && $event->getEnddate() != null) {
                 $startdatealarm = clone $event->getEnddate();
@@ -351,18 +351,20 @@ class Event extends AbstractEvent {
                     $this->setStartdate($startdatealarm);
                 }
             } else {
-                $startdatealarm = clone $event->getStartdate();
-                if ($deltabegin > 0) {
-                    $startdatealarm->add(new \DateInterval("PT" . $deltabegin . "M"));
-                } else {
-                    $invdiff = -$deltabegin;
-                    $interval = new \DateInterval('PT' . $invdiff . 'M');
-                    $interval->invert = 1;
-                    $startdatealarm->add($interval);
-                }
-                if ($startdatealarm != $previousstart) {
-                    $this->setStartdate($startdatealarm);
-                }
+            	if($deltabegin !== null){
+                $startdatealarm = clone $event->getStartdate ();
+					if ($deltabegin > 0) {
+						$startdatealarm->add ( new \DateInterval ( "PT" . $deltabegin . "M" ) );
+					} else {
+						$invdiff = - $deltabegin;
+						$interval = new \DateInterval ( 'PT' . $invdiff . 'M' );
+						$interval->invert = 1;
+						$startdatealarm->add ( $interval );
+					}
+					if ($startdatealarm != $previousstart) {
+						$this->setStartdate ( $startdatealarm );
+					}
+            	}
             }
         }
     }
