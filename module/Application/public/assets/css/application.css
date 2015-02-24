@@ -33,6 +33,10 @@
     margin-bottom: 0px;
 }
 
+.panel .block-content .table tr td:last-child {
+	width : 57px;
+}
+
 .panel .block-content dl {
     margin-bottom: 0px;
 }
@@ -405,4 +409,8 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 #Event blockquote small,
 #updates blockquote small{
     font-size: 80%;
+}
+
+#Event #inner-actionsTitle .table tr td:last-child {
+	width: 57px;
 }
