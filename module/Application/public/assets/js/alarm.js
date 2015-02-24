@@ -24,7 +24,7 @@ var setURLAlarm = function(urlt){
 var flash = function(){
 	$("ul#noty_topCenter_layout_container").draggable({
 		stop: function(event,ui){
-			$(event.toElement).one('click', function(e){e.stopImmediatePropagation();})
+			$(event.originalEvent.target).one('click', function(e){e.stopImmediatePropagation();})
 		}
 	}).addClass('animated infinite flash');
 	setTimeout(function(){$("ul#noty_topCenter_layout_container").removeClass('animated infinite flash')}, 5000);
