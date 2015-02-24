@@ -276,13 +276,18 @@ class ModelsController extends FormController
     							$customfieldvalue->setCustomField($customfield);
     							$pevent->addCustomFieldValue($customfieldvalue);
     						}
+    						if(is_array($value)) { //transformation des champs multiples
+    							$temp = "";
+    							foreach ($value as $v){
+    								$temp .= (string) $v . "\r";
+    							}
+    							$value = trim($temp);
+    						}
     						$customfieldvalue->setValue($value);
     						$objectManager->persist($customfieldvalue);
     					}
     				}
     			}
-                        
-                        
                         
     			$objectManager->flush();
     			$this->flashMessenger()->addSuccessMessage("Modèle ".$pevent->getName()." enregistré.");
