@@ -449,6 +449,13 @@ var antenna = function(url){
                                     if(value.status){
                                         $(this).removeClass('background-status-fail');
                                         $(this).addClass('background-status-ok');
+                                        if(value.planned) {
+                                        	$(this).removeClass('background-status-ok');
+                                        	$(this).addClass('background-status-planned');
+                                        } else {
+                                        	$(this).removeClass('background-status-planned');
+                                        	$(this).addClass('background-status-ok');
+                                        }
                                     } else {
                                         $(this).removeClass('background-status-ok');
                                         $(this).addClass('background-status-fail');

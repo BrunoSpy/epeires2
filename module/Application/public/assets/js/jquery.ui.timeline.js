@@ -998,7 +998,6 @@
                                 lines.push(line);
                             }
                         }
-                        console.log(lines.length);
                         for(var j = 0; j < lines.length; j++){
                             //liste des ids des evts sur la ligne                               
                             var eventsLine = [];
