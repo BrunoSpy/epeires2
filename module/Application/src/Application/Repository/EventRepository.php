@@ -205,8 +205,10 @@ class EventRepository extends ExtendedRepository {
                 ->andWhere($qbEvents->expr()->lte('e.startdate', '?1'))
                 ->andWhere($qbEvents->expr()->orX(
                                 $qbEvents->expr()->isNull('e.enddate'), $qbEvents->expr()->gte('e.enddate', '?2')))
+                ->andWhere($qbEvents->expr()->in('e.status', '?3'))
                 ->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-                    2 => $now->format('Y-m-d H:i:s')));
+                    2 => $now->format('Y-m-d H:i:s'),
+                	3 => array(1, 2, 3))); //statuts nouveau, en cours et terminé uniquement
 
         $query = $qbEvents->getQuery();
 
@@ -227,8 +229,11 @@ class EventRepository extends ExtendedRepository {
                 ->andWhere('cat INSTANCE OF ' . $category)
                 ->andWhere($qbEvents->expr()->andX(
                                 $qbEvents->expr()->gte('e.startdate', '?1'), $qbEvents->expr()->lte('e.startdate', '?2')))
+                ->andWhere($qbEvents->expr()->in('e.status', '?3'))
                 ->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-                    2 => $now->add(new \DateInterval('PT12H'))->format('Y-m-d H:i:s')));
+                    2 => $now->add(new \DateInterval('PT12H'))->format('Y-m-d H:i:s'),
+                	3 => array(1, 2, 3)
+                ));
 
         $query = $qbEvents->getQuery();
 
