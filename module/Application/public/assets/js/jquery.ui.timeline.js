@@ -663,6 +663,7 @@
                         this.currentDay = new Date();
                     }
                 }
+                this.element.css({'background-color':'white'});
                 this.forceUpdateView(true);
             }
         },
@@ -681,7 +682,7 @@
                     this.currentDay = new Date();
                 }
                 var now = new Date();
-                if(Math.ceil((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
+                if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
                     this.element.css({'background-color':'Cornsilk'});
                 } else {
                     this.element.css({'background-color':'white'});
