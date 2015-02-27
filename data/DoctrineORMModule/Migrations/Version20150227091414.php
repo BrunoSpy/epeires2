@@ -16,7 +16,7 @@ class Version20150227091414 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE INDEX search_idx ON categories (timeline)');
-        $this->addSql('CREATE INDEX search_idx ON event (startdate, enddate)');
+        $this->addSql('CREATE INDEX search_idx ON Event (startdate, enddate)');
     }
 
     public function down(Schema $schema)
