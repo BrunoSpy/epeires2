@@ -24,6 +24,7 @@ use Zend\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\EventRepository")
+ * @ORM\Table(indexes={@ORM\Index(name="search_idx", columns={"startdate", "enddate"})})
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  * @author Bruno Spyckerelle
