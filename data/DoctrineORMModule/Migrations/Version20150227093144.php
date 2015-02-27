@@ -17,7 +17,7 @@ class Version20150227093144 extends AbstractMigration
 
         $this->addSql('CREATE INDEX discr_idx ON categories (discr)');
         $this->addSql('CREATE INDEX search_idx ON events (punctual)');
-        $this->addSql('CREATE INDEX search_idx2 ON event (last_modified_on)');
+        $this->addSql('CREATE INDEX search_idx2 ON Event (last_modified_on)');
     }
 
     public function down(Schema $schema)
