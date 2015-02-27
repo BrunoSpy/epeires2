@@ -26,7 +26,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * @ORM\Table(name="categories", indexes={@ORM\Index(name="search_idx", columns={"timeline"})})
+ * @ORM\Table(name="categories", indexes={@ORM\Index(name="search_idx", columns={"timeline"}), 
+ 										@ORM\Index(name="discr_idx", columns={"discr"})
+ 											})
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")

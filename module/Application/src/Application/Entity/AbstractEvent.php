@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="events")
+ * @ORM\Table(name="events", indexes={@ORM\Index(name="search_idx", columns={"punctual"})})
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"generic" = "Event", "model" = "PredefinedEvent"})
