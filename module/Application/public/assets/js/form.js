@@ -444,8 +444,10 @@ var form = function(url, cat){
 							$('#root_categories').trigger('change');
 						} else {
 							//pas de parent : cat_parent_id === -1
-							$("#root_categories").val(cat_id);
-							$('#root_categories').trigger('change');
+							if(cat_id >= 0) {
+								$("#root_categories").val(cat_id);
+								$('#root_categories').trigger('change');
+							}
 						}
 					}
 			);
@@ -910,4 +912,5 @@ var form = function(url, cat){
 			$("#notesTitle").html("Notes <span class=\"pull-right badge\">"+$("#form-notes blockquote").length+"</span>");
 		});
 	});
+
 };

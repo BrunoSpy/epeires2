@@ -254,7 +254,7 @@ class Event extends AbstractEvent {
             throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
         }
         if ($status->getId() != 3) {
-            throw new \RuntimeException("Statut terminé attendu, un autre statut a été fourni.");
+            throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
         }
 
         if (!$this->isPunctual()) {

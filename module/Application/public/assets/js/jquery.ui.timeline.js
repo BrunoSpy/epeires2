@@ -1853,29 +1853,41 @@
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('i').removeClass().addClass('icon-warning-sign');
-                        elmt_deb.removeClass('disp').show();
+                        elmt_deb.removeClass('disp').show().tooltip({
+                        	title: "Cliquer pour confirmer l'heure de début.",
+                        	container: 'body'
+                        });
                         lien.filter('.leftlink').removeClass('disp').hide();
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('i').removeClass().addClass('icon-question-sign');
-                        elmt_deb.addClass('disp');
+                        elmt_deb.addClass('disp').tooltip({
+                        	title: "Cliquer pour confirmer l'heure de début.",
+                        	container: 'body'
+                        });
                         lien.filter('.leftlink').addClass('disp').show();
                     }
                     //heure de fin cliquable
                     elmt_fin.removeClass('disabled');
                     if(event.punctual || event.end_date === null){
-                        elmt_fin.removeClass('disp').hide();
+                        elmt_fin.removeClass('disp').hide().tooltip('destroy');
                         elmt_compl.show();
                     } else {
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
-                            elmt_fin.removeClass('disp').show();
+                            elmt_fin.removeClass('disp').show().tooltip({
+                            	title: "Cliquer pour confirmer l'heure de fin.",
+                            	container: 'body'
+                            });
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('i').removeClass().addClass('icon-question-sign');
-                            elmt_fin.addClass('disp').hide();
+                            elmt_fin.addClass('disp').hide().tooltip({
+                            	title: "Cliquer pour confirmer l'heure de fin.",
+                            	container: 'body'
+                            });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -1887,7 +1899,7 @@
                     elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
-                    elmt_deb.addClass('disp disabled').hide();
+                    elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
                     //heure de fin cliquable
                     elmt_fin.removeClass('disabled');
@@ -1898,12 +1910,18 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
-                            elmt_fin.removeClass('disp').show();
+                            elmt_fin.removeClass('disp').show().tooltip({
+                            	title: "Cliquer pour confirmer l'heure de fin.",
+                            	container: 'body'
+                            });
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('i').removeClass().addClass('icon-question-sign');
-                            elmt_fin.addClass('disp').hide();
+                            elmt_fin.addClass('disp').hide().tooltip({
+                            	title: "Cliquer pour confirmer l'heure de fin.",
+                            	container: 'body'
+                            });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -1915,9 +1933,9 @@
                     elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('i').removeClass().addClass('icon-check');
-                    elmt_deb.addClass('disp disabled').hide();
+                    elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
-                    elmt_fin.addClass('disabled');
+                    elmt_fin.addClass('disabled').tooltip('destroy');
                     if (event.punctual || event.end_date === null) {
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
@@ -1934,8 +1952,8 @@
                     elmt_txt.find('span').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('i').removeClass();
-                    elmt_deb.addClass('disp disabled').hide();
-                    elmt_fin.addClass('disabled');
+                    elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
+                    elmt_fin.addClass('disabled').tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
                     if (event.punctual || event.end_date === null){
                         elmt_fin.removeClass('disp').hide();
