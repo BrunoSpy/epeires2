@@ -297,7 +297,13 @@ var form = function(url, cat){
 			$("#start .minute input").val(hoursplit[1]);
 		} else {
 			var d = new Date();
-			$("#start .day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
+			if($('#calendar').is(':visible')){
+				//init start date with date from calendar
+				var calday = $('#calendar input').val().split('/');
+				$("#start .day input").val(calday[0]+"-"+calday[1]+"-"+calday[2]);
+			} else {
+				$("#start .day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
+			}
 			var hour = ""+d.getUTCHours();
 			if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
 				hour = "0"+d.getUTCHours();
