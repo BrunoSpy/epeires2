@@ -63,7 +63,7 @@ class FileUpload extends Form {
                 'filerenameupload', array(
             'target' => './public/files/',
             'overwrite' => false,
-            'use_upload_name' => true,
+            'use_upload_name' => false,
             'randomize' => true
                 )
         );

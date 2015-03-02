@@ -1508,7 +1508,7 @@ class EventsController extends TabController {
                     //on ferme l'evt proprement
                     $this->closeEvent($event);
                     if(is_array($messages)){
-                        $messages['success'][] = "Evènement passé au statut : terminé.";
+                        $messages['success'][] = "Evènement passé au statut : \"Fin confirmée\".";
                     }
                  }
             }
