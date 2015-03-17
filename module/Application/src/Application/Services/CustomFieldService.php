@@ -235,22 +235,25 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 	}
 	
 	public function isMultipleAllowed(\Application\Entity\CustomField $customfield) {
-		$multiple = false;
-		switch ($customfield->getType ()->getType ()) {
-			case 'string' :
-			case 'text' :
-			case 'boolean' :
-				break;
-			case 'sector' :
-			case 'antenna' :
-			case 'frequency' :
-			case 'radar' :
-			case 'select' :
-			case 'stack' :
-				$multiple = true;
-				break;
-			default :
-				break;
+		$multiple = true;
+		if ($customfield->getType ()) {
+			switch ($customfield->getType ()->getType ()) {
+				case 'string' :
+				case 'text' :
+				case 'boolean' :
+					$multiple = false;
+					break;
+				case 'sector' :
+				case 'antenna' :
+				case 'frequency' :
+				case 'radar' :
+				case 'select' :
+				case 'stack' :
+					$multiple = true;
+					break;
+				default :
+					break;
+			}
 		}
 		return $multiple;
 	}
