@@ -159,7 +159,7 @@ class RadarsController extends TabController {
 		
 		$radars = array();
 		
-		foreach ($em->getRepository('Application\Entity\Radar')->findAll() as $radar){
+		foreach ($em->getRepository('Application\Entity\Radar')->findBy(array('decommissionned' => false)) as $radar){
 			//avalaible by default
 			if($full){
 				$radars[$radar->getId()] = array();

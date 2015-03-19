@@ -292,7 +292,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$value_options = $result;
 				break;
 			case 'radar':
-				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray();
+				$value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray(array('decommissionned' => false));
 				break;
 			case 'select':
                                 $input = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());

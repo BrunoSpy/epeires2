@@ -8,6 +8,7 @@
 		<th data-sort="string">Nom</th>
 		<th data-sort="string">Nom court</th>
 		<th>Organisation</th>
+		<th>En service</th>
 		<th><a class="btn btn-mini" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
 	</tr>
 </thead>
@@ -20,6 +21,7 @@
 		echo '<td>'.$radar->getName().'</td>';
 		echo '<td>'.$radar->getShortname().'</td>';
 		echo '<td>'.$radar->getOrganisation()->getName().'</td>';
+		echo '<td>'.($radar->isDecommissionned() ? '<i class="icon-remove"></i>' : '<i class="icon-ok"></i>');
 		echo '<td>';
 		echo "<a 
 				title=\"Modifier\" 

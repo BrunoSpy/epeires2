@@ -12,7 +12,7 @@ use Zend\Form\Annotation;
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="radars")
  **/
-class Radar {
+class Radar extends HardwareResource {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")

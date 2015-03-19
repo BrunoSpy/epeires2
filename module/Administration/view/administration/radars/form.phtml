@@ -28,6 +28,9 @@ echo $this->controlGroup($this->formLabel($form->get('shortname')->setLabelAttri
 echo $this->controlGroup($this->formLabel($form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($form->get('organisation')) . $this->formElementErrors($form->get('organisation')));
 
+echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formCheckbox($form->get('decommissionned')) . $this->formElementErrors($form->get('decommissionned')));
+
 ?>
 
 </div>

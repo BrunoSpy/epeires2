@@ -10,8 +10,13 @@ class ExtendedRepository extends EntityRepository {
 	/**
 	 * @return array
 	 */
-	public function getAllAsArray(){
-		$list = parent::findAll();
+	public function getAllAsArray($criteria = null){
+		$list = array();
+		if($criteria === null) {
+			$list = parent::findAll();
+		} else {
+			$list = parent::findBy($criteria);
+		}
 		$res = array();
 		foreach ($list as $element) {
 			$res[$element->getId()]= $element->getName();
