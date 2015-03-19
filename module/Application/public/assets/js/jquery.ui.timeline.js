@@ -1431,14 +1431,14 @@
          * @param {type} event
          * @returns {undefined}
          */
-        _shadeEvent: function (event, elmt) {
+        _shadeEvent: function (event, elmt, rate) {
         	var rect = elmt.find('.rect_elmt');
         	var compl = elmt.find('.complement');
         	var cat = (this.options.showOnlyRootCategories ?
                     this._getCategory(event.category_root_id) :
                     this._getCategory(event.category_id));
         	var color = cat.color;
-        	var newcolor = this._shadeHexColor(color, 0.5);
+        	var newcolor = this._shadeHexColor(color, rate);
         	if(event.punctual){
         		rect.css('border-bottom-color', newcolor);
         		compl.css('border-top-color', newcolor);
@@ -1891,7 +1891,8 @@
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
-                    //couleur normale : rien à faire
+                    //couleur estompée
+                    this._shadeEvent(event, elmt, 0.3);
                     break;
                 case 2: //confirmé
                     //label normal
@@ -1967,7 +1968,7 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt);
+                    this._shadeEvent(event, elmt, 0.5);
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
