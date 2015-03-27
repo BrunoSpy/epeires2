@@ -184,10 +184,12 @@ class RadarsController extends TabController {
 					$radarid = $customvalue->getValue();
 				}
 			}
-			if($full){
-				$radars[$radarid]['status'] *= $available;
-			} else {
-				$radars[$radarid] *= $available;
+			if(array_key_exists($radarid, $radars)) {
+				if($full){
+					$radars[$radarid]['status'] *= $available;
+				} else {
+					$radars[$radarid] *= $available;
+				}
 			}
 		}
 				

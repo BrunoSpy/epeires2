@@ -47,6 +47,11 @@ class RadarsController extends AbstractActionController
     			
     			$objectManager->persist($radar);
     			$objectManager->flush();
+    			
+    			if($radar->isDecommissionned()){
+    				//sets all related events read-only
+    				$objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
+    			}
     		}
     	}
     	return new JsonModel();

@@ -1098,7 +1098,7 @@ class EventsController extends TabController {
 		$json = array (
 				'id' => $event->getId (),
 				'name' => $eventservice->getName ( $event ),
-				'modifiable' => $eventservice->isModifiable ( $event ) ? true : false,
+				'modifiable' => ($eventservice->isModifiable ( $event ) && !$event->isReadOnly()) ? true : false,
 				'start_date' => ($event->getStartdate () ? $event->getStartdate ()->format ( DATE_RFC2822 ) : null),
 				'end_date' => ($event->getEnddate () ? $event->getEnddate ()->format ( DATE_RFC2822 ) : null),
 				'punctual' => $event->isPunctual () ? true : false,

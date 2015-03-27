@@ -500,7 +500,7 @@
             	var txt = '<p class="elmt_tooltip actions">'
                 	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
             	var event = self.events[self.eventsPosition[id]];
-            	if(event.status_id !== 4){
+            	if(event.status_id !== 4 && event.modifiable){
             		if(event.punctual === false){
 	            		if(event.star === true){
 	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';

@@ -31,6 +31,7 @@ class HardwareResource  {
 	 * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Hors service :"})
+	 * @Annotation\Attributes({"title":"En cochant cette option, tous les évènements liés ne seront plus modifiables."})
 	 */
 	protected $decommissionned = false;
 	

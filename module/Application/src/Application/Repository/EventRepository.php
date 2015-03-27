@@ -24,6 +24,8 @@ use Application\Core\User;
 use Zend\Session\Container;
 
 use \Core\NMB2B\EAUPRSAs;
+use Application\Entity\HardwareResource;
+use Application\Entity\Radar;
 
 /**
  * Description of EventRepository
@@ -611,4 +613,46 @@ class EventRepository extends ExtendedRepository {
         return $results;
     }
 
+    /**
+     * Sets read-only all events linked to the following resource
+     * @param HardwareResource $resource
+     */
+    public function setReadOnly(HardwareResource $resource){
+    	$qbEvents = $this->getEntityManager()->createQueryBuilder();
+    	$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
+    	->from('Application\Entity\Event', 'e')
+    	->leftJoin('e.custom_fields_values', 'v')
+    	->leftJoin('v.customfield', 'c')
+    	->leftJoin('c.type', 't')
+    	->leftJoin('e.category', 'cat')
+    	->andWhere($qbEvents->expr()->isNull('e.parent'));
+    	
+    	if($resource instanceof Radar) {
+    		$qbEvents->andWhere($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?1'),
+    				$qbEvents->expr()->eq('v.value', $resource->getId())
+    		));
+    		$qbEvents->setParameter('1', 'radar');
+    	}
+    	
+    	$query = $qbEvents->getQuery();
+    	$events = $query->getResult();
+    	
+    	foreach ($events as $event){
+    		$event->setReadOnly(true);
+    		if(!$event->isPunctual() && $event->getEnddate() === null) {
+    			$statusClosed = $this->getEntityManager()->getRepository('Application\Entity\Status')->find('3');
+    			$now = new \DateTime('now');
+    			$now->setTimezone(new \DateTimeZone('UTC'));
+    			$event->close($statusClosed, $now);
+    		}
+    		$this->getEntityManager()->persist($event);
+    	}
+    	try {
+    		$this->getEntityManager()->flush();
+    	} catch (\Exception $e) {
+    		error_log($e->getMessage());
+    	}
+    } 
+    
 }

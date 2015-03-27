@@ -96,6 +96,12 @@ class Event extends AbstractEvent {
      */
     protected $scheduled = false;
 
+    /** 
+     * @ORM\Column(type="boolean")
+     * 
+	 */
+    protected $readonly = false;
+    
     public function __construct() {
         parent::__construct();
         $this->updates = new \Doctrine\Common\Collections\ArrayCollection();
@@ -121,6 +127,14 @@ class Event extends AbstractEvent {
         $this->archived = $archived;
     }
 
+    public function isReadOnly() {
+    	return $this->readonly;
+    }
+    
+    public function setReadOnly($readonly){
+    	$this->readonly = $readonly;
+    }
+    
     public function isScheduled() {
         return $this->scheduled;
     }
