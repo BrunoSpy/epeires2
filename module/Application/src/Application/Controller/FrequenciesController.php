@@ -97,6 +97,7 @@ class FrequenciesController extends TabController {
 
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()->isNull('defaultsector'));
+        $criteria->andWhere(Criteria::expr()->eq('decommissionned', false));
         $otherfrequencies = $em->getRepository('Application\Entity\Frequency')->matching($criteria);
 
         $viewmodel->setVariables(array('antennas' => $this->getAntennas(),
@@ -661,7 +662,7 @@ class FrequenciesController extends TabController {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $frequencies = array();
-        $results = $em->getRepository('Application\Entity\Frequency')->findAll();
+        $results = $em->getRepository('Application\Entity\Frequency')->findBy(array('decommissionned'=> false));
 
         //retrieve antennas state once and for all
         $antennas = $this->getAntennas(true);
@@ -791,7 +792,7 @@ class FrequenciesController extends TabController {
         
         $antennas = array();
 
-        foreach ($em->getRepository('Application\Entity\Antenna')->findAll() as $antenna) {
+        foreach ($em->getRepository('Application\Entity\Antenna')->findBy(array('decommissionned' => false)) as $antenna) {
             //avalaible by default
             if ($full) {
                 $antennas[$antenna->getId()] = array();

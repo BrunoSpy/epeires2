@@ -12,6 +12,7 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Antenna;
 use Application\Entity\Frequency;
+use Doctrine\Common\Collections\Criteria;
 
 class RadioController extends \Application\Controller\FormController
 {
@@ -31,6 +32,24 @@ class RadioController extends \Application\Controller\FormController
     	$this->flashMessenger()->clearMessages();
     	
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$decommissionnedAntennas = $objectManager->getRepository('Application\Entity\Antenna')->findBy(array('decommissionned' => true));
+    	
+    	$criteria = Criteria::create();
+    	$criteria->where(Criteria::expr()->eq('decommissionned', false));
+    	$criteria->andWhere(Criteria::expr()->orX(
+    			Criteria::expr()->in('mainantenna', $decommissionnedAntennas),
+    			Criteria::expr()->in('backupantenna', $decommissionnedAntennas),
+    			Criteria::expr()->in('mainantennaclimax', $decommissionnedAntennas),
+    			Criteria::expr()->in('backupantennaclimax', $decommissionnedAntennas)
+    			));
+    	
+    	
+    	$errorFrequencies = $objectManager->getRepository('Application\Entity\Frequency')->matching($criteria);
+    	
+    	if(count($errorFrequencies) > 0) {
+    		$return['error'][] = 'Attention, une ou plusieures fréquences ont des antennes qui ne sont plus en service.<br />Cette incohérence peut faire planter la page radio.';
+    	}
     	
     	$viewmodel->setVariables(array('antennas' => $objectManager->getRepository('Application\Entity\Antenna')->findAll(),
     									'frequencies' => $objectManager->getRepository('Application\Entity\Frequency')->findAll(),
@@ -85,6 +104,10 @@ class RadioController extends \Application\Controller\FormController
     
     			$objectManager->persist($antenna);
     			$objectManager->flush();
+    			
+    			if($antenna->isDecommissionned()){
+    				$objectManager->getRepository('Application\Entity\Event')->setReadOnly($antenna);
+    			}
     		}
     	}
     

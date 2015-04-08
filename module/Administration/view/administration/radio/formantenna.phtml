@@ -10,7 +10,6 @@ echo $this->form()->openTag($this->form);
 <div class="modal-body">
 <?php
 
-
 echo $this->formHidden($this->form->get('id'));
 
 echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
@@ -24,6 +23,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabe
 
 echo $this->controlGroup($this->formLabel($this->form->get('location')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formInput($this->form->get('location')));
+
+echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formCheckbox($form->get('decommissionned')) . $this->formElementErrors($form->get('decommissionned')));
 
 ?>
 

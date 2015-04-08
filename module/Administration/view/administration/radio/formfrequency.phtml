@@ -37,6 +37,10 @@ echo $this->controlGroup($this->formLabel($this->form->get('mainantennaclimax')-
 echo $this->controlGroup($this->formLabel($this->form->get('backupantennaclimax')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('backupantennaclimax')));
 
+echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formCheckbox($form->get('decommissionned')) . $this->formElementErrors($form->get('decommissionned')));
+
+
 ?>
 
 

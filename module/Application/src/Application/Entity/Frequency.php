@@ -12,7 +12,7 @@ use Zend\Form\Annotation;
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\Table(name="frequencies")
  **/
-class Frequency extends HardwareResource {
+class Frequency extends TemporaryResource {
 	/** 
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")

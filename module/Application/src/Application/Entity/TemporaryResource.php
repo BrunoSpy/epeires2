@@ -25,7 +25,7 @@ use Zend\Form\Annotation;
  * @author Bruno Spyckerelle
  * @ORM\MappedSuperclass
  */
-class HardwareResource  {
+class TemporaryResource  {
 	
 	/** 
 	 * @ORM\Column(type="boolean")

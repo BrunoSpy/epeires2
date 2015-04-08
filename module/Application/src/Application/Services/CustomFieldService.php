@@ -275,7 +275,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
 				$value_options = $om->getRepository('Application\Entity\Sector')->getAllAsArray();
 				break;
 			case 'antenna':
-				$value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray();
+				$value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray(array('decommissionned' => false));
 				break;
 			case 'frequency':
                                 $qb = $om->createQueryBuilder();
@@ -283,6 +283,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
                                         ->from('Application\Entity\Frequency', 'f')
                                         ->leftJoin('f.defaultsector', 's')
                                         ->leftJoin('s.zone', 'z')
+                                        ->where($qb->expr()->eq('f.decommissionned', 'false'))
                                         ->addOrderBy('z.name', 'DESC')
                                         ->addOrderBy('s.name', 'ASC');
                                 $result = array();

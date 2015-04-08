@@ -16,7 +16,7 @@
 				$inner = "";
 				$inner .= "<ul class=\"sector-list\">";
 				foreach ($group->getSectors() as $sector){
-					if($sector->getFrequency()){
+					if($sector->getFrequency() && !$sector->getFrequency()->isDecommissionned()){
 						$inner .= "<li>".$this->sector($sector->getFrequency(), $sector->getName())."</li>";
 					}
 				}
@@ -36,7 +36,9 @@
 				$inner = "";
 				$inner .= "<ul class=\"sector-list\">";
 				foreach ($other as $frequency){
-					$inner .= "<li>".$this->sector($frequency, $frequency->getOthername())."</li>";
+					if(!$frequency->isDecommissionned()) {
+						$inner .= "<li>".$this->sector($frequency, $frequency->getOthername())."</li>";
+					}
 				}
 				$inner .= "</ul>";
 				echo "<div class='span6'>";

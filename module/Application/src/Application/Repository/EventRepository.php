@@ -24,8 +24,9 @@ use Application\Core\User;
 use Zend\Session\Container;
 
 use \Core\NMB2B\EAUPRSAs;
-use Application\Entity\HardwareResource;
+use Application\Entity\TemporaryResource;
 use Application\Entity\Radar;
+use Application\Entity\Antenna;
 
 /**
  * Description of EventRepository
@@ -615,9 +616,9 @@ class EventRepository extends ExtendedRepository {
 
     /**
      * Sets read-only all events linked to the following resource
-     * @param HardwareResource $resource
+     * @param TemporaryResource $resource
      */
-    public function setReadOnly(HardwareResource $resource){
+    public function setReadOnly(TemporaryResource $resource){
     	$qbEvents = $this->getEntityManager()->createQueryBuilder();
     	$qbEvents->select(array('e', 'v', 'c', 't', 'cat'))
     	->from('Application\Entity\Event', 'e')
@@ -633,6 +634,12 @@ class EventRepository extends ExtendedRepository {
     				$qbEvents->expr()->eq('v.value', $resource->getId())
     		));
     		$qbEvents->setParameter('1', 'radar');
+    	} elseif ($resource instanceof Antenna) {
+    		$qbEvents->andWhere($qbEvents->expr()->andX(
+    				$qbEvents->expr()->eq('t.type', '?1'),
+    				$qbEvents->expr()->eq('v.value', $resource->getId())
+    		));
+    		$qbEvents->setParameter('1', 'antenna');
     	}
     	
     	$query = $qbEvents->getQuery();
