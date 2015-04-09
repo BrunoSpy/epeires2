@@ -18,7 +18,7 @@ class Version20150326173118 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE event ADD readonly TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE Event ADD readonly TINYINT(1) NOT NULL');
     }
 
     /**
