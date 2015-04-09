@@ -724,8 +724,8 @@ class EventsController extends TabController {
     	//création du formulaire : identique en cas de modif ou création
     	    	
     	$cat = $this->params()->fromQuery('cat', null);
-    	
-    	$form = $this->getSkeletonForm($cat);
+    	    	
+    	$form = $this->getSkeletonForm(json_decode($cat));
     	 
     	$id = $this->params()->fromQuery('id', null);
     	
@@ -844,7 +844,7 @@ class EventsController extends TabController {
     	if(!$event){
     		$event = new Event();
     	}
-    	
+    	    	
     	$builder = new AnnotationBuilder();
     	$form = $builder->createForm($event);
     	$form->setHydrator(new DoctrineObject($em))
@@ -863,8 +863,7 @@ class EventsController extends TabController {
     	if($cat === 'timeline' || $cat === null) {
     		$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
     	} else {
-    		$catObject = $em->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
-    		$rootCategories[] = $catObject;
+    		$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->findBy(array('id' => $cat)));
     	}
     	$rootarray = array();
     	foreach ($rootCategories as $cat){
@@ -1160,47 +1159,46 @@ class EventsController extends TabController {
      */
     public function getcategoriesAction(){
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $criteria = Criteria::create();
+    	$qb = $objectManager->createQueryBuilder();
+    	$qb->select('c')
+    	->from('Application\Entity\Category', 'c');
+    	
         $rootonly = $this->params()->fromQuery('rootonly', true);
         $timeline = $this->params()->fromQuery('timeline', true);
-        $cat = $this->params()->fromQuery('cat', null);
-        if($cat){
-            $category = $objectManager->getRepository('Application\Entity\Category')->findOneBy(array('shortname' => $cat));
-            if($category){
-                $criteria->andWhere(Criteria::expr()->orX(
-                        Criteria::expr()->eq('id', $category->getId()),
-                        Criteria::expr()->eq('parent', $category)));
+        $cats = $this->params()->fromQuery('cats', null);
+        if($cats){
+            $categories = $objectManager->getRepository('Application\Entity\Category')->findBy(array('id' => $cats));
+            if($categories && count($categories) > 0){
+            	$orCat = $qb->expr()->orX();
+            	foreach ($categories as $category){
+            		$orCat->add($qb->expr()->eq('c.id', $category->getId()));
+            		$orCat->add($qb->expr()->eq('c.parent', $category->getId()));
+            	}
+            	$qb->andWhere($orCat);
             }
         }
     	$json = array();
         if($rootonly === true){
-            $criteria->andWhere(Criteria::expr()->isNull('parent'));
+            $qb->andWhere($qb->expr()->isNull('c.parent'));
         }
         if($timeline === true){
-            $criteria->andWhere(Criteria::expr()->eq('timeline', true));
+            $qb->andWhere($qb->expr()->eq('c.timeline', true));
         }
-        $criteria->orderBy(array("place" => Criteria::ASC));
-    	$categories = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
-        //TODO gros hack moisi, rendre ce filtrage générique
-        if($cat === 'zones'){
-            $categories = array_filter($categories->toArray(),function($c){
-                return !$c instanceof \Application\Entity\MilCategory ||
-                        ($c instanceof \Application\Entity\MilCategory && $c->isOnMilPage());
-            });
-        }
-    	$readablecat = $this->filterReadableCategories($categories);
-    	foreach ($readablecat as $category){
-    		$json[$category->getId()] = array(
-                        'id' => $category->getId(),
-    			'name' => $category->getName(),
-    			'short_name' => $category->getShortName(),
-    			'color' => $category->getColor(),
-    			'compact' => $category->isCompactMode(),
-                        'place' => $category->getPlace(),
-                        'parent_id' => ($category->getParent() ? $category->getParent()->getId() : -1),
-                        'parent_place' => ($category->getParent() ? $category->getParent()->getPlace() : -1)
-    		);
-    	}
+        $qb->orderBy("c.place", 'ASC');
+    	$categories = $qb->getQuery()->getResult();
+		$readablecat = $this->filterReadableCategories ( $categories );
+		foreach ( $readablecat as $category ) {
+			$json [$category->getId ()] = array (
+					'id' => $category->getId (),
+					'name' => $category->getName (),
+					'short_name' => $category->getShortName (),
+					'color' => $category->getColor (),
+					'compact' => $category->isCompactMode (),
+					'place' => $category->getPlace (),
+					'parent_id' => ($category->getParent () ? $category->getParent ()->getId () : - 1),
+					'parent_place' => ($category->getParent () ? $category->getParent ()->getPlace () : - 1) 
+			);
+		}
     	
     	return new JsonModel($json);
     }

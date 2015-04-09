@@ -45,14 +45,6 @@ class TabController extends ZoneController {
             }
         }
         
-        //Determine if ZoneMil tab is usefull
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $zonesmils = $em->getRepository('Application\Entity\MilCategory')->findBy(array('onMilPage' => true));
-        if(count($zonesmils) > 0){
-            $this->layout()->zonesmil = true;
-        } else {
-            $this->layout()->zonesmil = false;
-        }
     }
     
 }

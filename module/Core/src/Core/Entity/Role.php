@@ -1,5 +1,20 @@
 <?php
-
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 namespace Core\Entity;
 
 
@@ -72,6 +87,15 @@ class Role implements HierarchicalRoleInterface{
     protected $readcategories;
     
     /**
+     * @ORM\ManyToMany(targetEntity="Application\Entity\Tab", mappedBy="readroles")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"multiple":"true"})
+     * @Annotation\Options({"label":"Onglets accessibles :"})
+     */
+    protected $readtabs;
+    
+    /**
      * @ORM\ManyToMany(targetEntity="User", mappedBy="userroles", cascade={"detach"})
      */
     protected $users;
@@ -80,6 +104,7 @@ class Role implements HierarchicalRoleInterface{
     	$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
     	$this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->readcategories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->readtabs = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -264,6 +289,28 @@ class Role implements HierarchicalRoleInterface{
         }
     }
     
+    public function getReadtabs(){
+    	return $this->readtabs;
+    }
+    
+    public function addReadtabs(Collection $tabs){
+    	foreach ($tabs as $tab){
+    		$collection = new ArrayCollection();
+    		$collection->add($this);
+    		$tab->addReadroles($collection);
+    		$this->readtabs->add($tab);
+    	}
+    }
+    
+    public function removeReadtabs(Collection $tabs){
+    	foreach ($tabs as $tab){
+    		$collection = new ArrayCollection();
+    		$collection->add($this);
+    		$tab->removeReadroles($collection);
+    		$this->readtabs->removeElement($tab);
+    	}
+    }
+    
     public function __toString()
     {
         return $this->name;
@@ -279,6 +326,11 @@ class Role implements HierarchicalRoleInterface{
             $readcategories[] = $cat->getId();
         }
         $object_vars['readcategories'] = $readcategories;
+        $readtabs = array();
+        foreach ($this->readtabs as $tab){
+        	$readtabs[] = $tab->getId();
+        }
+        $object_vars['readtabs'] = $readtabs;
     	return $object_vars;
     }
 }

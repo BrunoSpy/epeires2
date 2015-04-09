@@ -11,30 +11,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
 
-class MilController extends TabController {
-
-    public function indexAction() {
-
-        parent::indexAction();
-
-        $viewmodel = new ViewModel();
-
-        $return = array();
-
-        if ($this->flashMessenger()->hasErrorMessages()) {
-            $return['errorMessages'] = $this->flashMessenger()->getErrorMessages();
-        }
-
-        if ($this->flashMessenger()->hasSuccessMessages()) {
-            $return['successMessages'] = $this->flashMessenger()->getSuccessMessages();
-        }
-
-        $this->flashMessenger()->clearMessages();
-
-        $viewmodel->setVariables(array('messages' => $return));
-
-        return $viewmodel;
-    }
+class MilController {
 
     public function importNMB2BAction(){
         $request = $this->getRequest();

@@ -276,8 +276,6 @@ class FrequenciesController extends TabController {
                                 if(in_array($freqid, $freqids)) {
                                     $newfreqvalue = "";
                                     foreach ($freqids as $freq){
-                                        error_log("freq ".$freq);
-                                        error_log("freqid ".$freqid);
                                         if($freq != $freqid){
                                             $newfreqvalue .= $freq."\r";
                                         }

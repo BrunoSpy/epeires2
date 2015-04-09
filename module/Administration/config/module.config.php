@@ -74,7 +74,8 @@ return array(
             'Administration\Controller\Radars' => 'Administration\Controller\RadarsController',
             'Administration\Controller\IPOS' => 'Administration\Controller\IPOSController',
             'Administration\Controller\OpSups' => 'Administration\Controller\OpSupsController',
-            'Administration\Controller\Mil' => 'Administration\Controller\MilController'
+            'Administration\Controller\Mil' => 'Administration\Controller\MilController',
+        	'Administration\Controller\Tabs' => 'Administration\Controller\TabsController'
     	),
     ),
     'view_manager' => array(

@@ -108,10 +108,16 @@
                         }
                         ?>
                         <?php
-                        if($this->isGranted('zonesmil.read') && $this->zonesmil){
-                            echo '<li><a id="zonesmil" href="';
-                            echo $this->url('application', array('controller' => 'mil', 'action' => 'index'));
-                            echo '">Zones militaires</a></li>';
+                        //Determine custom tabs to be displayed
+                        $em = $this->getHelperPluginManager()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                        $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array('place' => 'ASC'));;
+                        foreach ($tabs as $tab) {
+                        	if($this->hasRole($tab->getReadRoleNames())){
+                        		echo '<li><a id="'.$tab->getShortName().'" href="';
+                        		echo $this->url('application', array('controller' => 'tabs', 'action' => 'index'), 
+                        											 array('query' => array('tabid' => $tab->getId())));
+                        		echo '">'.$tab->getName().'</a></li>';
+                        	}
                         }
                         ?>
                         </ul>

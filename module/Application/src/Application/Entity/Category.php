@@ -150,10 +150,16 @@ class Category {
      */
     protected $system = false;
 
+    /** 
+     * @ORM\ManyToMany(targetEntity="Tab", mappedBy="categories")
+     */
+    protected $tabs;
+    
     public function __construct() {
-        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->customfields = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->events = new ArrayCollection();
+        $this->customfields = new ArrayCollection();
         $this->readroles = new ArrayCollection();
+        $this->tabs = new ArrayCollection();
     }
 
     public static function getTypeValueOptions() {

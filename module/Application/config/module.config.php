@@ -84,6 +84,7 @@ return array(
             'Application\Controller\File' => 'Application\Controller\FileController',
             'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
             'Application\Controller\Mil' => 'Application\Controller\MilController',
+        	'Application\Controller\Tabs' => 'Application\Controller\TabsController',
     	),
     ),
     'view_helpers' => array(

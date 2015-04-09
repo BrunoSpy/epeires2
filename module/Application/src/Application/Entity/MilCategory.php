@@ -50,14 +50,6 @@ class MilCategory extends Category{
      */
     protected $lastUpdateSequence;
     
-    /** 
-     * @ORM\Column(type="boolean")
-     * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Page Zones Mil :"})
-     */
-    protected $onMilPage = false;
-    
     /**
     * 
     * @ORM\OneToOne(targetEntity="CustomField")
@@ -76,14 +68,6 @@ class MilCategory extends Category{
     
     public function isNMB2B(){
         return $this->nmB2B;
-    }
-    
-    public function isOnMilPage(){
-        return $this->onMilPage;
-    }
-    
-    public function setOnMilPage($onmilpage){
-        $this->onMilPage = $onmilpage;
     }
     
     public function setLastUpdateDate($update){

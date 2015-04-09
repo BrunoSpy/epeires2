@@ -1,5 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js');
-      $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
+      $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js');
 ?>
 
 <div class="container-fluid">
@@ -7,7 +7,7 @@
 	<div class="span9">
 		<div class="block">
 			<div class="navbar navbar-inner block-header">
-				<div class="muted pull-left">Zones militaires </div>
+				<div class="muted pull-left">Onglets </div>
 			</div>
 			<div class="block-content collapse in">
 				<div class="span12">
@@ -16,28 +16,34 @@
                                     <tr>
                                         <th>id</th>
                                         <th data-sort="string">Nom</th>
-                                        <th>Couleur</th>
-                                        <th>Filtre d'import</th>
-                                        <th data-sort="string">Zones associées</th>
-                                        <th>NM B2B</th>
-                                        <th></th>
+                                        <th>Nom court</th>
+                                        <th>Catégories associées</th>
+                                        <th>Rôles autorisés</th>
+                                        <th><a class="btn btn-mini" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         <?php 
-                                        foreach ($this->cats as $cat){
+                                        foreach ($this->tabs as $tab){
                                             echo '<tr>';
-                                            echo '<td>'.$cat->getId().'</td>';
-                                            echo '<td>'.$cat->getName().'</td>';
-                                            echo "<td><span class=\"label\" style=\"background-color:".$cat->getColor()."\">".$cat->getColor()."</span></td>";
-                                            echo '<td>'.$cat->getFilter().'</td>';
-                                            echo '<td>'.$cat->getZonesRegex().'</td>';
-                                            echo '<td>'.($cat->isNMB2B()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+                                            echo '<td>'.$tab->getId().'</td>';
+                                            echo '<td>'.$tab->getName().'</td>';
+                                            echo '<td>'.$tab->getShortname().'</td>';
+                                            echo '<td>';
+                                            foreach ($tab->getCategories() as $cat){
+                                            	echo $cat->getName().'<br/>';
+                                            }
+                                            echo '</td>';
+                                            echo '<td>';
+                                            foreach ($tab->getReadroles() as $role){
+                                            	echo $role->getName().'<br/>';
+                                            }
+                                            echo '</td>';
                                             echo '<td><a '
-                                                    . 'href="#zone-container" '
-                                                    . 'class="mod-mil" '
-                                                    . 'data-id="'.$cat->getId().'" '
-                                                    . 'data-name="'.$cat->getName().'" '
+                                                    . 'href="#tab-container" '
+                                                    . 'class="mod-tab" '
+                                                    . 'data-id="'.$tab->getId().'" '
+                                                    . 'data-name="'.$tab->getName().'" '
                                                     . 'title="Modifier" '
                                                     . 'data-toggle="modal"><i class="icon-pencil"></i></a></td>';
                                             echo '</tr>';
@@ -55,10 +61,8 @@
                     <div class="muted pull-left">Aide</div>
                 </div>
                 <div class="block-content collapse in">
-                    <p>Cette page permet de configurer les zones militaires affectées aux catégories de type "Zone militaire".</p>
+                    <p>Cette page permet de configurer de nouveaux onglets, positionnés après les onglets Radio et Radar.</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
-                    <p>La création d'un oglet spécifique doit se faire dans la page de configuration spécifique.</p>
-                    <p>La récupération des données via NM B2B nécessite que la connexion soit préalablement configurée par l'administrateur technique.</p>
                 </div>
             </div>
         </div>
@@ -67,12 +71,12 @@
 </div>
 
 			
-<?php echo $this->modalwindow("zone-container", "<h3 id=\"zone-title\"></h3>", "", "<div id=\"zone-form\"></div>") ?>
+<?php echo $this->modalwindow("tab-container", "<h3 id=\"tab-title\"></h3>", "", "<div id=\"tab-form\"></div>") ?>
 
 
 <?php $this->inlineScript()->captureStart();?>
 
-mil('<?php echo $this->url('administration'); ?>');
+tab('<?php echo $this->url('administration'); ?>');
 
 $(".sortable").stupidtable();
 
