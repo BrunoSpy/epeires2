@@ -40,7 +40,7 @@ class Version20150409083256 extends AbstractMigration
         $this->addSql('ALTER TABLE roles_tabs_read ADD CONSTRAINT FK_8BE614B1D60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE tab_category ADD CONSTRAINT FK_D654A95E8D0C9323 FOREIGN KEY (tab_id) REFERENCES tabs (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE tab_category ADD CONSTRAINT FK_D654A95E12469DE2 FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE Milcategory DROP onMilPage');
+        $this->addSql('ALTER TABLE MilCategory DROP onMilPage');
     }
 
     /**
