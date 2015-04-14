@@ -796,7 +796,7 @@ class EventsController extends TabController {
     	}
     	
     	if(!$id || ($id && $copy) || ($id && $pevent)){//nouvel évènement
-    		if($this->isGranted('events.status')){
+    		if($this->isGranted('events.confirme')){
     			//utilisateur opérationnel => statut confirmé dès le départ
     			$form->get('status')->setAttribute('value', 2);
     		} else {
@@ -1114,7 +1114,6 @@ class EventsController extends TabController {
 				'impact_value' => $event->getImpact ()->getValue (),
 				'impact_name' => $event->getImpact ()->getName (),
 				'impact_style' => $event->getImpact ()->getStyle (),
-				'archived' => $event->isArchived () ? true : false,
 				'files' => count ( $event->getFiles () ),
 				'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
 				'star' => $event->isStar () ? true : false,
@@ -1313,17 +1312,8 @@ class EventsController extends TabController {
                                 $messages['success'][] = "Impact modifié.";
                             }
                             break;
-                        case 'archived' :
-                            $event->setArchived($value);
-                            $objectManager->persist($event);
-                            if($value){
-                                $messages['success'][] = "Evènement archivé.";
-                            } else {
-                                $messages['success'][] = "Evènement non archivé.";
-                            }
-                            break;
                         case "status" :
-                            if ($this->isGranted('events.status')) {
+                            if ($this->isGranted('events.write')) {
                                 $status = $objectManager->getRepository('Application\Entity\Status')->find($value);
                                 if ($status) {
                                     
@@ -1497,7 +1487,7 @@ class EventsController extends TabController {
             //- evt confirmé ou (evt nouveau et heure de début passée)
             //et
             //- heure de fin proche de l'heure de début (15min)
-            if ($this->isGranted('events.status') && $event->getEnddate()) {
+            if ($this->isGranted('events.confirme') && $event->getEnddate()) {
                 $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => false, 'defaut' => true));
                 if ( ($event->getStatus()->getId() == 2 ||
                     ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now))
@@ -1542,7 +1532,7 @@ class EventsController extends TabController {
                 $messages['success'][] = "Date et heure de début modifiées au " . $formatter->format($event->getStartdate());
             }
             //passage au statut confirmé si pertinent, droits ok et heure de début proche de l'heure actuelle
-            if ($this->isGranted('events.status')) {
+            if ($this->isGranted('events.confirme')) {
                 $now = new \DateTime('now');
                 $now->setTimezone(new \DateTimeZone('UTC'));
                 $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array('open' => true, 'defaut' => false));

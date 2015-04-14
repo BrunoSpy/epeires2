@@ -129,14 +129,18 @@
 							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Page Fréquence</a>
 						</li>
                                             <?php endif; ?>
-                                                <li><a
+                        <?php if($this->isGranted('admin.zonesmil')) : ?>
+                        <li><a
 							data-title="Personnalisation > Page Zones militaires"
 							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Page Zones militaires</a>
 						</li>
+						<?php endif;?>
+						<?php if($this->isGranted('admin.tabs')) : ?>
 						<li>
 						<a data-title="Personnalisation > Onglets"
 							href="<?php echo $this->url('administration', array('controller' => 'tabs', 'action' => 'index'))?>">Onglets</a>
 						</li>
+						<?php endif;?>
 					</ul>
 				</li>
                                 <?php endif; ?>

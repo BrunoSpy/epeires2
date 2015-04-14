@@ -221,7 +221,7 @@ var form = function(url, cat){
 		var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
 		var diff = (deb - nowUTC)/60000; //différence en minutes
 		//change status if needed, authorized and beginning near actual time
-		if($('#event form').data('modstatus') 
+		if($('#event form').data('confirmauto') 
 				&& $("#event select[name=status] option:selected").val() == '1'
 					&& (diff < 10)){
 			$("#event select[name=status] option[value=2]").prop('selected', true);
@@ -264,12 +264,12 @@ var form = function(url, cat){
 			var now = new Date();
 			var nowUTC = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 			var nowUTCplus = new Date(nowUTC.getTime() + 15 * 60000);
-			if ($('#event form').data('modstatus')
+			if ($('#event form').data('confirmauto')
 					&& $('#event input[name=id]').val() > 0 //id != 0 => modif
 					&& (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')
 					&& end < nowUTCplus) {
 				$('#event select[name=status] option[value=3]').prop('selected', true);
-			} else if($('#event form').data('modstatus')
+			} else if($('#event form').data('confirmauto')
 					&& $('#event input[name=id]').val() == 0){
 				//en cas de création on se permet le changement de statut
 				if(deb < nowUTC && end < nowUTCplus){

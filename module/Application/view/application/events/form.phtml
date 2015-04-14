@@ -17,9 +17,9 @@
 		'class' => 'form-horizontal'));
 	}
         
-	if($this->isGranted('events.status')){
-            $this->form->setAttributes(array('data-modstatus' => true));
-        }
+	if($this->isGranted('events.confirme')){
+            $this->form->setAttributes(array('data-confirmauto' => true));
+    }
         
 	$this->form->prepare();
 	echo $this->form()->openTag($this->form);
@@ -416,7 +416,7 @@
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
 		<div class="controls">
 			<?php 
-			if($this->isGranted('events.status')) {
+			if($this->isGranted('events.write')) {
 				echo $this->formSelect($this->form->get('status'));
 			} else {
 				echo $this->formSelect($this->form->get('status')->setAttribute('disabled', 'disabled'));

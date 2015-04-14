@@ -68,11 +68,6 @@ class Event extends AbstractEvent {
     /** @ORM\Column(type="datetime") */
     protected $last_modified_on;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $archived = false;
-
     /** 
      * @ORM\Column(type="boolean")
      */
@@ -117,14 +112,6 @@ class Event extends AbstractEvent {
 
     public function getUpdates() {
         return $this->updates;
-    }
-
-    public function isArchived() {
-        return $this->archived;
-    }
-
-    public function setArchived($archived) {
-        $this->archived = $archived;
     }
 
     public function isReadOnly() {

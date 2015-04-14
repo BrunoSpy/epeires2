@@ -277,11 +277,11 @@ class AlarmController extends FormController {
     
     /**
      * Change le statut d'un mémo à Terminé
-     * Nécessite d'être identifié et d'avoir les droits events.status
+     * Nécessite d'être identifié et d'avoir les droits events.write
      */
     public function confirmAction(){
 	if($this->zfcUserAuthentication()->hasIdentity()){
-		if($this->isGranted('events.status')){
+		if($this->isGranted('events.write')){
 			$id = $this->params()->fromQuery('id', null);
 			$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 			$messages = array();

@@ -111,7 +111,9 @@ return array(
             'admin.users' => 'Utilisateurs',
             'admin.categories' => 'Catégories',
             'admin.models' => 'Modèles',
-            'admin.radio' => 'Radio'
+            'admin.radio' => 'Radio',
+    		'admin.zonesmil' => 'Zones militaires',
+    		'admin.tabs' => 'Onglets'
         ),
     ),
     'zfc_rbac' => array(
@@ -148,6 +150,14 @@ return array(
                         'controller' => 'Administration\Controller\Radio',
                         'permissions' => ['admin.radio'],
                     ),
+                	array(
+                		'controller' => 'Administration\Controller\Mil',
+                		'permissions' => ['admin.zonesmil'],
+                	),
+                	array(
+                		'controller' => 'Administration\Controller\Tabs',
+                		'permissions' => ['admin.tabs'],
+                	),
     		),
     	),
     ),
