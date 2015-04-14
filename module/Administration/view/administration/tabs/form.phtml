@@ -19,6 +19,9 @@ echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttr
 echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formInput($this->form->get('shortname')));
 
+echo $this->controlGroup($this->formLabel($this->form->get('onlyroot')->setLabelAttributes(array('class' => 'control-label'))),
+		$this->formCheckbox($this->form->get('onlyroot')));
+
 echo $this->controlGroup($this->formLabel($this->form->get('categories')->setLabelAttributes(array('class' => 'control-label'))),
 		$this->formSelect($this->form->get('categories')));
 

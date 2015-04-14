@@ -55,6 +55,7 @@ class TabsController extends TabController {
 				foreach ($categories as $cat) {
 					$cats[] = $cat->getId();
 				}
+				$viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
 				$viewmodel->setVariable('cats', $cats);
 			} else {
 				$return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";

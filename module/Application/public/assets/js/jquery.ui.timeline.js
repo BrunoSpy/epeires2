@@ -1812,8 +1812,6 @@
          * @return array [x1, x2]
          */
         _tryRemoveLabel: function(event){
-        	console.log('test');
-        	console.log(event.txtSize);
         	var result = [event.xleft, event.xright];
     		if(event.outside === 1){
     			result[0] = event.xleft + event.txtSize;

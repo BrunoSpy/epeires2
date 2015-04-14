@@ -1178,9 +1178,9 @@ class EventsController extends TabController {
             }
         }
     	$json = array();
-        if($rootonly === true){
+        if($rootonly == true){
             $qb->andWhere($qb->expr()->isNull('c.parent'));
-        }
+        } 
         if($timeline === true){
             $qb->andWhere($qb->expr()->eq('c.timeline', true));
         }

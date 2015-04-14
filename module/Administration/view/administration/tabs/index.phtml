@@ -19,6 +19,7 @@
                                         <th>Nom court</th>
                                         <th>Catégories associées</th>
                                         <th>Rôles autorisés</th>
+                                        <th>Catégories racines seulement</th>
                                         <th><a class="btn btn-mini" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
                                     </tr>
                                     </thead>
@@ -39,6 +40,7 @@
                                             	echo $role->getName().'<br/>';
                                             }
                                             echo '</td>';
+                                            echo '<td><i class="'.($tab->isOnlyroot() ? 'icon-ok' : 'icon-remove' ).'"></i></td>';
                                             echo '<td><a '
                                                     . 'href="#tab-container" '
                                                     . 'class="mod-tab" '

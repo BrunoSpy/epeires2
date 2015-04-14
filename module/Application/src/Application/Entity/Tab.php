@@ -81,6 +81,14 @@ class Tab {
 	 * @Annotation\Options({"label":"Catégories à afficher :"})	 */
 	protected $categories;
 	
+	/**
+	 * Show only root categories
+	 * @ORM\Column(type="boolean")
+ 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Catégories racines seulement :"})
+	 */
+	protected $onlyroot = false;
+	
 	public function __construct() {
 		$this->categories = new ArrayCollection();
 		$this->readroles = new ArrayCollection();
@@ -104,6 +112,14 @@ class Tab {
 	
 	public function setShortName($name){
 		$this->shortname = $name;
+	}
+	
+	public function setOnlyroot($only){
+		$this->onlyroot = $only;
+	}
+	
+	public function isOnlyroot(){
+		return $this->onlyroot;
 	}
 	
 	public function getCategories() {
