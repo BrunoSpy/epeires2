@@ -21,7 +21,7 @@ use Doctrine\Common\Collections\Collection;
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  **/
-class AbstractEvent {
+abstract class AbstractEvent {
 	/**
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
