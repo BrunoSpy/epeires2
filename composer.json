@@ -15,7 +15,7 @@
 	],
     "require": {
         "php": ">=5.4.0",
-        "zendframework/zendframework": ">=2.2.0",
+        "zendframework/zendframework": "~2.4.0",
         "robloach/component-installer": "dev-master",
         "rwoverdijk/assetmanager": ">=1.0",
         "doctrine/common": ">=2.4.0",
