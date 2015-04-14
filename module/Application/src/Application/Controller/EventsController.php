@@ -1313,39 +1313,31 @@ class EventsController extends TabController {
                             }
                             break;
                         case "status" :
-                            if ($this->isGranted('events.write')) {
-                                $status = $objectManager->getRepository('Application\Entity\Status')->find($value);
-                                if ($status) {
-                                    
-                                    //si statut terminé et (pas d'heure de fin + pas ponctuel) -> heure de fin = now
-                                    if(!$status->isOpen() && $status->isDefault() && !$event->getEnddate() && !$event->isPunctual()){
-                                        $now = new \DateTime('now');
-                                        $now->setTimezone(new \DateTimeZone('UTC'));
-                                        if($event->setEnddate($now)){
-                                            $event->setStatus($status);
-                                            $messages['success'][] = "Date et heure de fin modifiée au ".$formatter->format($event->getEnddate());
-                                            $messages['success'][] = "Evènement passé au statut ".$status->getName();
-                                        } else {
-                                            $messages['error'][] = "Impossible de changer le statut sans heure de fin";
-                                        }
-                                        //on ferme l'evt proprement
-                                        if(!$status->isOpen()){
-                                            $this->closeEvent($event);
-                                        }
-                                    } else if(!$status->isOpen() && !$status->isDefault()){
-                                        //si statut annulé
-                                        $event->cancelEvent($status);     
-                                        $messages['success'][] = "Evènement passé au statut ".$status->getName();
-                                    } else {
-                                        $event->setStatus($status);
-                                        $messages['success'][] = "Evènement passé au statut ".$status->getName();
-                                    }
-                                    $objectManager->persist($event);
-                                    
-                                }
-                            } else {
-                                $messages['error'][] = "Droits insuffisants pour changer le statut.";
-                            }
+                        	$status = $objectManager->getRepository('Application\Entity\Status')->find($value);
+                        	//si statut terminé et (pas d'heure de fin + pas ponctuel) -> heure de fin = now
+                        	if(!$status->isOpen() && $status->isDefault() && !$event->getEnddate() && !$event->isPunctual()){
+                        		$now = new \DateTime('now');
+                        		$now->setTimezone(new \DateTimeZone('UTC'));
+                        		if($event->setEnddate($now)){
+                        			$event->setStatus($status);
+                        			$messages['success'][] = "Date et heure de fin modifiée au ".$formatter->format($event->getEnddate());
+                        			$messages['success'][] = "Evènement passé au statut ".$status->getName();
+                        		} else {
+                        			$messages['error'][] = "Impossible de changer le statut sans heure de fin";
+                        		}
+                        		//on ferme l'evt proprement
+                        		if(!$status->isOpen()){
+                        			$this->closeEvent($event);
+                        		}
+                        	} else if(!$status->isOpen() && !$status->isDefault()){
+                        		//si statut annulé
+                        		$event->cancelEvent($status);     
+                        		$messages['success'][] = "Evènement passé au statut ".$status->getName();
+                        	} else {
+                        		$event->setStatus($status);
+                        		$messages['success'][] = "Evènement passé au statut ".$status->getName();
+                        	}
+                        	$objectManager->persist($event);
                             break;
                         case 'star':
                         	$event->setStar($value);
