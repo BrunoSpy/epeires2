@@ -93,7 +93,8 @@ $("#home").removeClass("dropdown-toggle")
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
-    eventUrl: '<?php echo $this->url('application', array('controller' => 'events', ''))?>'+'/getevents',
+    eventUrl: '<?php echo $this->url('application', array('controller' => 'events', 'action' => 'getevents'),
+    												array('query' => array('cats' => $this->cats)))?>',
     categoriesUrl: '<?php echo $this->url('application', 
     										array('controller' => 'events', 'action' => 'getcategories'), 
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),
@@ -102,7 +103,7 @@ $('#timeline').timeline({
     topOffset: 82,
     leftOffset: 120,
     rightOffset: 85,
-    showOnlyRootCategories: false,
+    showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
     initComplete: function(){$("#timeline .loading").hide();}
 });
 //init form

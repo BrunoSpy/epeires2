@@ -45,19 +45,32 @@ class EventRepository extends ExtendedRepository {
      * @param type $onlytimeline
      * @return type
      */
-    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false, $onlytimeline = false) {
+    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false, $cats = null) {
 
         $parameters = array();
-
+        
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select(array('e', 'f', 'c'))
+        $qb->select(array('e', 'f', 'c', 'p'))
                 ->from('Application\Entity\Event', 'e')
                 ->leftJoin('e.zonefilters', 'f')
                 ->leftJoin('e.category', 'c')
+                ->leftJoin('c.parent', 'p')
                 ->andWhere($qb->expr()->isNull('e.parent')); //display only root events
         
-        if($onlytimeline) {
-            $qb->andWhere($qb->expr()->eq('c.timeline', true));
+        if($cats) {
+            $qb->andWhere($qb->expr()->in('e.category', $cats));
+        } else {
+        	//pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
+        	$qb->andWhere($qb->expr()->orX(
+        			$qb->expr()->andX(
+        				$qb->expr()->isNull('c.parent'),
+        				$qb->expr()->eq('c.timeline', true)),
+        			$qb->expr()->andX(
+        					$qb->expr()->isNotNull('c.parent'),
+        					$qb->expr()->eq('c.timeline', true),
+        					$qb->expr()->eq('p.timeline', true)
+        					)
+        			));
         }
         
         //restriction à tous les evts modifiés depuis $lastmodified qqsoit la date de l'évènement

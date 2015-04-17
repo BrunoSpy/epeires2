@@ -613,7 +613,7 @@
                 event.display = true;
                 event.shade = false;
                 this.events.push(event);
-                this.eventsPosition[pos] = event.id;
+                this.eventsPosition[event.id] = pos;
             }
             if (sort === undefined || sort === true) {
                 this.sortEvents();
@@ -724,7 +724,7 @@
                     //catégorie racine, puis catégorie, puis nom, puis date de début
                     this.events.sort(function (a, b) {
                         if (self.catPositions[a.category_root_id] < self.catPositions[b.category_root_id]) {
-                            return -1;
+                        	return -1;
                         } else if (self.catPositions[a.category_root_id] > self.catPositions[b.category_root_id]) {
                             return 1;
                         }
@@ -748,15 +748,17 @@
                         return 0;
                     });
                 } else {
-                    //tri par date de début uniquement
-                    var aStartdate = new Date(a.start_date);
-                    var bStartdate = new Date(b.start_date);
-                    if (aStartdate < bStartdate) {
-                        return -1;
-                    } else if (aStartdate > bStartdate) {
-                        return 1;
-                    }
-                    return 0;
+                	this.events.sort(function (a, b) {
+	                    //tri par date de début uniquement
+	                    var aStartdate = new Date(a.start_date);
+	                    var bStartdate = new Date(b.start_date);
+	                    if (aStartdate < bStartdate) {
+	                        return -1;
+	                    } else if (aStartdate > bStartdate) {
+	                        return 1;
+	                    }
+	                    return 0;
+                	});
                 }
                 this.lastEventComparator = undefined;
             } else if (comparator === undefined && this.lastEventComparator !== undefined) {

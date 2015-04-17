@@ -1072,13 +1072,13 @@ class EventsController extends TabController {
     	
     	$day = $this->params()->fromQuery('day', null);
         
-        $onlytimeline = $this->params()->fromQuery('onlytimeline', null);
+        $cats = $this->params()->fromQuery('cats', null);
     	
     	$json = array();
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                 
-    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true, $onlytimeline) as $event){ 		
+    	foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, $lastmodified, true, $cats) as $event){ 		
     		$json[$event->getId()] = $this->getEventJson($event);
     	}
         
@@ -1180,7 +1180,7 @@ class EventsController extends TabController {
         if($rootonly == true){
             $qb->andWhere($qb->expr()->isNull('c.parent'));
         } 
-        if($timeline === true){
+        if($timeline == true){
             $qb->andWhere($qb->expr()->eq('c.timeline', true));
         }
         $qb->orderBy("c.place", 'ASC');
