@@ -105,7 +105,20 @@ class ModelsController extends FormController
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			$pevent->setPlace($pevent->getPlace() -1);
+    			//on recherche le modèle précédent
+    			$place = $pevent->getPlace();
+    			$criteria = Criteria::create()
+    				->where(Criteria::expr()->lt('place', $place))
+    				->orderBy(array('place' => Criteria::DESC))
+    				->setMaxResults(1);
+    			$previous = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
+    			if(count($previous) === 0){
+    				//pas de résultat, en toute logique on ne devrait pas être dans ce cas
+    				$pevent->setPlace(0);
+    			} else {
+    				$prev = $previous->first();
+    				$pevent->setPlace($prev->getPlace());
+    			}
     			$objectManager->persist($pevent);
     			try {
     				$objectManager->flush();
@@ -127,7 +140,20 @@ class ModelsController extends FormController
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			$pevent->setPlace($pevent->getPlace() +1);
+    			//on recherche le modèle suivent
+    			$place = $pevent->getPlace();
+    			$criteria = Criteria::create()
+    			->where(Criteria::expr()->gt('place', $place))
+    			->orderBy(array('place' => Criteria::ASC))
+    			->setMaxResults(1);
+    			$previous = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
+    			if(count($previous) === 0){
+    				//pas de résultat, en toute logique on ne devrait pas être dans ce cas
+    				$pevent->setPlace(-1);
+    			} else {
+    				$prev = $previous->first();
+    				$pevent->setPlace($prev->getPlace());
+    			}
     			$objectManager->persist($pevent);
     			try {
     				$objectManager->flush();
