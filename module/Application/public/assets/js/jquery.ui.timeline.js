@@ -1839,6 +1839,7 @@
             var elmt_compl = elmt.find('.complement');
             var move_deb = elmt.find('.move_deb');
             var move_fin = elmt.find('.move_fin');
+            var rect = elmt.find('.rect_elmt');
             var lien = elmt.find('.lien');
             var now = new Date();
             var start = new Date(event.start_date);
@@ -1892,7 +1893,8 @@
                         }
                     }
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.3);
+                    this._shadeEvent(event, elmt, 0.4);
+                    rect.addClass('stripes');
                     break;
                 case 2: //confirmé
                     //label normal
@@ -1927,6 +1929,7 @@
                         }
                     }
                     //couleur normale
+                    rect.removeClass('stripes');
                     break;
                 case 3: //terminé
                     //label normal
@@ -1946,6 +1949,7 @@
                     }
                     lien.filter('.rightlink').addClass('disp').show();
                     //couleur normale
+                    rect.removeClass('stripes');
                     break;
                 case 4: //annulé
                     //label barré
@@ -1969,6 +1973,7 @@
                     move_fin.removeClass('disp');
                     //couleur estompée
                     this._shadeEvent(event, elmt, 0.5);
+                    rect.removeClass('stripes');
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;

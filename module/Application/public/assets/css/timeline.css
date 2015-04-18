@@ -238,6 +238,10 @@
 	-webkit-animation: pulseshadow 2s infinite ease-in-out;
 }
 
+.elmt .rect_elmt.stripes {
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAoCAQAAAClM0ndAAAAhklEQVR4AdXO0QrCMBBE0bttkk38/w8WRERpdyjzVOc+HxhIHqJGMQcFFkpYRQotLLSw0IJ5aBdovruMYDA/kT8plF9ZKLFQcgF18hDj1SbQOMlCA4kao0iiXmah7qBWPdxpohsgVZyj7e5I9KcID+EhiDI5gxBYKLBQYKHAQoGFAoEks/YEGHYKB7hFxf0AAAAASUVORK5CYII=');
+}
+
 /* Animate box-shadow */
 @keyframes pulseshadow {
 	0% { box-shadow: 0 0 10px 5px rgba(255,255,0,0.2); }
