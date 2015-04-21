@@ -675,7 +675,22 @@ class EventsController extends TabController {
     			case 'subcategories':
     				$id = $this->params()->fromQuery('id');
     				$onlytimeline = $this->params()->fromQuery('onlytimeline', false);
+    				$tabid = $this->params()->fromQuery('tabid', null);
     				$subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getChilds($onlytimeline, $id));
+    				if($tabid !== null) {
+	    				$tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
+	    				if($tab) {
+	    					$tabcats = $tab->getCategories();
+	    					$tabcatsid = $tabcats->map(function($a){return $a->getId();})->toArray();
+	    					$tempsubcat = array();
+	    					foreach ($subcat as $cat){
+	    						if(in_array($cat->getId(), $tabcatsid)){
+	    							$tempsubcat[] = $cat;
+	    						}
+	    					}
+	    					$subcat = $tempsubcat;
+	    				}
+    				}
     				$subcatarray = array();
     				foreach ($subcat as $cat){
     					$subcatarray[$cat->getId()] = $cat->getName();
@@ -723,9 +738,9 @@ class EventsController extends TabController {
     	
     	//création du formulaire : identique en cas de modif ou création
     	    	
-    	$cat = $this->params()->fromQuery('cat', null);
+    	$tabid = $this->params()->fromQuery('tabid', null);
     	    	
-    	$form = $this->getSkeletonForm(json_decode($cat));
+    	$form = $this->getSkeletonForm($tabid);
     	 
     	$id = $this->params()->fromQuery('id', null);
     	
@@ -838,7 +853,7 @@ class EventsController extends TabController {
     	 
     }
     
-    private function getSkeletonForm($cat, $event = null){
+    private function getSkeletonForm($tabid, $event = null){
     	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	
     	if(!$event){
@@ -860,10 +875,14 @@ class EventsController extends TabController {
     	
     	//add default fieldsets
     	$rootCategories = array();
-    	if($cat === 'timeline' || $cat === null) {
+    	if($tabid === 'timeline' || $tabid === null) {
     		$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->getRoots(null, true));
     	} else {
-    		$rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')->findBy(array('id' => $cat)));
+    		$tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
+    		if($tab){
+    			$cats = $tab->getCategories()->filter(function($a){return $a->getParent() === null;});
+    			$rootCategories = $this->filterReadableCategories($cats);
+    		}
     	}
     	$rootarray = array();
     	foreach ($rootCategories as $cat){

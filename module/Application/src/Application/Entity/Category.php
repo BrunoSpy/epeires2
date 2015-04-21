@@ -253,6 +253,10 @@ class Category {
         $this->fieldname = $fieldname;
     }
 
+    public function getTabs() {
+    	return $this->tabs;
+    }
+    
     public function getReadroles($recursive = false) {
         if ($recursive) {
             $readroles = new ArrayCollection();

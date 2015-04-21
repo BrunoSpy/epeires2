@@ -192,7 +192,7 @@ var formModifyAlarm = function(alarm) {
 	$('#alarm-table').append(tr);
 };
 
-var form = function(url, cat){
+var form = function(url, tabid){
 
 	urlt = url;
 	//specific functions to maintain coherence between end and start inputs
@@ -431,7 +431,7 @@ var form = function(url, cat){
 			$("#event").html('<div>Chargement...</div>');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
-					url+'events/form'+'?cat='+cat,
+					url+'events/form'+'?tabid='+tabid,
 					function(){
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
@@ -637,7 +637,7 @@ var form = function(url, cat){
 		if(root_value > 0) {
 
 			$.when(
-					$.post(url+'events/subform?part=subcategories&id='+$(this).val() + (cat === 'timeline' ? '&onlytimeline=true' : ''),
+					$.post(url+'events/subform?part=subcategories&id='+$(this).val() + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
 							function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);

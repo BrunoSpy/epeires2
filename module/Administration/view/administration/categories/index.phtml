@@ -15,7 +15,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>Couleur</th>
 						<th>Compact</th>
 						<th>Timeline</th>
-						<th>Evts</th>
+						<th>Onglets</th>
 						<th>Modèles</th>
 						<th>Champs</th>
 						<th>Champ titre</th>
@@ -34,7 +34,15 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
 					echo '<td>'.($category->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 					echo '<td>'.($category->isTimeline()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-					echo "<td>".$this->events[$category->getId()]."</td>";
+					echo '<td>';
+                    	if(count($category->getTabs()) > 0) {
+                    		foreach ($category->getTabs() as $tab) {
+                    			echo $tab->getName().'<br/>';
+                    		}
+                    	} else {
+                    		echo 'Aucun';
+                    	}	
+					echo '</td>';
 					echo "<td>".$this->models[$category->getId()].
 									" <a href=\"#models-container\"
 								 		class=\"models-list\" 
@@ -66,7 +74,15 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
 							echo '<td>'.($subcategory->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
 							echo '<td>'.($subcategory->isTimeline()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-							echo "<td>".$this->events[$subcategory->getId()]."</td>";
+							echo '<td>';
+							if(count($subcategory->getTabs()) > 0) {
+								foreach ($subcategory->getTabs() as $tab) {
+									echo $tab->getName().'<br/>';
+								}
+							} else {
+								echo 'Aucun';
+							}
+							echo '</td>';
 							echo "<td>".$this->models[$subcategory->getId()].
 									" <a href=\"#models-container\"
 								 		class=\"models-list\" 
@@ -102,7 +118,6 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>id</th>
 						<th>Nom</th>
 						<th>Nom court</th>
-						<th>Evts</th>
 						<th>Champs</th>
 						<th>Champ titre</th>
 						<th>Rôles</th>
@@ -117,7 +132,6 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo "<td>".$category->getId()."</td>";		
 					echo "<td>".$category->getName()."</td>";
 					echo "<td>".$category->getShortName()."</td>";
-					echo "<td>".$this->events[$category->getId()]."</td>";
 
 					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
 					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";

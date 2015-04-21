@@ -74,7 +74,6 @@ class CategoriesController extends FormController{
     	$models = array();
     	$fields = array();
     	foreach ($objectManager->getRepository('Application\Entity\Category')->findAll() as $cat){
-    		$events[$cat->getId()] = count($objectManager->getRepository('Application\Entity\Event')->findBy(array('category' => $cat->getId())));
     		$models[$cat->getId()] = count($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('category' => $cat->getId(), 'parent'=> null)));
     		$fields[$cat->getId()] = count($objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category' => $cat->getId())));
     	}
