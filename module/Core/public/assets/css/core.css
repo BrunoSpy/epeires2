@@ -90,10 +90,17 @@ body{
 	margin-left:5px;
 }
 
+.navbar .exp {
+	font-size: 80%;
+	padding-right: 5px;
+	padding-left: 6px;
+	position: relative;
+	top: -0.6em;
+}
+
 /******************************/
 /*     Tune Bootstrap css     */
 /******************************/
-
 .modal-backdrop, .modal-backdrop.fade.in {
     opacity: 0.6;
 }

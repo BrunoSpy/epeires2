@@ -232,6 +232,82 @@ class EventRepository extends ExtendedRepository {
     }
 
     /**
+     * Tous les évènements de la page radio en cours ou dans l'heure
+     */
+    public function getRadioEvents() {
+    	$qbEvents = $this->getQueryEvents();
+    	$qbEvents->andWhere($qbEvents->expr()->orX(
+    			'cat INSTANCE OF Application\Entity\FrequencyCategory',
+    			'cat INSTANCE OF Application\Entity\AntennaCategory',
+    			'cat INSTANCE OF Application\Entity\BrouillageCategory'));
+    	
+    	$query = $qbEvents->getQuery();
+    	
+    	return $query->getResult();
+    }
+    
+    public function getRadarEvents() {
+    	$qbEvents = $this->getQueryEvents();
+    	$qbEvents->andWhere('cat INSTANCE OF Application\Entity\RadarCategory');
+    	 
+    	$query = $qbEvents->getQuery();
+    	 
+    	return $query->getResult();
+    }
+    
+    /**
+     * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
+     * @param Application\Entity\Tab $tab
+     */
+    public function getTabEvents(Application\Entity\Tab $tab){
+    	$qbEvents = $this->getQueryEvents();
+    	$catsid = array();
+    	foreach ($tab->getCategories() as $cat){
+    		$catsid[] = $cat->getId();
+    	}
+    	$qbEvents->andWhere($qbEvents->expr()->in('cat.id', '?4'))
+    		->setParameter(4, $catsid);
+    	$query = $qbEvents->getQuery();
+    	return $query->getResult();
+    }
+    
+    /**
+     * Retourne un Query Builder pour tous les évènements en cours ou dans l'heure
+     */
+    private function getQueryEvents(){
+    	$now = new \DateTime('NOW');
+    	$now->setTimezone(new \DateTimeZone("UTC"));
+    	$onehour = clone $now;
+    	$onehour->add(new \DateInterval('PT1H'));
+    	$qbEvents = $this->getEntityManager()->createQueryBuilder();
+    	$qbEvents->select(array('e', 'cat'))
+    	->from('Application\Entity\Event', 'e')
+    	->innerJoin('e.category', 'cat')
+    	->andWhere($qbEvents->expr()->in('e.status', '?1'))
+    	->andWhere($qbEvents->expr()->orX(
+    			$qbEvents->expr()->andX(
+    					$qbEvents->expr()->eq('e.punctual', 'false'),
+    					$qbEvents->expr()->lte('e.startdate', '?2'),
+    					$qbEvents->expr()->orX(
+    							$qbEvents->expr()->isNull('e.enddate'),
+    							$qbEvents->expr()->gte('e.enddate', '?2')
+    					)
+    			),
+    			$qbEvents->expr()->andX(
+    					$qbEvents->expr()->gte('e.startdate', '?2'),
+    					$qbEvents->expr()->lte('e.startdate', '?3')
+    			)
+    	)
+    	)
+    	->setParameters(array(
+    			1 => array(1, 2, 3),
+    			2 => $now->format('Y-m-d H:i:s'),
+    			3 => $onehour->format('Y-m-d H:i:s'),
+    	));
+    	return $qbEvents;
+    }
+    
+    /**
      * Tous les éléments prévus concernant la catégorie <code>$category</code>
      * - Date de début dans les 12h
      */

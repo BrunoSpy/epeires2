@@ -95,7 +95,7 @@
 	            	<li class="divider-vertical"></li>
                         <?php
                         if($this->isGranted('radars.read')){
-                            echo '<li><a href="'
+                            echo '<li><a id="radartab" href="'
                                 . $this->url('application', array('controller'=>'radars', 'action'=>'index'))
                                 . '">Radars</a></li>';
                         }
@@ -113,7 +113,7 @@
                         $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array('place' => 'ASC'));;
                         foreach ($tabs as $tab) {
                         	if($this->hasRole($tab->getReadRoleNames())){
-                        		echo '<li><a id="'.$tab->getShortName().'" href="';
+                        		echo '<li><a class="customtab" id="tab-'.$tab->getId().'" href="';
                         		echo $this->url('application', array('controller' => 'tabs', 'action' => 'index'), 
                         											 array('query' => array('tabid' => $tab->getId())));
                         		echo '">'.$tab->getName().'</a></li>';

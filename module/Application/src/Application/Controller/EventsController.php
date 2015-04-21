@@ -1066,6 +1066,21 @@ class EventsController extends TabController {
     }
     
     /**
+     * Retourne le nombre d'évènements courants ou à venir dans l'heure pour les onglets
+     */
+    public function getNumberEventsTabAction(){
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$json = array();
+    	foreach ($em->getRepository('Application\Entity\Tab')->findAll() as $tab) {
+    		$events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab);
+    		$json[$tab->getId()] = count($events);
+    	}
+    	$json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
+    	$json['radio'] = count($em->getRepository('Application\Entity\Event')->getRadioEvents());
+    	return new JsonModel($json);
+    }
+    
+    /**
      * {'evt_id_0' => {
      * 		'name' => evt_name,
      * 		'modifiable' => boolean,
