@@ -259,7 +259,7 @@ class EventRepository extends ExtendedRepository {
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * @param Application\Entity\Tab $tab
      */
-    public function getTabEvents(Application\Entity\Tab $tab){
+    public function getTabEvents(\Application\Entity\Tab $tab){
     	$qbEvents = $this->getQueryEvents();
     	$catsid = array();
     	foreach ($tab->getCategories() as $cat){
