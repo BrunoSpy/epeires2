@@ -35,7 +35,8 @@
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
-        "zendframework/zftool": "dev-master"
+        "zendframework/zftool": "dev-master",
+        "phpunit/phpunit": "~4.6"
     },
     "config":{
         "component-dir": "public/components",
