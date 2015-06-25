@@ -36,7 +36,7 @@ class CustomFieldValue {
 	protected $customfield;
 	
 	/** 
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="text")
 	 * @Gedmo\Versioned
 	 */
 	protected $value;
