@@ -1405,29 +1405,13 @@
         	this._highlightElmt(elmt, highlight);
         },
         _highlightElmt: function(elmt, highlight){
-        	var rect = elmt.find('.rect_elmt');
-        	rect.on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-        			function(){
-		        		var me = $(this);
-		        		me.removeClass('animated shake');
-		        		if(elmt.hasClass('star')){
-		        			setTimeout(function(){
-		        				//check again : star can be removed during interval
-		        				if(elmt.hasClass('star')){
-		        					me.addClass('animated shake');
-		        				}
-		        			}, 10000);
-		        		}
-        	});
         	if(highlight !== undefined && highlight === true){
         		if(!elmt.hasClass('star')){
         			elmt.addClass('star');
-        			rect.addClass('animated shake');
         		}
         	} else {
         		elmt.removeClass('star');
         		elmt.find('.rect_shadow').remove();
-        		rect.removeClass('animated shake');
         	}
         },
         /**
