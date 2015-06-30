@@ -11,7 +11,11 @@
                 {
                         "type": "vcs",
                         "url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
-                }
+                },
+		{
+			"type": "vcs",
+			"url": "https://github.com/kipperlenny/opentbsbundle"
+		}
 	],
     "require": {
         "php": ">=5.4.0",
@@ -31,12 +35,12 @@
 	"components/jquery": "2.1.*",
 	"components/bootstrap": "2.3.*",
 	"components/jqueryui": "1.11.*",
-        "components/bootstrap-default": "2.3.*"        
+        "components/bootstrap-default": "2.3.*",
+	"Kipperlenny/opentbs-bundle": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
-        "zendframework/zftool": "dev-master",
-        "phpunit/phpunit": "~4.6"
+        "zendframework/zftool": "dev-master"
     },
     "config":{
         "component-dir": "public/components",
