@@ -272,37 +272,28 @@ class EventRepository extends ExtendedRepository {
     }
     
     /**
-     * Retourne un Query Builder pour tous les évènements en cours ou dans l'heure
+     * Retourne un Query Builder pour tous les évènements en cours
      */
     private function getQueryEvents(){
     	$now = new \DateTime('NOW');
     	$now->setTimezone(new \DateTimeZone("UTC"));
-    	$onehour = clone $now;
-    	$onehour->add(new \DateInterval('PT1H'));
     	$qbEvents = $this->getEntityManager()->createQueryBuilder();
     	$qbEvents->select(array('e', 'cat'))
     	->from('Application\Entity\Event', 'e')
     	->innerJoin('e.category', 'cat')
     	->andWhere($qbEvents->expr()->in('e.status', '?1'))
-    	->andWhere($qbEvents->expr()->orX(
-    			$qbEvents->expr()->andX(
+    	->andWhere($qbEvents->expr()->andX(
     					$qbEvents->expr()->eq('e.punctual', 'false'),
     					$qbEvents->expr()->lte('e.startdate', '?2'),
     					$qbEvents->expr()->orX(
     							$qbEvents->expr()->isNull('e.enddate'),
     							$qbEvents->expr()->gte('e.enddate', '?2')
     					)
-    			),
-    			$qbEvents->expr()->andX(
-    					$qbEvents->expr()->gte('e.startdate', '?2'),
-    					$qbEvents->expr()->lte('e.startdate', '?3')
     			)
-    	)
     	)
     	->setParameters(array(
     			1 => array(1, 2, 3),
     			2 => $now->format('Y-m-d H:i:s'),
-    			3 => $onehour->format('Y-m-d H:i:s'),
     	));
     	return $qbEvents;
     }

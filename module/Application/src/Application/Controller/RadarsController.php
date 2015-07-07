@@ -66,7 +66,7 @@ class RadarsController extends TabController {
 			$now->setTimezone(new \DateTimeZone("UTC"));
 					
 			if($state != null && $radarid){
-				$events = $this->getCurrentRadarEvents();			
+				$events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');			
 
 				$radarevents = array();
 				foreach ($events as $event){
@@ -170,7 +170,7 @@ class RadarsController extends TabController {
 			}
 		}
 					
-		$results = $this->getCurrentRadarEvents();
+		$results = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');
 					
 		foreach ($results as $result){
 			$statefield = $result->getCategory()->getStatefield()->getId();
@@ -195,28 +195,6 @@ class RadarsController extends TabController {
 				
 		return $radars;
 		
-	}
-
-	private function getCurrentRadarEvents(){
-		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		$now = new \DateTime('NOW');
-		$now->setTimezone(new \DateTimeZone("UTC"));
-		//évènements radars en cours
-		$qb = $em->createQueryBuilder();
-		$qb->select('e', 'cat')
-		->from('Application\Entity\Event', 'e')
-		->innerJoin('e.category', 'cat')
-		->andWhere('cat INSTANCE OF Application\Entity\RadarCategory')
-		->andWhere($qb->expr()->lte('e.startdate', '?1'))
-		->andWhere($qb->expr()->orX(
-				$qb->expr()->isNull('e.enddate'),
-				$qb->expr()->gte('e.enddate', '?2')))
-				->andWhere($qb->expr()->in('e.status', array(2,3)))
-				->setParameters(array(1 => $now->format('Y-m-d H:i:s'),
-						2 => $now->format('Y-m-d H:i:s')));
-					
-		$query = $qb->getQuery();
-		return $query->getResult();
 	}
 	
 }

@@ -125,14 +125,14 @@
 .elmt.star.notpunctual .rect_elmt {
 	border-style: solid;
 	border-color: black;
-/*	box-shadow: 0px 2px 2px 0px;*/
+	box-shadow: 0px 2px 2px 0px;
 }
 
-/* .elmt.star.notpunctual .rect_shadow {
+.elmt.star.notpunctual .rect_shadow {
 	position: absolute;
 	background-color: #ffff00 !important;
 	box-shadow: 0px 0px 10px 10px #ffff00;
-} */
+} 
 
 .elmt.star.notpunctual .label_elmt {
 	text-shadow: #666 2px 2px 2px;
@@ -240,17 +240,4 @@
 
 .elmt .rect_elmt.stripes {
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAoCAQAAAClM0ndAAAAhklEQVR4AdXO0QrCMBBE0bttkk38/w8WRERpdyjzVOc+HxhIHqJGMQcFFkpYRQotLLSw0IJ5aBdovruMYDA/kT8plF9ZKLFQcgF18hDj1SbQOMlCA4kao0iiXmah7qBWPdxpohsgVZyj7e5I9KcID+EhiDI5gxBYKLBQYKHAQoGFAoEks/YEGHYKB7hFxf0AAAAASUVORK5CYII=');
-}
-
-/* Animate box-shadow */
-@keyframes pulseshadow {
-	0% { box-shadow: 0 0 10px 5px rgba(255,255,0,0.2); }
-	50% { box-shadow: 0 0 5px 5px rgba(255,255,0,1); }
-	100% { box-shadow: 0 0 10px 5px rgba(255,255,0,0.2); }
-}
-
-@-webkit-keyframes pulseshadow {
-	0% { box-shadow: 0 0 10px 5px rgba(255,255,0,0.2); }
-	50% { box-shadow: 0 0 5px 5px rgba(255,255,0,1); }
-	100% { box-shadow: 0 0 10px 5px rgba(255,255,0,0.2); }
 }

@@ -51,7 +51,6 @@ var headerbar = function (url) {
     					}
     				}
     			} else if(key === 'radio'){
-    				console.log(value);
     				if(isNaN(count) || count <= 0) {
     					$('#frequency').find('span').remove();
     				} else {
