@@ -87,8 +87,9 @@ class CustomField {
         protected $tooltip;
                 
         /** 
-         * @ORM\Column(type="boolean")
+         * @ORM\Column(type="boolean", nullable=true)
          * @Annotation\Type("Zend\Form\Element\Checkbox")
+         * @Annotation\Required(false)
          * @Annotation\Options({"label":"Sélection multiple :"})
          */
         protected $multiple = false;
