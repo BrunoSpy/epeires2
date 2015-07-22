@@ -10,15 +10,15 @@
                 }
 	],
     "require": {
-        "php": ">=5.4.0",
-        "zendframework/zendframework": "~2.4.0",
+        "php": ">=5.5.0",
+        "zendframework/zendframework": "~2.5.0",
         "robloach/component-installer": "dev-master",
-        "rwoverdijk/assetmanager": ">=1.0",
+        "rwoverdijk/assetmanager": "1.*",
         "doctrine/doctrine-orm-module": "~0.9.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
-        "zf-commons/zfc-user": "~1.0",
+        "zf-commons/zfc-user": "~1.2",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
-        "zf-commons/zfc-rbac": "~2.0",
+        "zf-commons/zfc-rbac": "~2.4",
         "mrclay/minify": "*",
         "doctrine/migrations": "dev-master",
         "murganikolay/doctrine-migrations-module": "dev-master",
@@ -30,8 +30,7 @@
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
-        "zendframework/zftool": "dev-master",
-        "phpunit/phpunit": "~4.6"
+        "zendframework/zftool": "dev-master"
     },
     "config":{
         "component-dir": "public/components",
