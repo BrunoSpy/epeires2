@@ -25,6 +25,29 @@
                                     </thead>
                                     <tbody>
                                         <?php 
+                                        function sortTabs($a, $b){
+                                        	if($a->getParent() !== null && $b->getParent() !== null) {
+                                        		if($a->getParent()->getId() === $b->getParent()->getId()) {
+                                        			return $a->getPlace() - $b->getPlace();
+                                        		} else {
+                                        			return $a->getParent()->getPlace() - $b->getParent()->getPlace();
+                                        		}
+                                        	} else if($a->getParent() !== null && $b->getParent() == null) {
+                                        		if($a->getParent()->getId() === $b->getId()){
+                                        			return 1;
+                                        		} else {
+                                        			return $a->getParent()->getPlace() - $b->getPlace();
+                                        		}
+                                        	} else if($a->getParent() == null && $b->getParent() !== null) {
+                                        		if($b->getParent()->getId() === $a->getId()){
+                                        			return -1;
+                                        		} else {
+                                        			return $a->getPlace() - $b->getParent()->getPlace();
+                                        		}
+                                        	} else if($a->getParent() == null && $b->getParent() == null){
+                                        		return $a->getPlace() - $b->getPlace();
+                                        	}
+                                        }
                                         foreach ($this->tabs as $tab){
                                             echo '<tr>';
                                             echo '<td>'.$tab->getId().'</td>';
@@ -32,29 +55,6 @@
                                             echo '<td>'.$tab->getShortname().'</td>';
                                             echo '<td>';
                                             $tabsArray = $tab->getCategories()->toArray();
-                                            function sortTabs($a, $b){
-                                            	if($a->getParent() !== null && $b->getParent() !== null) {
-                                            		if($a->getParent()->getId() === $b->getParent()->getId()) {
-                                            			return $a->getPlace() - $b->getPlace(); 
-                                            		} else {
-                                            			return $a->getParent()->getPlace() - $b->getParent()->getPlace(); 
-                                            		}
-                                            	} else if($a->getParent() !== null && $b->getParent() == null) {
-                                            		if($a->getParent()->getId() === $b->getId()){
-                                            			return 1;
-                                            		} else {
-                                            			return $a->getParent()->getPlace() - $b->getPlace();
-                                            		}
-                                            	} else if($a->getParent() == null && $b->getParent() !== null) {
-                                            		if($b->getParent()->getId() === $a->getId()){
-                                            			return -1;
-                                            		} else {
-                                            			return $a->getPlace() - $b->getParent()->getPlace();
-                                            		}
-                                            	} else if($a->getParent() == null && $b->getParent() == null){
-                                            		return $a->getPlace() - $b->getPlace();
-                                            	}
-                                            }
                                             uasort($tabsArray, "sortTabs");
                                             foreach ($tabsArray as $cat){
                                             	if($cat->getParent() !== null){

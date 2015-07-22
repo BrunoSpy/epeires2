@@ -5,38 +5,33 @@
     "homepage": "http://vulcain.do.aviation/projects/pvcds",
     "repositories": [
 		{
-			"type": "composer",
-			"url": "https://packages.zendframework.com/"
+			"type": "vcs",
+			"url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
 		},
-                {
-                        "type": "vcs",
-                        "url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
-                },
 		{
 			"type": "vcs",
 			"url": "https://github.com/kipperlenny/opentbsbundle"
 		}
 	],
     "require": {
-        "php": ">=5.4.0",
-        "zendframework/zendframework": "~2.4.0",
+        "php": ">=5.5.0",
+        "zendframework/zendframework": "~2.5.0",
         "robloach/component-installer": "dev-master",
-        "rwoverdijk/assetmanager": ">=1.0",
-        "doctrine/common": ">=2.4.0",
-        "doctrine/doctrine-orm-module": ">=0.7.0",
+        "rwoverdijk/assetmanager": "1.*",
+        "doctrine/doctrine-orm-module": "~0.9.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
-        "zf-commons/zfc-user": "~1.0",
+        "zf-commons/zfc-user": "~1.2",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
-        "zf-commons/zfc-rbac": "~2.0",
+        "zf-commons/zfc-rbac": "~2.4",
         "mrclay/minify": "*",
         "doctrine/migrations": "dev-master",
         "murganikolay/doctrine-migrations-module": "dev-master",
         "dino/dompdf-module": "dev-master",
-	"components/jquery": "2.1.*",
-	"components/bootstrap": "2.3.*",
-	"components/jqueryui": "1.11.*",
+        "components/jquery": "2.1.*",
+        "components/bootstrap": "2.3.*",
+        "components/jqueryui": "1.11.*",
         "components/bootstrap-default": "2.3.*",
-	"Kipperlenny/opentbs-bundle": "dev-master"
+        "Kipperlenny/opentbs-bundle": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
@@ -44,6 +39,6 @@
     },
     "config":{
         "component-dir": "public/components",
-	"component-baseurl": "/components"
+        "component-baseurl": "/components"
     }
 }
