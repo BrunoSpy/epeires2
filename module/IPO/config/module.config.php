@@ -44,9 +44,24 @@ return array(
             ),
         ),
     ),
+	'doctrine' => array(
+			'driver' => array(
+					'ipo_entities' => array(
+							'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+							'cache' => 'array',
+							'paths' => array(__DIR__ . '/../src/IPO/Entity')
+					),
+					'orm_default' => array(
+							'drivers' => array(
+									'IPO\Entity' => 'ipo_entities'
+							)
+					)
+			)
+	),
     'controllers' => array(
         'invokables' => array(
             'IPO\Controller\Index' => 'IPO\Controller\IndexController',
+        	'IPO\Controller\Report' => 'IPO\Controller\ReportController',
         ),
     ),
     'view_manager' => array(

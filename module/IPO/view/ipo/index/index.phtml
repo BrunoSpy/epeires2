@@ -1,40 +1,55 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/ipo.js')?>
 <?php
-$formatter = \IntlDateFormatter::create(\Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd/MM/YYYY');
+
+$formatter = \IntlDateFormatter::create(
+		\Locale::getDefault(),
+		\IntlDateFormatter::FULL,
+		\IntlDateFormatter::FULL,
+		'UTC',
+		\IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
 ?>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            
-            <div id="calendar">
-                <p><a href="#" id="prev-day"><i class="icon-backward"></i></a> <input id="day" type="text" class="date input-small" value='<?php echo $formatter->format($day);?>'></input> <a href="#" id="next-day"><i class="icon-forward"></i></a> <a href="#" id="export"><i class="icon-print"></i></a></p>
-            </div>
-                       
+
+	<div class="row-fluid">
+		<div class="span12">
+			<h1>Derniers rapports</h1>
+	           <table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Nom</th>
+						<th>Date de création</th>
+						<th>Semaine n°</th>
+						<th><a id="add-report" href="#report-container" data-toggle="modal" class="btn btn-small">Nouveau rapport</a></th>
+					</tr>
+				</thead>
+				<tbody>
+	           <?php
+					foreach ( $this->reports as $report ) {
+						echo "<tr>";
+						echo "<td>" . $report->getName() . "</td>";
+						echo "<td>" . $formatter->format ( $report->getCreatedOn () ) . "</td>";
+						echo "<td>" . $report->getWeek () . "/" . $report->getYear () . "</td>";
+						echo '<td><a href="#" title="Modifier les propriétés"><i class="icon-pencil"></i></a>
+									<a href="'. $this->url('ipo', array('controller' => 'report', 'action' => 'show'), array('query' => array('id' => $report->getId()))) .'" title="Visualiser et classer les évènements"><i class="icon-th-list"></i></a>
+	            					<a href="#" title="Envoyer par email"><i class="icon-share"></i></a>
+	            					<a href="#" title="Supprimer"><i class="icon-trash"></i></a>
+	            			</td>';
+						echo "</tr>";
+					}
+				?>
+	           </tbody>
+			</table>
+			<?php if(count($this->reports) == 0): ?>
+				<p>Aucun rapport en base de données.</p>
+           	<?php endif;?>
         </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span12">
-            <table class="table table-hover table-bordered table-condensed" id="table-events">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nom</th>
-                        <th>Catégorie</th>
-                        <th>Statut</th>
-                        <th>Début</th>
-                        <th>Fin</th>
-                        <th>Durée</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>
+	</div>
 </div>
+
+<?php echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>")?>
+
+<?php $this->inlineScript()->captureStart();?>
+
+setUrl('<?php echo $this->url('ipo'); ?>');
+
+<?php $this->inlineScript()->captureEnd();?>

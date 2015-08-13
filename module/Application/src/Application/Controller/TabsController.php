@@ -22,7 +22,10 @@ namespace Application\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
-
+/**
+ * @author Bruno Spyckerelle
+ * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+ */
 class TabsController extends TabController {
 
 	public function indexAction() {

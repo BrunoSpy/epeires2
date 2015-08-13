@@ -1,0 +1,141 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/ipo_show.js');
+
+$formatter = \IntlDateFormatter::create(
+		\Locale::getDefault(),
+		\IntlDateFormatter::FULL,
+		\IntlDateFormatter::FULL,
+		'UTC',
+		\IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
+?>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+		<?php if($this->report !== null) :?>
+			<h1>&Eacute;dition du rapport <?php echo $this->report->getName() ?></h1>
+			<h2>&Eacute;vènements à classer</h2>
+	           <table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Titre</th>
+						<th>Date de début</th>
+						<th>Date de fin</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+	           <?php 
+	           foreach ($this->unclassified as $event){
+	           		echo '<tr id="event_'.$event->getId().'">';
+	           		echo "<td>".$this->eventname($event)."</td>";
+	           		echo "<td>".$formatter->format($event->getStartdate())."</td>";
+	           		echo "<td>"; 
+	           		if($event->getEnddate() !== null){
+	           			echo $formatter->format($event->getEnddate());
+	           		} else {
+	           			echo "--";	
+	           		}	           		
+	           		echo "</td>";
+	           		echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+	           		echo '<option value="">Classer l\'évènement</option>';
+	           		echo '<option value="-1">Exclure du rapport</option>';
+	           		foreach ($this->reportcategories as $reportcategory){
+	           			if($reportcategory['category'] !== null) {
+	           				echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+	           			}
+	           		}
+	           		echo "</select></td>";
+	           		echo "</tr>";
+	           }
+	           
+	           ?>
+	           </tbody>
+			</table>
+			<?php 
+			foreach ($this->reportcategories as $reportcategory){
+				if($reportcategory['category'] !== null) {
+					echo "<h2>".$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
+					echo '<thead>';
+					echo '<tr><th>Titre</th>';
+					echo '<th>Date de début</th><th>Date de fin</th><th></th>';
+					echo '</tr>';
+					echo '</thead>';
+					echo '<tbody>';
+					foreach ($reportcategory['events'] as $event){
+						echo '<tr id="'.$event->getId().'">';
+						echo '<td>'.$this->eventname($event).'</td>';
+						echo "<td>".$formatter->format($event->getStartdate())."</td>";
+						echo "<td>";
+						if($event->getEnddate() !== null){
+							echo $formatter->format($event->getEnddate());
+						} else {
+							echo "--";
+						}
+						echo "</td>";
+						echo '<td></td>';
+						echo '</tr>';
+					}
+					echo '</tbody>';
+					echo '</table>';
+				} else {
+					echo "<h2>Eléments exclus</h2>";
+					echo '<table class="table table-striped" id="category_null">';
+					echo '<thead>';
+					echo '<tr><th>Titre</th>';
+					echo '<th>Date de début</th><th>Date de fin</th><th></th>';
+					echo '</tr>';
+					echo '</thead>';
+					echo '<tbody>';
+					foreach ($reportcategory['events'] as $event){
+						echo '<tr id="event_'.$event->getId().'">';
+						echo '<td>'.$this->eventname($event).'</td>';
+						echo "<td>".$formatter->format($event->getStartdate())."</td>";
+						echo "<td>";
+						if($event->getEnddate() !== null){
+							echo $formatter->format($event->getEnddate());
+						} else {
+							echo "--";
+						}
+						echo "</td>";
+						echo '<td></td>';
+						echo '</tr>';
+					}
+					echo '</tbody>';
+					echo '</table>';
+				}
+			}
+			
+			?>
+		<?php else :?>
+		<div class="alert alert-error">
+		Aucun rapport trouvé.
+		</div>
+		<?php endif;?>	
+        </div>
+	</div>
+</div>
+
+<?php echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>")?>
+
+<?php $this->inlineScript()->captureStart();?>
+
+iposhow('<?php echo $this->url('ipo'); ?>');
+
+<?php if (isset($this->messages['success'])) { ?>
+	<?php foreach ($this->messages['success'] as $message) { ?>
+		var n = noty({text:'<?php echo $message ?>', 
+					type:'success',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+<?php if (isset($this->messages['error'])) { ?>
+	<?php foreach ($this->messages['error'] as $message) { ?>
+		var n = noty({text:"<?php echo $message ?>", 
+					type:'error',
+					layout: 'bottomRight',});
+	<?php }?>
+<?php } ?>
+
+
+<?php $this->inlineScript()->captureEnd();?>

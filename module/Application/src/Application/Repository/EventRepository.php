@@ -207,6 +207,54 @@ class EventRepository extends ExtendedRepository {
     }
 
     /**
+     * Get all events intersecting [$start, $end] and affected to the user's organisation
+     * @param unknown $user
+     * @param unknown $start DateTime
+     * @param unknown $end DateTime
+     */
+    public function getAllEvents($user, $start, $end) {
+    	$qb = $this->getEntityManager()->createQueryBuilder();
+    	$qb->select(array('e'))
+    		->from('Application\Entity\Event', 'e')
+    		->andWhere($qb->expr()->isNull('e.parent')) //display only root events
+    	    ->andWhere($qb->expr()->orX(
+    			//sans date de fin et non ponctuel
+    			$qb->expr()->andX($qb->expr()->isNull('e.enddate'),
+    							  $qb->expr()->eq('e.punctual', 'false'), 
+    							  $qb->expr()->lte('e.startdate', '?2')),
+    			//non ponctuel, avec date de fin
+    			$qb->expr()->andX(
+    					$qb->expr()->isNotNull('e.enddate'),
+    					$qb->expr()->eq('e.punctual', 'false'),
+    					$qb->expr()->lte('e.startdate', '?2'),
+    					$qb->expr()->gte('e.enddate', '?1')
+    			),
+    			//ponctuel
+    			$qb->expr()->andX(
+    					$qb->expr()->eq('e.punctual', 'true'),
+    					$qb->expr()->gte('e.startdate', '?1'),
+    					$qb->expr()->lte('e.startdate', '?2'))
+    	));
+    	
+    	if($user !== null && $user->hasIdentity()) {
+    		$org = $user->getIdentity()->getOrganisation();
+    		
+    		$qb->andWhere($qb->expr()->eq('e.organisation', $org->getId()));
+    		
+    		$parameters[1] = $start->format("Y-m-d H:i:s");
+	    	$parameters[2] = $end->format("Y-m-d H:i:s");
+	    	$qb->setParameters($parameters);
+	
+	    	$query = $qb->getQuery();
+	    	
+	    	return $query->getResult();
+    	} else {
+    		return array();
+    	}
+    	
+    }
+    
+    /**
      * Tous les évènements en cours concernant la catégorie <code>$category</code>
      */
     public function getCurrentEvents($category) {
