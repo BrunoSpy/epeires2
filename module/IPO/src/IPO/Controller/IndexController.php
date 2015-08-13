@@ -8,40 +8,24 @@ namespace IPO\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
     public function indexAction(){
-        $now = new \DateTime('now');
-        $now->setTimezone(new \DateTimeZone('UTC'));
-        return array('day' => $now);
+    	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	
+    	$reports = $em->getRepository('IPO\Entity\Report')->findBy(array(), array('created_on' => 'ASC'), 10, 0);
+    	    	
+    	return array('reports' => $reports);
     }
     
     public function getEventsAction(){
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
-        $day = $this->params()->fromQuery('day', null);
-        if($day == null){
-            $day = new \DateTime('now');
-            $day->setTimezone(new \DateTimeZone('UTC'));
-        } else {
-            $day = new \DateTime($day);
-        }
         
         $events = array();
         
-        foreach ($em->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day->format(\DateTime::RFC2822), null) as $event){
-            $e = $this->getEventJson($event);
-            $children = array();
-            foreach ($event->getChildren() as $child){
-                $children[] = $this->getEventJson($child);
-            }
-            if(!empty($children)){
-                $e['children'] = $children;
-            }
-            $events[] = $e;
-        }
-        
+
         return new JsonModel($events);
     }
     

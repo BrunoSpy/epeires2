@@ -14,35 +14,27 @@
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-var url;
 
-var setUrl = function(urlt){
-  url = urlt;  
-};
-
-$(document).ready(function(){
-
-    
-	$("#add-report").on('click', function(){
-		$("#report-title").html("Nouveau rapport");
-		$("#report-form").load(url+'/report/newreport');
-	});
-	
-    
-	$("#report-container").on('click', 'input[type=submit]', function(event){
-		event.preventDefault();
-		$.post(url+'/report/savereport', $("#Report").serialize(), function(data){
+var iposhow = function (url){
+	$('select[name=cat]').change(function(e){
+		var me = $(this);
+		var eventid = me.data('eventid');
+		var newcatid = me.find('option:selected').val();
+		var reportid = me.data('reportid');
+		$.getJSON(url+'/report/affectcategory?id='+eventid+'&catid='+newcatid+'&reportid='+reportid, function(data){
 			if(data['messages']){
+				if(!data.messages['error']) {
+					//move line to the corresponding table
+					var id = data.id;
+					var catid = data.catid;
+					var tr = $("#event_"+id);
+					tr.remove();
+					if(catid == -1) catid = "null";
+					$("#category_"+catid+" tbody").append(tr);
+				}
 				displayMessages(data.messages);
-			}
-			if(data['success']){
-				location.reload();
-			}
-		}, 'json').fail(function(){
-			var messages = '({error: ["Impossible d\'enregistrer le rapport."]})';
-			displayMessages(eval(messages));
+			} 
+			
 		});
 	});
-});
-
-
+};

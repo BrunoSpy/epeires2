@@ -99,51 +99,58 @@
 						</li>
 					</ul>
 				</li>
-                                <?php endif; ?>
-                                <?php if($this->isGranted('admin.categories') ||
-                                        $this->isGranted('admin.models') ||
-                                        $this->isGranted('admin.radio')) : ?>
+                <?php endif; ?>
+                <?php if($this->isGranted('admin.categories') ||
+                         $this->isGranted('admin.models')) : ?>
 				<li class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Personnalisation <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-                                            <?php if($this->isGranted('admin.categories')) : ?>
+                        <?php if($this->isGranted('admin.categories')) : ?>
 						<li><a
 							data-title="Personnalisation > Catégories"
 							href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a>
 						</li>
-                                                <li>
-                                                    <a
-                                                        data-title="Personnalisation > Catégories par défaut"
-                                                        href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'defaultindex'))?>">Catégories par défaut</a>
-                                                </li>
-                                            <?php endif; ?>
-                                            <?php if($this->isGranted('admin.models')) : ?>
+                        <li><a
+                             data-title="Personnalisation > Catégories par défaut"
+                             href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'defaultindex'))?>">Catégories par défaut</a>
+                        </li>
+                        <?php endif; ?>
+                        <?php if($this->isGranted('admin.models')) : ?>
 						<li><a
 							data-title="Personnalisation > Modèles"
 							href="<?php echo $this->url('administration', array('controller'=>'models', 'action'=>'index')) ?>"
 							>Modèles</a></li>
-                                            <?php endif; ?>
-                                            <?php if($this->isGranted('admin.radio')) : ?>
-						<li><a
-							data-title="Personnalisation > Page fréquence"
-							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Page Fréquence</a>
-						</li>
-                                            <?php endif; ?>
-                        <?php if($this->isGranted('admin.zonesmil')) : ?>
-                        <li><a
-							data-title="Personnalisation > Page Zones militaires"
-							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Page Zones militaires</a>
+                        <?php endif; ?>
+					</ul>
+				</li>
+                <?php endif; ?>
+                <?php if($this->isGranted('admin.radio') || 
+                		$this->isGranted('admin.zonesmil') ||
+                		$this->isGranted('admin.tabs')) : ?>
+                <li class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Onglets <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+					    <?php if($this->isGranted('admin.tabs')) : ?>
+						<li>
+						<a data-title="Onglets > Gestion"
+							href="<?php echo $this->url('administration', array('controller' => 'tabs', 'action' => 'index'))?>">Gestion des onglets</a>
 						</li>
 						<?php endif;?>
-						<?php if($this->isGranted('admin.tabs')) : ?>
-						<li>
-						<a data-title="Personnalisation > Onglets"
-							href="<?php echo $this->url('administration', array('controller' => 'tabs', 'action' => 'index'))?>">Onglets</a>
+					    <?php if($this->isGranted('admin.radio')) : ?>
+						<li><a
+							data-title="Onglets > Fréquences"
+							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Onglet fréquences</a>
+						</li>
+                        <?php endif; ?>
+                        <?php if($this->isGranted('admin.zonesmil')) : ?>
+                        <li><a
+							data-title="Onglets > Zones militaires"
+							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
 						</li>
 						<?php endif;?>
 					</ul>
 				</li>
-                                <?php endif; ?>
+                <?php endif;?>
 			</ul>
 		</div>
 	</div>
