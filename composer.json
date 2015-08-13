@@ -4,14 +4,27 @@
     "license": "AGPL-3.0",
     "homepage": "http://vulcain.do.aviation/projects/pvcds",
     "repositories": [
-                {
-                        "type": "vcs",
-                        "url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
-                }
+		{
+			"type": "vcs",
+			"url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
+		},
+		{
+			"type": "vcs",
+			"url": "https://github.com/kipperlenny/opentbsbundle"
+		}
 	],
     "require": {
         "php": ">=5.5.0",
-        "zendframework/zendframework": "~2.5.0",
+        "zendframework/zend-mvc": "~2.5.0",
+        "zendframework/zend-view": "~2.5.0",
+        "zendframework/zend-log": "~2.5.0",
+        "zendframework/zend-i18n": "~2.5.0",
+        "zendframework/zend-session": "~2.5.0",
+        "zendframework/zend-form": "~2.5.0",
+        "zendframework/zend-file": "~2.5.0",
+        "zendframework/zend-mail": "~2.5.0",
+        "zendframework/zend-mime": "~2.5.0",
+        "zendframework/zend-console": "~2.5.0",
         "robloach/component-installer": "dev-master",
         "rwoverdijk/assetmanager": "1.*",
         "doctrine/doctrine-orm-module": "~0.9.0",
@@ -23,10 +36,11 @@
         "doctrine/migrations": "dev-master",
         "murganikolay/doctrine-migrations-module": "dev-master",
         "dino/dompdf-module": "dev-master",
-	"components/jquery": "2.1.*",
-	"components/bootstrap": "2.3.*",
-	"components/jqueryui": "1.11.*",
-        "components/bootstrap-default": "2.3.*"        
+        "components/jquery": "2.1.*",
+        "components/bootstrap": "2.3.*",
+        "components/jqueryui": "1.11.*",
+        "components/bootstrap-default": "2.3.*",
+        "Kipperlenny/opentbs-bundle": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
@@ -34,6 +48,6 @@
     },
     "config":{
         "component-dir": "public/components",
-	"component-baseurl": "/components"
+        "component-baseurl": "/components"
     }
 }

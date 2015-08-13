@@ -9,9 +9,13 @@
 namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
+
 use DOMPDFModule\View\Model\PdfModel;
+
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
+
+use OpentbsBundle\Factory\TBSFactory as TBS;
 
 /**
  * Description of ReportController
@@ -64,22 +68,26 @@ class ReportController extends AbstractActionController {
               
         if($day){
             $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
-            $pdf = new PdfModel();
-            $pdf->setVariables(array('events' => $events, 'day' => $day));
-            $pdf->setOption('paperSize', 'a4');
+//             $pdf = new PdfModel();
+//             $pdf->setVariables(array('events' => $events, 'day' => $day));
+//             $pdf->setOption('paperSize', 'a4');
             
-            $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd_LL_yyyy');
-            $pdf->setOption('filename', 'rapport_du_'.$formatter->format(new \DateTime($day)));
+//             $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+//             \IntlDateFormatter::FULL,
+//             \IntlDateFormatter::FULL,
+//             'UTC',
+//             \IntlDateFormatter::GREGORIAN,
+//             'dd_LL_yyyy');
+//             $pdf->setOption('filename', 'rapport_du_'.$formatter->format(new \DateTime($day)));
             
             
-            return $pdf;
-                   
-            
+//             return $pdf;
+
+            $tbs = new TBS();
+            $tbs->LoadTemplate('data/templates/cr_ipo.odt');
+            $tbs->MergeField('client', array('name' => 'Bruno'));
+            // send the file
+            $tbs->Show(OPENTBS_DOWNLOAD, 'test.odt');
         } else {
             //erreur
         }
