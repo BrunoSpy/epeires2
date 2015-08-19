@@ -988,10 +988,19 @@
                         } else {
                             catEvents = (this.options.showOnlyRootCategories ?
                                     catEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
+                                    	//warning name can be an integer
+                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                    		return val.category_root_id === cat.id && val.name === event.name;
+                                    	} else {
+                                    		return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
+                                    	}
                                     }) :
                                     catEvents.filter(function (val) {
-                                        return val.category_id === cat.id && val.name.trim() === event.name.trim();
+                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                    		return val.category_id === cat.id && val.name === event.name;
+                                    	} else {    
+                                    		return val.category_id === cat.id && val.name.trim() === event.name.trim();
+                                    	}
                                     }));
                         }
                         //pour toutes les lignes dessinées de la catégorie, on cherche si il y a de la place
