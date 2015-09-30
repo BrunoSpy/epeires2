@@ -17,4 +17,22 @@ var tab = function(url){
 		}, 'json');
 	});
 
+	$(".rm-tab").on('click', function(event){
+		$('#tab-name').html($(this).data('name'));
+		$("#delete-tab-href").data('id', $(this).data('id'));
+	});
+	
+	$("#tab-rm-container").on('click', '#delete-tab-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$("#tab-rm-container").modal('hide');
+		var id = me.data('id');
+		$.post(url+'/tabs/remove?id='+id, function(){
+			location.reload();
+		}).fail(function(){
+			var messages = '({error: ["Impossible de supprimer l\'onglet."]})';
+			displayMessages(eval(messages));
+		});
+	});
+	
 };

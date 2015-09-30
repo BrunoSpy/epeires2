@@ -138,4 +138,19 @@ class TabsController extends \Application\Controller\FormController {
 		return array('form'=>$form, 'tab'=>$tab);
 	}
 	
+	public function removeAction() {
+		$id = $this->params()->fromQuery('id', null);
+		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
+		if($tab){
+			$objectManager->remove($tab);
+			try{
+				$objectManager->flush();
+			} catch (\Exception $e){
+				$this->flashMessenger()->addErrorMessage($e->getMessage());
+			}
+		}
+		return new JsonModel();
+	}
+	
 }
