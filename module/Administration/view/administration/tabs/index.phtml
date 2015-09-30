@@ -75,7 +75,15 @@
                                                     . 'data-id="'.$tab->getId().'" '
                                                     . 'data-name="'.$tab->getName().'" '
                                                     . 'title="Modifier" '
-                                                    . 'data-toggle="modal"><i class="icon-pencil"></i></a></td>';
+                                                    . 'data-toggle="modal"><i class="icon-pencil"></i></a>';
+                                            echo ' <a '
+                                            		. 'href="#tab-rm-container" '
+                                            		. 'class="rm-tab" '
+                                            		. 'data-id="'.$tab->getId().'" '
+                                                    . 'data-name="'.$tab->getName().'" '
+                                                    . 'title="Supprimer" '
+                                                    . 'data-toggle="modal"><i class="icon-trash"></i></a>';
+                                            echo '</td>';
                                             echo '</tr>';
                                         }
                                         ?>
@@ -103,6 +111,13 @@
 			
 <?php echo $this->modalwindow("tab-container", "<h3 id=\"tab-title\"></h3>", "", "<div id=\"tab-form\"></div>") ?>
 
+<?php echo $this->modalwindow("tab-rm-container",
+						"<h3>Confirmer la suppression ?</h3>",
+						"", 
+						null, 
+						"<p>Voulez-vous vraiment supprimer l'onglet <em><span id=\"tab-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-tab-href\">Confirmer</a>
+						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
 

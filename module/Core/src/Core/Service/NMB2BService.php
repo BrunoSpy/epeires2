@@ -36,6 +36,16 @@ class NMB2BService implements ServiceLocatorAwareInterface {
         $options['local_cert'] = ROOT_PATH.$this->nmb2b['cert_path'];
         $options['passphrase'] = $this->nmb2b['cert_password'];
         
+        $options['stream_context'] = stream_context_create(
+        		array(
+        				'ssl' => array(
+        						'verify_peer' => false,
+        						'verify_peer_name' => false,
+        						'allow_self_signed' => true,
+        				)
+        		)
+        );
+        
         if(array_key_exists('proxy_host', $this->nmb2b)){
             $options['proxy_host'] = $this->nmb2b['proxy_host'];
         }
