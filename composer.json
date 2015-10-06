@@ -6,7 +6,7 @@
     "repositories": [
 		{
 			"type": "vcs",
-			"url": "https://github.com/abstractionnl/DoctrineMigrationsModule"
+			"url": "https://github.com/BrunoSpy/DoctrineMigrationsModule"
 		},
 		{
 			"type": "vcs",
