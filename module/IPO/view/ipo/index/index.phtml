@@ -32,8 +32,8 @@ $formatter = \IntlDateFormatter::create(
 						echo '<td>';
 						//echo '<a href="#report-container" data-toggle="modal" class="mod-report" data-id="'.$report->getId().'" data-name="'.$report->getName().'" title="Modifier les propriétés"><i class="icon-pencil"></i></a>';
 						echo '<a href="'. $this->url('ipo', array('controller' => 'report', 'action' => 'show'), array('query' => array('id' => $report->getId()))) .'" title="Visualiser et classer les évènements"><i class="icon-th-list"></i></a>';
-	            		echo '<a href="'.$this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId().'" class="send-report" data-id="'.$report->getId().'" title="Envoyer par email"><i class="icon-share"></i></a>';
-	            		echo '<a href="#remove-report-container" data-id="'.$report->getId().'" data-name="'.$report->getName().'" data-toggle="modal" class="remove-report" title="Supprimer"><i class="icon-trash"></i></a>
+	            		echo ' <a href="'.$this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId().'" class="send-report" data-id="'.$report->getId().'" title="Télécharger"><i class="icon-download-alt"></i></a>';
+	            		echo ' <a href="#remove-report-container" data-id="'.$report->getId().'" data-name="'.$report->getName().'" data-toggle="modal" class="remove-report" title="Supprimer"><i class="icon-trash"></i></a>
 	            			</td>';
 						echo "</tr>";
 					}

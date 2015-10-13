@@ -9,10 +9,38 @@ $formatter = \IntlDateFormatter::create(
 ?>
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span12">
+		<div class="span3" id="sidebar">		
+			<ul class="nav nav-list report-sidenav">
+				<li>
+					<a href="#AClasser">
+						<i class="icon-chevron-right"></i> Evènements à classer
+					</a>
+				</li>
+				<?php 
+				foreach ($this->reportcategories as $reportcategory){
+					if($reportcategory['category'] !== null) {
+						echo "<li>";
+						echo '<a  href="#'.$reportcategory['category']->getShortname().'">';
+						echo '<i class="icon-chevron-right"></i> '.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName();
+						echo '</a>';
+						echo "</li>";
+					}
+				}
+				?>
+			<li>
+					<a href="#Exclus">
+						<i class="icon-chevron-right"></i> Evènements exclus
+					</a>
+				</li>	
+			<li>
+				<a href="<?php echo $this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId() ?>" class="btn"><i class="icon-download-alt"></i>Télécharger</a>
+			</li>
+			</ul>
+		</div>
+		<div class="span9">
 		<?php if($this->report !== null) :?>
 			<h1>&Eacute;dition du rapport <?php echo $this->report->getName() ?></h1>
-			<h2>&Eacute;vènements à classer</h2>
+			<h2 id="AClasser">&Eacute;vènements à classer</h2>
 	           <table class="table table-striped">
 				<thead>
 					<tr>
@@ -26,7 +54,14 @@ $formatter = \IntlDateFormatter::create(
 	           <?php 
 	           foreach ($this->unclassified as $event){
 	           		echo '<tr id="event_'.$event->getId().'">';
-	           		echo "<td>".$this->eventname($event)."</td>";
+	           		$title = "";
+	           		foreach ( $event->getCustomFieldsValues () as $value ) {
+						$formattedvalue = $this->customfieldvalue ($value);
+						if ($formattedvalue != '') {
+							$title .= $value->getCustomField ()->getName () . ' : '. $formattedvalue.'<br />';
+						}
+					}
+	           		echo '<td data-toggle="tooltip" title="'.$title.'" data-html="true" data-container="body">'.$this->eventname($event)."</td>";
 	           		echo "<td>".$formatter->format($event->getStartdate())."</td>";
 	           		echo "<td>"; 
 	           		if($event->getEnddate() !== null){
@@ -53,7 +88,7 @@ $formatter = \IntlDateFormatter::create(
 			<?php 
 			foreach ($this->reportcategories as $reportcategory){
 				if($reportcategory['category'] !== null) {
-					echo "<h2>".$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+					echo '<h2 id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
 					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
 					echo '<thead>';
 					echo '<tr><th>Titre</th>';
@@ -86,7 +121,7 @@ $formatter = \IntlDateFormatter::create(
 					echo '</tbody>';
 					echo '</table>';
 				} else {
-					echo "<h2>Eléments exclus</h2>";
+					echo '<h2 id="Exclus">Evènements exclus</h2>';
 					echo '<table class="table table-striped" id="category_null">';
 					echo '<thead>';
 					echo '<tr><th>Titre</th>';
@@ -134,6 +169,10 @@ $formatter = \IntlDateFormatter::create(
 <?php echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>")?>
 
 <?php $this->inlineScript()->captureStart();?>
+
+$(".report-sidenav").affix({offset:{top:90}});
+
+$('.report-sidenav').scrollspy();
 
 iposhow('<?php echo $this->url('ipo'); ?>');
 

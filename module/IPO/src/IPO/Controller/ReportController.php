@@ -83,14 +83,14 @@ class ReportController extends AbstractActionController {
 					\IntlDateFormatter::FULL,
 					\IntlDateFormatter::FULL,
 					'UTC',
-					\IntlDateFormatter::GREGORIAN, 'HH mm');
+					\IntlDateFormatter::GREGORIAN, 'HH:mm');
 			
 			$formatterDayHour = \IntlDateFormatter::create(
 					\Locale::getDefault(),
 					\IntlDateFormatter::FULL,
 					\IntlDateFormatter::FULL,
 					'UTC',
-					\IntlDateFormatter::GREGORIAN, 'dd/MM HH mm');
+					\IntlDateFormatter::GREGORIAN, 'dd/MM HH:mm');
 			
 			//pour chaque catégorie
 			foreach ($em->getRepository('IPO\Entity\ReportCategory')->findAll() as $cat){
@@ -112,6 +112,7 @@ class ReportController extends AbstractActionController {
 								$newevent['name'] = $eventservice->getName ( $event );
 								$newevent['start'] = $formatterDayHour->format($event->getStartdate ());
 								$newevent['end'] = ($event->getEnddate() !== null ? $formatterDayHour->format($event->getEnddate()) : '');
+								$newevent['author'] = $event->getAuthor()->getDisplayName();
 								$newevent['fields'] = array();
 								foreach ($event->getCustomFieldsValues() as $value) {
 									$val = array();
