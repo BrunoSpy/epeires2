@@ -28,13 +28,13 @@ var iposhow = function (url){
 					var id = data.id;
 					var catid = data.catid;
 					var tr = $("#event_"+id);
-					tr.remove();
+					tr.detach();
 					if(catid == -1) catid = "null";
 					$("#category_"+catid+" tbody").append(tr);
+					
 				}
 				displayMessages(data.messages);
 			} 
-			
 		});
 	});
 };

@@ -62,7 +62,7 @@ $formatter = \IntlDateFormatter::create(
 					echo '</thead>';
 					echo '<tbody>';
 					foreach ($reportcategory['events'] as $event){
-						echo '<tr id="'.$event->getId().'">';
+						echo '<tr id="event_'.$event->getId().'">';
 						echo '<td>'.$this->eventname($event).'</td>';
 						echo "<td>".$formatter->format($event->getStartdate())."</td>";
 						echo "<td>";
@@ -72,7 +72,15 @@ $formatter = \IntlDateFormatter::create(
 							echo "--";
 						}
 						echo "</td>";
-						echo '<td></td>';
+						echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+	           				echo '<option value="">Classer l\'évènement</option>';
+	           				echo '<option value="-1">Exclure du rapport</option>';
+	           				foreach ($this->reportcategories as $reportcat){
+	           					if($reportcat['category'] !== null) {
+	           						echo '<option '.($reportcat['category']->getId() == $reportcategory['category']->getId() ? 'selected="selected"' : '').' value="'.$reportcat['category']->getId().'">'.$reportcat['category']->getPlace().'. '.$reportcat['category']->getName().'</option>';
+	           					}
+	           				}
+	           			echo "</select></td>";
 						echo '</tr>';
 					}
 					echo '</tbody>';
@@ -97,7 +105,15 @@ $formatter = \IntlDateFormatter::create(
 							echo "--";
 						}
 						echo "</td>";
-						echo '<td></td>';
+						echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+	           				echo '<option value="">Classer l\'évènement</option>';
+	           				echo '<option value="-1">Exclure du rapport</option>';
+	           				foreach ($this->reportcategories as $reportcategory){
+	           					if($reportcategory['category'] !== null) {
+	           						echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+	           					}
+	           				}
+	           			echo "</select></td>";
 						echo '</tr>';
 					}
 					echo '</tbody>';

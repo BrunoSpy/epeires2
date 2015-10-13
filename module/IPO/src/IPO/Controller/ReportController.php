@@ -40,13 +40,14 @@ class ReportController extends AbstractActionController {
 	public function exportAction() {
 		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$eventservice = $this->getServiceLocator ()->get ( 'EventService' );
+		$customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
 		
 		$id = $this->params()->fromQuery('id', null);
 		
 		if($this->zfcUserAuthentication()->hasIdentity() && $id !== null) {
 			$tbs = new TBS();
 				
-			$tbs->LoadTemplate('data/templates/cr_ipo_model_v1.odt');
+			$tbs->LoadTemplate('data/templates/cr_ipo_model_v1.odt', OPENTBS_ALREADY_UTF8);
 			
 			$org_id = $this->zfcUserAuthentication()->getIdentity()->getOrganisation()->getId();
 			$org = $em->getRepository('Application\Entity\Organisation')->find($org_id);
@@ -70,6 +71,27 @@ class ReportController extends AbstractActionController {
 					'UTC',
 					\IntlDateFormatter::GREGORIAN, 'EEEE d MMMM');
 			
+			$formatterYear = \IntlDateFormatter::create(
+					\Locale::getDefault(),
+					\IntlDateFormatter::FULL,
+					\IntlDateFormatter::FULL,
+					'UTC',
+					\IntlDateFormatter::GREGORIAN, 'EEEE d MMMM Y');
+			
+			$formatterHour = \IntlDateFormatter::create(
+					\Locale::getDefault(),
+					\IntlDateFormatter::FULL,
+					\IntlDateFormatter::FULL,
+					'UTC',
+					\IntlDateFormatter::GREGORIAN, 'HH mm');
+			
+			$formatterDayHour = \IntlDateFormatter::create(
+					\Locale::getDefault(),
+					\IntlDateFormatter::FULL,
+					\IntlDateFormatter::FULL,
+					'UTC',
+					\IntlDateFormatter::GREGORIAN, 'dd/MM HH mm');
+			
 			//pour chaque catégorie
 			foreach ($em->getRepository('IPO\Entity\ReportCategory')->findAll() as $cat){
 				$catevents = array();
@@ -86,10 +108,26 @@ class ReportController extends AbstractActionController {
 					foreach ( $categories [$cat->getId ()] as $event ) {
 							// on l'ajoute à la liste du jour si l'évènement intersecte le jour
 							if ($this->intersectDates ( $event, $tempdate0, $tempdate1 )) {
-								$events [] = array (
-										'name' => $eventservice->getName ( $event ),
-										'start' => $event->getStartdate ()->format ( 'Y-m-d' ) 
-								);
+								$newevent = array();
+								$newevent['name'] = $eventservice->getName ( $event );
+								$newevent['start'] = $formatterDayHour->format($event->getStartdate ());
+								$newevent['end'] = ($event->getEnddate() !== null ? $formatterDayHour->format($event->getEnddate()) : '');
+								$newevent['fields'] = array();
+								foreach ($event->getCustomFieldsValues() as $value) {
+									$val = array();
+									$val['name'] = $value->getCustomfield()->getName();
+									$val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+									$newevent['fields'][] = $val;
+								}
+								$newevent['updates'] = array();
+								foreach ($event->getUpdates() as $update) {
+									$up = array();
+									$up['hour'] = $formatterDayHour->format($update->getCreatedOn());
+									$up['note'] = $update->getText();
+									$newevent['updates'][] = $up;
+								}
+								$newevent['isupdates'] = (count($newevent['updates']) > 0 ? 1 : 0);
+								$events [] = $newevent; 
 							}
 						}
 					}
@@ -99,20 +137,20 @@ class ReportController extends AbstractActionController {
 			}
 			
 			$tbs->MergeField('general', 
-					array('week_number' => 28,
-						'start_date' => 'hier',
-						'end_date' => 'demain'			
+					array('week_number' => $report->getWeek().'/'.$report->getYear(),
+						'start_date' => $formatter->format($report->getStartDate()),
+						'end_date' => $formatterYear->format($report->getEndDate())			
 			));
 			
 			//fields in Header
 			$tbs->PlugIn(OPENTBS_SELECT_FILE, 'styles.xml');
 			$tbs->MergeField('general',
 					array('organisation_name' => $org->getLongname(),
-							'export_date' => 'test'
+							'export_date' => $formatterYear->format(new \DateTime('NOW'))
 					));
 			
 			// send the file
-			$tbs->Show(OPENTBS_DOWNLOAD, 'test.odt');
+			$tbs->Show(OPENTBS_DOWNLOAD, 'rapport_IPO_semaine'.$report->getWeek().'_'.$report->getYear().'.odt');
 		} else {
 			
 		}	
@@ -294,6 +332,29 @@ class ReportController extends AbstractActionController {
 			}
 		} else {
 			$messages['error'][] = "Données manquantes.";
+		}
+		$json['messages'] = $messages;
+		return new JsonModel($json);
+	}
+	
+	public function deleteAction() {
+		$id = $this->params()->fromQuery('id', null);
+		$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+		$json = array();
+		$messages = array();
+		if($id !== null) {
+			$report = $em->getRepository('IPO\Entity\Report')->find($id);
+			if($report) {
+				$em->remove($report);
+				try {
+					$em->flush();
+					$messages['success'][] = "Rapport supprimé";
+				} catch (\Exception $e) {
+					$messages['error'][] = $e->getMessage();
+				}
+			} else {
+				$messages['error'][] = "Impossible de trouver le rapport à supprimer";
+			}
 		}
 		$json['messages'] = $messages;
 		return new JsonModel($json);

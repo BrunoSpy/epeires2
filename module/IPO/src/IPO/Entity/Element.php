@@ -43,7 +43,7 @@ class Element {
 	protected $id;
 
 	/**
-	 * @ORM\OneToOne(targetEntity="Application\Entity\Event")
+	 * @ORM\ManyToOne(targetEntity="Application\Entity\Event")
 	 */
 	protected $event;
 
@@ -56,6 +56,10 @@ class Element {
 	public function __construct() {
 	}
 
+	public function getId() {
+		return $this->id;
+	}
+	
 	public function getCategory() {
 		return $this->category;
 	}

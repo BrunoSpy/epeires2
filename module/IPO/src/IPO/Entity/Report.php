@@ -162,7 +162,7 @@ class Report {
         foreach ($this->elements as $element) {
             $elmts[] = $element->getId();
         }
-        $object_vars['elements'] = $elements;
+        $object_vars['elements'] = $elmts;
         return $object_vars;
     }
 

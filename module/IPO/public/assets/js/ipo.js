@@ -28,6 +28,11 @@ $(document).ready(function(){
 		$("#report-form").load(url+'/report/newreport');
 	});
 	
+	$(".mod-report").on('click', function(){
+		var me = $(this);
+		$("#report-title").html('Modifier le rapport <em>'+me.data('name')+'</em>');
+		$("#report-form").load(url+'/report/newreport?id='+me.data('id'));
+	});
     
 	$("#report-container").on('click', 'input[type=submit]', function(event){
 		event.preventDefault();
@@ -35,14 +40,33 @@ $(document).ready(function(){
 			if(data['messages']){
 				displayMessages(data.messages);
 			}
-			if(data['success']){
-				location.reload();
-			}
+			location.reload();
 		}, 'json').fail(function(){
 			var messages = '({error: ["Impossible d\'enregistrer le rapport."]})';
 			displayMessages(eval(messages));
 		});
 	});
+	
+	$(".remove-report").on('click', function(event){
+		$('#report-name').html($(this).data('name'));
+		$("#remove-report-href").data('id', $(this).data('id'));
+	});
+	
+	$("#remove-report-container").on('click', '#remove-report-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		var id = me.data('id');
+		$("#remove-report-container").modal('hide');
+		$.post(url+'/report/delete?id='+id, function(data){
+			if(data['messages']) {
+				displayMessages(data.messages);
+			}
+			if(data.messages['success']) {
+				$('#reports-table tr#report-'+id).remove();
+			}
+		});
+	});
+	
 });
 
 
