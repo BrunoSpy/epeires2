@@ -56,7 +56,7 @@ class UsersController extends FormController {
     		$datas = $this->getForm($id);
     		$form = $datas['form'];
     		$form->setData($post);
-                $form->setPreferFormInputFilter(true);
+            $form->setPreferFormInputFilter(true);
     		$user = $datas['user'];
     		
     		if($form->isValid()){
@@ -65,8 +65,8 @@ class UsersController extends FormController {
     				$bcrypt->setCost($this->getServiceLocator()->get('zfcuser_module_options')->getPasswordCost());
     				$user->setPassword($bcrypt->create($user->getPassword()));
     			}
-    			$objectManager->persist($user);
     			try {
+    				$objectManager->persist($user);
     				$objectManager->flush();
     				$this->flashMessenger()->addSuccessMessage('Utilisateur enregistré.');
     			} catch (\Exception $e){
