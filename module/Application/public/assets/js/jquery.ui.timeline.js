@@ -1234,6 +1234,25 @@
                 'left': this.options.leftOffset + left + 'px',
                 'width': this.intervalle * this.timelineDuration * 2 + 'px',
                 'height': 1});
+            
+            var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
+            //if scrollbar visible, width is different
+            //TODO : do it better
+            if ($(document).height() > $(window).height()) {
+                largeurDisponible += this._getScrollbarWidth();
+            }
+            //nombre d'éléments "heure" à afficher
+            var nbHours = this.timelineDuration + 1;
+            var tailleTotaleHours = nbHours * 37; //37px = taille de la boite TODO : à calculer dynamiquement
+            var tailleTotaleHoursAndHalves = nbHours * 37 + (nbHours -1)*20; //20px = taille de la boite des demi-heures
+            //si taille des heures + demi >= largeur dispo, on ne dessine plus les demi
+            var drawHalves = tailleTotaleHoursAndHalves < largeurDisponible;
+            //on supprime l'affichage de certaines heures jusqu'à ce que ça tienne
+            var modulo = 1;
+            while( (tailleTotaleHours / modulo) > largeurDisponible) {
+            	modulo++;
+            }
+            
             for (var i = 0; i < this.timelineDuration * 2 + 1; i++) {
                 var vert_bar = $('<div class="Time_obj vert_bar"></div>');
                 base_elmt.append(vert_bar);
@@ -1244,17 +1263,21 @@
                     'height': this.element.height() - this.params.topSpace,
                     'background-color': '#C0C0C0'});
                 if (i % 2 === 1) {
-                    var halfHour = $('<div class="Time_obj halfhour">30</div>');
-                    base_elmt.append(halfHour);
-                    halfHour.css({
-                        'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
-                        'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
+                	if(drawHalves){
+	                    var halfHour = $('<div class="Time_obj halfhour">30</div>');
+	                    base_elmt.append(halfHour);
+	                    halfHour.css({
+	                        'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
+	                        'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
+                	}
                 } else {
-                    var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
-                    base_elmt.append(roundHour);
-                    roundHour.css({
-                        'top': this.options.topOffset + this.params.topHourSpace + 'px',
-                        'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
+                	if( (i / 2) % modulo === 0) {
+	                    var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
+	                    base_elmt.append(roundHour);
+	                    roundHour.css({
+	                        'top': this.options.topOffset + this.params.topHourSpace + 'px',
+	                        'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
+                	}
                     if (h_temp === 23) {
                         h_temp = 0;
                     } else {
