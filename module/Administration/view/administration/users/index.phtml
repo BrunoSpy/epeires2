@@ -84,21 +84,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
 });
 
 
-<?php if (isset($this->messages['success'])) { ?>
-	<?php foreach ($this->messages['success'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'success',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['error'])) { ?>
-	<?php foreach ($this->messages['error'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'error',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
+<?php echo $this->notifications($this->messages); ?>
 
 
 <?php $this->inlineScript()->captureEnd();?>

@@ -105,21 +105,6 @@ foreach($this->config as $key => $value){
 
 roles('<?php echo $this->url('administration'); ?>');
 
-<?php if (isset($this->messages['successMessages'])) { ?>
-	<?php foreach ($this->messages['successMessages'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'success',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['errorMessages'])) { ?>
-	<?php foreach ($this->messages['errorMessages'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'error',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
-
+<?php echo $this->notifications($this->messages); ?>
 
 <?php $this->inlineScript()->captureEnd();?>

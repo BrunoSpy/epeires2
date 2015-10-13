@@ -81,6 +81,7 @@ return array(
     'view_helpers' => array(
         'invokables' => array(
             'modalwindow' => 'Core\View\Helper\ModalWindow',
+        	'notifications' => 'Core\View\Helper\Notifications',
         ),
         'factories' => array(
             'userMenu' => 'Core\Factory\UserMenuFactory',

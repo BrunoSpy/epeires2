@@ -74,9 +74,10 @@ body{
 }
 
 /* Barre de nav */ 
-
-.nav-centered {
-	padding-left: 25%;
+@media (min-width:1200px ){
+	.nav-centered {
+		padding-left: 25%;
+	}
 }
 
 .navbar-after-top {
