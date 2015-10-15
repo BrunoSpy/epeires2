@@ -1,92 +1,123 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/roles.js')?>
 
+
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span12">
-<table class="table table-bordered table-condensed">
-
-<!-- Permission titles -->
-<thead>
-<tr>
-<th class="no-border" colspan="3"></th>
-<?php 
-
-foreach ($this->config as $key => $value){
-	echo "<th colspan=\"".count($value)."\">".$key."</th>";
-}
-?>
-</tr>
-</thead>
-
-<!-- Permissions -->
-<tr>
-<td><a class="btn btn-mini" href="#role-container" data-toggle="modal" id="add-role">Ajouter</a></td>
-<td><b>Nom</b></td>
-<td><b>Parent</b></td>
-<?php 
-
-$permissions = array();
-
-foreach($this->config as $key => $value){
-	foreach ($value as $code => $name){
-		echo "<td>".$name."</td>";
-		$permissions[] = $code;
-	}
-}?>
-</tr>
-
-<!-- Roles -->
-<?php foreach($this->roles as $role){
-	echo "<tr>";
-	echo "<td>";
-        
-		echo "<a 
-				title=\"Modifier\" 
-				href=\"#role-container\" 
-				class=\"mod-role\" 
-				data-id=\"".$role->getId()."\" 
-				data-name=\"".$role->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-		if($role->getName() != 'admin' && $role->getName() != 'guest'){
-                    echo "<a 
-				title=\"Supprimer\" 
-				href=\"#confirm-delete-role\" 
-				data-href=\"".$this->url('administration', array('controller'=>'roles', 'action'=>'deleterole'), array('query'=>array('id'=>$role->getId())))."\" 
-				class=\"delete-role\" 
-				data-id=\"".$role->getId()."\" 
-				data-name=\"".$role->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
-                }
-	echo '</td>';
-	echo "<td>".$role->getName()."</td>";
-	echo "<td>".($role->getParent() ? $role->getParent()->getName() : "<em>Aucun</em>")."</td>";
-	foreach ($permissions as $permission){
-		echo "<td>";
-			$inherited = false;
-			echo "<input class=\"permission\" 
-					data-roleid=\"".$role->getId()."\"
-					data-permission=\"".$permission."\"  
-					type=\"checkbox\" ";
-			if($role->hasPermission($permission, true)){
-				if(!$role->hasPermission($permission, false)){
-					//inherited -> can't be modified
-					$inherited = true;
-					echo "disabled=\"disabled\" ";
-				}
-				echo "checked=\"checked\"";
+		<div class="span3" id="sidebar">
+		<ul class="nav nav-list sidenav">
+		<li><a href="#liste">0. Liste</a></li>
+		<?php 
+			$i = 1;
+			foreach ($this->config as $key => $value){
+				echo '<li>';
+				echo'<a href="#'.$key.'"><i class="icon-chevron-right"></i> '.$i.'. '.$key.'</a>';
+				echo'</li>';
+				$i++;
 			}
-			echo ">";
-		if($inherited){
-			echo " (hérité)";
-		}
-		echo "</td>";
-	}
-	echo "</tr>";	
-}?>
-
-</table>
-</div>
-</div>
+		?>
+		</ul>
+		</div>
+		<div class="span9">
+		<div class="block" id="liste">
+				<div class="navbar navbar-inner block-header">
+					<div class="muted pull-left">0. Liste </div>
+				</div>
+				<div class="block-content collapse in">
+					<div class="span12">
+					<table class="table table-striped sortable">
+					<thead>
+						<tr>
+						<th>Nom</th>
+						<th>Parent</th>
+						<th><a class="btn btn-mini" href="#role-container" data-toggle="modal" id="add-role">Ajouter</a></th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php 
+					foreach ($this->roles as $role) {
+						echo "<tr>";
+						echo "<td>".$role->getName()."</td>";
+						echo "<td>".($role->getParent() ? $role->getParent()->getName() : "<em>Aucun</em>")."</td>";
+						echo "<td>";
+							echo "<a
+									title=\"Modifier\"
+									href=\"#role-container\"
+									class=\"mod-role\"
+									data-id=\"".$role->getId()."\"
+									data-name=\"".$role->getName()."\"
+									data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+							if($role->getName() != 'admin' && $role->getName() != 'guest'){
+								echo "<a
+								title=\"Supprimer\"
+								href=\"#confirm-delete-role\"
+								data-href=\"".$this->url('administration', array('controller'=>'roles', 'action'=>'deleterole'), array('query'=>array('id'=>$role->getId())))."\"
+								class=\"delete-role\"
+								data-id=\"".$role->getId()."\"
+								data-name=\"".$role->getName()."\"
+								data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+							}
+						echo '</td>';
+					}
+					?>
+					</tbody>
+					</table>
+					</div>
+				</div>
+		</div>
+		<?php 
+			$i = 1;
+			foreach ($this->config as $key => $value){
+				echo '<div class="block" id="'.$key.'">';
+				echo '<div class="navbar navbar-inner block-header">';
+				echo '<div class="muted pull-left">'.$i.'. '.$key.'</div>';
+				echo '</div>';
+				echo '<div class="block-content collapse in">';
+				echo '<div class="span12">';
+				echo '<table class="table table-striped">';
+				echo '<thead><tr><th>Rôle</th>';
+				$permissions = array();
+				foreach ($value as $code => $name){
+					echo '<th>'.$name.'</th>';
+					$permissions[] = $code;
+				}
+				echo '</tr></thead>';
+				echo '<tbody>';
+				foreach($this->roles as $role){
+					echo '<tr>';
+					echo "<td>".$role->getName()."</td>";
+					foreach ($permissions as $permission){
+						echo "<td>";
+						$inherited = false;
+						echo "<input class=\"permission\"
+								data-roleid=\"".$role->getId()."\"
+								data-permission=\"".$permission."\"
+								type=\"checkbox\" ";
+						if($role->hasPermission($permission, true)){
+							if(!$role->hasPermission($permission, false)){
+								//inherited -> can't be modified
+								$inherited = true;
+								echo "disabled=\"disabled\" ";
+							}
+							echo "checked=\"checked\"";
+						}
+						echo ">";
+						if($inherited){
+							echo " (hérité)";
+						}
+						echo "</td>";
+					}
+					echo '</tr>';
+				}
+				echo '</tbody>';
+				echo '</table>';
+				echo '</div>';
+				echo '</div>';
+				echo '</div>';
+				$i++;
+			}
+		?>
+		</div>
+	</div>
 </div>
 
 <?php echo $this->modalWindow("role-container", '<h3 id="role-title">Nouveau rôle</h3>', "", "<div id=\"role-form\"></div>")?>
@@ -102,6 +133,10 @@ foreach($this->config as $key => $value){
 
 
 <?php $this->inlineScript()->captureStart();?>
+
+$(".sidenav").affix({offset:{top:90}});
+
+$('.sidenav').scrollspy();
 
 roles('<?php echo $this->url('administration'); ?>');
 

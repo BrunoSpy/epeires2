@@ -4,7 +4,7 @@
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span3" id="sidebar">
-			<ul class="nav nav-list centres-sidenav">
+			<ul class="nav nav-list sidenav">
 				<li>
 					<a href="#Organisations">
 						<i class="icon-chevron-right"></i> 1. Organisations
@@ -345,9 +345,9 @@
 
 <?php $this->inlineScript()->captureStart();?>
 
-$(".centres-sidenav").affix({offset:{top:90}});
+$(".sidenav").affix({offset:{top:90}});
 
-$('.centres-sidenav').scrollspy();
+$('.sidenav').scrollspy();
 
 $(".sortable").stupidtable();
 

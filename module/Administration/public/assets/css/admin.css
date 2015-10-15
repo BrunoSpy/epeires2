@@ -38,7 +38,7 @@ input.pick-a-color {
 	width : 116px;
 }
 
-.centres-sidenav {
+.sidenav {
     margin: 30px 0px 0px;
     padding: 0px;
     background-color: #FFF;
@@ -46,29 +46,29 @@ input.pick-a-color {
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.067);
 }
 
-.centres-sidenav > li:first-child > a {
+.sidenav > li:first-child > a {
     border-radius: 6px 6px 0px 0px;
 }
 
-.centres-sidenav > li:last-child > a {
+.sidenav > li:last-child > a {
     border-radius: 0px 0px 6px 6px;
 }
 
-.centres-sidenav > li > a {
+.sidenav > li > a {
     display: block;
     margin: 0px 0px -1px;
     padding: 8px 14px;
     border: 1px solid #E5E5E5;
 }
 
-.centres-sidenav .icon-chevron-right {
+.sidenav .icon-chevron-right {
     float: right;
     margin-top: 2px;
     margin-right: -6px;
     opacity: 0.25;
 }
 
-.centres-sidenav.affix {
+.sidenav.affix {
     width: 22.55%;
     top: -10px;
 }
