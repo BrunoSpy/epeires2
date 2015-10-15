@@ -22,7 +22,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
 		$this->sm = $serviceManager;
 	}
 	
-	public function __construct(ServiceManager $sm, $categoryid){
+	public function __construct(ServiceManager $sm, $categoryid, $model = false){
 		
 		parent::__construct('custom_fields');
 		
@@ -74,11 +74,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
                         
 			$definition['options'] = $options;
 			
-			if($customfield->getId() == $category->getFieldname()->getId()){
+			if(!$model && $customfield->getId() == $category->getFieldname()->getId()){
 				$definition['attributes']['required'] = 'required';
                                 $definition['attributes']['maxlength'] = '48';
 			}
-                        $definition['attributes']['title'] = $customfield->getTooltip();
+            $definition['attributes']['title'] = $customfield->getTooltip();
                                                 
 			$this->add($definition);
 		}

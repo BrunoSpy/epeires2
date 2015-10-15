@@ -492,7 +492,7 @@ class ModelsController extends FormController
      	$form = $builder->createForm($pevent);
      	$form->setHydrator(new DoctrineObject($objectManager))
      	->setObject($pevent);
-     	$form->add(new CustomFieldset($this->getServiceLocator(), $id));
+     	$form->add(new CustomFieldset($this->getServiceLocator(), $id, true));
      	$viewmodel->setVariables(array('form' =>$form));
      	return $viewmodel;
      	
