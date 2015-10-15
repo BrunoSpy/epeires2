@@ -33,7 +33,6 @@
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
         "zf-commons/zfc-rbac": "~2.4",
         "mrclay/minify": "*",
-        "doctrine/migrations": "dev-master",
         "murganikolay/doctrine-migrations-module": "dev-master",
         "dino/dompdf-module": "dev-master",
         "components/jquery": "2.1.*",
