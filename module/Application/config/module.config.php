@@ -155,19 +155,28 @@ return array(
     
     'permissions' => array(
     	'Evènements' => array(
-    		'events.create' => 'Création',
-    		'events.write' => 'Modification',
-    		'events.confirme' => 'Statut auto',
-            'events.schedule' => 'Programmer évènements',
-    		'events.mod-files' => 'Ajouter/Modifier fichiers',
-    		'events.mod-ipo' => 'Modifier IPO',
-    		'events.mod-opsup' => 'Modifier Chef Op',
+    		'events.create' => 
+    			array('name' => 'Création', 'description' => 'Possibilité de créer de nouveaux évènements'),
+    		'events.write' => 
+    			array('name' =>'Modification', 'description' => 'Possibilité de modifier les évènements accessibles en lecture'),
+    		'events.schedule' =>  
+    			array('name' =>'Programmer', 'description' => 'Affiche la case &#8243;Evènement programmé&#8243;.'),
+    		'events.confirme' =>
+    			array('name' =>'Statut auto', 'description' => 'Les évènements sont créés avec le statut &#8243;Confirmé&#8243;.'),
+    		'events.mod-files' =>  
+    			array('name' =>'Ajouter/Modifier fichiers', 'description' => ''),
+    		'events.mod-ipo' =>  
+    			array('name' =>'Modifier IPO', 'description' => ''),
+    		'events.mod-opsup' =>  
+    			array('name' =>'Modifier Chef Op', 'description' => ''),
     	),
     	'Fréquences' => array(
-    		'frequencies.read' => 'Lecture',
+    		'frequencies.read' =>  
+    			array('name' =>'Lecture', 'description' => 'Donne accès à l\'onglet Radio.'),
     	),
         'Radars' => array(
-                'radars.read' => 'Lecture',
+                'radars.read' =>  
+    			array('name' =>'Lecture', 'description' => ''),
         ),
     ),
     

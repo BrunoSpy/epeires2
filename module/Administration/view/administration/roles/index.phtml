@@ -76,8 +76,12 @@
 				echo '<table class="table table-striped">';
 				echo '<thead><tr><th>Rôle</th>';
 				$permissions = array();
-				foreach ($value as $code => $name){
-					echo '<th>'.$name.'</th>';
+				foreach ($value as $code => $perm){
+					echo '<th data-container="body" data-toggle="tooltip" title="'.$perm['description'].'">'.$perm['name'];
+					if($perm['description'] !== '') {
+						echo '<sup>?</sup>';
+					}
+					echo '</th>';
 					$permissions[] = $code;
 				}
 				echo '</tr></thead>';

@@ -106,14 +106,22 @@ return array(
     ),
     'permissions' => array(
     	'Administration' => array(
-            'admin.access' => 'Accès',
-            'admin.centre' => 'Centre',
-            'admin.users' => 'Utilisateurs',
-            'admin.categories' => 'Catégories',
-            'admin.models' => 'Modèles',
-            'admin.radio' => 'Radio',
-    		'admin.zonesmil' => 'Zones militaires',
-    		'admin.tabs' => 'Onglets'
+            'admin.access' =>  
+    			array('name' => 'Accès', 'description' => 'Donne accès à la page d\'administration. '),
+            'admin.centre' =>  
+    			array('name' => 'Centre', 'description' => ''),
+            'admin.users' =>  
+    			array('name' => 'Utilisateurs', 'description' => ''),
+            'admin.categories' =>  
+    			array('name' => 'Catégories', 'description' => ''),
+            'admin.models' =>  
+    			array('name' => 'Modèles', 'description' => ''),
+            'admin.radio' =>  
+    			array('name' => 'Radio', 'description' => ''),
+    		'admin.zonesmil' =>  
+    			array('name' => 'Zones militaires', 'description' => ''),
+    		'admin.tabs' =>  
+    			array('name' => 'Onglets',  'description' => ''),
         ),
     ),
     'zfc_rbac' => array(

@@ -93,7 +93,8 @@ return array(
     
     'permissions' => array(
     	'IPO' => array(
-    		'ipo.read' => 'Accès',
+    		'ipo.read' =>  
+    			array('name' => 'Accès', 'description' => ''),
     	),	
     ),
 );
