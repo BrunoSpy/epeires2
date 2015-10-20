@@ -88,6 +88,7 @@ class Event extends AbstractEvent {
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Evènement programmé :"})
+	 * @Annotation\Attributes({"id":"scheduled"})
      */
     protected $scheduled = false;
 

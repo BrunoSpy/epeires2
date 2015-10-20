@@ -34,6 +34,9 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
 			$this->formCheckbox($this->form->get('searchable')));
 	
+	echo $this->controlGroup($this->formLabel($this->form->get('programmed')->setLabelAttributes(array('class' => 'control-label'))),
+			$this->formCheckbox($this->form->get('programmed')));
+	
 	echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
 			$this->formSelect($this->form->get('organisation')));
 	

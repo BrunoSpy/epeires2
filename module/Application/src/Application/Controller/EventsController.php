@@ -808,6 +808,12 @@ class EventsController extends TabController {
     				$form->get('custom_fields')->get($customfield->getId())->setAttribute('value', $customfieldvalue->getValue());
     			}
     		}
+    		if($pevent->isProgrammed()) {
+    			$form->get('scheduled')->setValue(true);
+    		}
+    		if($pevent->isPunctual()) {
+    			$form->get('punctual')->setValue(true);
+    		}
     	}
     	
     	if(!$id || ($id && $copy) || ($id && $pevent)){//nouvel évènement
@@ -925,6 +931,8 @@ class EventsController extends TabController {
     	$defaultvalues['punctual'] = $predefinedEvt->isPunctual();
 		
     	$defaultvalues['impact'] = $predefinedEvt->getImpact()->getId();
+    	
+    	$defaultvalues['programmed'] = $predefinedEvt->isProgrammed();
     	
     	foreach ($predefinedEvt->getZonefilters() as $filter){
     		$defaultvalues['zonefilters'][] = $filter->getId();

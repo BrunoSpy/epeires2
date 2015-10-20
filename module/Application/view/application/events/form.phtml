@@ -35,7 +35,7 @@
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
 		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
  		if($this->event || $this->model){
-			//Catégorie non modifiale si modification
+			//Catégorie non modifiable si modification
 			$formSelectCat->setAttribute('disabled',true);
 			$formSelectSubCat->setAttribute('disabled', true);
  		}

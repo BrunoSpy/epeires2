@@ -552,6 +552,7 @@ var form = function(url, tabid){
 				function(data){
 					$("#punctual").prop('checked', data.defaultvalues.punctual);
 					$("#punctual").trigger("change");
+					$("#scheduled").prop('checked', data.defaultvalues.programmed);
 					$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
 					if(data.defaultvalues['zonefilters']){
 						$.each(data.defaultvalues.zonefilters, function(key, value){

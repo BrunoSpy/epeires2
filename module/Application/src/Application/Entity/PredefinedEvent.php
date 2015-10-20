@@ -34,24 +34,30 @@ class PredefinedEvent extends AbstractEvent{
 	 */
 	protected $name;
 	
- 	
- 	/** 
-         * @ORM\Column(type="boolean")
+	/**
+	 * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Liste :"})
 	 */
- 	protected $listable;
- 	
- 	/** 
-         * @ORM\Column(type="boolean")
+	protected $listable;
+	
+	/**
+	 * @ORM\Column(type="boolean")
 	 * @Annotation\Type("Zend\Form\Element\Checkbox")
 	 * @Annotation\Options({"label":"Recherche :"})
 	 */
- 	protected $searchable;
- 	
-        public function __construct(){
- 		parent::__construct();
- 	}
+	protected $searchable;
+	
+	/**
+	 * @ORM\Column(type="boolean")
+	 * @Annotation\Type("Zend\Form\Element\Checkbox")
+	 * @Annotation\Options({"label":"Programmé par défaut :"})
+	 */
+	protected $programmed = false;
+	
+	public function __construct() {
+		parent::__construct ();
+	}
  	
 	public function setName($name){
 		$this->name = $name;
@@ -75,6 +81,14 @@ class PredefinedEvent extends AbstractEvent{
 	
 	public function setSearchable($searchable){
 		$this->searchable = $searchable;
+	}
+	
+	public function isProgrammed() {
+		return $this->programmed;
+	}
+	
+	public function setProgrammed($programmed) {
+		$this->programmed = $programmed;
 	}
 	
 	public function getPlace(){
