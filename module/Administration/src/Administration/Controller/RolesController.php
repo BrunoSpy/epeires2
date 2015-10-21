@@ -1,21 +1,41 @@
 <?php
-/**
- * Epeires 2
- * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  (c) Bruno Spyckerelle <bruno.spyckerelle@aviation-civile.gouv.fr>
  */
 
 namespace Administration\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use Core\Entity\Permission;
-use Doctrine\Common\Collections\ArrayCollection;
 use Zend\View\Model\JsonModel;
-use Core\Entity\Role;
-use Application\Controller\FormController;
 use Zend\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 
+use Core\Entity\Permission;
+use Core\Entity\Role;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Common\Collections\Criteria;
+
+use Application\Controller\FormController;
+/**
+ * 
+ * @author Bruno Spyckerelle
+ */
 class RolesController extends FormController
 {
     public function indexAction()
@@ -32,11 +52,11 @@ class RolesController extends FormController
     	
     	$return = array();
     	if($this->flashMessenger()->hasErrorMessages()){
-    		$return['errorMessages'] =  $this->flashMessenger()->getErrorMessages();
+    		$return['error'] =  $this->flashMessenger()->getErrorMessages();
     	}
     	 
     	if($this->flashMessenger()->hasSuccessMessages()){
-    		$return['successMessages'] =  $this->flashMessenger()->getSuccessMessages();
+    		$return['success'] =  $this->flashMessenger()->getSuccessMessages();
     	}
     	 
     	$this->flashMessenger()->clearMessages();
@@ -116,45 +136,48 @@ class RolesController extends FormController
     	 
     	return new JsonModel($messages);
     }
-    
-    public function saveroleAction(){
-    	$messages = array();
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $guest = false;
-        $admin = false;
-    	if($this->getRequest()->isPost()){
-    		$post = $this->getRequest()->getPost();
-    		$id = $post['id'];
-    		$datas = $this->getForm($id);
-    		$form = $datas['form'];
-                
-                $guest = $datas['role']->getName() == 'guest';
-                $admin = $datas['role']->getName() == 'admin';                
-    		$form->setPreferFormInputFilter(true);
-                $form->setData($post);
-    		$role = $datas['role'];
-    		
-    		if($form->isValid()){
-                        if($guest && $post['name'] != 'guest'){
-                            $role->setName('guest');
-                            $this->flashMessenger()->addErrorMessage("Modification du nom du rôle 'guest' interdit.");
-                        }
-                        if($admin && $post['name'] != 'admin'){
-                            $role->setName('admin');
-                            $this->flashMessenger()->addErrorMessage("Modification du nom du rôle 'admin' interdit.");
-                        }
-    			$objectManager->persist($role);
-                        try {
-                            $objectManager->flush();
-                            $this->flashMessenger()->addSuccessMessage("Rôle ".$role->getName()." correctement enregistré.");
-                        } catch (\Exception $ex) {
-                            $messages['error'][] = $ex->getMessage();
-                        }
-    		} else {
-                    $this->processFormMessages($form->getMessages(), $messages);
+	public function saveroleAction() {
+		$messages = array ();
+		$objectManager = $this->getServiceLocator ()->get ( 'Doctrine\ORM\EntityManager' );
+		$guest = false;
+		$admin = false;
+		if ($this->getRequest ()->isPost ()) {
+			$post = $this->getRequest ()->getPost ();
+			$id = $post ['id'];
+			$datas = $this->getForm ( $id );
+			$form = $datas ['form'];
+			
+			$guest = $datas ['role']->getName () == 'guest';
+			$admin = $datas ['role']->getName () == 'admin';
+			$form->setPreferFormInputFilter ( true );
+			$form->setData ( $post );
+			$role = $datas ['role'];
+			
+			if ($form->isValid ()) {
+				if ($guest && $post ['name'] != 'guest') {
+					$role->setName ( 'guest' );
+					$this->flashMessenger ()->addErrorMessage ( "Modification du nom du rôle 'guest' interdit." );
+				}
+				if ($admin && $post ['name'] != 'admin') {
+					$role->setName ( 'admin' );
+					$this->flashMessenger ()->addErrorMessage ( "Modification du nom du rôle 'admin' interdit." );
+				}
+                if ($role->getParent()->getName() === $post['name']) {
+                    $role->setParent(null);
+                    $this->flashMessenger()->addErrorMessage("Impossible d'être son parent : rôle parent laissé vide.");
                 }
-    	}
-    	return new JsonModel($messages);
+				$objectManager->persist ( $role );
+				try {
+					$objectManager->flush ();
+					$this->flashMessenger ()->addSuccessMessage ( "Rôle " . $role->getName () . " correctement enregistré." );
+				} catch ( \Exception $ex ) {
+					$messages ['error'] [] = $ex->getMessage ();
+				}
+			} else {
+				$this->processFormMessages ( $form->getMessages (), $messages );
+			}
+		}
+		return new JsonModel ( $messages );
     }
     
     public function deleteroleAction(){
@@ -194,6 +217,10 @@ class RolesController extends FormController
         $form->get('readcategories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')->getAllAsArray());
     	
     	if($id){
+    	    $criteria = Criteria::create()
+    	               ->where(Criteria::expr()->neq('id', $id));
+    	    $form->get('parent')->setValueOptions(
+    	        $objectManager->getRepository('Core\Entity\Role')->getAllAsArray($criteria));
     		$role = $objectManager->getRepository('Core\Entity\Role')->find($id);
     		if($role){
     			$form->bind($role);
