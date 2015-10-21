@@ -201,6 +201,10 @@ class Category {
         $this->parent = $parent;
     }
 
+    public function getChildren() {
+        return $this->childs;
+    }
+    
     public function getId() {
         return $this->id;
     }

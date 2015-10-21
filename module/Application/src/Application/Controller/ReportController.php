@@ -27,6 +27,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 
 use OpentbsBundle\Factory\TBSFactory as TBS;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @author Bruno Spyckerelle
@@ -77,9 +78,34 @@ class ReportController extends AbstractActionController {
         $day = $this->params()->fromQuery('day', null);
               
         if($day){
-            $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
+            $criteria = Criteria::create()
+                ->where(Criteria::expr()->isNull('parent'))
+                ->andWhere(Criteria::expr()->eq('system', false))
+                ->orderBy(array('place' => Criteria::ASC));
+            
+            $cats = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+            
+            $eventsbycats = array();
+            
+            foreach ($cats as $cat) {
+                $category = array();
+                $category['name'] = $cat->getName();
+                $category['events'] = $events = $objectManager->getRepository('Application\Entity\Event')
+                                                                ->getEvents($this->zfcUserAuthentication(), $day, null, true, array($cat->getId()));
+                $category['childs'] = array();
+                foreach ($cat->getChildren() as $subcat) {
+                    $subcategory = array();
+                    $subcategory['events'] = $events = $objectManager->getRepository('Application\Entity\Event')
+                                                                ->getEvents($this->zfcUserAuthentication(), $day, null, true, array($subcat->getId()));
+                    $subcategory['name'] = $subcat->getName();  
+                    $category['childs'][] = $subcategory;                                      
+                }
+                $eventsbycats[] = $category;
+            }
+            
+           // $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
             $pdf = new PdfModel();
-            $pdf->setVariables(array('events' => $events, 'day' => $day));
+            $pdf->setVariables(array('events' => $eventsbycats, 'day' => $day));
             $pdf->setOption('paperSize', 'a4');
             
             $formatter = \IntlDateFormatter::create(\Locale::getDefault(),

@@ -12,11 +12,11 @@
             \IntlDateFormatter::GREGORIAN,
             'dd LLLL yyyy');
     $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'HH:mm');
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'HH:mm');
 ?>
 
 <html>
@@ -65,7 +65,13 @@
 
             .cat_title {
                 font-weight: bold;
+                font-size: 16px;
+            }
+            
+            .subcat_title {
+                font-weight: bold;
                 font-size: 14px;
+                margin-left: 20px;
             }
             
             .event_name {
@@ -105,45 +111,21 @@
         </div>
         <div id="report">
         <?php
+       
             $cat = null;
             foreach ($this->events as $event){
-                if($cat == null || $cat !== $event->getCategory()->getName()){
-                    $cat = $event->getCategory()->getName();
-                    echo '<div class="cat_title">'.$cat.'</div>';
-                }
-                echo '<div class="event">';
-                echo '<p class="event_title"><span class="event_name">'.($this->eventName($event)).'</span>';
-                if($event->isPunctual()){
-                    echo ' à '.$formatterHeure->format($event->getStartDate()).".";
-                } else {
-                    if($event->getEndDate()){
-                        echo ' du '.$formatterJour->format($event->getStartDate()).' '.$formatterHeure->format($event->getStartdate()).
-                             ' au '.$formatterJour->format($event->getEndDate()).' '.$formatterHeure->format($event->getEnddate());
-                    } else {
-                        echo ' à partir du '.$formatterJour->format($event->getStartDate()).' '.$formatterHeure->format($event->getStartdate());
+                    echo '<div class="cat_title">'.$event['name'].'</div>';
+                    foreach ($event['events'] as $e) {
+                        echo $this->partial('event.phtml', array('event' => $e));
+                    }           
+                    foreach ($event['childs'] as $subcat) {
+                        if(count($subcat['events']) > 0 ) {
+                            echo '<div class="subcat_title"> > '.$subcat['name'].'</div>';
+                        }
+                        foreach ($subcat['events'] as $e) {
+                            echo $this->partial('event.phtml', array('event' => $e));
+                        }
                     }
-                }
-                echo ' (créé par '.$event->getAuthor()->getDisplayName().', évènement '. strtolower($event->getStatus()->getName()).')';
-                echo '</p>';
-                echo '<table class="table">';
-                foreach ($event->getCustomFieldsValues() as $value){
-                    if($this->customfieldvalue($value) != ''){
-                        echo '<tr>';
-                        echo '<td></td>';
-                        echo '<td>' . $value->getCustomfield()->getName().' : </td>';
-                        echo '<td colspan="3">'.nl2br($this->customfieldvalue($value)).'</td>';
-                        echo '</tr>';
-                    }
-                }
-                foreach ($event->getUpdates() as $update){
-                    echo '<tr>';
-                    echo '<td></td>';
-                    echo '<td>'.$this->updateAuthor($update).' le '.$formatterJour->format($update->getCreatedOn()).' à '.$formatterHeure->format($update->getCreatedOn()).' : </td>';
-                    echo '<td colspan="3">'.nl2br($update->getText()).'</td>';
-                    echo '</tr>';
-                }
-                echo '</table>';
-                echo '</div>';
             }
         ?>
         </div>
