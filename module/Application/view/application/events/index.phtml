@@ -66,7 +66,7 @@ echo $this->modalwindow("add-alarm",
 echo $this->modalwindow('add-note-modal',
         "<h3>Ajout d'une note</h3>",
         "",
-        "<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
+        "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
         . "<div class=\"modal-body\">"
             . "<div class=\"control-group\">"
                 . "<label class=\"control-label\">Contenu : </label>"

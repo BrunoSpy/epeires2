@@ -508,6 +508,7 @@
 	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
 	                	}
             		}
+            		txt += '<a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><i class="icon-comment"></i> Ajouter une note</a><br />';
             		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
             	}
             	txt += '</p>';
@@ -518,6 +519,11 @@
                     html: 'true'
                 }).popover('show');
             	me.parents('.elmt').tooltip('hide');
+            });
+            
+            this.element.on('click', '.add-note', function(e){
+            	e.preventDefault();
+        		$("#add-note").data('id', $(this).data('id'));
             });
             
             this.element.on('click', '.evt-important', function(e){

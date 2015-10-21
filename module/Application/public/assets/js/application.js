@@ -309,7 +309,7 @@ $(document).ready(function(){
     $('#tri_deb').on('click', function(e){
         e.preventDefault();
         $(this).parent().addClass('active');
-	$('#tri_cat').parent().removeClass('active');
+        $('#tri_cat').parent().removeClass('active');
         $('#timeline').timeline('pauseUpdateView');
         $('#timeline').timeline('option', 'showCategories', false);
         $('#timeline').timeline('sortEvents', function(a, b){
