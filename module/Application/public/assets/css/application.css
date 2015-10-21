@@ -411,6 +411,6 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
     font-size: 80%;
 }
 
-#Event #inner-actionsTitle .table tr td:last-child {
+#Event #inner-actionsTitle .table tr td.todo {
 	width: 57px;
 }
