@@ -380,7 +380,6 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 
 #calendar {
     display: none;
-    float:left;
     text-align: center;
     width: 100%;
 }

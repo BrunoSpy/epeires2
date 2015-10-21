@@ -27,7 +27,6 @@
 .Time_obj {
 	position: fixed;
 	z-index: 2;
-	background-color: white;
 }
 
 .Time_obj.roundhour {
