@@ -11,9 +11,11 @@
 namespace Application\Entity;
 
 use Zend\Form\Annotation;
+
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  **/
@@ -29,6 +31,11 @@ class ActionCategory extends Category{
 	 * @ORM\OneToOne(targetEntity="CustomField")
 	 */
 	protected $textfield;
+	
+	/**
+	 * @ORM\OneToOne(targetEntity="CustomField")
+	 */
+	protected $colorfield;
 	
 	public function getNamefield(){
 		return $this->namefield;
@@ -46,4 +53,11 @@ class ActionCategory extends Category{
 		$this->textfield = $textfield;
 	}
 	
+	public function setColorField($color){
+	    $this->colorfield = $color;
+	}
+	
+	public function getColorField() {
+	    return $this->colorfield;
+	}
 }

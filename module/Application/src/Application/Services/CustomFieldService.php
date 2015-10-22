@@ -184,7 +184,7 @@ class CustomFieldService implements ServiceManagerAwareInterface {
             switch ($customfieldtype->getType()) {
 			case 'string':
 			case 'text':
-                        case 'boolean':    
+            case 'boolean':    
                             break;
 			case 'frequency':
 			case 'sector':

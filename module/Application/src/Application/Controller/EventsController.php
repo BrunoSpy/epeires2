@@ -948,23 +948,34 @@ class EventsController extends TabController {
     	
     	return new JsonModel($json);
     }
-    
-    public function getactionsAction(){
-    	$parentId = $this->params()->fromQuery('id', null);
-    	$json = array();
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    	
-    	foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array('parent' => $parentId), array('place' => 'DESC')) as $action){
-            if($action->getCategory() instanceof \Application\Entity\ActionCategory) {
-    		$json[$action->getId()] = array('id' => $action->getId(),
-                                                'name' =>  $this->getServiceLocator()->get('EventService')->getName($action),
-                                                'place' => $action->getPlace(),
-    										'impactname' => $action->getImpact()->getName(),
-    										'impactstyle' => $action->getImpact()->getStyle());
+
+    public function getactionsAction()
+    {
+        $parentId = $this->params()->fromQuery('id', null);
+        $json = array();
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        
+        foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
+            'parent' => $parentId
+        ), array(
+            'place' => 'DESC'
+        )) as $action) {
+            if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+                $color = $action->getCustomFieldValue($action->getCategory()->getColorfield());
+                $json[$action->getId()] = array(
+                    'id' => $action->getId(),
+                    'name' => $this->getServiceLocator()
+                        ->get('EventService')
+                        ->getName($action),
+                    'place' => $action->getPlace(),
+                    'color' => ($color !== null ? $color->getValue() : ''),
+                    'impactname' => $action->getImpact()->getName(),
+                    'impactstyle' => $action->getImpact()->getStyle()
+                );
             }
-    	}
-    	
-    	return new JsonModel($json);
+        }
+        
+        return new JsonModel($json);
     }
     
     /*

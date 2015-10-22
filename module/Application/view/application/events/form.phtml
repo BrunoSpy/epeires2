@@ -355,6 +355,10 @@
                                     if($child->getCategory() instanceof Application\Entity\ActionCategory){
                                         $countactions++;
 					$html .= "<tr data-id=\"".$child->getId()."\"";
+					$color = $child->getCustomFieldValue($child->getCategory()->getColorfield());
+					if($color !=null && $color->getValue() !== ''){
+					    $html .= ' style="background-color:#'.$color->getValue().'"';
+					}
                                         foreach ($child->getCustomFieldsValues() as $value){
                                             if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
                                                 if($value->getValue() !== ''){

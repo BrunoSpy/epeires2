@@ -321,7 +321,7 @@ class ModelsController extends FormController
     		} else {
     			//traitement des erreurs de validation
     			$pevent = null;
-    			$this->processFormMessages($form->getMessages());
+    			$this->processFormMessages($form->getMessages(), $messages);
     		}
     		
     	}
@@ -414,6 +414,8 @@ class ModelsController extends FormController
                     //add custom fields input
                     $form->get('category')->setAttribute('value', $cataction->getId());
                     $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId()));
+                    $colorfield = $form->get('custom_fields')->get($cataction->getColorfield()->getId());
+                    $colorfield->setAttribute('class', 'pick-a-color');
                 }
     		//disable category modification
     		$form->get('category')->setAttribute('disabled', 'disabled');
@@ -439,7 +441,9 @@ class ModelsController extends FormController
     			//custom field values
     			$customfields = $objectManager->getRepository('Application\Entity\CustomField')->findBy(array('category'=>$pevent->getCategory()->getId()));
     			if(count($customfields) > 0 ){
-    				$form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()->getId()));
+    				if(!($catid || $action)) {//customfieldset already added
+    				    $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()->getId()));
+    				}
     				foreach ($customfields as $customfield){
     					$customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')
     					->findOneBy(array('event'=>$pevent->getId(), 'customfield'=>$customfield->getId()));
