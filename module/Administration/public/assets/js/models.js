@@ -198,12 +198,16 @@ var models = function(url, urlapp){
 	
 	$("#model-container").on('click', '#new-action', function(){
 		$("#action-title").html("Nouvelle action");
-		$("#action-form").load(url+'/models/form?action=true&parentid='+$(this).data('parent'));
+		$("#action-form").load(url+'/models/form?action=true&parentid='+$(this).data('parent'), function(){
+			$("#action-form").find(".pick-a-color").pickAColor({allowBlank: true});
+		});
 	});
 	
 	$("#model-container").on('click', '.mod-action', function(){
 		$("#action-title").html("Modifier <em>"+$(this).data('name')+"</em>");
-		$("#action-form").load(url+'/models/form?action=true&parentid='+$(this).data('parent')+'&id='+$(this).data('id'));
+		$("#action-form").load(url+'/models/form?action=true&parentid='+$(this).data('parent')+'&id='+$(this).data('id'), function(){
+			$("#action-form").find(".pick-a-color").pickAColor({allowBlank: true});
+		});
 	});
 	
 

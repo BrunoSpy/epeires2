@@ -50,6 +50,8 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 
 	echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
 	
+	echo $this->formHidden($this->form->get('programmed')->setAttribute('value', false));
+	
 	echo $this->formHidden($this->form->get('organisation'));
 	
 	echo $this->formHidden($this->form->get('parent'));

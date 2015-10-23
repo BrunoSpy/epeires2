@@ -1,19 +1,12 @@
 <?php
-/*
- * This file is part of Epeires².
- * Epeires² is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+/** 
+ * Epeires 2
  *
- * Epeires² is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * Catégorie d'évènements.
+ * Peut avoir une catégorie parente.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
- *
+ * @copyright Copyright (c) 2013 Bruno Spyckerelle
+ * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
 namespace Application\Entity;
 
@@ -36,6 +29,11 @@ class ActionCategory extends Category
      */
     protected $textfield;
 
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $colorfield;
+
     public function getNamefield()
     {
         return $this->namefield;
@@ -54,5 +52,15 @@ class ActionCategory extends Category
     public function setTextfield($textfield)
     {
         $this->textfield = $textfield;
+    }
+
+    public function setColorField($color)
+    {
+        $this->colorfield = $color;
+    }
+
+    public function getColorField()
+    {
+        return $this->colorfield;
     }
 }

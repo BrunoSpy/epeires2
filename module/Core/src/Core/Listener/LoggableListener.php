@@ -1,11 +1,6 @@
 <?php
-
 namespace Core\Listener;
 
-use Doctrine\Common\EventArgs;
-use Gedmo\Mapping\MappedEventSubscriber;
-use Gedmo\Loggable\Mapping\Event\LoggableAdapter;
-use Gedmo\Tool\Wrapper\AbstractWrapper;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
 
@@ -18,33 +13,37 @@ use Zend\ServiceManager\ServiceManager;
  */
 class LoggableListener extends \Gedmo\Loggable\LoggableListener implements ServiceManagerAwareInterface
 {
-	/**
-	 * Service Manager
-	 */
-	protected $sm;
 
-	public function setServiceManager(ServiceManager $serviceManager){
-		$this->sm = $serviceManager;
-	}
-	
-	public function getServiceManager(){
-		return $this->sm;
-	}
-	
+    /**
+     * Service Manager
+     */
+    protected $sm;
+
+    public function setServiceManager(ServiceManager $serviceManager)
+    {
+        $this->sm = $serviceManager;
+    }
+
+    public function getServiceManager()
+    {
+        return $this->sm;
+    }
+
     /**
      * Handle any custom LogEntry functionality that needs to be performed
      * before persisting it
      *
-     * @param object $logEntry The LogEntry being persisted
-     * @param object $object   The object being Logged
+     * @param object $logEntry
+     *            The LogEntry being persisted
+     * @param object $object
+     *            The object being Logged
      */
     protected function prePersistLogEntry($logEntry, $object)
     {
-		$auth = $this->getServiceManager()->get('zfc_user_auth_service');
-		if($auth->hasIdentity()){
-			$logEntry->setUsername($auth->getIdentity()->getUsername());
-		}
+        $auth = $this->getServiceManager()->get('zfc_user_auth_service');
+        if ($auth->hasIdentity()) {
+            $logEntry->setUsername($auth->getIdentity()
+                ->getUsername());
+        }
     }
-
-
 }

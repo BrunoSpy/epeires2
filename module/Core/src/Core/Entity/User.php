@@ -1,5 +1,20 @@
 <?php
- 
+/*
+ * This file is part of Epeires².
+ * Epeires² is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Epeires² is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 namespace Core\Entity;
 
 use Zend\Form\Annotation;
@@ -10,16 +25,16 @@ use ZfcRbac\Identity\IdentityInterface;
 use Doctrine\ORM\PersistentCollection;
 
 /**
- * An example of how to implement a role aware user entity.
  *
  * @ORM\Entity
  * @ORM\Table(name="users")
  *
+ * @author Bruno Spyckerelle
  */
 class User implements UserInterface, IdentityInterface
 {
+
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -27,8 +42,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $id;
 
-    /** 
-     * @var string
+    /**
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
@@ -36,17 +50,15 @@ class User implements UserInterface, IdentityInterface
      */
     protected $username;
 
-    /** 
-     * @var string
-     * @ORM\Column(type="string", unique=true,  length=255)
+    /**
+     * @ORM\Column(type="string", unique=true, length=255)
      * @Annotation\Type("Zend\Form\Element\Email")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Email :"})
      */
     protected $email;
 
-    /** 
-     * @var string
+    /**
      * @ORM\Column(type="string", length=50, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"false"})
@@ -54,8 +66,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $displayName;
 
-    /** 
-     * @var string
+    /**
      * @ORM\Column(type="string", length=128)
      * @Annotation\Type("Zend\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe :"})
@@ -63,21 +74,19 @@ class User implements UserInterface, IdentityInterface
     protected $password;
 
     /**
-     * @var int
      */
     protected $state;
 
-    /** 
-     * @var \Doctrine\Common\Collections\Collection
+    /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
      * @ORM\JoinTable(name="users_roles",
-     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
+     *                joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *                inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
      * )
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
-	 * @Annotation\Attributes({"multiple":true})
-	 * @Annotation\Options({"label":"Rôles :"})
+     * @Annotation\Attributes({"multiple":true})
+     * @Annotation\Options({"label":"Rôles :"})
      */
     protected $userroles;
 
@@ -85,8 +94,8 @@ class User implements UserInterface, IdentityInterface
      * @ORM\OneToMany(targetEntity="Application\Entity\Event", mappedBy="author", cascade={"detach"})
      */
     protected $events;
-    
-    /** 
+
+    /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      * @Annotation\Type("Zend\Form\Element\Select")
@@ -94,7 +103,7 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
     protected $organisation;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\QualificationZone")
      * @Annotation\Type("Zend\Form\Element\Select")
@@ -102,7 +111,7 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Facultatif"})
      */
     protected $zone;
-    
+
     public function __construct()
     {
         $this->userroles = new ArrayCollection();
@@ -121,7 +130,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set id.
      *
-     * @param int $id
+     * @param int $id            
      *
      * @return void
      */
@@ -143,7 +152,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set username.
      *
-     * @param string $username
+     * @param string $username            
      *
      * @return void
      */
@@ -165,7 +174,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set email.
      *
-     * @param string $email
+     * @param string $email            
      *
      * @return void
      */
@@ -187,7 +196,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set displayName.
      *
-     * @param string $displayName
+     * @param string $displayName            
      *
      * @return void
      */
@@ -209,7 +218,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set password.
      *
-     * @param string $password
+     * @param string $password            
      *
      * @return void
      */
@@ -231,7 +240,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Set state.
      *
-     * @param int $state
+     * @param int $state            
      *
      * @return void
      */
@@ -240,22 +249,26 @@ class User implements UserInterface, IdentityInterface
         $this->state = $state;
     }
 
-    public function getOrganisation(){
-    	return $this->organisation;
+    public function getOrganisation()
+    {
+        return $this->organisation;
     }
-    
-    public function setOrganisation($organisation){
-    	$this->organisation = $organisation;
+
+    public function setOrganisation($organisation)
+    {
+        $this->organisation = $organisation;
     }
-    
-    public function getZone(){
-    	return $this->zone;
+
+    public function getZone()
+    {
+        return $this->zone;
     }
-    
-    public function setZone($zone){
-    	$this->zone = $zone;
+
+    public function setZone($zone)
+    {
+        $this->zone = $zone;
     }
-    
+
     /**
      * Get role.
      *
@@ -269,7 +282,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * Add a role to the user.
      *
-     * @param Role $role
+     * @param Role $role            
      *
      * @return void
      */
@@ -277,57 +290,63 @@ class User implements UserInterface, IdentityInterface
     {
         $this->userroles[] = $role;
     }
-        
+
     /**
-     * @param PersistentCollection $roles
+     *
+     * @param PersistentCollection $roles            
      * @return self
      */
     public function setRoles(PersistentCollection $roles)
     {
-    	$this->userroles = $roles;
-    	
-    	return $this;
-    }
-    
-    public function addUserroles($roles){
-    	foreach ($roles as $role){
-    		$this->userroles->add($role);
-    	}
-    }
-    
-    public function removeUserroles($roles){
-    	foreach ($roles as $role){
-    		$this->userroles->removeElement($role);
-    	}
-    }
-    
-    public function setUserroles($roles){
-    	$this->userroles = $roles;
-    }
-    
-    public function getUserroles()
-    {
-    	return $this->userroles;
+        $this->userroles = $roles;
+        
+        return $this;
     }
 
-    public function hasRole($rolename){
-    	foreach ($this->userroles as $role){
-    		if($role->containsRole($rolename)){
-    			return true;
-    		}
-    	}
-    	return false;
+    public function addUserroles($roles)
+    {
+        foreach ($roles as $role) {
+            $this->userroles->add($role);
+        }
     }
-    
-    public function getArrayCopy(){
-    	$object_vars = get_object_vars($this);
-    	$roles = array();
-    	foreach ($this->userroles as $role){
-    		$roles[] = $role->getId();
-    	}
-    	$object_vars['userroles'] = $roles;
-    	$object_vars['organisation'] = $this->organisation->getId();
-    	$object_vars['zone'] = ($this->zone ? $this->zone->getId() : null);
-    	return $object_vars;
+
+    public function removeUserroles($roles)
+    {
+        foreach ($roles as $role) {
+            $this->userroles->removeElement($role);
+        }
+    }
+
+    public function setUserroles($roles)
+    {
+        $this->userroles = $roles;
+    }
+
+    public function getUserroles()
+    {
+        return $this->userroles;
+    }
+
+    public function hasRole($rolename)
+    {
+        foreach ($this->userroles as $role) {
+            if ($role->containsRole($rolename)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getArrayCopy()
+    {
+        $object_vars = get_object_vars($this);
+        $roles = array();
+        foreach ($this->userroles as $role) {
+            $roles[] = $role->getId();
+        }
+        $object_vars['userroles'] = $roles;
+        $object_vars['organisation'] = $this->organisation->getId();
+        $object_vars['zone'] = ($this->zone ? $this->zone->getId() : null);
+        return $object_vars;
     }
 }

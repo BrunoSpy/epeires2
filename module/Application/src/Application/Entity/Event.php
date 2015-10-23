@@ -1,21 +1,20 @@
 <?php
 /*
- *  This file is part of Epeires².
- *  Epeires² is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * This file is part of Epeires².
+ * Epeires² is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- *  Epeires² is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * Epeires² is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -25,12 +24,15 @@ use Zend\Form\Annotation;
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\EventRepository")
  * @ORM\Table(indexes={@ORM\Index(name="search_idx", columns={"startdate", "enddate"}),
- 					@ORM\Index(name="search_idx2", columns={"last_modified_on"})})
+                       @ORM\Index(name="search_idx2", columns={"last_modified_on"})})
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
+ * 
  * @author Bruno Spyckerelle
- * */
-class Event extends AbstractEvent {
+ *        
+ */
+class Event extends AbstractEvent
+{
 
     /**
      * @ORM\ManyToOne(targetEntity="Status")
@@ -62,17 +64,21 @@ class Event extends AbstractEvent {
      */
     protected $enddate = null;
 
-    /** @ORM\Column(type="datetime") */
+    /**
+     * @ORM\Column(type="datetime")
+     */
     protected $created_on;
 
-    /** @ORM\Column(type="datetime") */
+    /**
+     * @ORM\Column(type="datetime")
+     */
     protected $last_modified_on;
 
-    /** 
+    /**
      * @ORM\Column(type="boolean")
      */
     protected $star = false;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
@@ -88,90 +94,109 @@ class Event extends AbstractEvent {
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Evènement programmé :"})
-	 * @Annotation\Attributes({"id":"scheduled"})
+     * @Annotation\Attributes({"id":"scheduled"})
      */
     protected $scheduled = false;
 
-    /** 
+    /**
      * @ORM\Column(type="boolean")
-     * 
-	 */
+     */
     protected $readonly = false;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         parent::__construct();
         $this->updates = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function getAuthor() {
+    public function getAuthor()
+    {
         return $this->author;
     }
 
-    public function setAuthor($author) {
+    public function setAuthor($author)
+    {
         $this->author = $author;
     }
 
-    public function getUpdates() {
+    public function getUpdates()
+    {
         return $this->updates;
     }
 
-    public function isReadOnly() {
-    	return $this->readonly;
+    public function isReadOnly()
+    {
+        return $this->readonly;
     }
-    
-    public function setReadOnly($readonly){
-    	$this->readonly = $readonly;
+
+    public function setReadOnly($readonly)
+    {
+        $this->readonly = $readonly;
     }
-    
-    public function isScheduled() {
+
+    public function isScheduled()
+    {
         return $this->scheduled;
     }
 
-    public function setScheduled($scheduled) {
+    public function setScheduled($scheduled)
+    {
         $this->scheduled = $scheduled;
     }
 
-    /** @ORM\PrePersist */
-    public function setCreatedOn() {
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedOn()
+    {
         $this->created_on = new \DateTime('NOW');
         $this->created_on->setTimeZone(new \DateTimeZone("UTC"));
     }
 
     /**
      * @ORM\PreUpdate
-     * @ORM\PrePersist 
+     * @ORM\PrePersist
      */
-    public function setLastModifiedOn() {
+    public function setLastModifiedOn()
+    {
         $this->last_modified_on = new \DateTime('NOW');
         $this->last_modified_on->setTimeZone(new \DateTimeZone("UTC"));
     }
 
-    public function getLastModifiedOn() {
+    public function getLastModifiedOn()
+    {
         return $this->last_modified_on;
     }
 
-    public function setStatus($status) {
+    public function setStatus($status)
+    {
         $this->status = $status;
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function setStar($star){
-    	$this->star = $star;
+    public function setStar($star)
+    {
+        $this->star = $star;
     }
-    
-    public function isStar(){
-    	return $this->star;
+
+    public function isStar()
+    {
+        return $this->star;
     }
-    
+
     /**
-     * 
-     * @param \DateTime $startdate Warning : Timezone == UTC !
-     * @param \DateTime $enddate Warning : Timezone == UTC !
+     *
+     * @param \DateTime $startdate
+     *            Warning : Timezone == UTC !
+     * @param \DateTime $enddate
+     *            Warning : Timezone == UTC !
      */
-    public function setDates(\DateTime $startdate, \DateTime $enddate) {
+    public function setDates(\DateTime $startdate, \DateTime $enddate)
+    {
         if ($startdate && $enddate) {
             if ($startdate <= $enddate) {
                 $this->startdate = $startdate;
@@ -182,7 +207,8 @@ class Event extends AbstractEvent {
         return false;
     }
 
-    public function setStartdate($startdate = null) {
+    public function setStartdate($startdate = null)
+    {
         if ($this->enddate == null || ($this->enddate != null && $this->enddate >= $startdate)) {
             $this->startdate = $startdate;
             return true;
@@ -191,13 +217,15 @@ class Event extends AbstractEvent {
         }
     }
 
-    public function getStartdate() {
+    public function getStartdate()
+    {
         return $this->startdate;
     }
 
-    public function setEnddate($enddate = null) {
+    public function setEnddate($enddate = null)
+    {
         if ($this->startdate == null) {
-            //impossible de fixer la date de fin si aucune date de début
+            // impossible de fixer la date de fin si aucune date de début
             return false;
         } else {
             if ($enddate == null || $this->startdate <= $enddate) {
@@ -209,16 +237,18 @@ class Event extends AbstractEvent {
         return true;
     }
 
-    public function getEnddate() {
+    public function getEnddate()
+    {
         return $this->enddate;
     }
 
     /**
      * @ORM\PostLoad
      */
-    public function doCorrectUTC() {
-        //les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
-        //mais à la création php les crée en temps local, il faut donc les corriger
+    public function doCorrectUTC()
+    {
+        // les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
+        // mais à la création php les crée en temps local, il faut donc les corriger
         if ($this->enddate) {
             $offset = $this->enddate->getTimezone()->getOffset($this->enddate);
             $this->enddate->setTimezone(new \DateTimeZone("UTC"));
@@ -241,7 +271,8 @@ class Event extends AbstractEvent {
         }
     }
 
-    public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined) {
+    public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
+    {
         $this->setCategory($predefined->getCategory());
         $this->setImpact($predefined->getImpact());
         $this->setPunctual($predefined->isPunctual());
@@ -249,25 +280,27 @@ class Event extends AbstractEvent {
 
     /**
      * Cloture l'évènement ains que l'ensemble de ses fils.
-     * @param \Application\Entity\Status $status
-     * @param \DateTime $enddate
+     * 
+     * @param \Application\Entity\Status $status            
+     * @param \DateTime $enddate            
      * @throws \RuntimeException
      */
-    public function close(Status $status, \DateTime $enddate = null) {
-        if ($enddate == null && !$this->isPunctual()) {
+    public function close(Status $status, \DateTime $enddate = null)
+    {
+        if ($enddate == null && ! $this->isPunctual()) {
             throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
         }
         if ($status->getId() != 3) {
             throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
         }
-
-        if (!$this->isPunctual()) {
+        
+        if (! $this->isPunctual()) {
             $this->setEnddate($enddate);
         }
         $this->setStatus($status);
         foreach ($this->getChildren() as $child) {
-            //cloturer tous les évènements sauf les alarmes et les actions
-            if (!$child->getCategory() instanceof AlarmCategory && !$child->getCategory() instanceof ActionCategory) {
+            // cloturer tous les évènements sauf les alarmes et les actions
+            if (! $child->getCategory() instanceof AlarmCategory && ! $child->getCategory() instanceof ActionCategory) {
                 $child->close($status, $enddate);
             }
         }
@@ -276,77 +309,85 @@ class Event extends AbstractEvent {
     /**
      * Annule l'évènement et tous ses enfants
      * Si pas d'heure de fin programmée, utilisation de l'heure actuelle
-     * @param \Application\Entity\Status $status
+     * 
+     * @param \Application\Entity\Status $status            
      * @throws \RuntimeException
      */
-    public function cancelEvent(Status $status) {
+    public function cancelEvent(Status $status)
+    {
         if ($status->getId() != 4) {
             throw new \RuntimeException("Statut annulé attendu, un autre statut a été fourni.");
         }
         $this->setStatus($status);
-        if ($this->isPunctual() || (!$this->isPunctual() && $this->getEnddate() === null) ) {
+        if ($this->isPunctual() || (! $this->isPunctual() && $this->getEnddate() === null)) {
             $now = new \DateTime('now');
             $now->setTimezone(new \DateTimeZone('UTC'));
             $this->setEnddate($now);
         }
         foreach ($this->getChildren() as $child) {
-            //annuler tous les évènement sauf les actions
-            if (!$child instanceof ActionCategory) {
+            // annuler tous les évènement sauf les actions
+            if (! $child instanceof ActionCategory) {
                 $child->cancelEvent($status);
             }
         }
     }
 
-    /** 
+    /**
      * Update alarms if case of modification of startdate and enddate
      */
-    public function updateAlarms(){
-        foreach ($this->getChildren() as $child){
-            if($child->getCategory() instanceof AlarmCategory){
+    public function updateAlarms()
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($child->getCategory() instanceof AlarmCategory) {
                 $child->updateAlarmDate();
             }
         }
     }
 
-
     /**
      * Update alarm date according to parent dates and deltas
      * Only available if category is instance of AlarmCategory
-     * @param Event $alarm
+     * 
+     * @param Event $alarm            
      */
-    public function updateAlarmDate() {
-        if(!($this->getCategory() instanceof AlarmCategory)){
+    public function updateAlarmDate()
+    {
+        if (! ($this->getCategory() instanceof AlarmCategory)) {
             return;
         }
         $deltaend = "";
         $deltabegin = "";
         $previousstart = $this->getStartdate();
         foreach ($this->getCustomFieldsValues() as $value) {
-            if ($value->getCustomField()->getId() == $this->getCategory()->getDeltaBeginField()->getId()) {
+            if ($value->getCustomField()->getId() == $this->getCategory()
+                ->getDeltaBeginField()
+                ->getId()) {
                 $deltabegin = preg_replace('/\s+/', '', $value->getValue());
             }
-            if ($value->getCustomField()->getId() == $this->getCategory()->getDeltaEndField()->getId()) {
+            if ($value->getCustomField()->getId() == $this->getCategory()
+                ->getDeltaEndField()
+                ->getId()) {
                 $deltaend = preg_replace('/\s+/', '', $value->getValue());
             }
         }
         $event = $this->getParent();
         if ($event != null) {
-        	if(strlen(trim($deltaend)) > 0) {
-        		$deltaend = intval($deltaend);
-        	} else {
-        		$deltaend = 0;
-        	}
-        	if(strlen(trim($deltabegin)) > 0){
-        		$deltabegin = intval($deltabegin);
-        	} else {
-        		$deltabegin = null;
-        	}
+            if (strlen(trim($deltaend)) > 0) {
+                $deltaend = intval($deltaend);
+            } else {
+                $deltaend = 0;
+            }
+            if (strlen(trim($deltabegin)) > 0) {
+                $deltabegin = intval($deltabegin);
+            } else {
+                $deltabegin = null;
+            }
             if ($deltaend !== 0 && $event->getEnddate() != null) {
                 $startdatealarm = clone $event->getEnddate();
                 if ($deltaend > 0) {
                     $startdatealarm->add(new \DateInterval("PT" . $deltaend . "M"));
                 } else {
-                    $invdiff = -$deltaend;
+                    $invdiff = - $deltaend;
                     $interval = new \DateInterval('PT' . $invdiff . 'M');
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
@@ -355,25 +396,26 @@ class Event extends AbstractEvent {
                     $this->setStartdate($startdatealarm);
                 }
             } else {
-            	if($deltabegin !== null){
-                $startdatealarm = clone $event->getStartdate ();
-					if ($deltabegin > 0) {
-						$startdatealarm->add ( new \DateInterval ( "PT" . $deltabegin . "M" ) );
-					} else {
-						$invdiff = - $deltabegin;
-						$interval = new \DateInterval ( 'PT' . $invdiff . 'M' );
-						$interval->invert = 1;
-						$startdatealarm->add ( $interval );
-					}
-					if ($startdatealarm != $previousstart) {
-						$this->setStartdate ( $startdatealarm );
-					}
-            	}
+                if ($deltabegin !== null) {
+                    $startdatealarm = clone $event->getStartdate();
+                    if ($deltabegin > 0) {
+                        $startdatealarm->add(new \DateInterval("PT" . $deltabegin . "M"));
+                    } else {
+                        $invdiff = - $deltabegin;
+                        $interval = new \DateInterval('PT' . $invdiff . 'M');
+                        $interval->invert = 1;
+                        $startdatealarm->add($interval);
+                    }
+                    if ($startdatealarm != $previousstart) {
+                        $this->setStartdate($startdatealarm);
+                    }
+                }
             }
         }
     }
 
-    public function getArrayCopy() {
+    public function getArrayCopy()
+    {
         $object_vars = array_merge(get_object_vars($this), parent::getArrayCopy());
         $object_vars['status'] = ($this->status ? $this->status->getId() : null);
         $object_vars['author'] = ($this->author ? $this->author->getId() : null);

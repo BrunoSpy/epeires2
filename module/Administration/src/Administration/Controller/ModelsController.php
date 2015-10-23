@@ -233,13 +233,14 @@ class ModelsController extends FormController
                     $category = $post['category'];
                     $pevent->setCategory($objectManager->getRepository('Application\Entity\Category')
                         ->find($post['category']));
-                } elseif ($pevent->getCategory()) {
-                    $category = $pevent->getCategory()->getId();
-                } else { // last chance cat id passed by query
-                    $category = $catid;
-                    $pevent->setCategory($objectManager->getRepository('Application\Entity\Category')
-                        ->find($catid));
-                }
+                } else 
+                    if ($pevent->getCategory()) {
+                        $category = $pevent->getCategory()->getId();
+                    } else { // last chance cat id passed by query
+                        $category = $catid;
+                        $pevent->setCategory($objectManager->getRepository('Application\Entity\Category')
+                            ->find($catid));
+                    }
                 if (! $id) { // if modification : link to parent and calculate position
                              // link to parent
                     if (isset($post['parent'])) {
@@ -366,7 +367,7 @@ class ModelsController extends FormController
             } else {
                 // traitement des erreurs de validation
                 $pevent = null;
-                $this->processFormMessages($form->getMessages());
+                $this->processFormMessages($form->getMessages(), $messages);
             }
         }
         
@@ -474,6 +475,9 @@ class ModelsController extends FormController
                 // add custom fields input
                 $form->get('category')->setAttribute('value', $cataction->getId());
                 $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId()));
+                $colorfield = $form->get('custom_fields')->get($cataction->getColorfield()
+                    ->getId());
+                $colorfield->setAttribute('class', 'pick-a-color');
             }
             // disable category modification
             $form->get('category')->setAttribute('disabled', 'disabled');
@@ -508,8 +512,10 @@ class ModelsController extends FormController
                         ->getId()
                 ));
                 if (count($customfields) > 0) {
-                    $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
-                        ->getId()));
+                    if (! ($catid || $action)) { // customfieldset already added
+                        $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
+                            ->getId()));
+                    }
                     foreach ($customfields as $customfield) {
                         $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
                             'event' => $pevent->getId(),

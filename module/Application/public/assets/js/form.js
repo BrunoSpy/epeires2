@@ -596,7 +596,11 @@ var form = function(url, tabid){
 					//then the table of actions
 					content += '<table class="table table-hover"><tbody>';
 					for (index = 0; index < actions.length; ++index) {
-						content += "<tr data-id=\"" + actions[index].id + "\">";
+						content += "<tr ";
+						if(actions[index].color != '') {
+							content += 'style="background-color:#'+actions[index].color+'" ';
+						}
+						content += "data-id=\"" + actions[index].id + "\">";
 						content += "<td><span class=\"label label-" + actions[index].impactstyle + "\">" + actions[index].impactname + "</span></td>";
 						content += "<td>" + actions[index].name + "</td>";
 						content += '</tr>';

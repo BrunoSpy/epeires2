@@ -841,7 +841,7 @@ class EventsController extends TabController
 
     /**
      * Create a new form
-     *
+     * 
      * @return \Zend\View\Model\ViewModel
      */
     public function formAction()
@@ -931,7 +931,7 @@ class EventsController extends TabController
         }
         
         if ($id && $pevent) { // copie d'un modèle
-            // prefill customfields with predefined values
+                            // prefill customfields with predefined values
             foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array(
                 'category' => $cat->getId()
             )) as $customfield) {
@@ -963,7 +963,7 @@ class EventsController extends TabController
         }
         
         if ($id && $event) { // modification d'un evt, prefill form
-                             
+                           
             // custom fields values
             foreach ($em->getRepository('Application\Entity\CustomField')->findBy(array(
                 'category' => $cat->getId()
@@ -1118,12 +1118,15 @@ class EventsController extends TabController
             'place' => 'DESC'
         )) as $action) {
             if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+                $color = $action->getCustomFieldValue($action->getCategory()
+                    ->getColorfield());
                 $json[$action->getId()] = array(
                     'id' => $action->getId(),
                     'name' => $this->getServiceLocator()
                         ->get('EventService')
                         ->getName($action),
                     'place' => $action->getPlace(),
+                    'color' => ($color !== null ? $color->getValue() : ''),
                     'impactname' => $action->getImpact()->getName(),
                     'impactstyle' => $action->getImpact()->getStyle()
                 );
@@ -1196,7 +1199,7 @@ class EventsController extends TabController
 
     /**
      * Return {'open' => '<true or false>'}
-     *
+     * 
      * @return \Zend\View\Model\JsonModel
      */
     public function toggleficheAction()
@@ -1294,7 +1297,7 @@ class EventsController extends TabController
      * },
      * 'evt_id_1' => ...
      * }
-     *
+     * 
      * @return \Zend\View\Model\JsonModel
      */
     public function geteventsAction()
@@ -1314,7 +1317,8 @@ class EventsController extends TabController
             $day, 
             $lastmodified, 
             true, 
-            $cats) as $event) {
+            $cats
+        ) as $event) {
             $json[$event->getId()] = $this->getEventJson($event);
         }
         
@@ -1542,7 +1546,7 @@ class EventsController extends TabController
     /**
      * Usage :
      * $this->url('application', array('controller' => 'events'))+'/changefield?id=<id>&field=<field>&value=<newvalue>'
-     *
+     * 
      * @return JSon with messages
      */
     public function changefieldAction()
@@ -1596,14 +1600,15 @@ class EventsController extends TabController
                                 if (! $status->isOpen()) {
                                     $this->closeEvent($event);
                                 }
-                            } elseif (! $status->isOpen() && ! $status->isDefault()) {
-                                // si statut annulé
-                                $event->cancelEvent($status);
-                                $messages['success'][] = "Evènement passé au statut " . $status->getName();
-                            } else {
-                                $event->setStatus($status);
-                                $messages['success'][] = "Evènement passé au statut " . $status->getName();
-                            }
+                            } else 
+                                if (! $status->isOpen() && ! $status->isDefault()) {
+                                    // si statut annulé
+                                    $event->cancelEvent($status);
+                                    $messages['success'][] = "Evènement passé au statut " . $status->getName();
+                                } else {
+                                    $event->setStatus($status);
+                                    $messages['success'][] = "Evènement passé au statut " . $status->getName();
+                                }
                             $objectManager->persist($event);
                             break;
                         case 'star':
@@ -1767,7 +1772,7 @@ class EventsController extends TabController
      * Change la date de début d'un evt et
      * - vérifie la cohérence des évènements fils
      * - vérifie la cohérence du statut
-     *
+     * 
      * @param \Application\Entity\Event $event            
      * @param \DateTime $startdate            
      * @param
@@ -1777,7 +1782,14 @@ class EventsController extends TabController
     private function changeStartDate(Event $event, \DateTime $startdate, &$messages = null)
     {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(), 
+            \IntlDateFormatter::FULL, 
+            \IntlDateFormatter::FULL, 
+            'UTC', 
+            \IntlDateFormatter::GREGORIAN, 
+            'dd LLL, HH:mm'
+        );
         if ($event->setStartdate($startdate)) {
             if (is_array($messages)) {
                 $messages['success'][] = "Date et heure de début modifiées au " . $formatter->format($event->getStartdate());
@@ -1816,7 +1828,7 @@ class EventsController extends TabController
     /**
      * Cloture d'un evt : terminé ou annulé (statut 3 ou 4)
      * TODO : use $event->close or $event->cancel
-     *
+     * 
      * @param Event $event            
      */
     private function closeEvent(Event $event)
@@ -1955,7 +1967,7 @@ class EventsController extends TabController
 
     /**
      * Renvoie les evts les plus créés de la catégorie
-     *
+     * 
      * @return \Zend\View\Model\JsonModel
      */
     public function suggestEventsAction()

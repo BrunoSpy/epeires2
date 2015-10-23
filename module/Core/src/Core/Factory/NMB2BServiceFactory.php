@@ -1,13 +1,35 @@
 <?php
-
+/*
+ * This file is part of Epeires².
+ * Epeires² is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Epeires² is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 namespace Core\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class NMB2BServiceFactory implements FactoryInterface {
-    
-    public function createService(ServiceLocatorInterface $serviceLocator) {
+/**
+ *
+ * @author Bruno Spyckerelle
+ *        
+ */
+class NMB2BServiceFactory implements FactoryInterface
+{
+
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
         return new \Core\Service\NMB2BService($serviceLocator);
     }
 }
