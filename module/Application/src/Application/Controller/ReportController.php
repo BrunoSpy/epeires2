@@ -1,87 +1,94 @@
 <?php
 
 /*
- *  This file is part of Epeires².
- *  Epeires² is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * This file is part of Epeires².
+ * Epeires² is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- *  Epeires² is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * Epeires² is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-
 use DOMPDFModule\View\Model\PdfModel;
-
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
-
-use OpentbsBundle\Factory\TBSFactory as TBS;
 use Doctrine\Common\Collections\Criteria;
 
 /**
+ *
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
-class ReportController extends AbstractActionController {
+class ReportController extends AbstractActionController
+{
 
-    public function fnebrouillageAction() {
-
+    public function fnebrouillageAction()
+    {
         $view = $this->params()->fromQuery('view', null);
-
+        
         $brouillageid = $this->params()->fromQuery('id', null);
-
+        
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
+        
         $brouillage = $objectManager->getRepository('Application\Entity\Event')->find($brouillageid);
-
+        
         if ($brouillage) {
             $fields = array();
             foreach ($brouillage->getCustomFieldsValues() as $values) {
                 $fields[$values->getCustomField()->getId()] = $values->getValue();
             }
-            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()->getFrequencyField()->getId()]);
-
+            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()
+                ->getFrequencyField()
+                ->getId()]);
+            
             if ($view == 'pdf') {
                 $pdf = new PdfModel();
                 $pdf->setVariable('event', $brouillage);
-
-                $pdf->setVariables(array('frequency' => $frequency, 'fields' => $fields));
-
-                //   $pdf->setOption('filename', 'fne-brouillage');
+                
+                $pdf->setVariables(array(
+                    'frequency' => $frequency,
+                    'fields' => $fields
+                ));
+                
+                // $pdf->setOption('filename', 'fne-brouillage');
                 $pdf->setOption('paperSize', 'a4');
-
+                
                 return $pdf;
             } else {
                 $viewmodel = new ViewModel();
                 $viewmodel->setVariable('event', $brouillage);
-                $viewmodel->setVariables(array('frequency' => $frequency, 'fields' => $fields));
-                //disable layout if request by Ajax
+                $viewmodel->setVariables(array(
+                    'frequency' => $frequency,
+                    'fields' => $fields
+                ));
+                // disable layout if request by Ajax
                 $viewmodel->setTerminal(true);
                 return $viewmodel;
             }
         }
     }
 
-    public function dailyAction(){       
+    public function dailyAction()
+    {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $day = $this->params()->fromQuery('day', null);
-              
-        if($day){
-            $criteria = Criteria::create()
-                ->where(Criteria::expr()->isNull('parent'))
+        
+        if ($day) {
+            $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'))
                 ->andWhere(Criteria::expr()->eq('system', false))
-                ->orderBy(array('place' => Criteria::ASC));
+                ->orderBy(array(
+                'place' => Criteria::ASC
+            ));
             
             $cats = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
             
@@ -90,116 +97,122 @@ class ReportController extends AbstractActionController {
             foreach ($cats as $cat) {
                 $category = array();
                 $category['name'] = $cat->getName();
-                $category['events'] = $events = $objectManager->getRepository('Application\Entity\Event')
-                                                                ->getEvents($this->zfcUserAuthentication(), $day, null, true, array($cat->getId()));
+                $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
+                    $cat->getId()
+                ));
                 $category['childs'] = array();
                 foreach ($cat->getChildren() as $subcat) {
                     $subcategory = array();
-                    $subcategory['events'] = $events = $objectManager->getRepository('Application\Entity\Event')
-                                                                ->getEvents($this->zfcUserAuthentication(), $day, null, true, array($subcat->getId()));
-                    $subcategory['name'] = $subcat->getName();  
-                    $category['childs'][] = $subcategory;                                      
+                    $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
+                        $subcat->getId()
+                    ));
+                    $subcategory['name'] = $subcat->getName();
+                    $category['childs'][] = $subcategory;
                 }
                 $eventsbycats[] = $category;
             }
             
-           // $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
+            // $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
             $pdf = new PdfModel();
-            $pdf->setVariables(array('events' => $eventsbycats, 'day' => $day));
+            $pdf->setVariables(array(
+                'events' => $eventsbycats,
+                'day' => $day
+            ));
             $pdf->setOption('paperSize', 'a4');
             
-            $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd_LL_yyyy');
-            $pdf->setOption('filename', 'rapport_du_'.$formatter->format(new \DateTime($day)));
-            
+            $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
+            $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime($day)));
             
             return $pdf;
-
         } else {
-            //erreur
+            // erreur
         }
-        
     }
-    
-    public function reportAction(){
-        $request = $this->getRequest();
 
-        if (!$request instanceof ConsoleRequest) {
+    public function reportAction()
+    {
+        $request = $this->getRequest();
+        
+        if (! $request instanceof ConsoleRequest) {
             throw new \RuntimeException('Action only available from console.');
         }
-
+        
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
+        
         $j = $request->getParam('delta');
         
         $email = $request->getParam('email');
         
         $org = $request->getParam('orgshortname');
         
-        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findBy(array('shortname' => $org));
+        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findBy(array(
+            'shortname' => $org
+        ));
         
-        if(!$organisation){
+        if (! $organisation) {
             throw new \RuntimeException('Unable to find organisation.');
         } else {
             $email = $organisation[0]->getIpoEmail();
-            if(empty($email)){
+            if (empty($email)) {
                 throw new \RuntimeException('Unable to find IPO email.');
             }
         }
         
         $day = new \DateTime('now');
-        if($j){
-            if($j > 0){
-                $day->add(new \DateInterval('P'.$j.'D'));
+        if ($j) {
+            if ($j > 0) {
+                $day->add(new \DateInterval('P' . $j . 'D'));
             } else {
-                $j = -$j;
-                $interval = new \DateInterval('P'.$j.'D');
+                $j = - $j;
+                $interval = new \DateInterval('P' . $j . 'D');
                 $interval->invert = 1;
                 $day->add($interval);
             }
         }
         
         $day = $day->format(DATE_RFC2822);
-
+        
         $events = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true);
         $pdf = new PdfModel();
-        $pdf->setVariables(array('events' => $events, 'day' => $day));
+        $pdf->setVariables(array(
+            'events' => $events,
+            'day' => $day
+        ));
         $pdf->setOption('paperSize', 'a4');
-
-        $formatter = \IntlDateFormatter::create(
-                            \Locale::getDefault(),
-                            \IntlDateFormatter::FULL,
-                            \IntlDateFormatter::FULL,
-                            'UTC',
-                            \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
+        
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
         
         $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime($day)));
-
+        
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
-                ->setTemplate('application/report/daily')
-                ->setVariables(array('events' => $events, 'day' => $day));
-
-        $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
-        $engine = $this->getServiceLocator()->get('viewpdfrenderer')->getEngine();
-
+            ->setTemplate('application/report/daily')
+            ->setVariables(array(
+            'events' => $events,
+            'day' => $day
+        ));
+        
+        $html = $this->getServiceLocator()
+            ->get('viewpdfrenderer')
+            ->getHtmlRenderer()
+            ->render($pdfView);
+        $engine = $this->getServiceLocator()
+            ->get('viewpdfrenderer')
+            ->getEngine();
+        
         $engine->load_html($html);
         $engine->render();
-
-        //creating directory if it doesn't exists
-        if(!is_dir('data/reports')){
+        
+        // creating directory if it doesn't exists
+        if (! is_dir('data/reports')) {
             mkdir('data/reports');
         }
         
         file_put_contents('data/reports/rapport_du_' . $formatter->format(new \DateTime($day)) . '.pdf', $engine->output());
         
-        if($email){
-            //prepare body with file attachment
-            $text = new \Zend\Mime\Part('Veuillez trouver ci-joint le rapport automatique de la journée du '.$formatter->format(new \DateTime($day)));
+        if ($email) {
+            // prepare body with file attachment
+            $text = new \Zend\Mime\Part('Veuillez trouver ci-joint le rapport automatique de la journée du ' . $formatter->format(new \DateTime($day)));
             $text->type = \Zend\Mime\Mime::TYPE_TEXT;
             $text->charset = 'utf-8';
             
@@ -209,16 +222,19 @@ class ReportController extends AbstractActionController {
             $attachment->filename = 'rapport_du_' . $formatter->format(new \DateTime($day)) . '.pdf';
             $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
             $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
-
+            
             $mimeMessage = new \Zend\Mime\Message();
-            $mimeMessage->setParts(array($text, $attachment));
+            $mimeMessage->setParts(array(
+                $text,
+                $attachment
+            ));
             
             $config = $this->serviceLocator->get('config');
             $message = new \Zend\Mail\Message();
             $message->addTo($organisation[0]->getIpoEmail())
-                    ->addFrom($config['emailfrom'])
-                    ->setSubject('Rapport automatique du '. $formatter->format(new \DateTime($day)))
-                    ->setBody($mimeMessage);
+                ->addFrom($config['emailfrom'])
+                ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
+                ->setBody($mimeMessage);
             
             $transport = new \Zend\Mail\Transport\Smtp();
             $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
@@ -226,5 +242,4 @@ class ReportController extends AbstractActionController {
             $transport->send($message);
         }
     }
-
 }

@@ -1,22 +1,21 @@
 <?php
 
 /*
- *  This file is part of Epeires².
- *  Epeires² is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * This file is part of Epeires².
+ * Epeires² is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- *  Epeires² is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * Epeires² is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 namespace Application\Entity;
 
 use Zend\Form\Annotation;
@@ -26,28 +25,29 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * @ORM\Table(name="categories", indexes={@ORM\Index(name="search_idx", columns={"timeline"}), 
- 										@ORM\Index(name="discr_idx", columns={"discr"})
- 											})
+ * @ORM\Table(name="categories", indexes={@ORM\Index(name="search_idx", columns={"timeline"}),
+                                          @ORM\Index(name="discr_idx", columns={"discr"})
+                                          })
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"generic" = "Category",
-			  "radar" = "RadarCategory",
-			  "antenna" = "AntennaCategory", 
-			  "frequency" = "FrequencyCategory", 
-			  "action" = "ActionCategory", 
-			  "alarm" = "AlarmCategory", 
-			  "brouillage" = "BrouillageCategory",
-                          "mil" = "MilCategory"})
- 
+ * "radar" = "RadarCategory",
+ * "antenna" = "AntennaCategory",
+ * "frequency" = "FrequencyCategory",
+ * "action" = "ActionCategory",
+ * "alarm" = "AlarmCategory",
+ * "brouillage" = "BrouillageCategory",
+ * "mil" = "MilCategory"})
+ *
  * Catégorie d'évènements.
  * Peut avoir une catégorie parente.
  *
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
-class Category {
+class Category
+{
 
     /**
      * @ORM\Id
@@ -150,19 +150,21 @@ class Category {
      */
     protected $system = false;
 
-    /** 
+    /**
      * @ORM\ManyToMany(targetEntity="Tab", mappedBy="categories")
      */
     protected $tabs;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->events = new ArrayCollection();
         $this->customfields = new ArrayCollection();
         $this->readroles = new ArrayCollection();
         $this->tabs = new ArrayCollection();
     }
 
-    public static function getTypeValueOptions() {
+    public static function getTypeValueOptions()
+    {
         $type = array();
         $type['generic'] = "Générique";
         $type['radar'] = "Radar";
@@ -173,95 +175,118 @@ class Category {
         return $type;
     }
 
-    public function getCustomfields() {
+    public function getCustomfields()
+    {
         return $this->customfields;
     }
 
-    public function setSystem($system) {
+    public function setSystem($system)
+    {
         $this->system = $system;
     }
 
-    public function isSystem() {
+    public function isSystem()
+    {
         return $this->system;
     }
 
-    public function setPlace($place) {
+    public function setPlace($place)
+    {
         $this->place = $place;
     }
 
-    public function getPlace() {
+    public function getPlace()
+    {
         return $this->place;
     }
 
-    public function getParent() {
+    public function getParent()
+    {
         return $this->parent;
     }
 
-    public function setParent($parent) {
+    public function setParent($parent)
+    {
         $this->parent = $parent;
     }
 
-    public function getChildren() {
+    public function getChildren()
+    {
         return $this->childs;
     }
-    
-    public function getId() {
+
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getShortName() {
+    public function getShortName()
+    {
         return $this->shortname;
     }
 
-    public function setShortName($shortname) {
+    public function setShortName($shortname)
+    {
         $this->shortname = $shortname;
     }
 
-    public function getColor() {
+    public function getColor()
+    {
         return $this->color;
     }
 
-    public function setColor($color) {
+    public function setColor($color)
+    {
         $this->color = $color;
     }
 
-    public function isTimeline() {
+    public function isTimeline()
+    {
         return $this->timeline;
     }
 
-    public function setTimeline($timeline) {
+    public function setTimeline($timeline)
+    {
         $this->timeline = $timeline;
     }
 
-    public function isCompactMode() {
+    public function isCompactMode()
+    {
         return $this->compactmode;
     }
 
-    public function setCompactMode($compactmode) {
+    public function setCompactMode($compactmode)
+    {
         $this->compactmode = $compactmode;
     }
 
-    public function getFieldname() {
+    public function getFieldname()
+    {
         return $this->fieldname;
     }
 
-    public function setFieldname($fieldname) {
+    public function setFieldname($fieldname)
+    {
         $this->fieldname = $fieldname;
     }
 
-    public function getTabs() {
-    	return $this->tabs;
+    public function getTabs()
+    {
+        return $this->tabs;
     }
-    
-    public function getReadroles($recursive = false) {
+
+    public function getReadroles($recursive = false)
+    {
         if ($recursive) {
             $readroles = new ArrayCollection();
             foreach ($this->readroles as $readrole) {
@@ -278,23 +303,27 @@ class Category {
         }
     }
 
-    public function setReadroles($readroles) {
+    public function setReadroles($readroles)
+    {
         $this->readroles = $readroles;
     }
 
-    public function addReadroles(Collection $roles) {
+    public function addReadroles(Collection $roles)
+    {
         foreach ($roles as $role) {
             $this->readroles->add($role);
         }
     }
 
-    public function removeReadroles(Collection $roles) {
+    public function removeReadroles(Collection $roles)
+    {
         foreach ($roles as $role) {
             $this->readroles->removeElement($role);
         }
     }
 
-    public function getArrayCopy() {
+    public function getArrayCopy()
+    {
         $object_vars = get_object_vars($this);
         $object_vars["parent"] = ($this->parent ? $this->parent->getId() : null);
         $object_vars["fieldname"] = ($this->fieldname ? $this->fieldname->getId() : null);
@@ -305,5 +334,4 @@ class Category {
         $object_vars['readroles'] = $roles;
         return $object_vars;
     }
-
 }
