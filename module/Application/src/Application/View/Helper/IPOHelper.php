@@ -76,17 +76,19 @@ class IPOHelper extends AbstractHelper
                 
                 $formView = $this->view->form();
                 
-                $html .= "<li>";
+                $form->setAttributes(array('class' => 'navbar-form navbar-left visible-xs-block visible-md-block visible-lg-block'));
                 
                 $html .= $formView->openTag($form);
-                $html .= $this->view->formSelect($form->get('nameipo'));
+                $html .= '<div class="form-group">';
+                $html .= $this->view->formSelect($form->get('nameipo')->setAttribute('class', 'form-control'));
+                $html .= '</div>';
                 $html .= $formView->closeTag();
-                $html .= "</li>";
+                
             } else {
                 if ($currentipo) {
-                    $html .= '<span id="iponame">' . $currentipo->getName() . '</span>';
-                } else {
-                    $html .= "<em>Aucun IPO configuré</em>";
+                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span id="iponame">' . $currentipo->getName() . '</span></p>';
+                } else { 
+                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><em>Aucun IPO configuré</em></p>';
                 }
             }
         } else {

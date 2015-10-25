@@ -37,8 +37,8 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
         $urlHelper = $this->view->plugin('url');
         
         $html = '<li class="dropdown">';
-        $html .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
-        $html .= '<i class="icon-user"></i> ';
+        $html .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">';
+        $html .= '<span class="glyphicon glyphicon-user" aria-hidden="true"></span> ';
         if ($this->auth->getIdentity() != null) {
             $html .= $this->auth->getIdentity()->getUserName();
         } else {

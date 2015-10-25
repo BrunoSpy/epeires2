@@ -106,7 +106,9 @@ var displayMessages = function(messages){
  };
 
 $(document).ready(function(){
-	
+    
+    $.material.init();
+	    
    setInterval('updateClock()', 1000);
          
    $.datepicker.regional[ "fr" ];
@@ -335,8 +337,8 @@ $(document).ready(function(){
         $('#timeline').timeline('forceUpdateView');
     });
 
-    $('#zoom').on('switch-change', function(e, data) {
-        if (data.value) {
+    $('#zoom').on('click', function() {
+        if (this.checked) {
             $("#calendar").show();
             $("#export").show();
             var now = new Date();

@@ -21,12 +21,12 @@
     "bootstrap": "~3.3.5",
     "jquery-ui": "~1.11.4",
     "jquery": "~2.1.4",
-    "bootstrap-switch": "~3.3.2",
     "pick-a-color": "~1.2.3",
     "noty": "~2.3.7",
     "jquery-form": "~3.46.0",
     "jquery-stupid-table": "~1.0.1",
     "jquery-mousewheel": "~3.1.13",
-    "bootstrap-material-design": "~0.3.0"
+    "bootstrap-material-design": "~0.3.0",
+    "bootstrap-material-datetimepicker": "~2.0.0"
   }
 }

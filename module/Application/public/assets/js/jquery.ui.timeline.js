@@ -154,6 +154,7 @@
             var self = this;
             var height = $(window).height() - this.options.topOffset + 'px';
             this.element.css('height', height);
+            this.element.css('top', this.options.topOffset+'px');
             //first : draw categories
             $.when(
                     $.getJSON(self.options.categoriesUrl, function (data) {

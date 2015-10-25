@@ -85,21 +85,22 @@ class OpSupHelper extends AbstractHelper
                 
                 $formView = $this->view->form();
                 
-                $html .= "<li>";
-                
+                $form->setAttributes(array('class' => 'navbar-form navbar-left'));
+                                
                 $html .= $formView->openTag($form);
-                $html .= $this->view->formSelect($form->get('nameopsup'));
+                $html .= '<div class="form-group">';
+                $html .= $this->view->formSelect($form->get('nameopsup')->setAttribute('class', 'form-control'));
+                $html .= '</div>';
                 $html .= $formView->closeTag();
-                $html .= "</li>";
             } else {
                 if ($currentopsup) {
                     $html .= $currentopsup->getName();
                 } else {
-                    $html .= "<em>Aucun Op Sup configuré</em>";
+                    $html .= '<p class="navbar-text navbar-left"><em>Aucun Op Sup configuré</em></p>';
                 }
             }
         } else {
-            $html .= "<em>Connexion nécessaire</em>";
+            $html .= '<p class="navbar-text navbar-left"><em>Connexion nécessaire</em></p>';
         }
         return $html;
     }

@@ -14,6 +14,9 @@
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
                         ->prependStylesheet($this->basePath() . '/css/animate.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-fullpalette.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/components/jquery-ui/themes/smoothness/jquery-ui.min.css')
@@ -29,8 +32,10 @@
                         ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
                         ->prependFile($this->basePath() . '/assets/js/application.js')
                         ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
+                        ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
+                        ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
+                        ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-switch/dist/js/bootstrap-switch.min.js')
-            //            ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                         ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
                         ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
                         ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
@@ -41,99 +46,121 @@
 
     </head>
     <body>
-    	<div class="header">
-    		<ul class="inline">
-    				<?php echo $this->userMenu(); ?>
-    				<?php if($this->zfcUserIdentity() && !$this->zoneform) :?>
-    				<li><i class="icon-road"></i><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?></li>
-    				<?php endif;?>
-    				<?php if($this->zoneform) :?>
-    				<li><i class="icon-filter"></i><b> Zone : </b></li>
-    				<li><?php 
-    						$form = $this->zoneform;
-    						$form->setAttributes(array('action' => $this->url('application', array('controller'=>'events', 'action'=>'savezone')),
-												'class'=>''));
-    						$form->prepare();
-    						echo $this->form()->openTag($form);
-    						echo $this->formSelect($form->get('zone'));
-    						echo $this->form()->closeTag();
-    					?>
-    				</li>
-    				<?php  endif;?>
-    				<?php if($this->zfcUserIdentity() && $this->zfcUserIdentity()->getZone()) :?>
-    				<li><i class="icon-eye-open"></i><b> Chef de salle : </b><?php echo $this->opsup();?></li>
-    				<?php endif;?>
-    				<li><i class="icon-warning-sign"></i><b> IPO <?php echo $this->iponumber; ?> : </b><?php echo $this->ipo();?></li>
-    				<li id="clock" class="pull-right"></li>
-    		</ul>
-    		
-    	</div>
-    	<div class="navbar navbar-after-top">
-    		<div class="navbar-inner">
-    			<ul class="nav pull-left">
-    				<?php if($this->isGranted('events.create')):?>
-    				<li>
-    					<a href="#" id="create-link"><i class="icon-pencil"></i> <i class="icon-chevron-down"></i></a>
-    				</li>
-    				<?php endif;?>
-    			</ul>
-	        	<ul class="nav-centered nav">
-	            	<li class="dropdown active">  <!-- lien par défaut, classe "active" supprimée par jquery si besoin -->
-	            		<a id="home" class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>"><i class="icon-home"></i> Évènements <b class="caret"></b></a>
-	            		<ul class="dropdown-menu">
-	            			<li class="nav-header">Tri</li>
-	            			<li class="active"><a href="#" id="tri_cat">Par catégorie</a></li>
-	            			<li><a id="tri_deb" href="#">Par heure de début</a></li>
-	            		<!--	<li class="divider"></li>
-	            			<li class="nav-header">Filtre</li>
-                                        <li class="active"><a id="tri_std" href="#">Cacher les évènements archivés</a></li>
-	            			<li><a href="#" id="tri_tout">Afficher tous les évènements</a></li>-->
-	            		</ul>
-	            		
-	            	</li>
-	            	<li class="divider-vertical"></li>
-                        <?php
-                        if($this->isGranted('radars.read')){
-                            echo '<li><a id="radartab" href="'
-                                . $this->url('application', array('controller'=>'radars', 'action'=>'index'))
-                                . '">Radars</a></li>';
-                        }
-                        ?>
-                        <?php
-                        if($this->isGranted('frequencies.read')){
-                            echo '<li><a id="frequency" href="'
-                                . $this->url('application', array('controller'=>'frequencies', 'action'=>'index'))
-                                . '">Radio</a></li>';
-                        }
-                        ?>
-                        <?php
-                        //Determine custom tabs to be displayed
-                        $em = $this->getHelperPluginManager()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                        $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array('place' => 'ASC'));;
-                        foreach ($tabs as $tab) {
-                        	if($this->hasRole($tab->getReadRoleNames())){
-                        		echo '<li><a class="customtab" id="tab-'.$tab->getId().'" href="';
-                        		echo $this->url('application', array('controller' => 'tabs', 'action' => 'index'), 
-                        											 array('query' => array('tabid' => $tab->getId())));
-                        		echo '">'.$tab->getName().'</a></li>';
-                        	}
-                        }
-                        ?>
-                        </ul>
-	        	<ul class="nav pull-right">
-	        		<li>
-	        			<form class="navbar-search" id="search">
-	        				<input name="search" class="search-query" type="text" placeholder="Chercher"></input>
-	        			</form>
-	        		</li>
-	        		<li>
-	        			<div id="zoom" class="make-switch switch-small nav-in" data-on-label="Jour" data-off-label="6h" data-off="success" data-on="info" data-text-label="Vue">
-							<input type="checkbox">
+	<nav class="navbar navbar-default navbar-fixed-top navbar-material-deep-purple" id="navbar-first">
+		<div class="container-fluid">
+		<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar-first-collapse"
+					aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+			</div>
+		<div class="collapse navbar-collapse" id="navbar-first-collapse">	
+		<ul class="nav navbar-nav navbar-left">
+			<?php echo $this->userMenu(); ?>
+		</ul>
+		<?php if($this->zfcUserIdentity() && !$this->zoneform) :?>
+			<p class="navbar-text navbar-left visible-lg-block">
+				<span class="glyphicon glyphicon-road" aria-hidden="true"><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?>
+			</p>
+		<?php endif;?>
+    		<?php if($this->zoneform) {
+    		    $form = $this->zoneform;
+    		    $form->setAttributes(array('action' => $this->url('application', array('controller'=>'events', 'action'=>'savezone')),
+											'class'=>'navbar-form navbar-left'));
+    		    $form->prepare();
+    		    echo $this->form()->openTag($form);
+    		    echo '<div class="form-group">';
+    		    echo '<label for="zoneInput"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span><b> Zone : </b></label>';
+    		    echo $this->formSelect($form->get('zone')->setAttributes(array('id' => 'zoneInput', 'class' => 'form-control')));
+    		    echo '</div>';
+    		    echo $this->form()->closeTag();
+    		}
+    		?>
+    		<?php if ($this->zfcUserIdentity() && $this->zfcUserIdentity()->getZone()) {
+    		    echo '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>Chef de salle : </b></p>';
+                echo $this->opsup();    		    
+    		}
+    		?>
+    		<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO <?php echo $this->iponumber;?> : </b></p><?php echo $this->ipo(); ?>    			
+			<p class="navbar-text navbar-right visible-xs-block visible-lg-block" id="navbar-clock"><span id="clock"></span></p>
+			</div>
+		</div>
+	</nav>
+
+	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-purple">
+		<!-- Toggle for better mobile view -->
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar-collapse"
+					aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+			<?php if($this->isGranted('events.create')):?>
+			<a id="create-link" href="#" type="button" class="navbar-left btn-material-purple-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
+			<?php endif;?>
+			
+				<ul class="nav navbar-nav navbar-center">
+                <li class="dropdown active">
+                  <a id="home" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-home"></span> Évènements <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="nav-header">Tri</li>
+                    <li class="active"><a href="#" id="tri_cat">Par catégorie</a></li>
+                    <li><a href="#" id="tri_deb">Par heure de début</a></li>
+                  </ul>
+                </li>
+                <li role="separator" class="divider"></li>
+                <?php
+                if($this->isGranted('radars.read')){
+                    echo '<li><a id="radartab" href="'
+                        . $this->url('application', array('controller'=>'radars', 'action'=>'index'))
+                        . '">Radars</a></li>';
+                }
+                ?>
+                <?php
+                if($this->isGranted('frequencies.read')){
+                    echo '<li><a id="frequency" href="'
+                        . $this->url('application', array('controller'=>'frequencies', 'action'=>'index'))
+                        . '">Radio</a></li>';
+                }
+                ?>
+                <?php
+                //Determine custom tabs to be displayed
+                $em = $this->getHelperPluginManager()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array('place' => 'ASC'));;
+                foreach ($tabs as $tab) {
+                	if($this->hasRole($tab->getReadRoleNames())){
+                		echo '<li><a class="customtab" id="tab-'.$tab->getId().'" href="';
+                		echo $this->url('application', array('controller' => 'tabs', 'action' => 'index'), 
+                											 array('query' => array('tabid' => $tab->getId())));
+                		echo '">'.$tab->getName().'</a></li>';
+                	}
+                }
+                ?>
+				</ul>
+				<form class="navbar-form navbar-right" role="search" id="search">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Chercher" name="search">
+					</div>
+				</form>
+				<form class="navbar-form navbar-right">
+						<div class="togglebutton togglebutton-material-purple-300">
+							<label>
+							Vue journée : <input id="zoom" type="checkbox" name="zoom-switch">
+							</label>
 						</div>
-					</li>
-	        	</ul>
-        	</div>
-        </div>
+				</form>
+			</div>
+		</div>
+	</nav>
+
         
         <div class="content">
             <?php echo $this->content; ?>

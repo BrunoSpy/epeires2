@@ -38,51 +38,51 @@ th.no-border, td.no-border {
 /* Bandeau du haut */ 
 
 body{
-        overflow-x: hidden;
-	padding-top: 0px;
+    overflow-x: hidden;
 }
 
-.header {
-	min-height:2em;
-	width:100%;
-	background-color:#aaa;
-	padding-top:5px;
-	padding-left:5px;
+#navbar-first {
+	z-index: 2000;
 }
 
-.header form{
-	margin-bottom: 0px;
+#navbar-first select {
+	background-color:#673ab7;
 }
 
-.header select{
-	display: inline-block;
-	vertical-align: baseline;
-	margin-bottom: 5px;
+#navbar-clock {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
-
-.header ul{
-	margin-bottom: 0px;
-}
-
-
 
 #clock {
-	margin-right:0.5em;
 	font-weight: bold;
 	font-size: 1.4em;
-	margin-top: 0.3em;
 }
 
-/* Barre de nav */ 
-@media (min-width:1200px ){
-	.nav-centered {
-		padding-left: 25%;
-	}
+.navbar-lower {
+	top:50px;
+	height: 50px;
 }
 
-.navbar-after-top {
-	right:0px;
-	left:0px;
+.navbar .navbar-text {
+	margin-top: 14px;
+	margin-bottom: 14px;
+}
+
+.navbar .navbar-form {
+	margin-top: 10px;	
+}
+
+.navbar .navbar-nav>li>a {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.navbar-static-top {
+	margin-bottom: 0px;
+}
+
+.navbar-lower {
 	margin-bottom:0px;
 }
 
@@ -97,6 +97,38 @@ body{
 	padding-left: 6px;
 	position: relative;
 	top: -0.6em;
+}
+
+#create-link {
+	top: 20px;
+	box-shadow: 0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+}
+
+#create-link i {
+	top: -2px;
+}
+
+@media (min-width:1200px ){
+	.navbar-center {
+		padding-left: 25%;
+	}
+}
+
+li .nav-header {
+	padding-right: 20px;
+    padding-left: 20px;
+	display: block;
+    padding: 3px 15px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 20px;
+    color: #999999;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.navbar-form .togglebutton {
+	margin-top: 5px;
 }
 
 /******************************/
