@@ -30,7 +30,6 @@
         "zendframework/zend-code": "~2.5.0",
         "zendframework/zend-version": "~2.5.0",
         "zendframework/zend-text": "~2.5.0",
-        "robloach/component-installer": "dev-master",
         "rwoverdijk/assetmanager": "1.*",
         "doctrine/doctrine-orm-module": "~0.9.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
@@ -40,19 +39,11 @@
         "mrclay/minify": "*",
         "murganikolay/doctrine-migrations-module": "dev-master",
         "dino/dompdf-module": "dev-master",
-        "components/jquery": "2.1.*",
-        "components/bootstrap": "2.3.*",
-        "components/jqueryui": "1.11.*",
-        "components/bootstrap-default": "2.3.*",
         "Kipperlenny/opentbs-bundle": "dev-master"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
         "zendframework/zftool": "dev-master",
         "ocramius/ocra-service-manager": "dev-master"
-    },
-    "config":{
-        "component-dir": "public/components",
-        "component-baseurl": "/components"
     }
 }
