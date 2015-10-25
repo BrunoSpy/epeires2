@@ -685,7 +685,8 @@
                 if (this._isValidDate(tempday)) {
                     this.currentDay = tempday;
                 } else {
-                    this.currentDay = new Date();
+                	var now = new Date();
+                    this.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                 }
                 var now = new Date();
                 if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
@@ -846,10 +847,15 @@
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
+                this.currentDay = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), 0, 0, 0);
                 var diff = this.currentDay.getTimezoneOffset() / (-60);
                 this.timelineBegin = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), diff, 0, 0);
+                //changement d'heure dans la journée ?
+                var currentMidDay = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), 12, 0, 0);
+                var newDiff = currentMidDay.getTimezoneOffset() / (-60);
+                var changeDiff = newDiff - diff;
                 this.timelineEnd = new Date(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
-                        this.timelineBegin.getHours() + this.timelineDuration, 0, 0);
+                        this.timelineBegin.getHours() + changeDiff + this.timelineDuration, 0, 0);
             } else {
                 this.timelineDuration = 6;
                 var now = new Date();
