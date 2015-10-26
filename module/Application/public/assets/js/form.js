@@ -414,18 +414,17 @@ var form = function(url, tabid){
 		});
 	});
 
-	$("#event").on("click", "#cancel-form", function(){
-		$("#create-evt").slideUp('fast');
-		$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
-		restoreUpdateAlarms();
+	$("#event").on("click", "#cancel-form", function(event){
+	    event.preventDefault();
+	    $("#create-evt").modal('hide');
+	    restoreUpdateAlarms();
 	});
 
 	var cat_id = -1;
 	var cat_parent_id = -1;
 	$("#create-link").on("click", function(){
 		if($("#create-evt").is(':visible')){
-			$("#create-evt").slideUp('fast');
-			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-down"></i>');
+			$("#create-evt").modal('hide')
 			restoreUpdateAlarms();
 		} else {
 			$("#event").html('<div>Chargement...</div>');
@@ -451,8 +450,7 @@ var form = function(url, tabid){
 						}
 					}
 			);
-			$("#create-evt").slideDown('fast');
-			$("#create-link").html('<i class="icon-pencil"></i> <i class="icon-chevron-up"></i>');
+			$("#create-evt").modal('show');
 			pauseUpdateAlarms();
 		}
 	});

@@ -126,11 +126,11 @@
             //espace entre les évènements
             eventSpace: 6,
             //espace entre le haut et la barre horizontale
-            topSpace: 50,
+            topSpace: 55,
             //espace entre le haut et les heures
-            topHourSpace: 20,
+            topHourSpace: 25,
             //espace entre le haut et les demi-heures
-            topHalfHourSpace: 30,
+            topHalfHourSpace: 35,
             //espace horizontal entre deux évènements
             eventHorizSpace:10
         },

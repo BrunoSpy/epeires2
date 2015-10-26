@@ -6,6 +6,12 @@
     line-height: normal;
 }
 
+/************* Formulaire ****************/
+#Event ul.nav {
+	margin-right: -24px;
+	margin-left: -24px;
+} 
+
 /************** Slide panel **************/
 
 .panel-fixed {
@@ -299,16 +305,6 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 
 #create-evt {
 	display:none;
-	border:1px;
-	border-color:CadetBlue ;
-	border-style:solid;
-	background-color:AliceBlue;
-	width: 30%; 
-	margin-left: 1%;
-	clear: both;
-	top: 80px;
-	max-width:400px;
-	min-width:400px;
 }
 
 .overflow-auto {
@@ -389,9 +385,8 @@ ul > .antennas > .antenna-color.mainantenna-color:only-child {
 }
 
 #calendar input {
-    height: 10px;
     margin-bottom: 0px;
-    width: 71px;
+    width: 82px;
 }
 
 #Event blockquote,

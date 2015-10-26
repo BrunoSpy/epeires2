@@ -26,7 +26,11 @@
     "jquery-form": "~3.46.0",
     "jquery-stupid-table": "~1.0.1",
     "jquery-mousewheel": "~3.1.13",
-    "bootstrap-material-design": "~0.3.0",
+    "bootstrap-material-design": "master",
     "bootstrap-material-datetimepicker": "~2.0.0"
+  },
+  "resolutions": {
+    "jquery": "~2.1.4",
+    "bootstrap": "~3.3.5"
   }
 }

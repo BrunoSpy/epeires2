@@ -3,6 +3,15 @@
     Created on : 10 mai 2014, 11:12:07
     Author     : Bruno Spyckerelle
 */
+/************** Tabs *************/
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus,  .nav-tabs > li > a:hover {
+	background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav-tabs-material-purple {
+	background-color: #9C27B0;
+	border-bottom: none;
+}
 
 /************* Block ***********************/
 
@@ -42,7 +51,7 @@ body{
 }
 
 #navbar-first {
-	z-index: 2000;
+	z-index: 1031;
 }
 
 #navbar-first select {

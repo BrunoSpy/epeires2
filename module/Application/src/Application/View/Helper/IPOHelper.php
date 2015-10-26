@@ -92,7 +92,7 @@ class IPOHelper extends AbstractHelper
                 }
             }
         } else {
-            $html .= "<em>Connexion nécessaire</em>";
+            $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><em>Connexion nécessaire</em></p>';
         }
         return $html;
     }

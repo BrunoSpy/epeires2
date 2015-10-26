@@ -14,10 +14,11 @@
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
                         ->prependStylesheet($this->basePath() . '/css/animate.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
+                        ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-fullpalette.min.css')
-                        ->prependStylesheet($this->basePath() . '/components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/components/jquery-ui/themes/smoothness/jquery-ui.min.css')
         				?>
@@ -31,11 +32,12 @@
                         ->prependFile($this->basePath() . '/assets/js/form.js')
                         ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
                         ->prependFile($this->basePath() . '/assets/js/application.js')
+                        ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
+                        ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
-                        ->prependFile($this->basePath() . '/components/bootstrap-switch/dist/js/bootstrap-switch.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
                         ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
                         ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
@@ -168,7 +170,7 @@
         
         <?php 
 		if(!$this->zfcuserIdentity()){
-				echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->serverUrl(true))));
+				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>$this->serverUrl(true))));
 		} ?>
         
         <?php $this->inlineScript()->captureStart();?>

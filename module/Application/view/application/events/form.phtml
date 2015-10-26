@@ -1,3 +1,4 @@
+
 <?php
 // 4 cas :
 // * nouvel évènement vierge : $this->event, $this->model, $this->copy : null
@@ -27,10 +28,20 @@
 	echo $this->formHidden($this->form->get('category'));
 	?>
 
+<div class="modal-body">
+	<ul class="nav nav-tabs nav-tabs-material-purple shadow-z-2" role="tablist">
+		<li role="presentation" class="active"><a href="#categories-tab" data-toggle="tab">Catégorie</a></li>
+		<li role="presentation"><a href="#models-tab" data-toggle="tab">Modèles</a></li>
+		<li role="presentation"><a href="#hours-tab" data-toggle="tab">Horaires</a></li>
+		<li role="presentation"><a href="#">Description</a></li>
+		<li role="presentation"><a href="#">Mémos</a></li>
+		<li role="presentation"><a href="#">Fichiers</a></li>
+		<li role="presentation"><a href="#">Fiche réflèxe</a></li>
+	</ul>
 
-	
-	<div class="accordion" id="form">
-		<?php 
+	<div class="tab-content">
+	   <div role="tabpanel" class="tab-pane fade active" id="categories-tab">
+	   <?php 
 		//category and subcategory		
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
 		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
@@ -39,14 +50,35 @@
 			$formSelectCat->setAttribute('disabled',true);
 			$formSelectSubCat->setAttribute('disabled', true);
  		}
+	   
+ 		echo $this->controlGroup(
+ 		    $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
+ 		    $this->formSelect($formSelectCat->setAttribute('class', 'form-control')));
+ 		echo $this->controlGroup(
+ 		    $this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
+ 		    $this->formSelect($formSelectSubCat->setAttribute('class', 'form-control')),
+ 		    array('control_id'=>'form_categories'));
+ 		
+ 		?>
+	   
+	   </div>
+	
+	   <div role="tabpanel" class="tab-pane fade" id="models-tab">
+	   
+	   </div>
+	   <div role="tabpanel" class="tab-pane fade" id="hours-tab">
+	   
+	   </div>
+	</div>
+	
+	
+	
+	<div class="accordion" id="form">
 		
-		$html = $this->controlGroup(
-					$this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($formSelectCat));
-		$html .= $this->controlGroup(
-					$this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($formSelectSubCat),
-					array('control_id'=>'form_categories'));		
+		
+	<?php 
+	
+	   $html ="";
 		
 		$catTitle = "Catégories";
 		
@@ -423,19 +455,23 @@
 			echo $this->formSelect($this->form->get('status'));
 			?>
 		</div>
+		</div>
+
 	</div>
-	
-	<div class="control-group">
-		<div class="controls">
-                    <div style="display:inline-block; position:relative;">
+</div>
+<!-- .modal-body -->
+<div class="modal-footer">
+	<div class="form-group">
+		<div class="col-lg-6 col-lg-offset-6">
 			<?php	
 			if($this->event || $this->model){
-				echo $this->formSubmit($this->form->get('submit')->setAttribute('value', (($this->copy || $this->model) ? "Ajouter" : "Enregistrer")));
+				echo $this->formSubmit($this->form->get('submit')->setAttributes(array('value'=> (($this->copy || $this->model) ? "Ajouter" : "Enregistrer"), 'class' => 'btn btn-primary')));
 			} else {
-				echo $this->formSubmit($this->form->get('submit')->setAttribute('disabled', 'disabled'));
+				echo $this->formSubmit($this->form->get('submit')->setAttributes(array('disabled' => 'disabled', 'class' => 'btn btn-primary disabled')));
 			}?>
-                    </div>
-			<a class="btn" id="cancel-form">Annuler</a>
+                    
+			<button class="btn btn-default btn-raised" id="cancel-form">Annuler</button>
 		</div>
-	</div>	
-	<?php echo $this->form()->closeTag(); ?>
+	</div>
+</div>
+<?php echo $this->form()->closeTag(); ?>

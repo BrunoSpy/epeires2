@@ -13,11 +13,11 @@ echo $this->form()->openTag($form);
 
 echo $this->formElementErrors($form->get('identity'));
 
-echo $this->controlGroup($this->formLabel($form->get('identity')->setLabelAttributes(array('class'=>'control-label'))),
-						$this->formInput($form->get('identity')));
+echo $this->controlGroup($this->formLabel($form->get('identity')->setLabelAttributes(array('class'=>'control-label col-sm-2'))),
+						$this->formInput($form->get('identity')->setAttribute('class', 'form-control')));
        
-echo $this->controlGroup($this->formLabel($form->get('credential')->setLabelAttributes(array('class'=>'control-label'))),
-				$this->formInput($form->get('credential')));
+echo $this->controlGroup($this->formLabel($form->get('credential')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
+				$this->formInput($form->get('credential')->setAttribute('class', 'form-control')));
 
 ?>
 
@@ -27,7 +27,7 @@ echo $this->controlGroup($this->formLabel($form->get('credential')->setLabelAttr
 
 </div>        
 <div class="modal-footer">  
-        <?php echo $this->formButton($form->get('submit')) ?>
+        <?php echo $this->formButton($form->get('submit')->setAttribute('class', 'btn btn-primary')) ?>
 </div>
 <?php echo $this->form()->closeTag() ?>
 

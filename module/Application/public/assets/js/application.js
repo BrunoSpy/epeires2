@@ -355,9 +355,9 @@ $(document).ready(function(){
         }
     });
 
-    $("#date").datepicker({
-            dateFormat: "dd/mm/yy",
-            showButtonPanel: true
+    $("#date").bootstrapMaterialDatePicker({
+            format: "dd/mm/yy",
+            time: false
     });
     
     $("#date").on('change', function(){

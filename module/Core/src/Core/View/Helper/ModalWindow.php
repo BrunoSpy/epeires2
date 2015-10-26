@@ -45,9 +45,11 @@ class ModalWindow extends AbstractHelper
      */
     public function __invoke($id, $header, $headerstyle, $content, $body = null, $footer = null)
     {
-        $html = '<div class="modal hide fade" id="' . $id . '" ' . $headerstyle . '>';
+        $html = '<div class="modal fade" id="' . $id . '" ' . $headerstyle . '>';
+        $html .= '<div class="modal-dialog">';
+        $html .= '<div class="modal-content">';
         $html .= '<div class="modal-header">';
-        $html .= '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>';
+        $html .= '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span aria-hidden="true">&times;</span></button>';
         $html .= $header;
         $html .= '</div>';
         
@@ -61,6 +63,8 @@ class ModalWindow extends AbstractHelper
             $html .= $footer;
             $html .= '</div>';
         }
+        $html .= '</div>';
+        $html .= '</div>';
         $html .= '</div>';
         return $html;
     }

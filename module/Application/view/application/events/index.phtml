@@ -5,19 +5,20 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-        <div id="create-evt" class="popover fade bottom in" data-spy="affix" data-offset-top="80">
-            <div class="overflow-auto">
-                <div class="arrow"></div>
+    <div id="create-evt" data-toggle="modal" class="modal fade in" data-spy="affix" data-offset-top="80">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
                 <div class="loading"></div>
-                <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
+                </div>
                 <div id="event">
-                        <div>Chargement...</div>
-                        <!-- formulaire createform.phtml récupéré via ajax -->
+                    <div>Chargement...</div>
                 </div>
             </div>
         </div>
-        <div id="suggestions-container">
-        </div>
+    </div>
 <?php endif; ?>
 
 <div id="search-results" class="popover fade bottom in">
@@ -33,7 +34,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
-        <p><a href="#" id="day-backward"><i class="icon-backward"></i></a> <input id="date" type="text" class="date input-small"></input> <a href="#" id="day-forward"><i class="icon-forward"></i></a> <a href="#" id="export"><i class="icon-print"></i></a></p>
+        <p><a href="#" id="day-backward"><span class="glyphicon glyphicon-backward"></span></a> <input id="date" type="text" class="date input-small"></input> <a href="#" id="day-forward"><span class="glyphicon glyphicon-forward"></span></a> <a href="#" id="export"><span class="glyphicon glyphicon-print"></span></a></p>
     </div>
 </div>
 
