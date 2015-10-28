@@ -356,7 +356,7 @@ $(document).ready(function(){
     });
 
     $("#date").bootstrapMaterialDatePicker({
-            format: "dd/mm/yy",
+            format: "DD/MM/YYYY",
             time: false
     });
     

@@ -29,18 +29,17 @@
 	?>
 
 <div class="modal-body">
-	<ul class="nav nav-tabs nav-tabs-material-purple shadow-z-2" role="tablist">
-		<li role="presentation" class="active"><a href="#categories-tab" data-toggle="tab">Catégorie</a></li>
-		<li role="presentation"><a href="#models-tab" data-toggle="tab">Modèles</a></li>
-		<li role="presentation"><a href="#hours-tab" data-toggle="tab">Horaires</a></li>
-		<li role="presentation"><a href="#">Description</a></li>
-		<li role="presentation"><a href="#">Mémos</a></li>
-		<li role="presentation"><a href="#">Fichiers</a></li>
-		<li role="presentation"><a href="#">Fiche réflèxe</a></li>
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="#categories-tab" data-toggle="tab"><div class="round round-sm blue"><span class="glyphicon glyphicon-pencil"></span></div> Catégories et modèles</a></li>
+		<li role="presentation"><a href="#hours-tab" data-toggle="tab"><div class="round round-sm grey"><strong>2</strong></div> Horaires</a></li>
+		<li role="presentation"><a href="#description-tab"><div class="round round-sm grey"><strong>3</strong></div> Description</a></li>
+		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>4</strong></div> Mémos</a></li>
+		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>5</strong></div> Fichiers</a></li>
+		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>6</strong></div> Fiche réflèxe</a></li>
 	</ul>
 
 	<div class="tab-content">
-	   <div role="tabpanel" class="tab-pane fade active" id="categories-tab">
+	   <div role="tabpanel" class="tab-pane active" id="categories-tab">
 	   <?php 
 		//category and subcategory		
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
@@ -58,60 +57,37 @@
  		    $this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
  		    $this->formSelect($formSelectSubCat->setAttribute('class', 'form-control')),
  		    array('control_id'=>'form_categories'));
- 		
+ 		//Modèles uniquement si création
+        if(!$this->event && !$this->model){
+            echo '<div class="form-group">';
+            echo '<label class="col-sm-2 control-label">Modèles</label>';
+            echo '<div class="container-fluid" id="predefined_events">';
+        
+            echo '</div>';
+            echo '</div>';
+        }
+
  		?>
 	   
 	   </div>
 	
-	   <div role="tabpanel" class="tab-pane fade" id="models-tab">
+	   <div role="tabpanel" class="tab-pane fade" id="description-tab">
 	   
 	   </div>
 	   <div role="tabpanel" class="tab-pane fade" id="hours-tab">
-	   
-	   </div>
-	</div>
-	
-	
-	
-	<div class="accordion" id="form">
-		
-		
-	<?php 
-	
-	   $html ="";
-		
-		$catTitle = "Catégories";
-		
-		if($this->event) {
-			$catTitle .= " : ".($this->event->getCategory()->getParent() ? 
-									$this->event->getCategory()->getParent()->getName() . " > ".$this->event->getCategory()->getName() :
-									$this->event->getCategory()->getName());
-		}
-		
-		if($this->model) {
-			$catTitle .= " : ".($this->model->getCategory()->getParent() ?
-					$this->model->getCategory()->getParent()->getName() . " > ".$this->model->getCategory()->getName() :
-					$this->model->getCategory()->getName());
-		}
-		
-		echo $this->accordionGroup($catTitle, $html, array('in'=>($this->event ? false : true), 'inner-id'=>'category', 'data-parent'=>'form', 'title_id'=>'category_title', 'body-id' => "Catégories"));
- 
-		//Modèles uniquement si création
-		if(!$this->event && !$this->model){
-			echo $this->accordionGroup("Modèles <span class=\"badge pull-right\">0</span>", "Aucun modèle défini.", array('data-parent'=>'form', 'inner-id'=> 'predefined_events', 'title_id' => 'Modèlesid'));
-		}
+	   <?php 
+	   $this->form->get('scheduled')->setUseHiddenElement(false);
+	   echo $this->controlGroup(
+					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
+					'<div class="checkbox"><label>'.$this->formCheckbox($this->form->get('scheduled')).'</label></div>', 
+                    array('class'=>($this->isGranted('events.schedule') ? '' :' unvisible')));
                 
-                $html = $this->controlGroup(
-					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formCheckbox($this->form->get('scheduled')), 
-                                                            array('class'=>'compact' . ($this->isGranted('events.schedule') ? '' :' unvisible')));
-                
-		$html .= $this->controlGroup(
-					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formCheckbox($this->form->get('punctual')), array('class'=>'compact'));
+		echo $this->controlGroup(
+					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
+					'<div class="checkbox"><label>'.$this->formCheckbox($this->form->get('punctual')).'</label></div>');
 		
-		$html .= $this->controlGroup(
-				$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
+		echo $this->controlGroup(
+				$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'col-sm-2 control-label time-middle'))),
 				$this->formInput($this->form->get('startdate')), array('class'=>'compact'));
 		
 		$formEndDate = $this->form->get('enddate');
@@ -126,9 +102,31 @@
 			}
 		}
 		
-		$html .= $this->controlGroup(
-				$this->formLabel($formEndDate->setLabelAttributes(array('class'=>'control-label time-middle'))),
+		echo $this->controlGroup(
+				$this->formLabel($formEndDate->setLabelAttributes(array('class'=>'col-sm-2 control-label time-middle'))),
 				$this->formInput($formEndDate), array('class'=>'compact'));
+		?>
+			<div class="form-group">
+		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))); ?>
+		<div class="col-sm-8">
+			<?php 
+			echo $this->formSelect($this->form->get('status')->setAttribute('class', 'form-control'));
+			?>
+		</div>
+		</div>
+	   </div>
+	</div>
+	
+	
+	<!-- 
+	<div class="accordion" id="form">
+		
+		
+	<?php 
+	
+	   $html ="";
+              
+                
 		                
 		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
 		
@@ -448,16 +446,9 @@
                 
 		?>
 
-	<div class="control-group">
-		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'control-label'))); ?>
-		<div class="controls">
-			<?php 
-			echo $this->formSelect($this->form->get('status'));
-			?>
-		</div>
-		</div>
 
-	</div>
+
+	</div> -->
 </div>
 <!-- .modal-body -->
 <div class="modal-footer">

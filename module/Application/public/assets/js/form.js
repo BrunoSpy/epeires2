@@ -198,8 +198,8 @@ var form = function(url, tabid){
 	//specific functions to maintain coherence between end and start inputs
 
 	$('#event').on('change', 'input[name=startdate]', function(){
-		var datefin = $("#inner-Horairesid #end").siblings('input[type=hidden]');
-		var dateDeb = $("#inner-Horairesid #start").siblings('input[type=hidden]');
+		var datefin = $("#hours-tab #end").siblings('input[type=hidden]');
+		var dateDeb = $("#hours-tab #start").siblings('input[type=hidden]');
 		var startsplit = dateDeb.val().split(' ');
 		var daysplit = startsplit[0].split('-');
 		var hourstartsplit = startsplit[1].split(':');
@@ -233,8 +233,8 @@ var form = function(url, tabid){
 	});
 
 	$('#event').on('change', 'input[name=enddate]', function() {
-		var dateDeb = $("#inner-Horairesid #start").siblings("input[type=hidden]");
-		var dateFin = $("#inner-Horairesid #end").siblings("input[type=hidden]");
+		var dateDeb = $("#hours-tab #start").siblings("input[type=hidden]");
+		var dateFin = $("#hours-tab #end").siblings("input[type=hidden]");
 		if (dateFin.val()) {
 			//check if end_date < start_date	
 			var endsplit = dateFin.val().split(' ');
@@ -288,7 +288,7 @@ var form = function(url, tabid){
 	var updateHours = function(){
 		//initialize datetime pickers
 		//start date
-		var start = $("#inner-Horairesid #start").siblings("input[type=hidden]").val();
+		var start = $("#hours-tab #start").siblings("input[type=hidden]").val();
 		if(start){
 			var daysplit = start.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -316,7 +316,7 @@ var form = function(url, tabid){
 			$("#start .minute input").val(minute);
 			$("#start .minute input").trigger('change');
 		}
-		var end = $("#inner-Horairesid #end").siblings("input[type=hidden]").val();
+		var end = $("#hours-tab #end").siblings("input[type=hidden]").val();
 		if(end){
 			var daysplit = end.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -327,14 +327,14 @@ var form = function(url, tabid){
 	};
 
 	var updateHourTitle = function(){
-		var start = $("#inner-Horairesid #start").siblings("input[type=hidden]").val();
+		var start = $("#hours-tab #start").siblings("input[type=hidden]").val();
 		var split = start.split(' ');
 		var daysplit = split[0].split('-');
 		var text = "Horaires : "+FormatNumberLength(daysplit[0],2)+"/"+FormatNumberLength(daysplit[1],2)+" "+split[1];
 		var punctual = $("#punctual").is(':checked');
 		if(!punctual){
 			text += " \u2192 ";
-			var end = $("#inner-Horairesid #end").siblings("input[type=hidden]").val();
+			var end = $("#hours-tab #end").siblings("input[type=hidden]").val();
 			if(end){
 				var split = end.split(' ');
 				var daysplit = split[0].split('-');
@@ -432,6 +432,7 @@ var form = function(url, tabid){
 			$("#event").load(
 					url+'events/form'+'?tabid='+tabid,
 					function(){
+					    $.material.checkbox();
 						//disable every accordion but the first
 						$("a.accordion-toggle:gt(0)").addClass("disabled");
 						$("#event input[name=startdate]").timepickerform({'id':'start'});

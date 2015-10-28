@@ -19,6 +19,7 @@
  * Requires jquery-ui-datepicker
  * Licence : AGPL
  * @author Bruno Spyckerelle
+ * @version 2.0
  */
 
 (function($) {
@@ -118,24 +119,24 @@
             table.append('<tbody>' +
                     '<tr>' +
                     '<td class="day">' +
-                    "<div class=\"input-prepend\">" +
-                    "<span class=\"add-on\"><i class=\"icon-calendar\"></i></span>" +
-                    '<input type="text" class="date" ' + (parameters.required ? 'required="required"' : '') + '></input>' +
+                    "<div class=\"input-group\">" +
+                    "<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span>" +
+                    '<input type="text" class="date form-control" ' + (parameters.required ? 'required="required"' : '') + '></input>' +
                     "</div>" +
                     '</td>' +
                     '<td class="hour">' +
-                    '<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>' +
-                    '<input maxlength="2" type="text" class="input-mini"><br>' +
-                    '<a class="previous" href="#"><i class="icon-chevron-down"></i></a>' +
+                    '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
+                    '<input maxlength="2" type="text" class="form-control input-mini">' +
+                    '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
                     '</td>' +
                     '<td class="separator">:</td>' +
                     '<td class="minute">' +
-                    '<a class="next" href="#"><i class="icon-chevron-up"></i></a><br>' +
-                    '<input maxlength="2" type="text" class="input-mini"><br>' +
-                    '<a class="previous" href="#"><i class="icon-chevron-down"></i></a>' +
+                    '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
+                    '<input maxlength="2" type="text" class="form-control input-mini">' +
+                    '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
                     '</td>' +
                     '<td>'+
-                    (parameters.clearable ? '<a href="#" class="clear-time"><i class="icon-remove"></i></a>' : '') +
+                    (parameters.clearable ? '<a href="#" class="clear-time"><span class="glyphicon glyphicon-remove"></span></a>' : '') +
                     '</td>' +
                     '</tr>' +
                     '</tbody>');
@@ -160,14 +161,14 @@
                 //add the div containing timepicker fake form
                 var div = createFakeForm();
                 element.parent().append(div);
-
+                
                 //add datepicker
-                div.on('focus', 'input[type=text].date', function() {
-                    $(this).datepicker({
-                        dateFormat: "dd-mm-yy",
-                    });
+                $('input[type=text].date').bootstrapMaterialDatePicker({
+                    format: "DD-MM-YYYY",
+                    time: false
                 });
-                div.on('click', 'i.icon-calendar', function(e){
+               
+                div.on('click', 'span.glyphicon-calendar', function(e){
                     div.find('input[type=text].date').trigger('focus');
                 });
 

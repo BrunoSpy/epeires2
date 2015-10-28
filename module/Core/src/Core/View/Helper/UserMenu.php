@@ -17,7 +17,7 @@
  */
 namespace Core\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 /**
@@ -34,7 +34,8 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
 
     public function __invoke()
     {
-        $urlHelper = $this->view->plugin('url');
+            
+        $urlHelper = $this->getView()->plugin('url');
         
         $html = '<li class="dropdown">';
         $html .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">';
@@ -46,10 +47,11 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
         }
         $html .= '<b class="caret"></b>';
         $html .= '</a>';
-        $html .= '<ul class="dropdown-menu">';
+        $html .= '<ul class="dropdown-menu dropdown-menu-material-purple-800">';
         if ($this->auth->getIdentity() != null) {
             $router = $this->servicemanager->get('router');
             $request = $this->servicemanager->get('request');
+            
             if ($router->match($request) && $router->match($request)->getMatchedRouteName() == 'ipo') {
                 $html .= "<li><a href=\"" . $urlHelper('application') . "\">Interface OPE</a></li>";
             } else {

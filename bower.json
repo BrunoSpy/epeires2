@@ -27,10 +27,11 @@
     "jquery-stupid-table": "~1.0.1",
     "jquery-mousewheel": "~3.1.13",
     "bootstrap-material-design": "master",
-    "bootstrap-material-datetimepicker": "~2.0.0"
+    "bootstrap-material-datetimepicker": "gh-pages"
   },
   "resolutions": {
     "jquery": "~2.1.4",
-    "bootstrap": "~3.3.5"
+    "bootstrap": "~3.3.5",
+    "bootstrap-material-design": "master"
   }
 }

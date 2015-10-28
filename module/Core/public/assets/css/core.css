@@ -3,6 +3,96 @@
     Created on : 10 mai 2014, 11:12:07
     Author     : Bruno Spyckerelle
 */
+
+/** Round icons */
+
+.round {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color: #222;    
+    color: #FFF;
+    text-align: center;  
+}
+.round.hollow {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color: #FFF;    
+    color: #222;
+    text-align: center;
+    -webkit-box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.75);
+}
+
+.round.round-sm {
+    height: 25px;
+    width: 25px;
+    line-height: 25px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+.round.round-lg {
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    font-size: 1.5em;
+}
+
+.round.blue {
+    background-color: #3EA6CE;
+}
+
+.round.orange {
+    background-color: #FF6701;
+}
+
+.round.green {
+    background-color: #42A129;
+}
+
+.round.grey {
+	background-color: #888;
+}
+
+.round.hollow.blue {
+    color: #3EA6CE;   
+    background-color: #FFF;    
+    -webkit-box-shadow: 0px 0px 0px 3px #3EA6CE;
+    -moz-box-shadow: 0px 0px 0px 3px #3EA6CE;
+    box-shadow: 0px 0px 0px 3px #3EA6CE;
+}
+
+.round.hollow.orange {
+    color: #FF6701;
+    background-color: #FFF;    
+    -webkit-box-shadow: 0px 0px 0px 3px #FF6701;
+    -moz-box-shadow: 0px 0px 0px 3px #FF6701;
+    box-shadow: 0px 0px 0px 3px #FF6701;
+}
+
+.round.hollow.green {
+    color: #42A129;
+    background-color: #FFF;    
+    -webkit-box-shadow: 0px 0px 0px 3px #42A129;
+    -moz-box-shadow: 0px 0px 0px 3px #42A129;
+    box-shadow: 0px 0px 0px 3px #42A129;
+}
+
+.round span.glyphicon {
+	top: 2px;
+}
+
 /************** Tabs *************/
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus,  .nav-tabs > li > a:hover {
 	background-color: rgba(255, 255, 255, 0.1) !important;
@@ -51,7 +141,7 @@ body{
 }
 
 #navbar-first {
-	z-index: 1031;
+	z-index: 1032;
 }
 
 #navbar-first select {
@@ -108,15 +198,6 @@ body{
 	top: -0.6em;
 }
 
-#create-link {
-	top: 20px;
-	box-shadow: 0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
-}
-
-#create-link i {
-	top: -2px;
-}
-
 @media (min-width:1200px ){
 	.navbar-center {
 		padding-left: 25%;
@@ -155,17 +236,21 @@ li .nav-header {
     background-image: url("../../img/glyphicons-halflings-red.png");
 }
 
-.form-horizontal .control-group {
-	margin-bottom: 10px;
-}
-.form-horizontal .controls {
-    margin-left: 130px;
-}
-.form-horizontal .control-label {
-    width: 110px;
-}
-select {
-    width: 200px;
+/* .form-horizontal .control-group { */
+/* 	margin-bottom: 10px; */
+/* } */
+/* .form-horizontal .controls { */
+/*     margin-left: 130px; */
+/* } */
+/* .form-horizontal .control-label { */
+/*     width: 110px; */
+/* } */
+/* select { */
+/*     width: 200px; */
+/* } */
+
+.has-feedback .form-control:focus {
+    padding-right: 42.5px;
 }
 
 input, textarea, .uneditable-input {

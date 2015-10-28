@@ -13,12 +13,12 @@
                         ->prependStylesheet($this->basePath() . '/assets/css/core.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
-                        ->prependStylesheet($this->basePath() . '/css/animate.min.css')
+             //           ->prependStylesheet($this->basePath() . '/css/animate.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
-                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-fullpalette.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/components/jquery-ui/themes/smoothness/jquery-ui.min.css')
         				?>
@@ -48,7 +48,7 @@
 
     </head>
     <body>
-	<nav class="navbar navbar-default navbar-fixed-top navbar-material-deep-purple" id="navbar-first">
+	<nav class="navbar navbar-default navbar-fixed-top navbar-material-purple-800" id="navbar-first">
 		<div class="container-fluid">
 		<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed"
@@ -92,7 +92,7 @@
 		</div>
 	</nav>
 
-	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-purple">
+	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-purple-500">
 		<!-- Toggle for better mobile view -->
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -105,15 +105,12 @@
 				</button>
 			</div>
 			<div class="collapse navbar-collapse" id="navbar-collapse">
-			<?php if($this->isGranted('events.create')):?>
-			<a id="create-link" href="#" type="button" class="navbar-left btn-material-purple-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
-			<?php endif;?>
 			
 				<ul class="nav navbar-nav navbar-center">
                 <li class="dropdown active">
                   <a id="home" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-home"></span> Évènements <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li class="nav-header">Tri</li>
+                  <ul class="dropdown-menu dropdown-menu-material-purple-300">
+                    <li class="dropdown-header">Tri</li>
                     <li class="active"><a href="#" id="tri_cat">Par catégorie</a></li>
                     <li><a href="#" id="tri_deb">Par heure de début</a></li>
                   </ul>
@@ -148,12 +145,13 @@
                 ?>
 				</ul>
 				<form class="navbar-form navbar-right" role="search" id="search">
-					<div class="form-group">
+					<div class="form-group form-group-material-purple-500 has-feedback">
 						<input type="text" class="form-control" placeholder="Chercher" name="search">
+						<span class="glyphicon glyphicon-search form-control-feedback"></span>
 					</div>
 				</form>
-				<form class="navbar-form navbar-right">
-						<div class="togglebutton togglebutton-material-purple-300">
+				<form id="zoomform" class="navbar-form navbar-right visible-md-block visible-lg-block">
+						<div class="togglebutton togglebutton-material-purple-200">
 							<label>
 							Vue journée : <input id="zoom" type="checkbox" name="zoom-switch">
 							</label>
@@ -163,6 +161,9 @@
 		</div>
 	</nav>
 
+    <?php if($this->isGranted('events.create')):?>
+			<a id="create-link" href="#" type="button" class="navbar-left btn-material-purple-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
+    <?php endif;?>
         
         <div class="content">
             <?php echo $this->content; ?>

@@ -89,7 +89,7 @@ echo $this->modalwindow('add-note-modal',
 
 $("#home").removeClass("dropdown-toggle")
 		  .attr('data-toggle', '')
-		  .html('<i class="icon-home"></i> Évènements');
+		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
