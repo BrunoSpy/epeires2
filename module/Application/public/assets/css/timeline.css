@@ -154,6 +154,10 @@
 	width: auto;
 }
 
+.elmt .label_elmt a > span.glyphicon {
+	color: black;
+}
+
 .elmt .label_elmt.outside {
 	background-color: white;
 	border-style: solid;

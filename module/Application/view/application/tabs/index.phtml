@@ -2,22 +2,23 @@
 $this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-        <div id="create-evt" class="popover fade bottom in" data-spy="affix" data-offset-top="80">
-            <div class="overflow-auto">
-                <div class="arrow"></div>
+    <div id="create-evt" data-toggle="modal" class="modal fade in" data-spy="affix" data-offset-top="80">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
                 <div class="loading"></div>
-                <h3 class="popover-title" id="form-title">Nouvel évènement</h3>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
+                </div>
                 <div id="event">
-                        <div>Chargement...</div>
-                        <!-- formulaire createform.phtml récupéré via ajax -->
                 </div>
             </div>
         </div>
-        <div id="suggestions-container">
-        </div>
+    </div>
 <?php endif; ?>
 
 <div id="search-results" class="popover fade bottom in">
@@ -100,7 +101,7 @@ $('#timeline').timeline({
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),
     																		'cats' => $this->cats,
     																		'timeline' => false))) ?>',
-    topOffset: 82,
+    topOffset: 100,
     leftOffset: 120,
     rightOffset: 85,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',

@@ -1,6 +1,22 @@
-@CHARSET "UTF-8";
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ @CHARSET "UTF-8";
 
-/************** MÃ©mos ********************/
+/************** Mémos ********************/
 .noty_message .noty_big {
 	font-size: 110%;
 	line-height: normal;
@@ -16,7 +32,7 @@
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0
 		rgba(0, 0, 0, .19);
 	z-index: 1031;
-	position: absolute;
+	position: fixed;
 	top: 75px;
 	left: 25px;
 }
@@ -30,86 +46,6 @@
 }
 
 /************* Formulaire ****************/
-#create-evt .modal-lg {
-	width: 80%;
-}
-
-#Event ul.nav {
-	margin-right: -24px;
-	margin-left: -24px;
-}
-
-#Event ul>li {
-	width: 16.667%;
-}
-
-#Event .nav-tabs {
-	border-bottom: 2px solid #DDD;
-	background: #fff none repeat scroll 0% 0%;
-}
-
-#Event .nav-tabs>li.active>a, #Event .nav-tabs>li.active>a:focus, #Event .nav-tabs>li.active>a:hover
-	{
-	border-width: 0;
-}
-
-#Event .nav-tabs>li>a {
-	border: none;
-	color: #888 !important;
-	font-weight: normal;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#Event .nav-tabs>li.active>a, #Event .nav-tabs>li>a:hover {
-	border: none;
-	color: #4285F4 !important;
-	background: transparent;
-	font-weight: 500;
-}
-
-#Event .nav-tabs>li>a::after {
-	content: "";
-	background: #4285F4;
-	height: 2px;
-	position: absolute;
-	width: 100%;
-	left: 0px;
-	bottom: -1px;
-	transition: all 250ms ease 0s;
-	transform: scale(0);
-}
-
-#Event .nav-tabs>li.active>a::after, #Event .nav-tabs>li:hover>a::after
-	{
-	transform: scale(1);
-}
-
-#Event .tab-nav>li>a::after {
-	background: #21527d none repeat scroll 0% 0%;
-	color: #fff;
-}
-
-#Event .tab-pane {
-	padding: 15px 0;
-}
-
-#Event .tab-content {
-	padding: 20px
-}
-
-#predefined_events {
-	margin-top: 10px;
-}
-
-#predefined_events i {
-	margin-top: 6px;
-}
-
-#Event.form-horizontal .checkbox {
-    padding-top: 0px;
-}
 
 /************** Slide panel **************/
 .panel-fixed {
@@ -169,8 +105,8 @@
 }
 
 /*******************************************/
-#fiche .table tr:first-child td, #accordion-FicherÃ©flexe .table tr:first-child td,
-	#predefined_events .table tr:first-child td, #file-table.table tr:first-child td,
+#fiche .table tr:first-child td, #actions-tab .table tr:first-child td,
+	#files-tab table tr:first-child td,
 	#panel table.table tr:first-child td, #alert-table.table tr:first-child td,
 	#alarm-table.table tr:first-child td {
 	border: none;
@@ -383,7 +319,7 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 
 /*******************************************/
 
-/* menu Ã  gauche */
+/* menu à gauche */
 #create {
 	text-align: center;
 }
@@ -392,7 +328,7 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	text-align: center;
 }
 
-/* crÃ©ation d'Ã©vÃ¨nement */
+/* création d'évènement */
 #create-evt {
 	display: none;
 }
@@ -429,8 +365,6 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	background-repeat: no-repeat;
 	background-position: center;
 	z-index: 1200;
-	border-radius: 6px 6px 6px 6px;
-	margin: -1px;
 }
 
 #search-results {

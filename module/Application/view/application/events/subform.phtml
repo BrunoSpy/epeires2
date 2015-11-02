@@ -14,49 +14,37 @@ switch ($this->part) {
             echo '<p>Aucun modèle défini.</p>';
             echo '</div>';
         } else {
-            echo '<div class="col-md-5">';
+            echo '<div class="col-md-6">';
             
             $count = count($values);
             $i = 1;
             $separated = false;
             foreach ($this->values as $key => $value) {
                 echo '<div class="container-fluid">';
-                    echo '<div class="col-sm-2">';
+                    echo '<div class="models-col-1 hidden-xs">';
                         echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
                     echo '</div>';
-                    echo '<div class="col-sm-7">';
-                    echo '<p>'.$value.'</p>';
+                    echo '<div class="models-col-2">';
+                    echo '<p> '.$value.'</p>';
                     echo '</div>';
-                    echo '<div class="col-sm-3">';
-                    echo '<span class="pull-right"><button class="btn btn-sm btn-primary">Utiliser</button></span>';
+                    echo '<div class="models-col-3">';
+                    echo '<span class="pull-right"><button data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span>';
                     echo ' </div>';
                 echo '</div>';
                 if ($i >= $count / 2 && ! $separated) {
                     echo '</div>';
-                    echo '<div class="col-md-5">';
+                    echo '<div class="col-md-6">';
                     $separated = true;
                 }
                 $i ++;
             }
             
             echo '</div>';
-            
-            // echo '<table class="table table-hover" >';
-            // echo '<tbody>';
-            // foreach ($this->values as $key => $value){
-            // echo '<tr>';
-            // //echo '<td>'.$key.'</td>';
-            // echo '<td>'.$value.'</td>';
-            // echo '<td><a class="predefined btn btn-small btn-primary" data-id="'.$key.'" href="#">Utiliser</a></td>';
-            // echo '</tr>';
-            // }
-            // echo '</tbody>';
-            // echo '</table>';
         }
         break;
     case 'custom_fields':
         foreach ($this->form->get('custom_fields')->getElements() as $element) {
-            echo $this->customFieldGroup($element);
+            echo $this->customFieldGroup($element, 'form-control');
         }
         break;
     default:

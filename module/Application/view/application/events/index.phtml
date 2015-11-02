@@ -2,6 +2,7 @@
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
@@ -14,7 +15,6 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
                     <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
                 </div>
                 <div id="event">
-                    <div>Chargement...</div>
                 </div>
             </div>
         </div>

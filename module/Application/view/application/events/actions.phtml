@@ -1,0 +1,31 @@
+<?php
+if (count($this->actions) > 0) {
+    echo '<table class="table table-hover" >';
+    echo '<tbody>';
+    foreach ($this->actions as $action) {
+        echo "<tr data-id=\"" . $action->getId() . "\"";
+        $color = $action->getCustomFieldValue($action->getCategory()
+            ->getColorfield());
+        if ($color != null && $color->getValue() !== '') {
+            echo ' style="background-color:#' . $color->getValue() . '"';
+        }
+        foreach ($action->getCustomFieldsValues() as $value) {
+            if ($value->getCustomField()->getId() == $action->getCategory()
+                ->getTextField()
+                ->getId()) {
+                if ($value->getValue() !== '') {
+                    echo ' data-container="body" data-html="true" data-toggle="tooltip" data-placement="top" title="<span class=elmt_tooltip>' . nl2br(htmlspecialchars($value->getValue())) . '</span>"';
+                }
+            }
+        }
+        echo ">";
+        echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
+        echo "<td>" . $this->eventName($action) . "</td>";
+        if ($action instanceof \Application\Entity\Event && $this->isGranted('events.write')) {
+            echo "<td class=\"todo\"><a class=\"fiche btn btn-sm " . ($action->getStatus()->isOpen() ? "btn-primary" : "active btn-success") . "\" data-id=\"" . $action->getId() . "\">" . ($action->getStatus()->isOpen() ? "A faire" : "Fait") . "</a></td>";
+        }
+        echo '</tr>';
+    }
+    echo '</tbody>';
+    echo '</table>';
+}

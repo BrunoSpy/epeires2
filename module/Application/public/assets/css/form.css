@@ -1,0 +1,130 @@
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ @CHARSET "ISO-8859-1";
+ 
+ #create-evt .modal-content {
+ 	min-height: 300px; 
+ }
+ 
+ .models-col-1 {
+ 	width: 40px;
+ 	float:left;
+ }
+ 
+ .models-col-2 {
+ 	width: calc(100% - 137px);
+  	float:left;
+  	margin-left:5px;
+ }
+ 
+ .models-col-3 {
+ 	width: 92px;
+  	float:left;
+ }
+ 
+ #create-evt .modal-lg {
+	width: 80%;
+}
+
+#Event ul.nav {
+	margin-right: -24px;
+	margin-left: -24px;
+}
+
+#Event ul>li {
+	width: 14.2857%;
+}
+
+#Event .nav-tabs {
+	border-bottom: 2px solid #DDD;
+	background: #fff none repeat scroll 0% 0%;
+}
+
+#Event .nav-tabs>li.active>a, #Event .nav-tabs>li.active>a:focus, #Event .nav-tabs>li.active>a:hover
+	{
+	border-width: 0;
+}
+
+#Event .nav-tabs>li>a {
+	border: none;
+	color: #888 !important;
+	font-weight: normal;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#Event .nav-tabs>li.active>a, #Event .nav-tabs>li>a:hover {
+	border: none;
+	color: #4285F4 !important;
+	background: transparent;
+	font-weight: 500;
+}
+
+#Event .nav-tabs>li>a:not(.disabled)::after {
+	content: "";
+	background: #4285F4;
+	height: 2px;
+	position: absolute;
+	width: 100%;
+	left: 0px;
+	bottom: -1px;
+	transition: all 250ms ease 0s;
+	transform: scale(0);
+}
+
+#Event .nav-tabs>li.active>a:not(.disabled)::after, #Event .nav-tabs>li:hover>a:not(.disabled)::after
+	{
+	transform: scale(1);
+}
+
+#Event .tab-nav>li>a::after {
+	background: #21527d none repeat scroll 0% 0%;
+	color: #fff;
+}
+
+#Event .tab-pane {
+	padding: 15px 0;
+}
+
+#Event .tab-content {
+	padding: 20px
+}
+
+#predefined_events {
+	margin-top: 10px;
+}
+
+#predefined_events i {
+	margin-top: 6px;
+}
+
+#Event.form-horizontal .checkbox {
+    padding-top: 0px;
+}
+ 
+#Event #description-tab:not(.active) {
+	display:block;
+	width: calc(100% - 88px);
+	position: absolute;
+	top: 91px;
+	z-index: -1;
+}
+
+#Event #actions-tab td.todo > .btn {
+	margin: 0px;
+}

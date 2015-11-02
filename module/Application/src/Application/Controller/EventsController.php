@@ -32,6 +32,7 @@ use Zend\Session\Container;
 use Zend\Form\Element;
 use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\ActionCategory;
 
 /**
  *
@@ -879,6 +880,7 @@ class EventsController extends TabController
                 if ($pevent) {
                     $cat = $pevent->getCategory();
                     $viewmodel->setVariable('model', $pevent);
+                    $viewmodel->setVariable('actions', $this->getActions($pevent->getId()));
                     $zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($pevent->getOrganisation());
                     $form->get('category')->setValue($cat->getId());
                 }
@@ -888,6 +890,7 @@ class EventsController extends TabController
                     if ($event) {
                         $cat = $event->getCategory();
                         $zonefilters = $em->getRepository('Application\Entity\QualificationZone')->getAllAsArray($event->getOrganisation());
+                        $viewmodel->setVariable('actions', $this->getActions($event->getId()));
                     }
                 }
             if ($cat && $cat->getParent()) {
@@ -985,7 +988,6 @@ class EventsController extends TabController
                     }
                 }
             }
-            
             // other values
             $form->bind($event);
             $form->setData($event->getArrayCopy());
@@ -1136,6 +1138,35 @@ class EventsController extends TabController
         return new JsonModel($json);
     }
 
+    public function actionsAction()
+    {
+        $viewmodel = new ViewModel();
+        $parentId = $this->params()->fromQuery('id', null);
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
+        
+        $viewmodel->setVariable('actions', $this->getActions($parentId));
+        return $viewmodel;
+    }
+
+    private function getActions($eventid)
+    {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        
+        $qb = $objectManager->createQueryBuilder();
+        $qb->select(array(
+            'e',
+            'cat'
+        ))
+            ->from('Application\Entity\AbstractEvent', 'e')
+            ->innerJoin('e.category', 'cat')
+            ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
+            ->andWhere($qb->expr()
+            ->eq('e.parent', $eventid));
+        
+        return $qb->getQuery()->getResult();
+    }
+    
     /*
      * Fichiers liés à un évènement, au format JSON
      */

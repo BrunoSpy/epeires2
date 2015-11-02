@@ -40,7 +40,7 @@
     	 * 
     	 * @memberOf $
     	 */
-        version: "0.9.4",
+        version: "0.9.5",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -499,18 +499,18 @@
             	var me = $(this);
             	var id = me.data('id');
             	var txt = '<p class="elmt_tooltip actions">'
-                	+ '<a href="#" data-id="'+id+'" class="send-evt"><i class="icon-envelope"></i> Envoyer IPO</a><br />';
+                	+ '<a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a><br />';
             	var event = self.events[self.eventsPosition[id]];
             	if(event.status_id !== 4 && event.modifiable){
             		if(event.punctual === false){
 	            		if(event.star === true){
-	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><i class="icon-leaf"></i> Non important</a><br />';
+	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a><br />';
 	                	} else {
-	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><i class="icon-fire"></i> Important</a><br />';
+	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a><br />';
 	                	}
             		}
-            		txt += '<a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><i class="icon-comment"></i> Ajouter une note</a><br />';
-            		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><i class="icon-trash"></i> Annuler</a>';
+            		txt += '<a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a><br />';
+            		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a>';
             	}
             	txt += '</p>';
             	me.popover({
@@ -1575,14 +1575,14 @@
             elmt_txt.show();
             elmt_txt.css({'background-color': '', 'border-style': ''});
             elmt_txt.find('a').removeClass('disabled');
-            elmt_txt.find('span').removeClass('unvisible');
+            elmt_txt.find('span.elmt_name').removeClass('unvisible');
             //////   
 
             // libellé de l'évènement à mettre à jour
             if (event.scheduled > 0) {
-                elmt_txt.find('span').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
+                elmt_txt.find('span.elmt_name').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
             } else {
-                elmt_txt.find('span').text(event.name);
+                elmt_txt.find('span.elmt_name').text(event.name);
             }
             
             var yDeb, yEnd, hDeb, hEnd;
@@ -1834,7 +1834,7 @@
         		//suppression du lien
         		elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
         		//on cache le txt
-        		elmt_txt.find('span').addClass('unvisible');
+        		elmt_txt.find('span.elmt_name').addClass('unvisible');
         		elmt_txt.addClass('disp').hide();
         	}
         },
@@ -2027,25 +2027,25 @@
             // si l'événement a commencé avant la timeline, ajout d'une flèche gauche
             var elmt_flecheG = $('<div class="elmt_flecheG"></div>');
             elmt.append(elmt_flecheG);
-            elmt_flecheG.append('<i class="icon-arrow-left"></i>');
+            elmt_flecheG.append('<span class="glyphicon glyphicon-arrow-left"></span>');
             // si l'événement se poursuit au-delà de la timeline, ajout d'une flèche droite
             var elmt_flecheD = $('<div class="elmt_flecheD"></div>');
             elmt.append(elmt_flecheD);
-            elmt_flecheD.append('<i class="icon-arrow-right"></i>');
+            elmt_flecheD.append('<span class="glyphicon glyphicon-arrow-right"></span>');
             // ajout du nom de l'événement
-            var elmt_txt = $('<p class="label_elmt"><span>' + event.name + '</span></p>');
+            var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
             elmt.append(elmt_txt);
             // ajout du bouton "ouverture fiche"
             var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
             elmt_txt.append(elmt_b1);
-            elmt_b1.append('    <i class="icon-pencil"></i>');
+            elmt_b1.append('    <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"
             var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
             elmt_txt.append(elmt_b2);
-            elmt_b2.append('    <i class="icon-tasks"></i>');
+            elmt_b2.append('    <span class="glyphicon glyphicon-tasks"></span>');
             //ajout bouton ouverture menu tooltip
             var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
-            elmt_b3.append('    <i class="icon-chevron-up"></i>');
+            elmt_b3.append('    <span class="glyphicon glyphicon-chevron-up"></span>');
             elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
             var lien = $('<div class="lien"></div>');

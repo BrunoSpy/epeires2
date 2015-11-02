@@ -1,4 +1,3 @@
-
 <?php
 // 4 cas :
 // * nouvel évènement vierge : $this->event, $this->model, $this->copy : null
@@ -30,12 +29,13 @@
 
 <div class="modal-body">
 	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#categories-tab" data-toggle="tab"><div class="round round-sm blue"><span class="glyphicon glyphicon-pencil"></span></div> Catégories et modèles</a></li>
-		<li role="presentation"><a href="#hours-tab" data-toggle="tab"><div class="round round-sm grey"><strong>2</strong></div> Horaires</a></li>
-		<li role="presentation"><a href="#description-tab"><div class="round round-sm grey"><strong>3</strong></div> Description</a></li>
-		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>4</strong></div> Mémos</a></li>
-		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>5</strong></div> Fichiers</a></li>
-		<li role="presentation"><a href="#"><div class="round round-sm grey"><strong>6</strong></div> Fiche réflèxe</a></li>
+		<li role="presentation" class="active" id="cat-title"><a href="#categories-tab" data-toggle="tab"><div class="round round-sm blue"><span class="glyphicon glyphicon-pencil"></span></div> Catégories et modèles</a></li>
+		<li role="presentation" id="hours-title"><a href="#hours-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>2</strong></div> Horaires</a></li>
+		<li role="presentation" id="description-title"><a href="#description-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>3</strong></div> Description</a></li>
+		<li role="presentation" id="memos-title"><a href="#memos-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>4</strong></div> Mémos</a></li>
+		<li role="presentation" id="files-title"><a href="#files-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>5</strong></div> Fichiers</a></li>
+		<li role="presentation" id="actions-title"><a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>6</strong></div> Fiche réflèxe</a></li>
+		<li role="presentation" id="notes-title"><a href="#notes-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><strong>7</strong></div> Notes</a></li>
 	</ul>
 
 	<div class="tab-content">
@@ -61,7 +61,7 @@
         if(!$this->event && !$this->model){
             echo '<div class="form-group">';
             echo '<label class="col-sm-2 control-label">Modèles</label>';
-            echo '<div class="container-fluid" id="predefined_events">';
+            echo '<div class="container-fluid col-sm-10" id="predefined_events">';
         
             echo '</div>';
             echo '</div>';
@@ -70,13 +70,9 @@
  		?>
 	   
 	   </div>
-	
-	   <div role="tabpanel" class="tab-pane fade" id="description-tab">
-	   
-	   </div>
+
 	   <div role="tabpanel" class="tab-pane fade" id="hours-tab">
 	   <?php 
-	   $this->form->get('scheduled')->setUseHiddenElement(false);
 	   echo $this->controlGroup(
 					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
 					'<div class="checkbox"><label>'.$this->formCheckbox($this->form->get('scheduled')).'</label></div>', 
@@ -115,49 +111,39 @@
 		</div>
 		</div>
 	   </div>
-	</div>
-	
-	
-	<!-- 
-	<div class="accordion" id="form">
-		
-		
-	<?php 
-	
-	   $html ="";
-              
-                
-		                
-		echo $this->accordionGroup("Horaires",$html, array('data-parent'=>'form'));
-		
-		echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
-		
+	   
+	   	
+	   <div role="tabpanel" class="tab-pane fade" id="description-tab">
+	   		<div>
+	   <?php 
+	   echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
+	   echo "<div id=\"custom_fields\">";
+	   if($this->event || $this->model){
+	       foreach ($this->form->get('custom_fields')->getElements() as $element){
+	           echo $this->customFieldGroup($element, 'form-control');
+	       }
+	   }
+	   echo "</div>";
+	   echo "<div style=\"display:none;\">";
+	   echo $this->controlGroup(
+	       $this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
+	       $this->formSelect($this->form->get('impact')));
+	   if($this->form->has('zonefilters')){
+	       echo $this->controlGroup(
+	           $this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class'=>'control-label'))),
+	           $this->formSelect($this->form->get('zonefilters')));
+	   }
+	   echo "</div>";
+	   ?>
+	   </div>
+	   </div>
+	   
+	   <div role="tabpanel" class="tab-pane fade" id="memos-tab">
+	   <?php 
+	   $countalarm = 0;
+	   $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
 
-		$html = "<div id=\"custom_fields\">";
-		if($this->event || $this->model){
-			foreach ($this->form->get('custom_fields')->getElements() as $element){
-				$html .= $this->customFieldGroup($element);
-			}
-		} 
-		$html .= "</div>";
-		$html .= "<div style=\"display:none;\">";
-                $html .= $this->controlGroup(
-				$this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
-				$this->formSelect($this->form->get('impact')));
-		if($this->form->has('zonefilters')){
-			$html .= $this->controlGroup(
-					$this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class'=>'control-label'))),
-					$this->formSelect($this->form->get('zonefilters')));
-		}
-                $html .= "</div>";
-		echo $this->accordionGroup("Description", $html, array('in' => ($this->event ? true : false), 'data-parent'=>'form'));
-		
-		$titleclass="";	
-		$html = "";	
-		$countalarm = 0;
-		$mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
-
-		$html .= '<table class="table table-hover" id="alarm-table">';
+		echo '<table class="table table-hover" id="alarm-table">';
 		if($this->event || $this->model){
                     $formatter = \IntlDateFormatter::create(
                                 \Locale::getDefault(),
@@ -226,7 +212,7 @@
                                                 $timeAlert->add($interval);
                                             }                                      
                                         }
-                                        $html .= '<tr><div class="fake-alarm" '
+                                        echo '<tr><div class="fake-alarm" '
                                                     . 'data-alarm="fake-'.$countalarm.'"'
                                                     . 'id="alarm-fake-'.$countalarm.'">'
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.($timeAlert === -1 ? $formatterLong->format(new DateTime('now')): $formatterLong->format($timeAlert)).'"></input>'
@@ -236,219 +222,169 @@
                                                 . '<input type="hidden" name="alarm['.$countalarm.'][deltaend]" value="'.$deltaend.'"></input>'
                                                 . '</div></tr>';
                                         
-                                        $html .= '<tr class="alarm-fake" data-id="fake-'.$countalarm.'"'
+                                        echo '<tr class="alarm-fake" data-id="fake-'.$countalarm.'"'
                                                     . 'data-deltabegin="'.$deltabegin.'" '
                                                     . 'data-deltaend="'.$deltaend.'" '
                                                 . '>'
-                                                . '<td><i class="icon-bell"></i></td>'
+                                                . '<td><span class="glyphicon glyphicon-bell"></span></td>'
                                                 . '<td>'.($timeAlert === -1 ? "TDC" : $formatter->format($timeAlert)).'</td>'
                                                 . '<td>'.$this->eventName($child).'</td>'
-                                                . '<td><a class="delete-fake-alarm" href="#"><i class="icon-trash"></i></a></td>'
+                                                . '<td><a class="delete-fake-alarm" href="#"><span class="glyphicon glyphicon-trash"></span></a></td>'
                                                 . '</tr>';
                                         
                                     } else {
-					$html .= '<tr id="tr-'.$child->getId().'" data-id="'.$child->getId().'" '
+					echo '<tr id="tr-'.$child->getId().'" data-id="'.$child->getId().'" '
                                                 . 'data-deltabegin="'.$deltabegin.'" '
                                                 . 'data-deltaend="'.$deltaend.'" '
                                                 .'>';
 					if($child->getStatus()->isOpen()){
 						if($child->getStartDate() < $now) {
-							$html .= '<td><i class="icon-warning-sign"></i></td>';
+							echo '<td><span class="glyphicon glyphicon-warning-sign"></span></td>';
 						} else {
-							$html .= '<td><i class="icon-bell"></i></td>';
+							echo '<td><span class="glyphicon glyphicon-bell"></span></td>';
 						}
-                                        } else if($child->getStatus()->getId() == 4) {
-                                            $html .= '<td><i class="icon-remove"></i></td>';
+                                        } elseif($child->getStatus()->getId() == 4) {
+                                            echo '<td><span class="glyphicon glyphicon-remove"></span></td>';
                                         } else {
 						if($child->getStartDate() < $now) {
-							$html .= '<td><i class="icon-ok"></i></td>';
+							echo '<td><span class="glyphicon glyphicon-ok"></span></td>';
 						} else {
-							$html .= '<td><i class="icon-warning-sign"></i></td>';
+							echo '<td><span class="glyphicon glyphicon-warning-sign"></span></td>';
 						}
 					}
                                         $timeAlert = $formatter->format($child->getStartDate());
                                         if(strlen(trim($deltaend)) > 0 && $this->event->getEnddate() == NULL){
                                             $timeAlert = "TBC";
                                         }
-                                        $html .= '<td>'.$timeAlert.'</td>';
-					$html .= '<td>'.$this->eventname($child).'</td>';
-					$html .= '<td><a class="modify-alarm" href="#add-alarm" data-toggle="modal"><i class="icon-pencil"></i></a> <a class="delete-alarm" href="#"><i class="icon-trash"></i></a></td>';
-					$html .= "</tr>";
+                                        echo '<td>'.$timeAlert.'</td>';
+					echo '<td>'.$this->eventname($child).'</td>';
+					echo '<td><a class="modify-alarm" href="#add-alarm" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></a> <a class="delete-alarm" href="#"><span class="glyphicon glyphicon-trash"></span></a></td>';
+					echo "</tr>";
                                     }
 				}
 			}
 		}
-		$html .= '</table>';
+		echo '</table>';
 		if($mod){
-			$html .= "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
+			echo "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
 		}
-		
-		echo $this->accordionGroup("Mémos <span class=\"badge pull-right\">".$countalarm."</span>", $html, array('data-parent'=>'form', 'title_id' => "alarmTitle"));
-		
-		$titleclass="";	
-		$html = "";	
-		$countfiles = 0;
-		$mod = false;
-                $html = '<table class="table table-hover" id="file-table">';
-		$html .= '<tbody>';
-		if($this->event || $this->model){
-			$files = null;
-                        if($this->event) {
-                            $files = $this->event->getFiles();
-                        }
-                        if($this->model) {
-                            $files = $this->model->getFiles();
-                        }
-			
-			if($this->zfcUserIdentity()){
-                            if($this->event) {
-                                $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
-                            } else {
-                                //pas de modification possible d'un modèle
-                                $mod = false;
-                            }
-			}
-                        
-			if(count($files) > 0){
-				$countfiles = count($files);
-				//accéder aux fichiers
-				
-				foreach ($files as $file){
-					$html .= "<tr id=\"file_".$file->getId()."\">";
-					$html .= "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
-					$html .= "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\">".
-								($file->getName() ? $file->getname() : $file->getFilename())."</a></td>";
-					$html .= "<td>";
-					$html .= "<a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a>";
-					$html .= "</td>";
-					if($mod){//suppression d'un fichier possible si le fichier ne vient pas d'un modèle ou si droits ok
-						$html .= "<td>";
-						//TODO
-						//$html .= "<a href=\"#\"><i class=\"icon-pencil mod-file\"></i></a> ";
-						$html .= "<a href=\"#confirm-delete-file\"
+		?>
+	   </div>
+	   
+	   <div role="tabpanel" class="tab-pane fade" id="files-tab">
+	   <?php 
+	   $countfiles = 0;
+	   $mod = false;
+	   echo '<table class="table table-hover" id="file-table">';
+	   echo '<tbody>';
+	   if($this->event || $this->model){
+	       $files = null;
+	       if($this->event) {
+	           $files = $this->event->getFiles();
+	       }
+	       if($this->model) {
+	           $files = $this->model->getFiles();
+	       }
+	       	
+	       if($this->zfcUserIdentity()){
+	           if($this->event) {
+	               $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
+	           } else {
+	               //pas de modification possible d'un modèle
+	               $mod = false;
+	           }
+	       }
+	   
+	       if(count($files) > 0){
+	           $countfiles = count($files);
+	           //accéder aux fichiers
+	   
+	           foreach ($files as $file){
+	               echo "<tr id=\"file_".$file->getId()."\">";
+	               echo "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
+	               echo "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\">".
+	                   ($file->getName() ? $file->getname() : $file->getFilename())."</a></td>";
+	               echo "<td>";
+	               echo "<a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><span class=\"glyphicon glyphicon-download\"></span></a>";
+	               echo "</td>";
+	               if($mod){//suppression d'un fichier possible si le fichier ne vient pas d'un modèle ou si droits ok
+	                   echo "<td>";
+	                   //TODO
+	                   //$html .= "<a href=\"#\"><i class=\"icon-pencil mod-file\"></i></a> ";
+	                   echo "<a href=\"#confirm-delete-file\"
 									class=\"delete-file\"
-									data-href=\"".$this->url('application', 
-												array('controller'=>'events', 'action' => 'deletefile'),
-												array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
+									data-href=\"".$this->url('application',
+	   									    array('controller'=>'events', 'action' => 'deletefile'),
+	   									    array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
 									data-id=\"".$file->getId()."\"
 									data-name=\"".($file->getName() ? $file->getname() : $file->getFilename())."\"
 									data-toggle=\"modal\"
-									><i class=\"icon-trash\"></i></a>";
-						$html .= "</td>";
-					}
-					$html .= "</tr>";
-                                        if($this->copy || $this->model){ //ajout de l'input caché pour enregistrement
-                                            $html .= '<tr><input type="hidden" name="fichiers['.$file->getId().']" value="'.$file->getId().'"></input></tr>';
-                                        }
-				}
-				
-			} 
-                        
-			if(!$mod && count($files) == 0){
-				$titleclass = "disabled";
-				$html = "";
-			}
-		}
-                $html .= '</tbody>';
-		$html .= '</table>';
-		//ajout de fichier si nouvel evt ou mod avec droits ok
-		if(!$this->event || $this->model || ($this->event && $mod)){
-			$html .= "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
-		}
-		
-		echo $this->accordionGroup("Fichiers <span class=\"pull-right badge\">".$countfiles."</span>", $html, array('data-parent'=>'form', 'title_id'=>'filesTitle', 'title_class'=>$titleclass));
-		
-		
-		$html = "";
-		$actionsClass = "";
-                $countactions = 0;
+									><span class=\"glyphicon glyphicon-trash\"></span></a>";
+	                   echo "</td>";
+	               }
+	               echo "</tr>";
+	               if($this->copy || $this->model){ //ajout de l'input caché pour enregistrement
+	                   echo '<tr><input type="hidden" name="fichiers['.$file->getId().']" value="'.$file->getId().'"></input></tr>';
+	               }
+	           }
+	   
+	       }
+	   
+	   }
+	   echo '</tbody>';
+	   echo '</table>';
+	   //ajout de fichier si nouvel evt ou mod avec droits ok
+	   if(!$this->event || $this->model || ($this->event && $mod)){
+	       echo "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
+	   }
+	   ?>
+	   </div>
+	   
+	   <div role="tabpanel" class="tab-pane fade" id="actions-tab">
+	   <?php 
 		if($this->event || $this->model) {
 			if($this->copy){
 				echo "<input type=\"hidden\" name=\"fromeventid\" value=\"".$this->copy."\">";
 			}
-			$children = null;
-			if($this->event){
-				$children = $this->event->getChildren();
-			} else if ($this->model){
-				$children = $this->model->getChildren();
-			}
-			if(count($children) > 0){
-				$html .= '<table class="table table-hover" >';
-				$html .= '<tbody>';
-                                //sort by place
-                                $arrayChildren = $children->toArray();
-                                function cmp(Application\Entity\AbstractEvent $a, Application\Entity\AbstractEvent $b){
-                                    return $a->getPlace() > $b->getPlace();
-                                }
-                                usort($arrayChildren, "cmp");                                
-                                foreach ($arrayChildren as $child){
-                                    if($child->getCategory() instanceof Application\Entity\ActionCategory){
-                                        $countactions++;
-					$html .= "<tr data-id=\"".$child->getId()."\"";
-					$color = $child->getCustomFieldValue($child->getCategory()->getColorfield());
-					if($color !=null && $color->getValue() !== ''){
-					    $html .= ' style="background-color:#'.$color->getValue().'"';
-					}
-                                        foreach ($child->getCustomFieldsValues() as $value){
-                                            if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
-                                                if($value->getValue() !== ''){
-                                                    $html .= ' data-container="body" '
-                                                            . 'data-html="true" '
-                                                            . 'data-toggle="tooltip" '
-                                                            . 'title="<span class=elmt_tooltip>'.nl2br(htmlspecialchars($value->getValue())).'</span>"';
-                                                }
-                                            }
-                                        }
-                                        $html .= ">";
-					$html .= "<td><span class=\"label label-".$child->getImpact()->getStyle()."\">".$child->getImpact()->getName()."</span></td>";
-					$html .= "<td>".$this->eventName($child)."</td>";
-					if(!$this->copy && !$this->model){ //copie d'un évènement -> pas de modif de la fiche réflexe
-						$html .= "<td class=\"todo\"><a class=\"fiche btn btn-small ".($child->getStatus()->isOpen()? "" : "active btn-success")."\" data-id=\"".$child->getId()."\">".($child->getStatus()->isOpen()? "A faire" : "Fait")."</a></td>";
-					}
-					$html .= '</tr>';
-                                    }
-                                }
-                                $html .= '</tbody>';
-				$html .= '</table>';
-                                if($this->model){
-                                    //ajout de la référence pour copie des actions lors de l'enregistrement
-                                    $html .= '<input name="modelid" type="hidden" value="'.$this->model->getId().'" >';
-                                }
-			} else {
-				$actionsClass="disabled";
-			}
-		}
-		echo $this->accordionGroup("Fiche réflexe <span class=\"pull-right badge\">".$countactions."</span>", $html, array('data-parent'=>'form', 'title_id'=>'actionsTitle', 'title_class'=>$actionsClass));
+			echo $this->partial('actions.phtml', array('actions' => $this->actions));
+
+            if($this->model){
+                //ajout de la référence pour copie des actions lors de l'enregistrement
+                echo '<input name="modelid" type="hidden" value="'.$this->model->getId().'" >';
+            }
 		
-                //en cas de modif, afficher les notes
-                if($this->event){
-                    $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
-                        \IntlDateFormatter::FULL,
-                        \IntlDateFormatter::FULL,
-                        'UTC',
-                        \IntlDateFormatter::GREGORIAN,
-                        'dd LLL, HH:mm');
-                    $html = '<div id="form-notes">';
-                    foreach ($this->event->getUpdates() as $update){
-                        $html .= "<blockquote>"
-                                . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
-                                . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
-                                . "</blockquote>";
-                    }
-                    $html .='</div>';
-                    //ajout de notes si droits ok
-                    if($mod){
-			$html .= "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><i class=\"icon-plus\"></i></a>";
-                    }
-                    
-                    echo $this->accordionGroup('Notes <span class="pull-right badge">'.count($this->event->getUpdates()).'</span>', $html, array('data-parent' => 'form', 'title_id' => 'notesTitle'));
-                }
-                
+		}
 		?>
-
-
-
-	</div> -->
+	   </div>
+	   
+	   <div role="tabpanel" class="tab-pane fade" id="notes-tab">
+	   <?php 
+	   if($this->event){
+	       $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
+	           \IntlDateFormatter::FULL,
+	           \IntlDateFormatter::FULL,
+	           'UTC',
+	           \IntlDateFormatter::GREGORIAN,
+	           'dd LLL, HH:mm');
+	       echo '<div id="form-notes">';
+	       foreach ($this->event->getUpdates() as $update){
+	           echo "<blockquote>"
+	               . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
+	                   . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
+	                       . "</blockquote>";
+	       }
+	       echo '</div>';
+	       //ajout de notes si droits ok
+	       if($mod){
+	           echo "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
+	       }
+	   
+	   }
+	   ?>
+	   </div>
+	   
+	</div>
+	
 </div>
 <!-- .modal-body -->
 <div class="modal-footer">

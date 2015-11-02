@@ -38,7 +38,7 @@ class ControlGroup extends AbstractHelper
         
         $result = "<div class=\"form-group" . $class . "\" " . $group_id . ">";
         $result .= $label;
-        $result .= "<div class=\"col-sm-8\" " . $control_id . ">";
+        $result .= "<div class=\"col-sm-10 col-lg-8\" " . $control_id . ">";
         $result .= $control;
         $result .= "</div></div>";
         
