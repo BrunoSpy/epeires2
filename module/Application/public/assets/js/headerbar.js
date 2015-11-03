@@ -1,4 +1,26 @@
+function updateClock ( )
+    {
+    var currentTime = new Date ( );
+    var currentHours = currentTime.getUTCHours ( );
+    var currentMinutes = currentTime.getUTCMinutes ( );
+    var currentSeconds = currentTime.getUTCSeconds ( );
+
+    // Pad the minutes and seconds with leading zeros, if required
+    currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+    currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+
+    // Compose the string for display
+    var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds;
+    
+    
+    $("#clock").html(currentTimeString);
+        
+ };
+
 var headerbar = function (url) {
+    
+    setInterval('updateClock()', 1000);
+    
     $("select[name=zone]").on("change", function (event) {
         event.preventDefault();
         $.post(url + '/savezone', $("#zoneform").serialize(), function () {

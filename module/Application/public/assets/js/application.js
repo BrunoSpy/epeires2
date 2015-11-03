@@ -3,24 +3,7 @@
  * @author Bruno Spyckerelle
  */
 
-function updateClock ( )
-    {
-    var currentTime = new Date ( );
-    var currentHours = currentTime.getUTCHours ( );
-    var currentMinutes = currentTime.getUTCMinutes ( );
-    var currentSeconds = currentTime.getUTCSeconds ( );
 
-    // Pad the minutes and seconds with leading zeros, if required
-    currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
-    currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
-
-    // Compose the string for display
-    var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds;
-    
-    
-    $("#clock").html(currentTimeString);
-        
- };
 
 function FormatNumberLength(num, length) {
     var r = "" + num;
@@ -108,9 +91,7 @@ var displayMessages = function(messages){
 $(document).ready(function(){
     
     $.material.init();
-	    
-   setInterval('updateClock()', 1000);
-         
+	             
    $.datepicker.regional[ "fr" ];
    
    //higlight tabs

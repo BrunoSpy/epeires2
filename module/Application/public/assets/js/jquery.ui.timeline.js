@@ -30,6 +30,7 @@
  * });
  * 
  * @author Jonathan Colson
+ * @author Bruno Spyckerelle
  */
 
 (function ($, undefined) {
@@ -277,7 +278,10 @@
                     $(this).tooltip({
                         title: '<span class="elmt_tooltip">' + text + '</span>',
                         container: 'body',
-                        html: 'true'
+                        html: 'true',
+                        placement:'auto top',
+                        viewport: '#timeline',
+                        template: '<div class="tooltip tooltip-actions" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
                     }).tooltip('show');
                     //affichage heure et boutons
                     $(this).find('.disp').show();
@@ -290,7 +294,7 @@
                     $(this).find('.disp').hide();
                     $(this).find('.lien.disp').show();
                     //suppression menu
-                    $(this).find('.tooltip-evt').popover('destroy');
+                   // $(this).find('.tooltip-evt').popover('destroy');
                 }
             }, '.elmt');
 
@@ -499,25 +503,26 @@
             	var me = $(this);
             	var id = me.data('id');
             	var txt = '<p class="elmt_tooltip actions">'
-                	+ '<a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a><br />';
+                	+ '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
             	var event = self.events[self.eventsPosition[id]];
             	if(event.status_id !== 4 && event.modifiable){
             		if(event.punctual === false){
 	            		if(event.star === true){
-	                		txt += '<a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a><br />';
+	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
 	                	} else {
-	                		txt += '<a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a><br />';
+	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
 	                	}
             		}
-            		txt += '<a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a><br />';
-            		txt += '<a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a>';
+            		txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+            		txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
             	}
             	txt += '</p>';
             	me.popover({
                     content: txt,
-                    trigger:'click',
-                    placement:'top',
-                    html: 'true'
+                    trigger:'focus',
+                    placement:'auto top',
+                    html: 'true',
+                    viewport: '#timeline'
                 }).popover('show');
             	me.parents('.elmt').tooltip('hide');
             });
@@ -1596,7 +1601,7 @@
             } else {
                 yDeb = 6;
             }
-            elmt_deb.find('span').html(" " + hDeb);
+            elmt_deb.find('span.hour-txt').html(" " + hDeb);
             elmt_deb.css({'top': yDeb + 'px'});
 
             // ajout de l'heure de fin
@@ -1615,7 +1620,7 @@
                 yEnd = 4;
                 hEnd = "";
             }
-            elmt_fin.find('span').html(hEnd + " ");
+            elmt_fin.find('span.hour-txt').html(hEnd + " ");
             elmt_fin.css({'top': yEnd + 'px'});
 
             //affichage des boutons en fonction des droits
@@ -1884,7 +1889,7 @@
                     elmt_deb.removeClass('disabled');
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
-                        elmt_deb.find('i').removeClass().addClass('icon-warning-sign');
+                        elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                         elmt_deb.removeClass('disp').show().tooltip({
                         	title: "Cliquer pour confirmer l'heure de début.",
                         	container: 'body'
@@ -1892,7 +1897,7 @@
                         lien.filter('.leftlink').removeClass('disp').hide();
                     } else {
                         //affichage sur hover avec (?)
-                        elmt_deb.find('i').removeClass().addClass('icon-question-sign');
+                        elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                         elmt_deb.addClass('disp').tooltip({
                         	title: "Cliquer pour confirmer l'heure de début.",
                         	container: 'body'
@@ -1907,7 +1912,7 @@
                     } else {
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
-                            elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
+                            elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
                             	title: "Cliquer pour confirmer l'heure de fin.",
                             	container: 'body'
@@ -1915,7 +1920,7 @@
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
-                            elmt_fin.find('i').removeClass().addClass('icon-question-sign');
+                            elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
                             	title: "Cliquer pour confirmer l'heure de fin.",
                             	container: 'body'
@@ -1932,7 +1937,7 @@
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début : non cliquable, sur demande avec case cochée
-                    elmt_deb.find('i').removeClass().addClass('icon-check');
+                    elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
                     //heure de fin cliquable
@@ -1943,7 +1948,7 @@
                     } else {
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
-                            elmt_fin.find('i').removeClass().addClass('icon-warning-sign');
+                            elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
                             	title: "Cliquer pour confirmer l'heure de fin.",
                             	container: 'body'
@@ -1951,7 +1956,7 @@
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
-                            elmt_fin.find('i').removeClass().addClass('icon-question-sign');
+                            elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
                             	title: "Cliquer pour confirmer l'heure de fin.",
                             	container: 'body'
@@ -1967,7 +1972,7 @@
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.find('span').css({'text-decoration': ''});
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
-                    elmt_deb.find('i').removeClass().addClass('icon-check');
+                    elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
                     elmt_fin.addClass('disabled').tooltip('destroy');
@@ -1975,7 +1980,7 @@
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
                     } else {
-                        elmt_fin.find('i').removeClass().addClass('icon-check');
+                        elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                         elmt_fin.addClass('disp').hide();
                     }
                     lien.filter('.rightlink').addClass('disp').show();
@@ -1985,9 +1990,9 @@
                 case 4: //annulé
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
-                    elmt_txt.find('span').css({'text-decoration': 'line-through'});
+                    elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
-                    elmt_deb.find('i').removeClass();
+                    elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
                     elmt_fin.addClass('disabled').tooltip('destroy');
                     lien.filter('.leftlink').addClass('disp').show();
@@ -1995,7 +2000,7 @@
                         elmt_fin.removeClass('disp').hide();
                         elmt_compl.show();
                     } else {
-                        elmt_fin.find('i').removeClass();
+                        elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon');
                         elmt_fin.addClass('disp').hide();
                     }
                     lien.filter('.rightlink').addClass('disp').show();
@@ -2050,9 +2055,9 @@
             // lien entre le texte et l'événement (si texte écrit en dehors)
             var lien = $('<div class="lien"></div>');
             elmt.append(lien);
-            var elmt_deb = $('<a href="#" class="elmt_deb"><i></i><span></span></a>');
+            var elmt_deb = $('<a href="#" class="elmt_deb"><span class="glyphicon"></span><span class="hour-txt"></span></a>');
             elmt.append(elmt_deb);
-            var elmt_fin = $('<a href="#" class="elmt_fin"><span></span><i></i></a>');
+            var elmt_fin = $('<a href="#" class="elmt_fin"><span class="hour-txt"></span><span class="glyphicon"></span></a>');
             elmt.append(elmt_fin);
             var move_deb = $('<p class="move_deb"></p>');
             elmt.append(move_deb);
@@ -2065,7 +2070,7 @@
             elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
             elmt_b2.css({'z-index': 1});
-            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px', 'z-index': 20});
+            elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px'});
             lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
 
             move_deb.css({'height': dy - 8});

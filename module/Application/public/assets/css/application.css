@@ -41,11 +41,6 @@
 	top: -2px;
 }
 
-.navbar-lower .container-fluid {
-	background-color: #9C27B0;
-}
-
-/************* Formulaire ****************/
 
 /************** Slide panel **************/
 .panel-fixed {
@@ -369,6 +364,8 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 
 #search-results {
 	width: 280px;
+	left: calc(100% - 285px);
+	background-color: white;
 }
 
 #search-results .result:nth-child(even) {
@@ -384,19 +381,38 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	margin: 0px;
 }
 
+#search-results dd {
+	margin-bottom: 5px;
+}
+
 #search-results #results {
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
 
-#suggestions-container .result {
-	margin: 0px -15px 0px -15px;
-	padding: 0px 5px 0px 5px;
+#search-results.popover > .arrow {
+	display: block;
 }
 
-#search-results .result:nth-child(even), #suggestions-container .result:nth-child(even)
+#search-results .popover {
+	background-color: white;
+}
+
+#search-results .result:nth-child(odd)
+{
+	color: black;
+	background-color: white;
+}
+
+#search-results .result:nth-child(even)
 	{
+	color: black;
 	background-color: ghostwhite;
+}
+
+#search-results a.btn {
+	margin-top: 0px
+	margin-bottom: 0px;
 }
 
 #calendar {

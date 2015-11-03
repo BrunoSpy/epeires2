@@ -98,8 +98,8 @@
 	background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.nav-tabs-material-purple {
-	background-color: #9C27B0;
+.nav-tabs-material-blue {
+	background-color: #2196F3;
 	border-bottom: none;
 }
 
@@ -140,6 +140,10 @@ body{
     overflow-x: hidden;
 }
 
+.navbar-lower .container-fluid {
+	background-color: #2196F3;
+}
+
 #navbar-first {
 	z-index: 1032;
 }
@@ -151,7 +155,7 @@ body{
 
 
 #navbar-first select {
-	background-color:#673ab7;
+	background-color:#2196F3;
 }
 
 #navbar-clock {

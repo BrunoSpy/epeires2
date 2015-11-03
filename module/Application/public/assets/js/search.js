@@ -6,7 +6,7 @@ var search = function(url){
 	   //search events
 	   $("#search").submit(function(e){
 		   e.preventDefault();
-		   $("#search-results").offset({top: $(this).offset().top+$(this).outerHeight(), left:$(this).offset().left});
+		   $("#search-results").offset({top: $(this).offset().top+$(this).outerHeight()});
 			$("#results").html('<div>Chargement...</div>');
 			var inputSearch = $("#search input").val();
 			if(inputSearch.length >= 2) {
@@ -49,7 +49,7 @@ var search = function(url){
 		   if(!container.is(e.target) && container.has(e.target).length === 0){
 			   if($('#search-results').is(':visible')){
 				   container.slideUp('fast', function(){
-					   $("#search-results").css({'top':'0px', 'left':'0px'});
+					   $("#search-results").css({'top':'0px'});
 				   });
 			   }
 		   }
@@ -62,16 +62,18 @@ var createEventEntry = function(id, event){
 	var html = "";
 	var start = new Date(event.start_date);
 	var end = new Date(event.end_date);
-	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '')+"</dt>";
-	html += '<dd>';
-	html += '<small>Catégorie : '+event.category+'</small>';
+	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '');
 	if(event.status_id <= 2){
 		//evt en cours : modifier l'evt
-		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-mini pull-right modify-evt">Modifier</a></dd>';
+		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm btn-primary pull-right modify-evt">Modifier</a>';
 	} else {
 		//evt terminé : copier
-		html += '<a data-id='+id+' class="btn btn-mini pull-right copy-event">Copier</a></dd>';
+		html += '<a data-id='+id+' class="btn btn-sm btn-primary pull-right copy-event">Copier</a>';
 	}
+	html += "</dt>";
+	html += '<dd>';
+	html += '<small>Catégorie : '+event.category+'</small>';
+	html += '</dd>';
 	div.append(html);
 	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)+'/'+FormatNumberLength(start.getUTCMonth()+1,2);
 	if(event.end_date != null){
@@ -91,9 +93,11 @@ var createEventEntry = function(id, event){
 
 var createModelEntry = function(id, model){
 	var html = '<div class="result">';
-	html += "<dt>Modèle : "+model.name+"</dt>";
+	html += "<dt>Modèle : "+model.name;
+	html += '<a data-id='+id+' class="btn btn-sm btn-primary pull-right use-model">Utiliser</a>';
+	html += "</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+model.category+'</small>';
-	html += '<a data-id='+id+' class="btn btn-mini pull-right use-model">Utiliser</a></dd></div>';
+	html += '</dd></div>';
 	return html;
 };
