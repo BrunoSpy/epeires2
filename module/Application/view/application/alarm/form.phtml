@@ -27,11 +27,10 @@ echo $this->formHidden($this->form->get('impact'));
 
 echo $this->formHidden($this->form->get('scheduled'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-			$this->formInput($this->form->get('startdate')), array('class'=>'compact'));
+echo $this->controlGroup($this->form->get('startdate'), array('class'=>'compact', 'labelclass' => 'time-middle'));
 
 foreach ($this->form->get('custom_fields')->getElements() as $element){
-	echo $this->customFieldGroup($element);
+	echo $this->controlGroup($element);
 }
 
 ?>

@@ -61,7 +61,7 @@ class Category
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="childs")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Catégorie parente :", "empty_option":"Choisir la catégorie parente"})
+     * @Annotation\Options({"label":"Catégorie parente", "empty_option":"Choisir la catégorie parente"})
      * @Gedmo\SortableGroup
      */
     protected $parent;
@@ -74,7 +74,7 @@ class Category
     /**
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom court :"})
+     * @Annotation\Options({"label":"Nom court"})
      * @ORM\Column(type="string")
      */
     protected $shortname;
@@ -82,7 +82,7 @@ class Category
     /**
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Couleur :"})
+     * @Annotation\Options({"label":"Couleur"})
      * @ORM\Column(type="string")
      * Color coded in hexa, ex: #FFFFFF
      */
@@ -91,14 +91,14 @@ class Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Mode compact :"})
+     * @Annotation\Options({"label":"Mode compact"})
      */
     protected $compactmode;
 
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Timeline :"})
+     * @Annotation\Options({"label":"Timeline"})
      */
     protected $timeline;
 
@@ -106,7 +106,7 @@ class Category
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom complet :"})
+     * @Annotation\Options({"label":"Nom complet"})
      */
     protected $name;
 
@@ -125,7 +125,7 @@ class Category
      * @ORM\OneToOne(targetEntity="CustomField")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Champ titre :", "empty_option":"Choisir le champ titre"})
+     * @Annotation\Options({"label":"Champ titre", "empty_option":"Choisir le champ titre"})
      */
     protected $fieldname;
 
@@ -135,7 +135,7 @@ class Category
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Attributes({"multiple":true})
-     * @Annotation\Options({"label":"Affichée pour :"})
+     * @Annotation\Options({"label":"Affichée pour"})
      */
     protected $readroles;
 

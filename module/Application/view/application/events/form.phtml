@@ -43,6 +43,7 @@
 	   <?php 
 		//category and subcategory		
 		$formSelectCat = $this->form->get('categories')->get('root_categories');
+        $formSelectCat->setAttribute('required', true);
 		$formSelectSubCat = $this->form->get('categories')->get('subcategories');
  		if($this->event || $this->model){
 			//Catégorie non modifiable si modification
@@ -50,13 +51,8 @@
 			$formSelectSubCat->setAttribute('disabled', true);
  		}
 	   
- 		echo $this->controlGroup(
- 		    $this->formLabel($this->form->get('categories')->get('root_categories')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
- 		    $this->formSelect($formSelectCat->setAttribute('class', 'form-control')));
- 		echo $this->controlGroup(
- 		    $this->formLabel($this->form->get('categories')->get('subcategories')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
- 		    $this->formSelect($formSelectSubCat->setAttribute('class', 'form-control')),
- 		    array('control_id'=>'form_categories'));
+ 		echo $this->controlGroup($formSelectCat);
+ 		echo $this->controlGroup($formSelectSubCat, array('control_id'=>'form_categories'));
  		//Modèles uniquement si création
         if(!$this->event && !$this->model){
             echo '<div class="form-group">';
@@ -73,18 +69,12 @@
 
 	   <div role="tabpanel" class="tab-pane fade" id="hours-tab">
 	   <?php 
-	   echo $this->controlGroup(
-					$this->formLabel($this->form->get('scheduled')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
-					'<div class="checkbox"><label>'.$this->formCheckbox($this->form->get('scheduled')).'</label></div>', 
+	   echo $this->controlGroup($this->form->get('scheduled'), 
                     array('class'=>($this->isGranted('events.schedule') ? '' :' unvisible')));
                 
-		echo $this->controlGroup(
-					$this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))),
-					'<div class="checkbox"><label>'.$this->formCheckbox($this->form->get('punctual')).'</label></div>');
+		echo $this->controlGroup($this->form->get('punctual'));
 		
-		echo $this->controlGroup(
-				$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'col-sm-2 control-label time-middle'))),
-				$this->formInput($this->form->get('startdate')), array('class'=>'compact'));
+		echo $this->controlGroup($this->form->get('startdate'), array('class'=>'compact', 'labelclass' => 'time-middle'));
 		
 		$formEndDate = $this->form->get('enddate');
 		if($this->event){
@@ -98,9 +88,7 @@
 			}
 		}
 		
-		echo $this->controlGroup(
-				$this->formLabel($formEndDate->setLabelAttributes(array('class'=>'col-sm-2 control-label time-middle'))),
-				$this->formInput($formEndDate), array('class'=>'compact'));
+		echo $this->controlGroup($formEndDate, array('class'=>'compact', 'labelclass' => 'time-middle'));
 		?>
 			<div class="form-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))); ?>
@@ -120,18 +108,14 @@
 	   echo "<div id=\"custom_fields\">";
 	   if($this->event || $this->model){
 	       foreach ($this->form->get('custom_fields')->getElements() as $element){
-	           echo $this->customFieldGroup($element, 'form-control');
+	           echo $this->controlGroup($element);
 	       }
 	   }
 	   echo "</div>";
 	   echo "<div style=\"display:none;\">";
-	   echo $this->controlGroup(
-	       $this->formLabel($this->form->get('impact')->setLabelAttributes(array('class'=>'control-label'))),
-	       $this->formSelect($this->form->get('impact')));
+	   echo $this->controlGroup($this->form->get('impact'));
 	   if($this->form->has('zonefilters')){
-	       echo $this->controlGroup(
-	           $this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class'=>'control-label'))),
-	           $this->formSelect($this->form->get('zonefilters')));
+	       echo $this->controlGroup($this->form->get('zonefilters'));
 	   }
 	   echo "</div>";
 	   ?>
@@ -389,7 +373,7 @@
 <!-- .modal-body -->
 <div class="modal-footer">
 	<div class="form-group">
-		<div class="col-lg-6 col-lg-offset-6">
+		<div class="col-lg-6 col-lg-offset-6 btn-wrapper">
 			<?php	
 			if($this->event || $this->model){
 				echo $this->formSubmit($this->form->get('submit')->setAttributes(array('value'=> (($this->copy || $this->model) ? "Ajouter" : "Enregistrer"), 'class' => 'btn btn-primary')));

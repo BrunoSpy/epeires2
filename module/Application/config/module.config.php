@@ -100,8 +100,6 @@ return array(
     'view_helpers' => array(
         'invokables' => array(
             'accordionGroup' => 'Application\View\Helper\AccordionGroup',
-            'controlGroup' => 'Application\View\Helper\ControlGroup',
-            'customFieldGroup' => 'Application\View\Helper\CustomFieldGroup',
             'impact' => 'Application\View\Helper\Impact',
             'eventfieldname' => 'Application\View\Helper\EventFieldName',
             'block' => 'Application\View\Helper\Block',

@@ -48,7 +48,7 @@ abstract class AbstractEvent
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Ponctuel :"})
+     * @Annotation\Options({"label":"Ponctuel"})
      * @Annotation\Attributes({"id":"punctual"})
      * @Gedmo\Versioned
      */
@@ -58,7 +58,7 @@ abstract class AbstractEvent
      * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="children")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Evènement parent :", "empty_option":"Choisir l'evt parent"})
+     * @Annotation\Options({"label":"Evènement parent", "empty_option":"Choisir l'evt parent"})
      * @Gedmo\SortableGroup
      */
     protected $parent;
@@ -79,7 +79,7 @@ abstract class AbstractEvent
      * @ORM\ManyToOne(targetEntity="Impact")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
-     * @Annotation\Options({"label":"Impact :"})
+     * @Annotation\Options({"label":"Impact"})
      * @Gedmo\Versioned
      */
     protected $impact;
@@ -89,7 +89,7 @@ abstract class AbstractEvent
      * @ORM\JoinColumn(nullable=false)
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
-     * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
+     * @Annotation\Options({"label":"Catégorie", "empty_option":"Choisir la catégorie"})
      */
     protected $category;
 
@@ -103,7 +103,7 @@ abstract class AbstractEvent
      * @ORM\JoinColumn(nullable=false)
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
-     * @Annotation\Options({"label":"Organisation :"})
+     * @Annotation\Options({"label":"Organisation"})
      */
     protected $organisation;
 
@@ -113,7 +113,7 @@ abstract class AbstractEvent
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":true})
-     * @Annotation\Options({"label":"Visibilité :"})
+     * @Annotation\Options({"label":"Visibilité"})
      */
     protected $zonefilters;
 

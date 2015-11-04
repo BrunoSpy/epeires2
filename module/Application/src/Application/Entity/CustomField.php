@@ -43,7 +43,7 @@ class CustomField
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom :"})
+     * @Annotation\Options({"label":"Nom"})
      */
     protected $name;
 
@@ -52,7 +52,7 @@ class CustomField
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="customfields")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Catégorie :"})
+     * @Annotation\Options({"label":"Catégorie"})
      * @Gedmo\SortableGroup
      */
     protected $category;
@@ -61,7 +61,7 @@ class CustomField
      * @ORM\ManyToOne(targetEntity="CustomFieldType")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Type :", "empty_option":"Choisir le type"})
+     * @Annotation\Options({"label":"Type", "empty_option":"Choisir le type"})
      */
     protected $type;
 
@@ -75,7 +75,7 @@ class CustomField
      * @ORM\Column(type="text")
      * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Valeur par défaut :"})
+     * @Annotation\Options({"label":"Valeur par défaut"})
      * Stores default value, for example for select customtype
      */
     protected $defaultvalue;
@@ -92,7 +92,7 @@ class CustomField
      * @ORM\Column(type="boolean", nullable=true)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Sélection multiple :"})
+     * @Annotation\Options({"label":"Sélection multiple"})
      */
     protected $multiple = false;
 

@@ -21,8 +21,7 @@ echo $this->formHidden($this->form->get('id'));
 
 echo $this->formHidden($this->form->get('category'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('impact')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('impact')));
+echo $this->controlGroup($this->form->get('impact'));
 
 echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
 	
@@ -32,9 +31,7 @@ echo $this->formHidden($this->form->get('status'));
 
 echo $this->formHidden($this->form->get('scheduled'));
 
-echo $this->controlGroup(
-		$this->formLabel($this->form->get('startdate')->setLabelAttributes(array('class'=>'control-label time-middle'))),
-		$this->formInput($this->form->get('startdate')), array('class'=>'compact'));
+echo $this->controlGroup($this->form->get('startdate'), array('class'=>'compact'));
 
 ?>
 
@@ -44,7 +41,7 @@ echo $this->controlGroup(
 
 if($this->form->has('custom_fields')){
 	foreach ($this->form->get('custom_fields')->getElements() as $element){
-		echo $this->customFieldGroup($element);
+		echo $this->controlGroup($element);
 	}
 }
 ?>

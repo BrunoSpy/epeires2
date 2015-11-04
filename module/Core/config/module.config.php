@@ -99,7 +99,8 @@ return array(
     'view_helpers' => array(
         'invokables' => array(
             'modalwindow' => 'Core\View\Helper\ModalWindow',
-            'notifications' => 'Core\View\Helper\Notifications'
+            'notifications' => 'Core\View\Helper\Notifications',
+            'controlGroup' => 'Core\View\Helper\ControlGroup',
         ),
         'factories' => array(
             'userMenu' => 'Core\Factory\UserMenuFactory'

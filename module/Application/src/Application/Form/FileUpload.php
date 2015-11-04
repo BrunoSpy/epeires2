@@ -39,23 +39,23 @@ class FileUpload extends Form
     public function addElements()
     {
         $file = new Element\File('file');
-        $file->setLabel("Import : ")->setAttributes(array(
+        $file->setLabel("Import ")->setAttributes(array(
             'id' => 'file',
             'multiple' => false
         ));
         
         $name = new Element\Text('name');
-        $name->setLabel('Fichier :');
+        $name->setLabel('Fichier');
         $name->setAttribute('placeholder', 'Titre');
         $name->setAttribute('class', 'input-medium');
         
         $ref = new Element\Text('reference');
-        $ref->setLabel("Référence : ");
+        $ref->setLabel("Référence ");
         $ref->setAttribute('placeholder', 'Ref. (facultatif)');
         $ref->setAttribute('class', 'input-medium');
         
         $url = new Element\Text('url');
-        $url->setLabel('Url : ');
+        $url->setLabel('Url ');
         $url->setAttribute('placeholder', 'Url');
         $url->setAttribute('class', 'input-large');
         

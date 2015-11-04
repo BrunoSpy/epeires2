@@ -44,7 +44,7 @@ switch ($this->part) {
         break;
     case 'custom_fields':
         foreach ($this->form->get('custom_fields')->getElements() as $element) {
-            echo $this->customFieldGroup($element, 'form-control');
+            echo $this->controlGroup($element);
         }
         break;
     default:

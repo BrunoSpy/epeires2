@@ -34,7 +34,7 @@ var formAddFile = function(fileId, formData, modifiable){
     $("#file-table").append(tr);
     var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
     $("#files-tab").append(input);
-  //  $("#filesTitle span").html(parseInt($("#filesTitle span").html())+1);
+    //  $("#filesTitle span").html(parseInt($("#filesTitle span").html())+1);
 }
 
 /**
@@ -83,7 +83,7 @@ var formAddAlarm = function(alarm, alter) {
     div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+alarm.deltabegin+'"></input>');
     div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+(alarm.deltaend ? alarm.deltaend : '')+'"></input>');
     $('#memos-tab').append(div);
-  //  $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
+    //  $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
 };
 
 var convertInputIntoDate = function(input){
@@ -169,12 +169,13 @@ var formModifyAlarm = function(alarm) {
 var form = function(url, tabid){
 
     urlt = url;
-    
+
     var initTabs = function(newevt){
 	if(newevt) {
 	    //création d'un nouvel évènement vide ou à partir d'un modèle
 	    $('#notes-title').hide();
 	    $('#Event .nav-tabs > li').css('width', (100/6)+'%');
+	    $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
 	} else {
 	    //modification d'un evt
 	    $('#notes-title').show();
@@ -182,29 +183,49 @@ var form = function(url, tabid){
 	    $('#Event .nav-tabs > li > a').removeClass('disabled');
 	    $('#description-title > a').trigger('click');
 	}
+	//dans tous les cas, réactiver les js material
+	$.material.checkbox();
     };
-    
+
     //gestion des tabs
     $('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
 	$('#Event .nav-tabs > li').each(function(index){
 	    $(this).find('div.round')
-	    	.removeClass('blue').addClass('grey')
-	    	.empty().html('<strong>'+(index+1)+'</strong');
+	    .removeClass('blue').addClass('grey')
+	    .empty().html('<strong>'+(index+1)+'</strong');
 	});
-	
+
 	var me = $(event.target);
 	var round = me.find('div.round');
 	round.removeClass('grey')
-		.addClass('blue')
-		.empty()
-		.html('<span class="glyphicon glyphicon-pencil"></span>');
+	.addClass('blue')
+	.empty()
+	.html('<span class="glyphicon glyphicon-pencil"></span>');
 	$('#Event .nav-tabs > li.valid div.round')
-		.removeClass('grey blue').addClass('green')
-		.empty()
-		.html('<span class="glyphicon glyphicon-ok"></span>');
-	
+	.removeClass('grey blue').addClass('green')
+	.empty()
+	.html('<span class="glyphicon glyphicon-ok"></span>');
+
     });
-    
+
+    //enable/disable submit button according to required fields
+    $("#event").on('change keyup', function(e){
+	var fail = false;
+	$("#event input, #event select, #event textarea").each(function(index){
+	    if($(this).prop('required') && !$(this).val()) {
+		fail = true;
+		$(this).parents('.form-group').addClass('has-error');
+	    } else if($(this).prop('required') && $(this).val()){
+		$(this).parents('.form-group').removeClass('has-error');
+	    }
+	});
+	if(fail) {
+	    $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
+	} else {
+	    $("#event input[name='submit']").prop('disabled', false).removeClass('disabled');
+	}
+    });
+
     //specific functions to maintain coherence between end and start inputs
     $('#event').on('change', 'input[name=startdate]', function(){
 	var datefin = $("#hours-tab #end").siblings('input[type=hidden]');
@@ -235,7 +256,7 @@ var form = function(url, tabid){
 		    && (diff < 10)){
 	    $("#event select[name=status] option[value=2]").prop('selected', true);
 	}
-	updateHourTitle();
+	//updateHourTitle();
 
 	//mise à jour des alarmes
 	updateAlarmForms();
@@ -290,7 +311,7 @@ var form = function(url, tabid){
 	    //mise à jour des alarmes
 	    updateAlarmForms();
 	}
-	updateHourTitle();
+	//updateHourTitle();
 
     });
 
@@ -335,7 +356,7 @@ var form = function(url, tabid){
 	} 
     };
 
-    var updateHourTitle = function(){
+    /*    var updateHourTitle = function(){
 	var start = $("#hours-tab #start").siblings("input[type=hidden]").val();
 	var split = start.split(' ');
 	var daysplit = split[0].split('-');
@@ -353,7 +374,7 @@ var form = function(url, tabid){
 	    }
 	}
 	$("#Horairesid").html(text);
-    };
+    };*/
 
     /************************/
 
@@ -362,7 +383,7 @@ var form = function(url, tabid){
 	event.preventDefault();
 	$("#event input[type=submit]").tooltip('destroy');
 	//disable submit button to prevent double submission
-	$("#event input[name='submit']").prop('disabled', true);
+	$("#event input[name='submit']").prop('disabled', true).addClass('disabled');
 	//fill missing minute inputs
 	if($('#start .hour input').val().length > 0 && $('#start .minute input').val().length === 0){
 	    $('#start .minute input').val('00').trigger('change');
@@ -390,22 +411,12 @@ var form = function(url, tabid){
 	    success: function(data){
 		//close form
 		$("#create-link").trigger("click");
-		var id = $("#Event").find('input[name="id"]').val();
-		if(id>0){
-		    //modification
-		    if(data['events']){
-			$('#timeline').timeline('addEvents', data.events);
-			$('#timeline').timeline('forceUpdateView');
-		    }
-		    displayMessages(data.messages);
-		} else {
-		    //new event
-		    if(data['events']){
-			$('#timeline').timeline('addEvents', data.events);
-			$('#timeline').timeline('forceUpdateView');
-		    }
-		    displayMessages(data.messages);
+		//update timeline
+		if(data['events']){
+		    $('#timeline').timeline('addEvents', data.events);
+		    $('#timeline').timeline('forceUpdateView');
 		}
+		displayMessages(data.messages);
 	    },
 	    dataType: "json"
 	});
@@ -424,17 +435,16 @@ var form = function(url, tabid){
 	    $("#create-evt").modal('hide')
 	    restoreUpdateAlarms();
 	} else {
-	    $("#event").html('<div>Chargement...</div>');
+	    $("#event").html('');
 	    $("#form-title").html("Nouvel évènement");
 	    $("#event").load(
 		    url+'events/form'+'?tabid='+tabid,
 		    function(){
 			initTabs(true);
-			$.material.checkbox();
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
-			updateHourTitle();
+			//updateHourTitle();
 			if(cat_parent_id >= 0){
 			    $("#root_categories").val(cat_parent_id);
 			    $('#root_categories').trigger('change');
@@ -456,15 +466,15 @@ var form = function(url, tabid){
     $("#search-results").on("click", ".use-model", function(){
 	var me = $(this);
 	$("#search-results").slideUp('fast');
-	$("#event").html('<div>Chargement...</div>');
+	$("#event").html('');
 	$("#form-title").html(me.data('name'));
-	$("#create-evt").slideDown('fast');
+	$("#create-evt").modal('show');
 	$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
-	    initTabs();
+	    initTabs(true);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    updateHours();
-	    $("#Descriptionid").trigger('click');
+	    $("#description-title a").trigger('click');
 	});
 	$("#search-results").offset({top:0, left:0});
 	pauseUpdateAlarms();
@@ -476,13 +486,13 @@ var form = function(url, tabid){
 	$("#search-results").slideUp('fast');
 	$("#form-title").html(me.data('name'));
 	$("#create-evt").modal('show');
-	
+
 	$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
-	    initTabs();
+	    initTabs(true);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    updateHours();
-	    $("#Horairesid").trigger('click');
+	    $("#hours-title a").trigger('click');
 	});
 	$("#search-results").offset({top:0, left:0});
 	pauseUpdateAlarms();
@@ -497,16 +507,16 @@ var form = function(url, tabid){
 	$("#create-evt").modal('show');
 
 	$("#event").load(url+'events/form?id='+me.data('id'), function(){
-	    initTabs();
+	    initTabs(false);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    //mise à jour en fonction du statut ponctuel
 	    $('#event #punctual').trigger('change');
-	    $.material.checkbox();
 	    updateHours();
-	    updateHourTitle();
+	    //updateHourTitle();
 	    pauseUpdateAlarms();
 	    $('tr[data-toggle=tooltip]').tooltip();
+
 	});
     });
 
@@ -562,12 +572,14 @@ var form = function(url, tabid){
 		    $("#description-title a").trigger('click');
 		    //prepare actions
 		    $("#actions-title a").removeClass("disabled");
+		    //recalculate submit button state
+		    $("#event").trigger('change');
 		});
 	//get actions
 	$("#actions-tab").load(url+'events/actions?id='+me.data('id'), function(e){
 	    $('#actions-tab [data-toggle="tooltip"]').tooltip();
 	});
-	
+
 	//getfiles
 	$.getJSON(url+'events/getfiles?id='+me.data('id'),
 		function(data){
@@ -592,26 +604,26 @@ var form = function(url, tabid){
 	$('#subcategories option[value=-1]').prop('selected', true);
 	$('#subcategories').prop('disabled',true);
 	//suppression des champs liés à une sous-catégorie
-	//TODO
-	
+	$("#custom_fields").empty();
+
 	var root_value = $("#root_categories option:selected").val();
 
 	if(root_value > 0) {
-
 	    $.when(
 		    $.post(url+'events/subform?part=subcategories&id='+$(this).val() + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
 			    function(data){
 			$('#subcategories').prop('disabled',false);
 			$("#subcategories").html(data);
-			
+
 			$.post(
 				url+'events/subform?part=custom_fields&id='+root_value,
 				function(data){
 				    $("#custom_fields").html(data);
-				    $("#event input, #event select").on("invalid", function(event){
+				    $("#custom_fields input, #custom_fields select").on("invalid", function(event){
 					$("#description-title a").trigger('click');
 					$(this).parents('.form-group').addClass('has-error');
 				    });
+				    $('#event').trigger('change');
 				}			
 			);
 			$("#cat-title").addClass('valid');
@@ -620,13 +632,13 @@ var form = function(url, tabid){
 			$("#files-title a").removeClass("disabled");
 			$("#memos-title a").removeClass("disabled");
 			$('#actions-title a').removeClass("disabled");
-			$("input[name='submit']").prop('disabled', false);  
 		    }),
 		    //récupération des modèles
 		    $.post(
 			    url+'events/subform?part=predefined_events&id='+$(this).val(),
 			    function(data){
 				$("#predefined_events").html(data);
+				$.material.checkbox();
 			    })
 	    ).then(function(){
 		if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
@@ -646,8 +658,14 @@ var form = function(url, tabid){
 	    //pas de catégories :
 	    $("#cat-title").removeClass('valid');
 	    $("#predefined_events").empty();
-	    $("input[name='submit']").prop('disabled', true);
+	    $("#custom_fields").empty();
+	    $("input[name='submit']").prop('disabled', true).addClass('disabled');
 	    $("input[name='category']").val('');
+	    $("#hours-title a").addClass("disabled");
+	    $("#description-title a").addClass("disabled");
+	    $("#files-title a").addClass("disabled");
+	    $("#memos-title a").addClass("disabled");
+	    $('#actions-title a').addClass("disabled");
 	}
     });
 
@@ -656,7 +674,7 @@ var form = function(url, tabid){
 	var subcat_value = $("#subcategories option:selected").val();
 	if (subcat_value > 0) {
 	    //$("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());
-	    $("#custom_fields").html("");
+	    $("#custom_fields").empty();
 	    $("input[name='category']").val(subcat_value);
 	    $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
 		    function(data) {
@@ -664,6 +682,9 @@ var form = function(url, tabid){
 		$("#event input, #event select").on("invalid", function(event){
 		    $("#description-title a").trigger('click');
 		});
+		//force recalcule des conditions en fonction des champs chargés
+		$("#event").trigger('change');
+		$.material.checkbox();
 	    }
 	    );
 	    $.post(
@@ -671,12 +692,7 @@ var form = function(url, tabid){
 		    function(data){
 			$("#predefined_events").html(data);
 			//don't open model panel if there is no model
-			if($('#predefined_events div').length > 0) {
-			  //  $("#Modèlesid span").text($('#predefined_events table tr').length);
-			 //   $('#Modèlesid').trigger('click');
-			 //   $("#Modèlesid").removeClass("disabled");
-			} else {
-			  //  $("#Modèlesid").html('Modèles <span class=\"badge pull-right\">0</span>').addClass("disabled");
+			if($('#predefined_events div').length == 0) {
 			    $("#description-title a").trigger('click');
 			}
 		    }
@@ -697,7 +713,7 @@ var form = function(url, tabid){
 	} else {
 	    $("#end a").removeClass("disabled");
 	}
-	updateHourTitle();
+	//updateHourTitle();
     });
 
     $("#event").on('click', '.delete-file', function(){

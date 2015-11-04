@@ -38,7 +38,7 @@ class Event extends AbstractEvent
      * @ORM\ManyToOne(targetEntity="Status")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
-     * @Annotation\Options({"label":"Statut :"})
+     * @Annotation\Options({"label":"Statut"})
      * @Gedmo\Versioned
      */
     protected $status;
@@ -48,7 +48,7 @@ class Event extends AbstractEvent
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Début :", "format" : "d-m-Y H:i"})
+     * @Annotation\Options({"label":"Début", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
      * @Gedmo\Versioned
      */
@@ -58,7 +58,7 @@ class Event extends AbstractEvent
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Fin :", "format" : "d-m-Y H:i"})
+     * @Annotation\Options({"label":"Fin", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
      * @Gedmo\Versioned
      */
@@ -93,7 +93,7 @@ class Event extends AbstractEvent
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Evènement programmé :"})
+     * @Annotation\Options({"label":"Evènement programmé"})
      * @Annotation\Attributes({"id":"scheduled"})
      */
     protected $scheduled = false;

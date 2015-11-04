@@ -20,24 +20,11 @@ $form->prepare();
     
     <?php
     
-    echo $this->controlGroup($this->formLabel($this->form->get('reference')->setLabelAttributes(array('class' => 'control-label'))),
-            $this->formInput($this->form->get('reference')));
+    echo $this->controlGroup($this->form->get('reference'));
     
-    echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-            $this->formInput($this->form->get('name')));
+    echo $this->controlGroup($this->form->get('name'));
     
- //   echo $this->controlGroup($this->formLabel($this->form->get('url')->setLabelAttributes(array('class' => 'control-label'))),
- //           $this->formInput($this->form->get('url')));
-    
-    echo $this->controlGroup($this->formLabel($this->form->get('file')->setLabelAttributes(array('class' => 'control-label'))),
-            $this->formFile($form->get('file')).$this->formElementErrors($form->get('file')) . 
-            '<div id="file-errors" class="help-block"></div>
-                <div id="progress" class="help-block">
-                <div class="progress progress-info progress-striped active">
-                    <div class="bar"></div>
-                </div>
-                <p></p>
-            </div>', array('group_id' => 'file-controls'));
+    echo $this->controlGroup($this->form->get('file'), array('group_id' => 'file-controls'));
     ?>
 
 
