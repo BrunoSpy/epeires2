@@ -152,8 +152,8 @@ var antenna = function(url){
 	$("#confirm-end-event").on('hide', function(){
 		if(back){
 			var switchAntenna = $('#switch_'+$("#cancel-antenna").data('antenna'));
-			var state = switchAntenna.bootstrapSwitch('status');
-			switchAntenna.bootstrapSwitch('setState', !state, true);
+			//var state = switchAntenna.bootstrapSwitch('status');
+			//switchAntenna.bootstrapSwitch('setState', !state, true);
 		}
 	});
 
@@ -167,12 +167,12 @@ var antenna = function(url){
 			var switchbtn = $('#switch_'+$("#cancel-antenna").data('antenna'));
 			if(data.messages['error']){
 				//dans le doute, on remet le bouton à son état antérieur
-				var state = switchbtn.bootstrapSwitch('status');
-				switchbtn.bootstrapSwitch('setState', !state, true);
+				//var state = switchbtn.bootstrapSwitch('status');
+				//switchbtn.bootstrapSwitch('setState', !state, true);
 			} else {
 				//mise à jour des fréquences
 				var antenna = $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna'));
-				if(switchbtn.bootstrapSwitch('status')){
+				/*if(switchbtn.bootstrapSwitch('status')){
 					antenna.removeClass('background-status-fail')
 					.addClass('background-status-ok');
 					//changement de couv : antenne main opérationnelle
@@ -186,8 +186,8 @@ var antenna = function(url){
 					//changement de couv : antenne main en panne
 					antenna.filter('.mainantenna-color').removeClass('background-selected')
 					.siblings('.backupantenna-color').addClass('background-selected');
-                                        $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td:first-child").append('<a href="#" class="open-fiche" data-id="'+$('#cancel-antenna').data('antenna')+'"> <i class="icon-tasks"></i></a>');
-				}
+                                        $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td:first-child").append('<a href="#" class="open-fiche" data-id="'+$('#cancel-antenna').data('antenna')+'"> <span class="glyphicon glyphicon-tasks"></span></a>');
+				}*/
 				currentfrequencies = data.frequencies;
 				updatefrequencies();
 				updateActions();
@@ -419,7 +419,7 @@ var antenna = function(url){
 	
 	var updateantennas = function(){
 		$.each(currentantennas, function(key, value){
-			$('#switch_'+key).bootstrapSwitch('setState', value.status, true);
+			//$('#switch_'+key).bootstrapSwitch('setState', value.status, true);
                         var antennatd = $("#antenna-"+key+" td:first");
                         if(value.frequencies.length === 0 || (value.frequencies.length === 1 && value.frequencies[0] === "")) { //tous les fréquences impactées
                             var antenna = $('.antenna-color.antenna-'+key);
@@ -429,7 +429,7 @@ var antenna = function(url){
                                     antenna.addClass('background-status-ok');
                                     //evts planifiés ?
                                     if(value.planned){
-                                            antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
+                                            antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <span class="glyphicon glyphicon-tasks"></span></a>');
                                             antenna.removeClass('background-status-ok');
                                             antenna.addClass('background-status-planned');
                                     } else {
@@ -437,7 +437,7 @@ var antenna = function(url){
                                             antenna.addClass('background-status-ok');
                                     }
                             } else {
-                                    antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <i class="icon-tasks"></i></a>');
+                                    antennatd.append('<a href="#" class="open-fiche" data-id="'+key+'"> <span class="glyphicon glyphicon-tasks"></span></a>');
                                     antenna.removeClass('background-status-ok');
                                     antenna.addClass('background-status-fail');
                             }
@@ -502,7 +502,7 @@ var antenna = function(url){
 				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
                                 sector.find('.sector-name span').remove();
                                 var name = sector.find('.sector-name').html();
-                                sector.find('.sector-name').html(name+'<span> <i class="icon-forward"></i> '+value.otherfreqname);
+                                sector.find('.sector-name').html(name+'<span> <span class="glyphicon glyphicon-forward"></span> '+value.otherfreqname);
 			} else {
                             sector.find('.actions-freq').html(value.name).removeClass('em');
                             sector.find('.sector-name span').remove();

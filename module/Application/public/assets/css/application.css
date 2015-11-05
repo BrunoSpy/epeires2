@@ -1,22 +1,27 @@
 /*
- *  This file is part of Epeires².
- *  Epeires² is free software: you can redistribute it and/or modify
+ *  This file is part of Epeiresï¿½.
+ *  Epeiresï¿½ is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
  *  published by the Free Software Foundation, either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Epeires² is distributed in the hope that it will be useful,
+ *  Epeiresï¿½ is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Affero General Public License for more details.
  *
  *  You should have received a copy of the GNU Affero General Public License
- *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *  along with Epeiresï¿½.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
  @CHARSET "UTF-8";
 
-/************** Mémos ********************/
+body {
+	/* Due to 2 navbars fixed-top */
+	padding-top: 100px;
+}
+
+/************** MÃ©mos ********************/
 .noty_message .noty_big {
 	font-size: 110%;
 	line-height: normal;
@@ -55,39 +60,39 @@
 	overflow-y: auto;
 }
 
-.panel .block-header {
+.panel-left .block-header {
 	cursor: pointer;
 }
 
-.panel .block-content {
+.panel-left .block-content {
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
 
-.panel .block-content .table {
+.panel-left .block-content .table {
 	margin-bottom: 0px;
 }
 
-.panel .block-content .table tr td:last-child {
+.panel-left .block-content .table tr td:last-child {
 	width: 57px;
 }
 
-.panel .block-content dl {
+.panel-left .block-content dl {
 	margin-bottom: 0px;
 }
 
-.panel dd, #event dd {
+.panel-left dd, #event dd {
 	display: list-item;
 	list-style-type: disc;
 	margin-left: 2em;
 }
 
-.panel .dl-horizontal dd {
+.panel-left .dl-horizontal dd {
 	display: inherit;
 	margin-left: 120px;
 }
 
-.panel .dl-horizontal dt {
+.panel-left .dl-horizontal dt {
 	width: 100px;
 }
 
@@ -314,7 +319,7 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 
 /*******************************************/
 
-/* menu à gauche */
+/* menu ï¿½ gauche */
 #create {
 	text-align: center;
 }
@@ -323,7 +328,7 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	text-align: center;
 }
 
-/* création d'évènement */
+/* crï¿½ation d'ï¿½vï¿½nement */
 #create-evt {
 	display: none;
 }

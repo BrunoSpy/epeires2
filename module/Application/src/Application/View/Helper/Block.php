@@ -30,14 +30,10 @@ class Block extends AbstractHelper
 
     public function __invoke($title, $body)
     {
-        $html = '<div class="block">';
-        $html .= '<div class="navbar navbar-inner block-header">';
-        $html .= '<div class="muted pull-left">' . $title . '</div>';
-        $html .= '</div>';
-        $html .= '<div class="block-content collapse in">';
-        $html .= '<div class="span12">';
+        $html = '<div class="panel panel-default">';
+        $html .= '<div class="panel-heading"><h3 class="panel-title">' . $title . '</h3></div>';
+        $html .= '<div class="panel-body">';
         $html .= $body;
-        $html .= '</div>';
         $html .= '</div>';
         $html .= '</div>';
         
