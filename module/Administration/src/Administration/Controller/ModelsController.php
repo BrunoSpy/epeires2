@@ -479,7 +479,7 @@ class ModelsController extends FormController
                 $cataction = $catactions[0];
                 // add custom fields input
                 $form->get('category')->setAttribute('value', $cataction->getId());
-                $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId()));
+                $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId(), !$action));
                 $colorfield = $form->get('custom_fields')->get($cataction->getColorfield()
                     ->getId());
                 $colorfield->setAttribute('class', 'pick-a-color');
@@ -519,7 +519,7 @@ class ModelsController extends FormController
                 if (count($customfields) > 0) {
                     if (! ($catid || $action)) { // customfieldset already added
                         $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
-                            ->getId()));
+                            ->getId(), !$action));
                     }
                     foreach ($customfields as $customfield) {
                         $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
@@ -532,6 +532,7 @@ class ModelsController extends FormController
                                 ->setAttribute('value', $customfieldvalue->getValue());
                         }
                     }
+
                 }
             }
         }

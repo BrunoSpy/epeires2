@@ -112,7 +112,6 @@ class ReportController extends AbstractActionController
                 $eventsbycats[] = $category;
             }
             
-            // $events = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true);
             $pdf = new PdfModel();
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
@@ -171,13 +170,34 @@ class ReportController extends AbstractActionController
         }
         
         $day = $day->format(DATE_RFC2822);
+     
+        $criteria = Criteria::create()
+        ->where(Criteria::expr()->isNull('parent'))
+        ->andWhere(Criteria::expr()->eq('system', false))
+        ->orderBy(array('place' => Criteria::ASC));
         
-        $events = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true);
+        $cats = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+        
+        $eventsByCats = array();
+        foreach ($cats as $cat) {
+            $category = array();
+            $category['name'] = $cat->getName();
+            $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
+                $cat->getId()
+            ));
+            $category['childs'] = array();
+            foreach ($cat->getChildren() as $subcat) {
+                $subcategory = array();
+                $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
+                    $subcat->getId()
+                ));
+                $subcategory['name'] = $subcat->getName();
+                $category['childs'][] = $subcategory;
+            }
+            $eventsByCats[] = $category;
+        }
+                
         $pdf = new PdfModel();
-        $pdf->setVariables(array(
-            'events' => $events,
-            'day' => $day
-        ));
         $pdf->setOption('paperSize', 'a4');
         
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
@@ -186,20 +206,12 @@ class ReportController extends AbstractActionController
         
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
-            ->setTemplate('application/report/daily')
-            ->setVariables(array(
-            'events' => $events,
-            'day' => $day
-        ));
-        
-        $html = $this->getServiceLocator()
-            ->get('viewpdfrenderer')
-            ->getHtmlRenderer()
-            ->render($pdfView);
-        $engine = $this->getServiceLocator()
-            ->get('viewpdfrenderer')
-            ->getEngine();
-        
+                ->setTemplate('application/report/daily')
+                ->setVariables(array('events' => $eventsByCats, 'day' => $day));
+
+        $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
+        $engine = $this->getServiceLocator()->get('viewpdfrenderer')->getEngine();
+
         $engine->load_html($html);
         $engine->render();
         
