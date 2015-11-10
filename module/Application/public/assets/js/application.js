@@ -87,9 +87,11 @@ var displayMessages = function(messages){
         var val = panel.css('left') === '330px' ? '0px' : '330px';
         if(panel.css('left') === '330px') {
             $('#fiche').empty();
+            $('#fiche').removeData('id');
             $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
         } else {
             $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
+            $('#fiche').data('id', id);
             $('#fiche').load(url+'events/getfiche?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
             });
@@ -206,21 +208,25 @@ $(document).ready(function(){
         hidePanel();
     });
     
-    $(document).on('submit', '#add-note', function(e){
+    $(document).on('submit', '#add-note, #add-note-fiche', function(e){
         e.preventDefault();
         var me = $(this);
         $.post(url+'events/addnote?id='+me.data('id'), me.serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
-                //mise à jour notes
-                $("#updates").load(url+'events/updates?id='+me.data('id'), function(){
-                    $("#updates").parent().find("span.badge").html($("#updates blockquote").size());
-                });
-                $("#updates").show();
-                //mise à jour histo
-                $("#history").load(url+'events/gethistory?id='+me.data('id'), function(){
-                    $("#history").parent().find("span.badge").html($("#history dd").size());
-                });
+                var idFiche = $('#fiche').data('id');
+                if(typeof idFiche != 'undefined') {
+                    //fiche ouverte
+                    //mise à jour notes
+                    $("#updates").load(url+'events/updates?id='+idFiche, function(){
+                        $("#updates").parent().find("span.badge").html($("#updates blockquote").size());
+                    });
+                    $("#updates").show();
+                    //mise à jour histo
+                    $("#history").load(url+'events/gethistory?id='+idFiche, function(){
+                        $("#history").parent().find("span.badge").html($("#history dd").size());
+                    });
+                }
                 //mise à jour timeline
                 $('#timeline').timeline('addEvents',data.events);
             }

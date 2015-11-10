@@ -111,7 +111,7 @@
 
 <?php if($this->isGranted('events.write')) :?>
 <div class="block-controls">
-    <form data-id="<?php echo $this->event->getId();?>" id="add-note" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
+    <form data-id="<?php echo $this->event->getId();?>" id="add-note-fiche" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
     <textarea name="new-update" placeholder="Ajouter une note."></textarea>
     <input type="submit" class="btn btn-small btn-primary pull-right" value="Ajouter note"></input>
     </form>
