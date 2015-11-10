@@ -1182,10 +1182,17 @@ class EventsController extends TabController {
 		}
 		
 		$formatter = \IntlDateFormatter::create ( \Locale::getDefault (), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm' );
-		foreach ( $event->getUpdates () as $update ) {
-			$fields [$formatter->format ( $update->getCreatedOn () )] = nl2br ( $update->getText () );
-		}
-		$json ['fields'] = $fields;
+        foreach ($event->getUpdates() as $update) {
+            $key = $formatter->format($update->getCreatedOn());
+            $tempkey = $formatter->format($update->getCreatedOn());
+            $i = 0;
+            while (array_key_exists($tempkey, $fields)) {
+                $i ++;
+                $tempkey = $key . '-' . $i;
+            }
+            $fields[$tempkey] = nl2br($update->getText());
+        }
+        $json['fields'] = $fields;
 		
 		return $json;
 	}
