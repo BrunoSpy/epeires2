@@ -3,9 +3,9 @@
 
 <div class="container-fluid">
 	<p></p>
-	<div class="row-fluid">
-		<div class="span4 offset4">
-			<table class="table table-striped table-bordered sortable">
+	<div class="row">
+		<div class="col-sm-4 col-sm-offset-4">
+			<table class="table table-striped table-hover table-bordered sortable">
 				<thead>
 					<tr>
 						<th data-sort="string">Nom</th>
@@ -72,7 +72,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

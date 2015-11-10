@@ -13,35 +13,26 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('category')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('category')));
+echo $this->controlGroup($this->form->get('category'));
 
 //name only usefull for a model, not for actions
 if(!$this->action){
-	echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+	echo $this->controlGroup($this->form->get('name'));
 }
-echo $this->controlGroup($this->formLabel($this->form->get('impact')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('impact')));
+echo $this->controlGroup($this->form->get('impact'));
 
 if(!$this->action){// une action est ponctuelle, non listable et non recherchable -> on simplifie le formulaire
-	echo $this->controlGroup($this->formLabel($this->form->get('punctual')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formCheckbox($this->form->get('punctual')));
+	echo $this->controlGroup($this->form->get('punctual'));
 
-	echo $this->controlGroup($this->formLabel($this->form->get('listable')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formCheckbox($this->form->get('listable')));
+	echo $this->controlGroup($this->form->get('listable'));
 
-	echo $this->controlGroup($this->formLabel($this->form->get('searchable')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formCheckbox($this->form->get('searchable')));
+	echo $this->controlGroup($this->form->get('searchable'));
 	
-	echo $this->controlGroup($this->formLabel($this->form->get('programmed')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formCheckbox($this->form->get('programmed')));
+	echo $this->controlGroup($this->form->get('programmed'));
 	
-	echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formSelect($this->form->get('organisation')));
+	echo $this->controlGroup($this->form->get('organisation'));
 	
-	echo $this->controlGroup($this->formLabel($this->form->get('zonefilters')->setLabelAttributes(array('class' => 'control-label'))),
-			$this->formSelect($this->form->get('zonefilters')));
+	echo $this->controlGroup($this->form->get('zonefilters'));
 	
 } else {
 	echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
@@ -65,7 +56,7 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 if($this->form->has('custom_fields')){
 	echo "<h4>Valeurs des champs spécifiques :</h4>";
 	foreach ($this->form->get('custom_fields')->getElements() as $element){
-		echo $this->customFieldGroup($element);
+		echo $this->controlGroup($element);
 	}
 }
 ?>

@@ -360,8 +360,13 @@ class ModelsController extends FormController
                         }
                     }
                 }
-                
-                $objectManager->flush();
+                try {
+                    $start = microtime(true);
+                    $objectManager->flush();
+                    error_log(microtime(true) - $start);
+                } catch (\Exception $e) {
+                    error_log($e->getMessage());
+                }
                 $this->flashMessenger()->addSuccessMessage("Modèle " . $pevent->getName() . " enregistré.");
                 $this->processFormMessages($form->getMessages());
             } else {

@@ -1,7 +1,7 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/antenna.js')?>
 
-<div class="container-fluid">
+<div class="container-fluid" id="radio">
 	<div class="row">
 		<div class="col-sm-3 panel-left" id="fiche" style="margin-left: -23%; display: none"></div>
 		<div class="col-sm-9" id="frequencies" style="margin-left: 0px">
@@ -9,7 +9,7 @@
             $i = 0;
             foreach ($this->groups as $group) {
                 if ($i % 2 == 0) {
-                    echo "<div class='container'><div class='row'>";
+                    echo "<div class='container-fluid'><div class='row'>";
                 }
                 $inner = "";
                 $inner .= "<ul class=\"sector-list\">";
@@ -29,7 +29,7 @@
             }
             if (count($other) > 0) {
                 if ($i % 2 == 0) {
-                    echo "<div class='container'><div class='row'>";
+                    echo "<div class='container-fluid'><div class='row'>";
                 }
                 $inner = "";
                 $inner .= "<ul class=\"sector-list\">";
