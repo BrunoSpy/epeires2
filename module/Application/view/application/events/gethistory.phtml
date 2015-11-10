@@ -15,7 +15,7 @@ if($this->history){
 		echo '<dt>'.$formatter->format($value['date']).' UTC ('.$value['user'].')</dt>';
 
 		foreach($value['changes'] as $change){
-			echo '<dd class="clearfix">';
+			echo '<dd>';
 			if ($change['fieldname'] == 'action') {
                                 if(!$change['status']->isOpen()){
                                     echo "Action \"".$change['newvalue']."\" effectuée";
