@@ -73,6 +73,7 @@ abstract class AbstractEvent {
  	 * @Annotation\Type("Zend\Form\Element\Select")
  	 * @Annotation\Required(true)
  	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
+ 	 * @Gedmo\SortableGroup
  	 */
  	protected $category;
  	
