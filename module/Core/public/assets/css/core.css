@@ -195,6 +195,10 @@ body{
 	margin-bottom:0px;
 }
 
+.navbar-lower #zoomform {
+	margin-top: 6px;
+}
+
 .has-switch.nav-in {
 	margin-top:7px;
 	margin-left:5px;

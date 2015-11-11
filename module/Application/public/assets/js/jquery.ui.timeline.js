@@ -309,7 +309,7 @@
                 elmt.addClass('on_drag');
                 elmt.find('.elmt_deb').show();
 
-                var elmt_deb = elmt.find('.elmt_deb span');
+                var elmt_deb = elmt.find('.elmt_deb span.hour-txt');
                 var move_fin = elmt.find('.move_fin');
                 var rect_elmt = elmt.find('.rect_elmt');
                 var elmt_compl = elmt.find('.complement');
@@ -393,7 +393,7 @@
                         var temp_fin = new Date();
                         temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
                         var txtHour = self._formatNumberLength(temp_fin.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_fin.getMinutes(), 2);
-                        elmt_fin.find('span').text(txtHour + " ");
+                        elmt_fin.find('span.hour-txt').text(txtHour + " ");
                         elmt.data('end', temp_fin.getTime());
                         x_temp = e2.clientX;
                         elmt.css({'width': '+=' + delt});
