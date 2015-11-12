@@ -64,23 +64,17 @@ echo $this->modalwindow("add-alarm",
 	"<div id=\"alarm-form\"></div>");
     
 echo $this->modalwindow('add-note-modal',
-        "<h3>Ajout d'une note</h3>",
+        "<h3 class=\"modal-title\">Ajout d'une note</h3>",
         "",
         "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
         . "<div class=\"modal-body\">"
             . "<div class=\"form-group\">"
                 . "<label class=\"control-label col-sm-2\">Contenu : </label>"
-                . "<div class=\"controls col-sm-10\"><textarea name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
+                . "<div class=\"col-sm-10\"><textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
             . "</div>"
         . "</div>"
         . "<div class=\"modal-footer\">"
-            . "<div class=\"form-group\">"
-                . "<div class=\"controls\">"
-                    . "<div style=\"display:inline-block; position:relative;\">"
-                        . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
-                    . "</div>"
-                . "</div>"
-            . "</div>"
+                . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
         . "</div>"
         . "</form>");
 ?>
