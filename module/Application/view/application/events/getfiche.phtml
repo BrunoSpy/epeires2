@@ -1,14 +1,18 @@
-<a href="#" id="close-panel"><span class="pull-right" style="margin-right:-4px; margin-top:-4px; "><i class="icon-chevron-left icon-grey"></i></span></a>
-
+<div id="close-button">
+<a href="#" id="close-panel"><span class="pull-right"><span class="glyphicon glyphicon-remove"></span></span></a>
+</div>
 <?php if ($this->event) : ?>
+
+<div class="panel-group">
     
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Résumé</div>
-        <div class="pull-right"><i class="icon-chevron-up icon-grey"></i></div>
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <h4 class="panel-title">Résumé<div class="panel-badge"><span class="glyphicon glyphicon-chevron-up"></span></div></h4>
     </div>
-    <div class="block-content collapse in">
-        <?php echo $this->partial('events/summary.phtml');?>
+    <div class="panel-collapse collapse in">
+    	<div class="panel-body">
+    	<?php echo $this->partial('events/summary.phtml');?>
+    	</div>
     </div>
 </div>
     
@@ -22,55 +26,28 @@
     ?>
     <?php if ($count > 0) : ?>
 
-        <div class="block">
-            <div class="navbar navbar-inner block-header">
-                <div class="muted pull-left">Fiche réflexe <?php echo $this->eventName($this->event); ?></div>
-                <div class="pull-right"><span class="badge"><?php echo $count; ?></span> <i class="icon-chevron-up icon-grey"></i></div>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title" style="text-overflow:ellipsis">Fiche réflexe <?php echo $this->eventName($this->event); ?>
+                <div class="panel-badge"><span class="badge"><?php echo $count; ?></span> <span class="glyphicon glyphicon-chevron-up"></span></h4>
             </div>
-            <div class="block-content collapse in">
-                <?php
-                echo "<table class=\"table\">";
-                echo "<tbody>";
-                foreach ($this->event->getChildren() as $child) {
-                    if ($child->getCategory() instanceof Application\Entity\ActionCategory) {
-                        echo "<tr data-id=\"" . $child->getId()."\"";
-                        $color = $child->getCustomFieldValue($child->getCategory()->getColorfield());
-                        if($color !== null && $color != '') {
-                            echo ' style="background-color:#'.$color->getValue().'"';
-                        }
-                        foreach ($child->getCustomFieldsValues() as $value){
-                            if($value->getCustomField()->getId() == $child->getCategory()->getTextField()->getId()){
-                                if($value->getValue() !== ''){
-                                    echo ' data-container="body" '
-                                            . 'data-html="true" '
-                                            . 'data-toggle="tooltip" '
-                                            . 'data-title="<span class=elmt_tooltip>'.nl2br(htmlspecialchars($value->getValue())).'</span>"';
-                                }
-                            }
-                        }
-                        echo ">";
-                        echo "<td>" . $this->eventName($child) . "</td>";
-                        echo '<td><a class="fiche btn btn-small ' . 
-                                ($child->getStatus()->isOpen() ? "" : "btn-success active") . ' '
-                                . ($this->isGranted('events.write') ? '' : 'disabled').'" '
-                                . 'data-eventid="'.$this->event->getId().'" data-id="' . $child->getId() . '">' . ($child->getStatus()->isOpen() ? "A faire" : "Fait") . '</a></td>';
-                        echo "</tr>";
-                    }
-                }
-                echo "</tbody></table>";
-                ?>
+            <div class="panel-collapse collapse in">
+            	<div class="panel-body">
+                <?php echo $this->partial('actions.phtml', array('actions' => $this->actions, 'compact' => true)); ?>
+                </div>
             </div>
         </div>
 
     <?php endif; ?>
 
 <?php if(count($this->event->getFiles())>0) : ?>
-<div class="block">
-    <div class="navbar navbar-inner block-header" id="files-panel">
-        <div class="muted pull-left">Fichiers</div>
-        <div class="pull-right"><span class="badge"><?php echo count($this->event->getFiles()) ?></span> <i class="icon-chevron-down icon-grey"></i></div>
+<div class="panel panel-info">
+    <div class="panel-heading" id="files-panel">
+        <h4 class="panel-title">Fichiers
+        <div class="panel-badge"><span class="badge"><?php echo count($this->event->getFiles()) ?></span> <span class="glyphicon glyphicon-chevron-down"></span></h4>
     </div>
-    <div class="block-content collapse in" style="display:none">
+    <div class="panel-collapse collapse">
+    <div class="panel-body">
         <table class="table table-hover">
             <tbody>
                 <?php
@@ -79,43 +56,51 @@
                     echo "<td>".($file->getReference() ? "#".$file->getReference() : "N/A")."</td>";
                     echo "<td style=\"word-wrap: break-word; max-width: 200px;\"><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\">".
 				($file->getName() ? $file->getname() : $file->getFilename())."</a></td>";
-                    echo "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><i class=\"icon-download\"></i></a></td>";
+                    echo "<td><a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><span class=\"glyphicon glyphicon-download\"></span></a></td>";
                     echo "</tr>";
                 }
                 ?>
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 <?php endif; ?>
 
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Historique</div>
-        <div class="pull-right"><span class="badge"><?php echo count($this->history) ?></span> <i class="icon-chevron-down icon-grey"></i></div>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h4 class="panel-title">Historique
+        <div class="panel-badge"><span class="badge"><?php echo count($this->history) ?></span> <span class="glyphicon glyphicon-chevron-down"></span></div></h4>
     </div>
-    <div class="block-content collapse in" id="history" style="display:none;">
-        <?php echo $this->partial('events/gethistory.phtml'); ?>
+    <div class="panel-collapse collapse">
+    <div class="panel-body" id="history">
+        <?php echo $this->partial('events/gethistory.phtml', array('history' => $this->history)); ?>
+    </div>
     </div>
 </div>
 
-<div class="block">
-    <div class="navbar navbar-inner block-header">
-        <div class="muted pull-left">Notes</div>
-        <div class="pull-right"><span class="badge"><?php echo count($this->event->getUpdates()) ?></span> <i class="icon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?> icon-grey"></i></div>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h4 class="panel-title">Notes
+        <div class="panel-badge"><span class="badge"><?php echo count($this->event->getUpdates()) ?></span> <span class="glyphicon glyphicon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?>"></span></h4>
     </div>
-    <div class="block-content collapse in" id="updates" <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? '' : 'style="display:none"')?>>
+    <div class="panel-collapse collapse <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'in' : '')?>">
+        <div class="panel-body">
+        <div id="updates">
         <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
+        </div>
+        <?php if($this->isGranted('events.write')) :?>
+        <div class="block-controls">
+            <form data-id="<?php echo $this->event->getId();?>" id="add-note-fiche" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
+            <textarea name="new-update" placeholder="Ajouter une note."></textarea>
+            <input type="submit" class="btn btn-sm btn-primary pull-right" value="Ajouter note"></input>
+            </form>
+        </div>
+        <?php endif; ?>
+        
+        </div>
     </div>
 </div>
 
-<?php if($this->isGranted('events.write')) :?>
-<div class="block-controls">
-    <form data-id="<?php echo $this->event->getId();?>" id="add-note-fiche" action="<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>">
-    <textarea name="new-update" placeholder="Ajouter une note."></textarea>
-    <input type="submit" class="btn btn-small btn-primary pull-right" value="Ajouter note"></input>
-    </form>
 </div>
-<?php endif; ?>
-
 <?php endif; ?>

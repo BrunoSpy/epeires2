@@ -1907,6 +1907,7 @@ class EventsController extends TabController
         
         $viewmodel->setVariable('history', $history);
         $viewmodel->setVariable('event', $event);
+        $viewmodel->setVariable('actions', $this->getActions($event->getId()));
         
         return $viewmodel;
     }

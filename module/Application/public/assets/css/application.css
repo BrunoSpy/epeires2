@@ -48,11 +48,37 @@ body {
 
 
 /************** Slide panel **************/
+#fiche {
+	padding-top: 5px;
+}
+
+#fiche div#close-button {
+	padding-bottom: 10px;
+}
+
+#fiche .panel-group {
+	margin-top:10px;
+}
+
+#fiche .panel-title {
+	position:relative;
+}
+
+#fiche .panel-title .panel-badge {
+	position: absolute;
+	right: 0;
+	top:0;
+}
+
+#fiche .table.list-actions > tbody > tr > td {
+	padding: 0px;
+}
+
 .panel-fixed {
 	position: fixed;
 	left: 0;
 	right: auto;
-	width: 320px;
+	width: 310px;
 	height: 90%;
 	z-index: 1;
 	margin-left: 10px;
@@ -60,7 +86,7 @@ body {
 	overflow-y: auto;
 }
 
-.panel-left .block-header {
+.panel-left .panel-heading {
 	cursor: pointer;
 }
 
@@ -110,6 +136,11 @@ body {
 	#panel table.table tr:first-child td, #alert-table.table tr:first-child td,
 	#alarm-table.table tr:first-child td {
 	border: none;
+}
+
+#fiche .table > tbody > tr > td,
+#actions-tab .table > tbody > tr > td {
+	vertical-align: middle;
 }
 
 #predefined_events .table td {
@@ -379,7 +410,9 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	background-color: white;
 }
 
-#search-results .result:nth-child(even) {
+#search-results .result:nth-child(even)
+	{
+	color: black;
 	background-color: ghostwhite;
 }
 
@@ -415,15 +448,9 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	background-color: white;
 }
 
-#search-results .result:nth-child(even)
-	{
-	color: black;
-	background-color: ghostwhite;
-}
 
 #search-results a.btn {
-	margin-top: 0px
-	margin-bottom: 0px;
+	margin-top: 0px;
 }
 
 #calendar {

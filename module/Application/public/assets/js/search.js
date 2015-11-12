@@ -58,21 +58,22 @@ var search = function(url){
 };
 
 var createEventEntry = function(id, event){
-	var div = $('<div class="result"></div>');
+	var div = $('<div class="result clearfix"></div>');
 	var html = "";
 	var start = new Date(event.start_date);
 	var end = new Date(event.end_date);
 	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '');
-	if(event.status_id <= 2){
-		//evt en cours : modifier l'evt
-		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm btn-primary pull-right modify-evt">Modifier</a>';
-	} else {
-		//evt terminé : copier
-		html += '<a data-id='+id+' class="btn btn-sm btn-primary pull-right copy-event">Copier</a>';
-	}
+	
 	html += "</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+event.category+'</small>';
+	if(event.status_id <= 2){
+		//evt en cours : modifier l'evt
+		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm pull-right btn-primary modify-evt">Modifier</a>';
+	} else {
+		//evt terminé : copier
+		html += '<a data-id='+id+' class="btn btn-sm pull-right btn-primary copy-event">Copier</a>';
+	}
 	html += '</dd>';
 	div.append(html);
 	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)+'/'+FormatNumberLength(start.getUTCMonth()+1,2);
@@ -92,12 +93,13 @@ var createEventEntry = function(id, event){
 };
 
 var createModelEntry = function(id, model){
-	var html = '<div class="result">';
+	var html = '<div class="result clearfix">';
 	html += "<dt>Modèle : "+model.name;
-	html += '<a data-id='+id+' class="btn btn-sm btn-primary pull-right use-model">Utiliser</a>';
+	
 	html += "</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+model.category+'</small>';
+	html += '<a data-id='+id+' class="btn btn-sm btn-primary pull-right use-model">Utiliser</a>';
 	html += '</dd></div>';
 	return html;
 };

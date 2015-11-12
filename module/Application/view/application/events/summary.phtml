@@ -2,7 +2,7 @@
     <?php
         foreach ($this->event->getCustomFieldsValues() as $value){
             echo '<dt>' . $value->getCustomfield()->getName().'</dt>';
-            echo '<dd class="clearfix">'.nl2br($this->customfieldvalue($value)).' </dd>';
+            echo '<dd>'.nl2br($this->customfieldvalue($value)).' </dd>';
         }
     ?>
 </dl>

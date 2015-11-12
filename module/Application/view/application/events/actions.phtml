@@ -1,6 +1,6 @@
 <?php
 if (count($this->actions) > 0) {
-    echo '<table class="table table-hover" >';
+    echo '<table class="table table-hover list-actions" >';
     echo '<tbody>';
     foreach ($this->actions as $action) {
         echo "<tr data-id=\"" . $action->getId() . "\"";
@@ -19,10 +19,18 @@ if (count($this->actions) > 0) {
             }
         }
         echo ">";
-        echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
+        if(!$this->compact) {
+            echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
+        }
         echo "<td>" . $this->eventName($action) . "</td>";
         if ($action instanceof \Application\Entity\Event && $this->isGranted('events.write')) {
-            echo "<td class=\"todo\"><a class=\"fiche btn btn-sm " . ($action->getStatus()->isOpen() ? "btn-primary" : "active btn-success") . "\" data-id=\"" . $action->getId() . "\">" . ($action->getStatus()->isOpen() ? "A faire" : "Fait") . "</a></td>";
+            echo "<td class=\"todo\"><a class=\"fiche btn ";
+            if($this->compact){
+                echo "btn-xs ";
+            } else {
+                echo "btn-sm ";
+            }
+            echo ($action->getStatus()->isOpen() ? "btn-primary" : "active btn-success") . "\" data-eventid=\"" . $action->getParent()->getId() . "\" data-id=\"" . $action->getId() . "\">" . ($action->getStatus()->isOpen() ? "A faire" : "Fait") . "</a></td>";
         }
         echo '</tr>';
     }

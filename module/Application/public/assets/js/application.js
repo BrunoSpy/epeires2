@@ -214,7 +214,7 @@ $(document).ready(function(){
                 $('#timeline').timeline('addEvents',data.events);
             }
             displayMessages(data);
-            me.parent('.modal').modal('hide');
+            me.parents('.modal').modal('hide');
         });
     });
     
@@ -240,17 +240,17 @@ $(document).ready(function(){
 		);
 	});
     
-    $(document).on('click', '#fiche .block-header', function(){
+    $(document).on('click', '#fiche .panel-heading', function(){
         var me = $(this);
-        var content = me.siblings(".block-content");
+        var content = me.siblings(".panel-collapse");
         //change icon
         if(content.is(':visible')){
-            me.find('i').removeClass('icon-chevron-up');
-            me.find('i').addClass('icon-chevron-down');
+            me.find('span.glyphicon').removeClass('glyphicon-chevron-up');
+            me.find('span.glyphicon').addClass('glyphicon-chevron-down');
             content.slideUp('fast(');
         } else {
-            me.find('i').addClass('icon-chevron-up');
-            me.find('i').removeClass('icon-chevron-down');
+            me.find('span.glyphicon').addClass('glyphicon-chevron-up');
+            me.find('span.glyphicon').removeClass('glyphicon-chevron-down');
             content.slideDown('fast');
         }        
     });
