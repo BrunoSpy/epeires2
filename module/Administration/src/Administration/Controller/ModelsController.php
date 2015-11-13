@@ -98,41 +98,82 @@ class ModelsController extends FormController
     	}
     }
     
+    /**
+     * Monte d'un cran la place d'un élément
+     * Seuls les modèles (i.e. les évènements prédéfinis sans parent) et les actions sont classés
+     */
     public function upAction(){
     	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
     	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     	if($id){
-    		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
+    	    $pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			//on recherche le modèle précédent
+    		    //on recherche le modèle précédent
     			$place = $pevent->getPlace();
-    			$criteria = Criteria::create()
-    				->where(Criteria::expr()->lt('place', $place))
-    				->orderBy(array('place' => Criteria::DESC))
-    				->setMaxResults(1);
-    			$previous = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
-    			if(count($previous) === 0){
-    				//pas de résultat, en toute logique on ne devrait pas être dans ce cas
-    				$pevent->setPlace(0);
+    			$qb = $objectManager->createQueryBuilder();
+    			
+    			if($pevent->getCategory() instanceof \Application\Entity\ActionCategory) {
+                    //classement par parent
+                    $subquery = $objectManager->createQueryBuilder();
+    			    $subquery->select($subquery->expr()
+    			            ->max('m.place'))
+    			            ->from('Application\Entity\PredefinedEvent', 'm')
+    			            ->where($subquery->expr()
+    			                ->eq('m.parent', $pevent->getParent()->getId()))
+    			            ->andWhere($subquery->expr()->lt('m.place', $place));
+    			    
+    			    $dql = $subquery->getDQL();
+    			    $qb->select('p')
+    			    ->from('Application\Entity\PredefinedEvent', 'p')
+    			    ->where($qb->expr()->in('p.place', $dql))
+    			    ->andWhere($qb->expr()->eq('p.parent', $pevent->getParent()->getId()));
     			} else {
-    				$prev = $previous->first();
-    				$pevent->setPlace($prev->getPlace());
+                    // modèle : classement par catégorie
+                    $subquery = $objectManager->createQueryBuilder();
+                    $subquery->select($subquery->expr()
+                            ->max('m.place'))
+                            ->from('Application\Entity\PredefinedEvent', 'm')
+                            ->innerJoin('m.category', 'c')
+                            ->where($subquery->expr()
+                                ->eq('c.id', $pevent->getCategory()->getId()))
+                            ->andWhere($subquery->expr()->lt('m.place', $place));
+    			    
+                    $dql = $subquery->getDQL();
+    			    $qb->select('p')
+            			->from('Application\Entity\PredefinedEvent', 'p')
+            			->innerJoin('p.category', 'cat')
+            			->where($qb->expr()->in('p.place', $dql))
+            			->andWhere($qb->expr()->eq('cat.id', $pevent->getCategory()->getId()));
     			}
-    			$objectManager->persist($pevent);
+   			
     			try {
-    				$objectManager->flush();
-    				$messages['success'][] = "Élément correctement modifié.";
+    			    $result = $qb->getQuery()->getSingleResult();
+    			    if($result) {
+    			        //on échange les places
+    			        $prevPlace = $result->getPlace();
+    			        $result->setPlace($place);
+    			        $pevent->setPlace($prevPlace);
+    			        $objectManager->persist($result);
+    			        $objectManager->persist($pevent);
+    			        $objectManager->flush();
+    			        $messages['success'][] = "Élément correctement modifié.";
+    			    } else {
+    			        //pas de résultat, on ne fait rien
+    			        //l'élément est déjà en bas
+    			    }
     			} catch (\Exception $e) {
-    				$messages['error'][] = $e->getMessage();
+    			    $messages['error'][] = $e->getMessage();
     			}
-    		} else {
-    			$messages['error'][] = "Impossible de trouver l'élément";
     		}
     	}
     	return new JsonModel($messages);
     }
     
+    /**
+     * Descend d'un cran la place d'un élément
+     * Seuls les modèles (i.e. les évènements prédéfinis sans parent) et les actions sont classés
+     */
     public function downAction(){
     	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
@@ -140,26 +181,61 @@ class ModelsController extends FormController
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
-    			//on recherche le modèle suivent
+    		    //on recherche le modèle suivant
     			$place = $pevent->getPlace();
-    			$criteria = Criteria::create()
-    			->where(Criteria::expr()->gt('place', $place))
-    			->orderBy(array('place' => Criteria::ASC))
-    			->setMaxResults(1);
-    			$previous = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
-    			if(count($previous) === 0){
-    				//pas de résultat, en toute logique on ne devrait pas être dans ce cas
-    				$pevent->setPlace(-1);
+    			$qb = $objectManager->createQueryBuilder();
+    			
+    			if($pevent->getCategory() instanceof \Application\Entity\ActionCategory) {
+                    //classement par parent
+                    $subquery = $objectManager->createQueryBuilder();
+    			    $subquery->select($subquery->expr()
+    			            ->min('m.place'))
+    			            ->from('Application\Entity\PredefinedEvent', 'm')
+    			            ->where($subquery->expr()
+    			                ->eq('m.parent', $pevent->getParent()->getId()))
+    			            ->andWhere($subquery->expr()->gt('m.place', $place));
+    			    
+    			    $dql = $subquery->getDQL();
+    			    $qb->select('p')
+    			    ->from('Application\Entity\PredefinedEvent', 'p')
+    			    ->where($qb->expr()->in('p.place', $dql))
+    			    ->andWhere($qb->expr()->eq('p.parent', $pevent->getParent()->getId()));
     			} else {
-    				$prev = $previous->first();
-    				$pevent->setPlace($prev->getPlace());
+                    // modèle : classement par catégorie
+                    $subquery = $objectManager->createQueryBuilder();
+                    $subquery->select($subquery->expr()
+                            ->min('m.place'))
+                            ->from('Application\Entity\PredefinedEvent', 'm')
+                            ->innerJoin('m.category', 'c')
+                            ->where($subquery->expr()
+                                ->eq('c.id', $pevent->getCategory()->getId()))
+                            ->andWhere($subquery->expr()->gt('m.place', $place));
+    			    
+                    $dql = $subquery->getDQL();
+    			    $qb->select('p')
+            			->from('Application\Entity\PredefinedEvent', 'p')
+            			->innerJoin('p.category', 'cat')
+            			->where($qb->expr()->in('p.place', $dql))
+            			->andWhere($qb->expr()->eq('cat.id', $pevent->getCategory()->getId()));
     			}
-    			$objectManager->persist($pevent);
+   			
     			try {
-    				$objectManager->flush();
-    				$messages['success'][] = "Élément correctement modifié.";
+    			    $result = $qb->getQuery()->getSingleResult();
+    			    if($result) {
+    			        //on échange les places
+    			        $prevPlace = $result->getPlace();
+    			        $result->setPlace($place);
+    			        $pevent->setPlace($prevPlace);
+    			        $objectManager->persist($result);
+    			        $objectManager->persist($pevent);
+    			        $objectManager->flush();
+    			        $messages['success'][] = "Élément correctement modifié.";
+    			    } else {
+    			        //pas de résultat, on ne fait rien
+    			        //l'élément est déjà en bas
+    			    }
     			} catch (\Exception $e) {
-    				$messages['error'][] = $e->getMessage();
+    			    $messages['error'][] = $e->getMessage();
     			}
     		} else {
     			$messages['error'][] = "Impossible de trouver l'élément";
@@ -208,7 +284,7 @@ class ModelsController extends FormController
     				$category = $catid;
     				$pevent->setCategory($objectManager->getRepository('Application\Entity\Category')->find($catid));
     			}
-    			if(!$id){//if modification : link to parent and calculate position
+    			if(!$id){//if creation : link to parent and calculate position
     				//link to parent
     				if(isset($post['parent'])){
     					$pevent->setParent($objectManager->getRepository('Application\Entity\PredefinedEvent')->find($post['parent']));
@@ -314,7 +390,6 @@ class ModelsController extends FormController
     					}
     				}
     			}
-                        
     			$objectManager->flush();
     			$this->flashMessenger()->addSuccessMessage("Modèle ".$pevent->getName()." enregistré.");
     			$this->processFormMessages($form->getMessages());

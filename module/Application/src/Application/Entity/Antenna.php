@@ -141,7 +141,7 @@ class Antenna extends TemporaryResource {
             return $this->model;
         }
         
-        public function setModel(PredefinedEvent $model){
+        public function setModel($model){
             $this->model = $model;
         }
         

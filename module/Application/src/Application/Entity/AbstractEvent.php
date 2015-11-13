@@ -44,7 +44,6 @@ abstract class AbstractEvent {
  	 * @Annotation\Type("Zend\Form\Element\Select")
 	 * @Annotation\Required(false)
 	 * @Annotation\Options({"label":"Evènement parent :", "empty_option":"Choisir l'evt parent"})
-	 * @Gedmo\SortableGroup
  	 */
  	protected $parent;
 	
@@ -54,7 +53,6 @@ abstract class AbstractEvent {
  	/**
  	 * Position for models and actions
  	 * @ORM\Column(type="integer", nullable=true)
- 	 * @Gedmo\SortablePosition
  	 */
  	protected $place;
  	
@@ -73,7 +71,6 @@ abstract class AbstractEvent {
  	 * @Annotation\Type("Zend\Form\Element\Select")
  	 * @Annotation\Required(true)
  	 * @Annotation\Options({"label":"Catégorie :", "empty_option":"Choisir la catégorie"})
- 	 * @Gedmo\SortableGroup
  	 */
  	protected $category;
  	
