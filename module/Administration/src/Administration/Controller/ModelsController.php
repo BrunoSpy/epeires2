@@ -679,7 +679,9 @@ class ModelsController extends FormController
 	$alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; //TODO
 		
 	$form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));        
-        
+    
+	$form->get('programmed')->setValue(false);
+	
 	if($alarmid){
 		$alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);
 		if($alarm) {
