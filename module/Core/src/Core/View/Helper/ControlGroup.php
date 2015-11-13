@@ -40,9 +40,11 @@ class ControlGroup extends AbstractHelper
         
         $labelclass = (isset($options['labelclass'])) ? " " . $options['labelclass'] : "";
         
+        $large = (isset($options['large'])) ? $options['large'] : false ;
+        
         $controlForm;
         
-        $element->setLabelAttributes(array('class' => 'control-label col-sm-2'.$labelclass));
+        $element->setLabelAttributes(array('class' => 'control-label '.($large ? 'col-sm-2' : 'col-sm-3').$labelclass));
         $element->setAttributes(array('class' => 'form-control'));
         
         if ($element instanceof \Zend\Form\Element\Select) {
@@ -69,7 +71,7 @@ class ControlGroup extends AbstractHelper
         if($element->getLabel() !== null) {
             $result .= $view->formLabel($element);
         }
-        $result .= "<div class=\"col-sm-10 col-lg-8\" " . $control_id . ">";
+        $result .= "<div class=\"".($large ? "col-sm-10 col-lg-8" : "col-sm-9 col-lg-8")."\" " . $control_id . ">";
         $result .= $controlForm;
         $result .= "</div></div>";
         

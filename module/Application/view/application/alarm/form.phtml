@@ -36,8 +36,12 @@ foreach ($this->form->get('custom_fields')->getElements() as $element){
 ?>
 </div>
 <div class="modal-footer">
+<div class="form-group">
+<div class="col-lg-offset-6 col-lg-6 btn-wrapper">
 <?php echo $this->formSubmit($this->form->get('submit')); ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
+</div>
+</div>
 </div>
 <?php 
 echo $this->form()->closeTag();

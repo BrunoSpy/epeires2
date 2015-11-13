@@ -51,8 +51,8 @@
 			$formSelectSubCat->setAttribute('disabled', true);
  		}
 	   
- 		echo $this->controlGroup($formSelectCat);
- 		echo $this->controlGroup($formSelectSubCat, array('control_id'=>'form_categories'));
+ 		echo $this->controlGroup($formSelectCat, array('large' => true));
+ 		echo $this->controlGroup($formSelectSubCat, array('control_id'=>'form_categories', 'large' => true));
  		//Modèles uniquement si création
         if(!$this->event && !$this->model){
             echo '<div class="form-group">';
@@ -70,11 +70,11 @@
 	   <div role="tabpanel" class="tab-pane fade" id="hours-tab">
 	   <?php 
 	   echo $this->controlGroup($this->form->get('scheduled'), 
-                    array('class'=>($this->isGranted('events.schedule') ? '' :' unvisible')));
+                    array('class'=>($this->isGranted('events.schedule') ? '' :' unvisible'), 'large' => true));
                 
-		echo $this->controlGroup($this->form->get('punctual'));
+		echo $this->controlGroup($this->form->get('punctual'), array('large' => true));
 		
-		echo $this->controlGroup($this->form->get('startdate'), array('class'=>'compact', 'labelclass' => 'time-middle'));
+		echo $this->controlGroup($this->form->get('startdate'), array('class'=>'compact', 'labelclass' => 'time-middle', 'large' => true));
 		
 		$formEndDate = $this->form->get('enddate');
 		if($this->event){
@@ -88,7 +88,7 @@
 			}
 		}
 		
-		echo $this->controlGroup($formEndDate, array('class'=>'compact', 'labelclass' => 'time-middle'));
+		echo $this->controlGroup($formEndDate, array('class'=>'compact', 'labelclass' => 'time-middle', 'large' => true));
 		?>
 			<div class="form-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))); ?>
@@ -108,7 +108,7 @@
 	   echo "<div id=\"custom_fields\">";
 	   if($this->event || $this->model){
 	       foreach ($this->form->get('custom_fields')->getElements() as $element){
-	           echo $this->controlGroup($element);
+	           echo $this->controlGroup($element, array('large' => true));
 	       }
 	   }
 	   echo "</div>";
