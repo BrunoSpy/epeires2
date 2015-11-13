@@ -1,63 +1,74 @@
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * @author Bruno Spyckerelle
  */
 
 var radar = function(url){
-	   
-		//if true, switch the button to its previous state
-		var back = true;
-	
-		//if true, show modal on switch change
-		var modal = true;
-		
-	   $('.radar-switch').on('switch-change', function(e, data){
-		   $('a#end-radar-href').attr('href', $(this).data('href')+"&state="+data.value);
-		   $('#radar_name').html($(this).data('radar'));
-		   $("#cancel-radar").data('radar', $(this).data('radarid')) ;
-		   if(!data.value){
-			   $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
-						"<p>L'heure actuelle sera utilisée comme heure de début.</p>");
-		   } else {
-			   $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
-				"<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
-		   }
-		   if(modal){
-			   $("#confirm-end-event").modal('show');
-		   }
-	   });
-	
-	   $("#confirm-end-event").on('hide', function(){
-		 if(back){
-			 modal = false;
-			 $('#switch_'+$("#cancel-radar").data('radar')).bootstrapSwitch('toggleState');
-			 modal = true;
-		 }
-	   });
-	   
-	   $("#end-radar-href").on('click', function(event){
-		   event.preventDefault();
-		   back = false;
-		   $("#confirm-end-event").modal('hide');
-		   $.post($("#end-radar-href").attr('href'), function(data){
-			   displayMessages(data);
-			   back = true;
-			   if(data['error']){
-				   //dans le doute, on remet le bouton à son état antérieur
-				   modal = false;
-				   $('#switch_'+$("#cancel-radar").data('radar')).bootstrapSwitch('toggleState');
-				   modal = true;
-			   }
-		   }, 'json');
-	   });
-	   
-	   //refresh page every 30s
-	   (function doPoll(){
-		   $.post(url+'radars/getradarstate')
-	   			.done(function(data) {
-	   				$.each(data, function(key, value){
-	   					$('#switch_'+key).bootstrapSwitch('setState', value, true);
-	   				});
-	   			})
-	   			.always(function() { setTimeout(doPoll, 30000);});
-	   })();
+
+    //if true, switch the button to its previous state
+    var back = true;
+
+    $('.radar-switch').on('change', function(e){
+	var newState = $(this).is(':checked');
+	$('a#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
+	$('#radar_name').html($(this).data('radar'));
+	$("#cancel-radar").data('radar', $(this).data('radarid')) ;
+
+	if(!newState){
+	    $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
+	    "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
+	} else {
+	    $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
+	    "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
+	}
+	$("#confirm-end-event").modal('show');
+    });
+
+    $("#confirm-end-event").on('hide.bs.modal', function(){
+	if(back){
+	    var button = $('#switch_'+$("#cancel-radar").data('radar'));
+	    button.prop('checked', !button.is(':checked') );
+	}
+    });
+
+    $("#end-radar-href").on('click', function(event){
+	event.preventDefault();
+	back = false;
+	$("#confirm-end-event").modal('hide');
+	$.post($("#end-radar-href").attr('href'), function(data){
+	    displayMessages(data);
+	    back = true;
+	    if(data['error']){
+		//dans le doute, on remet le bouton à son état antérieur
+		var button = $('#switch_'+$("#cancel-radar").data('radar'));
+		button.prop('checked', !button.is(':checked') );
+	    }
+	}, 'json');
+    });
+
+    //refresh page every 30s
+    (function doPoll(){
+	$.post(url+'radars/getradarstate')
+	.done(function(data) {
+	    $.each(data, function(key, value){
+		$('#switch_'+key).prop('checked', value);
+	    });
+	})
+	.always(function() { setTimeout(doPoll, 30000);});
+    })();
 };

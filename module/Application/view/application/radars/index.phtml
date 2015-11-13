@@ -1,4 +1,4 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radar.js')?>
 
 <div class="container-fluid">
@@ -19,21 +19,19 @@
 					echo '<td>'.$radar['name'].'</td>';
 					echo '<td>';
 					
-					echo	'<div id="switch_'.$radarid.'" 
+					echo	'<div class="togglebutton">';
+					    echo '<label>';
+						echo '<input
+	                            id="switch_'.$radarid.'" 
 								data-radarid="'.$radarid.'"
 								data-radar="'.$radar['name'].'" 
 								data-href="'.$this->url('application', 
 													array('controller'=>'radars', 'action' => 'switchradar'), 
 													array('query' => array('radarid' => $radarid))).'" 
-								class="radar-switch make-switch switch-small" 
-								data-off="danger" 
-								data-on="success" 
-								data-on-label="OPE" 
-								data-off-label="HS" 
-								data-text-label="État">';
-						echo '<input type="checkbox" '.($radar['status'] ? 'checked="checked"' : '').
+	                            class="radar-switch" type="checkbox" '.($radar['status'] ? 'checked="checked"' : '').
 								($this->isGranted('events.write') ? '' : ' disabled="disabled"').
 								'>';
+						echo '</label>';
 					echo '</div>';
 
 					echo '</td>';

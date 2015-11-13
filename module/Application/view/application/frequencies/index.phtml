@@ -72,24 +72,24 @@
                                 echo '<td>' . $antenna['name'] . ' (' . $antenna['shortname'] . ')</td>';
                                 echo '<td>';
                                 
-                                echo '<div id="switch_' . $antennaid . '"
-                    												data-antennaid="' . $antennaid . '"
-                    												data-antenna="' . $antenna['name'] . '"
-                    												data-href="' . $this->url('application', array(
-                                    'controller' => 'frequencies',
-                                    'action' => 'switchantenna'
-                                ), array(
-                                    'query' => array(
-                                        'antennaid' => $antennaid
-                                    )
-                                )) . '"
-                    												class="antenna-switch make-switch switch-small"
-                    												data-off="danger"
-                    												data-on="success"
-                    												data-on-label="OPE"
-                    												data-off-label="HS"
-                    												data-text-label="État">';
-                                echo '<input type="checkbox" ' . ($antenna['status'] ? 'checked="checked"' : '') . ($this->isGranted('events.write') ? '' : ' disabled="disabled"') . '>';
+                                echo '<div class="togglebutton">';
+                                echo '<label>';
+                                echo '<input
+                                        id="switch_' . $antennaid . '"
+                    					data-antennaid="' . $antennaid . '"
+                    					data-antenna="' . $antenna['name'] . '"
+                    					data-href="' . $this->url('application', array(
+                                                                            'controller' => 'frequencies',
+                                                                            'action' => 'switchantenna'
+                                                                        ), array(
+                                                                            'query' => array(
+                                                                                'antennaid' => $antennaid
+                                                                            )
+                                                                        )) . '"
+                    					class="antenna-switch"
+                                        type="checkbox" ' . ($antenna['status'] ? 'checked="checked"' : '') . ($this->isGranted('events.write') ? '' : ' disabled="disabled"') . '>';
+                                
+                                echo '</label>';
                                 echo '</div>';
                                 
                                 echo '</td>';

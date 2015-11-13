@@ -202,7 +202,7 @@ class RadarsController extends TabController
                 if ($full) {
                     $radars[$radarid]['status'] *= $available;
                 } else {
-                    $radars[$radarid] *= $available;
+                    $radars[$radarid] *= ($available ? true : false);
                 }
             }
         }

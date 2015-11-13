@@ -1374,10 +1374,10 @@
             var y = this.params.topSpace + this.params.catSpace;
             for (var i = 0; i < this.categories.length; i++) {
                 var curCat = this.categories[i];
-                var text_cat = "";
-                for (var k = 0; k < curCat.short_name.length; k++) {
+                var text_cat = '<div class="verticaltxt">'+curCat.short_name+'</div>';
+                /*for (var k = 0; k < curCat.short_name.length; k++) {
                     text_cat += curCat.short_name[k] + '<br>';
-                }
+                }*/
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
                     var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'

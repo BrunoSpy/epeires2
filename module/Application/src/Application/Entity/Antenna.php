@@ -178,3 +178,4 @@ class Antenna extends TemporaryResource
     {
         return get_object_vars($this);
     }
+}

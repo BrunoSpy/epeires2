@@ -245,6 +245,13 @@
 	font-weight: bold;
 }
 
+.category .verticaltxt {
+	width: 10px;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	margin-left: 10px;
+}
+
 .elmt.notpunctual .rect_elmt.pulseshadow {
 	animation: pulseshadow 2s infinite ease-in-out;
 	-webkit-animation: pulseshadow 2s infinite ease-in-out;

@@ -277,3 +277,4 @@ abstract class AbstractEvent
         $object_vars['zonefilters'] = $zonefilters;
         return $object_vars;
     }
+}

@@ -135,11 +135,13 @@ var antenna = function(url){
         });
         
 
-	$('.antenna-switch').on('switch-change', function(e, data){
-		$('a#end-antenna-href').attr('href', $(this).data('href')+"&state="+data.value);
+	$('.antenna-switch').on('change', function(e){
+	    	var newState = $(this).is(':checked');
+		$('a#end-antenna-href').attr('href', $(this).data('href')+"&state="+newState);
 		$('#antenna_name').html($(this).data('antenna'));
 		$("#cancel-antenna").data('antenna', $(this).data('antennaid')) ;
-		if(!data.value){
+		
+		if(!newState){
 			$("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
 			"<p>L'heure actuelle sera utilisée comme heure de début.</p>");
 		} else {
@@ -152,8 +154,8 @@ var antenna = function(url){
 	$("#confirm-end-event").on('hide', function(){
 		if(back){
 			var switchAntenna = $('#switch_'+$("#cancel-antenna").data('antenna'));
-			//var state = switchAntenna.bootstrapSwitch('status');
-			//switchAntenna.bootstrapSwitch('setState', !state, true);
+			var state = switchAntenna.is(':checked');
+			switchAntenna.prop('checked', !state);
 		}
 	});
 
@@ -167,12 +169,12 @@ var antenna = function(url){
 			var switchbtn = $('#switch_'+$("#cancel-antenna").data('antenna'));
 			if(data.messages['error']){
 				//dans le doute, on remet le bouton à son état antérieur
-				//var state = switchbtn.bootstrapSwitch('status');
-				//switchbtn.bootstrapSwitch('setState', !state, true);
+				var state = switchbtn.is(':checked');
+				switchbtn.prop('checked', !state);
 			} else {
 				//mise à jour des fréquences
 				var antenna = $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna'));
-				/*if(switchbtn.bootstrapSwitch('status')){
+				if(switchbtn.prop('checked')){
 					antenna.removeClass('background-status-fail')
 					.addClass('background-status-ok');
 					//changement de couv : antenne main opérationnelle
@@ -187,7 +189,7 @@ var antenna = function(url){
 					antenna.filter('.mainantenna-color').removeClass('background-selected')
 					.siblings('.backupantenna-color').addClass('background-selected');
                                         $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td:first-child").append('<a href="#" class="open-fiche" data-id="'+$('#cancel-antenna').data('antenna')+'"> <span class="glyphicon glyphicon-tasks"></span></a>');
-				}*/
+				}
 				currentfrequencies = data.frequencies;
 				updatefrequencies();
 				updateActions();
@@ -419,7 +421,7 @@ var antenna = function(url){
 	
 	var updateantennas = function(){
 		$.each(currentantennas, function(key, value){
-			//$('#switch_'+key).bootstrapSwitch('setState', value.status, true);
+			$('#switch_'+key).prop('checked', value.status);
                         var antennatd = $("#antenna-"+key+" td:first");
                         if(value.frequencies.length === 0 || (value.frequencies.length === 1 && value.frequencies[0] === "")) { //tous les fréquences impactées
                             var antenna = $('.antenna-color.antenna-'+key);
