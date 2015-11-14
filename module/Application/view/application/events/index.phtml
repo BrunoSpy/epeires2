@@ -99,4 +99,6 @@ fileupload('<?php echo $this->url('application')?>');
 //search
 search('<?php echo $this->url('application', array('controller'=>'events'));?>');
 
+<?php echo $this->notifications($this->messages); ?>
+
 <?php $this->inlineScript()->captureEnd();?>

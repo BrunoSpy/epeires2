@@ -20,6 +20,7 @@ namespace Core;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\EventInterface;
+use Core\Controller\UserController;
 
 /**
  *
@@ -35,6 +36,14 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
         
         $t->getEventManager()->attach($t->getServiceManager()
             ->get('ZfcRbac\View\Strategy\UnauthorizedStrategy'));
+        
+        $events = $e->getApplication()->getEventManager()->getSharedManager();
+        $events->attach('ZfcUser\Form\Login','init', function($e) {
+            $form = $e->getTarget();
+            $form->get('identity')->setLabel("Nom d'utilisateur");
+            $form->get('credential')->setLabel("Mot de passe");
+            $form->get('submit')->setLabel("Se connecter");
+        });
     }
 
     public function getConfig()
@@ -49,6 +58,26 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
                 )
+            )
+        );
+    }
+
+    public function getControllerConfig()
+    {
+        return array(
+            'factories' => array(
+                'coreuser' => function ($controllerManager) {
+                    /* @var ControllerManager $controllerManager*/
+                    $serviceManager = $controllerManager->getServiceLocator();
+                    
+                    /* @var RedirectCallback $redirectCallback */
+                    $redirectCallback = $serviceManager->get('zfcuser_redirect_callback');
+                    
+                    /* @var UserController $controller */
+                    $controller = new UserController($redirectCallback);
+                    
+                    return $controller;
+                }
             )
         );
     }

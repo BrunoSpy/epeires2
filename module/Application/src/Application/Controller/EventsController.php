@@ -50,11 +50,11 @@ class EventsController extends TabController
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
-            $return['errorMessages'] = $this->flashMessenger()->getErrorMessages();
+            $return['error'] = $this->flashMessenger()->getErrorMessages();
         }
         
         if ($this->flashMessenger()->hasSuccessMessages()) {
-            $return['successMessages'] = $this->flashMessenger()->getSuccessMessages();
+            $return['success'] = $this->flashMessenger()->getSuccessMessages();
         }
         
         $this->flashMessenger()->clearMessages();

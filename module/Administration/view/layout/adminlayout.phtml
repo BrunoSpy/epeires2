@@ -189,7 +189,7 @@
         
     <?php 
 	if(!$this->zfcuserIdentity()){
-			echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('administration'))));
+			echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
 	} ?>
         
     <?php echo $this->inlineScript() ?>

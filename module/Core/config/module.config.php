@@ -49,6 +49,39 @@ return array(
             'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service'
         )
     ),
+    'controllers' => array(
+        'invokables' => array(
+            'Core\Controller\User' => 'Core\Controller\UserController'
+        )
+    ),
+    'router' => array(
+        'routes' => array(
+            'coreuser' => array(
+                'type' => 'Literal',
+                'priority' => 1000,
+                'options' => array(
+                    'route' => '/user',
+                    'defaults' => array(
+                        'controller' => 'coreuser',
+                        'action' => 'index'
+                    )
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'login' => array(
+                        'type' => 'Literal',
+                        'options' => array(
+                            'route' => '/login',
+                            'defaults' => array(
+                                'controller' => 'coreuser',
+                                'action' => 'login'
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ),
     'zfc_rbac' => array(
         'protection_policy' => GuardInterface::POLICY_ALLOW,
         'guest_role' => 'guest',
@@ -100,7 +133,7 @@ return array(
         'invokables' => array(
             'modalwindow' => 'Core\View\Helper\ModalWindow',
             'notifications' => 'Core\View\Helper\Notifications',
-            'controlGroup' => 'Core\View\Helper\ControlGroup',
+            'controlGroup' => 'Core\View\Helper\ControlGroup'
         ),
         'factories' => array(
             'userMenu' => 'Core\Factory\UserMenuFactory'

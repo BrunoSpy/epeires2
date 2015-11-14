@@ -1,7 +1,7 @@
 <?php
 $form = $this->loginForm;
 $form->prepare();
-$form->setAttribute('action', $this->url('zfcuser/login'));
+$form->setAttribute('action', $this->url('coreuser/login') . '?redirect=' . $this->redirect);
 $form->setAttribute('method', 'post');
 $form->setAttribute('class', 'form-horizontal');
 echo $this->form()->openTag($form);

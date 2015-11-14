@@ -171,7 +171,7 @@
         
         <?php 
 		if(!$this->zfcuserIdentity()){
-				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>$this->serverUrl(true))));
+				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
 		} ?>
         
         <?php $this->inlineScript()->captureStart();?>
