@@ -65,7 +65,7 @@
 		</ul>
 		<?php if($this->zfcUserIdentity() && !$this->zoneform) :?>
 			<p class="navbar-text navbar-left visible-lg-block">
-				<span class="glyphicon glyphicon-road" aria-hidden="true"><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?>
+				<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?>
 			</p>
 		<?php endif;?>
     		<?php if($this->zoneform) {
@@ -92,7 +92,7 @@
 		</div>
 	</nav>
 
-	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-blue-500">
+	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-blue-500 shadow-z-2">
 		<!-- Toggle for better mobile view -->
 		<div class="container-fluid">
 			<div class="navbar-header">

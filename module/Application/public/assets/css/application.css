@@ -457,6 +457,8 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	display: none;
 	text-align: center;
 	width: 100%;
+	position: fixed;
+	z-index: 3;
 }
 
 #calendar p {

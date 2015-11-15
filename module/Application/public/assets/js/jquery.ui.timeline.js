@@ -231,33 +231,6 @@
                 );
             });
 
-            //manage scrolling
-            $(window).on('scroll', function (event) {
-                var scrolltop = $(window).scrollTop();
-                var offset = self.options.topOffset + 12;
-                var diff = 0;
-                if (scrolltop === 0) {
-                    //reinit positions and height
-                    $('.Time_obj.horiz_bar, #TimeBar').css('top', self.options.topOffset + self.params.topSpace + 'px');
-                    $("#TimeBar").css('height', self.element.height() - self.params.topSpace);
-                    $('.Time_obj.vert_bar').css({'height': self.element.height() - self.params.topSpace,
-                        'top': self.options.topOffset + self.params.topSpace - 5 + 'px'});
-                    $('.Time_obj.halfhour').css('top', self.options.topOffset + self.params.topHalfHourSpace + 'px');
-                    $('.Time_obj.roundhour').css('top', self.options.topOffset + self.params.topHourSpace + 'px');
-                    self.prev_scroll = 0;
-                } else {
-                    if (scrolltop <= offset) {
-                        diff = scrolltop - self.prev_scroll;
-                        self.prev_scroll = scrolltop;
-                    } else {
-                        diff = offset - self.prev_scroll;
-                        self.prev_scroll = offset;
-                    }
-                    $('.Time_obj, #TimeBar').css('top', '-=' + diff + 'px');
-                    $('.Time_obj.vert_bar, #TimeBar').css('height', '+=' + diff + 'px');
-                }
-            });
-
             //retracé de la timeline en cas de changement de taille de fenêtre
             $(window).resize(function () {
                 var height = $(window).height() - self.options.topOffset + 'px';
@@ -901,13 +874,19 @@
                 this._drawEvent(this.events[i]);
             }
             //then update y position
-            this._updateYPosition(true);
+            var maxY = this._updateYPosition(true) + this.options.eventHeight;
+            
             //draw categories
             if (this.options.showCategories) {
-                this._drawCategories();
+                var y = this._drawCategories();
+                maxY = (maxY > y ? maxY : y );
             } else {
                 this._hideCategories();
             }
+            //then update height of timeline
+            var height = maxY - this.options.topOffset;
+            maxY = (maxY > height ? maxY : height);
+            this.element.css('height', maxY + 'px');
         },
         _getCategory: function (id) {
             if (id in this.catPositions) {
@@ -1137,10 +1116,11 @@
         /**
          * Update vertical position of each displayed event
          * @param {boolean} animate Animate modification of position
-         * @returns {undefined}
+         * @returns {float} position of the event at the bottom
          */
         _updateYPosition: function (animate) {
             this.eventsYPosition.length = 0;
+            var maxY = 0;
             for (var i = 0; i < this.eventsDisplayed.length; i++) {
                 var y = this._computeY(this.eventsDisplayed[i]);
                 var eventID = this.eventsDisplayed[i].id;
@@ -1151,7 +1131,11 @@
                 } else {
                     elmt.css('top', y + 'px');
                 }
+                if(y > maxY) {
+                    maxY = y;
+                }
             }
+            return maxY;
         },
         /**
          * Calcul le bas d'une catégorie en fonction des évènements réellement affichés
@@ -1375,9 +1359,6 @@
             for (var i = 0; i < this.categories.length; i++) {
                 var curCat = this.categories[i];
                 var text_cat = '<div class="verticaltxt">'+curCat.short_name+'</div>';
-                /*for (var k = 0; k < curCat.short_name.length; k++) {
-                    text_cat += curCat.short_name[k] + '<br>';
-                }*/
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
                     var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'
@@ -1393,6 +1374,7 @@
                 cat.animate({'top': y + 'px', 'height': trueHeight + 'px'});
                 y += trueHeight + this.params.catSpace;
             }
+            return y;
         },
         _hideCategories: function () {
             $('#category').hide();
