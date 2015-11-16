@@ -93,8 +93,6 @@ var displayMessages = function(messages){
 $(document).ready(function(){
     
     $.material.init();
-	             
-   $.datepicker.regional[ "fr" ];
    
    //higlight tabs
    var urlt = window.location;
