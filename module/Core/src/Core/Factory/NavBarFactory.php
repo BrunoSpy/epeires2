@@ -15,7 +15,7 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Factories;
+namespace Core\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -30,7 +30,7 @@ class NavBarFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $navbarHelper = new \Application\View\Helper\NavBar();
+        $navbarHelper = new \Core\View\Helper\NavBar();
         $navbarHelper->setServiceManager($serviceLocator->getServiceLocator());
         return $navbarHelper;
     }

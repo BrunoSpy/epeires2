@@ -136,7 +136,9 @@ return array(
             'controlGroup' => 'Core\View\Helper\ControlGroup'
         ),
         'factories' => array(
-            'userMenu' => 'Core\Factory\UserMenuFactory'
+            'userMenu' => 'Core\Factory\UserMenuFactory',
+            'navbartop' => 'Core\Factory\NavBarTopFactory',
+            'navbar' => 'Core\Factory\NavBarFactory',
         )
     ),
     'session' => array(

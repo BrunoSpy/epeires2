@@ -32,7 +32,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
 
     private $servicemanager;
 
-    public function __invoke()
+    public function __invoke($color)
     {
             
         $urlHelper = $this->getView()->plugin('url');
@@ -47,7 +47,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
         }
         $html .= '<b class="caret"></b>';
         $html .= '</a>';
-        $html .= '<ul class="dropdown-menu dropdown-menu-material-purple-800">';
+        $html .= '<ul class="dropdown-menu dropdown-menu-material-'.$color.'-800">';
         if ($this->auth->getIdentity() != null) {
             $router = $this->servicemanager->get('router');
             $request = $this->servicemanager->get('request');

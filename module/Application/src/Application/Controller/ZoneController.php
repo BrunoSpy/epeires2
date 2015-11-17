@@ -31,31 +31,31 @@ class ZoneController extends FormController
     public function indexAction()
     {
         $form = $this->getZoneForm();
-        
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $user = $this->zfcUserAuthentication()->getIdentity();
-            $org = $user->getOrganisation();
-            $zone = $user->getZone();
-            
-            $session = new Container('zone');
-            $zonesession = $session->zoneshortname;
-            
-            if ($zonesession != null) { // warning: "all" == 0
-                $values = $form->get('zone')->getValueOptions();
-                if (array_key_exists($zonesession, $values)) {
-                    $form->get('zone')->setValue($zonesession);
+        if($form != null) {
+            if ($this->zfcUserAuthentication()->hasIdentity()) {
+                $user = $this->zfcUserAuthentication()->getIdentity();
+                $org = $user->getOrganisation();
+                $zone = $user->getZone();
+                
+                $session = new Container('zone');
+                $zonesession = $session->zoneshortname;
+                
+                if ($zonesession != null) { // warning: "all" == 0
+                    $values = $form->get('zone')->getValueOptions();
+                    if (array_key_exists($zonesession, $values)) {
+                        $form->get('zone')->setValue($zonesession);
+                    }
+                } else {
+                    if ($zone) {
+                        $form->get('zone')->setValue($zone->getShortname());
+                    } else {
+                        $form->get('zone')->setValue($org->getShortname());
+                    }
                 }
             } else {
-                if ($zone) {
-                    $form->get('zone')->setValue($zone->getShortname());
-                } else {
-                    $form->get('zone')->setValue($org->getShortname());
-                }
+                $form->get('zone')->setValue('0');
             }
-        } else {
-            $form->get('zone')->setValue('0');
         }
-        
         $this->layout()->zoneform = $form;
     }
 
@@ -64,17 +64,23 @@ class ZoneController extends FormController
         $zoneElement = new Select('zone');
         $values = array();
         $values['0'] = "Tout";
+        $countZones = 0;
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             $user = $this->zfcUserAuthentication()->getIdentity();
             $values[$user->getOrganisation()->getShortname()] = $user->getOrganisation()->getName();
             foreach ($user->getOrganisation()->getZones() as $zone) {
                 $values[$zone->getShortname()] = " > " . $zone->getName();
+                $countZones++;
             }
         }
         $zoneElement->setValueOptions($values);
         $form = new Form('zoneform');
         $form->add($zoneElement);
-        
-        return $form;
+        if($countZones > 1) {
+            return $form;
+        } else {
+            //une seule zone : le champ est inutile
+            return null;
+        }
     }
 }

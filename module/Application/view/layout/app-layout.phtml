@@ -45,122 +45,13 @@
 
     </head>
     <body>
-	<nav class="navbar navbar-default navbar-fixed-top navbar-material-epeires-800" id="navbar-first">
-		<div class="container-fluid">
-		<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed"
-					data-toggle="collapse" data-target="#navbar-first-collapse"
-					aria-expanded="false">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand visible-lg-block" href="#">Epeires<sup>2</sup></a>
-			</div>
-		<div class="collapse navbar-collapse" id="navbar-first-collapse">	
-		<ul class="nav navbar-nav navbar-left">
-			<?php echo $this->userMenu(); ?>
-		</ul>
-		<?php if($this->zfcUserIdentity() && !$this->zoneform) :?>
-			<p class="navbar-text navbar-left visible-lg-block">
-				<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b><?php echo $this->zfcUserIdentity()->getOrganisation()->getName();?>
-			</p>
-		<?php endif;?>
-    		<?php if($this->zoneform) {
-    		    $form = $this->zoneform;
-    		    $form->setAttributes(array('action' => $this->url('application', array('controller'=>'events', 'action'=>'savezone')),
-											'class'=>'navbar-form navbar-left'));
-    		    $form->prepare();
-    		    echo $this->form()->openTag($form);
-    		    echo '<div class="form-group">';
-    		    echo '<label for="zoneInput"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span><b> Zone : </b></label>';
-    		    echo $this->formSelect($form->get('zone')->setAttributes(array('id' => 'zoneInput', 'class' => 'form-control')));
-    		    echo '</div>';
-    		    echo $this->form()->closeTag();
-    		}
-    		?>
-    		<?php if ($this->zfcUserIdentity() && $this->zfcUserIdentity()->getZone()) {
-    		    echo '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>Chef de salle : </b></p>';
-                echo $this->opsup();    		    
-    		}
-    		?>
-    		<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO <?php echo $this->iponumber;?> : </b></p><?php echo $this->ipo(); ?>    			
-			<p class="navbar-text navbar-right visible-xs-block visible-lg-block" id="navbar-clock"><span id="clock"></span></p>
-			</div>
-		</div>
-	</nav>
 
-	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-epeires-500 shadow-z-2">
-		<!-- Toggle for better mobile view -->
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed"
-					data-toggle="collapse" data-target="#navbar-collapse"
-					aria-expanded="false">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-			</div>
-			<div class="collapse navbar-collapse" id="navbar-collapse">
-			
-				<ul class="nav navbar-nav navbar-center">
-                <li class="dropdown active">
-                  <a id="home" href="<?php echo $this->url('application', array('controller'=>'events', 'action'=>'index'))?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-home"></span> Évènements <span class="caret"></span></a>
-                  <ul class="dropdown-menu dropdown-menu-material-epeires-300">
-                    <li class="dropdown-header">Tri</li>
-                    <li class="active"><a href="#" id="tri_cat">Par catégorie</a></li>
-                    <li><a href="#" id="tri_deb">Par heure de début</a></li>
-                  </ul>
-                </li>
-                <li role="separator" class="divider"></li>
-                <?php
-                if($this->isGranted('radars.read')){
-                    echo '<li><a id="radartab" href="'
-                        . $this->url('application', array('controller'=>'radars', 'action'=>'index'))
-                        . '">Radars</a></li>';
-                }
-                ?>
-                <?php
-                if($this->isGranted('frequencies.read')){
-                    echo '<li><a id="frequency" href="'
-                        . $this->url('application', array('controller'=>'frequencies', 'action'=>'index'))
-                        . '">Radio</a></li>';
-                }
-                ?>
-                <?php
-                //Determine custom tabs to be displayed
-                $em = $this->getHelperPluginManager()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array('place' => 'ASC'));;
-                foreach ($tabs as $tab) {
-                	if($this->hasRole($tab->getReadRoleNames())){
-                		echo '<li><a class="customtab" id="tab-'.$tab->getId().'" href="';
-                		echo $this->url('application', array('controller' => 'tabs', 'action' => 'index'), 
-                											 array('query' => array('tabid' => $tab->getId())));
-                		echo '">'.$tab->getName().'</a></li>';
-                	}
-                }
-                ?>
-				</ul>
-				<form class="navbar-form navbar-right" role="search" id="search">
-					<div class="form-group form-group-material-epeires-500 has-feedback">
-						<input type="text" class="form-control" placeholder="Chercher" name="search">
-						<span class="glyphicon glyphicon-search form-control-feedback"></span>
-					</div>
-				</form>
-				<form id="zoomform" class="navbar-form navbar-right visible-md-block visible-lg-block">
-						<div class="togglebutton togglebutton-material-epeires-200">
-							<label>
-							Vue journée : <input id="zoom" type="checkbox" name="zoom-switch">
-							</label>
-						</div>
-				</form>
-			</div>
-		</div>
-	</nav>
+	<?php echo $this->navbartop("blue", $this->iponumber, $this->zoneform); ?>
+
+	<?php echo $this->navbar("blue"); ?>
 
     <?php if($this->isGranted('events.create')):?>
-			<a id="create-link" href="#" type="button" class="navbar-left btn-material-epeires-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
+			<a id="create-link" href="#" type="button" class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
     <?php endif;?>
         
         <div class="content">

@@ -15,7 +15,7 @@
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
-                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-fullpalette.min.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-epeirespalette.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/components/jquery-ui/themes/smoothness/jquery-ui.min.css')
@@ -40,127 +40,131 @@
 
     </head>
     <body data-spy="scroll" data-target="#sidebar">
-    	<div class="header">
-    		<ul class="inline">
-    				<?php echo $this->userMenu(); ?>
-    				<li id="clock" class="pull-right"></li>
-    		</ul>
-    	</div>
-	<div class="navbar navbar-after-top">
-		<div class="navbar-inner">
-			<a class="brand" href="<?php echo $this->url('administration'); ?>">Epeires<sup>2</sup></a>
-			<?php if($this->title){?>
-			<a class="brand" href="#">
-				<?php 
-					echo " : <small>".$this->title."</small>"; 
-				?>
-			</a>
-			<?php }?>
-			<ul class="nav">
-				<li><a
-					href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
-					data-original-title="Paramètres globaux de l'application"
-					data-placement="bottom" data-toggle="tooltip">Paramètres</a>
-				</li>
-                                <?php if($this->isGranted('admin.centre')) : ?>
-				<li class="dropdown">
-					<a href="#"
-					class="dropdown-toggle"
-					data-toggle="dropdown">Centres <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a
-							href="<?php echo $this->url('administration', array('controller'=>'centre', 'action'=>'index'))?>"
-							data-title="Centres > Général">Général</a>
-						</li>
-						<li><a
-							href="<?php echo $this->url('administration', array('controller'=>'radio', 'action'=>'index'))?>"
-							data-title="Centres > Radio">Radio</a>
-						</li>
-						<li>
-							<a
-							href="<?php echo $this->url('administration', array('controller'=>'radars', 'action'=>'index'))?>"
-							data-title="Centres > Radars">Radars</a>
-						</li>
-					</ul>
-				</li>
-                                <?php endif; ?>
-                                <?php if($this->isGranted('admin.users')) : ?>
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Utilisateurs <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a
-							data-title="Utilisateurs > Administration"
-							href="<?php echo $this->url('administration', array('controller'=>'users', 'action'=>'index')) ?>">Liste</a>
-						</li>
-						<li><a
-							data-title="Utilisateurs > Roles"
-							href="<?php echo $this->url('administration', array('controller'=>'roles', 'action'=>'index')) ?>">Rôles</a>
-						</li>
-						<li><a
-							data-title="Utilisateurs > IPO"
-							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">Liste IPO</a>
-						</li>
-						<li><a
-							data-title="Utilisateurs > Op Sup"
-							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Liste Op Sup</a>
-						</li>
-					</ul>
-				</li>
-                <?php endif; ?>
-                <?php if($this->isGranted('admin.categories') ||
-                         $this->isGranted('admin.models')) : ?>
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Personnalisation <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-                        <?php if($this->isGranted('admin.categories')) : ?>
-						<li><a
-							data-title="Personnalisation > Catégories"
-							href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a>
-						</li>
-                        <li><a
-                             data-title="Personnalisation > Catégories par défaut"
-                             href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'defaultindex'))?>">Catégories par défaut</a>
-                        </li>
-                        <?php endif; ?>
-                        <?php if($this->isGranted('admin.models')) : ?>
-						<li><a
-							data-title="Personnalisation > Modèles"
-							href="<?php echo $this->url('administration', array('controller'=>'models', 'action'=>'index')) ?>"
-							>Modèles</a></li>
-                        <?php endif; ?>
-					</ul>
-				</li>
-                <?php endif; ?>
-                <?php if($this->isGranted('admin.radio') || 
+
+	<?php echo $this->navbartop('red', null); ?>
+
+	<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-red-500 shadow-z-2">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar-collapse"
+					aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+			</div>
+			
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+    				<li><a
+    					href="<?php echo $this->url('administration', array('controller'=>'config', 'action'=>'index')) ?>"
+    					data-original-title="Paramètres globaux de l'application"
+    					data-placement="bottom" data-toggle="tooltip">Paramètres</a>
+    				</li>
+	                <?php if($this->isGranted('admin.centre')) : ?>
+				    <li class="dropdown">
+    					<a href="#"
+    					class="dropdown-toggle"
+    					data-toggle="dropdown">Centres <span class="caret"></span></a>
+    					<ul class="dropdown-menu">
+    						<li><a
+    							href="<?php echo $this->url('administration', array('controller'=>'centre', 'action'=>'index'))?>"
+    							data-title="Centres > Général">Général</a>
+    						</li>
+    						<li><a
+    							href="<?php echo $this->url('administration', array('controller'=>'radio', 'action'=>'index'))?>"
+    							data-title="Centres > Radio">Radio</a>
+    						</li>
+    						<li>
+    							<a
+    							href="<?php echo $this->url('administration', array('controller'=>'radars', 'action'=>'index'))?>"
+    							data-title="Centres > Radars">Radars</a>
+    						</li>
+    					</ul>
+    				</li>
+                    <?php endif; ?>
+                    
+                    <?php if($this->isGranted('admin.users')) : ?>
+					<li class="dropdown">
+    					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Utilisateurs <span class="caret"></span></a>
+    					<ul class="dropdown-menu">
+    						<li><a
+    							data-title="Utilisateurs > Administration"
+    							href="<?php echo $this->url('administration', array('controller'=>'users', 'action'=>'index')) ?>">Liste</a>
+    						</li>
+    						<li><a
+    							data-title="Utilisateurs > Roles"
+    							href="<?php echo $this->url('administration', array('controller'=>'roles', 'action'=>'index')) ?>">Rôles</a>
+    						</li>
+    						<li><a
+    							data-title="Utilisateurs > IPO"
+    							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">Liste IPO</a>
+    						</li>
+    						<li><a
+    							data-title="Utilisateurs > Op Sup"
+    							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Liste Op Sup</a>
+    						</li>
+    					</ul>
+					</li>
+                	<?php endif; ?>
+                	
+                	<?php if($this->isGranted('admin.categories') || $this->isGranted('admin.models')) : ?>
+					<li class="dropdown">
+    					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Personnalisation <span class="caret"></span></a>
+    					<ul class="dropdown-menu">
+                            <?php if($this->isGranted('admin.categories')) : ?>
+    						<li><a
+    							data-title="Personnalisation > Catégories"
+    							href="<?php echo $this->url('administration', array('controller'=>'categories', 'action'=>'index')) ?>">Catégories</a>
+    						</li>
+                            <li><a
+                                 data-title="Personnalisation > Catégories par défaut"
+                                 href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'defaultindex'))?>">Catégories par défaut</a>
+                            </li>
+                            <?php endif; ?>
+                            <?php if($this->isGranted('admin.models')) : ?>
+    						<li><a
+    							data-title="Personnalisation > Modèles"
+    							href="<?php echo $this->url('administration', array('controller'=>'models', 'action'=>'index')) ?>"
+    							>Modèles</a></li>
+                            <?php endif; ?>
+    					</ul>
+    				</li>
+                    <?php endif; ?>
+                    
+                    <?php if($this->isGranted('admin.radio') || 
                 		$this->isGranted('admin.zonesmil') ||
                 		$this->isGranted('admin.tabs')) : ?>
-                <li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Onglets <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-					    <?php if($this->isGranted('admin.tabs')) : ?>
-						<li>
-						<a data-title="Onglets > Gestion"
-							href="<?php echo $this->url('administration', array('controller' => 'tabs', 'action' => 'index'))?>">Gestion des onglets</a>
-						</li>
-						<?php endif;?>
-					    <?php if($this->isGranted('admin.radio')) : ?>
-						<li><a
-							data-title="Onglets > Fréquences"
-							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Onglet fréquences</a>
-						</li>
-                        <?php endif; ?>
-                        <?php if($this->isGranted('admin.zonesmil')) : ?>
-                        <li><a
-							data-title="Onglets > Zones militaires"
-							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
-						</li>
-						<?php endif;?>
-					</ul>
-				</li>
-                <?php endif;?>
-			</ul>
+                	<li class="dropdown">
+    					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Onglets <span class="caret"></span></a>
+    					<ul class="dropdown-menu">
+    					    <?php if($this->isGranted('admin.tabs')) : ?>
+    						<li>
+    						<a data-title="Onglets > Gestion"
+    							href="<?php echo $this->url('administration', array('controller' => 'tabs', 'action' => 'index'))?>">Gestion des onglets</a>
+    						</li>
+    						<?php endif;?>
+    					    <?php if($this->isGranted('admin.radio')) : ?>
+    						<li><a
+    							data-title="Onglets > Fréquences"
+    							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Onglet fréquences</a>
+    						</li>
+                            <?php endif; ?>
+                            <?php if($this->isGranted('admin.zonesmil')) : ?>
+                            <li><a
+    							data-title="Onglets > Zones militaires"
+    							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
+    						</li>
+    						<?php endif;?>
+    					</ul>
+    				</li>
+                    <?php endif;?>
+				</ul>
+			</div>
+			
 		</div>
-	</div>
+	</nav>
 	
 	<div class="content">
 		<div class="warnings">

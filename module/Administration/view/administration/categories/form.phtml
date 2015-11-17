@@ -13,37 +13,28 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('type')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('type')));
+echo $this->controlGroup($this->form->get('type'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+echo $this->controlGroup($this->form->get('name'));
 
 
-echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('shortname')));
+echo $this->controlGroup($this->form->get('shortname'));
 if($this->system){
     echo '<div style="display:none;">';
 }
-echo $this->controlGroup($this->formLabel($this->form->get('color')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('color')->setAttribute('class', 'pick-a-color')));
+echo $this->controlGroup($this->form->get('color')->setAttribute('class', 'pick-a-color'));
 		
-echo $this->controlGroup($this->formLabel($this->form->get('compactmode')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formCheckbox($this->form->get('compactmode')));
+echo $this->controlGroup($this->form->get('compactmode'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('timeline')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formCheckbox($this->form->get('timeline')));
+echo $this->controlGroup($this->form->get('timeline'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('parent')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('parent')));
+echo $this->controlGroup($this->form->get('parent'));
 if($this->system) {
     echo "</div>";
 }
-echo $this->controlGroup($this->formLabel($this->form->get('fieldname')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('fieldname')));
+echo $this->controlGroup($this->form->get('fieldname'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('readroles')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($this->form->get('readroles')));
+echo $this->controlGroup($this->form->get('readroles'));
 
 ?>
 </div>

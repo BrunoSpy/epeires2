@@ -1,11 +1,15 @@
 <?php 
 $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 ?>
-
+<p></p>
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span12">
-                    <h2>Catégories d'évènements</h2>
+	<div class="row">
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+		<div class="panel-heading">
+		<h4 class="panel-title">Catégories d'évènements</h4>
+		</div>
+        <div class="panel-body">
 			<table class="table table-striped">
 				<thead>
 					<tr>
@@ -20,7 +24,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>Champs</th>
 						<th>Champ titre</th>
 						<th>Rôles</th>
-						<th><a href="#form-container" id="add-cat" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+						<th><a href="#form-container" id="add-cat" data-toggle="modal" class="btn btn-primary btn-xs">Ajouter</a></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -32,8 +36,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo "<td>".$category->getName()."</td>";
 					echo "<td>".$category->getShortName()."</td>";
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
-					echo '<td>'.($category->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-					echo '<td>'.($category->isTimeline()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+					echo '<td>'.($category->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+					echo '<td>'.($category->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>';
                     	if(count($category->getTabs()) > 0) {
                     		foreach ($category->getTabs() as $tab) {
@@ -49,9 +53,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 								 		data-id=\"".$category->getId()."\"
 										data-name=\"".$category->getName()."\"
 								 		data-toggle=\"modal\"
-								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$category->getId())))."\"><i class=\"icon-list\"></i></a>".
+								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$category->getId())))."\"><span class=\"glyphicon glyphicon-list\"></span></a>".
 						 		"</td>";
-					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-list\"></span></a></td>";
 					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
 					echo "<td>";
 					foreach ($category->getReadroles() as $role){
@@ -61,19 +65,19 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo "<td>";
                                                 echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$category->getId()."\"><span class=\"up-caret middle\"></span></a> ";
                                                 echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$category->getId()."\"><span class=\"caret middle\"></span></a> ";
-						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
-						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 					echo "</td>";
 					echo "</tr>";
 					
 						foreach ($this->subcategories[$category->getId()] as $subcategory){
 							echo "<tr>";
 							echo "<td>".$subcategory->getId()."</td>";
-							echo "<td>  <i class=\"icon-chevron-right\"></i> ".$subcategory->getName()."</td>";
+							echo "<td>  <span class=\"glyphicon glyphicon-chevron-right\"></span> ".$subcategory->getName()."</td>";
 							echo "<td>".$subcategory->getShortName()."</td>";
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
-							echo '<td>'.($subcategory->isCompactMode()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-							echo '<td>'.($subcategory->isTimeline()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
+							echo '<td>'.($subcategory->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+							echo '<td>'.($subcategory->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>';
 							if(count($subcategory->getTabs()) > 0) {
 								foreach ($subcategory->getTabs() as $tab) {
@@ -89,9 +93,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 								 		data-id=\"".$subcategory->getId()."\"
 										data-name=\"".$subcategory->getName()."\"
 								 		data-toggle=\"modal\"
-								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$subcategory->getId())))."\"><i class=\"icon-list\"></i></a>".
+								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$subcategory->getId())))."\"><span class=\"glyphicon glyphicon-list\"></span></a>".
 						 		"</td>";
-							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
+							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-list\"></span></a></td>";
 							echo "<td>".($subcategory->getFieldName()?$subcategory->getFieldName()->getName():"Non spécifié")."</td>";
 							echo "<td>";
 							foreach ($subcategory->getReadroles() as $role){
@@ -101,8 +105,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo "<td>";
                                                                 echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$subcategory->getId()."\"><span class=\"up-caret middle\"></span></a> ";
                                                                 echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$subcategory->getId()."\"><span class=\"caret middle\"></span></a> ";
-								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 							echo "</td>";
 							echo "</tr>";
 						}			
@@ -111,77 +115,79 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 				?>
 				</tbody>
 			</table>
-                    <h1>Catégories système</h1>
-                    <table class="table table-striped">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>Nom</th>
-						<th>Nom court</th>
-						<th>Champs</th>
-						<th>Champ titre</th>
-						<th>Rôles</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-                                <?php 
-                                foreach ($this->categories as $category){
-                                    if($category->isSystem()){
-					echo "<tr>";
-					echo "<td>".$category->getId()."</td>";		
-					echo "<td>".$category->getName()."</td>";
-					echo "<td>".$category->getShortName()."</td>";
-
-					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-list\"></i></a></td>";
-					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
-					echo "<td>";
-					foreach ($category->getReadroles() as $role){
-						echo $role->getName()."<br/>";
-					}
-					echo "</td>";
-					echo "<td>";
-						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
-					echo "</td>";
-					echo "</tr>";
-					
-						
-                                    }
-                                }
-				?>
-				</tbody>
-			</table>
-                    
-                    
+		</div>
 		</div>
 		
+		<div class="panel panel-default">
+    		<div class="panel-heading">
+				<h4 class="panel-title">Catégories système</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+    				<thead>
+    					<tr>
+    						<th>id</th>
+    						<th>Nom</th>
+    						<th>Nom court</th>
+    						<th>Champs</th>
+    						<th>Champ titre</th>
+    						<th>Rôles</th>
+    						<th></th>
+    					</tr>
+    				</thead>
+    				<tbody>
+                    <?php 
+                    foreach ($this->categories as $category){
+                        if($category->isSystem()){
+    					echo "<tr>";
+    					echo "<td>".$category->getId()."</td>";		
+    					echo "<td>".$category->getName()."</td>";
+    					echo "<td>".$category->getShortName()."</td>";
+    
+    					echo "<td>".$this->fields[$category->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-list\"></span></a></td>";
+    					echo "<td>".($category->getFieldName()?$category->getFieldName()->getName():"Non spécifié")."</td>";
+    					echo "<td>";
+    					foreach ($category->getReadroles() as $role){
+    						echo $role->getName()."<br/>";
+    					}
+    					echo "</td>";
+    					echo "<td>";
+    						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+    					echo "</td>";
+    					echo "</tr>";
+    					
+    						
+                            }
+                    }
+    				?>
+    				</tbody>
+    			</table>
+            </div>
+                        
+    		</div>
+		
 	</div>
-	
+	</div>
 </div>
 
 <!-- -------------------- -->
 <!-- Les fenêtres modales -->
 <!-- -------------------- -->
+<?php 
+echo $this->modalwindow("form-container", "<h3  id=\"form-title\"></h3>", "", "<div id=\"form\"></div>");
 
-
-<div class="modal hide fade" id="form-container">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3  id="form-title"></h3>
-	</div>
-	<div id="form"></div>
-</div>
-
-<div class="modal hide fade" id="fieldscontainer" style="width:auto;">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3  id="fields-title"></h3>
-	</div>
-	<form action="<?php echo $this->url('administration', array('controller' => 'fields', 'action'=>'save'));?>" method="POST" name="CustomField" id="CustomField">
-	<div id="fields-table">
-	</div>
-	</form>
-</div>
+echo $this->modalwindow(
+	"fieldscontainer", 
+	"<h3 id=\"fields-title\"></h3>",
+	'', 
+	'<form action="' 
+		. $this->url('administration', array('controller' => 'fields', 'action'=>'save'))
+		.'" method="POST" name="CustomField" id="CustomField">'
+		.'<div id="fields-table">'
+		.'</div>'
+		.'</form>'
+	);
+?>
 
 <div class="modal hide fade" id="confirm-delete">
 	<div class="modal-header">
