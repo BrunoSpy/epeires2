@@ -127,6 +127,9 @@
 	   $countalarm = 0;
 	   $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
 
+	   if($mod) {
+	        echo "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span> Créer un mémo</a>";
+	   }
 		echo '<table class="table table-hover" id="alarm-table">';
 		if($this->event || $this->model){
                     $formatter = \IntlDateFormatter::create(
@@ -249,9 +252,6 @@
 			}
 		}
 		echo '</table>';
-		if($mod){
-			echo "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
-		}
 		?>
 	   </div>
 	   
@@ -259,6 +259,10 @@
 	   <?php 
 	   $countfiles = 0;
 	   $mod = false;
+	   //ajout de fichier si nouvel evt ou mod avec droits ok
+	   if(!$this->event || $this->model || ($this->event && $mod)){
+	       echo "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span> Ajouter un fichier</a>";
+	   }
 	   echo '<table class="table table-hover" id="file-table">';
 	   echo '<tbody>';
 	   if($this->event || $this->model){
@@ -317,10 +321,7 @@
 	   }
 	   echo '</tbody>';
 	   echo '</table>';
-	   //ajout de fichier si nouvel evt ou mod avec droits ok
-	   if(!$this->event || $this->model || ($this->event && $mod)){
-	       echo "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
-	   }
+
 	   ?>
 	   </div>
 	   

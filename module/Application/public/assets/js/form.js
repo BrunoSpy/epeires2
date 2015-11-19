@@ -187,25 +187,46 @@ var form = function(url, tabid){
 	$.material.checkbox();
     };
 
-    //gestion des tabs
-    $('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
+    var updateIconTabs = function() {
+	
 	$('#Event .nav-tabs > li').each(function(index){
 	    $(this).find('div.round')
 	    .removeClass('blue').addClass('grey')
 	    .empty().html('<strong>'+(index+1)+'</strong');
 	});
-
-	var me = $(event.target);
-	var round = me.find('div.round');
-	round.removeClass('grey')
-	.addClass('blue')
-	.empty()
-	.html('<span class="glyphicon glyphicon-pencil"></span>');
-	$('#Event .nav-tabs > li.valid div.round')
-	.removeClass('grey blue').addClass('green')
+	
+	if($('#categories-tab .form-group.has-error').length > 0){
+	    $('#cat-title').addClass('invalid').removeClass('valid');
+	} else {
+	    $('#cat-title').addClass('valid').removeClass('invalid');
+	}
+	
+	if($('#description-tab .form-group.has-error').length > 0){
+	    $('#description-title').addClass('invalid').removeClass('valid');
+	} else {
+	    $('#description-title').addClass('valid').removeClass('invalid');
+	}
+	
+	$('#Event .nav-tabs > li.valid > a:not(.disabled) > div.round')
+	.removeClass('grey blue orange').addClass('green')
 	.empty()
 	.html('<span class="glyphicon glyphicon-ok"></span>');
-
+	
+	$('#Event .nav-tabs > li.active > a:not(.disabled) > div.round')
+	    .removeClass('grey green orange')
+    	    .addClass('blue')
+    	    .empty()
+    	    .html('<span class="glyphicon glyphicon-pencil"></span>');
+	
+	$('#Event .nav-tabs > li.invalid > a:not(.disabled) > div.round')
+	.removeClass('grey blue green').addClass('orange')
+	.empty()
+	.html('<span class="glyphicon glyphicon-warning-sign"></span>');	
+    };
+    
+    //gestion des tabs
+    $('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
+	updateIconTabs();
     });
 
     //enable/disable submit button according to required fields
@@ -224,6 +245,7 @@ var form = function(url, tabid){
 	} else {
 	    $("#event input[name='submit']").prop('disabled', false).removeClass('disabled');
 	}
+	updateIconTabs();
     });
 
     //specific functions to maintain coherence between end and start inputs

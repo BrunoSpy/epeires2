@@ -79,16 +79,17 @@ class IPOHelper extends AbstractHelper
                 $form->setAttributes(array('class' => 'navbar-form navbar-left visible-xs-block visible-md-block visible-lg-block'));
                 
                 $html .= $formView->openTag($form);
-                $html .= '<div class="form-group">';
+                $html .= '<div class="form-group visible-xs-block visible-md-block visible-lg-block">';
+                $html .= '<label>' . '<span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b>';
                 $html .= $this->view->formSelect($form->get('nameipo')->setAttribute('class', 'form-control'));
                 $html .= '</div>';
                 $html .= $formView->closeTag();
                 
             } else {
                 if ($currentipo) {
-                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span id="iponame">' . $currentipo->getName() . '</span></p>';
+                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
                 } else { 
-                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><em>Aucun IPO configuré</em></p>';
+                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
                 }
             }
         } else {

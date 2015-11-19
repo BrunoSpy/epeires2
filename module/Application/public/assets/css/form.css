@@ -128,3 +128,8 @@
 #Event #actions-tab td.todo > .btn {
 	margin: 0px;
 }
+
+#Event #memos-tab .btn-sm,
+#Event #files-tab .btn-sm {
+	margin-top: -10px;
+}
