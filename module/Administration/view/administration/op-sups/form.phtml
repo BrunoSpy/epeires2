@@ -1,17 +1,14 @@
 <?php
 
-
-use Zend\Form\Element\Select;
-
 $form = $this->form;
 $form->prepare();
 $form->setAttribute('action', $this->url('administration', array('controller'=>'opsups', 'action'=>'saveopsup')));
 $form->setAttribute('method', 'post');
 $form->setAttribute('class', 'form-horizontal');
 
-?>
+echo $this->form()->openTag($form) 
 
-<?php echo $this->form()->openTag($form) ?>
+?>
 
 <div class="modal-body">
 
@@ -19,14 +16,11 @@ $form->setAttribute('class', 'form-horizontal');
 
 echo $this->formInput($form->get('id'));
 
-echo $this->controlGroup($this->formLabel($form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($form->get('name')) . $this->formElementErrors($form->get('name')));
+echo $this->controlGroup($form->get('name'));
 
-echo $this->controlGroup($this->formLabel($form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('organisation')) . $this->formElementErrors($form->get('organisation')));
+echo $this->controlGroup($form->get('organisation'));
 
-echo $this->controlGroup($this->formLabel($form->get('zone')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('zone')) . $this->formElementErrors($form->get('zone')));
+echo $this->controlGroup($form->get('zone'));
 
 ?>
 

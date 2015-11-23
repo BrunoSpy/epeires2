@@ -13,20 +13,15 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+echo $this->controlGroup($this->form->get('name'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('color')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('color')->setAttribute('class', 'pick-a-color')));
+echo $this->controlGroup($this->form->get('color'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('filter')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('filter')));
+echo $this->controlGroup($this->form->get('filter'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('zonesRegex')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('zonesRegex')));
+echo $this->controlGroup($this->form->get('zonesRegex'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('nmB2B')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formCheckbox($this->form->get('nmB2B')));
+echo $this->controlGroup($this->form->get('nmB2B'));
 
 echo $this->formHidden($this->form->get('shortname'));
 						
@@ -44,7 +39,7 @@ echo $this->formSelect($this->form->get('readroles')->setAttributes(array('class
 
 	echo $this->formSubmit($this->form->get('submit'));
 ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();

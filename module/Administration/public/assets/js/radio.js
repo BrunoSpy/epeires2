@@ -8,12 +8,16 @@ var radio = function(url){
 	/* **************************** */
 	$("#add-antenna").on('click', function(){
 		$("#antenna-title").html("Nouvelle antenne");
-		$("#antenna-form").load(url+'/radio/formantenna');
+		$("#antenna-form").load(url+'/radio/formantenna', function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$(".mod-antenna").on('click', function(){
 		$("#antenna-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#antenna-form").load(url+'/radio/formantenna?id='+$(this).data('id'));
+		$("#antenna-form").load(url+'/radio/formantenna?id='+$(this).data('id'), function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$("#antenna-container").on('submit', function(event){
@@ -43,12 +47,16 @@ var radio = function(url){
 	/* **************************** */
 	$("#add-frequency").on('click', function(){
 		$("#frequency-title").html("Nouvelle fréquence");
-		$("#frequency-form").load(url+'/radio/formfrequency');
+		$("#frequency-form").load(url+'/radio/formfrequency', function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$(".mod-frequency").on('click', function(){
 		$("#frequency-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#frequency-form").load(url+'/radio/formfrequency?id='+$(this).data('id'));
+		$("#frequency-form").load(url+'/radio/formfrequency?id='+$(this).data('id'), function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$("#frequency-container").on('submit', function(event){
@@ -130,15 +138,15 @@ var radio = function(url){
 		}, 'json');
 	});
 	
-	$(document).on('switch-change', ".group-switch", function(event){
-		event.preventDefault();
-		var me = $(this);
-		$.post(me.data('href'), function(data){
-			if(data['error']){
-				me.bootstrapSwitch('setState', !me.bootstrapSwitch('status'), true);
-			} 
-			displayMessages(data);
-		}, 'json');
+	$(document).on('click', ".switch_display", function(event){
+	    var state = $(this).is(':checked');
+	    var me = $(this);
+	    $.post(me.data('href'), function(data){
+		if(data['error']){
+		    me.prop('checked', !state);
+		} 
+		displayMessages(data);
+	    }, 'json');
 	});
         
         $(".change-model").on('click', function(){

@@ -1,8 +1,5 @@
 <?php
 
-
-use Zend\Form\Element\Select;
-
 $form = $this->form;
 $form->prepare();
 $form->setAttribute('action', $this->url('administration', array('controller'=>'roles', 'action'=>'saverole')));
@@ -19,14 +16,11 @@ $form->setAttribute('class', 'form-horizontal');
 
 echo $this->formInput($form->get('id'));
 
-echo $this->controlGroup($this->formLabel($form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($form->get('name')) . $this->formElementErrors($form->get('name')));
+echo $this->controlGroup($form->get('name'));
 
-echo $this->controlGroup($this->formLabel($form->get('parent')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('parent')) . $this->formElementErrors($form->get('parent')));
+echo $this->controlGroup($form->get('parent'));
 
-echo $this->controlGroup($this->formLabel($form->get('readcategories')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('readcategories')) . $this->formElementErrors($form->get('parent')));
+echo $this->controlGroup($form->get('readcategories'));
         
 ?>
 

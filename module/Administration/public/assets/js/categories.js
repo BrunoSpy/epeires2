@@ -45,6 +45,7 @@ var categories = function(url){
 		$("#form").load(url+'/categories/form'+'?id='+$(this).data('id'),
 				function(){
 					$("#form").find(".pick-a-color").pickAColor();
+					$.material.checkbox();
 			});	
 	});
 
@@ -53,6 +54,7 @@ var categories = function(url){
 		$("#form").load(url+'/categories/form',
 			function(){
 				$("#form").find(".pick-a-color").pickAColor();
+				$.material.checkbox();
 			});	
 	});
 
@@ -67,8 +69,9 @@ var categories = function(url){
 	});
 
 	$("#fieldscontainer").on('click', '#new-field', function(){
+	    	var me = $(this);
 		$("#add-field").load(url+'/fields/form'+'?categoryid='+$(this).data('id'), function(){
-                    $(this).closest('.modal').css('left','30%');
+                    me.closest('.modal-dialog').css('width', '960px');
                 });
 	});
 
@@ -82,15 +85,15 @@ var categories = function(url){
 		}
 
 		$('#new-field').removeClass('disabled');
-                $("#fieldscontainer").css('left','');
 	});
 
 
 	$("#fieldscontainer").on('click', '.mod-field', function(){
-		var me = $(this);	
+		var me = $(this);
+		var dialog = me.closest('.modal-dialog');
 		closesttr = me.closest('tr').html();
 		me.closest('tr').load(url+'/fields/form'+'?id='+$(this).data('id'), function(){
-                    $(this).closest('.modal').css('left','30%');
+                    dialog.css('width', '960px');
                 });
 		//don't add a new field during modifying one
 		$('#new-field').addClass('disabled');
@@ -169,18 +172,18 @@ var categories = function(url){
 				tr.find('td:eq(0)').html(data.id);
 				tr.find('td:eq(1)').html(data.name);
 				tr.find('td:eq(2)').html(data.type);
-                                tr.find('td:eq(3)').html(data.multiple ? '<i class="icon-ok"></i>' : '<i class="icon-remove"></i>');
+                                tr.find('td:eq(3)').html(data.multiple ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>');
 				tr.find('td:eq(4)').html(data.defaut);
                                 tr.find('td:eq(5)').html(data.help);
 				tr.find('td:eq(6)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
-				tr.find('td:eq(7)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
+				tr.find('td:eq(7)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
 							' class="delete-field" '+ 
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
-							'data-toggle="modal"><i class="icon-trash"></i> </a>');					
+							'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> </a>');					
 				updateCarets($("#fieldscontainer"), false);
 			} else {
 				var tr = me.closest('tr');
@@ -188,18 +191,18 @@ var categories = function(url){
 				newhtml.append('<td>'+data.id+'</td>');
 				newhtml.append('<td>'+data.name+'</td>');
 				newhtml.append('<td>'+data.type+'</td>');
-                                newhtml.append('<td>'+(data.multiple ? '<i class="icon-ok"></i>' : '<i class="icon-remove"></i>')+'</td>');
+                                newhtml.append('<td>'+(data.multiple ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>')+'</td>');
 				newhtml.append('<td>'+data.defaut+'</td>');
                                 newhtml.append('<td>'+data.help+'</td>');
 				newhtml.append('<td>'+'<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a></td>');
-				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><i class="icon-pencil"></i></a> '+
+				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+ 
 							' class="delete-field" '+ 
 							'data-id="'+data.id+'" '+ 
 							'data-name="'+data.name+'" '+ 
-							'data-toggle="modal"><i class="icon-trash"></i> </a></td>');
+							'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> </a></td>');
 
 				newhtml.insertBefore(tr);
 				tr.html('');

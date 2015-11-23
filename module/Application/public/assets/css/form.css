@@ -112,10 +112,6 @@
 #predefined_events i {
 	margin-top: 6px;
 }
-
-#Event.form-horizontal .checkbox {
-    padding-top: 0px;
-}
  
 #Event #description-tab:not(.active) {
 	display:block;

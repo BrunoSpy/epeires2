@@ -3,8 +3,14 @@
 
 
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span9">
+    <div class="row">
+        <div class="col-md-9">
+        <p></p>
+        	<div class="panel panel-default">
+        	<div class="panel-heading">
+        	<h4 class="panel-title">Catégories par défaut</h4>
+        	</div>
+        	<div class="panel-body">
             <table class="table table-striped sortable">
                 <thead>
                     <tr>
@@ -16,7 +22,7 @@
                     <tr>
                         <td>Fréquence</td>
                         <td>
-                            <select id="freq-select">
+                            <select id="freq-select"  class="form-control">
                                 <option value="0">Choisir la catégorie fréquence par défaut</option>
                                 <?php
                                 foreach ($this->freqcategories as $freq) {
@@ -31,7 +37,7 @@
                     <tr>
                         <td>Brouillage fréquence</td>
                         <td>
-                            <select id="brouillage-select">
+                            <select id="brouillage-select"  class="form-control">
                                 <option value="0">Choisir la catégorie brouillage fréquence par défaut</option>
                                 <?php
                                 foreach ($this->brouillagecategories as $brouillage) {
@@ -46,7 +52,7 @@
                     <tr>
                         <td>Antenne</td>
                         <td>
-                            <select id="antenna-select">
+                            <select id="antenna-select"  class="form-control">
                                 <option value="0">Choisir la catégorie antenne par défaut</option>
                                 <?php
                                 foreach ($this->antennacategories as $antenna) {
@@ -60,7 +66,7 @@
                     <tr>
                         <td>Radar</td>
                         <td>
-                            <select id="radar-select">
+                            <select id="radar-select" class="form-control">
                                 <option value="0">Choisir la catégorie radar par défaut</option>
                                 <?php
                                 foreach ($this->radarcategories as $radar) {
@@ -74,13 +80,16 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
+            </div>
         </div>
-        <div class="span3">
-            <div class="block">
-                <div class="navbar navbar-inner block-header">
-                    <div class="muted pull-left" id="Organisations">Aide</div>
+        <div class="col-md-3">
+            <p></p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title" id="Organisations">Aide</h4>
                 </div>
-                <div class="block-content collapse in">
+                <div class="panel-body">
                     Les catégories par défaut sont utilisées lors de la création automatique d'évènements depuis les pages spéciales telles que :
                     <ul>
                         <li>la page Radar ;</li>
@@ -94,12 +103,16 @@
 
 <?php $this->inlineScript()->captureStart();?>
 
+$('document').ready(function(){
+	$.material.init();
+});
+
 $(".sortable").stupidtable();
 
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

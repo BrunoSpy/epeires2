@@ -4,7 +4,7 @@
 		<th>Nom</th>
 		<th><a 
 			id="add-model"
-			class="btn btn-mini"
+			class="btn btn-xs btn-primary"
 			href="#model-container"
 			data-catid="<?php echo $this->catid;?>"
 			data-toggle="modal">Ajouter</a>
@@ -40,7 +40,7 @@
 				data-toggle="modal"
 				data-id='.$model->getId().'
 				data-name="'.$model->getName().'"
-				><i class="icon-pencil"></i></a> 
+				><span class="glyphicon glyphicon-pencil"></span></a> 
 				<a 
 				href="#confirm-delete-model"
 				data-toggle="modal"
@@ -49,7 +49,7 @@
 				class="delete-model" 
 				data-id='.$model->getId().' 
 				data-name="'.$model->getName().'"> 
-				<i class="icon-trash"></i></a></td>';
+				<span class="glyphicon glyphicon-trash"></span></a></td>';
 		echo "</tr>";
 	}?>
 </tbody>

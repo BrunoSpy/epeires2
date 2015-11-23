@@ -144,6 +144,8 @@ class MilController extends \Application\Controller\FormController
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
         
+        $form->get('color')->setAttribute('class', 'pick-a-color');
+        
         if ($id) {
             $milcat = $objectManager->getRepository('Application\Entity\MilCategory')->find($id);
             if ($milcat) {

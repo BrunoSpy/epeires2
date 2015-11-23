@@ -1,8 +1,5 @@
 <?php
 
-
-use Zend\Form\Element\Select;
-
 $form = $this->form;
 $form->prepare();
 $form->setAttribute('action', $this->url('administration', array('controller'=>'radars', 'action'=>'save')));
@@ -19,17 +16,13 @@ $form->setAttribute('class', 'form-horizontal');
 
 echo $this->formHidden($form->get('id'));
 
-echo $this->controlGroup($this->formLabel($form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($form->get('name')) . $this->formElementErrors($form->get('name')));
+echo $this->controlGroup($form->get('name'));
 
-echo $this->controlGroup($this->formLabel($form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($form->get('shortname')) . $this->formElementErrors($form->get('shortname')));
+echo $this->controlGroup($form->get('shortname'));
 
-echo $this->controlGroup($this->formLabel($form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formSelect($form->get('organisation')) . $this->formElementErrors($form->get('organisation')));
+echo $this->controlGroup($form->get('organisation'));
 
-echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formCheckbox($form->get('decommissionned')) . $this->formElementErrors($form->get('decommissionned')));
+echo $this->controlGroup($form->get('decommissionned'));
 
 ?>
 

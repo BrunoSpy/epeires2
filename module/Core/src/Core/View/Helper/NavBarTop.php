@@ -77,7 +77,7 @@ class NavBarTop extends AbstractHelper {
             $html .= $this->view->opsup();
         }
         
-        $html .= $this->view->ipo();
+        $html .= $this->view->ipo($iponumber);
         $html .= '<p class="navbar-text navbar-right visible-xs-block visible-lg-block" id="navbar-clock"><span id="clock"></span></p>';
                        
         $html .= '</div></div></nav>';

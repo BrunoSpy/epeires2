@@ -24,9 +24,9 @@ $this->form->prepare();
 
 <td><?php echo $this->formInput($this->form->get('tooltip'));?></td>
 
-<td><?php echo $this->formSubmit($this->form->get('submit'));?></td>
+<td><?php echo $this->formSubmit($this->form->get('submit')->setAttribute('class', 'btn btn-xs btn-primary'));?></td>
 
 <td>
-	<a id="cancel-form-field" class="btn btn-small" href="#" <?php if($this->id){ echo "data-id=".$this->id;}?>>Annuler</a>
+	<a id="cancel-form-field" class="btn btn-xs" href="#" <?php if($this->id){ echo "data-id=".$this->id;}?>>Annuler</a>
 </td>
 

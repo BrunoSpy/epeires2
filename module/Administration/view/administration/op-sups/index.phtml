@@ -1,6 +1,14 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/opsups.js')?>
-
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-12">
+<p></p>
+<div class="panel panel-default">
+<div class="panel-heading">
+	<h4 class="panel-title">Liste des superviseurs opérationnels</h4>
+</div>
+<div class="panel-body">
 <table class="table table-striped sortable">
 <thead>
 	<tr>
@@ -8,7 +16,7 @@
 		<th data-sort="string">Nom</th>
 		<th>Organisation</th>
 		<th>Zone de qualification</th>
-		<th><a class="btn btn-mini" href="#opsup-container" data-toggle="modal" id="add-opsup">Ajouter</a></th>
+		<th><a class="btn btn-xs btn-primary" href="#opsup-container" data-toggle="modal" id="add-opsup">Ajouter</a></th>
 	</tr>
 </thead>
 
@@ -27,7 +35,7 @@
 				class=\"mod-opsup\" 
 				data-id=\"".$opsup->getId()."\" 
 				data-name=\"".$opsup->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 		echo "<a 
 				title=\"Supprimer\" 
 				href=\"#confirm-delete-opsup\" 
@@ -35,7 +43,7 @@
 				class=\"delete-opsup\" 
 				data-id=\"".$opsup->getId()."\" 
 				data-name=\"".$opsup->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -43,16 +51,20 @@
 </tbody>
 
 </table>
-
-<?php echo $this->modalWindow("opsup-container", "<h3 id=\"opsup-title\">Nouveau Chef OP</h3>", "", "<div id=\"opsup-form\"></div>")?>
+</div>
+</div>
+</div>
+</div>
+</div>
+<?php echo $this->modalWindow("opsup-container", "<h4 id=\"opsup-title\">Nouveau Chef OP</h4>", "", "<div id=\"opsup-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-opsup",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer le chef OP <em><span id=\"opsup-name\"></span></em> de la liste ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-opsup-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+						"<button class=\"btn btn-danger\" id=\"delete-opsup-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 <?php $this->inlineScript()->captureStart();?>
@@ -64,7 +76,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

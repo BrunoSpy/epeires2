@@ -1,13 +1,21 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/ipos.js')?>
-
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-12">
+<p></p>
+<div class="panel panel-default">
+<div class="panel-heading">
+	<h4 class="panel-title">Liste des IPO</h4>
+</div>
+<div class="panel-body">
 <table class="table table-striped sortable">
 <thead>
 	<tr>
 		<th>id</th>
 		<th data-sort="string">Nom</th>
 		<th>Organisation</th>
-		<th><a class="btn btn-mini" href="#ipo-container" data-toggle="modal" id="add-ipo">Ajouter</a></th>
+		<th><a class="btn btn-xs btn-primary" href="#ipo-container" data-toggle="modal" id="add-ipo">Ajouter</a></th>
 	</tr>
 </thead>
 
@@ -25,7 +33,7 @@
 				class=\"mod-ipo\" 
 				data-id=\"".$ipo->getId()."\" 
 				data-name=\"".$ipo->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 		echo "<a 
 				title=\"Supprimer\" 
 				href=\"#confirm-delete-ipo\" 
@@ -33,7 +41,7 @@
 				class=\"delete-ipo\" 
 				data-id=\"".$ipo->getId()."\" 
 				data-name=\"".$ipo->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -41,16 +49,20 @@
 </tbody>
 
 </table>
-
-<?php echo $this->modalWindow("ipo-container", "<h3 id=\"ipo-title\">Nouvel IPO</h3>", "", "<div id=\"ipo-form\"></div>")?>
+</div>
+</div>
+</div>
+</div>
+</div>
+<?php echo $this->modalWindow("ipo-container", "<h4 id=\"ipo-title\">Nouvel IPO</h4>", "", "<div id=\"ipo-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-ipo",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer l'IPO <em><span id=\"ipo-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-ipo-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+						"<button class=\"btn btn-danger\" id=\"delete-ipo-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 <?php $this->inlineScript()->captureStart();?>

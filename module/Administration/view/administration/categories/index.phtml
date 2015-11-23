@@ -174,11 +174,11 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 <!-- Les fenêtres modales -->
 <!-- -------------------- -->
 <?php 
-echo $this->modalwindow("form-container", "<h3  id=\"form-title\"></h3>", "", "<div id=\"form\"></div>");
+echo $this->modalwindow("form-container", "<h4 id=\"form-title\"></h4>", "", "<div id=\"form\"></div>");
 
 echo $this->modalwindow(
 	"fieldscontainer", 
-	"<h3 id=\"fields-title\"></h3>",
+	"<h4 id=\"fields-title\"></h4>",
 	'', 
 	'<form action="' 
 		. $this->url('administration', array('controller' => 'fields', 'action'=>'save'))
@@ -187,37 +187,30 @@ echo $this->modalwindow(
 		.'</div>'
 		.'</form>'
 	);
+
+echo $this->modalwindow(
+    "confirm-delete",
+    '<h4>Confirmer la suppression ?</h4>',
+    "",
+    null,
+    '<p>Voulez-vous vraiment supprimer la catégorie <em><span id="cat_name"></span></em> ?</p>
+	 <p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>',
+    '<button class="btn btn-danger" id="delete-href">Confirmer</button>
+	 <button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>'
+    );
+
+echo $this->modalwindow(
+    "confirm-delete-field",
+    '<h4>Confirmer la suppression ?</h4>',
+    "",
+    null,
+    '<p>Voulez-vous vraiment supprimer le champ <em><span id="field_name"></span></em> ?</p>
+	 <p>Toutes les valeurs associées à ce champ seront supprimées.</p>',
+    '<button class="btn btn-danger" id="delete-field-href">Confirmer</button>
+	 <button id="cancel-delete-field" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>'
+    );
+
 ?>
-
-<div class="modal hide fade" id="confirm-delete">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Confirmer la suppression ?</h3>
-	</div>
-	<div class="modal-body">
-		<p>Voulez-vous vraiment supprimer la catégorie <em><span id="cat_name"></span></em> ?</p>
-		<p>Tous les évènements, modèles et champs personnalisés associés à cette catégorie seront supprimés.</p>
-	</div>	
-	<div class="modal-footer">
-		<a class="btn btn-danger" id="delete-href">Confirmer</a>
-		<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
-	</div>	
-</div>
-
-<div class="modal hide fade" id="confirm-delete-field">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Confirmer la suppression ?</h3>
-	</div>
-	<div class="modal-body">
-		<p>Voulez-vous vraiment supprimer le champ <em><span id="field_name"></span></em> ?</p>
-		<p>Toutes les valeurs associées à ce champ seront supprimées.</p>
-	</div>	
-	<div class="modal-footer">
-		<a class="btn btn-danger" id="delete-field-href">Confirmer</a>
-		<a id="cancel-delete-field" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
-	</div>	
-</div>
 
 <?php echo $this->partial('models/modals.phtml') ?>
 

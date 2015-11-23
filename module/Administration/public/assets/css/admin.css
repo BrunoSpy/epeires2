@@ -19,32 +19,9 @@
 body {
 	/* Due to 2 navbars fixed-top */
 	padding-top: 100px;
+	position: relative;
 }
 
-.block {
-	border: 1px solid #ccc;
-	background: white;
-	margin: 1em 0em;
-	border-top: none;
-}
-
-.block-content {
-	margin: 1em;
-	min-height: .25em;
-}
-
-.block-header {
-	margin-bottom: 0px;
-	border-right: none;
-	border-left: none;
-	-webkit-border-radius: 0px;
-	-moz-border-radius: 0px;
-	border-radius: 0px;
-}
-
-.block-header div {
-	padding-top: 10px;
-}
 
 th.no-border, td.no-border {
 	border: none;
@@ -62,24 +39,22 @@ input.pick-a-color {
 .sidenav {
     margin: 30px 0px 0px;
     padding: 0px;
-    background-color: #FFF;
-    border-radius: 6px;
-    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.067);
 }
 
-.sidenav > li:first-child > a {
-    border-radius: 6px 6px 0px 0px;
-}
-
-.sidenav > li:last-child > a {
-    border-radius: 0px 0px 6px 6px;
-}
-
-.sidenav > li > a {
+.nav.sidenav > li > a {
     display: block;
-    margin: 0px 0px -1px;
-    padding: 8px 14px;
-    border: 1px solid #E5E5E5;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #767676;
+}
+
+.nav.sidenav > .active > a {
+    padding-left: 18px;
+    font-weight: 700;
+    color: #563D7C;
+    background-color: transparent;
+    border-left: 2px solid #563D7C;
 }
 
 .sidenav .icon-chevron-right {
@@ -89,7 +64,17 @@ input.pick-a-color {
     opacity: 0.25;
 }
 
-.sidenav.affix {
-    width: 22.55%;
-    top: -10px;
+table .btn-xs {
+	margin: 0;
+}
+
+:target:before {
+  content:"";
+  display:block;
+  height:110px; /* fixed header height*/
+  margin:-110px 0 0; /* negative fixed header height */
+}
+
+#fields-table input {
+	max-width: 120px;
 }

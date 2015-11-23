@@ -1,24 +1,49 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radio.js')?>
 
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="block">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">1. Antennes </div>
+	<div class="row">
+		<div class="col-md-3" id="sidebar">
+			<ul class="nav sidenav">
+				<li>
+					<a href="#antennas">
+						1. Antennes
+					</a>
+				</li>
+				<li>
+					<a href="#frequencies">
+						2. Fréquences
+					</a>
+				</li>
+				<li>
+					<a href="#oldantennas">
+						3. Anciennes antennes
+					</a>
+				</li>
+				<li>
+					<a href="#oldfrequencies">
+						4. Anciennes fréquences
+					</a>
+				</li>
+			</ul>		
+		</div>
+		
+		<div class="col-md-9">
+			<p></p>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="antennas">1. Antennes </h4>
 				</div>
-				<div class="block-content collapse in">
-					<div class="span12">
+				<div class="panel-body">
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
 								<th data-sort="string">Nom</th>
 								<th data-sort="string">Nom abrégé</th>
 								<th data-sort="string">Organisation</th>
 								<th>Localisation</th>
-								<th><a href="#antenna-container" id="add-antenna" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+								<th><a href="#antenna-container" id="add-antenna" data-toggle="modal" class="btn btn-xs btn-primary">Ajouter</a></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -37,14 +62,14 @@
 													href=\"#antenna-container\"
 													class=\"mod-antenna\"
 													data-id=\"".$antenna->getId()."\"
-													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
 											echo "<a 
 													title=\"Supprimer\"
 													href=\"#confirm-delete-antenna\"
 													data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deleteantenna'))."?id=".$antenna->getId()."\"
 													class=\"delete-antenna\"
 													data-id=\"".$antenna->getId()."\"
-													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 										echo "</td>";
 									echo '</tr>';
 									}
@@ -52,23 +77,18 @@
 								?>
 							</tbody>
 						</table>
-					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-	<div class="row-fluid">
-		<div class="span12">
-				<div class="block">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">2. Fréquences</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="frequencies">2. Fréquences</h4>
 				</div>
-				<div class="block-content collapse in">
-					<div class="span12">
+				<div class="panel-body">
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
 								<th data-sort="string">Organisation</th>
@@ -76,7 +96,7 @@
 								<th>Antenne principale climax</th>
 								<th>Antenne secours</th>
 								<th>Antenne secours climax</th>
-								<th><a href="#frequency-container" id="add-frequency" data-toggle="modal" class="btn btn-mini">Ajouter</a></th>
+								<th><a href="#frequency-container" id="add-frequency" data-toggle="modal" class="btn btn-xs btn-primary">Ajouter</a></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -98,14 +118,14 @@
 													href=\"#frequency-container\"
 													class=\"mod-frequency\"
 													data-id=\"".$frequency->getId()."\"
-													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
 											echo "<a
 													title=\"Supprimer\"
 													href=\"#confirm-delete-frequency\"
 													data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deletefrequency'))."?id=".$frequency->getId()."\"
 													class=\"delete-frequency\"
 													data-id=\"".$frequency->getId()."\"
-													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 										echo "</td>";
 									echo '</tr>';
 								}
@@ -113,24 +133,18 @@
 							?>
 						</tbody>
 					</table>
-					</div>
 				</div>
 			</div>
-		</div>
-	</div>
 	
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="block">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">3. Anciennes antennes </div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="oldantennas">3. Anciennes antennes </h4>
 				</div>
-				<div class="block-content collapse in">
-					<div class="span12">
+				<div class="panel-body">
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
 								<th data-sort="string">Nom</th>
 								<th data-sort="string">Nom abrégé</th>
 								<th data-sort="string">Organisation</th>
@@ -154,38 +168,33 @@
 													href=\"#antenna-container\"
 													class=\"mod-antenna\"
 													data-id=\"".$antenna->getId()."\"
-													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
 											echo "<a 
 													title=\"Supprimer\"
 													href=\"#confirm-delete-antenna\"
 													data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deleteantenna'))."?id=".$antenna->getId()."\"
 													class=\"delete-antenna\"
 													data-id=\"".$antenna->getId()."\"
-													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+													data-name=\"".$antenna->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 										echo "</td>";
 									echo '</tr>';
 									}
 								}							
 								?>
-							</tbody>
-						</table>
-					</div>
+						</tbody>
+					</table>
 				</div>
 			</div>
-		</div>
-	</div>
-	<div class="row-fluid">
-		<div class="span12">
-				<div class="block">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">4. Anciennes fréquences</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="oldfrequencies">4. Anciennes fréquences</h4>
 				</div>
-				<div class="block-content collapse in">
-					<div class="span12">
+				<div class="panel-body">
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
 								<th data-sort="string">Organisation</th>
@@ -215,14 +224,14 @@
 													href=\"#frequency-container\"
 													class=\"mod-frequency\"
 													data-id=\"".$frequency->getId()."\"
-													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a> ";
+													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
 											echo "<a
 													title=\"Supprimer\"
 													href=\"#confirm-delete-frequency\"
 													data-href=\"".$this->url('administration', array('controller' => 'radio', 'action' => 'deletefrequency'))."?id=".$frequency->getId()."\"
 													class=\"delete-frequency\"
 													data-id=\"".$frequency->getId()."\"
-													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+													data-name=\"".$frequency->getValue()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 										echo "</td>";
 									echo '</tr>';
 								}
@@ -230,46 +239,48 @@
 							?>
 						</tbody>
 					</table>
-					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	
 </div>
 
 
 
-<?php echo $this->modalwindow("antenna-container", "<h3 id=\"antenna-title\"></h3>", "", "<div id=\"antenna-form\"></div>") ?>
+<?php echo $this->modalwindow("antenna-container", "<h4 id=\"antenna-title\"></h4>", "", "<div id=\"antenna-form\"></div>") ?>
 
 <?php echo $this->modalwindow("confirm-delete-antenna",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer l'antenne <em><span id=\"antenna-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-antenna-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+						"<button class=\"btn btn-danger\" id=\"delete-antenna-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 						
-<?php echo $this->modalwindow("frequency-container", "<h3 id=\"frequency-title\"></h3>", "", "<div id=\"frequency-form\"></div>") ?>
+<?php echo $this->modalwindow("frequency-container", "<h4 id=\"frequency-title\"></h4>", "", "<div id=\"frequency-form\"></div>") ?>
 
 <?php echo $this->modalwindow("confirm-delete-frequency",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer la fréquence <em><span id=\"frequency-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-frequency-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>				
+						"<button class=\"btn btn-danger\" id=\"delete-frequency-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>				
 
 
 
 <?php $this->inlineScript()->captureStart();?>
+
+$('.sidenav').affix();
+
+$('body').scrollspy({target:'#sidebar', offset:120});
 
 $(".sortable").stupidtable();
 
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

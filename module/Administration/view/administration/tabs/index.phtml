@@ -1,16 +1,16 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js');
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
       $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js');
 ?>
 
 <div class="container-fluid">
-    <div class="row-fluid">
-	<div class="span9">
-		<div class="block">
-			<div class="navbar navbar-inner block-header">
-				<div class="muted pull-left">Onglets </div>
+    <div class="row">
+	<div class="col-md-9">
+		<p></p>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">Onglets </h4>
 			</div>
-			<div class="block-content collapse in">
-				<div class="span12">
+			<div class="panel-body">
 				<table class="table table-striped sortable">
                                     <thead>
                                     <tr>
@@ -20,7 +20,7 @@
                                         <th>Catégories associées</th>
                                         <th>Rôles autorisés</th>
                                         <th>Catégories racines seulement</th>
-                                        <th><a class="btn btn-mini" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
+                                        <th><a class="btn btn-xs btn-primary" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -68,56 +68,55 @@
                                             	echo $role->getName().'<br/>';
                                             }
                                             echo '</td>';
-                                            echo '<td><i class="'.($tab->isOnlyroot() ? 'icon-ok' : 'icon-remove' ).'"></i></td>';
+                                            echo '<td><span class="'.($tab->isOnlyroot() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' ).'"></span></td>';
                                             echo '<td><a '
                                                     . 'href="#tab-container" '
                                                     . 'class="mod-tab" '
                                                     . 'data-id="'.$tab->getId().'" '
                                                     . 'data-name="'.$tab->getName().'" '
                                                     . 'title="Modifier" '
-                                                    . 'data-toggle="modal"><i class="icon-pencil"></i></a>';
+                                                    . 'data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></a>';
                                             echo ' <a '
                                             		. 'href="#tab-rm-container" '
                                             		. 'class="rm-tab" '
                                             		. 'data-id="'.$tab->getId().'" '
                                                     . 'data-name="'.$tab->getName().'" '
                                                     . 'title="Supprimer" '
-                                                    . 'data-toggle="modal"><i class="icon-trash"></i></a>';
+                                                    . 'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></a>';
                                             echo '</td>';
                                             echo '</tr>';
                                         }
                                         ?>
                                     </tbody>
                                 </table>
-				</div>
 			</div>
 		</div>
 	</div>
-        <div class="span3">
-            <div class="block">
-                <div class="navbar navbar-inner block-header">
-                    <div class="muted pull-left">Aide</div>
+        <div class="col-md-3">
+        	<p></p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Aide</h4>
                 </div>
-                <div class="block-content collapse in">
+                <div class="panel-body">
                     <p>Cette page permet de configurer de nouveaux onglets, positionnés après les onglets Radio et Radar.</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 			
-<?php echo $this->modalwindow("tab-container", "<h3 id=\"tab-title\"></h3>", "", "<div id=\"tab-form\"></div>") ?>
+<?php echo $this->modalwindow("tab-container", "<h4 id=\"tab-title\"></h4>", "", "<div id=\"tab-form\"></div>") ?>
 
 <?php echo $this->modalwindow("tab-rm-container",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer l'onglet <em><span id=\"tab-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-tab-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>
+						"<button class=\"btn btn-danger\" id=\"delete-tab-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
 
@@ -128,7 +127,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

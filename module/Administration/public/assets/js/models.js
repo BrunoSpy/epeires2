@@ -71,10 +71,12 @@ var models = function(url, urlapp){
 		if(typeof catid === 'undefined'){
 			$("#model-form").load(url+'/models/form', function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
+				$.material.checkbox();
 			});	
 		} else {
 			$("#model-form").load(url+'/models/form?catid='+catid, function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
+				$.material.checkbox();
 			});
 		}
 	});
@@ -108,13 +110,14 @@ var models = function(url, urlapp){
 	
 	$(document).on('change', 'select[name=category]', function(){
 		$(this).closest(".modal-body").find(".custom-fields").load(url+'/models/customfields?id='+$(this).val(), function(){
-			
+			$.material.checkbox();
 		});
 	});
 	$(document).on('click',".mod-model", function(){
 		$("#model-title").html("Modification de <em>"+$(this).data('name')+"</em>");
 		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'), function(){
 			//fillZoneFilters($("#model-container select[name=organisation]").val());
+		    	$.material.checkbox();
 		});	
 	});
 		
@@ -142,7 +145,7 @@ var models = function(url, urlapp){
 							'data-toggle="modal" '+
 							'data-id='+data.id+' '+
 							'data-name="'+data.name+'" '+
-							'> <i class="icon-pencil"></i></a>'+ 
+							'> <span class="glyphicon glyphicon-pencil"></span></a>'+ 
 							'<a '+
 							'href="#confirm-delete-model" '+
 							'data-toggle="modal" '+
@@ -151,7 +154,7 @@ var models = function(url, urlapp){
 							'class="delete-model" '+
 							'data-id='+data.id+' '+
 							'data-name="'+data.name+'" >'+ 
-							' <i class="icon-trash"></i></a></td>');
+							' <span class="glyphicon glyphicon-trash"></span></a></td>');
 				$("#models-container tbody").append(tr);
 			}
 			$("#model-container").modal('hide');

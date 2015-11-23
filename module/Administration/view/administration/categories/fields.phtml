@@ -7,11 +7,11 @@
 				<th>id</th>
 				<th>Nom</th>
 				<th>Type</th>
-                                <th>Multiple</th>
+                <th>Multiple</th>
 				<th>Défaut</th>
-                                <th>Aide</th>
-				<th style="width:20px;"> </th>
-				<th><a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-mini" id="new-field">Ajouter</a></th>
+                <th>Aide</th>
+				<th> </th>
+				<th><a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-xs btn-primary" id="new-field">Ajouter</a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -24,17 +24,17 @@
 			echo "<td>".$field->getId()."</td>";
 			echo "<td>".$field->getName()."</td>";
 			echo "<td>".$field->getType()->getName()."</td>";
-                        echo "<td>";
-                        if(!$this->isMultipleAllowed($field)){
-                            echo '<i class="icon-grey icon-remove"></i>';
-                        } else {
-                            if($field->isMultiple()){
-                                echo '<i class="icon-ok"></i>';
-                            } else {
-                                echo '<i class="icon-remove"></i>';
-                            }
-                        }                        
-                        echo "</td>";
+            echo "<td>";
+                if(!$this->isMultipleAllowed($field)){
+                    echo '<span class="glyphicon glyphicon-grey icon-remove"></span>';
+                } else {
+                    if($field->isMultiple()){
+                        echo '<span class="glyphicon glyphicon-ok"></span>';
+                    } else {
+                        echo '<span class="glyphicon glyphicon-remove"></span>';
+                    }
+                }                        
+            echo "</td>";
 			echo "<td>".nl2br($field->getDefaultValue())."</td>";
                         echo "<td>".$field->getTooltip()."</td>";
 			echo "<td>";
@@ -45,7 +45,7 @@
 			echo "<a href=\"#\"
 					class=\"mod-field\" 
 					data-id=\"".$field->getId()."\" 
-					data-name=\"".$field->getName()."\"><i class=\"icon-pencil\"></i></a> ";
+					data-name=\"".$field->getName()."\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
 			echo "<a href=\"#confirm-delete-field\" 
 					data-href=\"".$this->url('administration', 
 											array('controller'=>'fields', 'action'=>'delete'),
@@ -53,22 +53,20 @@
 					class=\"delete-field\" 
 					data-id=\"".$field->getId()."\" 
 					data-name=\"".$field->getName()."\" 
-					data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+					data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 			echo "</td>";
 			echo "</tr>";
 			$i++;
 		}
 		?>
-		<tr id="add-field">
-		</tr>
+		<tr id="add-field"></tr>
 		</tbody>
 	</table>
 	<?php } else {?>
-	<p>Aucun champ spécifique à cette catégorie : <a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-mini" id="new-field">Ajouter</a></p>
+	<p>Aucun champ spécifique à cette catégorie : <a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-xs btn-primary" id="new-field">Ajouter</a></p>
 	<table class="table table-striped">
 	<tbody>
-	<tr id="add-field">
-	</tr>
+		<tr id="add-field"></tr>
 	</tbody>
 	</table>
 	<?php }?>

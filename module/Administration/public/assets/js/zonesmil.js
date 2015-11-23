@@ -5,10 +5,11 @@ var mil = function(url){
 		$("#zone-title").html('Modification de <em>'+$(this).data('name')+'</em>');
 		$("#zone-form").load(url+'/mil/form?id='+$(this).data('id'), function(){
                     $(this).find(".pick-a-color").pickAColor();
+                    $.material.checkbox();
                 });
 	});
 	
-	$("#zone-container").on('click', 'input[type=submit]', function(event){
+	$("#zone-container").on('submit', 'input[type=submit]', function(event){
 		event.preventDefault();
 		$.post(url+'/mil/save', $("#MilCategory").serialize(), function(data){
 			location.reload();

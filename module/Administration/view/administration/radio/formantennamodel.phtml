@@ -13,8 +13,7 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('models')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formSelect($this->form->get('models')));
+echo $this->controlGroup($this->form->get('models'));
 
 ?>
 
@@ -25,7 +24,7 @@ echo $this->controlGroup($this->formLabel($this->form->get('models')->setLabelAt
 
 	echo $this->formSubmit($this->form->get('submit'));
 ?>
-<a class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();

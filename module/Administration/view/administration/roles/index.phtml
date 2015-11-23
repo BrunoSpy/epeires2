@@ -2,34 +2,34 @@
 
 
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span3" id="sidebar">
-		<ul class="nav nav-list sidenav">
+	<div class="row">
+		<div class="col-md-3" id="sidebar">
+		<ul class="nav sidenav">
 		<li><a href="#liste">0. Liste</a></li>
 		<?php 
 			$i = 1;
 			foreach ($this->config as $key => $value){
 				echo '<li>';
-				echo'<a href="#'.$key.'"><i class="icon-chevron-right"></i> '.$i.'. '.$key.'</a>';
+				echo'<a href="#'.$key.'">'.$i.'. '.$key.'</a>';
 				echo'</li>';
 				$i++;
 			}
 		?>
 		</ul>
 		</div>
-		<div class="span9">
-		<div class="block" id="liste">
-				<div class="navbar navbar-inner block-header">
-					<div class="muted pull-left">0. Liste </div>
+		<div class="col-md-9">
+		<p></p>
+		<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title"  id="liste">0. Liste </h4>
 				</div>
-				<div class="block-content collapse in">
-					<div class="span12">
+				<div class="panel-body">
 					<table class="table table-striped sortable">
 					<thead>
 						<tr>
 						<th>Nom</th>
 						<th>Parent</th>
-						<th><a class="btn btn-mini" href="#role-container" data-toggle="modal" id="add-role">Ajouter</a></th>
+						<th><a class="btn btn-xs btn-primary" href="#role-container" data-toggle="modal" id="add-role">Ajouter</a></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -45,7 +45,7 @@
 									class=\"mod-role\"
 									data-id=\"".$role->getId()."\"
 									data-name=\"".$role->getName()."\"
-									data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+									data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 							if($role->getName() != 'admin' && $role->getName() != 'guest'){
 								echo "<a
 								title=\"Supprimer\"
@@ -54,25 +54,23 @@
 								class=\"delete-role\"
 								data-id=\"".$role->getId()."\"
 								data-name=\"".$role->getName()."\"
-								data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+								data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 							}
 						echo '</td>';
 					}
 					?>
 					</tbody>
 					</table>
-					</div>
 				</div>
 		</div>
 		<?php 
 			$i = 1;
 			foreach ($this->config as $key => $value){
-				echo '<div class="block" id="'.$key.'">';
-				echo '<div class="navbar navbar-inner block-header">';
-				echo '<div class="muted pull-left">'.$i.'. '.$key.'</div>';
+				echo '<div class="panel panel-default">';
+				echo '<div class="panel-heading">';
+				echo '<h4 class="panel-title" id="'.$key.'">'.$i.'. '.$key.'</h4>';
 				echo '</div>';
-				echo '<div class="block-content collapse in">';
-				echo '<div class="span12">';
+				echo '<div class="panel-body">';
 				echo '<table class="table table-striped">';
 				echo '<thead><tr><th>Rôle</th>';
 				$permissions = array();
@@ -116,7 +114,6 @@
 				echo '</table>';
 				echo '</div>';
 				echo '</div>';
-				echo '</div>';
 				$i++;
 			}
 		?>
@@ -124,23 +121,26 @@
 	</div>
 </div>
 
-<?php echo $this->modalWindow("role-container", '<h3 id="role-title">Nouveau rôle</h3>', "", "<div id=\"role-form\"></div>")?>
+<?php echo $this->modalWindow("role-container", '<h4 id="role-title">Nouveau rôle</h4>', "", "<div id=\"role-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-role",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer le rôle <em><span id=\"role-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-role-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+						"<button class=\"btn btn-danger\" id=\"delete-role-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 
 <?php $this->inlineScript()->captureStart();?>
+$(document).ready(function(){
+	$.material.init();
+});
 
-$(".sidenav").affix({offset:{top:90}});
+$(".sidenav").affix();
 
-$('.sidenav').scrollspy();
+$('body').scrollspy({target:'#sidebar', offset:120});
 
 roles('<?php echo $this->url('administration'); ?>');
 

@@ -26,7 +26,7 @@ var users = function(url){
 		}, 'json');
 	});
 	
-	$("#user-container").on('click', '#User input[type=submit]', function(event){
+	$("#user-container").on('submit', '#User input[type=submit]', function(event){
 		event.preventDefault();
 		$.post(url+'/users/saveuser', $("#User").serialize(), function(data){
 			location.reload();

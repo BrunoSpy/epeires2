@@ -31,7 +31,7 @@ class IPOHelper extends AbstractHelper
 
     private $sm;
 
-    public function __invoke()
+    public function __invoke($iponumber = null)
     {
         $html = "";
         

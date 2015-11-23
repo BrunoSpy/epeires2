@@ -240,6 +240,10 @@ li .nav-header {
 	margin: 0px;
 }
 
+.form-horizontal .checkbox {
+    padding-top: 4px;
+}
+
 /* ************************** */
 
 a.em {

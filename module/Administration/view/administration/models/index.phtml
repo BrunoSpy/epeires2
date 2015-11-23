@@ -2,71 +2,82 @@
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 ?>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<p></p>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">Modèles</h4>
+				</div>
+				<div class="panel-body">
+					<table class="table table-striped sortable" id="models-table">
+                        <thead>
+                        	<tr>
+                        		<th>id</th>
+                                <th data-sort="string">Organisation</th>
+                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="string">Catégorie</th>
+                        		<th>Impact</th>
+                        		<th>Fiche réflexe</th>
+                                <th>Mémos</th>
+                                <th>Fichiers</th>
+                        		<th>Ponctuel</th>
+                        		<th>Liste</th>
+                        		<th>Recherche</th>
+                        		<th><a class="btn btn-xs btn-primary" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
+                        	</tr>
+                        </thead>
 
-<table class="table table-striped sortable" id="models-table">
-<thead>
-	<tr>
-		<th>id</th>
-                <th data-sort="string">Organisation</th>
-		<th data-sort="string">Nom</th>
-		<th data-sort="string">Catégorie</th>
-		<th>Impact</th>
-		<th>Fiche réflexe</th>
-                <th>Mémos</th>
-                <th>Fichiers</th>
-		<th>Ponctuel</th>
-		<th>Liste</th>
-		<th>Recherche</th>
-		<th><a class="btn btn-mini" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
-	</tr>
-</thead>
-
-<tbody>
-	<?php 
-	foreach ($this->models as $model){
-		echo '<tr id="model-'.$model->getId().'">';
-		echo '<td>'.$model->getId().'</td>';
-		echo '<td>'.$model->getOrganisation()->getName().'</td>';
-		echo '<td>'.$model->getName().'</td>';
-		echo '<td>'.$model->getCategory()->getName().'</td>';
-		echo '<td>'.$this->impact($model->getImpact()).'</td>';
-		echo '<td>'.$this->actions[$model->getId()].'</td>';
-                echo '<td>'.$this->alerts[$model->getId()].'</td>';
-                echo '<td>'.$this->files[$model->getId()].'</td>';
-		echo '<td>'.($model->isPunctual()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-		echo '<td>';
-                    echo "<input class=\"model-listable\" 
-					data-modelid=\"".$model->getId()."\"
-					type=\"checkbox\" ";
-                            if($model->isListable()){
-				echo "checked=\"checked\"";
-                            }
-                    echo ">";
-                echo '</td>';
-		echo '<td>'.($model->isSearchable()?"<i class=\"icon-ok icon-grey\"></i>":"<i class=\"icon-remove icon-grey\"></i>").'</td>';
-		echo '<td>';
-		echo "<a 
-				title=\"Modifier\" 
-				href=\"#model-container\" 
-				class=\"mod-model\" 
-				data-id=\"".$model->getId()."\" 
-				data-name=\"".$model->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-		echo "<a 
-				title=\"Supprimer\" 
-				href=\"#confirm-delete-model\" 
-				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
-				class=\"delete-model\" 
-				data-id=\"".$model->getId()."\" 
-				data-name=\"".$model->getName()."\" 
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
-		echo '</td>';
-		echo '</tr>';
-	}
-	?>
-</tbody>
-
-</table>
+                        <tbody>
+                        	<?php 
+                        	foreach ($this->models as $model){
+                        		echo '<tr id="model-'.$model->getId().'">';
+                        		echo '<td>'.$model->getId().'</td>';
+                        		echo '<td>'.$model->getOrganisation()->getName().'</td>';
+                        		echo '<td>'.$model->getName().'</td>';
+                        		echo '<td>'.$model->getCategory()->getName().'</td>';
+                        		echo '<td>'.$this->impact($model->getImpact()).'</td>';
+                        		echo '<td>'.$this->actions[$model->getId()].'</td>';
+                                echo '<td>'.$this->alerts[$model->getId()].'</td>';
+                                echo '<td>'.$this->files[$model->getId()].'</td>';
+                        		echo '<td>'.($model->isPunctual()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+                        		echo '<td>';
+                                            echo "<input class=\"model-listable\" 
+                        					data-modelid=\"".$model->getId()."\"
+                        					type=\"checkbox\" ";
+                                                    if($model->isListable()){
+                        				echo "checked=\"checked\"";
+                                                    }
+                                            echo ">";
+                                        echo '</td>';
+                        		echo '<td>'.($model->isSearchable()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+                        		echo '<td>';
+                        		echo "<a 
+                        				title=\"Modifier\" 
+                        				href=\"#model-container\" 
+                        				class=\"mod-model\" 
+                        				data-id=\"".$model->getId()."\" 
+                        				data-name=\"".$model->getName()."\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+                        		echo "<a 
+                        				title=\"Supprimer\" 
+                        				href=\"#confirm-delete-model\" 
+                        				data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$model->getId())))."\" 
+                        				class=\"delete-model\" 
+                        				data-id=\"".$model->getId()."\" 
+                        				data-name=\"".$model->getName()."\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                        		echo '</td>';
+                        		echo '</tr>';
+                        	}
+                        	?>
+                        </tbody>
+	                </table>
+				</div>
+		</div>
+	</div>
+</div>
 
 <?php echo $this->partial('models/modals.phtml') ?>
 
@@ -77,7 +88,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

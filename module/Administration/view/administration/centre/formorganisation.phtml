@@ -13,23 +13,17 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+echo $this->controlGroup($this->form->get('name'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('longname')->setLabelAttributes(array('class' => 'control-label'))),
-                                                $this->formInput($this->form->get('longname')));
+echo $this->controlGroup($this->form->get('longname'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('shortname')));
+echo $this->controlGroup($this->form->get('shortname'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('address')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formTextarea($this->form->get('address')));
+echo $this->controlGroup($this->form->get('address'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('iponumber')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('iponumber')));
+echo $this->controlGroup($this->form->get('iponumber'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('ipoemail')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('ipoemail')));
+echo $this->controlGroup($this->form->get('ipoemail'));
 
 ?>
 
@@ -40,7 +34,7 @@ echo $this->controlGroup($this->formLabel($this->form->get('ipoemail')->setLabel
 
 	echo $this->formSubmit($this->form->get('submit'));
 ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();

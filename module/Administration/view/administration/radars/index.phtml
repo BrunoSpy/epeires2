@@ -8,7 +8,7 @@
 		echo '<td>'.$radar->getName().'</td>';
 		echo '<td>'.$radar->getShortname().'</td>';
 		echo '<td>'.$radar->getOrganisation()->getName().'</td>';
-		echo '<td>'.($radar->isDecommissionned() ? '<i class="icon-remove"></i>' : '<i class="icon-ok"></i>');
+		echo '<td>'.($radar->isDecommissionned() ? '<span class="glyphicon glyphicon-remove"></span>' : '<span class="glyphicon glyphicon-ok"></span>');
 		echo '<td>';
 		echo "<a
 				title=\"Modifier\"
@@ -16,7 +16,7 @@
 				class=\"mod-radar\"
 				data-id=\"".$radar->getId()."\"
 				data-name=\"".$radar->getName()."\"
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 		echo "<a
 				title=\"Supprimer\"
 				href=\"#confirm-delete-radar\"
@@ -24,63 +24,86 @@
 				class=\"delete-radar\"
 				data-id=\"".$radar->getId()."\"
 				data-name=\"".$radar->getName()."\"
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 		echo '</td>';
 		echo '</tr>';
 	}
 ?>
 
-<h2>Radars en service</h2>
-
-<table class="table table-striped sortable">
-<thead>
-	<tr>
-		<th>id</th>
-		<th data-sort="string">Nom</th>
-		<th data-sort="string">Nom court</th>
-		<th>Organisation</th>
-		<th>En service</th>
-		<th><a class="btn btn-mini" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
-	</tr>
-</thead>
-
-<tbody>
-	<?php 	
-	foreach ($this->radars as $radar){
-		if(!$radar->isDecommissionned()){
-			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
-		}
-	}
-	?>
-</tbody>
-
-</table>
-
-<h2>Anciens radars</h2>
-
-<table class="table table-striped sortable">
-<thead>
-	<tr>
-		<th>id</th>
-		<th data-sort="string">Nom</th>
-		<th data-sort="string">Nom court</th>
-		<th>Organisation</th>
-		<th>En service</th>
-		<th></th>
-	</tr>
-</thead>
-
-<tbody>
-	<?php 	
-	foreach ($this->radars as $radar){
-		if($radar->isDecommissionned()){
-			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
-		}
-	}
-	?>
-</tbody>
-
-</table>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-3" id="sidebar">
+			<ul class="nav sidenav">
+				<li>
+					<a href="#radars">1. Radars</a>
+				</li>
+				<li>
+					<a href="#oldradars">2. Anciens radars</a>
+				</li>
+			</ul>
+		</div>
+		<div class="col-md-9">
+			<p></p>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="radars">1. Radars en service</h4>
+				</div>
+				<div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                        	<tr>
+                        		<th>id</th>
+                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="string">Nom court</th>
+                        		<th>Organisation</th>
+                        		<th>En service</th>
+                        		<th><a class="btn btn-xs btn-primary" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
+                        	</tr>
+                        </thead>
+                        <tbody>
+                        	<?php 	
+                        	foreach ($this->radars as $radar){
+                        		if(!$radar->isDecommissionned()){
+                        			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
+                        		}
+                        	}
+                        	?>
+                        </tbody>
+                    </table>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title" id="oldradars">2. Anciens radars</h4>
+				</div>
+				<div class="panel-body">
+					<table class="table table-striped sortable">
+                        <thead>
+                        	<tr>
+                        		<th>id</th>
+                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="string">Nom court</th>
+                        		<th>Organisation</th>
+                        		<th>En service</th>
+                        		<th></th>
+                        	</tr>
+                        </thead>
+                        
+                        <tbody>
+                        	<?php 	
+                        	foreach ($this->radars as $radar){
+                        		if($radar->isDecommissionned()){
+                        			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
+                        		}
+                        	}
+                        	?>
+                        </tbody>
+                    </table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <?php echo $this->modalWindow("radar-container", "<h3 id=\"radar-title\">Nouveau radar</h3>", "", "<div id=\"radar-form\"></div>")?>
 
@@ -95,6 +118,10 @@
 
 <?php $this->inlineScript()->captureStart();?>
 
+$('.sidenav').affix();
+
+$('body').scrollspy({target:'#sidebar', offset:120});
+
 radars('<?php echo $this->url('administration')?>');
 
 $(".sortable").stupidtable();
@@ -102,7 +129,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

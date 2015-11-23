@@ -1,73 +1,85 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/users.js')?>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12">
+			<p></p>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">Liste des utilisateurs</h4>
+				</div>
+				<div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                        	<tr>
+                        		<th>id</th>
+                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="string">Email</th>
+                        		<th>Organisation</th>
+                        		<th>Zone de qualification</th>
+                        		<th>Roles</th>
+                        		<th><a class="btn btn-xs btn-primary" href="#user-container" data-toggle="modal" id="add-user">Ajouter</a></th>
+                        	</tr>
+                        </thead>
+                        
+                        <tbody>
+                        	<?php 
+                        	foreach ($this->users as $user){
+                        		echo '<tr>';
+                        		echo '<td>'.$user->getId().'</td>';
+                        		echo '<td>'.$user->getUsername().'</td>';
+                        		echo '<td>'.$user->getEmail().'</td>';
+                        		echo '<td>'.$user->getOrganisation()->getName().'</td>';
+                        		echo '<td>'.($user->getZone() ? $user->getZone()->getName() : "").'</td>';
+                        		echo '<td>';
+                        			foreach($user->getRoles() as $role){
+                        				echo $role->getName()." ";
+                        			}
+                        		echo '</td>';
+                        		echo '<td>';
+                        		echo "<a 
+                        				title=\"Changer mot de passe\"
+                        				href=\"#user-container\"
+                        				class=\"change-password\"
+                        				data-id=\"".$user->getId()."\" 
+                        				data-name=\"".$user->getUsername()."\"
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>  ";
+                        		echo "<a 
+                        				title=\"Modifier\" 
+                        				href=\"#user-container\" 
+                        				class=\"mod-user\" 
+                        				data-id=\"".$user->getId()."\" 
+                        				data-name=\"".$user->getUsername()."\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+                        		echo "<a 
+                        				title=\"Supprimer\" 
+                        				href=\"#confirm-delete-user\" 
+                        				data-href=\"".$this->url('administration', array('controller'=>'users', 'action'=>'deleteuser'), array('query'=>array('id'=>$user->getId())))."\" 
+                        				class=\"delete-user\" 
+                        				data-id=\"".$user->getId()."\" 
+                        				data-name=\"".$user->getUsername()."\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                        		echo '</td>';
+                        		echo '</tr>';
+                        	}
+                        	?>
+                        </tbody>                    
+                    </table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
-<table class="table table-striped sortable">
-<thead>
-	<tr>
-		<th>id</th>
-		<th data-sort="string">Nom</th>
-		<th data-sort="string">Email</th>
-		<th>Organisation</th>
-		<th>Zone de qualification</th>
-		<th>Roles</th>
-		<th><a class="btn btn-mini" href="#user-container" data-toggle="modal" id="add-user">Ajouter</a></th>
-	</tr>
-</thead>
-
-<tbody>
-	<?php 
-	foreach ($this->users as $user){
-		echo '<tr>';
-		echo '<td>'.$user->getId().'</td>';
-		echo '<td>'.$user->getUsername().'</td>';
-		echo '<td>'.$user->getEmail().'</td>';
-		echo '<td>'.$user->getOrganisation()->getName().'</td>';
-		echo '<td>'.($user->getZone() ? $user->getZone()->getName() : "").'</td>';
-		echo '<td>';
-			foreach($user->getRoles() as $role){
-				echo $role->getName()." ";
-			}
-		echo '</td>';
-		echo '<td>';
-		echo "<a 
-				title=\"Changer mot de passe\"
-				href=\"#user-container\"
-				class=\"change-password\"
-				data-id=\"".$user->getId()."\" 
-				data-name=\"".$user->getUsername()."\"
-				data-toggle=\"modal\"><i class=\"icon-exclamation-sign\"></i></a>  ";
-		echo "<a 
-				title=\"Modifier\" 
-				href=\"#user-container\" 
-				class=\"mod-user\" 
-				data-id=\"".$user->getId()."\" 
-				data-name=\"".$user->getUsername()."\" 
-				data-toggle=\"modal\"><i class=\"icon-pencil\"></i></a>  ";
-		echo "<a 
-				title=\"Supprimer\" 
-				href=\"#confirm-delete-user\" 
-				data-href=\"".$this->url('administration', array('controller'=>'users', 'action'=>'deleteuser'), array('query'=>array('id'=>$user->getId())))."\" 
-				class=\"delete-user\" 
-				data-id=\"".$user->getId()."\" 
-				data-name=\"".$user->getUsername()."\" 
-				data-toggle=\"modal\"><i class=\"icon-trash\"></i> </a>";
-		echo '</td>';
-		echo '</tr>';
-	}
-	?>
-</tbody>
-
-</table>
-
-<?php echo $this->modalWindow("user-container", "<h3 id=\"user-title\">Nouvel utilisateur</h3>", "", "<div id=\"user-form\"></div>")?>
+<?php echo $this->modalWindow("user-container", "<h4 id=\"user-title\">Nouvel utilisateur</h4>", "", "<div id=\"user-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-user",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+						"<button class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 <?php $this->inlineScript()->captureStart();?>
@@ -79,7 +91,7 @@ $(".sortable").stupidtable();
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 

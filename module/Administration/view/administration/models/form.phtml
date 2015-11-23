@@ -66,7 +66,7 @@ if($this->form->has('custom_fields')){
 {  ?>    
 <div id="model-files">
     <h4 style="display: inline;">Fichiers</h4>
-    <a class="pull-right btn btn-mini" href="#add-file" data-toggle="modal" id="addfile">Ajouter fichier</a>
+    <a class="pull-right btn btn-xs btn-primary" href="#add-file" data-toggle="modal" id="addfile">Ajouter fichier</a>
     <table class="table table-hover" id="file-table">
         <tbody>
             <?php
@@ -77,14 +77,14 @@ if($this->form->has('custom_fields')){
 			echo '<td>'.($file->getReference() ? '#'.$file->getReference() : "N/A").'</td>';
 			echo '<td><a href="'.$this->basePath().$file->getPath().'" rel="external">'
 				. ($file->getName() ? $file->getName() : $file->getFilename()) . '</a></td>';
-			echo '<td><a href="'.$this->basePath().$file->getPath().'" rel="external"><i class="icon-download"></i></a></td>';
+			echo '<td><a href="'.$this->basePath().$file->getPath().'" rel="external"><span class="glyphicon glyphicon-download"></span></a></td>';
 			echo '<td><a class="delete-file" href="#confirm-delete-file" '
 				. 'data-id="'.$file->getId().'" '
 				. 'data-name="'.($file->getName() ? $file->getName() : $file->getFilename()).'" '
 				. 'data-toggle="modal" '
 				. 'data-href="'.$this->url('administration', array('controller' => 'models', 'action' => 'deletefile'), 
 										array('query' => array('id' => $file->getId(), 'modelid' => $this->form->get('id')->getValue()))).'">'
-				. '<i class="icon-trash"></a></td>';
+				. '<span class="glyphicon glyphicon-trash"></span></a></td>';
 			echo '</tr>';
 		}
             }
@@ -96,7 +96,7 @@ if($this->form->has('custom_fields')){
 
 <div id="alerts">
 	<h4 style="display:inline;">Mémos</h4>
-	<a class="pull-right btn btn-mini" href="#add-alert" data-toggle="modal" id="addalert">Ajouter mémo</a>
+	<a class="pull-right btn btn-xs btn-primary" href="#add-alert" data-toggle="modal" id="addalert">Ajouter mémo</a>
 	<table class="table table-hover alert-table">
 		<tbody>
 		<?php
@@ -119,7 +119,7 @@ if($this->form->has('custom_fields')){
                                     echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après le début de l\'évènement">'.(strlen($deltabegin) > 0 ? $deltabegin : "0").' min</td>';
                                     echo '<td data-toggle="tooltip" data-title="Déclenchement du mémo x minutes après la fin de l\'évènement">'.(strlen($deltaend) > 0 ? $deltaend : "0").' min</td>';
                                     echo '<td>'.$this->eventName($alarm).'</td>';
-                                    echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><i class="icon-trash"></i></a></td>';
+                                    echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><span class="glyphicon glyphicon-trash"></span></a></td>';
                                     echo '</tr>';
 				}
 			}
@@ -133,7 +133,7 @@ if($this->form->has('custom_fields')){
 <div>
 <h4 style="display:inline;">Fiche réflexe</h4>
 
-<a href="#action-container" id="new-action" data-parent="<?php echo $this->form->get('id')->getValue()?>" data-toggle="modal" class="pull-right btn btn-mini">Nouvelle action</a>
+<a href="#action-container" id="new-action" data-parent="<?php echo $this->form->get('id')->getValue()?>" data-toggle="modal" class="pull-right btn btn-xs btn-primary">Nouvelle action</a>
 </div>
 <?php } else {?>
 <div class="well">Enregistrer le modèle pour configurer la fiche réflexe.</div>
@@ -164,14 +164,14 @@ if($this->childs) {
 				data-id='.$child->getId().'
 				data-name="'.$this->eventName($child).'"
 				data-parent='.$this->form->get('id')->getValue().'
-				><i class="icon-pencil"></i></a> 
+				><span class="glyphicon glyphicon-pencil"></span></a> 
 				<a 
 				title="Supprimer" 
 				href="'.$this->url('administration', array('controller'=>'models', 'action'=>'delete'), array('query'=>array('id'=>$child->getId(), 'redirect'=>false))).'" 
 				class="action-delete" 
 				data-id='.$child->getId().' 
 				data-name="'.$this->eventName($child).'"> 
-				<i class="icon-trash"></i></a></td>';
+				<span class="glyphicon glyphicon-trash"></span></a></td>';
 		echo '</tr>';
             }
 	}
@@ -186,7 +186,7 @@ if($action){
 } else {
 	echo $this->formSubmit($this->form->get('submit')->setAttribute('id', 'save-model')); 
 }?>
-<a id="cancel-form-<?php echo ($action ? "action" : "model") ?>" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form-<?php echo ($action ? "action" : "model") ?>" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();

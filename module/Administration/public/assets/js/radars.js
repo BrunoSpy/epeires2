@@ -6,12 +6,16 @@ var radars = function(url){
 	
 	$("#add-radar").on('click', function(){
 		$("#radar-title").html("Nouveau radar");
-		$("#radar-form").load(url+'/radars/form');
+		$("#radar-form").load(url+'/radars/form', function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$(".mod-radar").on('click', function(){
 		$("#radar-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#radar-form").load(url+'/radars/form?id='+$(this).data('id'));
+		$("#radar-form").load(url+'/radars/form?id='+$(this).data('id'), function(e){
+		    $.material.checkbox();
+		});
 	});
 	
 	$("#radar-container").on('click', 'input[type=submit]', function(event){

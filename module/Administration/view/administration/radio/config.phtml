@@ -1,19 +1,26 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radio.js')?>
 
 
 <div class="container-fluid">
-	<div class="span12">
-		<div class="block">
-			<div class="navbar navbar-inner block-header">
-				<div class="muted pull-left">Regroupements affichés </div>
+	<div class="row">
+	<div class="col-md-3" id="sidebar">
+		<ul class="nav sidenav">
+			<li><a href="#groups">1. Regroupements</a></li>
+			<li><a href="#reflex">2. Fiches reflexes</a></li>
+		</ul>	
+	</div>
+	<div class="col-md-9">
+		<p></p>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title" id="groups">Regroupements affichés </h4>
 			</div>
-			<div class="block-content collapse in">
-				<div class="span12">
+			<div class="panel-body">
 				<table class="table table-striped sortable">
 					<thead>
 						<tr>
-							<th data-sort="string">Id<span class="arrow"> <i class="icon-arrow-down"></i></span></th>
+							<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
 							<th data-sort="string">Organisation</th>
 							<th data-sort="string">Zone</th>
 							<th data-sort="string">Nom</th>
@@ -34,19 +41,16 @@
 								echo '<td>'.$sectorsgroup->getName().'</td>';
 								echo '<td>';
 								
-								echo '<div id="switch_'.$sectorsgroup->getId().'"
-											data-sectorgroupid="'.$sectorsgroup->getId().'"
+								echo '<div class="togglebutton"><label>';
+								echo '<input type="checkbox"
+		                                    class="switch_display" 
+							                id="switch_'.$sectorsgroup->getId().'"
+							                data-sectorgroupid="'.$sectorsgroup->getId().'"
 											data-href="'.$this->url('administration',
 																		array('controller'=>'radio', 'action' => 'switchdisplay'),
 																		array('query' => array('id' => $sectorsgroup->getId()))).'"
-											class="group-switch make-switch switch-small"
-											data-off="danger"
-											data-on="success"
-											data-on-label="O"
-											data-off-label="N"
-											>';
-								echo '<input type="checkbox" '.($sectorsgroup->isDisplay() ? 'checked="checked"' : '').'>';
-								echo '</div>';
+											'.($sectorsgroup->isDisplay() ? 'checked="checked"' : '').'>';
+								echo '</label></div>';
 								
 								echo '</td>';
 								echo "<td>";
@@ -63,24 +67,20 @@
 							?>
 						</tbody>
 					</table>
-				</div>
 			</div>
 		</div>
-	</div>
-	
-        <div class="span12">
-		<div class="block">
-			<div class="navbar navbar-inner block-header">
-				<div class="muted pull-left">Fiches réflexes des antennes </div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title" id="reflex">Fiches réflexes des antennes </h4>
 			</div>
-			<div class="block-content collapse in">
-				<div class="span12">
+			<div class="panel-body">
 				<table class="table table-striped sortable">
 					<thead>
 						<tr>
 							<th data-sort="string">Antenne</th>
 							<th>Fiche réflexe</th>
-                                                        <th></th>
+                            <th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -89,34 +89,38 @@
 							echo '<tr>';
 								echo '<td data-id="'.$antenna->getId().'">'.$antenna->getName().'</td>';
 								echo '<td>'.($antenna->getModel() ? $antenna->getModel()->getName() : 'Aucun modèle associé.').'</td>';
-                                                                echo '<td><a href="#model-container" '
-                                                                . 'data-toggle="modal" '
-                                                                . 'data-name="'.$antenna->getName().'" '
-                                                                . 'data-id="'.$antenna->getId().'" '
-                                                                . 'class="change-model"><i class="icon-pencil"></i></a></td>';
-                                                        echo '</tr>';
-							}							
-							?>
+                                echo '<td><a href="#model-container" '
+                                . 'data-toggle="modal" '
+                                . 'data-name="'.$antenna->getName().'" '
+                                . 'data-id="'.$antenna->getId().'" '
+                                . 'class="change-model"><span class="glyphicon glyphicon-pencil"></span></a></td>';
+                            echo '</tr>';
+						}							
+						?>
 						</tbody>
 					</table>
-				</div>
-			</div>
-		</div>
+    			</div>
+    		</div>
+    	</div>
 	</div>
 </div>
 
 			
-<?php echo $this->modalwindow("model-container", "<h3 id=\"model-title\"></h3>", "", "<div id=\"model-form\"></div>") ?>
+<?php echo $this->modalwindow("model-container", "<h4 id=\"model-title\"></h4>", "", "<div id=\"model-form\"></div>") ?>
 
 
 <?php $this->inlineScript()->captureStart();?>
+
+$('.sidenav').affix();
+
+$('body').scrollspy({target:'#sidebar', offset:120});
 
 $(".sortable").stupidtable();
 
 $(".sortable").bind('aftertablesort', function(event, data){
 	var th = $(this).find("th");
     th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<i class=\"icon-arrow-down\"></i>" : "<i class=\"icon-arrow-up\"></i>";
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
     th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 
@@ -124,20 +128,6 @@ $("table th:eq(1)").trigger('click');
 
 radio('<?php echo $this->url('administration'); ?>');
 
-<?php if (isset($this->messages['success'])) { ?>
-	<?php foreach ($this->messages['success'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'success',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['error'])) { ?>
-	<?php foreach ($this->messages['error'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'error',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
+<?php echo $this->notifications($this->messages); ?>
                                         
 <?php $this->inlineScript()->captureEnd();?>

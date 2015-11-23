@@ -12,20 +12,15 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('organisation')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formSelect($this->form->get('organisation')));
+echo $this->controlGroup($this->form->get('organisation'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+echo $this->controlGroup($this->form->get('name'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('shortname')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('shortname')));
+echo $this->controlGroup($this->form->get('shortname'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('location')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('location')));
+echo $this->controlGroup($this->form->get('location'));
 
-echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formCheckbox($form->get('decommissionned')) . $this->formElementErrors($form->get('decommissionned')));
+echo $this->controlGroup($form->get('decommissionned'));
 
 ?>
 
@@ -36,7 +31,7 @@ echo $this->controlGroup($this->formLabel($form->get('decommissionned')->setLabe
 
 	echo $this->formSubmit($this->form->get('submit'));
 ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();
