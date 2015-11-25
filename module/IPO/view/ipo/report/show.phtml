@@ -8,12 +8,12 @@ $formatter = \IntlDateFormatter::create(
 		\IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
 ?>
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span3" id="sidebar">		
-			<ul class="nav nav-list report-sidenav">
+	<div class="row">
+		<div class="col-md-3" id="sidebar">		
+			<ul class="nav report-sidenav">
 				<li>
 					<a href="#AClasser">
-						<i class="icon-chevron-right"></i> Evènements à classer
+						<span class="glyphicon glyphicon-chevron-right"></span> Evènements à classer
 					</a>
 				</li>
 				<?php 
@@ -21,7 +21,7 @@ $formatter = \IntlDateFormatter::create(
 					if($reportcategory['category'] !== null) {
 						echo "<li>";
 						echo '<a  href="#'.$reportcategory['category']->getShortname().'">';
-						echo '<i class="icon-chevron-right"></i> '.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName();
+						echo $reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName();
 						echo '</a>';
 						echo "</li>";
 					}
@@ -29,18 +29,22 @@ $formatter = \IntlDateFormatter::create(
 				?>
 			<li>
 					<a href="#Exclus">
-						<i class="icon-chevron-right"></i> Evènements exclus
+						Evènements exclus
 					</a>
 				</li>	
 			<li>
-				<a href="<?php echo $this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId() ?>" class="btn"><i class="icon-download-alt"></i>Télécharger</a>
+				<a href="<?php echo $this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId() ?>" class="btn"><span class="glyphicon glyphicon-download-alt"></span>Télécharger</a>
 			</li>
 			</ul>
 		</div>
-		<div class="span9">
+		<div class="col-md-9">
 		<?php if($this->report !== null) :?>
 			<h1>&Eacute;dition du rapport <?php echo $this->report->getName() ?></h1>
-			<h2 id="AClasser">&Eacute;vènements à classer</h2>
+			<div class="panel panel-default">
+			<div class="panel-heading">
+			<h2 class="panel-title" id="AClasser">&Eacute;vènements à classer</h2>
+			</div>
+			<div class="panel-body">
 	           <table class="table table-striped">
 				<thead>
 					<tr>
@@ -85,10 +89,16 @@ $formatter = \IntlDateFormatter::create(
 	           ?>
 	           </tbody>
 			</table>
+			</div>
+			</div>
 			<?php 
 			foreach ($this->reportcategories as $reportcategory){
 				if($reportcategory['category'] !== null) {
-					echo '<h2 id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+				    echo '<div class="panel panel-default">';
+				    echo '<div class="panel-heading">';
+					echo '<h2 class"panel-title" id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+					echo '</div>';
+					echo '<div class="panel-body">';
 					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
 					echo '<thead>';
 					echo '<tr><th>Titre</th>';
@@ -120,8 +130,13 @@ $formatter = \IntlDateFormatter::create(
 					}
 					echo '</tbody>';
 					echo '</table>';
+					echo '</div></div>';
 				} else {
-					echo '<h2 id="Exclus">Evènements exclus</h2>';
+				    echo '<div class="panel panel-default">';
+				    echo '<div class="panel-heading">';
+					echo '<h2 class="panel-title" id="Exclus">Evènements exclus</h2>';
+					echo '</div>';
+					echo '<div class="panel-body">';
 					echo '<table class="table table-striped" id="category_null">';
 					echo '<thead>';
 					echo '<tr><th>Titre</th>';
@@ -153,6 +168,7 @@ $formatter = \IntlDateFormatter::create(
 					}
 					echo '</tbody>';
 					echo '</table>';
+					echo '</div></div>';
 				}
 			}
 			
@@ -170,9 +186,9 @@ $formatter = \IntlDateFormatter::create(
 
 <?php $this->inlineScript()->captureStart();?>
 
-$(".report-sidenav").affix({offset:{top:90}});
+$(".report-sidenav").affix();
 
-$('.report-sidenav').scrollspy();
+$('body').scrollspy({target: '#sidebar', offset:120});
 
 iposhow('<?php echo $this->url('ipo'); ?>');
 

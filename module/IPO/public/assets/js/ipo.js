@@ -17,6 +17,7 @@
 var url;
 
 var setUrl = function(urlt){
+    console.log(urlt);
   url = urlt;  
 };
 
@@ -34,7 +35,7 @@ $(document).ready(function(){
 		$("#report-form").load(url+'/report/newreport?id='+me.data('id'));
 	});
     
-	$("#report-container").on('click', 'input[type=submit]', function(event){
+	$("#report-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/report/savereport', $("#Report").serialize(), function(data){
 			if(data['messages']){

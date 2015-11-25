@@ -33,7 +33,7 @@ class MilController extends \Application\Controller\FormController
     public function configAction()
     {
         $viewmodel = new ViewModel();
-        $this->layout()->title = "Personnalisation > Page Zones militaires";
+        $this->layout()->title = "Onglets > Zones militaires";
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         

@@ -310,7 +310,7 @@ class RadioController extends \Application\Controller\FormController
     public function configAction()
     {
         $viewmodel = new ViewModel();
-        $this->layout()->title = "Personnalisation > Page Fréquence";
+        $this->layout()->title = "Onglets > Radio";
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         

@@ -182,9 +182,12 @@ ul.sector {
 
 ul.sector-list {
 	list-style: none;
-	color: white;
 	padding-left: 5px;
 	padding-right: 0px;
+}
+
+#popover-frequencies .arrow {
+	display: block;
 }
 
 #popover-frequencies .popover-content {
@@ -194,6 +197,11 @@ ul.sector-list {
 
 #popover-frequencies .popover-content ul {
 	list-style: none;
+	padding-left: 10px;
+}
+
+#popover-frequencies .popover {
+	background: rgba(255, 255, 255, 0.9) none repeat scroll 0% 0%;
 }
 
 .sector-freq>a, .antenna-color>li>a {
@@ -213,7 +221,6 @@ ul.sector-list {
 .popover-content li.divider {
 	height: 1px;
 	background-color: #E5E5E5;
-	border-bottom: 1px solid #FFF;
 	margin: 9px 1px;
 	overflow: hidden;
 }
@@ -230,6 +237,10 @@ li.sector-freq>a:after, li.submenu>a:after {
 	border-style: solid;
 	border-width: 5px 0 5px 5px;
 	content: " ";
+}
+
+ul.sector a:hover, a:focus {
+	color: #337AB7;
 }
 
 ul.antennas {

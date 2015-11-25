@@ -68,7 +68,7 @@ class ControlGroup extends AbstractHelper
         } else {
             $controlForm = $view->formInput($element);
         }
-        $result = "<div class=\"form-group" . $class . "\" " . $group_id . ">";
+        $result = "<div class=\"form-group " . $class . "\" " . $group_id . ">";
         if($element->getLabel() !== null) {
             $result .= $view->formLabel($element);
         }

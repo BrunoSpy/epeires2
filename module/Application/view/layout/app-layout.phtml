@@ -32,7 +32,6 @@
                         ->prependFile($this->basePath() . '/assets/js/application.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
                         ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
-                        ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
@@ -46,7 +45,7 @@
     </head>
     <body>
 
-	<?php echo $this->navbartop("blue", $this->iponumber, $this->zoneform); ?>
+	<?php echo $this->navbartop("blue", '', $this->iponumber, $this->zoneform); ?>
 
 	<?php echo $this->navbar("blue"); ?>
 

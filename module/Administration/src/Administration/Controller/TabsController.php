@@ -34,7 +34,7 @@ class TabsController extends \Application\Controller\FormController
     public function indexAction()
     {
         $viewmodel = new ViewModel();
-        $this->layout()->title = "Personnalisation > Onglets personnalisés";
+        $this->layout()->title = "Onglets > Gestion";
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         

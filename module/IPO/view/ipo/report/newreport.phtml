@@ -1,7 +1,7 @@
 
 
 <?php 
-$this->form->setAttribute('action', $this->url('ipo', array('controller'=>'index', 'action'=>'savereport')));
+$this->form->setAttribute('action', $this->url('ipo', array('controller'=>'report', 'action'=>'savereport')));
 $this->form->setAttribute('class', 'form-horizontal');
 $this->form->prepare();
 
@@ -13,14 +13,11 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('name')->setLabelAttributes(array('class' => 'control-label'))),
-						$this->formInput($this->form->get('name')));
+echo $this->controlGroup($this->form->get('name'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('week')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('week')->setAttributes(array('type'=>'week'))));
+echo $this->controlGroup($this->form->get('week'));
 
-echo $this->controlGroup($this->formLabel($this->form->get('year')->setLabelAttributes(array('class' => 'control-label'))),
-		$this->formInput($this->form->get('year')->setAttributes(array('type'=>'week'))));
+echo $this->controlGroup($this->form->get('year'));
 
 ?>
 
@@ -31,7 +28,7 @@ echo $this->controlGroup($this->formLabel($this->form->get('year')->setLabelAttr
 
 	echo $this->formSubmit($this->form->get('submit'));
 ?>
-<a id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</a>
+<button id="cancel-form" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
 </div>
 <?php 
 echo $this->form()->closeTag();

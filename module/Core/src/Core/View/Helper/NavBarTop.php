@@ -29,7 +29,7 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $iponumber, $zoneform = null) {
+    public function __invoke($color, $title, $iponumber, $zoneform = null) {
         
         $auth = $this->sm->get('ZfcRbac\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');
@@ -45,7 +45,7 @@ class NavBarTop extends AbstractHelper {
                           aria-expanded="false">
                       <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
                   </button>';
-        $html .= '<a class="navbar-brand visible-lg-block" href="#">Epeires<sup>2</sup></a>';
+        $html .= '<a class="navbar-brand visible-lg-block" href="#">Epeires<sup>2</sup>'.$title.'</a>';
         $html .= '</div>';
         
         $html .= '<div class="collapse navbar-collapse" id="navbar-first-collapse">';
