@@ -5,6 +5,10 @@
     $revision = shell_exec("git log -n 1 --pretty=format:'%h' --abbrev-commit");
     
     $commit = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
+    
+    $tag = shell_exec("git describe --exact-match --tags");
+    
+    $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
 ?>
 <div class="container-fluid">
 	<div class="row-fluid">
@@ -16,6 +20,7 @@
 				<div class="block-content collapse in">
 					<div class="span12">
                                             <p> Branche : <em><?php echo $branchname; ?></em></p>
+                                            <?php if($hasTag) { echo '<p> Tag : <em>'.$tag.'</em></p>'; }?>
                                             <p> Révision : <em><?php echo $revision." : ".$commit; ?></em></p>
 					</div>
 				</div>
