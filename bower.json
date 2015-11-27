@@ -27,7 +27,8 @@
     "jquery-stupid-table": "~1.0.1",
     "jquery-mousewheel": "~3.1.13",
     "bootstrap-material-datetimepicker": "gh-pages",
-    "bootstrap-material-design": "https://github.com/BrunoSpy/bootstrap-material-design.git#master"
+    "bootstrap-material-design": "https://github.com/BrunoSpy/bootstrap-material-design.git#master",
+    "arrive": "~2.3.0"
   },
   "resolutions": {
     "jquery": "~2.1.4",

@@ -72,7 +72,6 @@
 	border: none;
 	color: #4285F4 !important;
 	background: transparent;
-	font-weight: 500;
 }
 
 #Event .nav-tabs>li>a:not(.disabled)::after {
@@ -128,4 +127,11 @@
 #Event #memos-tab .btn-sm,
 #Event #files-tab .btn-sm {
 	margin-top: -10px;
+}
+
+#form-tabs .badge.ext {
+	position: relative;
+	top:-0.8em;
+	padding-left:6px;
+	padding-right:6px;
 }

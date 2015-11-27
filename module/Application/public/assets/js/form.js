@@ -192,7 +192,9 @@ var form = function(url, tabid){
 	$('#Event .nav-tabs > li').each(function(index){
 	    $(this).find('div.round')
 	    .removeClass('blue').addClass('grey')
-	    .empty().html('<strong>'+(index+1)+'</strong');
+	    var icon = $(this).find('div.round > span.glyphicon');
+	    icon.removeClass();
+	    icon.addClass('glyphicon glyphicon-' + icon.data('class'));
 	});
 	
 	if($('#categories-tab .form-group.has-error').length > 0){
@@ -208,21 +210,23 @@ var form = function(url, tabid){
 	}
 	
 	$('#Event .nav-tabs > li.valid > a:not(.disabled) > div.round')
-	.removeClass('grey blue orange').addClass('green')
-	.empty()
-	.html('<span class="glyphicon glyphicon-ok"></span>');
+	.removeClass('grey blue orange').addClass('green');
 	
 	$('#Event .nav-tabs > li.active > a:not(.disabled) > div.round')
 	    .removeClass('grey green orange')
-    	    .addClass('blue')
-    	    .empty()
-    	    .html('<span class="glyphicon glyphicon-pencil"></span>');
+    	    .addClass('blue');
 	
 	$('#Event .nav-tabs > li.invalid > a:not(.disabled) > div.round')
 	.removeClass('grey blue green').addClass('orange')
-	.empty()
-	.html('<span class="glyphicon glyphicon-warning-sign"></span>');	
+	.find('span.glyphicon')
+	.removeClass()
+	.addClass('glyphicon glyphicon-warning-sign');
     };
+    
+    $('#event').arrive('#memos-tab tr', function(){
+	var count = $('#memos-tab tr').length;
+	$('#memos-title span.badge').html(count);
+    });
     
     //gestion des tabs
     $('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
@@ -612,6 +616,8 @@ var form = function(url, tabid){
 	//getalerts
 	$.getJSON(url+'events/getalarms?id='+me.data('id'), 
 		function(data){
+	    $('#memos-tab #alarm-table').empty();
+	    $("#memos-title span.badge").empty();
 	    $.each(data, function(i, item){
 		formAddAlarm(item, true);
 	    });  
@@ -620,13 +626,28 @@ var form = function(url, tabid){
 	$('#description-tab').append("<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >");
     });
 
+    var rebootTabs = function () {
+	//suppression des champs liés à une sous-catégorie
+	$("#custom_fields").empty();
+	//suppression des mémos
+	$("#memos-tab #alarm-table").empty();
+	$("#memos-title span.badge").empty();
+	//suppression des modèles
+	$("#predefined_events").empty();
+	//suppression des fichiers
+	
+	//suppression des actions
+	
+	//suppression des notes
+	
+    };
+    
     //choosing a category
     $("#event").on("change", "#root_categories", function(){
 	//disable subcategories select form before getting datas
 	$('#subcategories option[value=-1]').prop('selected', true);
 	$('#subcategories').prop('disabled',true);
-	//suppression des champs liés à une sous-catégorie
-	$("#custom_fields").empty();
+	rebootTabs();
 
 	var root_value = $("#root_categories option:selected").val();
 
@@ -679,8 +700,6 @@ var form = function(url, tabid){
 	} else {
 	    //pas de catégories :
 	    $("#cat-title").removeClass('valid');
-	    $("#predefined_events").empty();
-	    $("#custom_fields").empty();
 	    $("input[name='submit']").prop('disabled', true).addClass('disabled');
 	    $("input[name='category']").val('');
 	    $("#hours-title a").addClass("disabled");
@@ -695,8 +714,7 @@ var form = function(url, tabid){
     $("#event").on("change", "#subcategories", function(){
 	var subcat_value = $("#subcategories option:selected").val();
 	if (subcat_value > 0) {
-	    //$("#category_title").html('Catégories : ' + $("#root_categories option:selected").text() + ' > ' + $("#subcategories option:selected").text());
-	    $("#custom_fields").empty();
+	    rebootTabs();
 	    $("input[name='category']").val(subcat_value);
 	    $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
 		    function(data) {

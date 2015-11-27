@@ -27,7 +27,7 @@ var fileupload = function(url) {
 
     function showProgress(amount, message) {
         $('#progress').show();
-        $('#progress .bar').width(amount + '%');
+        $('#progress .progress-bar').width(amount + '%');
         $('#progress > p').html(message);
         if (amount < 100) {
             $('#progress .progress')
