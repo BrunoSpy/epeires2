@@ -200,7 +200,7 @@ $(document).ready(function(){
                     //fiche ouverte
                     //mise à jour notes
                     $("#updates").load(url+'events/updates?id='+idFiche, function(){
-                        $("#updates").parent().find("span.badge").html($("#updates blockquote").size());
+                        $("#updates").closest('.panel').find(".panel-heading span.badge").html($("#updates blockquote").length);
                     });
                     $("#updates").show();
                     //mise à jour histo
@@ -259,8 +259,8 @@ $(document).ready(function(){
         p.empty();
         var form = $('<form data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></form>');
         form.append('<textarea name="note">'+me+'</textarea>');
-        form.append('<button class="btn btn-mini btn-primary" type="submit"><i class="icon-ok"></i></button>');
-        form.append('<a href="#" class="cancel-note btn btn-mini"><i class="icon-remove"></i></a>');
+        form.append('<button class="btn btn-xs btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span></button>');
+        form.append('<button href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button>');
         p.append(form);
     });
     

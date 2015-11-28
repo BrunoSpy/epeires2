@@ -31,10 +31,9 @@ var formAddFile = function(fileId, formData, modifiable){
 		'data-toggle="modal" '+
 	'><span class="glyphicon glyphicon-trash"></span></a></td>');
     }
-    $("#file-table").append(tr);
+    $("#file-table tbody").append(tr);
     var input = $('<input type="hidden" name="fichiers['+fileId+']" value="'+fileId+'"></input>');
     $("#files-tab").append(input);
-    //  $("#filesTitle span").html(parseInt($("#filesTitle span").html())+1);
 }
 
 /**
@@ -226,6 +225,21 @@ var form = function(url, tabid){
     $('#event').arrive('#memos-tab tr', function(){
 	var count = $('#memos-tab tr').length;
 	$('#memos-title span.badge').html(count);
+    });
+    
+    $('#event').arrive('#files-tab tr', function(){
+	var count = $('#files-tab tr').length;
+	$("#files-title span.badge").html(count);
+    });
+    
+    $('#event').arrive('#actions-tab tr', function(){
+	var count = $('#actions-tab tr').length;
+	$("#actions-title span.badge").html(count);
+    });
+    
+    $('#event').arrive('#notes-tab blockquote', function(){
+	var count =  $('#notes-tab blockquote').length;
+	$('#notes-title span.badge').html(count);
     });
     
     //gestion des tabs
@@ -609,6 +623,9 @@ var form = function(url, tabid){
 	//getfiles
 	$.getJSON(url+'events/getfiles?id='+me.data('id'),
 		function(data){
+	    $('#files-tab #file-table tbody').empty();
+	    $("#files-tab input").remove();
+	    $("#files-title span.badge").html('0');
 	    $.each(data, function(i, item){
 		formAddFile(item.id, item.datas, false);
 	    });
@@ -617,7 +634,7 @@ var form = function(url, tabid){
 	$.getJSON(url+'events/getalarms?id='+me.data('id'), 
 		function(data){
 	    $('#memos-tab #alarm-table').empty();
-	    $("#memos-title span.badge").empty();
+	    $("#memos-title span.badge").html('0');
 	    $.each(data, function(i, item){
 		formAddAlarm(item, true);
 	    });  
@@ -631,15 +648,19 @@ var form = function(url, tabid){
 	$("#custom_fields").empty();
 	//suppression des mémos
 	$("#memos-tab #alarm-table").empty();
-	$("#memos-title span.badge").empty();
+	$("#memos-title span.badge").html('0');
 	//suppression des modèles
 	$("#predefined_events").empty();
 	//suppression des fichiers
-	
+	$("#file-table tbody").empty();
+	$("#files-tab input").remove();
+	$('#files-title span.badge').html('0');
 	//suppression des actions
-	
+	$("#list-actions").remove();
+	$('#actions-title span.badge').html('0');
 	//suppression des notes
-	
+	$('#form-notes').empty();
+	$('#notes-title span.badge').html('0');
     };
     
     //choosing a category
@@ -757,7 +778,7 @@ var form = function(url, tabid){
     });
 
     $("#event").on('click', '.delete-file', function(){
-	$("a#delete-file-href").attr('href', $(this).data("href"));
+	$("button#delete-file-href").attr('href', $(this).data("href"));
 	$("#file_name").html($(this).data('name'));
 	$("#delete-file-href").data('id', $(this).data('id'));
     });
@@ -768,8 +789,8 @@ var form = function(url, tabid){
 	$('#confirm-delete-file').modal('hide');
 	$.post($("#delete-file-href").attr('href'), function(data){
 	    $("#file-table").find('tr#file_'+me.data('id')).remove();
-	    $('#inner-filesTitle input[name=fichiers\\['+me.data('id')+'\\]]').remove();
-	    $('#filesTitle span').html(parseInt($('#filesTitle span').html())-1);
+	    $('#files-tab input[name=fichiers\\['+me.data('id')+'\\]]').remove();
+	    $('#files-title span.badge').html(parseInt($('#files-title span.badge').html())-1);
 	    displayMessages(data);
 	}, 'json');
     });
@@ -845,7 +866,7 @@ var form = function(url, tabid){
 	var id = me.closest('tr').data('id');
 	me.closest('tr').remove();
 	$('div#alarm-'+id).remove();
-	$('#alarmTitle span').html(parseInt($('#alarmTitle span').html())-1);
+	$('#memos-tile span.badge').html(parseInt($('#memos-title span.badge').html())-1);
     });
 
     $("#event").on('click', '.delete-alarm', function(e){
@@ -855,7 +876,7 @@ var form = function(url, tabid){
 	$.post(url+'alarm/delete?id='+id, function(data){
 	    if(!data['error']){
 		me.closest('tr').remove();
-		$('#alarmTitle span').html(parseInt($('#alarmTitle span').html())-1);
+		$('#memos-tile span.badge').html(parseInt($('#memos-tile span.badge').html())-1);
 		deleteAlarm(id);
 	    }
 	    displayMessages(data);
@@ -897,10 +918,10 @@ var form = function(url, tabid){
 	$("#add-note").data('id', $(this).data('id'));
     });
 
-    $("#add-note-modal").on('hide', function(){
+    $("#add-note-modal").on('hide.bs.modal', function(){
 	//update notes
 	$("#form-notes").load(url+'events/updates?id='+$("#add-note").data('id'), function(){
-	    $("#notesTitle").html("Notes <span class=\"pull-right badge\">"+$("#form-notes blockquote").length+"</span>");
+	    
 	});
     });
 

@@ -29,13 +29,29 @@
 
 <div class="modal-body">
 	<ul class="nav nav-tabs" role="tablist" id="form-tabs">
-		<li role="presentation" class="active" id="cat-title"><a href="#categories-tab" data-toggle="tab"><div class="round round-sm blue"><span data-class="tags" class="glyphicon glyphicon-tags"></span></div> Catégories et modèles</a></li>
-		<li role="presentation" id="hours-title"><a href="#hours-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="time" class="glyphicon glyphicon-time"></span></div> Horaires</a></li>
-		<li role="presentation" id="description-title"><a href="#description-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="folder-open" class="glyphicon glyphicon-folder-open"></span></div> Description</a></li>
-		<li role="presentation" id="memos-title"><a href="#memos-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="bell" class="glyphicon glyphicon-bell"></span></div> Mémos<span class="badge ext"></span></a></li>
-		<li role="presentation" id="files-title"><a href="#files-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="file" class="glyphicon glyphicon-file"></span></div> Fichiers</a></li>
-		<li role="presentation" id="actions-title"><a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="tasks" class="glyphicon glyphicon-tasks"></span></div> Fiche réflèxe</a></li>
-		<li role="presentation" id="notes-title"><a href="#notes-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="edit" class="glyphicon glyphicon-edit"></span></div> Notes</a></li>
+		<li role="presentation" class="active" id="cat-title">
+			<a href="#categories-tab" data-toggle="tab">
+				<div class="round round-sm blue"><span data-class="tags" class="glyphicon glyphicon-tags"></span></div> Catégories et modèles
+			</a>
+		</li>
+		<li role="presentation" id="hours-title">
+			<a href="#hours-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="time" class="glyphicon glyphicon-time"></span></div> Horaires</a>
+		</li>
+		<li role="presentation" id="description-title">
+			<a href="#description-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="folder-open" class="glyphicon glyphicon-folder-open"></span></div> Description</a>
+		</li>
+		<li role="presentation" id="memos-title">
+			<a href="#memos-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="bell" class="glyphicon glyphicon-bell"></span></div> Mémos<span class="badge ext">0</span></a>
+		</li>
+		<li role="presentation" id="files-title">
+			<a href="#files-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="file" class="glyphicon glyphicon-file"></span></div> Fichiers<span class="badge ext">0</span></a>
+		</li>
+		<li role="presentation" id="actions-title">
+			<a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="tasks" class="glyphicon glyphicon-tasks"></span></div> Fiche réflèxe<span class="badge ext">0</span></a>
+		</li>
+		<li role="presentation" id="notes-title">
+			<a href="#notes-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="edit" class="glyphicon glyphicon-edit"></span></div> Notes<span class="badge ext">0</span></a>
+		</li>
 	</ul>
 
 	<div class="tab-content">
@@ -259,6 +275,14 @@
 	   <?php 
 	   $countfiles = 0;
 	   $mod = false;
+	   if($this->zfcUserIdentity()){
+           if($this->event) {
+               $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
+           } else {
+               //pas de modification possible d'un modèle
+               $mod = false;
+           }
+       }
 	   //ajout de fichier si nouvel evt ou mod avec droits ok
 	   if(!$this->event || $this->model || ($this->event && $mod)){
 	       echo "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span> Ajouter un fichier</a>";
@@ -272,15 +296,6 @@
 	       }
 	       if($this->model) {
 	           $files = $this->model->getFiles();
-	       }
-	       	
-	       if($this->zfcUserIdentity()){
-	           if($this->event) {
-	               $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
-	           } else {
-	               //pas de modification possible d'un modèle
-	               $mod = false;
-	           }
 	       }
 	   
 	       if(count($files) > 0){
@@ -345,6 +360,10 @@
 	   <div role="tabpanel" class="tab-pane fade" id="notes-tab">
 	   <?php 
 	   if($this->event){
+	       //ajout de notes si droits ok
+	       if($mod){
+	           echo "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span>Ajouter une note</a>";
+	       }
 	       $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
 	           \IntlDateFormatter::FULL,
 	           \IntlDateFormatter::FULL,
@@ -355,15 +374,10 @@
 	       foreach ($this->event->getUpdates() as $update){
 	           echo "<blockquote>"
 	               . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
-	                   . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
-	                       . "</blockquote>";
+	               . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
+	               . "</blockquote>";
 	       }
 	       echo '</div>';
-	       //ajout de notes si droits ok
-	       if($mod){
-	           echo "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-small pull-right\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
-	       }
-	   
 	   }
 	   ?>
 	   </div>
