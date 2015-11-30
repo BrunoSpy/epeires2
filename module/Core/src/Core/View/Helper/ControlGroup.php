@@ -45,8 +45,8 @@ class ControlGroup extends AbstractHelper
         $controlForm;
         
         $element->setLabelAttributes(array('class' => 'control-label '.($large ? 'col-sm-2' : 'col-sm-3').$labelclass));
-        $class = $element->getAttribute('class');
-        $element->setAttributes(array('class' => 'form-control '.$class));
+        $elementClass = $element->getAttribute('class');
+        $element->setAttributes(array('class' => 'form-control '.$elementClass));
         
         if ($element instanceof \Zend\Form\Element\Select) {
             $controlForm = $view->formSelect($element);
@@ -62,8 +62,8 @@ class ControlGroup extends AbstractHelper
                                . $view->formElementErrors($element)
                                . '<div id="file-errors" class="help-block"></div>'
                                . '<div id="progress" class="help-block">'
-                               . '<div class="progress progress-info progress-striped active">'
-                               . '<div class="bar"></div>'
+                               . '<div class="progress">'
+                               . '<div class="progress-bar progress-bar-info progress-bar-striped active"></div>'
                                . '</div><p></p></div>';
         } else {
             $controlForm = $view->formInput($element);

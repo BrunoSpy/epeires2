@@ -1,10 +1,17 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/antenna.js')?>
+<?php 
+$this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/antenna.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/radio.css');
+?>
 
+
+<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+
+<div class="main-nav" id="fiche"></div>
+<div class="page-wrap">
 <div class="container-fluid" id="radio">
 	<div class="row">
-		<div class="col-sm-3 panel-left" id="fiche" style="margin-left: -23%; display: none"></div>
-		<div class="col-sm-9" id="frequencies" style="margin-left: 0px">
+		<div class="col-sm-9" id="frequencies">
 			<?php
             $i = 0;
             foreach ($this->groups as $group) {
@@ -69,9 +76,10 @@
 							<?php
                             foreach ($this->antennas as $antennaid => $antenna) {
                                 echo '<tr id="antenna-' . $antennaid . '" data-id="' . $antennaid . '" data-shortname="' . $antenna['shortname'] . '">';
-                                echo '<td>' . $antenna['name'] . ' (' . $antenna['shortname'] . ')</td>';
+                                echo '<td>' . $antenna['name'] . ' (' . $antenna['shortname'] . ') ';
+                                echo '<a href="#" data-id="'.$antennaid.'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                                echo '</td>';
                                 echo '<td>';
-                                
                                 echo '<div class="togglebutton">';
                                 echo '<label>';
                                 echo '<input
@@ -104,16 +112,17 @@
 		</div>
 	</div>
 </div>
+</div>
 <div id="popover-frequencies"></div>
 <?php
 
-echo $this->modalwindow("confirm-end-event", "<h3>Antenne <em><span id=\"antenna_name\"></span></em></h3>", "", null, "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>
-						<p>L'heure actuelle sera utilisée comme heure de fin.</p>", "<a class=\"btn btn-danger\" id=\"end-antenna-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" id=\"cancel-antenna\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+echo $this->modalwindow("confirm-end-event", "<h4>Antenne <em><span id=\"antenna_name\"></span></em></h4>", "", null, "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>
+						<p>L'heure actuelle sera utilisée comme heure de fin.</p>", "<button class=\"btn btn-danger\" id=\"end-antenna-href\">Confirmer</button>
+						<button class=\"btn\" href=\"#\" id=\"cancel-antenna\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
 <?php
-echo $this->modalwindow("fne-brouillage", "<h3>Fiche brouillage fréquence <em><span id=\"frequency_name\"></span></em></h3>", "", "<div id=\"form-brouillage\"></div>");
+echo $this->modalwindow("fne-brouillage", "<h4>Fiche brouillage fréquence <em><span id=\"frequency_name\"></span></em></h4>", "", "<div id=\"form-brouillage\"></div>");
 
 ?>
 
@@ -127,7 +136,9 @@ $("#create-link").remove();
 
 $("#create-evt").remove();
 
-$("#zoomform").remove(); $('#search').remove();
+$("#zoomform").remove();
+
+$('#search').remove();
 
 $(".sortable").stupidtable();
 

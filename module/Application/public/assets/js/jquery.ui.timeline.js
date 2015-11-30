@@ -884,7 +884,7 @@
                 this._hideCategories();
             }
             //then update height of timeline
-            var height = maxY - this.options.topOffset;
+            var height = $(window).height() - this.options.topOffset;
             maxY = (maxY > height ? maxY : height);
             this.element.css('height', maxY + 'px');
         },

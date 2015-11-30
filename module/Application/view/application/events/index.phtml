@@ -41,30 +41,30 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
 <?php 
 //modal windows to modify or delete file
 echo $this->modalwindow("confirm-delete-file",
-					"<h3>Confirmer la suppression du fichier ?</h3>",
+					"<h4>Confirmer la suppression du fichier ?</h4>",
 					"",
 					null,
 					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
-					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
-					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+					"<button class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</button>
+					<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
 <?php
 
 echo $this->modalwindow(
     "add-file",
-    "<h3>Ajout d'un fichier</h3>",
+    "<h4>Ajout d'un fichier</h4>",
     "",
     "<div id=\"file-upload-form\"></div>"
     );
 
 echo $this->modalwindow("add-alarm",
-	"<h3 id=\"alarm-title\">Ajout d'un mémo</h3>",
+	"<h4 id=\"alarm-title\">Ajout d'un mémo</h4>",
 	"",
 	"<div id=\"alarm-form\"></div>");
     
 echo $this->modalwindow('add-note-modal',
-        "<h3 class=\"modal-title\">Ajout d'une note</h3>",
+        "<h4 class=\"modal-title\">Ajout d'une note</h4>",
         "",
         "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
         . "<div class=\"modal-body\">"

@@ -15,30 +15,33 @@ switch ($this->part) {
             echo '</div>';
         } else {
             echo '<div class="col-md-6">';
-            
+            echo '<table>';
+            echo '<tbody>';
             $count = count($values);
             $i = 1;
             $separated = false;
             foreach ($this->values as $key => $value) {
-                echo '<div class="container-fluid">';
-                    echo '<div class="models-col-1 hidden-xs">';
+                    echo '<tr>';
+                    echo '<td class="hidden-xs">';
                         echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
-                    echo '</div>';
-                    echo '<div class="models-col-2">';
-                    echo '<p> '.$value.'</p>';
-                    echo '</div>';
-                    echo '<div class="models-col-3">';
-                    echo '<span class="pull-right"><button data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span>';
-                    echo ' </div>';
-                echo '</div>';
+                    echo '</td>';
+                    echo '<td class="tr-value"> '.$value.'</td>';
+                    echo '<td><span class="pull-right"><button data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span></td>';
+                    echo '</tr>';
+                    
                 if ($i >= $count / 2 && ! $separated) {
+                    echo '</tbody>';
+                    echo '</table>';
                     echo '</div>';
                     echo '<div class="col-md-6">';
+                    echo '<table>';
+                    echo '<tbody>';
                     $separated = true;
                 }
                 $i ++;
             }
-            
+            echo '</tbody>';
+            echo '</table>';
             echo '</div>';
         }
         break;

@@ -1,39 +1,23 @@
 /*
- *  This file is part of Epeires².
- *  Epeires² is free software: you can redistribute it and/or modify
+ *  This file is part of Epeiresï¿½.
+ *  Epeiresï¿½ is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
  *  published by the Free Software Foundation, either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Epeires² is distributed in the hope that it will be useful,
+ *  Epeiresï¿½ is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Affero General Public License for more details.
  *
  *  You should have received a copy of the GNU Affero General Public License
- *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *  along with Epeiresï¿½.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
  @CHARSET "ISO-8859-1";
  
  #create-evt .modal-content {
  	min-height: 300px; 
- }
- 
- .models-col-1 {
- 	width: 40px;
- 	float:left;
- }
- 
- .models-col-2 {
- 	width: calc(100% - 137px);
-  	float:left;
-  	margin-left:5px;
- }
- 
- .models-col-3 {
- 	width: 92px;
-  	float:left;
  }
  
  #create-evt .modal-lg {
@@ -72,7 +56,6 @@
 	border: none;
 	color: #4285F4 !important;
 	background: transparent;
-	font-weight: 500;
 }
 
 #Event .nav-tabs>li>a:not(.disabled)::after {
@@ -110,7 +93,11 @@
 }
 
 #predefined_events i {
-	margin-top: 6px;
+	margin-top: 7px;
+}
+ 
+#predefined_events td.tr-value {
+	padding: 5px;
 }
  
 #Event #description-tab:not(.active) {
@@ -126,6 +113,14 @@
 }
 
 #Event #memos-tab .btn-sm,
-#Event #files-tab .btn-sm {
+#Event #files-tab .btn-sm,
+#Event #notes-tab .btn-sm {
 	margin-top: -10px;
+}
+
+#form-tabs .badge.ext {
+	position: relative;
+	top:-0.8em;
+	padding-left:6px;
+	padding-right:6px;
 }

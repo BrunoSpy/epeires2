@@ -1,0 +1,241 @@
+/*
+ *  This file is part of Epeires².
+ *  Epeires² is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  Epeires² is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ 
+.page-wrap {
+	float: right;
+	width: 100%;
+	transition: width 0.3s ease;
+}
+
+.main-nav-check {
+	display: none;
+}
+
+.main-nav {
+	position: fixed;
+	width: 0;
+	height: calc(100% - 100px);
+	overflow-y: auto;
+	transition: width 0.3s ease;
+	padding-left: 15px;
+}
+
+#main-nav-check:checked+.main-nav {
+	width: 20%;
+}
+
+#main-nav-check:checked ~ .page-wrap {
+	width: 80%;
+}
+
+/******* Page radio *******/
+#radio.container-fluid {
+	margin-top: 10px;
+}
+
+.nav-status-alert {
+	text-shadow: 0px 0px 3px rgba(255, 0, 0, 1) !important;
+	background: linear-gradient(to bottom, #efc5ca 0%, #d24b5a 50%, #ba2737 51%, #f18e99
+		100%);
+	color: white !important;
+}
+
+ul.sector {
+	display: block !important;
+	position: static;
+	margin-right: 1em;
+	min-width: 110px;
+	padding-bottom: 0px;
+	margin-bottom: 10px;
+}
+
+ul.sector-list {
+	list-style: none;
+	padding-left: 5px;
+	padding-right: 0px;
+}
+
+#popover-frequencies .arrow {
+	display: block;
+}
+
+#popover-frequencies .popover-content {
+	padding-left: 0px;
+	padding-bottom: 0px;
+}
+
+#popover-frequencies .popover-content ul {
+	list-style: none;
+	padding-left: 10px;
+}
+
+#popover-frequencies .popover {
+	background: rgba(255, 255, 255, 0.9) none repeat scroll 0% 0%;
+}
+
+.sector-freq>a, .antenna-color>li>a {
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.sector-name {
+	text-align: center;
+	font-weight: bold;
+}
+
+.sector-freq {
+	text-align: center;
+}
+
+.popover-content li.divider {
+	height: 1px;
+	background-color: #E5E5E5;
+	margin: 9px 1px;
+	overflow: hidden;
+}
+
+li.sector-freq>a:after, li.submenu>a:after {
+	display: block;
+	float: right;
+	width: 0;
+	height: 0;
+	margin-top: 5px;
+	margin-right: 10px;
+	border-color: transparent;
+	border-left-color: #cccccc;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	content: " ";
+}
+
+ul.sector a:hover, a:focus {
+	color: #337AB7;
+}
+
+ul.antennas {
+	list-style: none;
+	margin-left: 0px;
+	padding-left: 0px;
+}
+
+ul.antennas>div>li>a:after {
+	display: block;
+	float: right;
+	width: 0;
+	height: 0;
+	margin-top: 5px;
+	margin-right: 10px;
+	border-color: transparent;
+	border-left-color: #cccccc;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	content: " ";
+}
+
+.sector-color {
+	height: 100%;
+	margin-top: -5px;
+	padding-top: 5px;
+	margin-bottom: -9px;
+	padding-bottom: 9px;
+	border-radius: 6px 6px 0px 0px;
+}
+
+.antenna-color {
+	height: 100%;
+	float: left;
+	width: 50%;
+	margin-top: -10px;
+	padding-top: 10px;
+	padding-bottom: 5px;
+}
+
+.antenna-climax-color {
+	margin-top: 0px;
+	padding-top: 5px;
+}
+
+.mainantenna-color {
+	padding-left: 5px;
+	margin-right: 0px;
+}
+
+ul>.antennas:last-child>.mainantenna-color {
+	border-radius: 0px 0px 0px 6px;
+}
+
+.backupantenna-color {
+	padding-left: 5px;
+}
+
+ul>.antennas:last-child>.backupantenna-color {
+	border-radius: 0px 0px 6px 0px;
+}
+
+ul>.antennas>.antenna-color.mainantenna-color:only-child {
+	padding-right: 0px;
+}
+
+.background-status-ok {
+	background-image: linear-gradient(to bottom, #51a351, #62c462);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.background-status-planned {
+	background-image: linear-gradient(to bottom, rgb(47, 150, 180),
+		rgb(91, 192, 222));
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.background-status-fail {
+	background-image: linear-gradient(to bottom, #bd362f, #ee5f5b);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.background-status-warning {
+	background-image: linear-gradient(to bottom, #FBB450, #F89406);
+	background-repeat: repeat-x;
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.background-status-test {
+	box-shadow: 10px 5px 10px rgba(255, 255, 0, 1);
+}
+
+.background-selected {
+	font-weight: bold;
+}
+
+.background-selected a {
+	text-shadow: 1px 1px 3px rgba(1, 1, 1, 0.9) !important
+}
+
+.vertical-scroll {
+	overflow-y: auto;
+	max-height: 200px;
+}
+
+.vertical-scroll ul {
+	margin-bottom: 0px;
+}

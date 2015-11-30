@@ -29,7 +29,7 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $title, $iponumber, $zoneform = null) {
+    public function __invoke($color, $title, $iponumber = null, $zoneform = null) {
         
         $auth = $this->sm->get('ZfcRbac\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');

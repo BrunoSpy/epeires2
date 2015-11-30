@@ -997,9 +997,22 @@ class FrequenciesController extends TabController
             }
         }
         
+        $qb = $objectManager->createQueryBuilder();
+        $qb->select(array(
+            'e',
+            'cat'
+        ))
+        ->from('Application\Entity\AbstractEvent', 'e')
+        ->innerJoin('e.category', 'cat')
+        ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
+        ->andWhere($qb->expr()
+            ->eq('e.parent', $fiche->getId()));
+        
+        $actions = $qb->getQuery()->getResult();
+        
         $viewmodel->setVariable('history', $history);
         $viewmodel->setVariable('fiche', $fiche);
-        
+        $viewmodel->setVariable('actions', $actions);
         return $viewmodel;
     }
 

@@ -97,6 +97,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
                 $definition['attributes']['maxlength'] = '48';
             }
             $definition['attributes']['title'] = $customfield->getTooltip();
+            $definition['attributes']['placeholder'] = $customfield->getTooltip();
             
             $this->add($definition);
         }
