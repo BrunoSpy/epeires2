@@ -9,7 +9,7 @@ GNU Affero General Public License v3
 Epeires² is a web application designed to allow operational supervisors to
  * log real-time events ;
  * be informed of programmable events ;
- * find help when unusal events occur.
+ * find help when unusual events occur.
 
 
 ## Learn a bit more
