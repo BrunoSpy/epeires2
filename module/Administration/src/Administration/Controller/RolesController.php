@@ -169,7 +169,7 @@ class RolesController extends FormController
                     $role->setName('admin');
                     $this->flashMessenger()->addErrorMessage("Modification du nom du rôle 'admin' interdit.");
                 }
-                if ($role->getParent()->getName() === $post['name']) {
+                if ($role->getParent() !== null && $role->getParent()->getName() === $post['name']) {
                     $role->setParent(null);
                     $this->flashMessenger()->addErrorMessage("Impossible d'être son parent : rôle parent laissé vide.");
                 }
