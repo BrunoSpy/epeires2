@@ -23,5 +23,7 @@ return array(
                     'password' => 'adminadmin')
             )
         )
-    )
+    ),
+    //specify another translation file
+    'lang' => 'fr_FR'
 );

@@ -1,4 +1,3 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radars.js')?>
 <?php 
 	
@@ -52,8 +51,8 @@
                     <table class="table table-striped sortable">
                         <thead>
                         	<tr>
-                        		<th>id</th>
-                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="int">id</th>
+                        		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
                         		<th>En service</th>
@@ -80,8 +79,8 @@
 					<table class="table table-striped sortable">
                         <thead>
                         	<tr>
-                        		<th>id</th>
-                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="int">id</th>
+                        		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
                         		<th>En service</th>
@@ -123,15 +122,6 @@ $('.sidenav').affix();
 $('body').scrollspy({target:'#sidebar', offset:120});
 
 radars('<?php echo $this->url('administration')?>');
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
 
 <?php echo $this->notifications($this->messages); ?>
 

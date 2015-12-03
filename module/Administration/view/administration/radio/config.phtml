@@ -20,7 +20,7 @@
 				<table class="table table-striped sortable">
 					<thead>
 						<tr>
-							<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
+							<th data-sort="int" data-autosort="true">Id</th>
 							<th data-sort="string">Organisation</th>
 							<th data-sort="string">Zone</th>
 							<th data-sort="string">Nom</th>
@@ -114,17 +114,6 @@
 $('.sidenav').affix();
 
 $('body').scrollspy({target:'#sidebar', offset:120});
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
-
-$("table th:eq(1)").trigger('click');
 
 radio('<?php echo $this->url('administration'); ?>');
 

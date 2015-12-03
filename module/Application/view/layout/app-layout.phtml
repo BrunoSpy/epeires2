@@ -25,6 +25,7 @@
         <?php
         echo $this->headScript()
 			->prependFile($this->basePath() . '/assets/js/application.js')
+			->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
                         ->prependFile($this->basePath() . '/assets/js/headerbar.js')
                         ->prependFile($this->basePath() . '/assets/js/alarm.js')
                         ->prependFile($this->basePath() . '/assets/js/form.js')
@@ -40,7 +41,9 @@
                         ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
                         ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
+                        ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
                         ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
+
         ?>
 
     </head>
@@ -73,12 +76,16 @@
                 //gestion des alertes
 		setURLAlarm('<?php echo $this->url('application');?>');
 		updateAlarms();
-                
-                
+                        
+        //init translation
+        i18n.init({
+        	lng: '<?php echo $this->lang;?>',
+        	fallbackLng: 'fr_FR',
+        	debug: true,
+        	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
+        });                
 		<?php $this->inlineScript()->captureEnd();?>
-        
-                                               
-                
+                        
         <?php echo $this->inlineScript() ?>
     </body>
 </html>

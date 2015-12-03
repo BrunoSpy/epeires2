@@ -1,5 +1,4 @@
 <?php 
-$this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 ?>
 <div class="container-fluid">
@@ -14,7 +13,7 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
 					<table class="table table-striped sortable" id="models-table">
                         <thead>
                         	<tr>
-                        		<th>id</th>
+                        		<th data-sort="int">id</th>
                                 <th data-sort="string">Organisation</th>
                         		<th data-sort="string">Nom</th>
                         		<th data-sort="string">Catégorie</th>
@@ -82,15 +81,6 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
 <?php echo $this->partial('models/modals.phtml') ?>
 
 <?php $this->inlineScript()->captureStart();?>
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
 
 <?php echo $this->notifications($this->messages); ?>
 

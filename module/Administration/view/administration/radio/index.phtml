@@ -1,4 +1,3 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radio.js')?>
 
 <div class="container-fluid">
@@ -38,7 +37,7 @@
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
+								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Nom</th>
 								<th data-sort="string">Nom abrégé</th>
 								<th data-sort="string">Organisation</th>
@@ -88,7 +87,7 @@
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
+								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
 								<th data-sort="string">Organisation</th>
@@ -144,7 +143,7 @@
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
+								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Nom</th>
 								<th data-sort="string">Nom abrégé</th>
 								<th data-sort="string">Organisation</th>
@@ -194,7 +193,7 @@
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Id<span class="arrow"> <span class="glyphicon glyphicon-arrow-down"></span></span></th>
+								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
 								<th data-sort="string">Organisation</th>
@@ -274,15 +273,6 @@
 $('.sidenav').affix();
 
 $('body').scrollspy({target:'#sidebar', offset:120});
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
 
 radio('<?php echo $this->url('administration'); ?>');
 

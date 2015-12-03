@@ -237,10 +237,10 @@ var antenna = function(url){
                         var mainantennacolor = sector.find('.antennas .mainantenna-color');
 			var backupantennacolor = sector.find('.antennas .backupantenna-color');
 			if(mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length){
-				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture secours</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
 			}
 			if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
-				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">Passer en couverture normale</a></li>");
+				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
 			}
                         //retour à la fréquence nominale
                         if(sector.find(".sector-name span").length > 0){

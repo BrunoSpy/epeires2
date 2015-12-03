@@ -28,7 +28,8 @@
     "jquery-mousewheel": "~3.1.13",
     "bootstrap-material-datetimepicker": "gh-pages",
     "bootstrap-material-design": "https://github.com/BrunoSpy/bootstrap-material-design.git#master",
-    "arrive": "~2.3.0"
+    "arrive": "~2.3.0",
+    "i18next": "~1.11.1"
   },
   "resolutions": {
     "jquery": "~2.1.4",

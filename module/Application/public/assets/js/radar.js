@@ -25,16 +25,18 @@ var radar = function(url){
 
     $('.radar-switch').on('change', function(e){
 	var newState = $(this).is(':checked');
-	$('a#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
+	$('button#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
 	$('#radar_name').html($(this).data('radar'));
 	$("#cancel-radar").data('radar', $(this).data('radarid')) ;
 
 	if(!newState){
-	    $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
+	    $("#confirm-end-event .modal-body #message").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
 	    "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
+	    $('.form-group').show();
 	} else {
-	    $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
+	    $("#confirm-end-event .modal-body #message").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
 	    "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
+	    $('.form-group').hide();
 	}
 	$("#confirm-end-event").modal('show');
     });
@@ -46,11 +48,11 @@ var radar = function(url){
 	}
     });
 
-    $("#end-radar-href").on('click', function(event){
+    $("#Event").on('submit', function(event){
 	event.preventDefault();
 	back = false;
 	$("#confirm-end-event").modal('hide');
-	$.post($("#end-radar-href").attr('href'), function(data){
+	$.post($("#end-radar-href").attr('href'), $("#Event").serialize(), function(data){
 	    displayMessages(data);
 	    back = true;
 	    if(data['error']){

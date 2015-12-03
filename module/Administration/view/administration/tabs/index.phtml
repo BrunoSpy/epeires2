@@ -1,6 +1,4 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
-      $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js');
-?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js'); ?>
 
 <div class="container-fluid">
     <div class="row">
@@ -14,8 +12,8 @@
 				<table class="table table-striped sortable">
                                     <thead>
                                     <tr>
-                                        <th>id</th>
-                                        <th data-sort="string">Nom</th>
+                                        <th data-sort="int">id</th>
+                                        <th data-sort="string" data-autosort="true">Nom</th>
                                         <th>Nom court</th>
                                         <th>Catégories associées</th>
                                         <th>Rôles autorisés</th>
@@ -121,15 +119,6 @@
 <?php $this->inlineScript()->captureStart();?>
 
 tab('<?php echo $this->url('administration'); ?>');
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
 
 $("table th:eq(1)").trigger('click');
 

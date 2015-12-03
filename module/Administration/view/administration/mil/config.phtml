@@ -1,4 +1,3 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
       $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
 ?>
 
@@ -15,7 +14,7 @@
                                     <thead>
                                     <tr>
                                         <th>id</th>
-                                        <th data-sort="string">Nom</th>
+                                        <th data-sort="string" data-autosort="true">Nom</th>
                                         <th>Couleur</th>
                                         <th>Filtre d'import</th>
                                         <th data-sort="string">Zones associées</th>
@@ -73,17 +72,6 @@
 <?php $this->inlineScript()->captureStart();?>
 
 mil('<?php echo $this->url('administration'); ?>');
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
-
-$("table th:eq(1)").trigger('click');
 
 <?php echo $this->notifications($this->messages); ?>
                                         

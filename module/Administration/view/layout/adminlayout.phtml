@@ -23,6 +23,7 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
+                                      ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')  
         							  ->prependFile($this->basePath() . '/components/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js')
         							  ->prependFile($this->basePath() . '/components/pick-a-color/build/dependencies/tinycolor-0.9.15.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')

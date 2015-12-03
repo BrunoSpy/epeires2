@@ -1,5 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeline.js');
-$this->headScript()->appendFile($this->basePath() . '/js/jquery.form.js');
+$this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
@@ -42,19 +42,19 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
 <?php 
 //modal windows to modify or delete file
 echo $this->modalwindow("confirm-delete-file",
-					"<h3>Confirmer la suppression du fichier ?</h3>",
+					"<h4>Confirmer la suppression du fichier ?</h4>",
 					"",
 					null,
 					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
-					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
-					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+					"<button class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</button>
+					<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
 <?php
 
 echo $this->modalwindow(
     "add-file",
-    "<h3>Ajout d'un fichier</h3>",
+    "<h4>Ajout d'un fichier</h4>",
     "",
     "<div id=\"file-upload-form\"></div>"
     );
@@ -65,7 +65,7 @@ echo $this->modalwindow("add-alarm",
 	"<div id=\"alarm-form\"></div>");
     
 echo $this->modalwindow('add-note-modal',
-        "<h3>Ajout d'une note</h3>",
+        "<h4>Ajout d'une note</h4>",
         "",
         "<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
         . "<div class=\"modal-body\">"
@@ -78,7 +78,7 @@ echo $this->modalwindow('add-note-modal',
             . "<div class=\"control-group\">"
                 . "<div class=\"controls\">"
                     . "<div style=\"display:inline-block; position:relative;\">"
-                        . "<input type=\"submit\" class=\"btn btn-small btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+                        . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
                     . "</div>"
                 . "</div>"
             . "</div>"
@@ -115,20 +115,6 @@ fileupload('<?php echo $this->url('application')?>');
 //search
 search('<?php echo $this->url('application', array('controller'=>'events'));?>');
 
-<?php if (isset($this->messages['success'])) { ?>
-	<?php foreach ($this->messages['success'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'success',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
-
-<?php if (isset($this->messages['error'])) { ?>
-	<?php foreach ($this->messages['error'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'error',
-					layout: 'bottomRight',});
-	<?php }?>
-<?php } ?>
+<?php echo $this->notifications($this->messages); ?>
 
 <?php $this->inlineScript()->captureEnd();?>

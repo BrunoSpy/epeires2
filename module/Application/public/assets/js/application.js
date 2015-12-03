@@ -110,6 +110,20 @@ $(document).ready(function(){
    
    $("a[data-toggle=popover]").popover();
    
+   //sortable tables
+   $("table.sortable").stupidtable();
+   //add arrow
+   $("table.sortable").bind('aftertablesort', function(event, data){
+   	var th = $(this).find("th");
+       th.find(".arrow").remove();
+       var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+       th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+   });
+   //autosort
+   $("table.sortable th[data-autosort=true]").each(function(item){
+       $(this).stupidsort();
+   });
+   
    //open links in new window
    $(document).on('click', 'a[rel="external"]',function(){
 	   window.open($(this).attr('href'));

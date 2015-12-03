@@ -12,5 +12,5 @@
  */
 
 return array(
-    // ...
+    'lang' => 'fr_FR'
 );

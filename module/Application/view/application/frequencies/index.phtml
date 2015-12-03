@@ -1,5 +1,4 @@
 <?php 
-$this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/antenna.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/radio.css');
 ?>
@@ -68,7 +67,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/radio.css'
 					<table id="antennas" class="table table-striped table-bordered table-hover sortable">
 						<thead>
 							<tr>
-								<th data-sort="string">Nom</th>
+								<th data-sort="string" data-autosort="true">Nom</th>
 								<th>État</th>
 							</tr>
 						</thead>
@@ -139,17 +138,6 @@ $("#create-evt").remove();
 $("#zoomform").remove();
 
 $('#search').remove();
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){ 
-	var th = $(this).find("th");
-	th.find(".arrow").remove();
-	var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-	th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
-
-$("#antennas th:first").trigger('click');
 
 antenna('<?php echo $this->url('application');?>');
 

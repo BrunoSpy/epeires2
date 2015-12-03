@@ -52,6 +52,11 @@ class TabController extends ZoneController
                     ->getShortname();
             }
         }
+        
+
+        $config = $this->getServiceLocator()->get('config');
+        
+        $this->layout()->lang = $config['lang'];
     }
 }
 

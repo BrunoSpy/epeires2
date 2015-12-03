@@ -21,6 +21,9 @@ use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
+use Zend\Form\Annotation\AnnotationBuilder;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Application\Form\CustomFieldset;
 
 /**
  *
@@ -48,7 +51,8 @@ class RadarsController extends TabController
         $this->flashMessenger()->clearMessages();
         
         $viewmodel->setVariables(array(
-            'messages' => $return
+            'messages' => $return,
+            'form' => $this->getRadarForm()
         ));
         
         $viewmodel->setVariable('radars', $this->getRadars());
@@ -56,11 +60,33 @@ class RadarsController extends TabController
         return $viewmodel;
     }
 
+    private function getRadarForm() {
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $event = new Event();
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($event);
+        $form->setHydrator(new DoctrineObject($em))->setObject($event);
+        
+        $categories = $em->getRepository('Application\Entity\RadarCategory')->findBy(array(
+            'defaultradarcategory' => true
+        ));
+        if ($categories) {
+            $cat = $categories[0];
+            $form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
+            //uniquement les champs ajoutés par conf
+            $form->get('custom_fields')->remove($cat->getRadarfield()->getId());
+            $form->get('custom_fields')->remove($cat->getStatefield()->getId());
+        }
+               
+        return $form;
+    }
+    
     public function switchradarAction()
     {
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
             $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $post = $this->getRequest()->getPost();
             $state = $this->params()->fromQuery('state', null);
             $radarid = $this->params()->fromQuery('radarid', null);
             
@@ -104,7 +130,6 @@ class RadarsController extends TabController
                     if (count($radarevents) > 0) {
                         $messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
                     } else {
-                        // $messages['error'][] = "Création d'un nouvel évènement non implémenté : utilisez la page Evènements.";
                         $event = new Event();
                         $status = $em->getRepository('Application\Entity\Status')->find('2');
                         $impact = $em->getRepository('Application\Entity\Impact')->find('3');
@@ -116,6 +141,7 @@ class RadarsController extends TabController
                         $event->setOrganisation($radar->getOrganisation());
                         $event->setAuthor($this->zfcUserAuthentication()
                             ->getIdentity());
+                        
                         $categories = $em->getRepository('Application\Entity\RadarCategory')->findBy(array(
                             'defaultradarcategory' => true
                         ));
@@ -134,6 +160,32 @@ class RadarsController extends TabController
                             $event->setCategory($categories[0]);
                             $em->persist($radarfieldvalue);
                             $em->persist($statusvalue);
+                            //on ajoute les valeurs des champs persos
+                            if (isset($post['custom_fields'])) {
+                                foreach ($post['custom_fields'] as $key => $value) {
+                                    // génération des customvalues si un customfield dont le nom est $key est trouvé
+                                    $customfield = $em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                                        'id' => $key
+                                    ));
+                                    if ($customfield) {
+                                        if (is_array($value)) {
+                                            $temp = "";
+                                            foreach ($value as $v) {
+                                                $temp .= (string) $v . "\r";
+                                            }
+                                            $value = trim($temp);
+                                        }
+                                        $customvalue = new CustomFieldValue();
+                                        $customvalue->setEvent($event);
+                                        $customvalue->setCustomField($customfield);
+                                        $event->addCustomFieldValue($customvalue);
+                                        
+                                        $customvalue->setValue($value);
+                                        $em->persist($customvalue);
+                                    }
+                                }
+                            }
+                            //et on sauve le tout
                             $em->persist($event);
                             try {
                                 $em->flush();
