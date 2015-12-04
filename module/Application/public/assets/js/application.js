@@ -368,7 +368,8 @@ $(document).ready(function(){
 
     $("#date").bootstrapMaterialDatePicker({
             format: "DD/MM/YYYY",
-            time: false
+            time: false,
+            lang: 'fr'
     });
     
     $("#date").on('change', function(){

@@ -165,7 +165,8 @@
                 //add datepicker
                 $('input[type=text].date').bootstrapMaterialDatePicker({
                     format: "DD-MM-YYYY",
-                    time: false
+                    time: false,
+                    lang: 'fr'
                 });
                
                 div.on('click', 'span.glyphicon-calendar', function(e){
