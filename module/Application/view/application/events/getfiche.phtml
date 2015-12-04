@@ -32,7 +32,7 @@
                 <div class="panel-badge"><span class="badge"><?php echo $count; ?></span> <span class="glyphicon glyphicon-chevron-up"></span></h4>
             </div>
             <div class="panel-collapse collapse in">
-            	<div class="panel-body">
+            	<div class="panel-body" id="list-actions" data-parentid="<?php echo $this->event->getId(); ?>">
                 <?php echo $this->partial('events/actions.phtml', array('actions' => $this->actions, 'compact' => true)); ?>
                 </div>
             </div>

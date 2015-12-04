@@ -54,7 +54,9 @@ var displayMessages = function(messages){
  };
  
  var updateFiche = function(id){
-    $('#fiche').load(url + 'events/getfiche?id=' + id, function () {
+    //on ne met à jour que le contenu de la fiche reflexe
+    //sinon on a un effet de flip-flop sur les panneaux
+    $('#list-actions').load(url + 'events/actions?id=' + id + '&compact=true', function () {
         $('tr[data-toggle=tooltip]').tooltip();
         timerFiche = setTimeout(updateFiche, 10000, id);
     });

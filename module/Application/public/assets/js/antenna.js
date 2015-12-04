@@ -8,6 +8,7 @@ var togglefiche = function(){
 var closeFiche = function() {
     $("#fiche").empty();
     $("#main-nav-check").prop('checked', false);
+    clearTimeout(timerFiche);
 };
 
 var openFiche = function() {
@@ -25,16 +26,21 @@ var antenna = function(url){
         var timer;
         
         $(document).on('click', '.open-fiche', function(){
+            var id = $(this).data('id');
             if($("#main-nav-check").is(':checked')){
-                if($('#fiche').data('id') === $(this).data('id')){
+                if($('#fiche').data('id') === id){
                     closeFiche();
                 } else {
-                    $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'))
-                        .data('id', $(this).data('id'));
+                    $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
+                	timerFiche = setTimeout(updateFiche, 10000, $("#list-actions").data('parentid'));
+                    })
+                        .data('id', id);
                 }
             } else {
                 $("#fiche").empty();
-                $('#fiche').load(url+'frequencies/getfiche?id='+$(this).data('id'))
+                $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
+                    timerFiche = setTimeout(updateFiche, 10000, $("#list-actions").data('parentid'));
+                })
                 .data('id', $(this).data('id'));
                 openFiche();
             }

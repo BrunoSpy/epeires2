@@ -1142,10 +1142,12 @@ class EventsController extends TabController
     {
         $viewmodel = new ViewModel();
         $parentId = $this->params()->fromQuery('id', null);
+        $compact = $this->params()->fromQuery('compact', false);
         // disable layout if request by Ajax
         $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
         
         $viewmodel->setVariable('actions', $this->getActions($parentId));
+        $viewmodel->setVariable('compact', $compact);
         return $viewmodel;
     }
 
