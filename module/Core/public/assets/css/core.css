@@ -132,6 +132,10 @@ body{
 	font-size: 1.4em;
 }
 
+#day {
+	font-size: 1.2em;
+}
+
 .navbar-lower {
 	top:50px;
 	height: 50px;

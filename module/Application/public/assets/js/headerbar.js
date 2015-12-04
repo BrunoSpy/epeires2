@@ -1,19 +1,11 @@
 function updateClock ( )
     {
-    var currentTime = new Date ( );
-    var currentHours = currentTime.getUTCHours ( );
-    var currentMinutes = currentTime.getUTCMinutes ( );
-    var currentSeconds = currentTime.getUTCSeconds ( );
-
-    // Pad the minutes and seconds with leading zeros, if required
-    currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
-    currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
-
-    // Compose the string for display
-    var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds;
+    moment.locale('fr_FR');
+    var currentDay = moment.utc().format('D MMMM');
+    var currentTime = moment.utc().format('HH:mm:ss');
     
-    
-    $("#clock").html(currentTimeString);
+    $("#day").html (currentDay);
+    $("#clock").html(currentTime);
         
  };
 
