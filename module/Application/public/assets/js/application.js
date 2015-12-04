@@ -48,9 +48,17 @@ var displayMessages = function(messages){
                 if(files){
                     $("#files-panel").trigger('click');
                 }
+                timerFiche = setTimeout(updateFiche, 10000, id);
             }).data('id', id);
         }
  };
+ 
+ var updateFiche = function(id){
+    $('#fiche').load(url + 'events/getfiche?id=' + id, function () {
+        $('tr[data-toggle=tooltip]').tooltip();
+        timerFiche = setTimeout(updateFiche, 10000, id);
+    });
+ }
  
  var hidePanel = function(){
         var timeline = $('#timeline');
@@ -61,6 +69,7 @@ var displayMessages = function(messages){
         timeline.animate({
             left: '0px'
         }, 300);
+        clearTimeout(timerFiche);
         
  };
  
@@ -72,11 +81,13 @@ var displayMessages = function(messages){
             $('#fiche').empty();
             $('#fiche').removeData('id');
             $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
+            clearTimeout(timerFiche);
         } else {
             $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
             $('#fiche').data('id', id);
             $('#fiche').load(url+'events/getfiche?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
+                timerFiche = setTimeout(updateFiche, 10000, id);
             });
         }
         panel.animate({
@@ -85,7 +96,8 @@ var displayMessages = function(messages){
  };
  
  var url;
- 
+ var timerFiche;
+
  var setURL = function(urlt){
      url = urlt;
  };
