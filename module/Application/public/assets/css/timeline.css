@@ -159,6 +159,7 @@
 }
 
 .elmt .label_elmt.outside {
+	z-index: 2;
 	background-color: white;
 	border-style: solid;
 	border-color: gray;

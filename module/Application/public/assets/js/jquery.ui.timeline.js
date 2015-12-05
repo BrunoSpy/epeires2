@@ -41,7 +41,7 @@
     	 * 
     	 * @memberOf $
     	 */
-        version: "0.9.5",
+        version: "0.9.6",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1697,7 +1697,9 @@
             var endWidth = this._outerWidth(elmt_fin);
             if (event.punctual) {
                 lien.addClass('disp').show();
-                x2 = x1 + elmt_rect.outerWidth() - 10;
+                //FF renvoit 0 pour elmt_rect.outerWidth() ...
+                //x2 = x1 + elmt_rect.outerWidth() - 10;
+                x2 = x1 + 25 - 10;
                 // on place l'heure à droite
                 if (startdate.getDate() !== d_actuelle.getDate()) {
                 	elmt_deb.css({'top':'-6px'});
@@ -1761,8 +1763,9 @@
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                    	x1 -= txt_wid +15;
-                        lien.css({'left': x1 + 'px', 'width': x0 - x1+ 'px'});
+                    	x1 -= txt_wid - 5;
+                    	var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
+                        lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
                         event.outside = 1;
@@ -1876,7 +1879,7 @@
                         	title: "Cliquer pour confirmer l'heure de début.",
                         	container: 'body'
                         });
-                        lien.filter('.leftlink').removeClass('disp').hide();
+                        lien.filter('.leftlink').addClass('disp').show();
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
