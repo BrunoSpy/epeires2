@@ -82,6 +82,18 @@ class EventRepository extends ExtendedRepository
                 ->eq('p.timeline', true))));
         }
         
+        // restriction éventuelle aux événements confirmés si timelineconfirmed, seulement en timeline (cats est null)
+        if(!$cats)
+        {
+        $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->neq('c.timelineconfirmed',true),
+                $qb->expr()->andX(
+                        $qb->expr()->eq('c.timelineconfirmed',true),
+                        $qb->expr()->in('e.status',array(2,3)))
+                )
+            );
+        }
+                
         // restriction à tous les evts modifiés depuis $lastmodified qqsoit la date de l'évènement
         if ($lastmodified) {
             $lastmodified = new \DateTime($lastmodified);
