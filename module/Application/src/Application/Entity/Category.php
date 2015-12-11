@@ -103,6 +103,13 @@ class Category
     protected $timeline;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Timeline si confirmé"})
+     */
+    protected $timelineconfirmed;
+
+    /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
@@ -255,9 +262,19 @@ class Category
         return $this->timeline;
     }
 
+    public function isTimelineConfirmed()
+    {
+        return $this->timelineconfirmed;
+    }
+
     public function setTimeline($timeline)
     {
         $this->timeline = $timeline;
+    }
+
+    public function setTimelineConfirmed($timelineconfirmed)
+    {
+        $this->timelineconfirmed = $timelineconfirmed;
     }
 
     public function isCompactMode()
