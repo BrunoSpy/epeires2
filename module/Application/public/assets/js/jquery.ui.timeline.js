@@ -656,9 +656,6 @@
         view: function (viewName, day) {
             if (viewName === "day" && !this.dayview) {
                 this.dayview = true;
-                this.forceUpdateView(true);
-            } else if (viewName === "sixhours" && this.dayview) {
-                this.dayview = false;
                 if (day === undefined) {
                     this.currentDay = new Date(); //now
                 } else {
@@ -669,6 +666,9 @@
                         this.currentDay = new Date();
                     }
                 }
+                this.forceUpdateView(true);
+            } else if (viewName === "sixhours" && this.dayview) {
+                this.dayview = false;
                 this.element.css({'background-color':'white'});
                 this.forceUpdateView(true);
             }
@@ -847,15 +847,10 @@
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
-                this.currentDay = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), 0, 0, 0);
-                var diff = this.currentDay.getTimezoneOffset() / (-60);
-                this.timelineBegin = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), diff, 0, 0);
-                //changement d'heure dans la journée ?
-                var currentMidDay = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), this.currentDay.getDate(), 12, 0, 0);
-                var newDiff = currentMidDay.getTimezoneOffset() / (-60);
-                var changeDiff = newDiff - diff;
-                this.timelineEnd = new Date(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
-                        this.timelineBegin.getHours() + changeDiff + this.timelineDuration, 0, 0);
+                this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
+                this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
+                this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
+                				this.timelineDuration, 0, 0));
             } else {
                 this.timelineDuration = 6;
                 var now = new Date();
@@ -1325,12 +1320,26 @@
                 this._updateView();
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
-                if(this.lastUpdateTimebar !== undefined
+        	var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        	var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
+        	if(this.lastUpdateTimebar !== undefined) {
+        	    var lastUpUTC = Date.UTC(this.lastUpdateTimebar.getUTCFullYear(), this.lastUpdateTimebar.getUTCMonth(), this.lastUpdateTimebar.getUTCDate());
+        	}
+                if(lastUpUTC !== undefined
                         //changement de jour depuis la dernière mise à jour
-                        && Math.ceil((now.getTime() - lastUpdateTimebar.getTime()) / (1000 * 60 * 60 * 24)) !== 0
+                        && Math.ceil((nowUTC - lastUpUTC) / (1000 * 60 * 60 * 24)) !== 0
                         //si le jour affiché est la veille
-                        && Math.ceil((now.getTime() - this.currentDay.getTime()) / (1000 * 60 * 60 * 24)) === 1){
+                        && Math.ceil((nowUTC - currentDayUTC) / (1000 * 60 * 60 * 24)) === 1){
                     this.day(now);
+                    //ne pas oublier de mettre à jour le widget date si il existe
+                    if($("#date").length > 0){
+                	var day = now.getUTCDate();
+                        var month = now.getUTCMonth() + 1;
+                        var year = now.getUTCFullYear();
+                        var daystring = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
+                	$("#date").val(daystring);
+                    }
+                    this.lastUpdateTimebar = now;
                     return;
                 }
             } else {
@@ -1353,7 +1362,7 @@
             } else {
                 timeBar.hide();
             }
-            lastUpdateTimebar = now;
+            this.lastUpdateTimebar = now;
         },
         /**
          * Draw or update categories
@@ -2074,8 +2083,7 @@
         /* *********************** */
         /* ** Utilitary methods ** */
         /* *********************** */
-
-
+        
         /**
          * Format a number into a string with a predefined length
          * @param {type} num
