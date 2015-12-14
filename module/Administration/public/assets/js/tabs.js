@@ -14,7 +14,7 @@ var tab = function(url){
 		});
 	});
 	
-	$("#tab-container").on('submit', 'input[type=submit]', function(event){
+	$("#tab-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/tabs/save', $("#Tab").serialize(), function(data){
 			location.reload();
