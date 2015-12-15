@@ -14,7 +14,7 @@
             <table class="table table-striped sortable">
                 <thead>
                     <tr>
-                        <th data-sort="string">Nom</th>
+                        <th data-sort="string" data-autosort="true">Nom</th>
                         <th>Catégorie par défaut</th>
                     </tr>
                 </thead>
@@ -105,15 +105,6 @@
 
 $('document').ready(function(){
 	$.material.init();
-});
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
 });
 
 categories('<?php echo $this->url('administration'); ?>');

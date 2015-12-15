@@ -8,44 +8,44 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 //models list window
 
 echo $this->modalwindow("models-container",
-		"<h3 id=\"models-title\"></h3>",
+		"<h4 id=\"models-title\"></h4>",
 		"",
 		null,
 		"<div id=\"models-table\"></div>",
 		"<a class=\"btn btn-primary\" href=\"".$this->url('administration', array('controller'=>'categories'))."\">Terminer</a>");
 
-echo $this->modalwindow("model-container", "<h3  id=\"model-title\"></h3>", "", "<div id=\"model-form\"></div>");
+echo $this->modalwindow("model-container", "<h4 id=\"model-title\"></h4>", "", "<div id=\"model-form\"></div>");
 
-echo $this->modalwindow("action-container", "<h3  id=\"action-title\">Nouvelle action</h3>", "", "<div id=\"action-form\"></div>");
+echo $this->modalwindow("action-container", "<h4 id=\"action-title\">Nouvelle action</h4>", "", "<div id=\"action-form\"></div>");
 
 echo $this->modalwindow("confirm-delete-model", 
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"",
 						null,
 						"<p>Voulez-vous vraiment supprimer le modèle <em><span id=\"model_name\"></span></em> ?</p>
 						<p>La fiche réflexe associée sera supprimée également.</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-model-href\">Confirmer</a>
-						<a id=\"cancel-form\" class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+						<button id=\"cancel-form\" class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
  
 //modal windows to modify or delete file
 echo $this->modalwindow("confirm-delete-file",
-					"<h3>Confirmer la suppression du fichier ?</h3>",
+					"<h4>Confirmer la suppression du fichier ?</h4>",
 					"",
 					null,
 					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
 					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
-					<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>");
+					<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 
 echo $this->modalwindow(
     "add-file",
-    "<h3>Ajout d'un fichier</h3>",
+    "<h4>Ajout d'un fichier</h4>",
     "",
     "<div id=\"file-upload-form\"></div>"
     );
 
 echo $this->modalwindow(
 	"add-alert",
-	"<h3>Ajout d'une alerte</h3>",
+	"<h4>Ajout d'une alerte</h4>",
 	"",
 	"<div id=\"alert-form\"></div>");
     

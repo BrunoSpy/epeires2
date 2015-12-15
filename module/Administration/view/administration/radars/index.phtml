@@ -107,12 +107,12 @@
 <?php echo $this->modalWindow("radar-container", "<h3 id=\"radar-title\">Nouveau radar</h3>", "", "<div id=\"radar-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-radar",
-						"<h3>Confirmer la suppression ?</h3>",
+						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer le radar <em><span id=\"radar-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-radar-href\">Confirmer</a>
-						<a class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</a>") ?>	
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 <?php $this->inlineScript()->captureStart();?>

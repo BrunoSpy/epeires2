@@ -12,7 +12,7 @@
                         <thead>
                         	<tr>
                         		<th>id</th>
-                        		<th data-sort="string">Nom</th>
+                        		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Email</th>
                         		<th>Organisation</th>
                         		<th>Zone de qualification</th>
@@ -77,22 +77,13 @@
 						"", 
 						null, 
 						"<p>Voulez-vous vraiment supprimer l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>",
-						"<button class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</button>
+						"<a class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
 
 <?php $this->inlineScript()->captureStart();?>
 
 users('<?php echo $this->url('administration')?>');
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
 
 
 <?php echo $this->notifications($this->messages); ?>
