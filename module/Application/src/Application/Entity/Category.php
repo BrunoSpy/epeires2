@@ -105,7 +105,8 @@ class Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Timeline si confirmé"})
+     * @Annotation\Options({"label":"Mode confirmé"})
+     * @Annotation\Attributes({"id":"timelineconfirmed","title":"Disponible uniquement si Timeline est actif", "data-toggle":"tooltip"})
      */
     protected $timelineconfirmed;
 
