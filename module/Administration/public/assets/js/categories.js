@@ -43,11 +43,28 @@ var categories = function(url){
 	$(".mod").on('click', function(){
 		$("#form-title").html("Modification de "+$(this).data('name'));
 		$("#form").load(url+'/categories/form'+'?id='+$(this).data('id'),
-				function(){
-					$("#form").find(".pick-a-color").pickAColor();
-					$.material.checkbox();
-			});	
-	});
+                        function(){
+                                $("#form").find(".pick-a-color").pickAColor();
+                                $.material.checkbox();
+                                $('#tcdiv').tooltip();
+                                $('.form-control[name="timeline"]').change(function () {
+                                        if (this.checked) {
+                                                $('.form-control[name="timelineconfirmed"]').prop('disabled', false);
+                                                $('#tcdiv').css({ opacity: 1 });
+                                        } else {
+                                                $('.form-control[name="timelineconfirmed"]').prop('disabled', true).attr('checked', false);
+                                                $('#tcdiv').css({ opacity: 0.5 });
+                                        }
+                                });
+                                if ($('.form-control[name="timeline"]').checked) {
+                                        $('.form-control[name="timelineconfirmed"]').prop('disabled', false);
+                                        $('#tcdiv').css({ opacity: 1 });
+                                } else {
+                                        $('.form-control[name="timelineconfirmed"]').prop('disabled', true).attr('checked', false);
+                                        $('#tcdiv').css({ opacity: 0.5 });
+                                }
+                });
+        });
 
 	$("#add-cat").on('click', function(evt){
 		$("#form-title").html("Nouvelle catégorie");
