@@ -18,7 +18,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>Nom court</th>
 						<th>Couleur</th>
 						<th>Compact</th>
-						<th>Timeline</th>
+						<th data-container="body" data-toggle="tooltip" title="Afficher les évènements sur la page d'accueil.">Timeline<sup>?</sup></th>
+						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé ou Terminé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
 						<th>Onglets</th>
 						<th>Modèles</th>
 						<th>Champs</th>
@@ -38,6 +39,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
 					echo '<td>'.($category->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>'.($category->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+					echo '<td>'.($category->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>';
                     	if(count($category->getTabs()) > 0) {
                     		foreach ($category->getTabs() as $tab) {
@@ -78,6 +80,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
 							echo '<td>'.($subcategory->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>'.($subcategory->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+							echo '<td>'.($subcategory->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>';
 							if(count($subcategory->getTabs()) > 0) {
 								foreach ($subcategory->getTabs() as $tab) {
