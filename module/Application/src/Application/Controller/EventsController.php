@@ -859,6 +859,8 @@ class EventsController extends TabController
         
         $tabid = $this->params()->fromQuery('tabid', null);
         
+        $onlytimeline = ($tabid === 'timeline' || $tabid === null) ;
+        
         $form = $this->getSkeletonForm($tabid);
         
         $id = $this->params()->fromQuery('id', null);
@@ -897,8 +899,8 @@ class EventsController extends TabController
                 $form->get('categories')
                     ->get('subcategories')
                     ->setValueOptions($em->getRepository('Application\Entity\Category')
-                    ->getChildsAsArray($cat->getParent()
-                    ->getId()));
+                    ->getChildsAsArray($onlytimeline, $cat->getParent()->getId()));
+                
                 $form->get('categories')
                     ->get('root_categories')
                     ->setAttribute('value', $cat->getParent()
@@ -1052,7 +1054,6 @@ class EventsController extends TabController
         foreach ($rootCategories as $cat) {
             $rootarray[$cat->getId()] = $cat->getName();
         }
-        
         $form->add(new CategoryFormFieldset($rootarray));
         
         $form->bind($event);
@@ -1467,8 +1468,6 @@ class EventsController extends TabController
                 foreach ($categories as $category) {
                     $orCat->add($qb->expr()
                         ->eq('c.id', $category->getId()));
-                    $orCat->add($qb->expr()
-                        ->eq('c.parent', $category->getId()));
                 }
                 $qb->andWhere($orCat);
             }

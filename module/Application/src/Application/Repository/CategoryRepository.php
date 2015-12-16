@@ -74,10 +74,10 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
-    public function getChildsAsArray($parentId = null)
+    public function getChildsAsArray($onlytimeline, $parentId = null)
     {
         $res = array();
-        foreach ($this->getChilds($parentId) as $element) {
+        foreach ($this->getChilds($onlytimeline, $parentId) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;

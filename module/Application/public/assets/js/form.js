@@ -546,7 +546,7 @@ var form = function(url, tabid){
 
 	$("#create-evt").modal('show');
 
-	$("#event").load(url+'events/form?id='+me.data('id'), function(){
+	$("#event").load(url+'events/form?id='+me.data('id')+'&tabid='+tabid, function(){
 	    initTabs(false);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
