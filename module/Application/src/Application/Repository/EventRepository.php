@@ -73,23 +73,21 @@ class EventRepository extends ExtendedRepository
             // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()
-                ->andX($qb->expr()
-                ->isNull('c.parent'), $qb->expr()
-                ->eq('c.timeline', true)), $qb->expr()
-                ->andX($qb->expr()
-                ->isNotNull('c.parent'), $qb->expr()
-                ->eq('c.timeline', true), $qb->expr()
-                ->eq('p.timeline', true))));
-        }
-        
-        // restriction éventuelle aux événements confirmés si timelineconfirmed, seulement en timeline (cats est null)
-        if(!$cats)
-        {
-        $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->neq('c.timelineconfirmed',true),
-                $qb->expr()->andX(
-                        $qb->expr()->eq('c.timelineconfirmed',true),
-                        $qb->expr()->in('e.status',array(2,3)))
+                    ->andX($qb->expr()
+                        ->isNull('c.parent'), $qb->expr()
+                        ->eq('c.timeline', true)), $qb->expr()
+                    ->andX($qb->expr()
+                        ->isNotNull('c.parent'), $qb->expr()
+                        ->eq('c.timeline', true), $qb->expr()
+                        ->eq('p.timeline', true))));
+            // restriction éventuelle aux événements confirmés si timelineconfirmed
+            $qb->andWhere($qb->expr()
+                ->orX($qb->expr()
+                    ->neq('c.timelineconfirmed', true), $qb->expr()
+                    ->andX($qb->expr()
+                        ->eq('c.timelineconfirmed', true), $qb->expr()
+                        ->in('e.status', array(2,3))
+                    )
                 )
             );
         }

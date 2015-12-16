@@ -56,7 +56,7 @@ var categories = function(url){
                                                 $('#tcdiv').css({ opacity: 0.5 });
                                         }
                                 });
-                                if ($('.form-control[name="timeline"]').checked) {
+                                if ($('.form-control[name="timeline"]').is(':checked')) {
                                         $('.form-control[name="timelineconfirmed"]').prop('disabled', false);
                                         $('#tcdiv').css({ opacity: 1 });
                                 } else {
