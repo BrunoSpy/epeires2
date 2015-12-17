@@ -166,7 +166,8 @@
                 $('input[type=text].date').bootstrapMaterialDatePicker({
                     format: "DD-MM-YYYY",
                     time: false,
-                    lang: 'fr'
+                    lang: 'fr',
+                    cancelText: "Annuler"
                 });
                
                 div.on('click', 'span.glyphicon-calendar', function(e){
