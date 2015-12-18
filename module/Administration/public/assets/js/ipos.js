@@ -15,7 +15,7 @@ var ipos = function(url){
 	});
 	
 	
-	$("#ipo-container").on('click', '#IPO input[type=submit]', function(event){
+	$("#ipo-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/ipos/saveipo', $("#IPO").serialize(), function(data){
 			location.reload();

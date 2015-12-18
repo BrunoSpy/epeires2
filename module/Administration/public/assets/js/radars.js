@@ -18,7 +18,7 @@ var radars = function(url){
 		});
 	});
 	
-	$("#radar-container").on('click', 'input[type=submit]', function(event){
+	$("#radar-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/radars/save', $("#Radar").serialize(), function(data){
 			location.reload();

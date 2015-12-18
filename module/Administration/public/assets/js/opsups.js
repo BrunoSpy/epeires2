@@ -15,7 +15,7 @@ var opsups = function(url){
 	});
 	
 	
-	$("#opsup-container").on('click', '#OperationalSupervisor input[type=submit]', function(event){
+	$("#opsup-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/op-sups/saveopsup', $("#OperationalSupervisor").serialize(), function(data){
 			location.reload();

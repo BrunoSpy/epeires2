@@ -9,7 +9,7 @@ var mil = function(url){
                 });
 	});
 	
-	$("#zone-container").on('submit', 'input[type=submit]', function(event){
+	$("#zone-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/mil/save', $("#MilCategory").serialize(), function(data){
 			location.reload();

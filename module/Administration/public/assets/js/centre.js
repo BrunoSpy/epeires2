@@ -17,7 +17,7 @@ var centre = function(url){
 		$("#organisation-form").load(url+'/centre/formorganisation?id='+$(this).data('id'));
 	});
 	
-	$("#organisation-container").on('click', 'input[type=submit]', function(event){
+	$("#organisation-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/saveorganisation', $("#Organisation").serialize(), function(data){
 			if(data['messages']){
@@ -63,7 +63,7 @@ var centre = function(url){
 		$("#qualif-form").load(url+'/centre/formqualif?id='+$(this).data('id'));
 	});
 	
-	$("#qualif-container").on('click', 'input[type=submit]', function(event){
+	$("#qualif-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/savequalif', $("#QualificationZone").serialize(), function(data){
 			location.reload();
@@ -115,7 +115,7 @@ var centre = function(url){
 		});
 	});
 	
-	$("#group-container").on('click', 'input[type=submit]', function(event){
+	$("#group-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/savegroup', $("#SectorGroup").serialize(), function(data){
 			location.reload();
@@ -199,7 +199,7 @@ var centre = function(url){
 		$("#stack-form").load(url+'/centre/formstack?id='+$(this).data('id'));
 	});
 	
-	$("#stack-container").on('click', 'input[type=submit]', function(event){
+	$("#stack-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/centre/savestack', $("#Stack").serialize(), function(data){
 			location.reload();

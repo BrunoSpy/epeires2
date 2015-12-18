@@ -19,14 +19,14 @@ var users = function(url){
 		$("#user-form").load(url+'/users/changepasswordform?id='+$(this).data('id'));
 	});
 	
-	$("#user-container").on('click', '#changepassword input[type=submit]', function(event){
+	$("#user-container").on('submit', '#changepassword', function(event){
 		event.preventDefault();
 		$.post(url+'/users/changepassword', $("#changepassword").serialize(), function(data){
 			location.reload();
 		}, 'json');
 	});
 	
-	$("#user-container").on('submit', '#User input[type=submit]', function(event){
+	$("#user-container").on('submit', '#User', function(event){
 		event.preventDefault();
 		$.post(url+'/users/saveuser', $("#User").serialize(), function(data){
 			location.reload();
