@@ -15,7 +15,7 @@ var openFiche = function() {
     $("#main-nav-check").prop('checked', true);
 };
 
-var antenna = function(url){
+var antenna = function(url, frequencyTestMenu){
 
 	//if true, switch the button to its previous state
 	var back = true;
@@ -54,7 +54,11 @@ var antenna = function(url){
 	$(document).on('click','.switch-coverture', function(){
 		var me = $(this);
                 $('a.actions-freq, a#changefreq').popover('hide');
-		$.post(url+'frequencies/switchcoverture?frequencyid='+me.data("freqid")+'&cov='+me.data('cov'), function(data){
+		$.post(url+'frequencies/switchcoverture'
+			  +'?frequencyid='+me.data("freqid")
+			  +'&cov='+me.data('cov')
+			  + (me.data('cause') ? '&cause='+me.data('cause') : ''),
+			function(data){
 			displayMessages(data);
 			if(!data['error']){
 				var frequency = $('.frequency-'+me.data('freqid'));
@@ -247,6 +251,11 @@ var antenna = function(url){
 			}
 			if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
 				list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
+			}
+			if(frequencyTestMenu
+			    	&& mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length
+			    	&& backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
+			    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cause=\"Test couverture secours\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + "Test couverture secours" + "</a></li>");
 			}
                         //retour à la fréquence nominale
                         if(sector.find(".sector-name span").length > 0){

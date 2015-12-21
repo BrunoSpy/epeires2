@@ -25,5 +25,7 @@ return array(
         )
     ),
     //specify another translation file
-    'lang' => 'fr_FR'
+    'lang' => 'fr_FR',
+    //activate special radio menu for frequencies test
+    'frequency_test_menu' => true,
 );

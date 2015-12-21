@@ -218,6 +218,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface
         $statefield->setPlace(2);
         $statefield->setDefaultValue("");
         $statefield->setTooltip("");
+        
         $currentAntenna = new CustomField();
         $currentAntenna->setCategory($frequencycat);
         $currentAntenna->setName('Couverture');
@@ -238,15 +239,31 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface
         $otherfreq->setPlace(4);
         $otherfreq->setDefaultValue("");
         $otherfreq->setTooltip("");
+        
+        
+        $cause = new CustomField();
+        $cause->setCategory($frequencycat);
+        $cause->setName("Cause");
+        $cause->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'text'
+            )));
+        $cause->setPlace(5);
+        $cause->setDefaultValue("");
+        $cause->setTooltip("");
+        
         $frequencycat->setFieldname($frequencyfield);
         $frequencycat->setFrequencyField($frequencyfield);
         $frequencycat->setCurrentAntennaField($currentAntenna);
         $frequencycat->setStateField($statefield);
         $frequencycat->setOtherFrequencyField($otherfreq);
+        $frequencycat->setCauseField($cause);
+        
         $em->persist($frequencyfield);
         $em->persist($statefield);
         $em->persist($currentAntenna);
         $em->persist($otherfreq);
+        $em->persist($cause);
         
         // si aucune cat par défaut --> nouvelle catégorie par défaut
         $cats = $em->getRepository('Application\Entity\FrequencyCategory')->findBy(array(

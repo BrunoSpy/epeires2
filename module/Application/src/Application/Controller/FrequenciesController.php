@@ -111,11 +111,15 @@ class FrequenciesController extends TabController
         $criteria->andWhere(Criteria::expr()->eq('decommissionned', false));
         $otherfrequencies = $em->getRepository('Application\Entity\Frequency')->matching($criteria);
         
+        $config = $this->getServiceLocator()->get('config');
+        $frequencyMenu = isset($config['frequency_test_menu']) ? $config['frequency_test_menu'] : false;
+        
         $viewmodel->setVariables(array(
             'antennas' => $this->getAntennas(),
             'messages' => $return,
             'groups' => $groups,
-            'other' => $otherfrequencies
+            'other' => $otherfrequencies,
+            'frequencyTestMenu' => $frequencyMenu
         ));
         
         return $viewmodel;
@@ -356,7 +360,7 @@ class FrequenciesController extends TabController
                     } else {
                         $messages['error'][] = "Impossible de déterminer l'évènement à terminer";
                     }
-                } else {
+                } else { //antenne indisponible
                     if (count($antennaEvents) > 0) {
                         $messages['error'][] = "Un évènement est déjà en cours, impossible d'en créer un nouveau.";
                     } else {
@@ -409,6 +413,7 @@ class FrequenciesController extends TabController
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
+                                        "Antenne principale indisponible",
                                         $now, 
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
@@ -422,6 +427,7 @@ class FrequenciesController extends TabController
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
+                                        "Antenne principale indisponible",
                                         $now, 
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
@@ -433,6 +439,7 @@ class FrequenciesController extends TabController
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
+                                        "Antenne principale indisponible",
                                         $now, 
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
@@ -591,7 +598,7 @@ class FrequenciesController extends TabController
             $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $cov = $this->params()->fromQuery('cov', null);
             $frequencyid = $this->params()->fromQuery('frequencyid', null);
-            
+            $cause = $this->params()->fromQuery('cause', '');
             if ($cov != null && $frequencyid) {
                 $now = new \DateTime('NOW');
                 $now->setTimezone(new \DateTimeZone("UTC"));
@@ -623,6 +630,7 @@ class FrequenciesController extends TabController
                                 $freq, 
                                 $cov, 
                                 false, // sur un changement de couverture, la fréquence reste disponible
+                                $cause,
                                 $now, 
                                 $this->zfcUserAuthentication()->getIdentity(), 
                                 null, 

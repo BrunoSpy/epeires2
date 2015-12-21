@@ -54,6 +54,11 @@ class FrequencyCategory extends Category
      */
     protected $otherfrequencyfield;
 
+    /** 
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $causefield;
+    
     public function isDefaultFrequencyCategory()
     {
         return $this->defaultfrequencycategory;
@@ -112,5 +117,15 @@ class FrequencyCategory extends Category
     public function setOtherFrequencyField($otherfrequencyfield)
     {
         $this->otherfrequencyfield = $otherfrequencyfield;
+    }
+    
+    public function getCauseField()
+    {
+        return $this->causefield;
+    }
+    
+    public function setCauseField($causefield)
+    {
+        $this->causefield = $causefield;
     }
 }

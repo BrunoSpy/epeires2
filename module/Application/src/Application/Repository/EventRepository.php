@@ -598,12 +598,13 @@ class EventRepository extends ExtendedRepository
      *            Value for the current antenna field
      * @param type $freqstatus
      *            Value for the current frequency state field
+     * @param cause Valeur du champ cause
      * @param Event $parent            
      * @param \DateTime $startdate            
      * @param User $author            
      * @param type $messages            
      */
-    public function addChangeFrequencyCovEvent(Frequency $frequency, $cov, $freqstatus, \DateTime $startdate, \Core\Entity\User $author, Event $parent = null, &$messages = null)
+    public function addChangeFrequencyCovEvent(Frequency $frequency, $cov, $freqstatus, $cause, \DateTime $startdate, \Core\Entity\User $author, Event $parent = null, &$messages = null)
     {
         $em = $this->getEntityManager();
         $event = new Event();
@@ -648,9 +649,14 @@ class EventRepository extends ExtendedRepository
             $covfield->setEvent($event);
             $covfield->setValue($cov);
             $event->addCustomFieldValue($covfield);
+            $causefield = new CustomFieldValue();
+            $causefield->setCustomField($cat->getCauseField());
+            $causefield->setEvent($event);
+            $causefield->setValue($cause);
             $em->persist($frequencyfieldvalue);
             $em->persist($statusfield);
             $em->persist($covfield);
+            $em->persist($causefield);
             $em->persist($event);
             try {
                 $em->flush();
