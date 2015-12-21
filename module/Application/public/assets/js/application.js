@@ -442,6 +442,11 @@ $(document).ready(function(){
     
     /* ******************************* */
 
+    //hack très moche pour corriger la couleur des dropdown dans la navbar sous chrome
+    //à supprimer une fois corrigé upstream
+    var color = $('#navbar-first').css('background-color');
+    $("#navbar-first option").css('background-color', color);
+    
 });
 
 
