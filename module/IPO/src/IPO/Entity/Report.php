@@ -57,6 +57,7 @@ class Report
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Numéro de la semaine :"})
+     * @Annotation\Attributes({"data-rule-number":"true", "data-rule-min":"1", "data-rule-max":"53"})
      */
     protected $week;
 
@@ -65,6 +66,7 @@ class Report
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Année :"})
+     * @Annotation\Attributes({"data-rule-number":"true", "data-rule-min":"2000"})
      */
     protected $year;
 

@@ -68,6 +68,19 @@ $(document).ready(function(){
 		});
 	});
 	
+	$("#report-container").arrive("#Report", function() {
+	    $('#Report input').on('keypress', function(){
+		$("#Report").validate({
+		    highlight: function(element) {
+			$(element).closest('.form-group').addClass('has-error');
+		    },
+		    unhighlight: function(element) {
+		        $(element).closest('.form-group').removeClass('has-error');
+		    }
+		});
+	    });
+	});
+	
 });
 
 

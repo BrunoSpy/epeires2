@@ -46,7 +46,10 @@ class ControlGroup extends AbstractHelper
         
         $element->setLabelAttributes(array('class' => 'control-label '.($large ? 'col-sm-2' : 'col-sm-3').$labelclass));
         $elementClass = $element->getAttribute('class');
-        $element->setAttributes(array('class' => 'form-control '.$elementClass));
+        $element->setAttributes(
+            array_merge(
+                $element->getAttributes(),
+                array('class' => 'form-control '.$elementClass)));
         
         if ($element instanceof \Zend\Form\Element\Select) {
             $controlForm = $view->formSelect($element);
