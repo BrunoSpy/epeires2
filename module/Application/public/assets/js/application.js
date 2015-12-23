@@ -236,8 +236,10 @@ $(document).ready(function(){
                         $("#history").parent().find("span.badge").html($("#history dd").size());
                     });
                 }
-                //mise à jour timeline
-                $('#timeline').timeline('addEvents',data.events);
+                //mise à jour timeline si besoin
+                if($('#timeline').length > 0){
+                    $('#timeline').timeline('addEvents',data.events);
+                }
             }
             displayMessages(data);
             me.parents('.modal').modal('hide');

@@ -28,6 +28,10 @@ var iposhow = function (url){
 					var id = data.id;
 					var catid = data.catid;
 					var tr = $("#event_"+id);
+					tr.find('td:first').remove();
+					if(catid != -1){
+					    tr.find('td').eq(2).after('<td><a href="#add-note-modal" title="Ajouter une note" data-toggle="modal" class="add-note" data-eventid="'+id+'"><span class="glyphicon glyphicon-comment"></span></a></td>')
+					}
 					tr.detach();
 					if(catid == -1) catid = "null";
 					$("#category_"+catid+" tbody").append(tr);
@@ -36,5 +40,34 @@ var iposhow = function (url){
 				displayMessages(data.messages);
 			} 
 		});
+	});
+	
+	$('select[name=bulkcat]').change(function(e){
+	    var me = $(this);
+	    var newcatid = me.find('option:selected').val();
+	    var reportid = me.data('reportid');
+	    $('#toclassify input:checked').each(function(index, item){
+		var eventid = $(item).data('id');
+		$.getJSON(url+'/report/affectcategory?id='+eventid+'&catid='+newcatid+'&reportid='+reportid, function(data){
+		    if(data['messages']){
+			if(!data.messages['error']) {
+				//move line to the corresponding table
+				var id = data.id;
+				var catid = data.catid;
+				var tr = $("#event_"+id);
+				tr.find('td:first').remove();
+				if(catid != -1){
+				    tr.find('td').eq(2).after('<td><a href="#add-note-modal" title="Ajouter une note" data-toggle="modal" class="add-note" data-eventid="'+id+'"><span class="glyphicon glyphicon-comment"></span></a></td>')
+				}
+				tr.detach();
+				if(catid == -1) catid = "null";
+				$("#category_"+catid+" tbody").append(tr);
+				
+			}
+			displayMessages(data.messages);
+		    } 
+		});
+	    });
+	    me.find('option[value=""]').prop('selected', true);
 	});
 };

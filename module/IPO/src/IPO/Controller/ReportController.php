@@ -136,6 +136,7 @@ class ReportController extends AbstractActionController
                                 foreach ($event->getUpdates() as $update) {
                                     $up = array();
                                     $up['hour'] = $formatterDayHour->format($update->getCreatedOn());
+                                    $up['author'] = $eventservice->getUpdateAuthor($update);
                                     $up['note'] = $update->getText();
                                     $newevent['updates'][] = $up;
                                 }

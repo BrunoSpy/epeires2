@@ -45,19 +45,33 @@ $formatter = \IntlDateFormatter::create(
 			<h2 class="panel-title" id="AClasser">&Eacute;vènements à classer</h2>
 			</div>
 			<div class="panel-body">
-	           <table class="table table-striped">
+	           <table class="table table-striped" id="toclassify">
 				<thead>
 					<tr>
+						<th></th>
 						<th>Titre</th>
 						<th>Date de début</th>
 						<th>Date de fin</th>
-						<th></th>
+						<th>
+						<?php 
+						echo '<select name="bulkcat" data-reportid="'.$report->getId().'">';
+	           		    echo '<option value="">Classer les évènements cochés</option>';
+						echo '<option value="-1">Exclure du rapport</option>';
+						foreach ($this->reportcategories as $reportcategory){
+						    if($reportcategory['category'] !== null) {
+						        echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+						    }
+						}
+						echo "</select>";
+						?>
+						</th>
 					</tr>
 				</thead>
 				<tbody>
 	           <?php 
 	           foreach ($this->unclassified as $event){
 	           		echo '<tr id="event_'.$event->getId().'">';
+	           		echo '<td><input type="checkbox" name="bulk" data-id="'.$event->getId().'" /></td>';
 	           		$title = "";
 	           		foreach ( $event->getCustomFieldsValues () as $value ) {
 						$formattedvalue = $this->customfieldvalue ($value);
@@ -102,7 +116,7 @@ $formatter = \IntlDateFormatter::create(
 					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
 					echo '<thead>';
 					echo '<tr><th>Titre</th>';
-					echo '<th>Date de début</th><th>Date de fin</th><th></th>';
+					echo '<th>Date de début</th><th>Date de fin</th><th></th><th></th>';
 					echo '</tr>';
 					echo '</thead>';
 					echo '<tbody>';
@@ -117,6 +131,7 @@ $formatter = \IntlDateFormatter::create(
 							echo "--";
 						}
 						echo "</td>";
+						echo '<td><a href="#add-note-modal" title="Ajouter une note" data-toggle="modal" class="add-note" data-eventid="'.$event->getId().'"><span class="glyphicon glyphicon-comment"></span></a></td>';
 						echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
 	           				echo '<option value="">Classer l\'évènement</option>';
 	           				echo '<option value="-1">Exclure du rapport</option>';
@@ -182,7 +197,25 @@ $formatter = \IntlDateFormatter::create(
 	</div>
 </div>
 
-<?php echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>")?>
+<?php
+
+echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>");
+
+echo $this->modalwindow('add-note-modal',
+        "<h4 class=\"modal-title\">Ajout d'une note</h4>",
+        "",
+        "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
+        . "<div class=\"modal-body\">"
+            . "<div class=\"form-group\">"
+                . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+                . "<div class=\"col-sm-10\"><textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
+            . "</div>"
+        . "</div>"
+        . "<div class=\"modal-footer\">"
+                . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+        . "</div>"
+        . "</form>");
+?>
 
 <?php $this->inlineScript()->captureStart();?>
 
@@ -190,7 +223,13 @@ $(".report-sidenav").affix();
 
 $('body').scrollspy({target: '#sidebar', offset:120});
 
+setURL('<?php echo $this->url('application');?>');
+
 iposhow('<?php echo $this->url('ipo'); ?>');
+
+$(document).on('click', '.add-note', function(e){
+	$('#add-note').data('id', $(this).data('eventid'));
+});
 
 <?php if (isset($this->messages['success'])) { ?>
 	<?php foreach ($this->messages['success'] as $message) { ?>

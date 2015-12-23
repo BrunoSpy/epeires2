@@ -110,5 +110,14 @@ return array(
                 'description' => ''
             )
         )
+    ),
+    'zfc_rbac' => array(
+        'guards' => array(
+            'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+                'ipo' => array(
+                    'ipo.read'
+                )
+            ),
+        )
     )
 );
