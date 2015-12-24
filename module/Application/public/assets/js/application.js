@@ -56,9 +56,16 @@ var displayMessages = function(messages){
  var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
     //sinon on a un effet de flip-flop sur les panneaux
-    $('#list-actions').load(url + 'events/actions?id=' + id + '&compact=true', function () {
-        $('tr[data-toggle=tooltip]').tooltip();
-        timerFiche = setTimeout(updateFiche, 10000, id);
+    $.getJSON(url + 'events/actionsStatus?id=' + id, function(data){
+	$.each(data, function(key, value){
+	    var td = $('tr[data-id='+key+'] td:last a');
+	    if(value) {
+		td.removeClass('active btn-success').addClass('btn-primary').html('A faire');
+	    } else {
+		td.addClass('active btn-success').removeClass('btn-primary').html('Fait');
+	    }
+	});
+	timerFiche = setTimeout(updateFiche, 10000, id);
     });
  }
  

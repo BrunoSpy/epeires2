@@ -1152,6 +1152,16 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
+    public function actionsStatusAction() {
+        $json = array();
+        $parentId = $this->params()->fromQuery('id', null);
+        $actions = $this->getActions($parentId);
+        foreach ($actions as $action) {
+            $json[$action->getId()] = $action->getStatus()->isOpen();
+        }
+        return new JsonModel($json);
+    }
+    
     private function getActions($eventid)
     {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
