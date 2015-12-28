@@ -62,12 +62,17 @@ var createEventEntry = function(id, event){
 	var html = "";
 	var start = new Date(event.start_date);
 	var end = new Date(event.end_date);
-	html += "<dt>"+event.name+((event.status_id <= 2) ? ' <em>(en cours)</em>' : '');
+	
+	var encours = event.punctual === false 
+			&& (event.end_date == null || (event.end_date !== null && end > now));
+	
+	html += "<dt>"+event.name+ (encours ? ' <em>(en cours)</em>' : '');
 	
 	html += "</dt>";
 	html += '<dd>';
 	html += '<small>Catégorie : '+event.category+'</small>';
-	if(event.status_id <= 2){
+	var now = new Date();
+	if(encours){
 		//evt en cours : modifier l'evt
 		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm pull-right btn-primary modify-evt">Modifier</a>';
 	} else {
