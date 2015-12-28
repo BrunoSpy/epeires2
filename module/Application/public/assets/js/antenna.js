@@ -221,6 +221,16 @@ var antenna = function(url, frequencyTestMenu){
                 });
 	});
 	
+	$('.sector-color').on('click', function(e){
+	    e.preventDefault();
+	    $(this).find('a.actions-freq').trigger('click');
+	});
+	
+	$('.antenna-color').on('click', function(e){
+	    e.preventDefault();
+	    $(this).find('a.actions-antenna').trigger('click');
+	});
+	
 	$('#form-brouillage').on('submit', function(e){
 		e.preventDefault();
 		$.post($("#form-brouillage form").attr('action'), $("#form-brouillage form").serialize(), function(data){
@@ -330,6 +340,7 @@ var antenna = function(url, frequencyTestMenu){
 	
 	$('a.actions-antenna, a.actions-freq').on('click', function(event){
 		event.preventDefault();
+		event.stopPropagation();
 		$(this).popover('toggle');
 	});
 	

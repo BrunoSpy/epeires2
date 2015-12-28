@@ -153,6 +153,7 @@ ul.antennas>div>li>a:after {
 	margin-bottom: -9px;
 	padding-bottom: 9px;
 	border-radius: 6px 6px 0px 0px;
+	cursor: pointer;
 }
 
 .antenna-color {
@@ -162,6 +163,7 @@ ul.antennas>div>li>a:after {
 	margin-top: -10px;
 	padding-top: 10px;
 	padding-bottom: 5px;
+	cursor: pointer;
 }
 
 .antenna-climax-color {
