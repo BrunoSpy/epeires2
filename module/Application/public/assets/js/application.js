@@ -56,15 +56,25 @@ var displayMessages = function(messages){
  var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
     //sinon on a un effet de flip-flop sur les panneaux
+    var change = false;
     $.getJSON(url + 'events/actionsStatus?id=' + id, function(data){
 	$.each(data, function(key, value){
 	    var td = $('tr[data-id='+key+'] td:last a');
-	    if(value) {
+	    if(value && td.hasClass('btn-success')) {
+		change = true;
 		td.removeClass('active btn-success').addClass('btn-primary').html('A faire');
-	    } else {
+	    } else if (!value && td.hasClass('btn-primary')) {
+		change = true;
 		td.addClass('active btn-success').removeClass('btn-primary').html('Fait');
 	    }
 	});
+	//il faut aussi mettre l'historique à jour si il y a eu un changement
+	if(change == true){
+	    //mise à jour histo
+	    $("#history").load(url+'events/gethistory?id='+id, function(){
+		$("#history").closest('.panel').find("span.badge").html($("#history dd").length);
+	    });
+	}
 	timerFiche = setTimeout(updateFiche, 10000, id);
     });
  }
@@ -240,7 +250,7 @@ $(document).ready(function(){
                     $("#updates").show();
                     //mise à jour histo
                     $("#history").load(url+'events/gethistory?id='+idFiche, function(){
-                        $("#history").parent().find("span.badge").html($("#history dd").size());
+                        $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
                     });
                 }
                 //mise à jour timeline si besoin
@@ -262,13 +272,13 @@ $(document).ready(function(){
                     function(data){
 			if(data.open){
 				me.html("A faire");
-				me.removeClass("active btn-success");
+				me.removeClass("active btn-success").addClass('btn-primary');
 			} else {
 				me.html("Fait");
 				me.addClass("active btn-success");
 			}
                         $("#history").load(url+'events/gethistory?id='+me.data('eventid'), function(){
-                            $("#history").parent().find("span.badge").html($("#history dd").size());
+                            $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
                         });
                         
                     }
