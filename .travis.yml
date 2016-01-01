@@ -14,6 +14,7 @@ install:
 before_script:
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
+  - php public/index.php orm:generate-proxies
   - php public/index.php data-fixture:import --no-interaction --append
 
 script: 
@@ -21,5 +22,5 @@ script:
   - cd ./tests
   - phpunit --stderr --coverage-clover ../build/logs/clover.xml
   
-after_script:
+after_success:
   - php ../vendor/bin/coveralls -v
