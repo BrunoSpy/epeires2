@@ -1,0 +1,21 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 7.0
+
+services:
+  - mysql
+
+install:
+   - composer install
+
+before_script:
+  - mysql -e 'create database epeires2;'
+  - php public/index.php migrations:migrate --no-interaction
+  - php public/index.php data-fixture:import --no-interaction
+  - cd ./tests
+
+script: phpunit

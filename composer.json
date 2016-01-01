@@ -44,6 +44,14 @@
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",
         "zendframework/zftool": "dev-master",
-        "ocramius/ocra-service-manager": "dev-master"
-    }
+        "ocramius/ocra-service-manager": "dev-master",
+        "zendframework/zend-test": "~2.5.0",
+        "phpunit/phpunit": "^5.1",
+        "hounddog/doctrine-data-fixture-module": "dev-master"
+    },
+    "autoload-dev": {
+    	"psr-4": {
+	        "ApplicationTest\\": "tests/ApplicationTest"
+	    }
+	}
 }
