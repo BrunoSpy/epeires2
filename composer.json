@@ -46,8 +46,9 @@
         "zendframework/zftool": "dev-master",
         "ocramius/ocra-service-manager": "dev-master",
         "zendframework/zend-test": "~2.5.0",
-        "phpunit/phpunit": "^5.1",
-        "hounddog/doctrine-data-fixture-module": "dev-master"
+        "phpunit/phpunit": "^4.8",
+        "hounddog/doctrine-data-fixture-module": "dev-master",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload-dev": {
     	"psr-4": {

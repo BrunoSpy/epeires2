@@ -1,21 +1,25 @@
 language: php
 
 php:
-  - 5.3
-  - 5.4
   - 5.5
+  - 5.6
   - 7.0
 
 services:
   - mysql
 
 install:
-   - composer install
+   - composer install --dev --no-interaction
 
 before_script:
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
-  - php public/index.php data-fixture:import --no-interaction
-  - cd ./tests
+  - php public/index.php data-fixture:import --no-interaction --append
 
-script: phpunit
+script: 
+  - mkdir -p build/logs
+  - cd ./tests
+  - phpunit --coverage-clover ../build/logs/clover.xml
+  
+after_script:
+  - php vendor/bin/coveralls -v
