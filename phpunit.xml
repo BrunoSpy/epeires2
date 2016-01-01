@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit 
-	bootstrap="Bootstrap.php"
+	bootstrap="tests/Bootstrap.php"
 	colors="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
@@ -14,13 +14,16 @@
 >
     <testsuites>
         <testsuite name="Application tests">
-            <directory suffix=".php">./ApplicationTest</directory>
-            <exclude>./ApplicationTest/Common/TestCase.php</exclude>
+            <directory suffix=".php">./tests/ApplicationTest</directory>
+            <exclude>./tests/ApplicationTest/Common/TestCase.php</exclude>
         </testsuite>
     </testsuites>
     <filter>
-    	<whitelist processUncoveredFilesFromWhitelist="true">
-    		<directory suffix=".php">../module</directory>
+    	<whitelist addUncoveredFilesFromWhitelist="true">
+    		<directory suffix=".php">./module</directory>
    		</whitelist>
     </filter>
+    <logging>
+  		<log type="coverage-clover" target="coverage.xml"/>
+  	</logging>
 </phpunit>

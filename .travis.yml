@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 5.5
   - 5.6
   - 7.0
 
@@ -19,8 +18,7 @@ before_script:
 
 script: 
   - mkdir -p build/logs
-  - cd ./tests
-  - phpunit --stderr --coverage-clover ../build/logs/clover.xml
+  - phpunit --stderr
   
 after_success:
-  - php ../vendor/bin/coveralls -v
+  - php vendor/bin/coveralls -v -x coverage.xml
