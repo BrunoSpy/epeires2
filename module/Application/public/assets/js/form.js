@@ -37,7 +37,7 @@ var formAddFile = function(fileId, formData, modifiable){
 }
 
 /**
- * 
+ *
  * @param {type} alarm
  * @param {boolean} alter if true, then alarm can be altered according to change of start date
  * @returns {undefined}
@@ -50,7 +50,7 @@ var formAddAlarm = function(alarm, alter) {
     //ajouter ligne dans le tableau
     var tr = $('<tr '+(alter ? 'class="fake-alarm" id="tr-fake-'+count+'"' : '')+' data-id="fake-'+count+'"></tr>');
     tr.data('deltabegin', alarm.deltabegin);
-    if(alarm.deltaend) { 
+    if(alarm.deltaend) {
 	tr.data('deltaend', alarm.deltaend);
     }
     //si date est déjà passée : warning
@@ -169,25 +169,39 @@ var form = function(url, tabid){
 
     urlt = url;
 
+    /**
+     *
+     * @param newevt 0 : nouvel évènement, 1 : modification d'un evt, 2 : copie d'un evt ou intanciation modèle via recherche
+     */
     var initTabs = function(newevt){
-	if(newevt) {
-	    //création d'un nouvel évènement vide ou à partir d'un modèle
-	    $('#notes-title').hide();
-	    $('#Event .nav-tabs > li').css('width', (100/6)+'%');
-	    $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
-	} else {
-	    //modification d'un evt
-	    $('#notes-title').show();
-	    $('#Event .nav-tabs > li').css('width', (100/7)+'%');
-	    $('#Event .nav-tabs > li > a').removeClass('disabled');
-	    $('#description-title > a').trigger('click');
-	}
-	//dans tous les cas, réactiver les js material
-	$.material.checkbox();
+        switch (newevt) {
+            case 0:
+                //création d'un nouvel évènement vide ou à partir d'un modèle
+                $('#notes-title').hide();
+                $('#Event .nav-tabs > li').css('width', (100/6)+'%');
+                $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
+                break;
+            case 1:
+                //modification d'un evt
+                $('#notes-title').show();
+                $('#Event .nav-tabs > li').css('width', (100/7)+'%');
+                $('#Event .nav-tabs > li > a').removeClass('disabled');
+                $('#description-title > a').trigger('click');
+                break;
+            case 2:
+                //copie d'un evt ou utilisatio modèle via recherche
+                $('#notes-title').hide();
+                $('#Event .nav-tabs > li').css('width', (100/6)+'%');
+                $('#Event .nav-tabs > li > a').removeClass('disabled');
+                $('#hours-title > a').trigger('click');
+                break;
+        }
+        //dans tous les cas, réactiver les js material
+        $.material.checkbox();
     };
 
     var updateIconTabs = function() {
-	
+
 	$('#Event .nav-tabs > li').each(function(index){
 	    $(this).find('div.round')
 	    .removeClass('blue').addClass('grey')
@@ -195,53 +209,53 @@ var form = function(url, tabid){
 	    icon.removeClass();
 	    icon.addClass('glyphicon glyphicon-' + icon.data('class'));
 	});
-	
+
 	if($('#categories-tab .form-group.has-error').length > 0){
 	    $('#cat-title').addClass('invalid').removeClass('valid');
 	} else {
 	    $('#cat-title').addClass('valid').removeClass('invalid');
 	}
-	
+
 	if($('#description-tab .form-group.has-error').length > 0){
 	    $('#description-title').addClass('invalid').removeClass('valid');
 	} else {
 	    $('#description-title').addClass('valid').removeClass('invalid');
 	}
-	
+
 	$('#Event .nav-tabs > li.valid > a:not(.disabled) > div.round')
 	.removeClass('grey blue orange').addClass('green');
-	
+
 	$('#Event .nav-tabs > li.active > a:not(.disabled) > div.round')
 	    .removeClass('grey green orange')
     	    .addClass('blue');
-	
+
 	$('#Event .nav-tabs > li.invalid > a:not(.disabled) > div.round')
 	.removeClass('grey blue green').addClass('orange')
 	.find('span.glyphicon')
 	.removeClass()
 	.addClass('glyphicon glyphicon-warning-sign');
     };
-    
+
     $('#event').arrive('#memos-tab tr', function(){
 	var count = $('#memos-tab tr').length;
 	$('#memos-title span.badge').html(count);
     });
-    
+
     $('#event').arrive('#files-tab tr', function(){
-	var count = $('#files-tab tr').length;
+	var count = $('#files-tab tr[id]').length;
 	$("#files-title span.badge").html(count);
     });
-    
+
     $('#event').arrive('#actions-tab tr', function(){
 	var count = $('#actions-tab tr').length;
 	$("#actions-title span.badge").html(count);
     });
-    
+
     $('#event').arrive('#notes-tab blockquote', function(){
 	var count =  $('#notes-tab blockquote').length;
 	$('#notes-title span.badge').html(count);
     });
-    
+
     //gestion des tabs
     $('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
 	updateIconTabs();
@@ -291,7 +305,7 @@ var form = function(url, tabid){
 	var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
 	var diff = (deb - nowUTC)/60000; //différence en minutes
 	//change status if needed, authorized and beginning near actual time
-	if($('#event form').data('confirmauto') 
+	if($('#event form').data('confirmauto')
 		&& $("#event select[name=status] option:selected").val() == '1'
 		    && (diff < 10)){
 	    $("#event select[name=status] option[value=2]").prop('selected', true);
@@ -306,7 +320,7 @@ var form = function(url, tabid){
 	var dateDeb = $("#hours-tab #start").siblings("input[type=hidden]");
 	var dateFin = $("#hours-tab #end").siblings("input[type=hidden]");
 	if (dateFin.val()) {
-	    //check if end_date < start_date	
+	    //check if end_date < start_date
 	    var endsplit = dateFin.val().split(' ');
 	    var daysplit = endsplit[0].split('-');
 	    var hourendsplit = endsplit[1].split(':');
@@ -393,7 +407,7 @@ var form = function(url, tabid){
 	    $("#end .day input").val(daysplit[0]);
 	    $("#end .hour input").val(hoursplit[0]);
 	    $("#end .minute input").val(hoursplit[1]);
-	} 
+	}
     };
 
     /*    var updateHourTitle = function(){
@@ -480,7 +494,7 @@ var form = function(url, tabid){
 	    $("#event").load(
 		    url+'events/form'+'?tabid='+tabid,
 		    function(){
-			initTabs(true);
+			initTabs(0);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 			updateHours();
@@ -510,13 +524,12 @@ var form = function(url, tabid){
 	$("#form-title").html(me.data('name'));
 	$("#create-evt").modal('show');
 	$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
-	    initTabs(true);
+	    initTabs(2);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    updateHours();
-	    $("#description-title a").trigger('click');
 	});
-	$("#search-results").offset({top:0, left:0});
+	$("#search-results").offset({top:0});
 	pauseUpdateAlarms();
     });
 
@@ -528,13 +541,12 @@ var form = function(url, tabid){
 	$("#create-evt").modal('show');
 
 	$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
-	    initTabs(true);
+	    initTabs(2);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    updateHours();
-	    $("#hours-title a").trigger('click');
 	});
-	$("#search-results").offset({top:0, left:0});
+	$("#search-results").offset({top:0});
 	pauseUpdateAlarms();
     });
 
@@ -547,7 +559,7 @@ var form = function(url, tabid){
 	$("#create-evt").modal('show');
 
 	$("#event").load(url+'events/form?id='+me.data('id')+'&tabid='+tabid, function(){
-	    initTabs(false);
+	    initTabs(1);
 	    $("#event input[name=startdate]").timepickerform({'id':'start'});
 	    $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
 	    //mise à jour en fonction du statut ponctuel
@@ -606,7 +618,7 @@ var form = function(url, tabid){
 			    elt.attr('checked', (value == 1));
 			} else if(elt.is('input')){
 			    elt.prop('value', value);
-			} 
+			}
 		    });
 		    //open description accordion
 		    $("#description-title a").trigger('click');
@@ -631,13 +643,13 @@ var form = function(url, tabid){
 	    });
 	});
 	//getalerts
-	$.getJSON(url+'events/getalarms?id='+me.data('id'), 
+	$.getJSON(url+'events/getalarms?id='+me.data('id'),
 		function(data){
 	    $('#memos-tab #alarm-table').empty();
 	    $("#memos-title span.badge").html('0');
 	    $.each(data, function(i, item){
 		formAddAlarm(item, true);
-	    });  
+	    });
 	});
 	//save the fact that we used a model in order to copy actions
 	$('#description-tab').append("<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >");
@@ -662,7 +674,7 @@ var form = function(url, tabid){
 	$('#form-notes').empty();
 	$('#notes-title span.badge').html('0');
     };
-    
+
     //choosing a category
     $("#event").on("change", "#root_categories", function(){
 	//disable subcategories select form before getting datas
@@ -688,7 +700,7 @@ var form = function(url, tabid){
 					$(this).parents('.form-group').addClass('has-error');
 				    });
 				    $('#event').trigger('change');
-				}			
+				}
 			);
 			$("#cat-title").addClass('valid');
 			$("#hours-title a").removeClass("disabled");
@@ -765,7 +777,7 @@ var form = function(url, tabid){
     });
 
     $("#event").on("change", "#punctual", function(){
-	$("#end").siblings('input').prop('disabled',$(this).is(':checked')); 
+	$("#end").siblings('input').prop('disabled',$(this).is(':checked'));
 	$("#end input").prop('disabled', $(this).is(':checked'));
 	if($(this).is(':checked')){
 	    $("#end a").addClass("disabled");
@@ -921,7 +933,7 @@ var form = function(url, tabid){
     $("#add-note-modal").on('hide.bs.modal', function(){
 	//update notes
 	$("#form-notes").load(url+'events/updates?id='+$("#add-note").data('id'), function(){
-	    
+
 	});
     });
 
