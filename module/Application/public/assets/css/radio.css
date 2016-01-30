@@ -241,3 +241,7 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 .vertical-scroll ul {
 	margin-bottom: 0px;
 }
+
+.open-fiche {
+	display: none;
+}
