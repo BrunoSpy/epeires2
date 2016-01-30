@@ -32,16 +32,14 @@ var antenna = function(url, frequencyTestMenu){
                     closeFiche();
                 } else {
                     $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
-                	timerFiche = setTimeout(updateFiche, 10000, $("#list-actions").data('parentid'));
-                    })
-                        .data('id', id);
+                	timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+                    });
                 }
             } else {
                 $("#fiche").empty();
                 $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
-                    timerFiche = setTimeout(updateFiche, 10000, $("#list-actions").data('parentid'));
-                })
-                .data('id', $(this).data('id'));
+                    timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+                });
                 openFiche();
             }
         });
@@ -444,10 +442,10 @@ var antenna = function(url, frequencyTestMenu){
 	var updatefrequencies = function() {
 		$.each(currentfrequencies, function(key, value){
 			var sector = $('.sector-color.frequency-'+key);
-                        var $failAntennas = sector.closest('.sector').find('.antenna-color.background-status-fail').length;
+			var $failAntennas = sector.closest('.sector').find('.antenna-color.background-status-fail').length;
 			if(value.status != 0 && value.otherfreq == 0 && value.cov == 0 && $failAntennas == 0){
 				sector.removeClass('background-status-fail');
-                                sector.removeClass('background-status-warning');
+				sector.removeClass('background-status-warning');
 				sector.addClass('background-status-ok');
 			} else {
                             if(value.status == 0){
@@ -464,7 +462,7 @@ var antenna = function(url, frequencyTestMenu){
                                 } 
                             }				
 			}
-                        //changement de couverture
+            //changement de couverture
 			if(value.cov == 1){ //principale = 0
 				sector.closest('.sector').find('.mainantenna-color').removeClass('background-selected');
 				sector.closest('.sector').find('.backupantenna-color').addClass('background-selected');
@@ -472,7 +470,7 @@ var antenna = function(url, frequencyTestMenu){
 				sector.closest('.sector').find('.backupantenna-color').removeClass('background-selected');
 				sector.closest('.sector').find('.mainantenna-color').addClass('background-selected');
 			}
-                        //changement de fréquence
+            //changement de fréquence
 			if(value.otherfreq != 0 && value.otherfreqid != sector.closest('.sector').data('freq')){
 				sector.find('.actions-freq').html(value.otherfreq).addClass('em').data('freq',value.otherfreqid);
                                 sector.find('.sector-name span').remove();

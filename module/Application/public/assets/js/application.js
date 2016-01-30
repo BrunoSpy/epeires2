@@ -240,7 +240,7 @@ $(document).ready(function(){
         $.post(url+'events/addnote?id='+me.data('id'), me.serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
-                var idFiche = $('#fiche').data('id');
+                var idFiche = $('#close-button').data('id');
                 if(typeof idFiche != 'undefined') {
                     //fiche ouverte
                     //mise à jour notes
