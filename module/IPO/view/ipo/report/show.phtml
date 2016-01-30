@@ -9,11 +9,11 @@ $formatter = \IntlDateFormatter::create(
 ?>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-3" id="sidebar">		
+		<div class="col-md-3" id="sidebar">
 			<ul class="nav report-sidenav">
 				<li>
 					<a href="#AClasser">
-						<span class="glyphicon glyphicon-chevron-right"></span> Evènements à classer
+						<span class="glyphicon glyphicon-random"></span> Évènements à classer
 					</a>
 				</li>
 				<?php 
@@ -29,7 +29,7 @@ $formatter = \IntlDateFormatter::create(
 				?>
 			<li>
 					<a href="#Exclus">
-						Evènements exclus
+						Évènements exclus
 					</a>
 				</li>	
 			<li>
@@ -110,7 +110,7 @@ $formatter = \IntlDateFormatter::create(
 				if($reportcategory['category'] !== null) {
 				    echo '<div class="panel panel-default">';
 				    echo '<div class="panel-heading">';
-					echo '<h2 class"panel-title" id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+					echo '<h2 class="panel-title" id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
 					echo '</div>';
 					echo '<div class="panel-body">';
 					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
@@ -149,7 +149,7 @@ $formatter = \IntlDateFormatter::create(
 				} else {
 				    echo '<div class="panel panel-default">';
 				    echo '<div class="panel-heading">';
-					echo '<h2 class="panel-title" id="Exclus">Evènements exclus</h2>';
+					echo '<h2 class="panel-title" id="Exclus">Évènements exclus</h2>';
 					echo '</div>';
 					echo '<div class="panel-body">';
 					echo '<table class="table table-striped" id="category_null">';
