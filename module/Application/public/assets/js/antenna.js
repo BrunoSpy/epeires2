@@ -114,10 +114,20 @@ var antenna = function(url, frequencyTestMenu){
 		$("#confirm-end-event").modal('show');	
 	});
 
+
+    $("#confirm-end-event").on('hide.bs.modal', function(){
+        if(back){
+            var button = $('#switch_'+$("#cancel-antenna").data('antenna'));
+            button.prop('checked', !button.is(':checked') );
+        }
+    });
+
 	$("#end-antenna-href").on('click', function(event){
 		event.preventDefault();
+        back=false;
 		$("#confirm-end-event").modal('hide');
 		$.post($("#end-antenna-href").attr('href'), function(data){
+            back = true;
 			displayMessages(data.messages);
 			var switchbtn = $('#switch_'+$("#cancel-antenna").data('antenna'));
 			if(data.messages['error']){
