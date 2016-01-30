@@ -391,7 +391,8 @@ $(document).ready(function(){
             format: "DD/MM/YYYY",
             time: false,
             lang: 'fr',
-            cancelText: "Annuler"
+            cancelText: "Annuler",
+            weekStart : 1
     });
     
     $("#date").on('change', function(){
