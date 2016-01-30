@@ -81,9 +81,13 @@ var createEventEntry = function(id, event){
 	}
 	html += '</dd>';
 	div.append(html);
-	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)+'/'+FormatNumberLength(start.getUTCMonth()+1,2);
+	var titlehtml = '<b>Date de début :</b> '+FormatNumberLength(start.getUTCDate(), 2)
+		                                       +'/'+FormatNumberLength(start.getUTCMonth()+1,2)
+                                           +'/'+FormatNumberLength(start.getFullYear(), 2);
 	if(event.end_date != null){
-		titlehtml += '<br /><b>Date de fin :</b> '+FormatNumberLength(end.getUTCDate(), 2)+'/'+FormatNumberLength(end.getUTCMonth()+1,2);
+		titlehtml += '<br /><b>Date de fin :</b> '+FormatNumberLength(end.getUTCDate(), 2)
+                                              +'/'+FormatNumberLength(end.getUTCMonth()+1,2)
+                                              +'/'+FormatNumberLength(start.getFullYear(), 2);
 	}
 	$.each(event.fields, function(key, value){
 		titlehtml += '<br/><b>'+key+' :</b> '+value; 
