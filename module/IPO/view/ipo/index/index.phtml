@@ -13,12 +13,12 @@ $formatter = \IntlDateFormatter::create(
 	<div class="row">
 		<div class="col-sm-12">
 			<h1>Derniers rapports</h1>
-	           <table class="table table-striped" id="reports-table">
+	           <table class="table table-striped sortable" id="reports-table">
 				<thead>
 					<tr>
-						<th>Nom</th>
-						<th>Date de création</th>
-						<th>Semaine n°</th>
+						<th data-sort="string">Nom</th>
+						<th data-sort="string">Date de création</th>
+						<th data-sort="int">Semaine n°</th>
 						<th><a id="add-report" href="#report-container" data-toggle="modal" class="btn btn-sm btn-primary">Nouveau rapport</a></th>
 					</tr>
 				</thead>

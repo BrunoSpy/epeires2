@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\AntennaCategory;
 use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
 use Application\Form\CategoryFormFieldset;
@@ -720,6 +721,57 @@ class EventsController extends TabController
                         
                         $event->updateAlarms();
                         $objectManager->persist($event);
+
+                        //certains évènements induisent des évènements fils
+                        //il faut les créer à ce moment
+                        if( !$id ) { //uniquement lors d'une création d'évènement
+                            if( $event->getCategory() instanceof AntennaCategory ) {
+                                $frequencies = $event->getCustomFieldValue($event->getCategory()->getFrequenciesField());
+                                $antennaState = $event->getCustomFieldValue($event->getCategory()->getStatefield())->getValue();
+                                $antennaId = $event->getCustomFieldValue($event->getCategory()->getAntennafield())->getValue();
+                                $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
+                                $freqs = array();
+                                if($frequencies) {
+                                    $freqids = explode("\r", $frequencies->getValue());
+                                    foreach($freqids as $freqid) {
+                                        $freq = $objectManager->getRepository('Application\Entity\Frequency')->find($freqid);
+                                        if($freq) {
+                                            $freqs[] = $freq;
+                                        }
+                                    }
+                                }
+                                if(!$frequencies || count($freqs) == 0) {
+                                    //pas d'info sur les fréquences impactées : toutes les fréquences de l'antenne sont en panne
+                                    foreach($antenna->getMainfrequencies() as $freq) {
+                                        $freqs[] = $freq;
+                                    }
+                                    foreach($antenna->getMainfrequenciesclimax() as $freq){
+                                        $freqs[] = $freq;
+                                    }
+                                }
+                                if($antenna && $antennaState == 1) {
+                                    //antenne indisponible : il faut créer les changements de couverture
+                                    //pour les fréquences impactées
+                                    foreach($freqs as $freq) {
+                                        if($freq->hasMainAntenna($antenna) || $freq->hasMainClimaxAntenna($antenna)){
+                                            $objectManager
+                                                ->getRepository('Application\Entity\Event')
+                                                ->addChangeFrequencyCovEvent(
+                                                    $freq,
+                                                    1, // couv secours
+                                                    0, // toujours dispo
+                                                    "Antenne principale indisponible",
+                                                    $event->getStartdate(),
+                                                    $this->zfcUserAuthentication()->getIdentity(),
+                                                    $event,
+                                                    $messages
+                                                );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         try {
                             $objectManager->flush();
                             $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");

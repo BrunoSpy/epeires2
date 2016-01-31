@@ -167,7 +167,8 @@
                     format: "DD-MM-YYYY",
                     time: false,
                     lang: 'fr',
-                    cancelText: "Annuler"
+                    cancelText: "Annuler",
+                    weekStart : 1
                 });
                
                 div.on('click', 'span.glyphicon-calendar', function(e){

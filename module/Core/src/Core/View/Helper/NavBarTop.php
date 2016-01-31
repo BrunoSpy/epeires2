@@ -29,30 +29,34 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $title, $iponumber = null, $zoneform = null) {
+    public function __invoke($color, $title, $return = null, $iponumber = null, $zoneform = null) {
         
         $auth = $this->sm->get('ZfcRbac\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');
-        
+
         $html = '<nav class="navbar navbar-default navbar-fixed-top navbar-material-'.$color.'-800" id="navbar-first">';
         $html .= '<div class="container-fluid">';
-        
+
         $html .= '<div class="navbar-header">';
-        $html .= '<button type="button" 
-                          class="navbar-toggle collapsed" 
-                          data-toggle="collapse" 
-                          data-target="#navbar-first-collapse" 
+        $html .= '<button type="button"
+                          class="navbar-toggle collapsed"
+                          data-toggle="collapse"
+                          data-target="#navbar-first-collapse"
                           aria-expanded="false">
                       <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
                   </button>';
-        $html .= '<a class="navbar-brand visible-lg-block" href="#">Epeires<sup>2</sup>'.$title.'</a>';
+        $html .= '<a class="navbar-brand visible-lg-block" href="'.($return !== null ? $this->view->url($return) : "#").'">';
+        if($return !== null) {
+            $html .= '<span class="glyphicon glyphicon-home"></span> ';
+        }
+        $html .= 'Epeires<sup>2</sup>'.$title.'</a>';
         $html .= '</div>';
-        
+
         $html .= '<div class="collapse navbar-collapse" id="navbar-first-collapse">';
         $html .= '<ul class="nav navbar-nav navbar-left">';
         $html .= $this->view->userMenu($color);
         $html .= '</ul>';
-        
+
         if($auth->getIdentity() && !$zoneform) {
             $html .= '<p class="navbar-text navbar-left visible-lg-block">';
             $html .= '<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b>' . $auth->getIdentity()->getOrganisation()->getName();

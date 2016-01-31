@@ -94,9 +94,9 @@ class OpSupHelper extends AbstractHelper
                 $html .= $formView->closeTag();
             } else {
                 if ($currentopsup) {
-                    $html .= $currentopsup->getName();
+                    $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px">' . $currentopsup->getName() . '</p>';
                 } else {
-                    $html .= '<p class="navbar-text navbar-left"><em>Aucun Op Sup configuré</em></p>';
+                    $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px"><em>Aucun Op Sup configuré</em></p>';
                 }
             }
         } else {
