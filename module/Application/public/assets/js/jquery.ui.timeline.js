@@ -492,14 +492,22 @@
             	txt += '</p>';
             	me.popover({
                     content: txt,
-                    trigger:'focus',
                     placement:'auto top',
                     html: 'true',
                     viewport: '#timeline'
                 }).popover('show');
             	me.parents('.elmt').tooltip('hide');
             });
-            
+            //fermeture des popover sur clic en dehors
+            this.element.on('click', function (e) {
+                self.element.find('.tooltip-evt').each(function () {
+                    // hide any open popovers when the anywhere else in the body is clicked
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                        $(this).popover('destroy');
+                    }
+                });
+            });
+
             this.element.on('click', '.add-note', function(e){
             	e.preventDefault();
         		$("#add-note").data('id', $(this).data('id'));
