@@ -127,10 +127,21 @@ class ReportController extends AbstractActionController
                                 $newevent['author'] = $event->getAuthor()->getDisplayName();
                                 $newevent['fields'] = array();
                                 foreach ($event->getCustomFieldsValues() as $value) {
-                                    $val = array();
-                                    $val['name'] = $value->getCustomfield()->getName();
-                                    $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-                                    $newevent['fields'][] = $val;
+                                    if(!$value->getCustomField()->isTraceable()) {
+                                        $val = array();
+                                        $val['name'] = $value->getCustomfield()->getName();
+                                        $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                                        $newevent['fields'][] = $val;
+                                    } else {
+                                        $repo = $em->getRepository('Application\Entity\Log');
+                                        $logs = $repo->getLogEntries($value);
+                                        foreach(array_reverse($logs) as $log) {
+                                            $val = array();
+                                            $val['name'] = $formatterDayHour->format($log->getLoggedAt()) . " " . $value->getCustomfield()->getName();
+                                            $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $log->getData()["value"]);
+                                            $newevent['fields'][] = $val;
+                                        }
+                                    }
                                 }
                                 $newevent['updates'] = array();
                                 foreach ($event->getUpdates() as $update) {

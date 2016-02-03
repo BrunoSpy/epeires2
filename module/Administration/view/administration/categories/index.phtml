@@ -19,7 +19,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>Couleur</th>
 						<th>Compact</th>
 						<th data-container="body" data-toggle="tooltip" title="Afficher les évènements sur la page d'accueil.">Timeline<sup>?</sup></th>
-						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé ou Terminé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
+						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé, Terminé ou Annulé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
 						<th>Onglets</th>
 						<th>Modèles</th>
 						<th>Champs</th>
@@ -188,7 +188,8 @@ echo $this->modalwindow(
 		.'" method="POST" name="CustomField" id="CustomField">'
 		.'<div id="fields-table">'
 		.'</div>'
-		.'</form>'
+		.'</form>',
+	null, null, "modal-lg"
 	);
 
 echo $this->modalwindow(
