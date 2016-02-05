@@ -168,19 +168,21 @@
 	padding: 2px;
 }
 
-.label_elmt .popover {
+.label_elmt.popover {
 	min-width: 185px;
 	background-color: #fff;
 	z-index:1033;
+	color: black !important;
+	white-space: nowrap;
 }
 
-.label_elmt .popover-content {
+.label_elmt.popover-content {
 	/* padding-bottom: 0px;*/
 	font-weight: bold;
 	
 }
 
-.label_elmt .popover > .arrow {
+.label_elmt.popover > .arrow {
 	display: block;
 }
 
