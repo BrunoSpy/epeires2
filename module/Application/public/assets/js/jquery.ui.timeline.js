@@ -244,10 +244,13 @@
                     //affichage du tooltip
                     var id = $(this).data('ident');
                     var event = self.events[self.eventsPosition[id]];
-                    var text = "";
+                    var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
-                        text += nom + " : " + contenu + "<br />";
+                        text += "<tr>";
+                        text += "<td>" + nom + " : </td><td>" + contenu + "</td>";
+                        text += "</tr>";
                     });
+                    text += "</tbody></table>";
                     $(this).tooltip({
                         title: '<span class="elmt_tooltip">' + text + '</span>',
                         container: 'body',

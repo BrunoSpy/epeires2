@@ -115,7 +115,8 @@ class ReportController extends AbstractActionController
             $pdf = new PdfModel();
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
-                'day' => $day
+                'day' => $day,
+                'logs' => $objectManager->getRepository('Application\Entity\Log')
             ));
             $pdf->setOption('paperSize', 'a4');
             
@@ -207,7 +208,7 @@ class ReportController extends AbstractActionController
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
                 ->setTemplate('application/report/daily')
-                ->setVariables(array('events' => $eventsByCats, 'day' => $day));
+                ->setVariables(array('events' => $eventsByCats, 'day' => $day, 'logs' => $objectManager->getRepository('Application\Entity\Log')));
 
         $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
         $engine = $this->getServiceLocator()->get('viewpdfrenderer')->getEngine();

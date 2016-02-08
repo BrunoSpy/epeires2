@@ -122,7 +122,7 @@
                             echo '<div class="subcat_title"> > '.$subcat['name'].'</div>';
                         }
                         foreach ($subcat['events'] as $e) {
-                            echo $this->partial('event.phtml', array('event' => $e));
+                            echo $this->partial('event.phtml', array('event' => $e, 'logs' => $this->logs));
                         }
                     }
             }

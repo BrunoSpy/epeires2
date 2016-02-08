@@ -1432,6 +1432,8 @@ class EventsController extends TabController
 
     private function getEventJson(Event $event)
     {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $logsRepo = $objectManager->getRepository("Application\Entity\Log");
         $eventservice = $this->getServiceLocator()->get('EventService');
         $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         $json = array(
@@ -1467,14 +1469,40 @@ class EventsController extends TabController
         );
         
         $fields = array();
+        $formatterSimple = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL HH:mm'
+        );
         foreach ($event->getCustomFieldsValues() as $value) {
-            $formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-            if ($formattedvalue != null) {
-                $fields[$value->getCustomField()->getName()] = $formattedvalue;
+            if($value->getCustomField()->isTraceable()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                    $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
+                    $formattedvalue = $customfieldservice->getFormattedValue(
+                        $value->getCustomField(),
+                        $log->getData()["value"]
+                    );
+                    $fields[$name] = $formattedvalue;
+                }
+            } else {
+                $formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                if ($formattedvalue != null) {
+                    $fields[$value->getCustomField()->getName()] = $formattedvalue;
+                }
             }
         }
         
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL, HH:mm'
+        );
         foreach ($event->getUpdates() as $update) {
             $key = $formatter->format($update->getCreatedOn());
             $tempkey = $formatter->format($update->getCreatedOn());

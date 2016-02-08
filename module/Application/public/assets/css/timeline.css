@@ -276,3 +276,20 @@
 .tooltip.tooltip-actions.bottom {
 	margin-top: 0px;
 }
+
+.tooltip.tooltip-actions .tooltip-inner {
+	max-width: 250px;
+}
+
+.tooltip.tooltip-actions .table td {
+	padding: 0px;
+	line-height: 1.1;
+}
+
+.tooltip.tooltip-actions .table tr {
+	text-align: left;
+}
+
+.tooltip.tooltip-actions .table > tbody > tr:first-child > td {
+	border-top: none;
+}
