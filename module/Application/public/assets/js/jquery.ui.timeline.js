@@ -244,10 +244,13 @@
                     //affichage du tooltip
                     var id = $(this).data('ident');
                     var event = self.events[self.eventsPosition[id]];
-                    var text = "";
+                    var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
-                        text += nom + " : " + contenu + "<br />";
+                        text += "<tr>";
+                        text += "<td>" + nom + " : </td><td>" + contenu + "</td>";
+                        text += "</tr>";
                     });
+                    text += "</tbody></table>";
                     $(this).tooltip({
                         title: '<span class="elmt_tooltip">' + text + '</span>',
                         container: 'body',
@@ -492,14 +495,22 @@
             	txt += '</p>';
             	me.popover({
                     content: txt,
-                    trigger:'focus',
                     placement:'auto top',
                     html: 'true',
                     viewport: '#timeline'
                 }).popover('show');
             	me.parents('.elmt').tooltip('hide');
             });
-            
+            //fermeture des popover sur clic en dehors
+            this.element.on('click', function (e) {
+                self.element.find('.tooltip-evt').each(function () {
+                    // hide any open popovers when the anywhere else in the body is clicked
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                        $(this).popover('destroy');
+                    }
+                });
+            });
+
             this.element.on('click', '.add-note', function(e){
             	e.preventDefault();
         		$("#add-note").data('id', $(this).data('id'));
