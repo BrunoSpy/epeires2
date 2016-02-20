@@ -26,7 +26,7 @@
 			echo "<td>".$field->getType()->getName()."</td>";
             echo "<td>";
                 if(!$this->isMultipleAllowed($field)){
-                    echo '<span class="glyphicon glyphicon-grey icon-remove"></span>';
+                    echo '<span class="glyphicon glyphicon-remove" style="color:lightgrey"></span>';
                 } else {
                     if($field->isMultiple()){
                         echo '<span class="glyphicon glyphicon-ok"></span>';
