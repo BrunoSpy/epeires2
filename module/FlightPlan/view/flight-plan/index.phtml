@@ -1,0 +1,81 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/stupidtable.js') ?>
+<?php $this->headScript()->appendFile($this->basePath() . '/moment.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/momentlocale.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/bootstrap-datetimepicker.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/jquery.timepicker.js') ?>
+<?php $this->headScript()->appendFile($this->basePath() . '/flightplan.js') ?>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a class="btn btn-primary" href="#fp-cont-form" data-toggle="modal" id="fp-add">
+                            Suivre un Vol
+                        </a>
+                    </h3>
+		</div>
+                <div class="panel-body">
+                    <table class="table table-striped table-hover table-bordered sortable">
+                        <thead>
+                            <tr>
+                                <th data-sort="string">Indicatif</th>
+                                <th data-sort="string">Destination</th>
+                                <th data-sort="string">Départ</th>
+                                <th>TOA</th>
+                                <th>ETA</th>
+                            </tr>    
+                        </thead>
+                        <tbody>
+                            <?php foreach ($allFp as $fp) : ?>
+                            <?php echo $this->fp()->renderRow($fp)?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?=$this->modalWindow(  "fp-cont-form", 
+                        "<h4 id='fp-title'></h4>",
+                        "", 
+                        "<div id='fp-form'></div>"); ?>
+
+<?=$this->modalwindow(  "fp-cont-del",
+                        "<h3>Confirmer la suppression ?</h3>",
+                        "", 
+                        null, 
+                        "<p>Voulez-vous vraiment supprimer le vol <em><span id ='fp-cont-del-airid'></span></em> ?</p>",
+                        "<a class='btn btn-danger' id='fp-cont-del-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
+
+<?php $this->inlineScript()->captureStart(); ?>
+
+$("#home").removeClass("dropdown-toggle")
+		  .attr('data-toggle', '')
+		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+
+$("#create-link").remove();		  
+
+$("#zoomform").remove();
+
+$('#search').remove();
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+    var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+//sort the table by name
+$("table th:first").trigger('click');
+
+flightplan('<?php echo $this->url('flight-plans'); ?>');
+
+<?php $this->inlineScript()->captureEnd(); ?>

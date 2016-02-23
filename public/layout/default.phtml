@@ -1,0 +1,84 @@
+<?=$this->doctype(); ?>
+
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <?=$this->headTitle($this->translate('Epeires²'))->setSeparator(' - ')->setAutoEscape(false) ?>
+        <?=$this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+        <!-- Le styles -->
+        <?=$this->headLink(['rel'   => 'shortcut icon', 
+                            'type'  => 'image/vnd.microsoft.icon', 
+                            'href'  => $this->basePath() . '/img/favicon.ico'
+                           ])
+                    ->prependStylesheet($this->basePath() . '/assets/css/application.css') 
+                    ->prependStylesheet($this->basePath() . '/assets/css/core.css') 
+                    ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
+            //        ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
+                    ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
+            //        ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
+            //        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
+                    ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-epeirespalette.min.css')
+            //        ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
+                    ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
+        ?>
+        <!-- Scripts -->
+        <?=$this->headScript()
+            //        ->prependFile($this->basePath() . '/assets/js/application.js')
+            //        ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
+                    ->prependFile($this->basePath() . '/assets/js/headerbar.js')
+            //        ->prependFile($this->basePath() . '/assets/js/alarm.js')
+            //        ->prependFile($this->basePath() . '/assets/js/form.js')
+                    ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
+            //        ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
+            //        ->prependFile($this->basePath() . '/components/momentjs/locale/fr.js')
+            //        ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
+                    ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
+            //        ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
+            //        ->prependFile($this->basePath() . '/components/arrive/minified/arrive.min.js')
+            //        ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
+                    ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
+                    ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
+                    ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
+                    ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
+            //        ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
+                    ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
+
+        ?>
+    </head>
+    <body>
+	<?=$this->navbartop("blue", '', $this->iponumber, $this->zoneform)?>
+	<?=$this->navbar("blue")?>
+        <?php if($this->isGranted('events.create')):?>
+        <a id="create-link" href="#" type="button" class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn">
+            <i class="mdi-image-edit"></i>
+        </a>
+        <?php endif;?>
+        
+        <div class="content"><?=$this->content?></div> 
+        
+        <?php 
+        if(!$this->zfcuserIdentity()){
+            echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
+        } ?>
+        
+        <?php $this->inlineScript()->captureStart();?>
+                //setURL('<?php echo $this->url('application');?>');
+		
+		//init header bar
+		//headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
+                
+                //gestion des alertes
+		//setURLAlarm('<?php echo $this->url('application');?>');
+		//updateAlarms();       
+        //init translation
+        /*i18n.init({
+        	lng: '<?php echo $this->lang;?>',
+        	fallbackLng: 'fr_FR',
+        	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
+        });*/
+        
+        <?php $this->inlineScript()->captureEnd();?>
+                        
+        <?=$this->inlineScript()?>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+<tr>
+<td>                                    
+    <?=$fp->getAircraftid()?>
+    <?php
+    /*
+     * RENDRE CA PLUS CONFIGURABLE DETRESSFA INERFA ALERFA
+     */
+    $now = new DateTime();
+    $iv = $fp->getEstimatedtimeofarrival()->diff($now);
+    //pre_r($iv);
+    if($iv->i >= 15){
+        ?>
+    <span>!ALERFA!<span>
+        <?php
+    }
+    ?>
+</td>
+<td><?=$fp->getDestinationterrain()?></td>
+<td><?=$fp->getStartterrain()?></td>                    
+<td><?=($fp->getTimeofarrival()) ? $fp->getTimeofarrival()->format('H:i:s') : null?></td>
+<td><?=($fp->getEstimatedtimeofarrival()) ? $fp->getEstimatedtimeofarrival()->format('H:i:s') : null?></td>
+<td>
+    <a title="Modifier" 
+       href="#fp-cont-form" 
+       class="fp-a-edit" 
+       data-fp-id="<?=$fp->getId()?>"
+       data-aircraft-id="<?=$fp->getAircraftid()?>"
+       data-toggle="modal">
+       <span class="glyphicon glyphicon-pencil"></span>
+    </a>
+    <a  title="Supprimer"
+        href="#fp-cont-del"
+        class="fp-a-del"
+        data-fp-id="<?=$fp->getId()?>"
+        data-fp-aircraft-id="<?=$fp->getAircraftid()?>"
+        data-toggle="modal">
+        <span class="glyphicon glyphicon-trash"></span>
+    </a>
+</td>
+</tr>

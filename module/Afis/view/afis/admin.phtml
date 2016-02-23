@@ -1,0 +1,99 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js')?>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <?php echo $this->afis()->renderSideNav($allAfis); ?>
+        
+        <div class="col-md-9">
+            <p></p>
+                        
+            <div class="panel-heading">
+                <a class="btn btn-lg btn-primary" href="#afis-cont-form" data-toggle="modal" id="afis-add">Ajouter</a>
+                <a class="btn btn-lg btn-primary" href="/afis">Retour</a>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title" id="afis">1. AFIS en service</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th data-sort="string">Nom</th>
+                                <th data-sort="string">Nom court</th>
+                                <th>Organisation</th>
+                                <th>En service</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($allAfis as $afis) : ?>
+                            <?php echo (!$afis->isDecommissionned()) ? $this->afis()->renderAdminRow($afis) : null?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title" id="oldafis">2. Anciens AFIS</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th data-sort="string">Nom</th>
+                                <th data-sort="string">Nom court</th>
+                                <th>Organisation</th>
+                                <th>En service</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                        	<?php foreach ($allAfis as $afis) : ?>
+                                <?php echo ($afis->isDecommissionned()) ? $this->afis()->renderAdminRow($afis) : null?>
+                        	<?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?=$this->modalWindow(  "afis-cont-form", 
+                        "<h3 id='afis-title'></h3>", 
+                        "", 
+                        "<div id='afis-form'></div>")?>
+
+<?=$this->modalwindow(  "afis-cont-del",
+                        "<h3>Confirmer la suppression ?</h3>",
+                        "", 
+                        null, 
+                        "<p>Voulez-vous vraiment supprimer l'AFIS <em><span id ='afis-cont-del-name'></span></em> ?</p>",
+                        "<a class='btn btn-danger' id='afis-cont-del-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>	
+
+
+<?php $this->inlineScript()->captureStart();?>
+
+$('.sidenav').affix();
+
+$("#create-link").remove();		  
+
+$("#zoomform").remove();
+
+$('#search').remove();
+
+$('body').scrollspy({target:'#sidebar', offset:120});
+
+<?php echo $this->notifications($this->messages); ?>
+
+afis('<?php echo $this->url('afis')?>');
+
+<?php $this->inlineScript()->captureEnd();?>

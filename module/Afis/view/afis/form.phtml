@@ -1,0 +1,22 @@
+
+<?php echo $this->form()->openTag($form) ?>
+
+<div class="modal-body">
+
+    <?php 
+
+    echo $this->formHidden($form->get('id'));
+    echo $this->controlGroup($form->get('name'));
+    echo $this->controlGroup($form->get('shortname'));
+    echo $this->controlGroup($form->get('organisation'));
+    echo $this->controlGroup($form->get('decommissionned'));
+
+    ?>
+
+</div>
+
+<div class="modal-footer">
+<?=$this->formSubmit($this->form->get('submit')); ?>
+</div>
+  
+<?php echo $this->form()->closeTag() ?>
