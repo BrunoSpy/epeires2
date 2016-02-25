@@ -75,7 +75,26 @@ class NavBar extends AbstractHelper
                     )) 
                 . '">Radio</a></li>';
         }
-        
+
+        if ($this->view->isGranted('afis.read')) {
+            $html .= '<li><a id="afis" href="'
+                . $urlHelper('afis',
+                    [
+                        //'controller' => 'afis',
+                        'action' => 'index'
+                    ])
+                . '">AFIS</a></li>';
+        }
+
+        if ($this->view->isGranted('fp.read')) {
+            $html .= '<li><a id="fp" href="'
+                . $urlHelper('fp',
+                    [
+                       // 'controller' => 'fp',
+                        'action' => 'index'
+                    ])
+                . '">SAR PLN</a></li>';
+        }
         // Determine custom tabs to be displayed
         $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array(
             'place' => 'ASC'

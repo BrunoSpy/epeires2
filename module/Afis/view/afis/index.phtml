@@ -26,7 +26,6 @@
     </div>
 </div>
 
-
 <?php $this->inlineScript()->captureStart();?>
 
 $("#home").removeClass("dropdown-toggle")
@@ -52,5 +51,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
 $("table th:first").trigger('click');
 	
 afis('<?php echo $this->url('afis'); ?>');
-		  
+
+<?=$this->notifications($messages)?>
+
 <?php $this->inlineScript()->captureEnd();?>

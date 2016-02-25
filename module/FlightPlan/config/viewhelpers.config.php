@@ -1,9 +1,11 @@
 <?php
 
 namespace FlightPlan;
-use Flightplan\View\Helper\FlightPlanHelper;
+
+use FlightPlan\View\Helper\FlightPlanHelper;
+
 return [
     'invokables' => [
-        'fp' => FlightPlanHelper::class,
+        'fp' => FlightPlanHelper::class
     ]
 ];

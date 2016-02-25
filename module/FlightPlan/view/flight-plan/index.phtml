@@ -76,6 +76,6 @@ $(".sortable").bind('aftertablesort', function(event, data){
 //sort the table by name
 $("table th:first").trigger('click');
 
-flightplan('<?php echo $this->url('flight-plans'); ?>');
+flightplan('<?php echo $this->url('fp'); ?>');
 
 <?php $this->inlineScript()->captureEnd(); ?>

@@ -205,7 +205,27 @@ return array(
                 'name' => 'Lecture',
                 'description' => ''
             )
-        )
+        ),
+        'Afis' => array(
+            'afis.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet Afis.'
+            ),
+            'afis.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet de modifier l\'état des Afis.'
+            )
+        ),
+        'FlightPlan' => array(
+            'fp.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet de gestion des plans de vol.'
+            ),
+            'fp.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet de créer/modifier des plans de vol.'
+            )
+        ),
     ),
     
     'zfc_rbac' => array(

@@ -24,6 +24,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use FlightPlan\Entity\FlightPlan;
 use FlightPlan\Form\FlightPlanForm;
 use Doctrine\ORM\EntityManager;
+
 /**
  *
  * @author Loïc Perrin
@@ -32,10 +33,14 @@ class FlightPlanController extends AbstractActionController
 {
     public function indexAction()
     {
-        $this->layout()->setTemplate('flight-plan/layout');
-        return [
-            'allFp' => $this->getAllFlightPlan(),
-        ];
+        $this->layout()->setTemplate('fp/layout');
+
+        return (new ViewModel())
+                ->setTemplate('fp/index')
+                ->setVariables(
+                [
+                    'allFp' => $this->getAllFlightPlan(),
+                ]);
     }
 
     private function getAllFlightPlan(array $params = [])
@@ -68,7 +73,7 @@ class FlightPlanController extends AbstractActionController
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
-                ->setTemplate('flight-plan/form')
+                ->setTemplate('fp/form')
                 ->setVariables([
                     'form' => $form
         ]);

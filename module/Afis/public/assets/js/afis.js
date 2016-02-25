@@ -31,7 +31,7 @@ var afis = function(url){
         } 
         
         $.post(url+'/switchafis',{afisid:$(this).data('afis-id'),state:boolState},function(data){
-
+            location.reload();
         },'json');
     });
     /*

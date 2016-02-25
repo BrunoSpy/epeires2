@@ -24,6 +24,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Doctrine\ORM\EntityManager;
 use Afis\Entity\Afis;
 use Afis\Form\AfisForm;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 /**
  *
@@ -32,19 +33,30 @@ use Afis\Form\AfisForm;
  */
 class AfisController extends AbstractActionController
 {
+    CONST FORMAT_SWITCH_SUCCESS = 'Nouvel état de l\'AFIS %s : %s.';
+    CONST FORMAT_SWITCH_ERROR   = 'Impossible de modifier l\'état de l\'AFIS %s. \n %s';
     /*
      * Page principale
      */
     public function indexAction()
     {
-        //var_dump($this->aform());
-        //var_dump($this->afisForm($this->getServiceLocator(), new Afis()));
-        //var_dump($this->today());
-        //parent::indexAction();
-        $this->layout()->setTemplate('afis/layout');
-        return [
-            'allAfis'  => $this->getAllAfis(['decommissionned' => 0])            
-        ];
+        $this->layout()->setTemplate('fp/layout');
+
+        $messages = [];
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $messages['success'] = $this->flashMessenger()->getSuccessMessages();
+        }
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $messages['error'] = $this->flashMessenger()->getErrorMessages();
+        }
+
+        return (new ViewModel())
+            ->setTemplate('afis/index')
+            ->setVariables(
+                [
+                    'messages'  => $messages,
+                    'allAfis'   => $this->getAllAfis(['decommissionned' => 0]),
+                ]);
     }
     
     /*
@@ -52,24 +64,32 @@ class AfisController extends AbstractActionController
      */
     public function switchafisAction()
     {
-        /*
-         * TODO
-         * Pas d'authentification pour l'instant
-         * Ni de message
-         */
-         //$messages = array();
-        //if ($this->isGranted('afis.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('afis.write') && $this->zfcUserAuthentication()->hasIdentity()) {
             $request    = $this->getRequest();
             if ($request->isPost()) {
-                //$em     = $this->getServiceLocator()->get(EntityManager::class);
+                $em     = $this->getServiceLocator()->get(EntityManager::class);
                 $post   = $request->getPost();
                 $afis   = $this->getAfis($post['afisid']);
-                $afis->setState((boolean) $post['state']);
-                
-                $this->em()->persist($afis);
-                $this->em()->flush();
+
+                if(is_a($afis,Afis::class) and $afis->isValid()) {
+                    try {
+                        $afis->setState((boolean) $post['state']);
+
+                        $afis = null;
+
+                        $em->persist($afis);
+                        $em->flush();
+
+                        ($afis->getState() == true) ? $etat = 'actif' : $etat = 'inactif';
+                        $this->flashMessenger()
+                            ->addSuccessMessage(sprintf(self::FORMAT_SWITCH_SUCCESS, $afis->getName(),$etat));
+                    } catch (\Exception $ex) {
+                        $this->flashMessenger()
+                            ->addErrorMessage(sprintf(self::FORMAT_SWITCH_ERROR, $ex->getMessage()));
+                    }
+                }
             }
-        //}    
+        }
         return new JsonModel();
     }
     
@@ -93,7 +113,12 @@ class AfisController extends AbstractActionController
     private function getAfis($id)
     {
         $em = $this->getServiceLocator()->get(EntityManager::class);
-        return $em->getRepository(Afis::class)->find($id);
+        $afis = $em->getRepository(Afis::class)->find($id);
+
+        if($afis == null){
+            return null;
+        }
+        return ($afis->isValid()) ? $afis : null;
     }
 
     /*

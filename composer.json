@@ -52,7 +52,9 @@
     },
     "autoload-dev": {
     	"psr-4": {
-	        "ApplicationTest\\": "tests/ApplicationTest"
+	        "ApplicationTest\\": "tests/ApplicationTest",
+            "Afis\\": "module/Afis/src",
+            "FlightPlan\\": "module/FlightPlan/src"
 	    }
 	}
 }

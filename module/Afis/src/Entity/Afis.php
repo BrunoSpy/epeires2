@@ -54,6 +54,7 @@ class Afis extends TemporaryResource
      * @Annotation\Options({"label":"Nom abrégé :"})
      */
     protected $shortname;
+
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation")
      * @ORM\JoinColumn(nullable=false)
@@ -106,11 +107,13 @@ class Afis extends TemporaryResource
         return $this->organisation;
     }
     
-    public function getState() {
+    public function getState()
+    {
         return $this->state;
     }
     
-    public function setState($state) {
+    public function setState($state)
+    {
         $this->state = $state;
     }
     
@@ -121,26 +124,17 @@ class Afis extends TemporaryResource
         return $object_vars;
     }
     
-    public function setValues($values, $em)
-    {
-        /*
-        * A REVOIR, PAS TRES ELEGANT...
-        */
-        foreach ($values->getElements() as $element) 
+    public function isValid(){
+        if (    is_int($this->id) and
+                is_string($this->name) and
+                is_string($this->shortname) and
+                is_a($this->organisation, Organisation::class) and
+                is_bool($this->state))
         {
-            if($element->getValue()) {
-                $name = $element->getAttributes()['name'];
-                $value = $element->getValue();
-                
-                ($name == 'organisation') ? $value = $em->getRepository(Organisation::class)->find($value) : null;
-                ($name == 'decommissionned') ? $value = (bool) $value : null;
-                
-                if($name !== 'submit' && $name !== 'id')
-                {
-                    $set = 'set'.ucfirst($name);
-                    $this->{$set}($value);
-                }
-            }
-        } 
+            return true;
+        } else {
+            return false;
+        }
     }
+
 }

@@ -41,27 +41,10 @@ return [
             ]
         ]
     ],
-    /*
-     'doctrine' => array(
-        'driver' => array(
-            'afis-driver' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(
-                    __DIR__ . '/../src/Entity'
-                )
-            ),
-            'orm_default' => array(
-                'drivers' => array(
-                    'Afis\Entity' => 'afis-driver'
-                )
-            )
-        )
-    ),   
-    */
+
     'view_manager' => [
         'template_map' => [
-            'afis/layout'             => __DIR__ . '/../../../public/layout/default.phtml',
+            'afis/layout'               => __DIR__ . '/../../../public/layout/default.phtml',
             'afis/admin/layout'         => __DIR__ . '/../../Administration/view/layout/adminlayout.phtml',
             
             'afis/afis/index'           => __DIR__ . '/../view/afis/index.phtml',

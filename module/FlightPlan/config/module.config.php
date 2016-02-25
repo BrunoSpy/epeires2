@@ -8,7 +8,7 @@ use FlightPlan\Controller\FlightPlanController;
 return [
     'router' => array(
         'routes' => array(
-            'flight-plans' => array(
+            'fp' => array(
                 'type' => 'segment',
                 'options' => array(
                     'route' => '/flightplans[/:action]',
@@ -43,10 +43,10 @@ return [
     ],
     'view_manager' => [
         'template_map' => [
-            'flight-plan/layout'            => __DIR__ . '/../../../public/layout/default.phtml',
-            'flight-plan/flight-plan/index' => __DIR__ . '/../view/flight-plan/index.phtml',
-            'flight-plan/form'              => __DIR__ . '/../view/flight-plan/form.phtml',
-            'flight-plan/helper/flight-plan'=> __DIR__ . '/../view/flight-plan/helpers/flight-plan.phtml',
+            'fp/layout'     => __DIR__ . '/../../../public/layout/default.phtml',
+            'fp/index'      => __DIR__ . '/../view/flight-plan/index.phtml',
+            'fp/form'       => __DIR__ . '/../view/flight-plan/form.phtml',
+            'fp/helper/fp'  => __DIR__ . '/../view/flight-plan/helpers/flight-plan.phtml',
         ]
     ],
     'asset_manager' => [
