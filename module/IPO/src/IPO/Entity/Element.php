@@ -40,7 +40,7 @@ class Element
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Event")
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Event", inversedBy="elements")
      */
     protected $event;
 
