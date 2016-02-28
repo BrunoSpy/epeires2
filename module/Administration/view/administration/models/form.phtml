@@ -33,6 +33,8 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->controlGroup($this->form->get('organisation'));
 	
 	echo $this->controlGroup($this->form->get('zonefilters'));
+
+	echo $this->controlGroup($this->form->get('duration'));
 	
 } else {
 	echo $this->formHidden($this->form->get('punctual')->setAttribute('value', true));
@@ -46,6 +48,8 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->formHidden($this->form->get('organisation'));
 	
 	echo $this->formHidden($this->form->get('parent'));
+
+	echo $this->formHidden($this->form->get('duration'));
 }
 ?>
 

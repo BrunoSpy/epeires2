@@ -1145,6 +1145,8 @@ class EventsController extends TabController
         $defaultvalues['impact'] = $predefinedEvt->getImpact()->getId();
         
         $defaultvalues['programmed'] = $predefinedEvt->isProgrammed();
+
+        $defaultvalues['duration'] = $predefinedEvt->getDuration();
         
         foreach ($predefinedEvt->getZonefilters() as $filter) {
             $defaultvalues['zonefilters'][] = $filter->getId();
@@ -1531,7 +1533,8 @@ class EventsController extends TabController
             'category_root' => ($model->getCategory()->getParent() ? $model->getCategory()
                 ->getParent()
                 ->getName() : $model->getCategory()->getName()),
-            'category' => $model->getCategory()->getName()
+            'category' => $model->getCategory()->getName(),
+            'duration' => $model->getDuration()
         );
         $fields = array();
         foreach ($model->getCustomFieldsValues() as $value) {

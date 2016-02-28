@@ -117,29 +117,29 @@
             var div = $("<div class=\"timepicker-form\" id=" + parameters.id + "></div>");
             var table = $("<table></table>");
             table.append('<tbody>' +
-                    '<tr>' +
-                    '<td class="day">' +
-                    "<div class=\"input-group\">" +
-                    "<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span>" +
-                    '<input type="text" class="date form-control" ' + (parameters.required ? 'required="required"' : '') + '></input>' +
-                    "</div>" +
-                    '</td>' +
-                    '<td class="hour">' +
-                    '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
-                    '<input maxlength="2" type="text" class="form-control input-mini">' +
-                    '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
-                    '</td>' +
-                    '<td class="separator">:</td>' +
-                    '<td class="minute">' +
-                    '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
-                    '<input maxlength="2" type="text" class="form-control input-mini">' +
-                    '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
-                    '</td>' +
-                    '<td>'+
-                    (parameters.clearable ? '<a href="#" class="clear-time"><span class="glyphicon glyphicon-remove"></span></a>' : '') +
-                    '</td>' +
-                    '</tr>' +
-                    '</tbody>');
+                '<tr>' +
+                '<td class="day">' +
+                "<div class=\"input-group\">" +
+                "<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span>" +
+                '<input type="text" class="date form-control" ' + (parameters.required ? 'required="required"' : '') + '></input>' +
+                "</div>" +
+                '</td>' +
+                '<td class="hour">' +
+                '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
+                '<input maxlength="2" type="text" class="form-control input-mini">' +
+                '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
+                '</td>' +
+                '<td class="separator">:</td>' +
+                '<td class="minute">' +
+                '<a class="next" href="#"><span class="glyphicon glyphicon-chevron-up"></span></a>' +
+                '<input maxlength="2" type="text" class="form-control input-mini">' +
+                '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
+                '</td>' +
+                '<td>'+
+                (parameters.clearable ? '<a href="#" class="clear-time"><span class="glyphicon glyphicon-remove"></span></a>' : '') +
+                '</td>' +
+                '</tr>' +
+                '</tbody>');
             div.append(table);
             return div;
         };
@@ -161,7 +161,7 @@
                 //add the div containing timepicker fake form
                 var div = createFakeForm();
                 element.parent().append(div);
-                
+
                 //add datepicker
                 $('input[type=text].date').bootstrapMaterialDatePicker({
                     format: "DD-MM-YYYY",
@@ -170,7 +170,7 @@
                     cancelText: "Annuler",
                     weekStart : 1
                 });
-               
+
                 div.on('click', 'span.glyphicon-calendar', function(e){
                     div.find('input[type=text].date').trigger('focus');
                 });
@@ -189,12 +189,12 @@
                     div.find(".day input").val(d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear());
                     var hour = ""+d.getUTCHours();
                     if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
-			hour = "0"+d.getUTCHours();
+                        hour = "0"+d.getUTCHours();
                     }
                     div.find(".hour input").val(hour);
                     var minute = ""+d.getUTCMinutes();
                     if(d.getUTCMinutes()>=0 && d.getUTCMinutes()<=9){
-			minute = "0"+d.getUTCMinutes();
+                        minute = "0"+d.getUTCMinutes();
                     }
                     div.find(".minute input").val(minute);
                     element.val(div.find('.day input').val() + " " + div.find('.hour input').val() + ":" + div.find('.minute input').val());
@@ -252,13 +252,13 @@
                     $(this).val(minuteplusone($(this), delta));
                     $(this).trigger('change');
                 });
-                
+
                 div.on('mousewheel', 'td.day input', function(event, delta){
-                   event.preventDefault(); 
-                   $(this).val(dayplusone($(this), delta));
-                   $(this).trigger('change');
+                    event.preventDefault();
+                    $(this).val(dayplusone($(this), delta));
+                    $(this).trigger('change');
                 });
-                
+
                 div.on('click', 'a.clear-time', function(e){
                     e.preventDefault();
                     element.val('');
@@ -266,15 +266,15 @@
                     form.find('td input').val('');
                     element.trigger('change');
                 });
-                
+
                 //change input if more than 2 digits are entered in the hour input
                 var charCount = 0;
-                
+
                 div.on('focus', 'td.hour input', function(event){
                     event.preventDefault();
                     this.charCount = $(this).val().length;
                 });
-                
+
                 div.on('keyup', 'td.hour input', function(event){
                     var currentCharCount = $(this).val().length;
                     if(currentCharCount === 2 && this.charCount === 1){

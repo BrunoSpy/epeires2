@@ -82,7 +82,6 @@ var formAddAlarm = function(alarm, alter) {
 	div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+alarm.deltabegin+'"></input>');
 	div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+(alarm.deltaend ? alarm.deltaend : '')+'"></input>');
 	$('#memos-tab').append(div);
-	//  $('#alarmTitle span').html(parseInt($('#alarmTitle span').html())+1);
 };
 
 var convertInputIntoDate = function(input){
@@ -288,19 +287,30 @@ var form = function(url, tabid){
 		var daysplit = startsplit[0].split('-');
 		var hourstartsplit = startsplit[1].split(':');
 		var deb = new Date(daysplit[2], daysplit[1]-1, daysplit[0], hourstartsplit[0], hourstartsplit[1]);
-		//check if start_date > end_date, if end_date is set
-		if(datefin.val()){
-			var endsplit = datefin.val().split(' ');
-			var enddaysplit = endsplit[0].split('-');
-			var hoursplit = endsplit[1].split(':');
-			var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
-			//if deb > end, block startdate
-			if(deb > end){
-				dateDeb.val(datefin.val());
-				datefin.trigger('change');
-				updateHours();
-			}
-		}
+        //if duration is set, set end date according to it
+        if($("input[name=enddate]").data('duration') > 0){
+            var duration = $("input[name=enddate]").data('duration');
+            var d = new Date(deb.getTime() + 60*60000);
+            var datestring = d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
+            var timestring = FormatNumberLength(d.getHours(), 2)+":"+FormatNumberLength(d.getMinutes(), 2);
+            datefin.val(datestring + " " + timestring);
+            datefin.trigger('change');
+            updateHours();
+        } else {
+            //check if start_date > end_date, if end_date is set
+            if(datefin.val()){
+                var endsplit = datefin.val().split(' ');
+                var enddaysplit = endsplit[0].split('-');
+                var hoursplit = endsplit[1].split(':');
+                var end = new Date(enddaysplit[2], enddaysplit[1]-1, enddaysplit[0], hoursplit[0], hoursplit[1]);
+                //if deb > end, block startdate
+                if(deb > end){
+                    dateDeb.val(datefin.val());
+                    datefin.trigger('change');
+                    updateHours();
+                }
+            }
+        }
 		var now = new Date();
 		var nowUTC = new Date(now.getTime() + now.getTimezoneOffset()*60000);
 		var diff = (deb - nowUTC)/60000; //différence en minutes
@@ -310,8 +320,6 @@ var form = function(url, tabid){
 			&& (diff < 10)){
 			$("#event select[name=status] option[value=2]").prop('selected', true);
 		}
-		//updateHourTitle();
-
 		//mise à jour des alarmes
 		updateAlarmForms();
 	});
@@ -400,7 +408,15 @@ var form = function(url, tabid){
 			$("#start .minute input").val(minute);
 			$("#start .minute input").trigger('change');
 		}
-		var end = $("#hours-tab #end").siblings("input[type=hidden]").val();
+        var end = $("#hours-tab #end").siblings("input[type=hidden]").val();
+        if($("input[name=enddate]").data('duration') > 0) {
+            var deb = convertInputIntoDate($("#hours-tab #start").siblings("input[type=hidden]").val());
+            var duration = $("input[name=enddate]").data('duration');
+            var d = new Date(deb.getTime() + duration*60000);
+            var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
+            var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
+            end = datestring + " " + timestring;
+        }
 		if(end){
 			var daysplit = end.split(' ');
 			var hoursplit = daysplit[1].split(':');
@@ -410,25 +426,7 @@ var form = function(url, tabid){
 		}
 	};
 
-	/*    var updateHourTitle = function(){
-	 var start = $("#hours-tab #start").siblings("input[type=hidden]").val();
-	 var split = start.split(' ');
-	 var daysplit = split[0].split('-');
-	 var text = "Horaires : "+FormatNumberLength(daysplit[0],2)+"/"+FormatNumberLength(daysplit[1],2)+" "+split[1];
-	 var punctual = $("#punctual").is(':checked');
-	 if(!punctual){
-	 text += " \u2192 ";
-	 var end = $("#hours-tab #end").siblings("input[type=hidden]").val();
-	 if(end){
-	 var split = end.split(' ');
-	 var daysplit = split[0].split('-');
-	 text += FormatNumberLength(daysplit[0],2)+"/"+FormatNumberLength(daysplit[1],2)+" "+split[1];
-	 } else {
-	 text += "?";
-	 }
-	 }
-	 $("#Horairesid").html(text);
-	 };*/
+
 
 	/************************/
 
@@ -534,7 +532,7 @@ var form = function(url, tabid){
 	});
 
 	//clic sur copie d'un évènement
-	$("#search-results, #suggestions-container").on("click", ".copy-event", function(e){
+	$("#search-results").on("click", ".copy-event", function(e){
 		var me = $(this);
 		$("#search-results").slideUp('fast');
 		$("#form-title").html(me.data('name'));
@@ -600,6 +598,7 @@ var form = function(url, tabid){
 				$("#punctual").prop('checked', data.defaultvalues.punctual);
 				$("#punctual").trigger("change");
 				$("#scheduled").prop('checked', data.defaultvalues.programmed);
+                $("input[name=enddate]").data('duration', data.defaultvalues.duration);
 				$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
 				if(data.defaultvalues['zonefilters']){
 					$.each(data.defaultvalues.zonefilters, function(key, value){
@@ -626,6 +625,8 @@ var form = function(url, tabid){
 				$("#actions-title a").removeClass("disabled");
 				//recalculate submit button state
 				$("#event").trigger('change');
+                //update hours in case of duration
+                updateHours();
 			});
 		//get actions
 		$("#actions-tab").load(url+'events/actions?id='+me.data('id'), function(e){
@@ -673,6 +674,8 @@ var form = function(url, tabid){
 		//suppression des notes
 		$('#form-notes').empty();
 		$('#notes-title span.badge').html('0');
+        //durée par défaut
+        $("input[name=enddate]").data('duration', -1);
 	};
 
 	//choosing a category
