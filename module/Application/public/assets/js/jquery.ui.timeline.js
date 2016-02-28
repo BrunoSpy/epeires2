@@ -247,7 +247,7 @@
                     var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
                         text += "<tr>";
-                        text += "<td>" + nom + " : </td><td>" + contenu + "</td>";
+                        text += "<td>" + nom + "</td><td>: " + contenu + "</td>";
                         text += "</tr>";
                     });
                     text += "</tbody></table>";

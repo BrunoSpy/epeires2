@@ -1481,6 +1481,11 @@ class EventsController extends TabController
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
                     $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
+                    $i = 0;
+                    while(array_key_exists($name, $fields)) {
+                        $i++;
+                        $name = $formatterSimple->format($log->getLoggedAt()) . '-' . $i . ' ' . $value->getCustomField()->getName();
+                    }
                     $formattedvalue = $customfieldservice->getFormattedValue(
                         $value->getCustomField(),
                         $log->getData()["value"]
