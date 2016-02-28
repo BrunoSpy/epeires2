@@ -34,13 +34,13 @@
  */
 
 (function ($, undefined) {
-	
+
     $.widget("epeires.timeline", {
-    	
-    	/**
-    	 * 
-    	 * @memberOf $
-    	 */
+
+        /**
+         *
+         * @memberOf $
+         */
         version: "0.9.6",
         /**
          * List of events
@@ -105,7 +105,7 @@
          */
         lastupdate: 0,
         /**
-         * 
+         *
          */
         lastUpdateTimebar: undefined,
         timerUpdate: 0,
@@ -158,15 +158,15 @@
             this.element.css('top', this.options.topOffset+'px');
             //first : draw categories
             $.when(
-                    $.getJSON(self.options.categoriesUrl, function (data) {
-                        var pos = 0;
-                        $.each(data, function (key, value) {
-                            self.categories.push(value);
-                            self.catPositions[value.id] = pos;
-                            pos++;
-                        });
-                    })
-                    ).then(function () {
+                $.getJSON(self.options.categoriesUrl, function (data) {
+                    var pos = 0;
+                    $.each(data, function (key, value) {
+                        self.categories.push(value);
+                        self.catPositions[value.id] = pos;
+                        pos++;
+                    });
+                })
+            ).then(function () {
                 //unable user to select objects
                 self._setUnselectable();
                 //sort categories by place
@@ -200,34 +200,34 @@
                 });
                 //get events and display them
                 $.when($.getJSON(self.options.eventUrl,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                var pos = 0;
-                                $.each(data, function (key, value) {
-                                    //ajout des attributs aux évènements
-                                    value.display = true;
-                                    value.shade = false;
-                                    self.events.push(value);
-                                    self.eventsPosition[pos] = value.id;
-                                    pos++;
-                                });
-                                self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
-                            }
-                        })).then(
-                        function () {
-                            //sort events by categories which will trigger events' drawing
-                            self.sortEvents();
-                            //update timebar every minute
-                            setInterval(function () {
-                                self._updateTimebar();
-                            }, 60000);
-                            //update events every 10s
-                            self.timerUpdate = setTimeout(function () {
-                                self._updateEvents();
-                            }, 10000);
-                            //trigger event when init is finished
-                            self._trigger("initComplete");
+                    function (data, textStatus, jqHXR) {
+                        if (jqHXR.status !== 304) {
+                            var pos = 0;
+                            $.each(data, function (key, value) {
+                                //ajout des attributs aux évènements
+                                value.display = true;
+                                value.shade = false;
+                                self.events.push(value);
+                                self.eventsPosition[pos] = value.id;
+                                pos++;
+                            });
+                            self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                         }
+                    })).then(
+                    function () {
+                        //sort events by categories which will trigger events' drawing
+                        self.sortEvents();
+                        //update timebar every minute
+                        setInterval(function () {
+                            self._updateTimebar();
+                        }, 60000);
+                        //update events every 10s
+                        self.timerUpdate = setTimeout(function () {
+                            self._updateEvents();
+                        }, 10000);
+                        //trigger event when init is finished
+                        self._trigger("initComplete");
+                    }
                 );
             });
 
@@ -270,7 +270,7 @@
                     $(this).find('.disp').hide();
                     $(this).find('.lien.disp').show();
                     //suppression menu
-                   // $(this).find('.tooltip-evt').popover('destroy');
+                    // $(this).find('.tooltip-evt').popover('destroy');
                 }
             }, '.elmt');
 
@@ -300,9 +300,9 @@
                 var temp_deb = new Date();
 
                 self.element.mousemove(function (e2) {
-                	e2.preventDefault();
-                	//désactivaton de tous les liens des boutons
-                	elmt.find('.label_elmt a').addClass('disabled');
+                    e2.preventDefault();
+                    //désactivaton de tous les liens des boutons
+                    elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if (delt2 + 40 < rect_width) {
@@ -317,7 +317,7 @@
                         elmt_fin.css({'left': '-=' + delt});
                         move_fin.css({'left': '-=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')){
-                        	elmt_txt.css({'left':'-='+delt});
+                            elmt_txt.css({'left':'-='+delt});
                         }
                     }
                 });
@@ -333,7 +333,7 @@
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
                 elmt.addClass('on_drag');
-                
+
                 elmt.find('.elmt_fin').show();
                 var rect_elmt = elmt.find('.rect_elmt');
                 elmt.find('.complement').hide();
@@ -356,14 +356,14 @@
                 }
                 //à chaque mouvement, calcul et mise à jour de l'heure
                 self.element.mousemove(function (e2) {
-                	e2.preventDefault();
+                    e2.preventDefault();
                     //désactivaton de tous les liens des boutons
-                	elmt.find('.label_elmt a').addClass('disabled');
+                    elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if(delt !== 0){
-                    	//mouvement effectif
-                    	self.on_drag = 2;
+                        //mouvement effectif
+                        self.on_drag = 2;
                     }
                     if (rect_width + delt2 > 40) {
                         var temp_fin = new Date();
@@ -377,7 +377,7 @@
                         elmt_fin.css({'left': '+=' + delt});
                         move_fin.css({'left': '+=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')) {
-                        	elmt_txt.css({'left':'+='+delt});
+                            elmt_txt.css({'left':'+='+delt});
                         }
                     }
                 });
@@ -396,38 +396,38 @@
                         var time = new Date();
                         time.setTime(elmt.data('start'));
                         $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=startdate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     } else if (self.on_drag === 2) {
                         var time = new Date();
                         time.setTime(elmt.data('end'));
                         $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     } else if (self.on_drag === -2){
-                    	//clic simple : heure de fin = heure actuelle
-                    	var time = new Date();
-                    	$.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                        //clic simple : heure de fin = heure actuelle
+                        var time = new Date();
+                        $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     }
                 }
                 self.on_drag = 0;
@@ -435,71 +435,73 @@
             });
             //clic sur les heures de début => passage à confirmé
             this.element.on('click', '.elmt_deb', function(e){
-            	e.preventDefault();
-            	self.pauseUpdateView();
-            	var me = $(this);
-            	var elmt = me.parent('.elmt');
-            	var id = elmt.data('ident');
-            	var newstatus = 2;
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus, 
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-            		self.forceUpdateView(false);
-            	});
+                e.preventDefault();
+                self.pauseUpdateView();
+                var me = $(this);
+                var elmt = me.parent('.elmt');
+                var id = elmt.data('ident');
+                var newstatus = 2;
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
             });
-            
+
             //clic sur heure de fin => passage à terminé
             this.element.on('click', '.elmt_fin', function(e){
-            	e.preventDefault();
-            	self.pauseUpdateView();
-            	var me = $(this);
-            	var elmt = me.parent('.elmt');
-            	var id = elmt.data('ident');
-            	var newstatus = 3;
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-    				self.forceUpdateView(false);
-    			});
+                e.preventDefault();
+                self.pauseUpdateView();
+                var me = $(this);
+                var elmt = me.parent('.elmt');
+                var id = elmt.data('ident');
+                var newstatus = 3;
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
             });
-            
+
             //clic sur ouverture de tooltip
             this.element.on('click', '.tooltip-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	var txt = '<p class="elmt_tooltip actions">'
-                	+ '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
-            	var event = self.events[self.eventsPosition[id]];
-            	if(event.status_id !== 4 && event.modifiable){
-            		if(event.punctual === false){
-	            		if(event.star === true){
-	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
-	                	} else {
-	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
-	                	}
-            		}
-            		txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-            		txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
-            	}
-            	txt += '</p>';
-            	me.popover({
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                var txt = '<p class="elmt_tooltip actions">'
+                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                var event = self.events[self.eventsPosition[id]];
+                if(event.status_id !== 4 && event.modifiable){
+                    if(event.punctual === false){
+                        if(event.star === true){
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                        } else {
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                        }
+                    }
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
+                }
+                txt += '</p>';
+                me.popover({
+                    container: '#timeline',
                     content: txt,
                     placement:'auto top',
                     html: 'true',
-                    viewport: '#timeline'
+                    viewport: '#timeline',
+                    template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 }).popover('show');
-            	me.parents('.elmt').tooltip('hide');
+                me.parents('.elmt').tooltip('hide');
             });
             //fermeture des popover sur clic en dehors
             this.element.on('click', function (e) {
@@ -512,68 +514,68 @@
             });
 
             this.element.on('click', '.add-note', function(e){
-            	e.preventDefault();
-        		$("#add-note").data('id', $(this).data('id'));
+                e.preventDefault();
+                $("#add-note").data('id', $(this).data('id'));
             });
-            
+
             this.element.on('click', '.evt-important', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=1',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self._highlightEvent(id, true);
-            				}
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=1',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self._highlightEvent(id, true);
+                        }
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.evt-non-important', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=0',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self._highlightEvent(id, false);
-            				}
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=0',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self._highlightEvent(id, false);
+                        }
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.send-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/sendevent?id='+id,
-            			function(data){
-            				displayMessages(data.messages);
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/sendevent?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.cancel-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	self.pauseUpdateView();
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value=4',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-    				self.forceUpdateView(false);
-    			});
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                self.pauseUpdateView();
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value=4',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
         },
         _setOption: function (key, value) {
@@ -633,11 +635,11 @@
          * @param id
          */
         getEvent:function (id) {
-        	if(id in this.eventsPosition) {
-        		return this.events[this.eventsPosition[id]];
-        	} else {
-        		return null;
-        	}
+            if(id in this.eventsPosition) {
+                return this.events[this.eventsPosition[id]];
+            } else {
+                return null;
+            }
         },
         removeEvent: function (event) {
             this._hideEvent(event);
@@ -675,7 +677,7 @@
                 if (this._isValidDate(tempday)) {
                     this.currentDay = tempday;
                 } else {
-                	var now = new Date();
+                    var now = new Date();
                     this.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                 }
                 var now = new Date();
@@ -689,22 +691,22 @@
                 this.element.find(".loading").show();
                 var url = self.options.eventUrl;
                 if(url.indexOf('?') > 0){
-                	url += '&day=' + self.currentDay.toUTCString();
+                    url += '&day=' + self.currentDay.toUTCString();
                 } else {
-                	url += '?day=' + self.currentDay.toUTCString();
+                    url += '?day=' + self.currentDay.toUTCString();
                 }
                 $.when($.getJSON(url,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                self.pauseUpdateView();
-                                self.addEvents(data);
-                            }
-                        }))
-                        .then(function () {
-                            self.forceUpdateView();
-                            self._restoreUpdate();
-                            self.element.find('.loading').hide();
-                        });
+                    function (data, textStatus, jqHXR) {
+                        if (jqHXR.status !== 304) {
+                            self.pauseUpdateView();
+                            self.addEvents(data);
+                        }
+                    }))
+                    .then(function () {
+                        self.forceUpdateView();
+                        self._restoreUpdate();
+                        self.element.find('.loading').hide();
+                    });
             }
             //else : do nothing
         },
@@ -720,10 +722,10 @@
                 if (this.options.showCategories === true) {
                     //catégorie racine, puis catégorie, puis nom, puis date de début
                     this.events.sort(function (a, b) {
-                    	var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
-                    	var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
+                        var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
+                        var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
                         if (aPosition < bPosition) {
-                        	return -1;
+                            return -1;
                         } else if (aPosition > bPosition) {
                             return 1;
                         }
@@ -747,17 +749,17 @@
                         return 0;
                     });
                 } else {
-                	this.events.sort(function (a, b) {
-	                    //tri par date de début uniquement
-	                    var aStartdate = new Date(a.start_date);
-	                    var bStartdate = new Date(b.start_date);
-	                    if (aStartdate < bStartdate) {
-	                        return -1;
-	                    } else if (aStartdate > bStartdate) {
-	                        return 1;
-	                    }
-	                    return 0;
-                	});
+                    this.events.sort(function (a, b) {
+                        //tri par date de début uniquement
+                        var aStartdate = new Date(a.start_date);
+                        var bStartdate = new Date(b.start_date);
+                        if (aStartdate < bStartdate) {
+                            return -1;
+                        } else if (aStartdate > bStartdate) {
+                            return 1;
+                        }
+                        return 0;
+                    });
                 }
                 this.lastEventComparator = undefined;
             } else if (comparator === undefined && this.lastEventComparator !== undefined) {
@@ -840,7 +842,7 @@
                 this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
                 this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
                 this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
-                				this.timelineDuration, 0, 0));
+                    this.timelineDuration, 0, 0));
             } else {
                 this.timelineDuration = 6;
                 var now = new Date();
@@ -864,8 +866,8 @@
                 evt.display = evt.display && this._isEventInTimeline(evt);
                 //ne pas afficher les évènements dont on n'a pas la catégorie
                 evt.display = evt.display && (this.options.showOnlyRootCategories ?
-                        evt.category_root_id in this.catPositions :
-                        evt.category_id in this.catPositions);
+                    evt.category_root_id in this.catPositions :
+                    evt.category_id in this.catPositions);
             }
             this.eventsDisplayed = this.events.filter(function (event) {
                 return event.display;
@@ -881,7 +883,7 @@
             }
             //then update y position
             var maxY = this._updateYPosition(true) + this.options.eventHeight;
-            
+
             //draw categories
             if (this.options.showCategories) {
                 var y = this._drawCategories();
@@ -928,8 +930,8 @@
             if (date < this.timelineBegin || date > this.timelineEnd) {
                 return -1;
             } else {
-                return this.options.leftOffset 
-                        +  ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
+                return this.options.leftOffset
+                    +  ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
             }
         },
         /**
@@ -943,8 +945,8 @@
             var i = this.eventsDisplayedPosition[event.id];
             if (this.options.showCategories) {
                 var catPos = (this.options.showOnlyRootCategories ?
-                        this._getCategoryPosition(event.category_root_id) :
-                        this._getCategoryPosition(event.category_id));
+                    this._getCategoryPosition(event.category_root_id) :
+                    this._getCategoryPosition(event.category_id));
                 var cat = this.categories[catPos];
                 if (i === 0) {
                     //premier élément : somme des hauteurs min des cat précédentes (vides par conséquent)
@@ -961,11 +963,11 @@
                     //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
                     //le calcul de la catégorie précédente est différent si on affiche les cat non racines ou pas
                     if ((this.options.showOnlyRootCategories && prevEvent.category_root_id !== event.category_root_id) ||
-                            (!this.options.showOnlyRootCategories && prevEvent.category_id !== event.category_id)) {
+                        (!this.options.showOnlyRootCategories && prevEvent.category_id !== event.category_id)) {
                         //calcul du bas de la catégorie non vide précédente
                         var prevCatPos = (this.options.showOnlyRootCategories ?
-                                this._getCategoryPosition(prevEvent.category_root_id) :
-                                this._getCategoryPosition(prevEvent.category_id));
+                            this._getCategoryPosition(prevEvent.category_root_id) :
+                            this._getCategoryPosition(prevEvent.category_id));
                         catOffset += this._getCategoryBottom(prevCatPos);
                         //si la cat précédente est celle juste avant : rien à faire
                         if (prevCatPos < catPos - 1) {
@@ -982,29 +984,29 @@
                         var catEvents = this.eventsDisplayed.slice(0,i);
                         if (cat.compact) {
                             catEvents = (this.options.showOnlyRootCategories ?
-                                    catEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id;
-                                    }) :
-                                    catEvents.filter(function (val) {
-                                        return val.category_id === cat.id;
-                                    }));
+                                catEvents.filter(function (val) {
+                                    return val.category_root_id === cat.id;
+                                }) :
+                                catEvents.filter(function (val) {
+                                    return val.category_id === cat.id;
+                                }));
                         } else {
                             catEvents = (this.options.showOnlyRootCategories ?
-                                    catEvents.filter(function (val) {
-                                    	//warning name can be an integer
-                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
-                                    		return val.category_root_id === cat.id && val.name === event.name;
-                                    	} else {
-                                    		return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
-                                    	}
-                                    }) :
-                                    catEvents.filter(function (val) {
-                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
-                                    		return val.category_id === cat.id && val.name === event.name;
-                                    	} else {    
-                                    		return val.category_id === cat.id && val.name.trim() === event.name.trim();
-                                    	}
-                                    }));
+                                catEvents.filter(function (val) {
+                                    //warning name can be an integer
+                                    if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                        return val.category_root_id === cat.id && val.name === event.name;
+                                    } else {
+                                        return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
+                                    }
+                                }) :
+                                catEvents.filter(function (val) {
+                                    if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                        return val.category_id === cat.id && val.name === event.name;
+                                    } else {
+                                        return val.category_id === cat.id && val.name.trim() === event.name.trim();
+                                    }
+                                }));
                         }
                         //pour toutes les lignes dessinées de la catégorie, on cherche si il y a de la place
                         //liste des lignes dessinées
@@ -1027,32 +1029,32 @@
                             var eventRemoveLabel = [];
                             for(var k = 0; k < eventsLine.length; k++){
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[k]]];
-                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
-                                        (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                                	//pas de place
-                                	//si compactage sur nom uniquement, on tente de supprimer le label
-                                	if(cat.compact === false){
-                                		var sizeWithoutLabel = this._tryRemoveLabel(evt);
-                                		if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) || 
-                                				(sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
-                                			//pas de place sans label non plus
-                                			place = false;
-                                    		break; //inutile de continuer la vérification
-                                		} else {
-                                			//on met l'evt de côté pour suppression du label si compactage effectif
-                                			eventRemoveLabel.push(evt);
-                                		}
-                                	} else {
-                                		//pas de place
-                                		place = false;
-                                		break; //inutile de continuer la vérification
-                                	}
+                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) ||
+                                    (evt.xleft - this.params.eventHorizSpace > event.xright))){
+                                    //pas de place
+                                    //si compactage sur nom uniquement, on tente de supprimer le label
+                                    if(cat.compact === false){
+                                        var sizeWithoutLabel = this._tryRemoveLabel(evt);
+                                        if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) ||
+                                            (sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
+                                            //pas de place sans label non plus
+                                            place = false;
+                                            break; //inutile de continuer la vérification
+                                        } else {
+                                            //on met l'evt de côté pour suppression du label si compactage effectif
+                                            eventRemoveLabel.push(evt);
+                                        }
+                                    } else {
+                                        //pas de place
+                                        place = false;
+                                        break; //inutile de continuer la vérification
+                                    }
                                 }
                             }
                             if(place === true){
-                            	for(var l = 0; l < eventRemoveLabel.length; l++){
-                            		this._removeLabel(eventRemoveLabel[l]);
-                            	}
+                                for(var l = 0; l < eventRemoveLabel.length; l++){
+                                    this._removeLabel(eventRemoveLabel[l]);
+                                }
                                 return lines[j];
                             }
                         }
@@ -1060,12 +1062,12 @@
                         //ensemble des evts de la catégorie déjà dessinés
                         var allCatEvents = this.eventsDisplayed.slice(0,i);
                         allCatEvents = (this.options.showOnlyRootCategories ?
-                                    allCatEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id;
-                                    }) :
-                                    allCatEvents.filter(function (val) {
-                                        return val.category_id === cat.id;
-                                    }));
+                            allCatEvents.filter(function (val) {
+                                return val.category_root_id === cat.id;
+                            }) :
+                            allCatEvents.filter(function (val) {
+                                return val.category_id === cat.id;
+                            }));
                         var max = 0;
                         for(var j = 0; j < allCatEvents.length; j++){
                             var ypos = this.eventsYPosition[allCatEvents[j].id];
@@ -1098,14 +1100,14 @@
                             //si le nouvel élément n'intersecte pas les précédents
                             for(var j = 0; j < eventsLine.length; j++){
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[j]]];
-                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
+                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) ||
                                     (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                            		//pas de place
-                            		hasPlace = false;
-                            		break; //inutile de continuer la vérification
+                                    //pas de place
+                                    hasPlace = false;
+                                    break; //inutile de continuer la vérification
                                 }
                             }
-                            if(hasPlace === true){                            	
+                            if(hasPlace === true){
                                 return lines[index];
                             }
                         }
@@ -1151,12 +1153,12 @@
         _getCategoryBottom: function (i) {
             var cat = this.categories[i];
             var catEvents = (this.options.showOnlyRootCategories ?
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_root_id === cat.id;
-                    }) :
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_id === cat.id;
-                    }));
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_root_id === cat.id;
+                }) :
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_id === cat.id;
+                }));
             var top = 0;
             var bottom = 0;
             for (var j = 0; j < catEvents.length; j++) {
@@ -1184,12 +1186,12 @@
         _getCategoryHeight: function (i) {
             var cat = this.categories[i];
             var catEvents = (this.options.showOnlyRootCategories ?
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_root_id === cat.id;
-                    }) :
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_id === cat.id;
-                    }));
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_root_id === cat.id;
+                }) :
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_id === cat.id;
+                }));
             var top = 0;
             var bottom = 0;
             for (var j = 0; j < catEvents.length; j++) {
@@ -1242,7 +1244,7 @@
                 'left': this.options.leftOffset + left + 'px',
                 'width': this.intervalle * this.timelineDuration * 2 + 'px',
                 'height': 1});
-            
+
             var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //if scrollbar visible, width is different
             //TODO : do it better
@@ -1258,9 +1260,9 @@
             //on supprime l'affichage de certaines heures jusqu'à ce que ça tienne
             var modulo = 1;
             while( (tailleTotaleHours / modulo) > largeurDisponible) {
-            	modulo++;
+                modulo++;
             }
-            
+
             for (var i = 0; i < this.timelineDuration * 2 + 1; i++) {
                 var vert_bar = $('<div class="Time_obj vert_bar"></div>');
                 base_elmt.append(vert_bar);
@@ -1271,21 +1273,21 @@
                     'height': this.element.height() - this.params.topSpace,
                     'background-color': '#C0C0C0'});
                 if (i % 2 === 1) {
-                	if(drawHalves){
-	                    var halfHour = $('<div class="Time_obj halfhour">30</div>');
-	                    base_elmt.append(halfHour);
-	                    halfHour.css({
-	                        'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
-	                        'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
-                	}
+                    if(drawHalves){
+                        var halfHour = $('<div class="Time_obj halfhour">30</div>');
+                        base_elmt.append(halfHour);
+                        halfHour.css({
+                            'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
+                            'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
+                    }
                 } else {
-                	if( (i / 2) % modulo === 0) {
-	                    var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
-	                    base_elmt.append(roundHour);
-	                    roundHour.css({
-	                        'top': this.options.topOffset + this.params.topHourSpace + 'px',
-	                        'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
-                	}
+                    if( (i / 2) % modulo === 0) {
+                        var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
+                        base_elmt.append(roundHour);
+                        roundHour.css({
+                            'top': this.options.topOffset + this.params.topHourSpace + 'px',
+                            'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
+                    }
                     if (h_temp === 23) {
                         h_temp = 0;
                     } else {
@@ -1321,24 +1323,24 @@
                 this._updateView();
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
-        	var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-        	var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
-        	if(this.lastUpdateTimebar !== undefined) {
-        	    var lastUpUTC = Date.UTC(this.lastUpdateTimebar.getUTCFullYear(), this.lastUpdateTimebar.getUTCMonth(), this.lastUpdateTimebar.getUTCDate());
-        	}
+                var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+                var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
+                if(this.lastUpdateTimebar !== undefined) {
+                    var lastUpUTC = Date.UTC(this.lastUpdateTimebar.getUTCFullYear(), this.lastUpdateTimebar.getUTCMonth(), this.lastUpdateTimebar.getUTCDate());
+                }
                 if(lastUpUTC !== undefined
                         //changement de jour depuis la dernière mise à jour
-                        && Math.ceil((nowUTC - lastUpUTC) / (1000 * 60 * 60 * 24)) !== 0
+                    && Math.ceil((nowUTC - lastUpUTC) / (1000 * 60 * 60 * 24)) !== 0
                         //si le jour affiché est la veille
-                        && Math.ceil((nowUTC - currentDayUTC) / (1000 * 60 * 60 * 24)) === 1){
+                    && Math.ceil((nowUTC - currentDayUTC) / (1000 * 60 * 60 * 24)) === 1){
                     this.day(now);
                     //ne pas oublier de mettre à jour le widget date si il existe
                     if($("#date").length > 0){
-                	var day = now.getUTCDate();
+                        var day = now.getUTCDate();
                         var month = now.getUTCMonth() + 1;
                         var year = now.getUTCFullYear();
                         var daystring = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
-                	$("#date").val(daystring);
+                        $("#date").val(daystring);
                     }
                     this.lastUpdateTimebar = now;
                     return;
@@ -1382,8 +1384,8 @@
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
                     var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'
-                            + text_cat
-                            + '</div>');
+                        + text_cat
+                        + '</div>');
                     $('#category').append(cat);
                     cat.css({'background-color': curCat.color, 'height': 'auto',
                         'left': '15px'});
@@ -1416,8 +1418,8 @@
          */
         _drawEvent: function (event) {
             var cat = (this.options.showOnlyRootCategories ?
-                    this._getCategory(event.category_root_id) :
-                    this._getCategory(event.category_id));
+                this._getCategory(event.category_root_id) :
+                this._getCategory(event.category_id));
             //si l'evt est affiché et que la catégorie existe
             if (event.display && cat !== null) {
                 //si oui, déterminer si il existe déjà ou non
@@ -1444,48 +1446,48 @@
          * @returns {undefined}
          */
         _highlightEvent: function (eventid, highlight) {
-        	var elmt = this.element.find('#event'+eventid);
-        	if(highlight !== undefined && highlight === true){
-        		if(eventid in this.eventsPosition){
-        			this.events[this.eventsPosition[eventid]].star = true;
-        		}
-        	} else {
-        		if(eventid in this.eventsPosition){
-        			this.events[this.eventsPosition[eventid]].star = false;
-        		}
-        	}
-        	this._highlightElmt(elmt, highlight);
+            var elmt = this.element.find('#event'+eventid);
+            if(highlight !== undefined && highlight === true){
+                if(eventid in this.eventsPosition){
+                    this.events[this.eventsPosition[eventid]].star = true;
+                }
+            } else {
+                if(eventid in this.eventsPosition){
+                    this.events[this.eventsPosition[eventid]].star = false;
+                }
+            }
+            this._highlightElmt(elmt, highlight);
         },
         _highlightElmt: function(elmt, highlight){
-        	if(highlight !== undefined && highlight === true){
-        		if(!elmt.hasClass('star')){
-        			elmt.addClass('star');
-        		}
-        	} else {
-        		elmt.removeClass('star');
-        		elmt.find('.rect_shadow').remove();
-        	}
+            if(highlight !== undefined && highlight === true){
+                if(!elmt.hasClass('star')){
+                    elmt.addClass('star');
+                }
+            } else {
+                elmt.removeClass('star');
+                elmt.find('.rect_shadow').remove();
+            }
         },
         /**
-         * 
+         *
          * @param {type} event
          * @returns {undefined}
          */
         _shadeEvent: function (event, elmt, rate) {
-        	var rect = elmt.find('.rect_elmt');
-        	var compl = elmt.find('.complement');
-        	var cat = (this.options.showOnlyRootCategories ?
-                    this._getCategory(event.category_root_id) :
-                    this._getCategory(event.category_id));
-        	var color = cat.color;
-        	var newcolor = this._shadeHexColor(color, rate);
-        	if(event.punctual){
-        		rect.css('border-bottom-color', newcolor);
-        		compl.css('border-top-color', newcolor);
-        	} else {
-        		rect.css('background-color', newcolor);
-        		compl.css('border-left-color', newcolor);
-        	}
+            var rect = elmt.find('.rect_elmt');
+            var compl = elmt.find('.complement');
+            var cat = (this.options.showOnlyRootCategories ?
+                this._getCategory(event.category_root_id) :
+                this._getCategory(event.category_id));
+            var color = cat.color;
+            var newcolor = this._shadeHexColor(color, rate);
+            if(event.punctual){
+                rect.css('border-bottom-color', newcolor);
+                compl.css('border-top-color', newcolor);
+            } else {
+                rect.css('background-color', newcolor);
+                compl.css('border-left-color', newcolor);
+            }
         },
         /**
          * Hide an event if displayed
@@ -1506,25 +1508,25 @@
          * @returns {undefined}
          */
         _updateEvents: function () {
-        	clearTimeout(this.timerUpdate);
+            clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
             if(url.indexOf('?') > 0){
-            	url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
+                url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
             } else {
-            	url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+                url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
             }
             clearTimeout(this.timerUpdate);
             return $.getJSON(url,
-                    function (data, textStatus, jqHXR) {
-                        if (jqHXR.status !== 304) {
-                            self.addEvents(data);
-                            self.forceUpdateView();
-                            self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
-                        }
-                    }).always(function () {
-                    	self.timerUpdate = setTimeout(function () {
-                    		self._updateEvents();
+                function (data, textStatus, jqHXR) {
+                    if (jqHXR.status !== 304) {
+                        self.addEvents(data);
+                        self.forceUpdateView();
+                        self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    }
+                }).always(function () {
+                self.timerUpdate = setTimeout(function () {
+                    self._updateEvents();
                 }, 10000);
             });
         },
@@ -1539,7 +1541,7 @@
             clearTimeout(this.timerUpdate);
             var self = this;
             this.timerUpdate = setTimeout(function(){
-            	self._updateEvents();
+                self._updateEvents();
             }, 10000);
         },
         /**
@@ -1591,14 +1593,14 @@
             } else {
                 elmt_txt.find('span.elmt_name').text(event.name);
             }
-            
+
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début
             var hDeb = this._formatNumberLength(startdate.getUTCHours(), 2) + ":" + this._formatNumberLength(startdate.getMinutes(), 2);
             var d_actuelle = new Date();
             if (startdate.getDate() !== d_actuelle.getDate()) {
                 hDeb = '<span style="display: inline-block; vertical-align: middle;">' + this._formatNumberLength(startdate.getUTCDate(), 2) + "/" +
-                        this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
+                    this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
                 yDeb = -5;
             } else {
                 yDeb = 6;
@@ -1610,10 +1612,10 @@
             if (enddate !== -1) {
                 var hEnd = this._formatNumberLength(enddate.getUTCHours(), 2) + ":" + this._formatNumberLength(enddate.getMinutes(), 2);
                 if (enddate.getDate() !== d_actuelle.getDate()) {
-                    hEnd = '<span style="display: inline-block; vertical-align: middle;">' 
-                            + this._formatNumberLength(enddate.getUTCDate(), 2) + "/" 
-                            + this._formatNumberLength(enddate.getUTCMonth() + 1, 2) 
-                            + "<br/>" + hEnd + '</span>';
+                    hEnd = '<span style="display: inline-block; vertical-align: middle;">'
+                        + this._formatNumberLength(enddate.getUTCDate(), 2) + "/"
+                        + this._formatNumberLength(enddate.getUTCMonth() + 1, 2)
+                        + "<br/>" + hEnd + '</span>';
                     yEnd = -5;
                 } else {
                     yEnd = 6;
@@ -1633,7 +1635,7 @@
             elmt_tooltip.addClass('disp');
 
             var x_deb, x_end;
-            
+
             //cas 1 : évènement ponctuel
             if (event.punctual) {
                 x_deb = this._computeX(startdate);
@@ -1649,15 +1651,15 @@
                 elmt_compl.show();
                 elmt_compl.css({
                     'border-left-width': larg + 'px',
-                    'border-right-width': larg + 'px', 
-                    'border-top-width': haut + 'px', 
+                    'border-right-width': larg + 'px',
+                    'border-top-width': haut + 'px',
                     'border-top-color': couleur,
                     'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px'});
                 elmt_rect.css({'left': '+=' + x_deb});
                 elmt_compl.css({'left': x_deb + 'px'});
             } else {
-            	elmt.removeClass('punctual');
-            	elmt.addClass('notpunctual');
+                elmt.removeClass('punctual');
+                elmt.addClass('notpunctual');
                 //cas 2 : date début antérieure au début de la timeline
                 if (startdate < this.timelineBegin) {
                     x_deb = this.options.leftOffset;
@@ -1666,8 +1668,8 @@
                 } else {
                     x_deb = this._computeX(startdate);
                     if(event.modifiable){
-                    	move_deb.addClass('disp');
-                    	move_deb.css({'left': 8 + x_deb + 'px'});
+                        move_deb.addClass('disp');
+                        move_deb.css({'left': 8 + x_deb + 'px'});
                     }
                 }
                 //cas 3 : date fin postérieure à la fin de la timeline
@@ -1679,15 +1681,15 @@
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
                     if(event.modifiable){
-                    	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px'});
+                        move_fin.addClass('disp');
+                        move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
                     if(event.modifiable){
-                    	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px'});
+                        move_fin.addClass('disp');
+                        move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     var haut = this.options.eventHeight;
                     elmt_compl.css({'left': x_end + 4 + 'px',
@@ -1710,8 +1712,8 @@
             var txtSize = this._computeTextSize(elmt_txt.text(), "Arial");
             event.txtSize = txtSize;
             var txt_wid = txtSize +
-                    + 18*3 
-                    + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
+                + 18*3
+                + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
             var largeur = this._computeX(this.timelineEnd);
             var debWidth = this._outerWidth(elmt_deb);
             var endWidth = this._outerWidth(elmt_fin);
@@ -1722,9 +1724,9 @@
                 x2 = x1 + 25 - 10;
                 // on place l'heure à droite
                 if (startdate.getDate() !== d_actuelle.getDate()) {
-                	elmt_deb.css({'top':'-6px'});
+                    elmt_deb.css({'top':'-6px'});
                 } else {
-                	elmt_deb.css({'top':'4px'});
+                    elmt_deb.css({'top':'4px'});
                 }
                 elmt_deb.css({'left': x2 + 'px'});
                 elmt_txt.addClass('outside');
@@ -1748,28 +1750,28 @@
                 // on place l'heure de début à gauche
                 x1 -= debWidth + 5; //+5 pour décoller l'heure de l'évènement
                 if(startdate < this.timelineBegin){
-                	//flèche gauche à prendre en compte
-                	x1 -= 10;
+                    //flèche gauche à prendre en compte
+                    x1 -= 10;
                 }
                 if(enddate > this.timelineEnd) {
-                	//décalage cause flèche droite
-                	x2 += 10;
+                    //décalage cause flèche droite
+                    x2 += 10;
                 }
                 elmt_deb.css({'left': x1 + 'px'});
                 // on place l'heure de fin à droite
                 elmt_fin.css({'left': x2 + 5 + 'px'});
                 if(x_end - x_deb <= 40){
-                	//pas assez de place pour les poignées
-                	move_deb.removeClass('disp');
-                	move_fin.removeClass('disp');
+                    //pas assez de place pour les poignées
+                    move_deb.removeClass('disp');
+                    move_fin.removeClass('disp');
                 }
                 if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
-                	var x_left = x0 + 22;
-                	elmt_txt.removeClass('outside');
-                	event.outside = 0;
+                    var x_left = x0 + 22;
+                    elmt_txt.removeClass('outside');
+                    event.outside = 0;
                     elmt_txt.css({'left': x_left + 'px',
-                                   'top': (this.options.eventHeight/2-11)+'px'});
-                    
+                        'top': (this.options.eventHeight/2-11)+'px'});
+
                     x2 += endWidth + 5;
                 } else {
                     lien.addClass('disp').show();
@@ -1783,8 +1785,8 @@
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                    	x1 -= txt_wid - 5;
-                    	var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
+                        x1 -= txt_wid - 5;
+                        var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
                         lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
                         lien.addClass('leftlink');
@@ -1813,40 +1815,40 @@
             event.xright = x2;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
-            
+
 
         },
-        /** 
+        /**
          * Remove label and update size
          * Only if label is outside
          */
         _removeLabel: function(event){
-        	var elmt = this.element.find('#event'+event.id);
-        	var elmt_txt = elmt.find('.label_elmt.outside');
-        	if(elmt_txt.length > 0 && event.label === true){
-        		event.label = false;
-        		var lien = elmt.find('.lien');
-        		//mise à jour des dimensions 
-        		var txt_width = this._computeTextSize(elmt_txt.text(), "Arial");
-        		if(lien.hasClass('leftlink')){
-        			var x1 = event.xleft;
-        			x1 += txt_width;
-        			elmt.css({'left': x1+'px'});
-        			elmt.children().css({'left':'+='+txt_width+'px'});
-        			event.xleft = x1;
-        		} else if(lien.hasClass('rightlink')){
-        			var x1 = event.xleft;
-        			var x2 = event.xright;
-        			x2 -= txt_width;
-        			elmt.css({'width':x2-x1});
-        			event.xright = x2;
-        		}
-        		//suppression du lien
-        		elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
-        		//on cache le txt
-        		elmt_txt.find('span.elmt_name').addClass('unvisible');
-        		elmt_txt.addClass('disp').hide();
-        	}
+            var elmt = this.element.find('#event'+event.id);
+            var elmt_txt = elmt.find('.label_elmt.outside');
+            if(elmt_txt.length > 0 && event.label === true){
+                event.label = false;
+                var lien = elmt.find('.lien');
+                //mise à jour des dimensions
+                var txt_width = this._computeTextSize(elmt_txt.text(), "Arial");
+                if(lien.hasClass('leftlink')){
+                    var x1 = event.xleft;
+                    x1 += txt_width;
+                    elmt.css({'left': x1+'px'});
+                    elmt.children().css({'left':'+='+txt_width+'px'});
+                    event.xleft = x1;
+                } else if(lien.hasClass('rightlink')){
+                    var x1 = event.xleft;
+                    var x2 = event.xright;
+                    x2 -= txt_width;
+                    elmt.css({'width':x2-x1});
+                    event.xright = x2;
+                }
+                //suppression du lien
+                elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
+                //on cache le txt
+                elmt_txt.find('span.elmt_name').addClass('unvisible');
+                elmt_txt.addClass('disp').hide();
+            }
         },
         /**
          * Compute size of an event if label removed
@@ -1855,13 +1857,13 @@
          * @return array [x1, x2]
          */
         _tryRemoveLabel: function(event){
-        	var result = [event.xleft, event.xright];
-    		if(event.outside === 1){
-    			result[0] = event.xleft + event.txtSize;
-    		} else if(event.outside === 2){
-    			result[1] = event.xright - event.txtSize;
-        	}
-        	return result;
+            var result = [event.xleft, event.xright];
+            if(event.outside === 1){
+                result[0] = event.xleft + event.txtSize;
+            } else if(event.outside === 2){
+                result[1] = event.xright - event.txtSize;
+            }
+            return result;
         },
         /**
          * Update an event according to its status and dates :
@@ -1896,16 +1898,16 @@
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                         elmt_deb.removeClass('disp').show().tooltip({
-                        	title: "Cliquer pour confirmer l'heure de début.",
-                        	container: 'body'
+                            title: "Cliquer pour confirmer l'heure de début.",
+                            container: 'body'
                         });
                         lien.filter('.leftlink').addClass('disp').show();
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                         elmt_deb.addClass('disp').tooltip({
-                        	title: "Cliquer pour confirmer l'heure de début.",
-                        	container: 'body'
+                            title: "Cliquer pour confirmer l'heure de début.",
+                            container: 'body'
                         });
                         lien.filter('.leftlink').addClass('disp').show();
                     }
@@ -1919,16 +1921,16 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
@@ -1955,16 +1957,16 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
@@ -2085,7 +2087,7 @@
         /* *********************** */
         /* ** Utilitary methods ** */
         /* *********************** */
-        
+
         /**
          * Format a number into a string with a predefined length
          * @param {type} num
@@ -2133,14 +2135,14 @@
          */
         _setUnselectable: function () {
             this.element.attr('unselectable', 'on')
-                    .css({'-moz-user-select': '-moz-none',
-                        '-moz-user-select':'none',
-                                '-o-user-select': 'none',
-                        '-khtml-user-select': 'none',
-                        '-webkit-user-select': 'none',
-                        '-ms-user-select': 'none',
-                        'user-select': 'none'
-                    }).bind('selectstart', function () {
+                .css({'-moz-user-select': '-moz-none',
+                    '-moz-user-select':'none',
+                    '-o-user-select': 'none',
+                    '-khtml-user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
+                    'user-select': 'none'
+                }).bind('selectstart', function () {
                 return false;
             });
         },
@@ -2150,7 +2152,7 @@
             return !isNaN(d.getTime());
         },
         /**
-         * 
+         *
          * @param {type} event
          * @returns {boolean}
          */
@@ -2162,9 +2164,9 @@
             }
             // si l'evt intersecte la timeline
             if ((event.punctual && startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
-                    (!event.punctual && startdate < this.timelineEnd && enddate === null) ||
-                    (!event.punctual && enddate !== null &&
-                            (enddate > this.timelineBegin && startdate < this.timelineEnd))) {
+                (!event.punctual && startdate < this.timelineEnd && enddate === null) ||
+                (!event.punctual && enddate !== null &&
+                (enddate > this.timelineBegin && startdate < this.timelineEnd))) {
                 return true;
             } else {
                 return false;
@@ -2189,7 +2191,7 @@
          * @param color Hex color (with #)
          * @param percent Value between -1.0 and 1.0. Negative : darker, positive : lighter
          */
-        _shadeHexColor: function(color, percent) {   
+        _shadeHexColor: function(color, percent) {
             var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
             return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
         },

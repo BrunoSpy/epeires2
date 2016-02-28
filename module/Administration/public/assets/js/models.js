@@ -354,4 +354,8 @@ var models = function(url, urlapp){
 			displayMessages(data);
 		});
 	});
+
+	$('#add-alert, #add-file, #action-container').on('hidden.bs.modal', function(e){
+		$('body').addClass('modal-open');
+	});
 };

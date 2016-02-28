@@ -99,6 +99,11 @@ class Event extends AbstractEvent
     protected $scheduled = false;
 
     /**
+     * @ORM\OneToMany(targetEntity="IPO\Entity\Element", mappedBy="event", cascade={"remove"})
+     */
+    protected $elements;
+
+    /**
      * @ORM\Column(type="boolean")
      */
     protected $readonly = false;
