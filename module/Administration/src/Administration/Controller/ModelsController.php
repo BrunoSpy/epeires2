@@ -435,9 +435,7 @@ class ModelsController extends FormController
                     }
                 }
                 try {
-                    $start = microtime(true);
                     $objectManager->flush();
-                    error_log(microtime(true) - $start);
                 } catch (\Exception $e) {
                     error_log($e->getMessage());
                 }

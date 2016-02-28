@@ -102,6 +102,7 @@
 			if($this->model->isPunctual()){
 				$formEndDate->setAttribute('disabled', true);
 			}
+            $formEndDate->setAttribute('data-duration', $this->model->getDuration());
 		}
 		
 		echo $this->controlGroup($formEndDate, array('class'=>'compact', 'labelclass' => 'time-middle', 'large' => true));
@@ -218,11 +219,11 @@
                                         echo '<tr><div class="fake-alarm" '
                                                     . 'data-alarm="fake-'.$countalarm.'"'
                                                     . 'id="alarm-fake-'.$countalarm.'">'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.($timeAlert === -1 ? $formatterLong->format(new DateTime('now')): $formatterLong->format($timeAlert)).'"></input>'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'"></input>'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'"></input>'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltabegin]" value="'.$deltabegin.'"></input>'
-                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltaend]" value="'.$deltaend.'"></input>'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][date]" value="'.($timeAlert === -1 ? $formatterLong->format(new DateTime('now')): $formatterLong->format($timeAlert)).'">'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][name]" value="'.$this->eventName($child).'">'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][comment]" value="'.$alarmcomment.'">'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltabegin]" value="'.$deltabegin.'">'
+                                                . '<input type="hidden" name="alarm['.$countalarm.'][deltaend]" value="'.$deltaend.'">'
                                                 . '</div></tr>';
                                         
                                         echo '<tr class="alarm-fake" data-id="fake-'.$countalarm.'"'
@@ -327,7 +328,7 @@
 	               }
 	               echo "</tr>";
 	               if($this->copy || $this->model){ //ajout de l'input caché pour enregistrement
-	                   echo '<tr><input type="hidden" name="fichiers['.$file->getId().']" value="'.$file->getId().'"></input></tr>';
+	                   echo '<tr><input type="hidden" name="fichiers['.$file->getId().']" value="'.$file->getId().'"></tr>';
 	               }
 	           }
 	   

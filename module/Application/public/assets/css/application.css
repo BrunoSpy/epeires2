@@ -274,7 +274,8 @@ body {
 
 #calendar input {
 	margin-bottom: 0px;
-	width: 82px;
+	width: 94px;
+	height: 25px;
 }
 
 #Event blockquote, #updates blockquote {
