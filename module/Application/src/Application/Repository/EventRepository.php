@@ -84,6 +84,7 @@ class EventRepository extends ExtendedRepository
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()
                     ->neq('c.timelineconfirmed', true), $qb->expr()
+                    ->neq('e.scheduled', true), $qb->expr()
                     ->andX($qb->expr()
                         ->eq('c.timelineconfirmed', true), $qb->expr()
                         ->in('e.status', array(2,3,4)), $qb->expr()
