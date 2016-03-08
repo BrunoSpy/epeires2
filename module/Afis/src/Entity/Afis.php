@@ -111,7 +111,12 @@ class Afis extends TemporaryResource
     {
         return $this->state;
     }
-    
+
+    public function getStrState()
+    {
+        return ($this->getState() == true) ? 'actif' : 'inactif';
+    }
+
     public function setState($state)
     {
         $this->state = $state;
@@ -125,16 +130,13 @@ class Afis extends TemporaryResource
     }
     
     public function isValid(){
+        $r = false;
         if (    is_int($this->id) and
                 is_string($this->name) and
                 is_string($this->shortname) and
                 is_a($this->organisation, Organisation::class) and
-                is_bool($this->state))
-        {
-            return true;
-        } else {
-            return false;
-        }
+                is_bool($this->state)) $r = true;
+        return $r;
     }
 
 }

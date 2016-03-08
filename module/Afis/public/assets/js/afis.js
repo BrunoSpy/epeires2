@@ -18,9 +18,7 @@
  * @author Loïc Perrin
  */
 
-var afis = function(url){
-    
-    var back = true;
+var afis = function(url) {
     /*
      * Changer l'état
      */
