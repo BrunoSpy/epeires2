@@ -1,9 +1,11 @@
 <?php
 
 namespace Afis;
-use Afis\Controller\Plugin\EntityManagerPlugin;
+use Afis\Controller\Plugin\AfisSGBD;
+use Afis\Controller\Plugin\AfisMessages;
 return [
     'invokables' => [
-        'em'    => EntityManagerPlugin::class,
+        'afisMessages'  => AfisMessages::class,
+        'afisSGBD'      => AfisSGBD::class
     ],
 ];

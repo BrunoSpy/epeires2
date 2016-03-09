@@ -57,6 +57,7 @@ return [
             'afis/helper/sidenav'       => __DIR__ . '/../view/afis/helpers/sidenav.phtml',
         ],
     ],
+
     'asset_manager' => [
         'resolver_configs' => [
             'paths' => [
@@ -64,4 +65,27 @@ return [
             ]
         ]
     ],
+
+    'user_messages' => [
+        'switch' => [
+            'success'    => 'Nouvel état de l\'AFIS "%s" : %s.',
+            'error'      => 'Impossible de modifier l\'état de l\'AFIS. %s'
+        ],
+        'form' => [
+            'error'      => 'Formulaire invalide : %s'
+        ],
+        'add' => [
+            'success'    => 'L\'AFIS "%s" a bien été ajouté',
+            'error'      => 'Impossible d\'ajouter l\'AFIS. %s',
+        ],
+        'edit' => [
+            'success'    => 'L\'AFIS "%s" a bien été modifié',
+            'error'      => 'Impossible de modifier l\'AFIS. %s',
+        ],
+        'del' => [
+            'success'    => 'L\'AFIS "%s" a bien été supprimé',
+            'error'      => 'Impossible de supprimer l\'AFIS. %s'
+        ],
+    ]
+
 ];

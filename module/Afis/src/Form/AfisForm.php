@@ -2,61 +2,49 @@
 
 namespace Afis\Form;
 
-use Zend\Form\Form;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Application\Entity\Organisation;
-
-class AfisForm extends Form 
+use Afis\Entity\Afis;
+class AfisForm
 {
-    public static $instance = NULL;
     const DEFAULT_METHOD = 'post';
 
-    
-    public function __construct($name = null, $options = array()) {
-        parent::__construct($name, $options);
-        $this->setAttributes([
-                        'method'    => self::DEFAULT_METHOD,
-                        'action'    => 'afis/save',
-                        'class'     => 'form-horizontal'
-                        ])
-                ->add([
-                            'name' => 'submit',
-                            'attributes' => [
-                                'type' => 'submit',
-                                'value' => 'Enregistrer',
-                                'class' => 'btn btn-primary btn-small'
-                            ]
-                        ]);
-    }
-    
-    
-    public static function newInstance($entity, $em)
+    protected $form;
+
+    public function __construct($em)
     {
-        if(is_null(self::$instance))
-        {
-            $organisations = $em->getRepository(Organisation::class);
-            
-            self::$instance = (new AnnotationBuilder())->createForm($entity);
-            
-            self::$instance
-                    ->setAttributes([
-                        'method'    => self::DEFAULT_METHOD,
-                        'action'    => 'afis/save',
-                        'class'     => 'form-horizontal'
-                        ])
-                    ->add([
-                            'name' => 'submit',
-                            'attributes' => [
-                                'type' => 'submit',
-                                'value' => 'Enregistrer',
-                                'class' => 'btn btn-primary btn-small'
-                            ]
-                        ])
-                    ->get('organisation')
-                    ->setValueOptions($organisations->getAllAsArray())
-            ;
-        }
-        return self::$instance;
+        $organisations = $em->getRepository(Organisation::class);
+
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);
+        $this->form
+            ->setAttributes([
+                'method'    => self::DEFAULT_METHOD,
+                'action'    => 'afis/save',
+                'class'     => 'form-horizontal'
+            ])
+            ->add([
+                'name' => 'submit',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Enregistrer',
+                    'class' => 'btn btn-primary btn-small'
+                ]
+            ])
+            ->get('organisation')
+            ->setValueOptions($organisations->getAllAsArray())
+        ;
     }
-    
+
+    public function getForm()
+    {
+        return $this->form;
+    }
+
+    public function showErrors(){
+        $str = '';
+        foreach ($this->form->getMessages() as $field => $messages)
+            foreach ($messages as $typeErr => $message)
+                $str.= " | ".$field.' : ['.$typeErr.'] '.$message;
+        return $str;
+    }
 }

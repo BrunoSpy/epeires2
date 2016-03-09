@@ -30,7 +30,7 @@ use Application\Entity\Organisation;
  */
 class Afis extends TemporaryResource
 {
-    
+    const DEFAULT_STATE = false;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -65,12 +65,11 @@ class Afis extends TemporaryResource
     protected $organisation;
     
     /**
-     * 
-     * @ORM\Column(name="state", type="boolean", options={"default" = 1})
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required({"required":"false"})
      * @Annotation\Type("Zend\Form\Element\Hidden")
-     * @Annotation\Options({"label":"Hors service :"})
      */
-    protected $state = 1;
+    protected $state = self::DEFAULT_STATE;
     
     public function getId()
     {
@@ -119,7 +118,9 @@ class Afis extends TemporaryResource
 
     public function setState($state)
     {
-        $this->state = $state;
+        $s = self::DEFAULT_STATE;
+        if(is_bool($state)) $s = $state;
+        $this->state = $s;
     }
     
     public function getArrayCopy()

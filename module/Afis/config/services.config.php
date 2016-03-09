@@ -10,7 +10,7 @@ return [
         'em' => function ($sm) 
                 {
                     return $sm->get(EntityManager::class);
-                }
-        //'today' => DateTime::class
+                },
+        'today' => DateTime::class
     ],
 ];

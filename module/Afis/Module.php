@@ -2,13 +2,12 @@
 
 namespace Afis;
 
+use Doctrine\ORM\EntityManager;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
-use Zend\ModuleManager\Feature\RouteProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
-//use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ControllerProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
@@ -17,11 +16,6 @@ use Zend\ModuleManager\Feature\FormElementProviderInterface;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\MvcEvent;
-
-use Zend\EventManager\EventInterface;
-use Zend\Mvc\Router\Console\Simple;
-use Zend\Mvc\Router\Http\Literal;
-use Afis\Controller\AfisController;
 
 class Module implements ConfigProviderInterface, 
                         AutoloaderProviderInterface,
@@ -39,13 +33,6 @@ class Module implements ConfigProviderInterface,
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-                
-       /*$e->getApplication()
-        ->getServiceManager()
-        ->get('router')
-        ->addRoutes($this->getRouteConfig());
-        * 
-        */
     }
 
     public function init(ModuleManager $moduleManager)
@@ -54,19 +41,9 @@ class Module implements ConfigProviderInterface,
         $sharedEvents->attach(__NAMESPACE__, 'dispatch', function ($e) {
             $controller = $e->getTarget();
             $controller->layout('layout/layout');
+            $controller->setEntityManager($controller->getServiceLocator()->get(EntityManager::class));
         }, 100);
     }
-    
-/*    public function onBootstrap(EventInterface $e)
-    {   
-        
-       $e->getApplication()
-        ->getServiceManager()
-        ->get('router')
-        ->addRoutes($this->getRouteConfig());
-    }
-*/
-    
     
     public function getConfig()
     {
