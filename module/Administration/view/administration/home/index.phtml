@@ -7,7 +7,7 @@ $commit = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
 
 $tag = shell_exec("git describe --exact-match --tags");
 
-$hostname = shell_exec("hostname -s");
+$hostname = getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n');
 
 $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
 ?>
