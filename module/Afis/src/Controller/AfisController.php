@@ -26,9 +26,6 @@ use Afis\Form\AfisForm;
 /**
  *
  * @author Loïc Perrin
- * TODO
- * corriger la verrue setState(1) par defaut
- * revoir AfisForm...
  */
 class AfisController extends AbstractActionController
 {
