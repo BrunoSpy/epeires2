@@ -2,12 +2,12 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/moment.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/momentlocale.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/bootstrap-datetimepicker.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/jquery.timepicker.js') ?>
-<?php $this->headScript()->appendFile($this->basePath() . '/flightplan.js') ?>
+<?php $this->headScript()->appendFile('jquery.timepicker.js') ?>
+<?php $this->headScript()->appendFile('flightplan.js') ?>
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
+        <div class="col-sm-10 col-sm-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
@@ -25,11 +25,12 @@
                                 <th data-sort="string">Départ</th>
                                 <th>TOA</th>
                                 <th>ETA</th>
+                                <th>ALERTES</th>
                             </tr>    
                         </thead>
                         <tbody>
                             <?php foreach ($allFp as $fp) : ?>
-                            <?php echo $this->fp()->renderRow($fp)?>
+                            <?php echo $this->fp()->renderRow($fp, $typesAlerte)?>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -51,6 +52,13 @@
                         "<a class='btn btn-danger' id='fp-cont-del-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
+<?=$this->modalwindow(  "fp-cont-alt",
+                        "<h3>Déclenchement d'une alerte <em><span class ='fp-cont-alt-type'></span></em></h3>",
+                        "",
+                        null,
+                        "<p>Voulez-vous vraiment déclencher une <em><span class ='fp-cont-alt-type'></span></em> sur le vol <strong><span id ='fp-cont-alt-airid'></span></strong> ?</p>",
+                        "<a class='btn btn-danger' id='fp-cont-alt-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
 <?php $this->inlineScript()->captureStart(); ?>
 
@@ -77,5 +85,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
 $("table th:first").trigger('click');
 
 flightplan('<?php echo $this->url('fp'); ?>');
+
+<?=$this->notifications($messages)?>
 
 <?php $this->inlineScript()->captureEnd(); ?>

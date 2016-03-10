@@ -2,38 +2,45 @@
 
 namespace FlightPlan\Form;
 
-use Zend\Form\Form;
 use Zend\Form\Annotation\AnnotationBuilder;
+use FlightPlan\Entity\FlightPlan;
 
-class FlightPlanForm extends Form 
+class FlightPlanForm
 {
-    public static $instance = NULL;
     const DEFAULT_METHOD = 'post';
 
-    public static function newInstance($entity, $em)
+    protected $form;
+
+    public function __construct($em)
     {
-        if(is_null(self::$instance))
-        {
-            
-            self::$instance = (new AnnotationBuilder())->createForm($entity);
-            
-            self::$instance
-                    ->setAttributes([
-                        'method'    => self::DEFAULT_METHOD,
-                        'action'    => 'flightplans/save',
-                        'class'     => 'form-horizontal'
-                        ])
-                    ->add([
-                            'name' => 'submit',
-                            'attributes' => [
-                                'type' => 'submit',
-                                'value' => 'Enregistrer',
-                                'class' => 'btn btn-primary btn-small'
-                            ]
-                        ])
-            ;
-        }
-        return self::$instance;
+        $this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
+        $this->form
+            ->setAttributes([
+                'method'    => self::DEFAULT_METHOD,
+                'action'    => 'flightplans/save',
+                'class'     => 'form-horizontal'
+                ])
+            ->add([
+                    'name' => 'submit',
+                    'attributes' => [
+                        'type' => 'submit',
+                        'value' => 'Enregistrer',
+                        'class' => 'btn btn-primary btn-small'
+                    ]
+                ])
+        ;
     }
-    
+
+    public function getForm()
+    {
+        return $this->form;
+    }
+
+    public function showErrors(){
+        $str = '';
+        foreach ($this->form->getMessages() as $field => $messages)
+        foreach ($messages as $typeErr => $message)
+        $str.= " | ".$field.' : ['.$typeErr.'] '.$message;
+        return $str;
+    }
 }

@@ -19,11 +19,16 @@ namespace FlightPlan\Controller;
 
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Zend\Mvc\Controller\AbstractActionController;
+
 use FlightPlan\Entity\FlightPlan;
 use FlightPlan\Form\FlightPlanForm;
-use Doctrine\ORM\EntityManager;
+
+use Application\Entity\Event;
+use Application\Entity\Organisation;
+use Application\Entity\CustomFieldValue;
+use Application\Entity\Status;
+use Application\Entity\Impact;
 
 /**
  *
@@ -31,6 +36,22 @@ use Doctrine\ORM\EntityManager;
  */
 class FlightPlanController extends AbstractActionController
 {
+    const TYPES_ALERTE = ['ALERFA', 'INERFA', 'DETRESSFA'];
+    /*
+     * Entity Manager
+     */
+    protected $em;
+
+    public function setEntityManager($em)
+    {
+        $this->em = $em;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->em;
+    }
+
     public function indexAction()
     {
         $this->layout()->setTemplate('fp/layout');
@@ -39,35 +60,19 @@ class FlightPlanController extends AbstractActionController
                 ->setTemplate('fp/index')
                 ->setVariables(
                 [
-                    'allFp' => $this->getAllFlightPlan(),
+                    'messages'  => $this->fpMessages()->get(),
+                    'allFp' => $this->fpSGBD($this->em)->getAll(),
+                    'typesAlerte' => self::TYPES_ALERTE
                 ]);
-    }
-
-    private function getAllFlightPlan(array $params = [])
-    {
-        $em = $this->getServiceLocator()->get(EntityManager::class);
-        $allFp = [];
-        foreach ($em->getRepository(FlightPlan::class)->findBy($params) as $fp) 
-        {
-            $allFp[] = $fp;
-        }
-        return $allFp;
-    }
-    
-    private function getFlightPlan($id)
-    {
-        $em = $this->getServiceLocator()->get(EntityManager::class);
-        return $em->getRepository(FlightPlan::class)->find($id);
     }
     
     public function formAction()
     {
-        $em = $this->getServiceLocator()->get(EntityManager::class);
-        $form = FlightPlanForm::newInstance(new FlightPlan(), $em);
+        $form = (new FlightPlanForm($this->em))->getForm();
         $request = $this->getRequest();
         
         if ($request->isPost()) {
-            $fp = $this->getFlightPlan($request->getPost()['fpid']);
+            $fp = $this->fpSGBD($this->em)->get($request->getPost()['fpid']);
             $form->setData($fp->getArrayCopy());
         }
         return 
@@ -81,23 +86,16 @@ class FlightPlanController extends AbstractActionController
     
     public function saveAction()
     {
+        /* TODO
+           DROIT d'écriture sur FP
+        */
+        if (!$this->zfcUserAuthentication()->hasIdentity())
+            return new JsonModel();
+
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $em = $this->getServiceLocator()->get(EntityManager::class);
             $post = $request->getPost();
-            if($post['id']){
-                $fp = $em->getRepository(FlightPlan::class)->find($post['id']);
-            } else {
-                $fp = new FlightPlan();
-            }
-            
-            $form = FlightPlanForm::newInstance($fp, $em);
-            $form->setData($request->getPost());
-            if($form->isValid())
-            {
-                $em->persist((new DoctrineHydrator($em))->hydrate($form->getData(), $fp));
-                $em->flush();    
-            }
+            $this->fpSGBD($this->em)->save($post);
         }
         return new JsonModel();
     }
@@ -106,13 +104,59 @@ class FlightPlanController extends AbstractActionController
      */
     public function deleteAction()
     {
-        $em = $this->getServiceLocator()->get(EntityManager::class);
-        $id = $this->getRequest()->getPost()['fpid'];
-        
-        if ($id) {
-            $fp = $em->getRepository(FlightPlan::class)->find($id);
-            $em->remove($fp);
-            $em->flush();
+        /* TODO
+         *   DROIT d'écriture sur FP, test s'il existe des evenements associes
+         */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $id = $this->getRequest()->getPost()['fpid'];
+            if ($id) {
+                $this->fpSGBD($this->em)->del($id);
+            }
+        }
+        return new JsonModel();
+    }
+
+    public function triggerAction(){
+        /* TODO
+         *   DROIT d'écriture sur FP, test s'il existe des evenements associes
+         *   Pour l'instant utilisation de la categorie d'evenemenet generique => créer une catégorie SAR
+         *   gérer organisation
+         */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = $request->getPost();
+            $fp = $this->em->getRepository(FlightPlan::class)->find($post['fpid']);
+            // l'evenement sera confirmé dès sa création
+            $status = $this->em->getRepository(Status::class)->find('2');
+            // l'evenement sera d'impact mineur
+            $impact = $this->em->getRepository(Impact::class)->find('3');
+            // pour l'instant crna-x
+            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+            // catégorie en fonction du type d'alerte
+            $categories = $this->em->getRepository('Application\Entity\Category')->findByName($post['type']);
+            $cat = $categories[0];
+
+            $e = new Event();
+            $e->setPunctual(false);
+            $e->setStartdate((new \DateTime('NOW'))->setTimezone(new \DateTimeZone("UTC")));
+            $e->setStatus($status);
+            $e->setImpact($impact);
+            $e->setOrganisation($organisation);
+            $e->setCategory($cat);
+            $e->setAuthor($this->zfcUserAuthentication()->getIdentity());
+
+            // Champ qui contient l'aircraft ID à afficher dans la timeline sur l'évènement
+            $chpAirId = new CustomFieldValue();
+            $chpAirId->setCustomField($cat->getFieldName());
+            $chpAirId->setValue($fp->getAircraftid());
+            $chpAirId->setEvent($e);
+
+            $e->addCustomFieldValue($chpAirId);
+
+            $this->em->persist($chpAirId);
+            $this->em->persist($e);
+            $this->em->flush();
         }
         return new JsonModel();
     }

@@ -55,7 +55,6 @@ class FlightPlan
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"false"})
      * @Annotation\Options({"label":"Terrain de Départ :"})
      */
     protected $startterrain;
@@ -138,24 +137,13 @@ class FlightPlan
         //$object_vars['organisation'] = $this->organisation->getId();
         return $object_vars;
     }
-    
-    public function setValues($values, $em)
-    {
-        /*
-        * A REVOIR, PAS TRES ELEGANT...
-        */
-        foreach ($values->getElements() as $element) 
-        {
-            if($element->getValue()) {
-                $name = $element->getAttributes()['name'];
-                $value = $element->getValue();
-                
-                if($name !== 'submit' && $name !== 'id')
-                {
-                    $set = 'set'.ucfirst($name);
-                    $this->{$set}($value);
-                }
-            }
-        } 
+
+    public function isValid(){
+        $r = false;
+        if (is_int($this->id) and
+            is_string($this->aircraftid) and
+            is_string($this->startterrain) and
+            is_string($this->destinationterrain)) $r = true;
+        return $r;
     }
 }

@@ -61,4 +61,23 @@ return [
             ]
         ]
     ],
+
+    'user_messages' => [
+        'form' => [
+            'error'      => 'Formulaire invalide : %s'
+        ],
+        'add' => [
+            'success'    => 'Le vol "%s" a bien été ajouté',
+            'error'      => 'Impossible d\'ajouter le vol. %s',
+        ],
+        'edit' => [
+            'success'    => 'Le vol "%s" a bien été modifié',
+            'error'      => 'Impossible de modifier le vol. %s',
+        ],
+        'del' => [
+            'success'    => 'Le vol "%s" a bien été supprimé',
+            'error'      => 'Impossible de supprimer le vol. %s'
+        ],
+    ]
+
 ];

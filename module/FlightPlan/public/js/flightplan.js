@@ -15,7 +15,7 @@ var flightplan=function(url){
  *  Chargement du formulaire avec les données du flight plan. Puis transformation des saisies de temps avec timepicker.
  */  
     $(".fp-a-edit").on('click',function(){
-        $("#fp-title").html('Modification du Plan de Vol - <em>'+$(this).data('aircraft-id')+'</em>');
+        $("#fp-title").html('Modification du Plan de Vol - <em>'+$(this).data('fp-aircraft-id')+'</em>');
         $("#fp-form").load(url+'/form', {fpid:$(this).data('fp-id')},function(){
             $("#fp-cont-form input[name=timeofarrival]").timepickerform({'id':'start', 'clearable':true});
             $("#fp-cont-form input[name=estimatedtimeofarrival]").timepickerform({'id':'end', 'clearable':true});
@@ -45,5 +45,20 @@ var flightplan=function(url){
            location.reload();
         }, 'json');
     });
-   
+
+    /*
+     * Alertes
+     */
+    $(".fp-a-alt").on('click', function(){
+        $(".fp-cont-alt-type").html($(this).data('fp-alt-type'));
+        $("#fp-cont-alt-airid").html($(this).data('fp-aircraft-id'));
+        $("#fp-cont-alt-ok").data($(this).data());
+    });
+
+    $("#fp-cont-alt-ok").on('click', function (){
+        $.post(url+'/trigger', {fpid:$(this).data('fp-id'),type:$(this).data('fp-alt-type')}, function(data){
+            location.href = '/events';
+        }, 'json');
+    });
+
 };

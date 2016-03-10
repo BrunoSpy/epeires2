@@ -18,7 +18,7 @@
 
 // set APP_ENV = 'development' in httpd.conf or virtualhost conf to set up a dev environment
 $env = getenv('APP_ENV') ?  : 'production';
-//$env = "developement";
+$env = "developement";
 
 // Production modules
 $modules = array(

@@ -7,10 +7,11 @@ use FlightPlan\Entity\FlightPlan;
 class FlightPlanHelper extends AbstractHelper
 {
     
-    public function renderRow(FlightPlan $fp)
+    public function renderRow(FlightPlan $fp, $typesAlerte)
     {
         return $this->getView()->render('fp/helper/fp', [
-            'fp' => $fp
+            'fp' => $fp,
+            'typesAlerte' => $typesAlerte
         ]);
     }
     

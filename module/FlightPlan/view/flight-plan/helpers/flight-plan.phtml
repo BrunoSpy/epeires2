@@ -2,8 +2,8 @@
 <td>                                    
     <?=$fp->getAircraftid()?>
     <?php
-    /*
-     * RENDRE CA PLUS CONFIGURABLE DETRESSFA INERFA ALERFA
+    /* TODO
+     * Alerter discretement l'utilisateur sur les alertes en cours
      */
     $now = new DateTime();
     $iv = $fp->getEstimatedtimeofarrival()->diff($now);
@@ -19,12 +19,25 @@
 <td><?=$fp->getStartterrain()?></td>                    
 <td><?=($fp->getTimeofarrival()) ? $fp->getTimeofarrival()->format('H:i:s') : null?></td>
 <td><?=($fp->getEstimatedtimeofarrival()) ? $fp->getEstimatedtimeofarrival()->format('H:i:s') : null?></td>
+    <td>
+        <?php foreach ($typesAlerte as $type) :?>
+        <a title="alerfa"
+           href="#fp-cont-alt"
+           class="btn btn-danger btn-s fp-a-alt"
+           data-fp-id="<?=$fp->getId()?>"
+           data-fp-alt-type="<?=$type?>"
+           data-fp-aircraft-id="<?=$fp->getAircraftid()?>"
+           data-toggle="modal">
+            <span><?=$type?></span>
+        </a>
+        <?php endforeach;?>
+    </td>
 <td>
     <a title="Modifier" 
        href="#fp-cont-form" 
        class="fp-a-edit" 
        data-fp-id="<?=$fp->getId()?>"
-       data-aircraft-id="<?=$fp->getAircraftid()?>"
+       data-fp-aircraft-id="<?=$fp->getAircraftid()?>"
        data-toggle="modal">
        <span class="glyphicon glyphicon-pencil"></span>
     </a>

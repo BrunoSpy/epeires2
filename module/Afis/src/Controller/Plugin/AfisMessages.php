@@ -20,7 +20,7 @@ class AfisMessages extends AbstractPlugin
         return $messages;
     }
 
-    public function add($action, $etat, array $values){
+    public function add($action, $etat, array $values = []){
         $userMessages = $this->getController()->getServiceLocator()->get('Config')['user_messages'];
         if(array_key_exists($action, $userMessages) and array_key_exists($etat, $userMessages[$action])) {
             $fm = $this->getController()->flashMessenger();
