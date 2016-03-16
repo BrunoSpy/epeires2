@@ -383,6 +383,7 @@ class FrequenciesController extends TabController
                             $frequency = $em->getRepository('Application\Entity\Frequency')->find($freqid);
                         }
                         if ($categories) {
+                            $em->persist($event);
                             $cat = $categories[0];
                             $antennafieldvalue = new CustomFieldValue();
                             $antennafieldvalue->setCustomField($cat->getAntennaField());
@@ -403,8 +404,6 @@ class FrequenciesController extends TabController
                                 $em->persist($freqvalue);
                             }
                             $event->setCategory($categories[0]);
-                            $em->persist($antennafieldvalue);
-                            $em->persist($statusvalue);
                             // création des evts fils pour le passage en secours
                             if ($frequency && $frequency->hasAntenna($antenna)) {
                                 // une seule fréquence impactée
@@ -476,7 +475,6 @@ class FrequenciesController extends TabController
                                     // ajout des fichiers
                                     foreach ($antenna->getModel()->getFiles() as $file) {
                                         $file->addEvent($event);
-                                        $em->persist($file);
                                     }
                                 }
                             }
