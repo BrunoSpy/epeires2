@@ -92,7 +92,7 @@ abstract class AbstractEvent
     protected $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="event", cascade={"persist", "remove"})
      */
     protected $custom_fields_values;
 
@@ -116,7 +116,7 @@ abstract class AbstractEvent
     protected $zonefilters;
 
     /**
-     * @ORM\ManyToMany(targetEntity="File", mappedBy="events")
+     * @ORM\ManyToMany(targetEntity="File", mappedBy="events", cascade={"persist"})
      */
     protected $files;
 

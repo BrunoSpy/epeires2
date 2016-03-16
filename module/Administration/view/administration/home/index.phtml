@@ -7,12 +7,26 @@ $commit = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
 
 $tag = shell_exec("git describe --exact-match --tags");
 
+$hostname = getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n');
+
 $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
 ?>
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-sm-12">
 			<p></p>
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title">Serveur</h3>
+    			</div>
+    
+    			<div class="panel-body">
+    				<p>
+    					Nom d'hôte : <em><?php echo $hostname; ?></em>
+    				</p>
+    			</div>
+    		</div>
+    
     		<div class="panel panel-default">
     			<div class="panel-heading">
     				<h3 class="panel-title">Version</h3>
