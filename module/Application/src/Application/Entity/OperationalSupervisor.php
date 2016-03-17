@@ -52,7 +52,7 @@ class OperationalSupervisor
      * @ORM\ManyToOne(targetEntity="Organisation")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Type :", "empty_option":"Choisir l'organisation"})
+     * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
     protected $organisation;
 
