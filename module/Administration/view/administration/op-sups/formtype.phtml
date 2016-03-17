@@ -2,7 +2,7 @@
 
 $form = $this->form;
 $form->prepare();
-$form->setAttribute('action', $this->url('administration', array('controller'=>'opsups', 'action'=>'saveopsup')));
+$form->setAttribute('action', $this->url('administration', array('controller'=>'opsups', 'action'=>'saveopsuptype')));
 $form->setAttribute('method', 'post');
 $form->setAttribute('class', 'form-horizontal');
 
@@ -18,11 +18,9 @@ echo $this->formInput($form->get('id'));
 
 echo $this->controlGroup($form->get('name'));
 
-echo $this->controlGroup($form->get('organisation'));
+echo $this->controlGroup($form->get('shortname'));
 
-echo $this->controlGroup($form->get('zone'));
-
-echo $this->controlGroup($form->get('type'));
+echo $this->controlGroup($form->get('roles'));
 
 ?>
 

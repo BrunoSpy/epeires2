@@ -17,19 +17,20 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="opsups")
+ * @ORM\Table(name="opsuptypes")
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
  *
  * @author Bruno Spyckerelle
  *        
  */
-class OperationalSupervisor
+class OpSupType
 {
 
     /**
@@ -49,48 +50,40 @@ class OperationalSupervisor
     protected $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Type :", "empty_option":"Choisir l'organisation"})
+     * @Annotation\Options({"label":"Nom court :"})
      */
-    protected $organisation;
+    protected $shortname;
 
     /**
-     * @ORM\ManyToOne(targetEntity="OpSupType", inversedBy="opsups")
+     * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="opsuptype")
+     * @ORM\JoinTable(name="roles_opsuptypes")
      * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Type :", "empty_option":"Choisir le type"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"multiple":true})
+     * @Annotation\Options({"label":"Affiché pour :"})
      */
-    protected $type;
+    protected $roles;
 
     /**
-     * @ORM\ManyToOne(targetEntity="QualificationZone")
-     * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(true)
-     * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Choisir la zone de qualification"})
+     * @ORM\OneToMany(targetEntity="OperationalSupervisor", mappedBy="type", cascade={"remove"})
      */
-    protected $zone;
+    protected $opsups;
 
     /**
-     * @ORM\Column(type="boolean")
-     * @Gedmo\Versioned
+     * OpSupType constructor.
      */
-    protected $current = false;
+    public function __construct()
+    {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->opsups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public function getId()
     {
         return $this->id;
-    }
-
-    public function isCurrent()
-    {
-        return $this->current;
-    }
-
-    public function setCurrent($current)
-    {
-        $this->current = $current;
     }
 
     public function getName()
@@ -103,42 +96,58 @@ class OperationalSupervisor
         $this->name = $name;
     }
 
-    public function getZone()
+    public function setShortname($shortname)
     {
-        return $this->zone;
+        $this->shortname = $shortname;
     }
 
-    public function setZone($zone)
+    public function getShortname()
     {
-        $this->zone = $zone;
+        return $this->shortname;
     }
 
-    public function getOrganisation()
+    public function getRoles()
     {
-        return $this->organisation;
+        return $this->roles;
     }
 
-    public function setOrganisation(Organisation $organisation)
+    public function setRoles($roles)
     {
-        $this->organisation = $organisation;
+        $this->roles = $roles;
     }
 
-    public function getType()
+    public function addRoles(Collection $roles)
     {
-        return $this->type;
+        foreach ($roles as $role) {
+            $this->roles->add($role);
+        }
     }
 
-    public function setType($type)
+    public function removeRoles(Collection $roles)
     {
-        $this->type = $type;
+        foreach ($roles as $role) {
+            $this->roles->removeElement($role);
+        }
+    }
+
+    public function getRoleNames()
+    {
+        $roles = $this->getRoles();
+        $names = array();
+        foreach ($roles as $role) {
+            $names[] = $role->getName();
+        }
+        return $names;
     }
 
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
-        $object_vars['organisation'] = $this->organisation->getId();
-        $object_vars['type'] = $this->type->getId();
-        $object_vars['zone'] = $this->zone->getId();
+        $roles = array();
+        foreach ($this->roles as $role) {
+            $roles[] = $role->getId();
+        }
+        $object_vars['roles'] = $roles;
         return $object_vars;
     }
 }
