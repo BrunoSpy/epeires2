@@ -11,20 +11,29 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a class="btn btn-primary" href="#fp-cont-form" data-toggle="modal" id="fp-add">
-                            Suivre un Vol
+                        <a class="btn btn-primary btn-xs" href="#fp-cont-form" data-toggle="modal" id="fp-add">
+                            Suivre un nouveau Vol
                         </a>
                     </h3>
-		</div>
+                    <div id="chx-fp-day">
+                            <a href="#" id="fp-day-back">
+                                <span class="glyphicon glyphicon-backward"></span>
+                            </a>
+                            <input id="fp-day" type="text" class="date input-small"></input>
+                            <a href="#" id="fp-day-forward">
+                                <span class="glyphicon glyphicon-forward"></span>
+                            </a>
+                            <a href="#" id="fp-day-today">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                            </a>
+                    </div>
+		        </div>
                 <div class="panel-body">
                     <table class="table table-striped table-hover table-bordered sortable">
                         <thead>
                             <tr>
                                 <th data-sort="string">Indicatif</th>
-                                <th data-sort="string">Destination</th>
-                                <th data-sort="string">Départ</th>
-                                <th>TOA</th>
-                                <th>ETA</th>
+                                <th>Plan</th>
                                 <th>ALERTES</th>
                             </tr>    
                         </thead>

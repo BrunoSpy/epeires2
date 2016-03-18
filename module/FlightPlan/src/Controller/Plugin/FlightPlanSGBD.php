@@ -2,9 +2,11 @@
 
 namespace FlightPlan\Controller\Plugin;
 
+
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Stdlib\Parameters;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use DateTime;
 
 use FlightPlan\Entity\FlightPlan;
 use FlightPlan\Form\FlightPlanForm;
@@ -43,6 +45,19 @@ class FlightPlanSGBD extends AbstractPlugin
         }
         return $fp;
     }
+    /*
+     * Format datetime pour la date
+     */
+    public function getByDate(DateTime $dt)
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('fp')
+            ->from(FlightPlan::class,'fp')
+            ->where('DATE_DIFF(fp.estimatedtimeofarrival, :date) = 0')
+            ->setParameter('date', $dt);
+
+        return $qb->getQuery()->getResult();
+    }
 
     public function save(Parameters $p)
     {
@@ -58,7 +73,7 @@ class FlightPlanSGBD extends AbstractPlugin
                 $this->em->persist($fp);
                 $this->em->flush();
 
-                if ($id) $pluginMessages->add('edit', 'success', [$fp->getAircrafid()]);
+                if ($id) $pluginMessages->add('edit', 'success', [$fp->getAircraftid()]);
                 else $pluginMessages->add('add', 'success', [$fp->getAircraftid()]);
             } catch (\Exception $ex) {
                 if ($id) $pluginMessages->add('edit', 'error', [$ex]);

@@ -20,6 +20,7 @@ namespace FlightPlan\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Mvc\Controller\AbstractActionController;
+use DateTime;
 
 use FlightPlan\Entity\FlightPlan;
 use FlightPlan\Form\FlightPlanForm;
@@ -36,7 +37,17 @@ use Application\Entity\Impact;
  */
 class FlightPlanController extends AbstractActionController
 {
-    const TYPES_ALERTE = ['ALERFA', 'INERFA', 'DETRESSFA'];
+    const TYPES_ALERTE = [
+        'INCERFA' => [
+            'btnType' => 'info'
+        ],
+        'ALERFA' => [
+            'btnType' => 'warning',
+        ],
+        'DETRESFA' => [
+            'btnType' => 'danger'
+        ]
+    ];
     /*
      * Entity Manager
      */
@@ -54,20 +65,34 @@ class FlightPlanController extends AbstractActionController
 
     public function indexAction()
     {
+        /* TODO
+        DROIT de lecture sur FP
+        */
         $this->layout()->setTemplate('fp/layout');
 
+        $q = $this->params()->fromQuery();
+        if(array_key_exists('date',$q)) {
+            $d = explode(',',$q['date']);
+            $dateTime = new DateTime($d[1].'/'.$d[0].'/'.$d[2]);
+        }
+        else
+            $dateTime = new DateTime();
+
         return (new ViewModel())
-                ->setTemplate('fp/index')
-                ->setVariables(
-                [
-                    'messages'  => $this->fpMessages()->get(),
-                    'allFp' => $this->fpSGBD($this->em)->getAll(),
-                    'typesAlerte' => self::TYPES_ALERTE
-                ]);
+            ->setTemplate('fp/index')
+            ->setVariables(
+            [
+                'messages'  => $this->fpMessages()->get(),
+                'allFp' => $this->fpSGBD($this->em)->getByDate($dateTime),
+                'typesAlerte' => self::TYPES_ALERTE,
+            ]);
     }
     
     public function formAction()
     {
+        /* TODO
+       DROIT d'écriture sur FP
+        */
         $form = (new FlightPlanForm($this->em))->getForm();
         $request = $this->getRequest();
         

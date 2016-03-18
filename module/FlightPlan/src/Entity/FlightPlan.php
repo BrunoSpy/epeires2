@@ -75,7 +75,7 @@ class FlightPlan
      * Actions need an empty start date at creation
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
-     * @Annotation\Required(false)
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Heure estimée d'arrivée :", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
      */
