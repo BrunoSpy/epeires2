@@ -37,6 +37,9 @@ abstract class FormController extends AbstractActionController
                 if (is_array($mvalue)) {
                     foreach ($mvalue as $nkey => $nvalue) { // les fieldsets sont un niveau en dessous
                         if ($json) {
+                            if(is_array($nvalue)) {
+                                $nvalue = json_encode($nvalue);
+                            }
                             $json['error'][] = "Champ " . addslashes($mkey) . " incorrect : " . addslashes($nvalue);
                         } else {
                             $this->flashMessenger()->addErrorMessage("Champ " . addslashes($mkey) . " incorrect : " . addslashes($nvalue));

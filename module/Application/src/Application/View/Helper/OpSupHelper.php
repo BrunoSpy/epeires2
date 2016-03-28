@@ -31,7 +31,7 @@ class OpSupHelper extends AbstractHelper
 
     private $sm;
 
-    public function __invoke()
+    public function __invoke($id)
     {
         $html = "";
         
@@ -40,65 +40,96 @@ class OpSupHelper extends AbstractHelper
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');
         
         $objectmanager = $this->sm->get('Doctrine\ORM\EntityManager');
-        
+
+        $type = $objectmanager->getRepository('Application\Entity\OpSupType')->find($id);
+
         if ($zfcuserauth->hasIdentity()) {
             
             $criteria = array();
             $criteria['organisation'] = $zfcuserauth->getIdentity()
                 ->getOrganisation()
                 ->getId();
+
+            $criteria['type'] = $id;
+
+            $query = $objectmanager->createQueryBuilder();
+            $query->select('o')
+                ->from('Application\Entity\OperationalSupervisor', 'o')
+                ->where('o.type = ?1')
+                ->groupBy('o.zone')
+                ->setParameter(1, $id);
+
+
             if ($zfcuserauth->getIdentity()->getZone()) {
-                $criteria['zone'] = $zfcuserauth->getIdentity()
-                    ->getZone()
-                    ->getId();
+                $query->andWhere($query->expr()->eq('o.zone', '?2'))
+                    ->setParameter(2, $zfcuserauth->getIdentity()->getZone()->getId());
             }
-            
-            $opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy($criteria, array(
-                'name' => 'asc'
-            ));
-            
-            $currentopsup = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
-                'organisation' => $zfcuserauth->getIdentity()
-                    ->getOrganisation()
-                    ->getId(),
-                'zone' => $zfcuserauth->getIdentity()
-                    ->getZone()
-                    ->getId(),
-                'current' => true
-            ));
-            if ($auth->isGranted('events.mod-opsup')) {
-                
-                $form = new Form('opsup');
-                $selectOpSup = new Select('nameopsup');
-                $opsupArray = array();
-                $opsupArray['-1'] = "Choisir Op Sup";
-                foreach ($opsups as $opsup) {
-                    $opsupArray[$opsup->getId()] = $opsup->getName();
-                }
-                
-                $selectOpSup->setValueOptions($opsupArray);
-                if ($currentopsup) {
-                    $selectOpSup->setAttribute('value', $currentopsup->getId());
-                }
-                
-                $form->add($selectOpSup);
-                
-                $formView = $this->view->form();
-                
-                $form->setAttributes(array('class' => 'navbar-form navbar-left'));
-                                
-                $html .= $formView->openTag($form);
-                $html .= '<div class="form-group">';
-                $html .= $this->view->formSelect($form->get('nameopsup')->setAttribute('class', 'form-control'));
-                $html .= '</div>';
-                $html .= $formView->closeTag();
-            } else {
-                if ($currentopsup) {
-                    $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px">' . $currentopsup->getName() . '</p>';
+
+            $zones = $query->getQuery()->getResult();
+
+            foreach ($zones as $result) {
+
+                $criteria['zone'] = $result->getZone()->getId();
+
+                $opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy($criteria, array(
+                    'name' => 'asc'
+                ));
+
+                $currentopsup = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
+                    'organisation' => $zfcuserauth->getIdentity()
+                        ->getOrganisation()
+                        ->getId(),
+                    'zone' => $result->getZone()->getId(),
+                    'current' => true
+                ));
+
+                if ($auth->isGranted('events.mod-opsup')) {
+
+                    $form = new Form();
+                    $selectOpSup = new Select('nameopsup');
+                    $opsupArray = array();
+                    $opsupArray['-1'] = "Choisir Op Sup";
+                    foreach ($opsups as $opsup) {
+                        $opsupArray[$opsup->getId()] = $opsup->getName();
+                    }
+
+                    $selectOpSup->setValueOptions($opsupArray);
+
+
+                    if ($currentopsup) {
+                        $selectOpSup->setAttribute('value', $currentopsup->getId());
+                    }
+
+                    $form->add($selectOpSup);
+
+                    $formView = $this->view->form();
+
+                    $form->setAttributes(array('class' => 'navbar-form navbar-left opsup-form'));
+
+                    $html .= $formView->openTag($form);
+                    $html .= '<div class="form-group">';
+                    $html .= '<label for="nameopsup">';
+                    $html .= '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
+                        . $type->getName() . (count($zones) > 1 ? ' ('.$result->getZone()->getShortname().')' : '')
+                        .' : </b>';
+
+                    $html .= '</label>';
+                    $html .= $this->view->formSelect($form->get('nameopsup')->setAttribute('class', 'form-control'));
+                    $html .= '</div>';
+                    $html .= $formView->closeTag();
                 } else {
-                    $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px"><em>Aucun Op Sup configuré</em></p>';
+                    if ($currentopsup) {
+                        $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px">'
+                            . '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
+                            . $type->getName() . (count($zones) > 1 ? ' ('.$result->getZone()->getShortname().')' : '')
+                            .' : </b>'
+                            . $currentopsup->getName() . '</p>';
+                    } else {
+                        $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px"><em>Aucun Op Sup configuré</em></p>';
+                    }
                 }
             }
+
         } else {
             $html .= '<p class="navbar-text navbar-left"><em>Connexion nécessaire</em></p>';
         }

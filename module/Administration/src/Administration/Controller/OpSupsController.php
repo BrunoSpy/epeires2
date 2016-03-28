@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Application\Entity\OpSupType;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -40,7 +41,9 @@ class OpSupsController extends FormController
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         
         $opsups = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->findAll();
-        
+
+        $types = $objectManager->getRepository('Application\Entity\OpSupType')->findAll();
+
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -57,7 +60,8 @@ class OpSupsController extends FormController
         
         $viewmodel->setVariables(array(
             'messages' => $return,
-            'opsups' => $opsups
+            'opsups' => $opsups,
+            'types' => $types
         ));
         
         return $viewmodel;
@@ -151,7 +155,9 @@ class OpSupsController extends FormController
         
         $form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
-        
+
+        $form->get('type')->setValueOptions($objectManager->getRepository('Application\Entity\OpSupType')->getAllAsArray());
+
         if ($opsupid) {
             $opsup = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
             if ($opsup) {
@@ -175,5 +181,99 @@ class OpSupsController extends FormController
             'form' => $form,
             'opsup' => $opsup
         );
+    }
+
+    public function formtypeAction()
+    {
+        $request = $this->getRequest();
+        $viewmodel = new ViewModel();
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+
+        $opsuptypeid = $this->params()->fromQuery('opsuptypeid', null);
+
+        $getform = $this->getFormType($opsuptypeid);
+
+        $viewmodel->setVariables(array(
+            'form' => $getform['form'],
+            'opsuptypeid' => $opsuptypeid
+        ));
+        return $viewmodel;
+    }
+
+    private function getFormType($opsuptypeid = null)
+    {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $opsuptype = new OpSupType();
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($opsuptype);
+        $form->setHydrator(new DoctrineObject($objectManager))->setObject($opsuptype);
+
+        $form->get('roles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')->getAllAsArray());
+
+        if ($opsuptypeid) {
+            $opsuptype = $objectManager->getRepository('Application\Entity\OpSupType')->find($opsuptypeid);
+            if ($opsuptype) {
+                $form->bind($opsuptype);
+                $form->setData($opsuptype->getArrayCopy());
+            }
+        }
+
+        $form->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Enregistrer',
+                'class' => 'btn btn-primary btn-small'
+            )
+        ));
+
+        return array(
+            'form' => $form,
+            'opsuptype' => $opsuptype
+        );
+    }
+
+    public function saveopsuptypeAction()
+    {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $id = $post['id'];
+            $datas = $this->getFormType($id);
+            $form = $datas['form'];
+            $form->setPreferFormInputFilter(true);
+            $form->setData($post);
+            $opsuptype = $datas['opsuptype'];
+
+            if ($form->isValid()) {
+                $objectManager->persist($opsuptype);
+                try {
+                    $objectManager->flush();
+                    $this->flashMessenger()->addSuccessMessage('Type Op Sup enregistré.');
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
+            } else {
+                $this->processFormMessages($form->getMessages());
+            }
+        }
+        return new JsonModel();
+    }
+
+    public function deleteopsuptypeAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $opsuptype = $objectManager->getRepository('Application\Entity\OpSupType')->find($id);
+        if ($opsuptype) {
+            $objectManager->remove($opsuptype);
+            try {
+                $objectManager->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return new JsonModel();
     }
 }

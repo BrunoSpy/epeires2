@@ -1,11 +1,77 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/opsups.js')?>
 <div class="container-fluid">
 <div class="row">
-<div class="col-md-12">
+    <div class="col-md-3" id="sidebar">
+        <ul class="nav sidenav">
+            <li>
+                <a href="#Types">
+                    1. Types superviseurs opérationnels
+                </a>
+            </li>
+            <li>
+                <a href="#Opsups">
+                    2. Liste des superviseurs opérationnels
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-9">
 <p></p>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title" id="Types">Types superviseurs opérationnels</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped sortable">
+                    <thead>
+                    <tr>
+                        <th data-sort="int">id</th>
+                        <th data-sort="string" data-autosort="true">Nom</th>
+                        <th data-sort="string">Nom court</th>
+                        <th>Visible pour</th>
+                        <th><a class="btn btn-xs btn-primary" href="#opsuptype-container" data-toggle="modal" id="add-opsuptype">Ajouter</a></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    foreach($this->types as $type) {
+                        echo '<tr>';
+                        echo '<td>'.$type->getId().'</td>';
+                        echo '<td>'.$type->getName().'</td>';
+                        echo '<td>'.$type->getShortname().'</td>';
+                        echo '<td>';
+                        foreach ($type->getRoles() as $role) {
+                            echo $role->getName() . '<br />';
+                        }
+                        echo '</td>';
+                        echo '<td>';
+                        echo "<a
+                            title=\"Modifier\"
+                            href=\"#opsuptype-container\"
+                            class=\"mod-opsuptype\"
+                            data-id=\"".$type->getId()."\"
+                            data-name=\"".$type->getName()."\"
+                            data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+                        echo "<a
+                            title=\"Supprimer\"
+                            href=\"#confirm-delete-opsuptype\"
+                            data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'deleteopsuptype'), array('query'=>array('id'=>$type->getId())))."\"
+                            class=\"delete-opsuptype\"
+                            data-id=\"".$type->getId()."\"
+                            data-name=\"".$type->getName()."\"
+                            data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 <div class="panel panel-default">
 <div class="panel-heading">
-	<h4 class="panel-title">Liste des superviseurs opérationnels</h4>
+	<h4 class="panel-title" id="Opsups">Liste des superviseurs opérationnels</h4>
 </div>
 <div class="panel-body">
 <table class="table table-striped sortable">
@@ -15,6 +81,7 @@
 		<th data-sort="string" data-autosort="true">Nom</th>
 		<th data-sort="string">Organisation</th>
 		<th>Zone de qualification</th>
+		<th>Type</th>
 		<th><a class="btn btn-xs btn-primary" href="#opsup-container" data-toggle="modal" id="add-opsup">Ajouter</a></th>
 	</tr>
 </thead>
@@ -27,6 +94,7 @@
 		echo '<td>'.$opsup->getName().'</td>';
 		echo '<td>'.$opsup->getOrganisation()->getName().'</td>';
 		echo '<td>'.$opsup->getZone()->getName().'</td>';
+		echo '<td>'.$opsup->getType()->getName().'</td>';
 		echo '<td>';
 		echo "<a 
 				title=\"Modifier\" 
@@ -63,10 +131,26 @@
 						null, 
 						"<p>Voulez-vous vraiment supprimer le chef OP <em><span id=\"opsup-name\"></span></em> de la liste ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-opsup-href\">Confirmer</a>
-						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
+<?php echo $this->modalWindow("opsuptype-container", "<h4 id=\"opsuptype-title\">Nouveau type OP Sup</h4>", "", "<div id=\"opsuptype-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-opsuptype",
+    "<h4>Confirmer la suppression ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment supprimer le type de superviseur opérationnel<em><span id=\"opsuptype-name\"></span></em> de la liste ?</p>
+    <p><em>Tous les superviseurs opérationnels associés seront supprimés !</em></p>",
+    "<a class=\"btn btn-danger\" id=\"delete-opsuptype-href\">Confirmer</a>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
 
 
 <?php $this->inlineScript()->captureStart();?>
+
+$(".sidenav").affix();
+
+$('body').scrollspy({target: '#sidebar', offset:120});
 
 opsups('<?php echo $this->url('administration')?>');
 

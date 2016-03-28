@@ -227,7 +227,12 @@ $(document).ready(function(){
 		    buttons: false // an array of buttons
 		};
     
-    
+    //suppression des éléments inutiles en cas de nombreux champs dans la navbartop
+    if($('#navbar-first-collapse form').size() > 2) {
+        $('.navbar-brand').removeClass("visible-lg-block").hide();
+        $("#day").hide();
+    }
+
     //slidepanel
     $(document).on('click', "#close-panel", function(e){
         e.preventDefault();

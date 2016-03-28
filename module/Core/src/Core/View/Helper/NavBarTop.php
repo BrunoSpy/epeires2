@@ -69,16 +69,25 @@ class NavBarTop extends AbstractHelper {
                 'class'=>'navbar-form navbar-left'));
             $form->prepare();
             $html .= $this->view->form()->openTag($form);
-            $html .= '<div class="form-group">';
+            $html .= '<div class="form-group visible-xs-block visible-lg-block">';
             $html .= '<label for="zoneInput"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span><b> Zone : </b></label>';
             $html .= $this->view->formSelect($form->get('zone')->setAttributes(array('id' => 'zoneInput', 'class' => 'form-control')));
             $html .= '</div>';
             $html .= $this->view->form()->closeTag();
         }
         
-        if ($auth->getIdentity() && $auth->getIdentity()->getZone()) {
-            $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>Chef de salle : </b></p>';
-            $html .= $this->view->opsup();
+        if ($auth->getIdentity() && $zoneform) {
+            $opsuptypes = array();
+            foreach($auth->getIdentity()->getRoles() as $role) {
+                foreach ($role->getOpsuptypes() as $type) {
+                    if( ! array_key_exists($type->getId(), $opsuptypes)) {
+                        $opsuptypes[$type->getId()] = $type->getName();
+                    }
+                }
+            }
+            foreach($opsuptypes as $id => $name) {
+                $html .= $this->view->opsup($id);
+            }
         }
         
         $html .= $this->view->ipo($iponumber);

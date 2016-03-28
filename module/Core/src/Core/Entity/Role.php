@@ -104,6 +104,15 @@ class Role implements HierarchicalRoleInterface
     protected $readtabs;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Application\Entity\OpSupType", mappedBy="roles")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"multiple":"true"})
+     * @Annotation\Options({"label":"Types Opsup affichés :"})
+     */
+    protected $opsuptypes;
+
+    /**
      * @ORM\ManyToMany(targetEntity="User", mappedBy="userroles", cascade={"detach"})
      */
     protected $users;
@@ -337,6 +346,31 @@ class Role implements HierarchicalRoleInterface
             $collection->add($this);
             $tab->removeReadroles($collection);
             $this->readtabs->removeElement($tab);
+        }
+    }
+
+    public function getOpsuptypes()
+    {
+        return $this->opsuptypes;
+    }
+
+    public function addOpsuptypes(Collection $opsuptypes)
+    {
+        foreach($opsuptypes as $opsuptype){
+            $collection = new ArrayCollection();
+            $collection->add($this);
+            $opsuptype->addRoles($collection);
+            $this->opsuptypes->add($opsuptype);
+        }
+    }
+
+    public function removeOpsuptypes(Collection $opsuptypes)
+    {
+        foreach($opsuptypes as $opsuptype){
+            $collection = new ArrayCollection();
+            $collection->add($this);
+            $opsuptype->removeRoles($collection);
+            $this->opsuptypes->removeElement($opsuptype);
         }
     }
 

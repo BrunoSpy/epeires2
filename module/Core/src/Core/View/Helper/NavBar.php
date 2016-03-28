@@ -101,7 +101,7 @@ class NavBar extends AbstractHelper
         $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
         $html .= '</div>';
         $html .= '</form>';
-        $html .= '<form class="navbar-form navbar-right" id="zoomform">';
+        $html .= '<form class="navbar-form navbar-right visible-lg-block" id="zoomform">';
         $html .= '<div class="togglebutton togglebutton-material-'.$color.'-200">';
         $html .= '<label> Vue journée : <input id="zoom" type="checkbox" name="zoom-switch">';
         $html .= '</label></div></form></div></div></nav>';

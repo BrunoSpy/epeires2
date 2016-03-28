@@ -23,7 +23,8 @@ var headerbar = function (url) {
 
     $("select[name=nameopsup]").on("change", function (event) {
         event.preventDefault();
-        $.post(url + '/saveopsup', $("#opsup").serialize(), function (data) {
+        var form = $(this).closest('form');
+        $.post(url + '/saveopsup', form.serialize(), function (data) {
             displayMessages(data);
         }, 'json');
     });
