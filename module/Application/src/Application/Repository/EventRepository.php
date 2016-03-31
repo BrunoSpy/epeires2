@@ -655,6 +655,7 @@ class EventRepository extends ExtendedRepository
             $causefield->setCustomField($cat->getCauseField());
             $causefield->setEvent($event);
             $causefield->setValue($cause);
+            $event->addCustomFieldValue($causefield);
             $em->persist($event);
             try {
                 $em->flush();
