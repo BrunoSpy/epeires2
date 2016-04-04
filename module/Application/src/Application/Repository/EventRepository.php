@@ -259,14 +259,16 @@ class EventRepository extends ExtendedRepository
      *            DateTime
      * @param unknown $end
      *            DateTime
+     * @param unknown $exclude
      */
-    public function getAllEvents($user, $start, $end)
+    public function getAllEvents($user, $start, $end, $exclude = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array(
-            'e'
+            'e, c'
         ))
             ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'c')
             ->andWhere($qb->expr()
             ->isNull('e.parent'))
             ->andWhere($qb->expr() // display only root events
@@ -290,7 +292,11 @@ class EventRepository extends ExtendedRepository
                 ->eq('e.punctual', 'true'), $qb->expr()
                 ->gte('e.startdate', '?1'), $qb->expr()
                 ->lte('e.startdate', '?2'))));
-        
+        //exclusion des catégories pour rapport IPO
+        if($exclude) {
+            $qb->andWhere($qb->expr()->eq('c.exclude', '?3'));
+            $parameters[3] = false;
+        }
         if ($user !== null && $user->hasIdentity()) {
             $org = $user->getIdentity()->getOrganisation();
             
