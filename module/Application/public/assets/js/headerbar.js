@@ -40,11 +40,11 @@ var headerbar = function (url) {
     setInterval(function () {
         $.getJSON(url + '/getIPO', function (data) {
             $.each(data, function (key, value) {
-                if ($('.header #iponame').length > 0) { //ipo = span
-                    $('.header #iponame').text(value);
+                if ($('#navbar-first-collapse #iponame').length > 0) { //ipo = span
+                    $('#navbar-first-collapse #iponame').text(value);
                 } else {
                     //ipo = select
-                    $('.header select[name=nameipo] option[value=' + key + ']').prop('selected', true);
+                    $('#navbar-first-collapse select[name=nameipo] option[value=' + key + ']').prop('selected', true);
                 }
             });
         });
