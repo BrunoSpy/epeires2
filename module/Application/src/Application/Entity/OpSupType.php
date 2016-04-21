@@ -58,7 +58,7 @@ class OpSupType
     protected $shortname;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="opsuptype")
+     * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="opsuptypes")
      * @ORM\JoinTable(name="roles_opsuptypes")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
@@ -73,12 +73,18 @@ class OpSupType
     protected $opsups;
 
     /**
+     * @ORM\OneToMany(targetEntity="ShiftHour", mappedBy="opsuptype", cascade={"remove"})
+     */
+    protected $shifthours;
+
+    /**
      * OpSupType constructor.
      */
     public function __construct()
     {
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
         $this->opsups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->shifthours = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId()

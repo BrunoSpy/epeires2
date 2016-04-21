@@ -10,9 +10,9 @@ function updateClock ( )
  };
 
 var headerbar = function (url) {
-    
+
     setInterval('updateClock()', 1000);
-    
+
     $("select[name=zone]").on("change", function (event) {
         event.preventDefault();
         $.post(url + '/savezone', $("#zoneform").serialize(), function () {
@@ -87,15 +87,73 @@ var headerbar = function (url) {
     				}
     			}
     		});
-    		
+
     	});
     };
-    
+
     updateTabs();
-    
+
     //update events of tabs every minute
     setInterval(function(){
     	updateTabs();
     }, 60000);
-    
+
+
+    //noty for shift hours
+    var shiftHoursNoty = new Array();
+    var updateShiftHours = function () {
+        $.getJSON(url + '/getshifthours', function(data) {
+            var shifthours = [];
+            $.each(data, function(key, value){
+                shifthours.push(value);
+            });
+            var names = shifthours
+                .map(function(obj){return obj.name})
+                .filter(function(value, index, self){return self.indexOf(value) === index; });
+            names.forEach(function(element, index, array){
+                var now = new Date();
+                var nowString = (now.getUTCHours() < 10 ? "0" : "" )
+                    + now.getUTCHours()
+                    +":"+now.getUTCMinutes();
+                var nextHour = "";
+                var nextDay = false;
+                var hours = shifthours
+                    .filter(function(value, index, self){
+                        return value.name === element;
+                    });
+                    //.map(function(obj){return obj.hour;});
+                var nextHours = hours.filter(function(value, index, self){return value.hour > nowString;});
+                if(nextHours.length === 0) {
+                    //next hour : first next day
+                    nextHours = hours;
+                    nextDay = true;
+                }
+                nextHour = hours.reduce(function(a, b, i, arr){return (a.hour <= b.hour ? a : b)});
+                var nextDate = new Date(Date.UTC(now.getUTCFullYear(),
+                    now.getUTCMonth(),
+                    now.getUTCDate(),
+                    nextHour.hour.split(":")[0],
+                    nextHour.hour.split(":")[1]));
+                if(nextDay === true) {
+                    nextDate.setDate(nextDate.getDate() + 1);
+                }
+                var delta = new Date(nextDate) - new Date();
+                var timer = setTimeout(function(){
+                    var n = noty({
+                        text: "Rappel :<br> Relève " + nextHour.name + (nextHour.zone.length > 0 ? "(zone "+nextHour.zone+")." : ".")
+                                + "<br>Penser à mettre à jour le nom du chef de salle en fonction.",
+                        type: "information",
+                        timeout: false,
+                        layout: "topRight",
+                        callback: {
+                            onClose: function(){
+                                updateShiftHours();
+                            }
+                        }
+                    });
+                }, delta);
+            });
+        });
+    };
+    updateShiftHours();
 };

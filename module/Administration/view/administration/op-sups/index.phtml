@@ -1,4 +1,18 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/opsups.js')?>
+
+<?php
+
+$formatterHour = \IntlDateFormatter::create(
+    \Locale::getDefault(),
+    \IntlDateFormatter::FULL,
+    \IntlDateFormatter::FULL,
+    'UTC',
+    \IntlDateFormatter::GREGORIAN,
+    'HH:mm'
+);
+
+?>
+
 <div class="container-fluid">
 <div class="row">
     <div class="col-md-3" id="sidebar">
@@ -8,9 +22,15 @@
                     1. Types superviseurs opérationnels
                 </a>
             </li>
+            
+            <li>
+                <a href="#shifthours">
+                    2. Tours de service
+                </a>
+            </li>
             <li>
                 <a href="#Opsups">
-                    2. Liste des superviseurs opérationnels
+                    3. Liste des superviseurs opérationnels
                 </a>
             </li>
         </ul>
@@ -69,6 +89,52 @@
             </div>
         </div>
 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title" id="shifthours">Tours de service</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped sortable">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th data-sort="string" data-autosort="true">Type</th>
+                        <th data-sort="string">Zone qualif.</th>
+                        <th>Heure</th>
+                        <th><a class="btn btn-xs btn-primary" href="#shifthour-container" data-toggle="modal" id="add-shifthour">Ajouter</a></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    foreach ($shifthours as $shifthour) {
+                        echo '<tr>';
+                        echo '<td>' . $shifthour->getId() . '</td>';
+                        echo '<td>' . $shifthour->getOpsuptype()->getName() . '</td>';
+                        echo '<td>' . ($shifthour->getQualificationzone() == null ? '' : $shifthour->getQualificationzone()->getName()) . '</td>';
+                        echo '<td>' . $formatterHour->format($shifthour->getHour()) . '</td>';
+                        echo '<td>';
+                        echo "<a 
+                                title=\"Modifier\" 
+                                href=\"#shifthour-container\" 
+                                class=\"mod-shifthour\" 
+                                data-id=\"".$shifthour->getId()."\" 
+                                data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+                        echo "<a 
+                                title=\"Supprimer\" 
+                                href=\"#confirm-delete-shifthour\" 
+                                data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'deleteshifthour'), array('query'=>array('id'=>$shifthour->getId())))."\" 
+                                class=\"delete-shifthour\" 
+                                data-id=\"".$shifthour->getId()."\" 
+                                data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
 <div class="panel panel-default">
 <div class="panel-heading">
 	<h4 class="panel-title" id="Opsups">Liste des superviseurs opérationnels</h4>
@@ -120,9 +186,22 @@
 </table>
 </div>
 </div>
+
 </div>
 </div>
 </div>
+
+<?php echo $this->modalWindow("shifthour-container", "<h4 id=\"shifthour-title\">Nouvelle heure de relève</h4>", "", "<div id=\"shifthour-form\"></div>")?>
+
+<?php echo $this->modalwindow("confirm-delete-shifthour",
+    "<h4>Confirmer la suppression ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment supprimer cette heure de relève de la liste ?</p>",
+    "<a class=\"btn btn-danger\" id=\"delete-shifthour-href\">Confirmer</a>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
+
 <?php echo $this->modalWindow("opsup-container", "<h4 id=\"opsup-title\">Nouveau Chef OP</h4>", "", "<div id=\"opsup-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-opsup",
@@ -139,8 +218,8 @@
     "<h4>Confirmer la suppression ?</h4>",
     "",
     null,
-    "<p>Voulez-vous vraiment supprimer le type de superviseur opérationnel<em><span id=\"opsuptype-name\"></span></em> de la liste ?</p>
-    <p><em>Tous les superviseurs opérationnels associés seront supprimés !</em></p>",
+    "<p>Voulez-vous vraiment supprimer le type de superviseur opérationnel <em><span id=\"opsuptype-name\"></span></em> de la liste ?</p>
+    <p><em>Tous les superviseurs opérationnels ainsi que les heures de relève associés seront supprimés !</em></p>",
     "<a class=\"btn btn-danger\" id=\"delete-opsuptype-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 

@@ -1,0 +1,36 @@
+<?php
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url('administration', array('controller'=>'opsups', 'action'=>'saveshifthour')));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+
+echo $this->form()->openTag($form)
+
+?>
+
+<div class="modal-body">
+
+    <?php
+
+    echo $this->formInput($form->get('id'));
+
+    echo $this->controlGroup($form->get('hour'));
+
+    echo $this->controlGroup($form->get('opsuptype'));
+
+    echo $this->controlGroup($form->get('qualificationzone'));
+
+    ?>
+
+</div>
+
+<div class="modal-footer">
+    <?php
+    echo $this->formSubmit($this->form->get('submit'));
+    ?>
+</div>
+
+
+<?php echo $this->form()->closeTag() ?>

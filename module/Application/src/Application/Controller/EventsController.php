@@ -2101,69 +2101,45 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
+
     /**
-     * Renvoie les evts les plus créés de la catégorie
-     * 
-     * @return \Zend\View\Model\JsonModel
+     * Renvoie les heures de relève pour chaque opsup affiché
      */
-    public function suggestEventsAction()
-    {
+    public function getshifthoursAction() {
         $json = array();
-        $catid = $this->params()->fromQuery('id', null);
-        
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        // search in category and its children
-        $children = $em->getRepository('Application\Entity\Category')->findBy(array(
-            'parent' => $catid
-        ));
-        $catids = array();
-        foreach ($children as $child) {
-            $catids[] = $child->getId();
+        if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.mod-opsup')) {
+            $user =  $this->zfcUserAuthentication()->getIdentity();
+            $shifthours = array();
+            foreach ($em->getRepository('Application\Entity\ShiftHour')->findAll() as $shifthour) {
+                foreach ($shifthour->getOpSupType()->getRoles() as $role) {
+                    if($user->hasRole($role->getName())) { //l'utilisateur peut afficher le type d'opsup
+                        //on vérifie si il y a une restriction sur la zone
+                        if($shifthour->getQualificationZone() !== null) {
+                            if ($user->getZone() !== null
+                                && $shifthour->getQualificationZone()->getId() == $user->getZone()->getId()) {
+                                $shifthours[] = array(
+                                        'id' => $shifthour->getId(),
+                                        'name' => $shifthour->getOpSupType()->getName(),
+                                        'zone' => $shifthour->getQualificationZone()->getName(),
+                                        'hour' => $shifthour->getFormattedHour()
+                                );
+                            }
+                        } else {
+                            $shifthours[] = array(
+                                    'id' => $shifthour->getId(),
+                                    'name' => $shifthour->getOpSupType()->getName(),
+                                    'zone' => '',
+                                    'hour' => $shifthour->getFormattedHour()
+                            );
+                        }
+                        //inutile de vérifier les autres rôles
+                        break;
+                    }
+                }
+            }
+            $json = $shifthours;
         }
-        $catids[] = $catid;
-        
-        // search relevant customfields
-        $qb = $em->createQueryBuilder();
-        $qb->select(array(
-            'e',
-            'v',
-            'f',
-            'c',
-            'count(v.value) as cc'
-        ))
-            ->from('Application\Entity\Event', 'e')
-            ->leftJoin('e.category', 'c')
-            ->leftJoin('e.custom_fields_values', 'v')
-            ->innerJoin('v.customfield', 'f', Join::WITH, $qb->expr()
-            ->eq('f.id', 'c.fieldname'))
-            ->andWhere($qb->expr()
-            ->in('c.id', '?1'))
-            ->andWhere($qb->expr()
-            ->isNull('e.parent'))
-            ->andWhere($qb->expr()
-            ->in('e.status', '?2'))
-            ->groupBy('v.value')
-            ->orderBy('cc', 'DESC')
-            ->setMaxResults(6)
-            ->setParameter(1, $catids)
-            ->setParameter(2, array(
-            3,
-            4,
-            5
-        ));
-        
-        $events = array();
-        foreach ($qb->getQuery()->getResult() as $event) {
-            $events[] = $event[0]->getId();
-        }
-        
-        $em->clear();
-        foreach ($events as $id) {
-            $json[$id] = $this->getEventJson($em->getRepository('Application\Entity\Event')
-                ->find($id));
-        }
-        
         return new JsonModel($json);
     }
 }
