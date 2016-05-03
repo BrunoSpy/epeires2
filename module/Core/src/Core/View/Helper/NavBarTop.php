@@ -56,13 +56,14 @@ class NavBarTop extends AbstractHelper {
         $html .= '<ul class="nav navbar-nav navbar-left">';
         $html .= $this->view->userMenu($color);
         $html .= '</ul>';
-
+        /* Non utilisé pour l'instant
+        
         if($auth->getIdentity() && !$zoneform) {
             $html .= '<p class="navbar-text navbar-left visible-lg-block">';
             $html .= '<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b>' . $auth->getIdentity()->getOrganisation()->getName();
             $html .= '</p>';
         }
-        
+
         if($zoneform) {
             $form = $zoneform;
             $form->setAttributes(array('action' => $this->view->url('application', array('controller'=>'events', 'action'=>'savezone')),
@@ -75,7 +76,7 @@ class NavBarTop extends AbstractHelper {
             $html .= '</div>';
             $html .= $this->view->form()->closeTag();
         }
-        
+        */
         if ($auth->getIdentity() && $auth->getIdentity()->getZone()) {
             $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>Chef de salle : </b></p>';
             $html .= $this->view->opsup();
