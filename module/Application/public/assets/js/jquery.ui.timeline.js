@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "0.9.6",
+        version: "0.9.7",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1782,7 +1782,8 @@
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                        x1 -= txt_wid - 5;
+                        x1 -= txt_wid + 8;
+                        console.log(x1);
                         var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
                         lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
