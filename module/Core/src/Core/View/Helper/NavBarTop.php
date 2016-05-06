@@ -78,7 +78,7 @@ class NavBarTop extends AbstractHelper {
         }
         */
 
-        if ($auth->getIdentity() && $zoneform) {
+        if ($auth->getIdentity() /*&& $zoneform*/) {
             $opsuptypes = array();
             foreach($auth->getIdentity()->getRoles() as $role) {
                 foreach ($role->getOpsuptypes() as $type) {
