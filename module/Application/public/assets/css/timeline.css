@@ -32,14 +32,12 @@
 .Time_obj.roundhour {
 	text-align: center;
 	color: #0000FF;
-	font-family: Calibri;
 	font-size: 16px;
 }
 
 .Time_obj.halfhour {
 	text-align: center;
 	color: #0000FF;
-	font-family: Calibri;
 	font-size: 12px;
 	width: 20px;
 }
@@ -292,4 +290,5 @@
 
 .tooltip.tooltip-actions .table > tbody > tr > td {
 	border-top: none;
+
 }
