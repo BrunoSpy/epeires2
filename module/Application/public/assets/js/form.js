@@ -948,4 +948,44 @@ var form = function(url, tabid){
 		});
 	});
 
+	$('#recurr').on('show.bs.modal', function() {
+        var startdate = $('input[name=startdate]').val();
+        var start = convertInputIntoDate(startdate);
+        var startsplit = startdate.split(' ');
+        var pattern = $("input[name=recurrence]").val();
+		$("#recurr-scheduler").scheduler();
+        $("#recurr-scheduler").scheduler('value', {
+            startDateTime: moment(start).utc().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+            timeZone: {
+                offset: '+00:00'
+            },
+            recurrencePattern: pattern
+        });
+        $("#myStartDate").val(startsplit[0].replace(/-/g, '/'));
+        $("#MyStartTime").val(startsplit[1]);
+
+		$(".scheduler .end-on-date input").bootstrapMaterialDatePicker({
+            format: "DD/MM/YYYY",
+            time: false,
+            lang: 'fr',
+            cancelText: "Annuler",
+            weekStart : 1
+        });
+        $(".scheduler .end-on-date input").bootstrapMaterialDatePicker('setMinDate', start);
+        $(".scheduler .end-on-date input").bootstrapMaterialDatePicker('setDate', start);
+	});
+
+	$("#recurr .btn-success").on('click', function(){
+        var recurrence = $("#recurr-scheduler").scheduler('value');
+        var pattern = recurrence.recurrencePattern;
+        if(pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") == 0){
+            $("input[name=recurrence]").val('');
+        } else {
+            $("input[name=recurrence]").val(pattern);
+        }
+    });
+
+    $('#recurr').on('hidden.bs.modal', function(e){
+        $('body').addClass('modal-open');
+    });
 };

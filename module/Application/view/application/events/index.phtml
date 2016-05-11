@@ -77,6 +77,9 @@ echo $this->modalwindow('add-note-modal',
                 . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
         . "</div>"
         . "</form>");
+
+echo $this->partial('recurrence-form.html');
+
 ?>
 
 <?php $this->inlineScript()->captureStart();?>

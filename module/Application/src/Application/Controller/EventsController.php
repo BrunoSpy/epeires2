@@ -555,7 +555,12 @@ class EventsController extends TabController
                                 $this->changeEndDate($event, $enddate);
                             }
                         }
-                        
+
+                        //save recurrence pattern
+                        if(isset($post['recurrencepattern'])) {
+                            $event->setRecurrence($post['recurrencepattern']);
+                        }
+
                         // save optional datas
                         if (isset($post['custom_fields'])) {
                             foreach ($post['custom_fields'] as $key => $value) {

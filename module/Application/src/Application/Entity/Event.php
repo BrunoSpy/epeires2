@@ -65,6 +65,15 @@ class Event extends AbstractEvent
     protected $enddate = null;
 
     /**
+     * Recurrence pattern following RFC 2445 RRULE spec
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Gedmo\Versioned
+     */
+    protected $recurrence = "";
+
+    /**
      * @ORM\Column(type="datetime")
      */
     protected $created_on;
@@ -274,6 +283,16 @@ class Event extends AbstractEvent
             $this->last_modified_on->setTimezone(new \DateTimeZone("UTC"));
             $this->last_modified_on->add(new \DateInterval("PT" . $offset . "S"));
         }
+    }
+
+    public function getRecurrence()
+    {
+        return $this->recurrence;
+    }
+
+    public function setRecurrence($recurrence)
+    {
+        $this->recurrence = $recurrence;
     }
 
     public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
