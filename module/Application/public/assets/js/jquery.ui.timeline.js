@@ -1588,11 +1588,14 @@
             //////   
 
             // libellé de l'évènement à mettre à jour
-            if (event.scheduled > 0) {
-                elmt_txt.find('span.elmt_name').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
-            } else {
-                elmt_txt.find('span.elmt_name').text(event.name);
+            var name = event.name;
+            if(event.recurr == true) {
+                name += ' <span class="badge">R</span>';
             }
+            if (event.scheduled > 0) {
+                name += ' <a href="#"><span class="badge">P</span></a>';
+            }
+            elmt_txt.find('span.elmt_name').html(name);
 
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début
@@ -1667,7 +1670,7 @@
                     elmt_flecheG.css({'left': x_deb - 12 + 'px'});
                 } else {
                     x_deb = this._computeX(startdate);
-                    if(event.modifiable){
+                    if(event.modifiable && event.recurr == false){
                         move_deb.addClass('disp');
                         move_deb.css({'left': 8 + x_deb + 'px'});
                     }
@@ -1680,14 +1683,14 @@
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
-                    if(event.modifiable){
+                    if(event.modifiable && event.recurr == false){
                         move_fin.addClass('disp');
                         move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
-                    if(event.modifiable){
+                    if(event.modifiable && event.recurr == false){
                         move_fin.addClass('disp');
                         move_fin.css({'left': x_end - 14 + 'px'});
                     }
@@ -2049,7 +2052,7 @@
             var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
             elmt.append(elmt_txt);
             // ajout du bouton "ouverture fiche"
-            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
+            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '"></a>');
             elmt_txt.append(elmt_b1);
             elmt_b1.append('    <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"

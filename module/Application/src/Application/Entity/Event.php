@@ -17,8 +17,11 @@
  */
 namespace Application\Entity;
 
+use Application\src\Application\Entity\Recurrence;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use RRule\RRule;
+use RRule\RSet;
 use Zend\Form\Annotation;
 
 /**
@@ -65,15 +68,6 @@ class Event extends AbstractEvent
     protected $enddate = null;
 
     /**
-     * Recurrence pattern following RFC 2445 RRULE spec
-     * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required(false)
-     * @Gedmo\Versioned
-     */
-    protected $recurrence = "";
-
-    /**
      * @ORM\Column(type="datetime")
      */
     protected $created_on;
@@ -116,6 +110,12 @@ class Event extends AbstractEvent
      * @ORM\Column(type="boolean")
      */
     protected $readonly = false;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Recurrence", inversedBy="events")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     */
+    protected $recurrence;
 
     public function __construct()
     {
@@ -295,6 +295,7 @@ class Event extends AbstractEvent
         $this->recurrence = $recurrence;
     }
 
+
     public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
     {
         $this->setCategory($predefined->getCategory());
@@ -443,6 +444,7 @@ class Event extends AbstractEvent
         $object_vars = array_merge(get_object_vars($this), parent::getArrayCopy());
         $object_vars['status'] = ($this->status ? $this->status->getId() : null);
         $object_vars['author'] = ($this->author ? $this->author->getId() : null);
+        $object_vars['recurrence'] = ($this->recurrence ? $this->recurrence->getId() : null);
         return $object_vars;
     }
 }

@@ -18,6 +18,7 @@
 namespace Application\Controller;
 
 use Application\Entity\AntennaCategory;
+use Application\Entity\Recurrence;
 use Zend\View\Model\ViewModel;
 use Application\Entity\Event;
 use Application\Form\CategoryFormFieldset;
@@ -495,6 +496,36 @@ class EventsController extends TabController
                 
                 if ($credentials) {
                     
+                    if(isset($post['recurrencepattern'])) {
+                        //gestion des recurrences
+                        if($id) { //recurrence positionnée et mod d'evt -> recherche de la récurrence associée
+                            $recurrence = $event->getRecurrence();
+                            if($recurrence) {
+                                if(isset($post['exclude'])){
+                                    $recurrence->exclude($event);
+                                    //le traitement continue ensuite comme un évènement normal à partir de là
+                                } else {
+                                    //1. vérification du changement de date début
+                                    
+                                    //2. vérification changement date de fin
+                                    
+                                    //3. les champs custom doivent être propagés à tous les évènements
+                                    
+                                    //4. les fichiers aussi
+                                    
+                                    //alertes et statuts ne sont pas partagés
+                                }
+                            } else {
+                                $messages['error'][] = "Impossible d'enregistrer l'évènement, récurrence introuvable.";
+                            }
+                        } else {
+                            //nouvel évènement avec récurrence
+                            
+                        }
+                    } else {
+                        //pas de récurrence positionnée (ou récupérée) : traitement normal
+                    }
+                    
                     $form = $this->getSkeletonForm(null, $event);
                     $form->setPreferFormInputFilter(true);
                     $form->setData($post);
@@ -555,12 +586,7 @@ class EventsController extends TabController
                                 $this->changeEndDate($event, $enddate);
                             }
                         }
-
-                        //save recurrence pattern
-                        if(isset($post['recurrencepattern'])) {
-                            $event->setRecurrence($post['recurrencepattern']);
-                        }
-
+                       
                         // save optional datas
                         if (isset($post['custom_fields'])) {
                             foreach ($post['custom_fields'] as $key => $value) {
@@ -671,7 +697,7 @@ class EventsController extends TabController
                         if (isset($post['alarm']) && is_array($post['alarm'])) {
                             foreach ($post['alarm'] as $key => $alarmpost) {
                                 // les modifications d'alarmes existantes sont faites en direct
-                                // et ne passe pas par le formulaire
+                                // et ne passent pas par le formulaire
                                 // voir AlarmController.php
                                 $alarm = new Event();
                                 $alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')
@@ -728,9 +754,21 @@ class EventsController extends TabController
                         if ($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { // passage au statut terminé ou annulé
                             $this->closeEvent($event);
                         }
-                        
-                        $event->updateAlarms();
-                        $objectManager->persist($event);
+
+                        //save recurrence pattern and create or update linked events
+                        if(isset($post['recurrencepattern'])) {
+
+                            $recurrence = new Recurrence();
+                            $recurrence->setRecurrencePattern($post['recurrencepattern']);
+                            $event->setRecurrence($recurrence);
+                            $objectManager->persist($recurrence);
+                        } else {
+                            $event->updateAlarms();
+                            $objectManager->persist($event);
+                        }
+
+
+
 
                         //certains évènements induisent des évènements fils
                         //il faut les créer à ce moment
@@ -1477,7 +1515,8 @@ class EventsController extends TabController
             'files' => count($event->getFiles()),
             'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
             'star' => $event->isStar() ? true : false,
-            'scheduled' => $event->isScheduled() ? true : false
+            'scheduled' => $event->isScheduled() ? true : false,
+            'recurr' => $event->getRecurrence() ? true : false
         );
         
         $fields = array();

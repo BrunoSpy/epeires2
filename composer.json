@@ -39,7 +39,8 @@
         "mrclay/minify": "*",
         "murganikolay/doctrine-migrations-module": "dev-master",
         "dino/dompdf-module": "dev-master",
-        "Kipperlenny/opentbs-bundle": "dev-master"
+        "Kipperlenny/opentbs-bundle": "dev-master",
+        "rlanvin/php-rrule": "^1.2"
     },
     "require-dev":{
     	"zendframework/zend-developer-tools": "dev-master",

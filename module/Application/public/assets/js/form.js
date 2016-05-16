@@ -549,27 +549,52 @@ var form = function(url, tabid){
 	});
 
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #suggestions-container a.modify-evt", function(e){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
-		$("#form-title").html(me.data('name'));
-
-		$("#create-evt").modal('show');
-
-		$("#event").load(url+'events/form?id='+me.data('id')+'&tabid='+tabid, function(){
-			initTabs(1);
-			$("#event input[name=startdate]").timepickerform({'id':'start'});
-			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
-			//mise à jour en fonction du statut ponctuel
-			$('#event #punctual').trigger('change');
-			updateHours();
-			//updateHourTitle();
-			pauseUpdateAlarms();
-			$('tr[data-toggle=tooltip]').tooltip();
-
-		});
+        if(me.data('recurr') == "true") {
+            $("#confirm-recurr").modal('show');
+            $("#confirm-recurr").data('id', me.data('id'));
+            $("#confirm-recurr").data('name', me.data('name'));
+        } else {
+            loadForm(me.data('id'), me.data('name'), false);
+        }
 	});
 
+    $("#confirm-recurr #confirm-modify-series").on('click', function(){
+        $("#confirm-recurr").modal('hide');
+        var id = $("#confirm-recurr").data('id');
+        var name = $("#confirm-recurr").data('name');
+        loadForm(id, name, false);
+    });
+    
+    $("#confirm-recurr #confirm-modify-one").on('click', function(){
+        $("#confirm-recurr").modal('hide');
+        var id = $("#confirm-recurr").data('id');
+        var name = $("#confirm-recurr").data('name');
+        loadForm(id, name, true);
+    });
+    
+    var loadForm = function(id, name, exclude) {
+        $("#form-title").html(name);
+
+        $("#create-evt").modal('show');
+
+        $("#event").load(url+'events/form?id='+id+'&tabid='+tabid, function(){
+            initTabs(1);
+            $("#event input[name=exclude]").val(exclude);
+            $("#event input[name=startdate]").timepickerform({'id':'start'});
+            $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+            //mise à jour en fonction du statut ponctuel
+            $('#event #punctual').trigger('change');
+            updateHours();
+            //updateHourTitle();
+            pauseUpdateAlarms();
+            $('tr[data-toggle=tooltip]').tooltip();
+
+        });
+    };
+    
 	//click sur une fiche reflexe
 	$("#event").on("click", "a.fiche", function(){
 		var id = $(this).data('id');
@@ -952,7 +977,7 @@ var form = function(url, tabid){
         var startdate = $('input[name=startdate]').val();
         var start = convertInputIntoDate(startdate);
         var startsplit = startdate.split(' ');
-        var pattern = $("input[name=recurrence]").val();
+        var pattern = $("input[name=recurrencepattern]").val();
 		$("#recurr-scheduler").scheduler();
         $("#recurr-scheduler").scheduler('value', {
             startDateTime: moment(start).utc().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
@@ -979,9 +1004,9 @@ var form = function(url, tabid){
         var recurrence = $("#recurr-scheduler").scheduler('value');
         var pattern = recurrence.recurrencePattern;
         if(pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") == 0){
-            $("input[name=recurrence]").val('');
+            $("input[name=recurrencepattern]").val('');
         } else {
-            $("input[name=recurrence]").val(pattern);
+            $("input[name=recurrencepattern]").val(pattern);
         }
     });
 

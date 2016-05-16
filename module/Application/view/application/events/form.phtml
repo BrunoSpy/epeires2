@@ -112,7 +112,8 @@
                <div class="col-sm-10 col-lg-8">
                    <a class="btn btn-sm btn-raised" id="recurr-button" data-value="" data-target="#recurr" data-toggle="modal">Configurer...</a>
                </div>
-			   <?php echo $this->formHidden($this->form->get('recurrence')); ?>
+               <input name="recurrencepattern" type="hidden" value="<?php echo ($this->event && $this->event->getRecurrence() ? $this->event->getRecurrence()->getRecurrencePattern() : '') ?>">
+               <input name="exclude" type="hidden" value="false">
            </div>
 			<div class="form-group">
 		<?php echo $this->formLabel($this->form->get('status')->setLabelAttributes(array('class'=>'col-sm-2 control-label'))); ?>

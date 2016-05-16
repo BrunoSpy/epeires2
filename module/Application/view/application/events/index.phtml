@@ -80,6 +80,16 @@ echo $this->modalwindow('add-note-modal',
 
 echo $this->partial('recurrence-form.html');
 
+echo $this->modalwindow('confirm-recurr',
+    '<h4 class="modal-title">Modifier tous les évènements ?</h4>',
+    "",
+    null,
+    "<p>Cet évènement fait parti d'une série d'évènements récurrents.</p>"
+    ."<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
+    ."<p>Modifier uniquement cet évènement le supprimera de la série.</p>",
+    "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
+     <button class=\"btn btn-primary\" id=\"confirm-modify-one\">Seulement cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
