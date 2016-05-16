@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Application\src\Application\Entity\Recurrence;
+use Application\Repository\StatusRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use RRule\RRule;
@@ -285,6 +285,9 @@ class Event extends AbstractEvent
         }
     }
 
+    /**
+     * @return Recurrence
+     */
     public function getRecurrence()
     {
         return $this->recurrence;
@@ -437,6 +440,62 @@ class Event extends AbstractEvent
                 }
             }
         }
+    }
+
+    /**
+     * Renvoit un nouvel évènement créé à partir d'un évènement et d'une date de début
+     * Les notes ne sont pas copiées, le statut est mis à "nouveau"
+     * @param Event $event
+     * @param \DateTime $start UTC start date
+     */
+    public static function createFromEvent(Event $event, \DateTime $start, Status $status) {
+        $newevent = new Event();
+        $newevent->setAuthor($event->getAuthor());
+        $newevent->setOrganisation($event->getOrganisation());
+        $newevent->setCategory($event->getCategory());
+        $newevent->setImpact($event->getImpact());
+        $newevent->setStatus($status);
+        if($event->getPlace() !== null) {
+            $newevent->setPlace($event->getPlace());
+        }
+        //horaires
+        $newevent->setScheduled($event->isScheduled());
+        $newevent->setPunctual($event->isPunctual());
+        if($start !== null) {//actions can have no start date
+            $newevent->setStartdate($start);
+            if (!$event->isPunctual() && $event->getEnddate() !== null) {
+                $diff = $event->getStartdate()->diff($event->getEnddate());
+                $end = clone $start;
+                $end->add($diff);
+                $newevent->setEnddate($end);
+            }
+        }
+        //enfants
+        foreach ($event->getChildren() as $child) {
+            $childdate = $start;
+            if($child->getCategory() instanceof AlarmCategory) {
+                $diff = $event->getStartdate()->diff($child->getStartdate());
+                $alarmdate = clone $start->getStartdate();
+                $alarmdate->add($diff);
+                $childdate = $alarmdate;
+            } else if($child->getCategory() instanceof ActionCategory) {
+                $childdate = null;
+            }
+            $newevent->addChild(Event::createFromEvent($child, $childdate));
+        }
+        //champs
+        foreach ($event->getCustomFieldsValues() as $customFieldsValue){
+            $customFieldValue = new CustomFieldValue();
+            $customFieldValue->setEvent($newevent);
+            $customFieldValue->setCustomField($customFieldsValue->getCustomField());
+            $customFieldValue->setValue($customFieldsValue->getValue());
+            $newevent->addCustomFieldValue($customFieldValue);
+        }
+        //fichiers
+        foreach ($event->getFiles() as $file) {
+            $file->addEvent($newevent);
+        }
+        return $newevent;
     }
 
     public function getArrayCopy()

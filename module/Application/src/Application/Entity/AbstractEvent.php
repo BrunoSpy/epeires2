@@ -187,6 +187,14 @@ abstract class AbstractEvent
         return $this->place;
     }
 
+    /**
+     * @param int $place
+     */
+    public function setPlace($place)
+    {
+        $this->place = $place;
+    }
+    
     public function getCustomFieldsValues()
     {
         return $this->custom_fields_values;

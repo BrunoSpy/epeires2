@@ -465,7 +465,9 @@ class EventsController extends TabController
                 $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                 
                 $credentials = false;
-                
+
+                $events = array();
+
                 if ($id) {
                     // modification
                     $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
@@ -495,37 +497,14 @@ class EventsController extends TabController
                 }
                 
                 if ($credentials) {
-                    
-                    if(isset($post['recurrencepattern'])) {
-                        //gestion des recurrences
-                        if($id) { //recurrence positionnée et mod d'evt -> recherche de la récurrence associée
-                            $recurrence = $event->getRecurrence();
-                            if($recurrence) {
-                                if(isset($post['exclude'])){
-                                    $recurrence->exclude($event);
-                                    //le traitement continue ensuite comme un évènement normal à partir de là
-                                } else {
-                                    //1. vérification du changement de date début
-                                    
-                                    //2. vérification changement date de fin
-                                    
-                                    //3. les champs custom doivent être propagés à tous les évènements
-                                    
-                                    //4. les fichiers aussi
-                                    
-                                    //alertes et statuts ne sont pas partagés
-                                }
-                            } else {
-                                $messages['error'][] = "Impossible d'enregistrer l'évènement, récurrence introuvable.";
-                            }
-                        } else {
-                            //nouvel évènement avec récurrence
-                            
-                        }
-                    } else {
-                        //pas de récurrence positionnée (ou récupérée) : traitement normal
+
+                    //en cas de modif d'un évt, on stocke la date de début initiale
+                    //ce sera utilisé en cas d'evt appartenant à une récurrence
+                    $startdateIni = null;
+                    if($id) {
+                        $startdateIni = clone $event->getStartdate();
                     }
-                    
+
                     $form = $this->getSkeletonForm(null, $event);
                     $form->setPreferFormInputFilter(true);
                     $form->setData($post);
@@ -613,7 +592,7 @@ class EventsController extends TabController
                                         $event->addCustomFieldValue($customvalue);
                                     }
                                     $customvalue->setValue($value);
-                                    $objectManager->persist($customvalue);
+                                    //$objectManager->persist($customvalue);
                                 }
                             }
                         }
@@ -643,7 +622,7 @@ class EventsController extends TabController
                                         $newcustomvalue->setEvent($child);
                                         $newcustomvalue->setCustomField($customvalue->getCustomField());
                                         $newcustomvalue->setValue($customvalue->getValue());
-                                        $objectManager->persist($newcustomvalue);
+                                        //$objectManager->persist($newcustomvalue);
                                     }
                                     $objectManager->persist($child);
                                 }
@@ -744,31 +723,16 @@ class EventsController extends TabController
                                 $deltaend->setEvent($alarm);
                                 $alarm->addCustomFieldValue($deltaend);
                                 $event->addChild($alarm);
-                                $objectManager->persist($name);
-                                $objectManager->persist($comment);
-                                $objectManager->persist($deltabegin);
-                                $objectManager->persist($deltaend);
-                                $objectManager->persist($alarm);
+                                //$objectManager->persist($name);
+                                //$objectManager->persist($comment);
+                                //$objectManager->persist($deltabegin);
+                                //$objectManager->persist($deltaend);
+                                //$objectManager->persist($alarm);
                             }
                         }
                         if ($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { // passage au statut terminé ou annulé
                             $this->closeEvent($event);
                         }
-
-                        //save recurrence pattern and create or update linked events
-                        if(isset($post['recurrencepattern'])) {
-
-                            $recurrence = new Recurrence();
-                            $recurrence->setRecurrencePattern($post['recurrencepattern']);
-                            $event->setRecurrence($recurrence);
-                            $objectManager->persist($recurrence);
-                        } else {
-                            $event->updateAlarms();
-                            $objectManager->persist($event);
-                        }
-
-
-
 
                         //certains évènements induisent des évènements fils
                         //il faut les créer à ce moment
@@ -820,6 +784,56 @@ class EventsController extends TabController
                             }
                         }
 
+                        if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern'])) {
+                            //gestion des recurrences
+                            if($id) { //recurrence positionnée et mod d'evt -> recherche de la récurrence associée
+                                $recurrence = $event->getRecurrence();
+                                if($recurrence) {
+                                    if(isset($post['exclude'])){
+                                        $recurrence->exclude($event);
+                                        $event->setRecurrence(null);
+                                    } else {
+                                        $startdate = new \DateTime($post['startdate']);
+                                        $offset = $startdate->getTimezone()->getOffset($startdate);
+                                        $startdate->setTimezone(new \DateTimeZone("UTC"));
+                                        $startdate->add(new \DateInterval("PT" . $offset . "S"));
+                                        $diff = $startdateIni->diff($event->getStartdate()) !== 0;
+                                        $excludedEvents = $recurrence->update($post['recurrencepattern'],
+                                                            $diff,
+                                                            $event);
+                                        foreach ($excludedEvents as $e) {
+                                            $objectManager->persist($e);
+                                            $events[$e];
+                                        }
+                                        foreach ($recurrence->getEvents() as $e) {
+                                            $objectManager->persist($e);
+                                            $events[] = $e;
+                                        }
+                                        $objectManager->persist($event);
+                                        $objectManager->persist($recurrence);
+                                        $messages['success'][] = "Suite d'évènements mise à jour.";
+                                    }
+                                } else {
+                                    $messages['error'][] = "Impossible d'enregistrer l'évènement, récurrence introuvable.";
+                                }
+                            } else {
+                                //nouvel évènement avec récurrence
+                                $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
+                                $recurrence = new Recurrence($event->getStartdate(), $post['recurrencepattern'], $event, $status);
+                                foreach ($recurrence->getEvents() as $e) {
+                                    $objectManager->persist($e);
+                                    $events[] = $e;
+                                }
+                                $objectManager->remove($event);
+                                $objectManager->persist($recurrence);
+                            }
+                        } else {
+                            //pas de récurrence positionnée (ou récupérée) : traitement normal
+                            $event->updateAlarms();
+                            $objectManager->persist($event);
+                            $events[] = $event;
+                        }
+
                         try {
                             $objectManager->flush();
                             $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
@@ -855,10 +869,12 @@ class EventsController extends TabController
         } else {
             $json = array();
             $json['messages'] = $messages;
-            if ($event) {
-                $json['events'] = array(
-                    $event->getId() => $this->getEventJson($event)
-                );
+            $jsonevents = array();
+            foreach ($events as $e) {
+                $jsonevents[$e->getId()] = $this->getEventJson($e);
+            }
+            if (count($jsonevents) > 0) {
+                $json['events'] = $jsonevents;
             }
             return new JsonModel($json);
         }

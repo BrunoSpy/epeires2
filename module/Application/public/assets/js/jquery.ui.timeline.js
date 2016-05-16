@@ -1683,14 +1683,14 @@
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
-                    if(event.modifiable && event.recurr == false){
+                    if(event.modifiable){
                         move_fin.addClass('disp');
                         move_fin.css({'left': x_end - 14 + 'px'});
                     }
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
-                    if(event.modifiable && event.recurr == false){
+                    if(event.modifiable){
                         move_fin.addClass('disp');
                         move_fin.css({'left': x_end - 14 + 'px'});
                     }

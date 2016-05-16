@@ -552,7 +552,7 @@ var form = function(url, tabid){
 	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
-        if(me.data('recurr') == "true") {
+        if(me.data('recurr') == true) {
             $("#confirm-recurr").modal('show');
             $("#confirm-recurr").data('id', me.data('id'));
             $("#confirm-recurr").data('name', me.data('name'));
