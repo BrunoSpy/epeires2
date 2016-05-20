@@ -20,7 +20,6 @@ namespace Application\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-//use RRule\RRule;
 use RRule\RRule;
 use RRule\RSet;
 use Zend\Form\Annotation;
@@ -67,13 +66,12 @@ class Recurrence
 
     private $rrule;
 
-    public function __construct($dtstart, $pattern, $refEvent, $status)
+    public function __construct($dtstart, $pattern)
     {
         $this->events = new ArrayCollection();
         $this->exdates = new ArrayCollection();
         $this->startdate = $dtstart;
         $this->recurrencePattern = $pattern;
-        $this->createEvents($refEvent, $status);
     }
 
     public function getId()
@@ -130,7 +128,6 @@ class Recurrence
         } else {
             $this->recurrencePattern = $recurrencePattern;
             $this->rrule = null;
-            $this->updateEvents();
         }
     }
 
@@ -178,50 +175,25 @@ class Recurrence
         return $this->rrule;
     }
 
-    /**
-     * Create events from a reference event
-     * @param Event $refEvent
-     */
-    private function createEvents(Event $refEvent, $status) {
+    public function getRSet() {
         $rset = new RSet();
         $rset->addRRule($this->getRRule());
         foreach ($this->getExdates() as $exdate) {
             $rset->addExDate($exdate);
         }
         if($this->getRRule()->isFinite()) {
-            foreach ($rset as $occurence) {
-                $event = Event::createFromEvent($refEvent, $occurence, $status);
-                $event->setRecurrence($this);
-                $this->events->add($event);
-            }
+            return $rset;
         } else {
-            //throw something
+            return null;
         }
     }
 
     /**
-     * When a recurrence is updated, only future events are concerned,
-     * Past events are excluded.
-     * @param $recurrencepattern
-     * @param $diff
-     * @param $refEvent
-     * @return ArrayCollection Events excluded to be persisted
+     * @return string
      */
-    public function update($recurrencepattern, $diff, $refEvent) {
-        $now = new Date();
-        $offset = $now->getTimezone()->getOffset($now);
-        $now->setTimezone(new \DateTimeZone("UTC"));
-        $now->add(new \DateInterval("PT" . $offset . "S"));
-        $excluded = array();
-        foreach ($this->getEvents() as $e) {
-            if($e->getStartdate() < $now) {
-                $e->setRecurrence(null);
-                $excluded[] = $e;
-            }
-        }
-        //delete future events ??
-        
-        return $excluded;
+    public function getHumanReadable()
+    {
+        return $this->getRRule()->humanReadable(array('locale' => 'fr'));
     }
 
 }

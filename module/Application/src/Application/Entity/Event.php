@@ -17,11 +17,8 @@
  */
 namespace Application\Entity;
 
-use Application\Repository\StatusRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use RRule\RRule;
-use RRule\RSet;
 use Zend\Form\Annotation;
 
 /**
@@ -121,6 +118,8 @@ class Event extends AbstractEvent
     {
         parent::__construct();
         $this->updates = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedOn();
+        $this->setLastModifiedOn();
     }
 
     public function getAuthor()
@@ -306,6 +305,14 @@ class Event extends AbstractEvent
         $this->setPunctual($predefined->isPunctual());
     }
 
+    public function createFromEvent(Event $e){
+        $this->setCategory($e->getCategory());
+        $this->setAuthor($e->getAuthor());
+        $this->setOrganisation($e->getOrganisation());
+        $this->setImpact($e->getImpact());
+        $this->setPunctual($e->isPunctual());
+    }
+    
     /**
      * Cloture l'évènement ains que l'ensemble de ses fils.
      * 
@@ -380,7 +387,7 @@ class Event extends AbstractEvent
      */
     public function updateAlarmDate()
     {
-        if (! ($this->getCategory() instanceof AlarmCategory)) {
+        if (!($this->getCategory() instanceof AlarmCategory)) {
             return;
         }
         $deltaend = "";
@@ -388,13 +395,15 @@ class Event extends AbstractEvent
         $previousstart = $this->getStartdate();
         foreach ($this->getCustomFieldsValues() as $value) {
             if ($value->getCustomField()->getId() == $this->getCategory()
-                ->getDeltaBeginField()
-                ->getId()) {
+                    ->getDeltaBeginField()
+                    ->getId()
+            ) {
                 $deltabegin = preg_replace('/\s+/', '', $value->getValue());
             }
             if ($value->getCustomField()->getId() == $this->getCategory()
-                ->getDeltaEndField()
-                ->getId()) {
+                    ->getDeltaEndField()
+                    ->getId()
+            ) {
                 $deltaend = preg_replace('/\s+/', '', $value->getValue());
             }
         }
@@ -415,7 +424,7 @@ class Event extends AbstractEvent
                 if ($deltaend > 0) {
                     $startdatealarm->add(new \DateInterval("PT" . $deltaend . "M"));
                 } else {
-                    $invdiff = - $deltaend;
+                    $invdiff = -$deltaend;
                     $interval = new \DateInterval('PT' . $invdiff . 'M');
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
@@ -429,7 +438,7 @@ class Event extends AbstractEvent
                     if ($deltabegin > 0) {
                         $startdatealarm->add(new \DateInterval("PT" . $deltabegin . "M"));
                     } else {
-                        $invdiff = - $deltabegin;
+                        $invdiff = -$deltabegin;
                         $interval = new \DateInterval('PT' . $invdiff . 'M');
                         $interval->invert = 1;
                         $startdatealarm->add($interval);
@@ -443,59 +452,21 @@ class Event extends AbstractEvent
     }
 
     /**
-     * Renvoit un nouvel évènement créé à partir d'un évènement et d'une date de début
-     * Les notes ne sont pas copiées, le statut est mis à "nouveau"
-     * @param Event $event
-     * @param \DateTime $start UTC start date
+     * Compute if an event is strictly before a date
+     * If an event has no end date, it is considered unfinished and therefore we return false
+     * @param \DateTime $date
+     * @return bool
      */
-    public static function createFromEvent(Event $event, \DateTime $start, Status $status) {
-        $newevent = new Event();
-        $newevent->setAuthor($event->getAuthor());
-        $newevent->setOrganisation($event->getOrganisation());
-        $newevent->setCategory($event->getCategory());
-        $newevent->setImpact($event->getImpact());
-        $newevent->setStatus($status);
-        if($event->getPlace() !== null) {
-            $newevent->setPlace($event->getPlace());
-        }
-        //horaires
-        $newevent->setScheduled($event->isScheduled());
-        $newevent->setPunctual($event->isPunctual());
-        if($start !== null) {//actions can have no start date
-            $newevent->setStartdate($start);
-            if (!$event->isPunctual() && $event->getEnddate() !== null) {
-                $diff = $event->getStartdate()->diff($event->getEnddate());
-                $end = clone $start;
-                $end->add($diff);
-                $newevent->setEnddate($end);
+    public function isPast(\DateTime $date) {
+        if($this->isPunctual()) {
+            return $this->getStartdate() < $date;
+        } else {
+            if($this->getEnddate() !== null) {
+                return $this->getEnddate() < $date;
+            } else {
+                return false;
             }
         }
-        //enfants
-        foreach ($event->getChildren() as $child) {
-            $childdate = $start;
-            if($child->getCategory() instanceof AlarmCategory) {
-                $diff = $event->getStartdate()->diff($child->getStartdate());
-                $alarmdate = clone $start->getStartdate();
-                $alarmdate->add($diff);
-                $childdate = $alarmdate;
-            } else if($child->getCategory() instanceof ActionCategory) {
-                $childdate = null;
-            }
-            $newevent->addChild(Event::createFromEvent($child, $childdate));
-        }
-        //champs
-        foreach ($event->getCustomFieldsValues() as $customFieldsValue){
-            $customFieldValue = new CustomFieldValue();
-            $customFieldValue->setEvent($newevent);
-            $customFieldValue->setCustomField($customFieldsValue->getCustomField());
-            $customFieldValue->setValue($customFieldsValue->getValue());
-            $newevent->addCustomFieldValue($customFieldValue);
-        }
-        //fichiers
-        foreach ($event->getFiles() as $file) {
-            $file->addEvent($newevent);
-        }
-        return $newevent;
     }
 
     public function getArrayCopy()

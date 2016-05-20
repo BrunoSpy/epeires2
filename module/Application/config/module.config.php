@@ -169,6 +169,10 @@ return array(
                 'name' => 'Création',
                 'description' => 'Possibilité de créer de nouveaux évènements'
             ),
+            'events.recurrent' => array(
+                'name' => 'Evènements récurrents',
+                'description' => 'Possibilité de créer des évènements récurrents'
+            ),
             'events.write' => array(
                 'name' => 'Modification',
                 'description' => 'Possibilité de modifier les évènements accessibles en lecture'

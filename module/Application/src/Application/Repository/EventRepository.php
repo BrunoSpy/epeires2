@@ -383,7 +383,8 @@ class EventRepository extends ExtendedRepository
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 
-     * @param Application\Entity\Tab $tab            
+     * @param Application\Entity\Tab $tab
+     * @return array
      */
     public function getTabEvents(\Application\Entity\Tab $tab)
     {
@@ -948,4 +949,65 @@ class EventRepository extends ExtendedRepository
         }
     }
 
+    /**
+     * Renvoit un nouvel évènement créé à partir d'un évènement et d'une date de début
+     * Les notes ne sont pas copiées, le statut est mis à "nouveau"
+     * @param Event $event
+     * @param \DateTime $start UTC start date
+     */
+    public function createFromEvent(Event $event, $start) {
+        $newevent = new Event();
+        $newevent->setAuthor($event->getAuthor());
+        $newevent->setOrganisation($event->getOrganisation());
+        $newevent->setCategory($event->getCategory());
+        $newevent->setImpact($event->getImpact());
+        $newevent->setStatus($this->getEntityManager()->getRepository('Application\Entity\Status')->find(1));
+        if($event->getPlace() !== null) {
+            $newevent->setPlace($event->getPlace());
+        }
+        //horaires
+        $newevent->setScheduled($event->isScheduled());
+        $newevent->setPunctual($event->isPunctual());
+        if($start !== null) {//actions can have no start date
+            $newevent->setStartdate($start);
+            if (!$event->isPunctual() && $event->getEnddate() !== null) {
+                $diff = $event->getStartdate()->diff($event->getEnddate());
+                $end = clone $start;
+                $end->add($diff);
+                $newevent->setEnddate($end);
+            }
+        }
+        //enfants
+        foreach ($event->getChildren() as $child) {
+            $childdate = $start;
+            if($child->getCategory() instanceof AlarmCategory) {
+                $diff = $event->getStartdate()->diff($child->getStartdate());
+                $alarmdate = clone $newevent->getStartdate();
+                $alarmdate->add($diff);
+                $childdate = $alarmdate;
+            } else if($child->getCategory() instanceof ActionCategory) {
+                $childdate = null;
+            }
+            $childEvent = $this->createFromEvent($child, $childdate);
+            $childEvent->setParent($newevent);
+            $newevent->addChild($childEvent);
+        }
+        //champs
+        foreach ($event->getCustomFieldsValues() as $customFieldsValue){
+            error_log($this->getClassName($event->getCategory()));
+            error_log($customFieldsValue->getValue());
+            error_log($customFieldsValue->getCustomField()->getType()->getName());
+            $customFieldValue = new CustomFieldValue();
+            $customFieldValue->setEvent($newevent);
+            $customFieldValue->setCustomField($customFieldsValue->getCustomField());
+            $customFieldValue->setValue($customFieldsValue->getValue());
+            $newevent->addCustomFieldValue($customFieldValue);
+        }
+        //fichiers
+        foreach ($event->getFiles() as $file) {
+            $newevent->addFile($file);
+        }
+        return $newevent;
+    }
+    
 }

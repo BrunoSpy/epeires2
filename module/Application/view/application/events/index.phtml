@@ -34,7 +34,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
-        <p><a href="#" id="day-backward"><span class="glyphicon glyphicon-backward"></span></a> <input id="date" type="text" class="date input-small"></input> <a href="#" id="day-forward"><span class="glyphicon glyphicon-forward"></span></a> <a href="#" id="export"><span class="glyphicon glyphicon-print"></span></a></p>
+        <p><a href="#" id="day-backward"><span class="glyphicon glyphicon-backward"></span></a> <input id="date" type="text" class="date input-small"> <a href="#" id="day-forward"><span class="glyphicon glyphicon-forward"></span></a> <a href="#" id="export"><span class="glyphicon glyphicon-print"></span></a></p>
     </div>
 </div>
 
@@ -74,22 +74,34 @@ echo $this->modalwindow('add-note-modal',
             . "</div>"
         . "</div>"
         . "<div class=\"modal-footer\">"
-                . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+                . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\">"
         . "</div>"
         . "</form>");
 
 echo $this->partial('recurrence-form.html');
 
-echo $this->modalwindow('confirm-recurr',
-    '<h4 class="modal-title">Modifier tous les évènements ?</h4>',
-    "",
-    null,
-    "<p>Cet évènement fait parti d'une série d'évènements récurrents.</p>"
-    ."<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
-    ."<p>Modifier uniquement cet évènement le supprimera de la série.</p>",
-    "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
+if($this->isGranted('events.recurrent')) {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier tous les évènements ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
+        . "<p>Modifier uniquement cet évènement le supprimera de la série.</p>",
+        "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
      <button class=\"btn btn-primary\" id=\"confirm-modify-one\">Seulement cet évènement</button>
 	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+} else {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier l\'évènement ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Le modifier le supprimera de la récurrence et le rendra indépendant.</p>",
+     "<button class=\"btn btn-primary\" id=\"confirm-modify-one\">Modifier cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+}
+
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
