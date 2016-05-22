@@ -7,7 +7,7 @@
         <h4 class="modal-title" id="myModalLabel">Répétitions</h4>
       </div>
       <div class="modal-body">
-        <div class="form-horizontal container-fluid scheduler" data-initialize="scheduler" role="form" id="recurr-scheduler">
+        <div class="form-horizontal container-fluid scheduler" role="form" id="recurr-scheduler">
           <div class="form-group start-datetime">
             <label class="control-label col-sm-3 scheduler-label" for="myStartDate">Date de début :</label>
             <div class="col-xs-8">
@@ -352,11 +352,11 @@
             <div class="col-sm-8">
               <div class="row">
                 <div class="col-sm-4 form-group">
-                  <div data-resize="auto" class="btn-group selectlist end-options pull-left">
+                  <div data-resize="auto" id="endOptionsSelectList" class="btn-group selectlist end-options pull-left">
                     <button data-toggle="dropdown" class="btn btn-sm btn-default dropdown-toggle" type="button">
-                      <span class="selected-label">Jamais</span>
+                      <span class="selected-label">Le</span>
                       <span class="caret"></span>
-                      <span class="sr-only">Jamais</span>
+                      <span class="sr-only">Le</span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                       <!--<li data-value="never"><a href="#">Jamais</a></li>-->
@@ -399,7 +399,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-dismiss="modal">Valider</button>
+        <button id="validateRecurrence" type="button" class="btn btn-success" data-dismiss="modal" disabled="disabled">Valider</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
       </div>
     </div>

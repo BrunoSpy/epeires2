@@ -450,6 +450,7 @@ class EventsController extends TabController
     {
         $messages = array();
         $event = null;
+        $events = array();
         $return = $this->params()->fromQuery('return', null);
         
         if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -496,9 +497,6 @@ class EventsController extends TabController
                 }
                 
                 if ($credentials) {
-
-                    $events = array();
-
                     //préparation de certains champs
                     $startdate = new \DateTime($post['startdate']);
                     $offset = $startdate->getTimezone()->getOffset($startdate);
@@ -529,7 +527,12 @@ class EventsController extends TabController
                         if($id) {
                             //récurrence existante
                             $recurrence = $event->getRecurrence();
-                            if(isset($post['exclude']) && $post['exclude']) {
+                            if($recurrence === null) {
+                                //en cas de modification d'un évènement seul et ajout d'une recurrence
+                                $recurrence = new Recurrence($startdate, "");
+                                $objectManager->remove($event);
+                            }
+                            if(isset($post['exclude']) && $post['exclude'] == "true") {
                                 $recurrence->exclude($event);
                                 $event->setRecurrence(null);
                                 $status = $objectManager->getRepository('Application\Entity\Status')->find($post['status']);
@@ -559,6 +562,7 @@ class EventsController extends TabController
                                     $recurrence = new Recurrence($startdate, $post['recurrencepattern']);
                                     foreach ($recurrence->getRSet() as $occurrence) {
                                         $e = new Event();
+                                        $e->setRecurrence($recurrence);
                                         $e->setAuthor($this->zfcUserAuthentication()
                                             ->getIdentity());
                                         $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
@@ -603,6 +607,7 @@ class EventsController extends TabController
                             $rset = $recurrence->getRSet();
                             foreach ($rset as $occurrence) {
                                 $e = new Event();
+                                $e->setRecurrence($recurrence);
                                 $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
                                 $e->setStatus($status);
                                 $e->setStartdate($occurrence);
@@ -758,7 +763,7 @@ class EventsController extends TabController
                                         'defaut' => true,
                                         'open' => true
                                     )));
-                                foreach ($child->getCustomFiledsValues() as $value) {
+                                foreach ($child->getCustomFieldsValues() as $value) {
                                     $newcustomvalue = new CustomFieldValue();
                                     $newcustomvalue->setEvent($newchild);
                                     $newcustomvalue->setCustomField($value->getCustomField());
@@ -776,7 +781,6 @@ class EventsController extends TabController
                             }
                             //fichiers
                             foreach ($event->getFiles() as $f) {
-                                $e->addFile($f);
                                 $f->addEvent($e);
                                 $objectManager->persist($f);
                             }
@@ -823,7 +827,7 @@ class EventsController extends TabController
                                 $file = $objectManager->getRepository('Application\Entity\File')->find($key);
                                 if ($file) {
                                     $file->addEvent($e);
-                                    $e->addFile($file);
+                                   // $e->addFile($file);
                                     //$objectManager->persist($file);
                                 }
                             }
@@ -945,30 +949,19 @@ class EventsController extends TabController
                         $objectManager->persist($e);
                     }
 
-                    
-                    if (/*$form->isValid()*/true) {
-/*
-
-*/
-                        try {
-                            if($recurrence !== null) {
-                                $objectManager->persist($recurrence);
-                            }
-                            $objectManager->flush();
-                            $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
-                        } catch (\Exception $e) {
-                            error_log(print_r($e->getMessage(), true));
-                            $messages['error'][] = $e->getMessage();
-                            $events =
+                    try {
+                        if($recurrence !== null) {
+                            $objectManager->persist($recurrence);
                         }
-                    } else {
-                        // erase event
-                        $event = null;
-                        // formulaire invalide
+                        $objectManager->flush();
+                        $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                    } catch (\Exception $e) {
+                        error_log(print_r($e->getMessage(), true));
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
-                        // traitement des erreurs de validation
-                        //$this->processFormMessages($form->getMessages(), $messages);
+                        $messages['error'][] = $e->getMessage();
+                        $events = array();
                     }
+
                 } else {
                     $messages['error'][] = "Création ou modification impossible, droits insuffisants.";
                 }
@@ -1731,6 +1724,18 @@ class EventsController extends TabController
         return $json;
     }
 
+    public function getRecurrHumanReadableAction() {
+        $json = array();
+        $pattern = $this->params()->fromQuery('pattern', null);
+        $start = $this->params()->fromQuery('start', null);
+        $text = '';
+        if($pattern !== null) {
+            $text = Recurrence::getHumanReadableFromPattern($start, $pattern);
+        }
+        $json['text'] = $text;
+        return new JsonModel($json);
+    }
+    
     /**
      * Liste des catégories racines visibles timeline
      * Au format JSON

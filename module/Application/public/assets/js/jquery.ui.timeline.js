@@ -1590,12 +1590,13 @@
             // libellé de l'évènement à mettre à jour
             var name = event.name;
             if(event.recurr == true) {
-                name += ' <span class="badge">R</span>';
+                name += ' <span data-toggle="tooltip" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>';
             }
             if (event.scheduled > 0) {
-                name += ' <a href="#"><span class="badge">P</span></a>';
+                name += ' <a href="#"><span class="badge scheduled">P</span></a>';
             }
             elmt_txt.find('span.elmt_name').html(name);
+            elmt_txt.find('span.badge.recurrence').tooltip();
 
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début

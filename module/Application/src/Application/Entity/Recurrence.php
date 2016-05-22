@@ -193,7 +193,17 @@ class Recurrence
      */
     public function getHumanReadable()
     {
-        return $this->getRRule()->humanReadable(array('locale' => 'fr'));
+        $rule = 'DTSTART;TZID=Europe/Paris:' . $this->getStartdate()->format('Ymd\THis') . '
+                 RRULE:'.$this->getRecurrencePattern();
+        $rrule = new RRule($rule);
+        return $rrule->humanReadable(array('locale' => 'fr'));
+    }
+
+    public static function getHumanReadableFromPattern($start, $pattern) {
+        $rule = 'DTSTART;TZID=Europe/Paris:' . $start . '
+                RRULE:'.$pattern;
+        $rrule = new RRule($rule);
+        return $rrule->humanReadable(array('locale' => 'fr'));
     }
 
 }

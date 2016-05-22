@@ -978,7 +978,7 @@ var form = function(url, tabid){
         var start = convertInputIntoDate(startdate);
         var startsplit = startdate.split(' ');
         var pattern = $("input[name=recurrencepattern]").val();
-		$("#recurr-scheduler").scheduler();
+        var forceEndDate = $('#myEndDate').val() == '';
         $("#recurr-scheduler").scheduler('value', {
             startDateTime: moment(start).utc().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
             timeZone: {
@@ -988,7 +988,9 @@ var form = function(url, tabid){
         });
         $("#myStartDate").val(startsplit[0].replace(/-/g, '/'));
         $("#MyStartTime").val(startsplit[1]);
-
+        if(forceEndDate) {
+            $("#myEndDate").val(startsplit[0].replace(/-/g, '/'));
+        }
 		$(".scheduler .end-on-date input").bootstrapMaterialDatePicker({
             format: "DD/MM/YYYY",
             time: false,
@@ -1005,8 +1007,30 @@ var form = function(url, tabid){
         var pattern = recurrence.recurrencePattern;
         if(pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") == 0){
             $("input[name=recurrencepattern]").val('');
+            $("#recurr-button").text('Configurer...');
+            $('#recurr-humanreadable em').text('(Aucune récurrence.)');
         } else {
             $("input[name=recurrencepattern]").val(pattern);
+            $("#recurr-button").text('Modifier...');
+            var startD = moment($("#recurr-scheduler").scheduler('value')['startDateTime']);
+            var start = startD.utc().format('YYYYMMDD[T]HHmm');
+            $.getJSON(url+'events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
+                var text = data.text;
+                if(text !== '') {
+                    $('#recurr-humanreadable em').text('('+text+')');
+                } else {
+                    $('#recurr-humanreadable em').text('(Aucune récurrence.)');
+                }
+            });
+        }
+    });
+
+    $('#endOptionsSelectList').on('changed.fu.selectlist', function () {
+        var item = $(this).selectlist('selectedItem');
+        if(item['value'] && (item.value == "after" || item.value == "date")) {
+            $("#validateRecurrence").removeAttr('disabled');
+        } else {
+            $("#validateRecurrence").attr('disabled', 'disabled');
         }
     });
 
