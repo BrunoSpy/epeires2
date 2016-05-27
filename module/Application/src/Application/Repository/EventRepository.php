@@ -415,14 +415,14 @@ class EventRepository extends ExtendedRepository
             ->from('Application\Entity\Event', 'e')
             ->innerJoin('e.category', 'cat')
             ->andWhere($qbEvents->expr()
-            ->in('e.status', '?1'))
+                ->in('e.status', '?1'))
             ->andWhere($qbEvents->expr()
-            ->andX($qbEvents->expr()
-            ->eq('e.punctual', 'false'), $qbEvents->expr()
-            ->lte('e.startdate', '?2'), $qbEvents->expr()
-            ->orX($qbEvents->expr()
-            ->isNull('e.enddate'), $qbEvents->expr()
-            ->gte('e.enddate', '?2'))))
+                ->andX($qbEvents->expr()
+                    ->eq('e.punctual', 'false'), $qbEvents->expr()
+                    ->lte('e.startdate', '?2'), $qbEvents->expr()
+                    ->orX($qbEvents->expr()
+                        ->isNull('e.enddate'), $qbEvents->expr()
+                        ->gte('e.enddate', '?2'))))
             ->setParameters(array(
             1 => array(
                 1,
@@ -614,8 +614,17 @@ class EventRepository extends ExtendedRepository
      * @param User $author            
      * @param type $messages            
      */
-    public function addChangeFrequencyCovEvent(Frequency $frequency, $cov, $freqstatus, $cause, \DateTime $startdate, \Core\Entity\User $author, Event $parent = null, &$messages = null)
-    {
+    public function addChangeFrequencyCovEvent(
+        Frequency $frequency,
+        $cov,
+        $freqstatus,
+        $cause,
+        \DateTime $startdate,
+        $enddate,
+        \Core\Entity\User $author,
+        Event $parent = null,
+        &$messages = null
+    ) {
         $em = $this->getEntityManager();
         $event = new Event();
         if ($parent) {
@@ -626,6 +635,7 @@ class EventRepository extends ExtendedRepository
         $event->setImpact($impact);
         $event->setStatus($status);
         $event->setStartdate($startdate);
+        $event->setEnddate($enddate);
         $event->setPunctual(false);
         // TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
         if ($frequency->getDefaultsector()) {

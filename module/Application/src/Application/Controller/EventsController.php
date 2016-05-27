@@ -451,6 +451,7 @@ class EventsController extends TabController
         $messages = array();
         $event = null;
         $events = array();
+        $sendEvents = array();
         $return = $this->params()->fromQuery('return', null);
         
         if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -464,7 +465,9 @@ class EventsController extends TabController
                 $id = $post['id'] ? $post['id'] : null;
                 
                 $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                
+
+                $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find('5');
+
                 $credentials = false;
 
                 if ($id) {
@@ -530,7 +533,8 @@ class EventsController extends TabController
                             if($recurrence === null) {
                                 //en cas de modification d'un évènement seul et ajout d'une recurrence
                                 $recurrence = new Recurrence($startdate, "");
-                                $objectManager->remove($event);
+                                $event->setStatus($deleteStatus);
+                                $this->closeEvent($event);
                             }
                             if(isset($post['exclude']) && $post['exclude'] == "true") {
                                 $recurrence->exclude($event);
@@ -553,13 +557,15 @@ class EventsController extends TabController
                                     foreach ($recurrentEvents as $e) {
                                         if ($e->isPast($now)) {
                                             $e->setRecurrence(null);
-                                            $objectManager->persist($e);
                                         } else {
-                                            $objectManager->remove($e);
+                                            $e->setStatus($deleteStatus);
                                         }
+                                        $objectManager->persist($e);
+                                        $sendEvents[] = $e;
                                     }
-                                    $objectManager->remove($recurrence);
+                                    //$objectManager->remove($recurrence);
                                     $recurrence = new Recurrence($startdate, $post['recurrencepattern']);
+                                    $objectManager->persist($recurrence);
                                     foreach ($recurrence->getRSet() as $occurrence) {
                                         $e = new Event();
                                         $e->setRecurrence($recurrence);
@@ -586,6 +592,7 @@ class EventsController extends TabController
                                             $recurrence->exclude($e);
                                             $e->setRecurrence(null);
                                             $objectManager->persist($e);
+                                            $sendEvents[] = $e;
                                         } else {
                                             $events[] = $e;
                                         }
@@ -604,6 +611,7 @@ class EventsController extends TabController
                             //nouvelle récurrence
                             $pattern = $post['recurrencepattern'];
                             $recurrence = new Recurrence($startdate, $pattern);
+                            $objectManager->persist($recurrence);
                             $rset = $recurrence->getRSet();
                             foreach ($rset as $occurrence) {
                                 $e = new Event();
@@ -888,7 +896,7 @@ class EventsController extends TabController
                                 //$objectManager->persist($comment);
                                 //$objectManager->persist($deltabegin);
                                 //$objectManager->persist($deltaend);
-                                //$objectManager->persist($alarm);
+                                $objectManager->persist($alarm);
                             }
                         }
 
@@ -933,8 +941,9 @@ class EventsController extends TabController
                                                     0, // toujours dispo
                                                     "Antenne principale indisponible",
                                                     $e->getStartdate(),
+                                                    $e->getEnddate(),
                                                     $this->zfcUserAuthentication()->getIdentity(),
-                                                    $event,
+                                                    $e,
                                                     $messages
                                                 );
                                         }
@@ -952,6 +961,7 @@ class EventsController extends TabController
                     try {
                         if($recurrence !== null) {
                             $objectManager->persist($recurrence);
+                            $messages['success'][] = "Récurrence correctement enregistrée.";
                         }
                         $objectManager->flush();
                         $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
@@ -985,6 +995,9 @@ class EventsController extends TabController
             $json['messages'] = $messages;
             $jsonevents = array();
             foreach ($events as $e) {
+                $jsonevents[$e->getId()] = $this->getEventJson($e);
+            }
+            foreach ($sendEvents as $e) {
                 $jsonevents[$e->getId()] = $this->getEventJson($e);
             }
             if (count($jsonevents) > 0) {
@@ -1256,9 +1269,14 @@ class EventsController extends TabController
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($event);
         $form->setHydrator(new DoctrineObject($em))->setObject($event);
-        
-        $form->get('status')->setValueOptions($em->getRepository('Application\Entity\Status')
-            ->getAllAsArray());
+
+        $status = $em->getRepository('Application\Entity\Status')
+            ->getAllAsArray();
+        if(!$this->isGranted('events.delete')) {
+            unset($status[5]);
+        }
+
+        $form->get('status')->setValueOptions($status);
         
         $form->get('impact')->setValueOptions($em->getRepository('Application\Entity\Impact')
             ->getAllAsArray());
@@ -1620,6 +1638,7 @@ class EventsController extends TabController
             'id' => $event->getId(),
             'name' => $eventservice->getName($event),
             'modifiable' => ($eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'deleteable' => $this->isGranted('events.delete') ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
             'punctual' => $event->isPunctual() ? true : false,
@@ -1968,6 +1987,46 @@ class EventsController extends TabController
     }
 
     /**
+     * Change the status of an event to "Supprimé"
+     * @return JsonModel
+     */
+    public function deleteeventAction()
+    {
+        $id = $this->params()->fromQuery('id', 0);
+        $messages = array();
+        $json = array();
+        if($this->isGranted('events.delete')) {
+            if ($id) {
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+                if ($event) {
+                    $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
+                    $event->setStatus($deleteStatus);
+                    $this->closeEvent($event);
+                    try {
+                        $objectManager->persist($event);
+                        $objectManager->flush();
+                        $messages['success'][] = "Évènement correctement supprimé";
+                        $json['event'] = array(
+                            $event->getId() => $this->getEventJson($event)
+                        );
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                } else {
+                    $messages['error'][] = "Suppression d'évènement impossible : évènment non trouvé.";
+                }
+            } else {
+                $messages['error'][] = "Suppression d'évènement impossible : ID non valide.";
+            }
+        } else {
+            $messages['error'][] = "Suppression impossible : droits insuffisants";
+        }
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    /**
      * Send an event by email to the corresponding IPO
      */
     public function sendEventAction()
@@ -2156,7 +2215,6 @@ class EventsController extends TabController
     private function closeEvent(Event $event)
     {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $cancelStatus = $objectManager->getRepository('Application\Entity\Status')->find(4);
         foreach ($event->getChildren() as $child) {
             if ($child->getCategory() instanceof FrequencyCategory) {
                 // on termine les évènements fils de type fréquence
@@ -2168,8 +2226,8 @@ class EventsController extends TabController
             } else 
                 if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
                     // si evt annulé uniquement : on annule toutes les alarmes
-                    if ($event->getStatus()->getId() == 4) {
-                        $child->setStatus($cancelStatus);
+                    if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
+                        $child->setStatus($event->getStatus());
                     }
                 }
             $objectManager->persist($child);

@@ -177,6 +177,10 @@ return array(
                 'name' => 'Modification',
                 'description' => 'Possibilité de modifier les évènements accessibles en lecture'
             ),
+            'events.delete' => array(
+                'name' => 'Suppression',
+                'description' => 'Possibilité de supprimer des évènements'
+            ),
             'events.schedule' => array(
                 'name' => 'Programmer',
                 'description' => 'Affiche la case &#8243;Evènement programmé&#8243;.'

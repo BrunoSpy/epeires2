@@ -490,7 +490,10 @@
                         }
                     }
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
+                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                }
+                if(event.deleteable) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
                 txt += '</p>';
                 me.popover({
@@ -577,6 +580,23 @@
                 });
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
+
+            this.element.on('click', '.delete-evt', function(e){
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                self.pauseUpdateView();
+                $.post(self.options.controllerUrl + '/deleteevent?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']) {
+                            self.addEvents(data.event);
+                        }
+                    }).always(function(){
+                    self.forceUpdateView(false);
+                });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -608,7 +628,6 @@
             } else {
                 //ajout de l'évènement en fin de tableau
                 var pos = this.events.length;
-                event.display = true;
                 event.shade = false;
                 this.events.push(event);
                 this.eventsPosition[event.id] = pos;
@@ -794,11 +813,12 @@
                 this.catPositions[this.categories[i].id] = i;
             }
         },
+        //default callback : display all events except status_id == 5
         filter: function (callback) {
             var cb = callback;
             if (cb === undefined && this.lastFilter === undefined) {
                 cb = function (event) {
-                    return true;
+                    return event.status_id != 5;
                 };
             } else if (cb === undefined && this.lastFilter !== undefined) {
                 cb = this.lastFilter;
@@ -1497,8 +1517,6 @@
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
             elmt.fadeOut(function () {
-                //destroy popups
-                $(this).tooltip('destroy');
                 //remove from DOM
                 $(this).remove();
             });
@@ -1590,7 +1608,9 @@
             // libellé de l'évènement à mettre à jour
             var name = event.name;
             if(event.recurr == true) {
-                name += ' <span data-toggle="tooltip" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>';
+                name += ' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>';
+            } else {
+                elmt.find('.modify-evt').data('recurr', '');
             }
             if (event.scheduled > 0) {
                 name += ' <a href="#"><span class="badge scheduled">P</span></a>';
@@ -1790,7 +1810,6 @@
                         event.outside = 2;
                     } else { // sinon on le met à gauche
                         x1 -= txt_wid + 8;
-                        console.log(x1);
                         var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
                         lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
@@ -2025,6 +2044,10 @@
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
+                case 5:
+                    //non displayed
+                    break;
+
             }
         },
         /**
