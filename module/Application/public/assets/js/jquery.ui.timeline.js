@@ -330,7 +330,7 @@
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
                 elmt.addClass('on_drag');
-
+                elmt.find('.elmt_flecheD').hide();
                 elmt.find('.elmt_fin').show();
                 var rect_elmt = elmt.find('.rect_elmt');
                 elmt.find('.complement').hide();
@@ -346,7 +346,9 @@
                 var enddate = new Date(event.end_date);
                 var d_fin = new Date();
                 elmt.data('end', d_fin.getTime());
-                if (event.end_date !== null && self._isValidDate(enddate)) {
+                if (event.end_date !== null
+                    && self._isValidDate(enddate)
+                    && enddate <= self.timelineEnd) {
                     d_fin = enddate;
                 } else {
                     d_fin = self.timelineEnd;
@@ -1674,6 +1676,10 @@
                     x_end = this._computeX(this.timelineEnd);
                     elmt_flecheD.show();
                     elmt_flecheD.css({'left': x_end + 'px'});
+                    if(event.modifiable){
+                        move_fin.addClass('disp');
+                        move_fin.css({'left': x_end - 14 + 'px'});
+                    }
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
