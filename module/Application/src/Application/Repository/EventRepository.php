@@ -84,6 +84,7 @@ class EventRepository extends ExtendedRepository
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()
                     ->neq('c.timelineconfirmed', true), $qb->expr()
+                    ->neq('e.scheduled', true), $qb->expr()
                     ->andX($qb->expr()
                         ->eq('c.timelineconfirmed', true), $qb->expr()
                         ->in('e.status', array(2,3,4)), $qb->expr()
@@ -654,10 +655,7 @@ class EventRepository extends ExtendedRepository
             $causefield->setCustomField($cat->getCauseField());
             $causefield->setEvent($event);
             $causefield->setValue($cause);
-            $em->persist($frequencyfieldvalue);
-            $em->persist($statusfield);
-            $em->persist($covfield);
-            $em->persist($causefield);
+            $event->addCustomFieldValue($causefield);
             $em->persist($event);
             try {
                 $em->flush();
@@ -797,6 +795,11 @@ class EventRepository extends ExtendedRepository
                     $this->getEntityManager()->persist($deltaend);
                     $this->getEntityManager()->persist($alarm);
                 }
+            }
+            //ajout des fichiers
+            foreach($model->getFiles() as $file) {
+                $file->addEvent($event);
+                $this->getEntityManager()->persist($file);
             }
             $event->updateAlarms();
         }

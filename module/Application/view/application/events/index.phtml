@@ -6,7 +6,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-    <div id="create-evt" data-toggle="modal" class="modal fade in" data-spy="affix" data-offset-top="80">
+    <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="loading"></div>

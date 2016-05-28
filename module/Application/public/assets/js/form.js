@@ -686,45 +686,47 @@ var form = function(url, tabid){
 
 		if(root_value > 0) {
 			$.when(
-				$.post(url+'events/subform?part=subcategories&id='+$(this).val() + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
+				$.post(url+'events/subform?part=subcategories&id='+root_value + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
 					function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);
-
-						$.post(
-							url+'events/subform?part=custom_fields&id='+root_value,
-							function(data){
-								$("#custom_fields").html(data);
-								$("#custom_fields input, #custom_fields select").on("invalid", function(event){
-									$("#description-title a").trigger('click');
-									$(this).parents('.form-group').addClass('has-error');
-								});
-								$('#event').trigger('change');
-							}
-						);
 						$("#cat-title").addClass('valid');
 						$("#hours-title a").removeClass("disabled");
 						$("#description-title a").removeClass("disabled");
 						$("#files-title a").removeClass("disabled");
 						$("#memos-title a").removeClass("disabled");
 						$('#actions-title a').removeClass("disabled");
-					}),
-				//récupération des modèles
-				$.post(
-					url+'events/subform?part=predefined_events&id='+$(this).val(),
-					function(data){
-						$("#predefined_events").html(data);
-						$.material.checkbox();
 					})
 			).then(function(){
-				if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
-					$("#description-title a").trigger('click');
-				} else {
-					if(cat_parent_id >= 0){
-						$("#subcategories").val(cat_id);
-						$("#subcategories").trigger('change');
-					}
-				}
+                if(cat_parent_id >= 0){
+                    $("#subcategories").val(cat_id);
+                    $("#subcategories").trigger('change');
+                } else {
+                    $.when(//récupération des modèles
+                        $.post(
+                            url+'events/subform?part=predefined_events&id='+root_value,
+                            function(data){
+                                $("#predefined_events").html(data);
+                                $.material.checkbox();
+                            }
+                        ),
+                        $.post(
+                            url+'events/subform?part=custom_fields&id='+root_value,
+                            function(data){
+                                $("#custom_fields").html(data);
+                                $("#custom_fields input, #custom_fields select").on("invalid", function(event){
+                                    $("#description-title a").trigger('click');
+                                    $(this).parents('.form-group').addClass('has-error');
+                                });
+                                $('#event').trigger('change');
+                            }
+                        )
+                    ).then(function(){
+                        if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
+                            $("#description-title a").trigger('click');
+                        }
+                    });
+                }
 				cat_parent_id = -1;
 				cat_id = -1;
 			});
@@ -749,27 +751,33 @@ var form = function(url, tabid){
 		if (subcat_value > 0) {
 			rebootTabs();
 			$("input[name='category']").val(subcat_value);
-			$.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
-				function(data) {
-					$("#custom_fields").html(data);
-					$("#event input, #event select").on("invalid", function(event){
-						$("#description-title a").trigger('click');
-					});
-					//force recalcule des conditions en fonction des champs chargés
-					$("#event").trigger('change');
-					$.material.checkbox();
-				}
-			);
-			$.post(
-				url + 'events/subform?part=predefined_events&id=' + $(this).val(),
-				function(data){
-					$("#predefined_events").html(data);
-					//don't open model panel if there is no model
-					if($('#predefined_events div').length == 0) {
-						$("#description-title a").trigger('click');
-					}
-				}
-			);
+            $.when(
+                $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
+                    function(data) {
+                        $("#custom_fields").html(data);
+                        $("#event input, #event select").on("invalid", function(event){
+                            $("#description-title a").trigger('click');
+                        });
+                        //force recalcule des conditions en fonction des champs chargés
+                        $("#event").trigger('change');
+                        $.material.checkbox();
+                    }
+                ),
+                $.post(
+                    url + 'events/subform?part=predefined_events&id=' + $(this).val(),
+                    function(data){
+                        $("#predefined_events").html(data);
+                        //don't open model panel if there is no model
+                        if($('#predefined_events div').length == 0) {
+                            $("#description-title a").trigger('click');
+                        }
+                    }
+                )
+            ).then(function(){
+                if($("#predefined_events table").length === 0){
+                    $("#description-title a").trigger('click');
+                }
+            });
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');
