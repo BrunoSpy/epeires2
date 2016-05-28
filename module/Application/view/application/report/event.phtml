@@ -33,7 +33,7 @@ $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
 <?php 
 foreach ($this->event->getCustomFieldsValues() as $value){
     if($this->customfieldvalue($value) != ''){
-        if($value->getCustomField()->isTraceable()) {
+        if($value->getCustomField()->isTraceable() && $this->logs != null) {
             foreach(array_reverse($this->logs->getLogEntries($value)) as $log) {
                 echo '<tr>';
                 echo '<td></td>';
