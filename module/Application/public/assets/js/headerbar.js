@@ -15,7 +15,7 @@ var headerbar = function (url) {
 
     $("select[name=zone]").on("change", function (event) {
         event.preventDefault();
-        $.post(url + '/savezone', $("#zoneform").serialize(), function () {
+        $.post(url + 'events/savezone', $("#zoneform").serialize(), function () {
             //refresh timeline instead of entire window
             location.reload();
         });
@@ -24,21 +24,21 @@ var headerbar = function (url) {
     $("select[name=nameopsup]").on("change", function (event) {
         event.preventDefault();
         var form = $(this).closest('form');
-        $.post(url + '/saveopsup', form.serialize(), function (data) {
+        $.post(url + 'opsups/saveopsup', form.serialize(), function (data) {
             displayMessages(data);
         }, 'json');
     });
 
     $("select[name=nameipo]").on("change", function (event) {
         event.preventDefault();
-        $.post(url + '/saveipo', $("#ipo").serialize(), function (data) {
+        $.post(url + 'events/saveipo', $("#ipo").serialize(), function (data) {
             displayMessages(data);
         }, 'json');
     });
 
     //update IPO every minute
     setInterval(function () {
-        $.getJSON(url + '/getIPO', function (data) {
+        $.getJSON(url + 'events/getIPO', function (data) {
             $.each(data, function (key, value) {
                 if ($('#navbar-first-collapse #iponame').length > 0) { //ipo = span
                     $('#navbar-first-collapse #iponame').text(value);
@@ -51,7 +51,7 @@ var headerbar = function (url) {
     }, 60000);
 
     var updateTabs = function() {
-    	$.getJSON(url + '/getNumberEventsTab', function(data){
+    	$.getJSON(url + 'events/getNumberEventsTab', function(data){
     		$.each(data, function(key, value){
     			var count = parseInt(value);
     			var span = $('<span class="exp badge badge-important">'+count+'</span>');
@@ -102,7 +102,7 @@ var headerbar = function (url) {
     //noty for shift hours
     var shiftHoursNoty = new Array();
     var updateShiftHours = function () {
-        $.getJSON(url + '/getshifthours', function(data) {
+        $.getJSON(url + 'events/getshifthours', function(data) {
             var shifthours = [];
             $.each(data, function(key, value){
                 shifthours.push(value);
@@ -156,4 +156,85 @@ var headerbar = function (url) {
         });
     };
     updateShiftHours();
+
+    /***** Op Sups *****/
+    $('#navbar-first').on(
+        {
+            'mouseenter': function () {
+                $(this).css('cursor', 'pointer');
+                var width = $(this).outerWidth();
+                $(this).find('.caret').css({'left' : (width / 2) + "px", "display" : "block"});
+            },
+            mouseleave: function () {
+                $(this).css('cursor', 'auto');
+                $(this).find('.caret').hide();
+            }
+        }, '.opsup-form label'
+    );
+
+    $('#navbar-first .opsup-form label').on('click', function(e){
+        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups', function(){
+            $("#opsupwindow").modal('show');
+        });
+    });
+
+    $('.filterable .btn-calendar').on('click', function() {
+        $('.filterable input[name=opsup-date]').trigger('focus');
+    });
+
+    $('.filterable input[name=opsup-date]').bootstrapMaterialDatePicker({
+                    format: "DD-MM-YYYY",
+                    time: false,
+                    lang: 'fr',
+                    cancelText: "Annuler",
+                    weekStart : 1,
+                    switchOnClick: true
+    });
+
+    $('.filterable input[name=opsup-date]').on('change', function(e){
+        var date = $(this).val();
+        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups?day='+date);
+    });
+
+    $('.filterable .btn-filter').click(function(){
+        var $panel = $(this).parents('.filterable'),
+            $filters = $panel.find('.filters input'),
+            $tbody = $panel.find('.table tbody');
+        if ($filters.prop('disabled') == true) {
+            $filters.prop('disabled', false);
+            $filters.first().focus();
+        } else {
+            $filters.val('').prop('disabled', true);
+            $tbody.find('.no-result').remove();
+            $tbody.find('tr').show();
+        }
+    });
+
+    $('.filterable .filters input').keyup(function(e){
+        /* Ignore tab key */
+        var code = e.keyCode || e.which;
+        if (code == '9') return;
+        /* Useful DOM data and selectors */
+        var $input = $(this),
+            inputContent = $input.val().toLowerCase(),
+            $panel = $input.parents('.filterable'),
+            column = $panel.find('.filters th').index($input.parents('th')),
+            $table = $panel.find('.table'),
+            $rows = $table.find('tbody tr');
+        /* Dirtiest filter function ever ;) */
+        var $filteredRows = $rows.filter(function(){
+            var value = $(this).find('td').eq(column).text().toLowerCase();
+            return value.indexOf(inputContent) === -1;
+        });
+        /* Clean previous no-result if exist */
+        $table.find('tbody .no-result').remove();
+        /* Show all rows, hide filtered ones (never do that outside of a demo ! xD) */
+        $rows.show();
+        $filteredRows.hide();
+        /* Prepend no-result row if all rows are filtered */
+        if ($filteredRows.length === $rows.length) {
+            $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filters th').length +'">No result found</td></tr>'));
+        }
+    });
+
 };

@@ -1,0 +1,36 @@
+<?php
+if(count($this->opsups) > 0) {
+    $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'dd LLL YYYY, HH:mm');
+    foreach ($this->opsups as $entry) {
+        $opsup = $entry['opsup'];
+        $date = $entry['date'];
+        echo '<tr>';
+        echo '<td>' . $opsup->getName() . '</td>';
+        echo '<td>' . $opsup->getZone()->getName() . '</td>';
+        echo '<td>' . $opsup->getType()->getName() . '</td>';
+        echo '<td>' . $formatter->format($date) . '</td>';
+        echo '</tr>';
+    }
+} else {
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'dd LLL YYYY');
+    echo '<tr>';
+    echo '<td colspan="4">Aucun changement de superviseur opérationnel le '.$formatter->format($this->day).'</td>';
+    echo '</tr>';
+}
+?>
+
+
+
+
+
+       

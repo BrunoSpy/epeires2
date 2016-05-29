@@ -109,11 +109,11 @@ class OpSupHelper extends AbstractHelper
                     $html .= $formView->openTag($form);
                     $html .= '<div class="form-group">';
                     $html .= '<label for="nameopsup">';
-                    $html .= '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
+                    $html .= ' <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
                         . $type->getName() . (count($zones) > 1 ? ' ('.$result->getZone()->getShortname().')' : '')
                         .' : </b>';
 
-                    $html .= '</label>';
+                    $html .= '<b class="caret"></b></label>';
                     $html .= $this->view->formSelect($form->get('nameopsup')->setAttribute('class', 'form-control'));
                     $html .= '</div>';
                     $html .= $formView->closeTag();

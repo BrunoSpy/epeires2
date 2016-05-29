@@ -50,7 +50,7 @@
         ?>
 
     </head>
-    <body>
+    <body class="fuelux">
 
 	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform); ?>
 
@@ -68,15 +68,47 @@
 		if(!$this->zfcuserIdentity()){
 				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
 		} ?>
-        
+
+    <?php
+    echo $this->modalWindow(
+        "opsupwindow",
+        null,
+        "",
+        '<div class="panel panel-info filterable">
+          <div class="panel-heading">
+            <h3 class="panel-title">Historique des superviseurs opérationnels</h3>
+              <div class="pull-right">
+                <button class="btn btn-default btn-xs btn-calendar"><span class="glyphicon glyphicon-calendar"></span> Date</button>
+                <input type="text" name="opsup-date">
+                <button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filtre</button>
+              </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr class="filters">
+                <th><input type="text" class="form-control" placeholder="Nom" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Zone" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Type" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Jusqu\'à" disabled></th>
+              </tr>
+            </thead>
+            <tbody id="opsup-content">
+            </tbody>
+           </table>
+        </div>',
+        null,
+        null,
+        "modal-lg");
+    ?>
+
         <?php $this->inlineScript()->captureStart();?>
                 
-                setURL('<?php echo $this->url('application');?>');
+        setURL('<?php echo $this->url('application');?>');
 		
 		//init header bar
-		headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
+		headerbar('<?php echo $this->url('application');?>');
                 
-                //gestion des alertes
+        //gestion des alertes
 		setURLAlarm('<?php echo $this->url('application');?>');
 		updateAlarms();
                         

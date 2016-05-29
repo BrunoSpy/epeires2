@@ -94,7 +94,8 @@ return array(
             'Application\Controller\File' => 'Application\Controller\FileController',
             'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
             'Application\Controller\Mil' => 'Application\Controller\MilController',
-            'Application\Controller\Tabs' => 'Application\Controller\TabsController'
+            'Application\Controller\Tabs' => 'Application\Controller\TabsController',
+            'Application\Controller\OpSups' => 'Application\Controller\OpSupsController'
         )
     ),
     'view_helpers' => array(

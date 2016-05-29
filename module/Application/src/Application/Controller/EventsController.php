@@ -123,46 +123,6 @@ class EventsController extends TabController
         return new JsonModel($json);
     }
 
-    public function saveopsupAction()
-    {
-        $messages = array();
-        if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
-            $opsupid = $post['nameopsup'];
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
-            if ($opsup) {
-                // un seul op sup par organisation, par zone et par type
-                $opsups = $em->getRepository('Application\Entity\OperationalSupervisor')->findBy(array(
-                    'organisation' => $opsup->getOrganisation()
-                        ->getId(),
-                    'zone' => $opsup->getZone()
-                        ->getId(),
-                    'type' => $opsup->getType()->getId()
-                ));
-                foreach ($opsups as $i) {
-                    $i->setCurrent(false);
-                    $em->persist($i);
-                }
-                $opsup->setCurrent(true);
-                $em->persist($opsup);
-                try {
-                    $em->flush();
-                    $messages['success'][] = $opsup->getType()->getName()
-                        . " ("
-                        . $opsup->getZone()->getShortname()
-                        . ")"
-                        ." en fonction modifié";
-                } catch (\Exception $e) {
-                    $messages['error'][] = $e->getMessage();
-                }
-            } else {
-                $messages['error'][] = "Impossible de modifier le chef OP";
-            }
-        }
-        return new JsonModel($messages);
-    }
-
     public function savezoneAction()
     {
         if ($this->getRequest()->isPost()) {
