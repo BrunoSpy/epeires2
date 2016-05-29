@@ -113,4 +113,29 @@ class OpSupsController extends AbstractActionController
         return $viewmodel;
 
     }
+    
+    public function getopsupsAction()
+    {
+        $type = $this->params()->fromQuery('typeid', '');
+        $zone = $this->params()->fromQuery('zoneid', '');
+        
+        $json = array();
+        $objectmanager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($this->zfcUserAuthentication()->hasIdentity()) {
+            
+            $current = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
+                'organisation' => $this->zfcUserAuthentication()
+                    ->getIdentity()
+                    ->getOrganisation()
+                    ->getId(),
+                'zone' => $zone,
+                'type' => $type,
+                'current' => true
+            ));
+            
+            $json[$current->getId()] = $current->getName();
+        }
+        
+        return new JsonModel($json);
+    }
 }
