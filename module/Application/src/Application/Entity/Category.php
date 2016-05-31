@@ -163,6 +163,14 @@ class Category
      */
     protected $tabs;
 
+    /**
+     * Exclude category from IPO report
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Exclure IPO"})
+     */
+    protected $exclude = false;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -286,6 +294,14 @@ class Category
     public function setCompactMode($compactmode)
     {
         $this->compactmode = $compactmode;
+    }
+
+    public function isExclude() {
+        return $this->exclude;
+    }
+
+    public function setExclude($exclude) {
+        $this->exclude = $exclude;
     }
 
     public function getFieldname()

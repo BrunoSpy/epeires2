@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "0.9.6",
+        version: "0.9.7",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -247,7 +247,7 @@
                     var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
                         text += "<tr>";
-                        text += "<td>" + nom + "</td><td>: " + contenu + "</td>";
+                        text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
                         text += "</tr>";
                     });
                     text += "</tbody></table>";
@@ -333,7 +333,7 @@
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
                 elmt.addClass('on_drag');
-
+                elmt.find('.elmt_flecheD').hide();
                 elmt.find('.elmt_fin').show();
                 var rect_elmt = elmt.find('.rect_elmt');
                 elmt.find('.complement').hide();
@@ -349,7 +349,9 @@
                 var enddate = new Date(event.end_date);
                 var d_fin = new Date();
                 elmt.data('end', d_fin.getTime());
-                if (event.end_date !== null && self._isValidDate(enddate)) {
+                if (event.end_date !== null
+                    && self._isValidDate(enddate)
+                    && enddate <= self.timelineEnd) {
                     d_fin = enddate;
                 } else {
                     d_fin = self.timelineEnd;
@@ -490,7 +492,10 @@
                         }
                     }
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
+                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                }
+                if(event.deleteable) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
                 txt += '</p>';
                 me.popover({
@@ -577,6 +582,23 @@
                 });
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
+
+            this.element.on('click', '.delete-evt', function(e){
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                self.pauseUpdateView();
+                $.post(self.options.controllerUrl + '/deleteevent?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']) {
+                            self.addEvents(data.event);
+                        }
+                    }).always(function(){
+                    self.forceUpdateView(false);
+                });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -608,7 +630,6 @@
             } else {
                 //ajout de l'évènement en fin de tableau
                 var pos = this.events.length;
-                event.display = true;
                 event.shade = false;
                 this.events.push(event);
                 this.eventsPosition[event.id] = pos;
@@ -794,11 +815,12 @@
                 this.catPositions[this.categories[i].id] = i;
             }
         },
+        //default callback : display all events except status_id == 5
         filter: function (callback) {
             var cb = callback;
             if (cb === undefined && this.lastFilter === undefined) {
                 cb = function (event) {
-                    return true;
+                    return event.status_id != 5;
                 };
             } else if (cb === undefined && this.lastFilter !== undefined) {
                 cb = this.lastFilter;
@@ -1497,8 +1519,6 @@
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
             elmt.fadeOut(function () {
-                //destroy popups
-                $(this).tooltip('destroy');
                 //remove from DOM
                 $(this).remove();
             });
@@ -1588,11 +1608,17 @@
             //////   
 
             // libellé de l'évènement à mettre à jour
-            if (event.scheduled > 0) {
-                elmt_txt.find('span.elmt_name').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
+            var name = event.name;
+            if(event.recurr == true) {
+                name += ' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>';
             } else {
-                elmt_txt.find('span.elmt_name').text(event.name);
+                elmt.find('.modify-evt').data('recurr', '');
             }
+            if (event.scheduled > 0) {
+                name += ' <a href="#"><span class="badge scheduled">P</span></a>';
+            }
+            elmt_txt.find('span.elmt_name').html(name);
+            elmt_txt.find('span.badge.recurrence').tooltip();
 
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début
@@ -1667,7 +1693,7 @@
                     elmt_flecheG.css({'left': x_deb - 12 + 'px'});
                 } else {
                     x_deb = this._computeX(startdate);
-                    if(event.modifiable){
+                    if(event.modifiable && event.recurr == false){
                         move_deb.addClass('disp');
                         move_deb.css({'left': 8 + x_deb + 'px'});
                     }
@@ -1677,6 +1703,10 @@
                     x_end = this._computeX(this.timelineEnd);
                     elmt_flecheD.show();
                     elmt_flecheD.css({'left': x_end + 'px'});
+                    if(event.modifiable){
+                        move_fin.addClass('disp');
+                        move_fin.css({'left': x_end - 14 + 'px'});
+                    }
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
@@ -1785,7 +1815,7 @@
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                        x1 -= txt_wid - 5;
+                        x1 -= txt_wid + 8;
                         var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
                         lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
                         elmt_txt.css({'left': x1 + 'px'});
@@ -2020,6 +2050,10 @@
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
+                case 5:
+                    //non displayed
+                    break;
+
             }
         },
         /**
@@ -2048,7 +2082,7 @@
             var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
             elmt.append(elmt_txt);
             // ajout du bouton "ouverture fiche"
-            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
+            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '"></a>');
             elmt_txt.append(elmt_b1);
             elmt_b1.append('    <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"

@@ -18,6 +18,7 @@
 namespace Administration\Controller;
 
 use Application\Entity\OpSupType;
+use Application\Entity\ShiftHour;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -44,6 +45,8 @@ class OpSupsController extends FormController
 
         $types = $objectManager->getRepository('Application\Entity\OpSupType')->findAll();
 
+        $shifthours = $objectManager->getRepository('Application\Entity\ShiftHour')->findAll();
+
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -61,7 +64,8 @@ class OpSupsController extends FormController
         $viewmodel->setVariables(array(
             'messages' => $return,
             'opsups' => $opsups,
-            'types' => $types
+            'types' => $types,
+            'shifthours' => $shifthours
         ));
         
         return $viewmodel;
@@ -268,6 +272,99 @@ class OpSupsController extends FormController
         $opsuptype = $objectManager->getRepository('Application\Entity\OpSupType')->find($id);
         if ($opsuptype) {
             $objectManager->remove($opsuptype);
+            try {
+                $objectManager->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return new JsonModel();
+    }
+
+    public function formshifthourAction () {
+        $request = $this->getRequest();
+        $viewmodel = new ViewModel();
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+
+        $shifthourid = $this->params()->fromQuery('shifthourid', null);
+
+        $getform = $this->getFormShifthour($shifthourid);
+
+        $viewmodel->setVariables(array(
+            'form' => $getform['form'],
+            'shifthourid' => $shifthourid
+        ));
+        return $viewmodel;
+    }
+
+    private function getFormShifthour($id = null) {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $shifthour = new ShiftHour();
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($shifthour);
+        $form->setHydrator(new DoctrineObject($objectManager))->setObject($shifthour);
+
+        $form->get('opsuptype')->setValueOptions($objectManager->getRepository('Application\Entity\OpSupType')->getAllAsArray());
+        $form->get('qualificationzone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')->getAllAsArray());
+
+        if ($id) {
+            $shifthour = $objectManager->getRepository('Application\Entity\ShiftHour')->find($id);
+            if ($shifthour) {
+                $form->bind($shifthour);
+                $form->setData($shifthour->getArrayCopy());
+            }
+        }
+
+        $form->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Enregistrer',
+                'class' => 'btn btn-primary btn-small'
+            )
+        ));
+
+        return array(
+            'form' => $form,
+            'shifthour' => $shifthour
+        );
+    }
+
+    public function saveshifthourAction()
+    {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $id = $post['id'];
+            $datas = $this->getFormShifthour($id);
+            $form = $datas['form'];
+            $form->setPreferFormInputFilter(true);
+            $form->setData($post);
+            $shifthour = $datas['shifthour'];
+
+            if ($form->isValid()) {
+                $objectManager->persist($shifthour);
+                try {
+                    $objectManager->flush();
+                    $this->flashMessenger()->addSuccessMessage('Heure de relève enregistrée.');
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
+            } else {
+                $this->processFormMessages($form->getMessages());
+            }
+        }
+        return new JsonModel();
+    }
+
+    public function deleteshifthourAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $shifthour = $objectManager->getRepository('Application\Entity\ShiftHour')->find($id);
+        if ($shifthour) {
+            $objectManager->remove($shifthour);
             try {
                 $objectManager->flush();
             } catch (\Exception $e) {

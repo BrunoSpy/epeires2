@@ -413,7 +413,8 @@ class FrequenciesController extends TabController
                                         1, // couv secours
                                         0, // toujours dispo
                                         "Antenne principale indisponible",
-                                        $now, 
+                                        $now,
+                                        null,
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
                                         $messages
@@ -428,6 +429,7 @@ class FrequenciesController extends TabController
                                         0, // toujours dispo
                                         "Antenne principale indisponible",
                                         $now, 
+                                        null,
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
                                         $messages
@@ -440,6 +442,7 @@ class FrequenciesController extends TabController
                                         0, // toujours dispo
                                         "Antenne principale indisponible",
                                         $now, 
+                                        null,
                                         $this->zfcUserAuthentication()->getIdentity(), 
                                         $event, 
                                         $messages
@@ -630,6 +633,7 @@ class FrequenciesController extends TabController
                                 false, // sur un changement de couverture, la fréquence reste disponible
                                 $cause,
                                 $now, 
+                                null,
                                 $this->zfcUserAuthentication()->getIdentity(), 
                                 null, 
                                 $messages

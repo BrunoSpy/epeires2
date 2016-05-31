@@ -295,7 +295,8 @@ class ReportController extends AbstractActionController
                     $events = $em->getRepository('Application\Entity\Event')->getAllEvents(
                         $this->zfcUserAuthentication(), 
                         $report->getStartDate(), 
-                        $report->getEndDate()
+                        $report->getEndDate(),
+                        true
                     );
                     
                     // ids des évènements inclus au rapport

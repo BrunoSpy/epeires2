@@ -122,6 +122,12 @@ body{
 	line-height: 20px;
 }
 
+
+#navbar-first .opsup-form label .caret, #navbar-first .opsup-name .caret {
+  display: none;
+  position: relative;
+}
+
 #navbar-clock {
 	margin-top: 10px;
 	margin-bottom: 10px;

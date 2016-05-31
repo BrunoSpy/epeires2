@@ -55,7 +55,7 @@ abstract class AbstractEvent
     protected $punctual;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="children", cascade={"persist"})
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Evènement parent", "empty_option":"Choisir l'evt parent"})
@@ -133,6 +133,16 @@ abstract class AbstractEvent
         return $this->files;
     }
 
+    public function addFile(File $file) {
+        $this->files->add($file);
+        $file->addEvent($this);
+    }
+
+    public function removeFile(File $file){
+        $this->files->removeElement($file);
+        $file->removeEvent($this);
+    }
+
     public function getOrganisation()
     {
         return $this->organisation;
@@ -187,6 +197,14 @@ abstract class AbstractEvent
         return $this->place;
     }
 
+    /**
+     * @param int $place
+     */
+    public function setPlace($place)
+    {
+        $this->place = $place;
+    }
+    
     public function getCustomFieldsValues()
     {
         return $this->custom_fields_values;

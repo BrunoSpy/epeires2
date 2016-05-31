@@ -108,10 +108,18 @@ class Event extends AbstractEvent
      */
     protected $readonly = false;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Recurrence", inversedBy="events")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     */
+    protected $recurrence;
+
     public function __construct()
     {
         parent::__construct();
         $this->updates = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedOn();
+        $this->setLastModifiedOn();
     }
 
     public function getAuthor()
@@ -276,6 +284,20 @@ class Event extends AbstractEvent
         }
     }
 
+    /**
+     * @return Recurrence
+     */
+    public function getRecurrence()
+    {
+        return $this->recurrence;
+    }
+
+    public function setRecurrence($recurrence)
+    {
+        $this->recurrence = $recurrence;
+    }
+
+
     public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
     {
         $this->setCategory($predefined->getCategory());
@@ -283,6 +305,14 @@ class Event extends AbstractEvent
         $this->setPunctual($predefined->isPunctual());
     }
 
+    public function createFromEvent(Event $e){
+        $this->setCategory($e->getCategory());
+        $this->setAuthor($e->getAuthor());
+        $this->setOrganisation($e->getOrganisation());
+        $this->setImpact($e->getImpact());
+        $this->setPunctual($e->isPunctual());
+    }
+    
     /**
      * Cloture l'évènement ains que l'ensemble de ses fils.
      * 
@@ -357,7 +387,7 @@ class Event extends AbstractEvent
      */
     public function updateAlarmDate()
     {
-        if (! ($this->getCategory() instanceof AlarmCategory)) {
+        if (!($this->getCategory() instanceof AlarmCategory)) {
             return;
         }
         $deltaend = "";
@@ -365,13 +395,15 @@ class Event extends AbstractEvent
         $previousstart = $this->getStartdate();
         foreach ($this->getCustomFieldsValues() as $value) {
             if ($value->getCustomField()->getId() == $this->getCategory()
-                ->getDeltaBeginField()
-                ->getId()) {
+                    ->getDeltaBeginField()
+                    ->getId()
+            ) {
                 $deltabegin = preg_replace('/\s+/', '', $value->getValue());
             }
             if ($value->getCustomField()->getId() == $this->getCategory()
-                ->getDeltaEndField()
-                ->getId()) {
+                    ->getDeltaEndField()
+                    ->getId()
+            ) {
                 $deltaend = preg_replace('/\s+/', '', $value->getValue());
             }
         }
@@ -392,7 +424,7 @@ class Event extends AbstractEvent
                 if ($deltaend > 0) {
                     $startdatealarm->add(new \DateInterval("PT" . $deltaend . "M"));
                 } else {
-                    $invdiff = - $deltaend;
+                    $invdiff = -$deltaend;
                     $interval = new \DateInterval('PT' . $invdiff . 'M');
                     $interval->invert = 1;
                     $startdatealarm->add($interval);
@@ -406,7 +438,7 @@ class Event extends AbstractEvent
                     if ($deltabegin > 0) {
                         $startdatealarm->add(new \DateInterval("PT" . $deltabegin . "M"));
                     } else {
-                        $invdiff = - $deltabegin;
+                        $invdiff = -$deltabegin;
                         $interval = new \DateInterval('PT' . $invdiff . 'M');
                         $interval->invert = 1;
                         $startdatealarm->add($interval);
@@ -419,11 +451,30 @@ class Event extends AbstractEvent
         }
     }
 
+    /**
+     * Compute if an event is strictly before a date
+     * If an event has no end date, it is considered unfinished and therefore we return false
+     * @param \DateTime $date
+     * @return bool
+     */
+    public function isPast(\DateTime $date) {
+        if($this->isPunctual()) {
+            return $this->getStartdate() < $date;
+        } else {
+            if($this->getEnddate() !== null) {
+                return $this->getEnddate() < $date;
+            } else {
+                return false;
+            }
+        }
+    }
+
     public function getArrayCopy()
     {
         $object_vars = array_merge(get_object_vars($this), parent::getArrayCopy());
         $object_vars['status'] = ($this->status ? $this->status->getId() : null);
         $object_vars['author'] = ($this->author ? $this->author->getId() : null);
+        $object_vars['recurrence'] = ($this->recurrence ? $this->recurrence->getId() : null);
         return $object_vars;
     }
 }

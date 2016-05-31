@@ -447,7 +447,7 @@ $(document).ready(function(){
     /**
      * Ouverture des protections via le label
      */
-    $("#timeline").on('click', ".label_elmt span.badge", function(e){
+    $("#timeline").on('click', ".label_elmt span.badge.scheduled", function(e){
         e.preventDefault();
         var me = $(this);
         var id = parseInt(me.closest(".elmt").data('ident'));

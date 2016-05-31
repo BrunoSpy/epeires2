@@ -168,7 +168,8 @@
                     time: false,
                     lang: 'fr',
                     cancelText: "Annuler",
-                    weekStart : 1
+                    weekStart : 1,
+                    switchOnClick: true
                 });
 
                 div.on('click', 'span.glyphicon-calendar', function(e){

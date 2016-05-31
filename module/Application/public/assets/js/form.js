@@ -549,27 +549,52 @@ var form = function(url, tabid){
 	});
 
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #suggestions-container a.modify-evt", function(e){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
-		$("#form-title").html(me.data('name'));
-
-		$("#create-evt").modal('show');
-
-		$("#event").load(url+'events/form?id='+me.data('id')+'&tabid='+tabid, function(){
-			initTabs(1);
-			$("#event input[name=startdate]").timepickerform({'id':'start'});
-			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
-			//mise à jour en fonction du statut ponctuel
-			$('#event #punctual').trigger('change');
-			updateHours();
-			//updateHourTitle();
-			pauseUpdateAlarms();
-			$('tr[data-toggle=tooltip]').tooltip();
-
-		});
+        if(me.data('recurr') == true) {
+            $("#confirm-recurr").modal('show');
+            $("#confirm-recurr").data('id', me.data('id'));
+            $("#confirm-recurr").data('name', me.data('name'));
+        } else {
+            loadForm(me.data('id'), me.data('name'), false);
+        }
 	});
 
+    $("#confirm-recurr #confirm-modify-series").on('click', function(){
+        $("#confirm-recurr").modal('hide');
+        var id = $("#confirm-recurr").data('id');
+        var name = $("#confirm-recurr").data('name');
+        loadForm(id, name, false);
+    });
+    
+    $("#confirm-recurr #confirm-modify-one").on('click', function(){
+        $("#confirm-recurr").modal('hide');
+        var id = $("#confirm-recurr").data('id');
+        var name = $("#confirm-recurr").data('name');
+        loadForm(id, name, true);
+    });
+    
+    var loadForm = function(id, name, exclude) {
+        $("#form-title").html(name);
+
+        $("#create-evt").modal('show');
+
+        $("#event").load(url+'events/form?id='+id+'&tabid='+tabid, function(){
+            initTabs(1);
+            $("#event input[name=exclude]").val(exclude);
+            $("#event input[name=startdate]").timepickerform({'id':'start'});
+            $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+            //mise à jour en fonction du statut ponctuel
+            $('#event #punctual').trigger('change');
+            updateHours();
+            //updateHourTitle();
+            pauseUpdateAlarms();
+            $('tr[data-toggle=tooltip]').tooltip();
+
+        });
+    };
+    
 	//click sur une fiche reflexe
 	$("#event").on("click", "a.fiche", function(){
 		var id = $(this).data('id');
@@ -689,45 +714,47 @@ var form = function(url, tabid){
 
 		if(root_value > 0) {
 			$.when(
-				$.post(url+'events/subform?part=subcategories&id='+$(this).val() + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
+				$.post(url+'events/subform?part=subcategories&id='+root_value + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
 					function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);
-
-						$.post(
-							url+'events/subform?part=custom_fields&id='+root_value,
-							function(data){
-								$("#custom_fields").html(data);
-								$("#custom_fields input, #custom_fields select").on("invalid", function(event){
-									$("#description-title a").trigger('click');
-									$(this).parents('.form-group').addClass('has-error');
-								});
-								$('#event').trigger('change');
-							}
-						);
 						$("#cat-title").addClass('valid');
 						$("#hours-title a").removeClass("disabled");
 						$("#description-title a").removeClass("disabled");
 						$("#files-title a").removeClass("disabled");
 						$("#memos-title a").removeClass("disabled");
 						$('#actions-title a').removeClass("disabled");
-					}),
-				//récupération des modèles
-				$.post(
-					url+'events/subform?part=predefined_events&id='+$(this).val(),
-					function(data){
-						$("#predefined_events").html(data);
-						$.material.checkbox();
 					})
 			).then(function(){
-				if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
-					$("#description-title a").trigger('click');
-				} else {
-					if(cat_parent_id >= 0){
-						$("#subcategories").val(cat_id);
-						$("#subcategories").trigger('change');
-					}
-				}
+                if(cat_parent_id >= 0){
+                    $("#subcategories").val(cat_id);
+                    $("#subcategories").trigger('change');
+                } else {
+                    $.when(//récupération des modèles
+                        $.post(
+                            url+'events/subform?part=predefined_events&id='+root_value,
+                            function(data){
+                                $("#predefined_events").html(data);
+                                $.material.checkbox();
+                            }
+                        ),
+                        $.post(
+                            url+'events/subform?part=custom_fields&id='+root_value,
+                            function(data){
+                                $("#custom_fields").html(data);
+                                $("#custom_fields input, #custom_fields select").on("invalid", function(event){
+                                    $("#description-title a").trigger('click');
+                                    $(this).parents('.form-group').addClass('has-error');
+                                });
+                                $('#event').trigger('change');
+                            }
+                        )
+                    ).then(function(){
+                        if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
+                            $("#description-title a").trigger('click');
+                        }
+                    });
+                }
 				cat_parent_id = -1;
 				cat_id = -1;
 			});
@@ -752,27 +779,33 @@ var form = function(url, tabid){
 		if (subcat_value > 0) {
 			rebootTabs();
 			$("input[name='category']").val(subcat_value);
-			$.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
-				function(data) {
-					$("#custom_fields").html(data);
-					$("#event input, #event select").on("invalid", function(event){
-						$("#description-title a").trigger('click');
-					});
-					//force recalcule des conditions en fonction des champs chargés
-					$("#event").trigger('change');
-					$.material.checkbox();
-				}
-			);
-			$.post(
-				url + 'events/subform?part=predefined_events&id=' + $(this).val(),
-				function(data){
-					$("#predefined_events").html(data);
-					//don't open model panel if there is no model
-					if($('#predefined_events div').length == 0) {
-						$("#description-title a").trigger('click');
-					}
-				}
-			);
+            $.when(
+                $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
+                    function(data) {
+                        $("#custom_fields").html(data);
+                        $("#event input, #event select").on("invalid", function(event){
+                            $("#description-title a").trigger('click');
+                        });
+                        //force recalcule des conditions en fonction des champs chargés
+                        $("#event").trigger('change');
+                        $.material.checkbox();
+                    }
+                ),
+                $.post(
+                    url + 'events/subform?part=predefined_events&id=' + $(this).val(),
+                    function(data){
+                        $("#predefined_events").html(data);
+                        //don't open model panel if there is no model
+                        if($('#predefined_events div').length == 0) {
+                            $("#description-title a").trigger('click');
+                        }
+                    }
+                )
+            ).then(function(){
+                if($("#predefined_events table").length === 0){
+                    $("#description-title a").trigger('click');
+                }
+            });
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');
@@ -940,4 +973,68 @@ var form = function(url, tabid){
 		});
 	});
 
+	$('#recurr').on('show.bs.modal', function() {
+        var startdate = $('input[name=startdate]').val();
+        var start = convertInputIntoDate(startdate);
+        var startsplit = startdate.split(' ');
+        var pattern = $("input[name=recurrencepattern]").val();
+        var forceEndDate = $('#myEndDate').val() == '';
+        $("#recurr-scheduler").scheduler('value', {
+            startDateTime: moment(start).utc().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+            timeZone: {
+                offset: '+00:00'
+            },
+            recurrencePattern: pattern
+        });
+        $("#myStartDate").val(startsplit[0].replace(/-/g, '/'));
+        $("#MyStartTime").val(startsplit[1]);
+        if(forceEndDate) {
+            $("#myEndDate").val(startsplit[0].replace(/-/g, '/'));
+        }
+		$(".scheduler .end-on-date input").bootstrapMaterialDatePicker({
+            format: "DD/MM/YYYY",
+            time: false,
+            lang: 'fr',
+            cancelText: "Annuler",
+            weekStart : 1
+        });
+        $(".scheduler .end-on-date input").bootstrapMaterialDatePicker('setMinDate', start);
+        $(".scheduler .end-on-date input").bootstrapMaterialDatePicker('setDate', start);
+	});
+
+	$("#recurr .btn-success").on('click', function(){
+        var recurrence = $("#recurr-scheduler").scheduler('value');
+        var pattern = recurrence.recurrencePattern;
+        if(pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") == 0){
+            $("input[name=recurrencepattern]").val('');
+            $("#recurr-button").text('Configurer...');
+            $('#recurr-humanreadable em').text('(Aucune récurrence.)');
+        } else {
+            $("input[name=recurrencepattern]").val(pattern);
+            $("#recurr-button").text('Modifier...');
+            var startD = moment($("#recurr-scheduler").scheduler('value')['startDateTime']);
+            var start = startD.utc().format('YYYYMMDD[T]HHmm');
+            $.getJSON(url+'events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
+                var text = data.text;
+                if(text !== '') {
+                    $('#recurr-humanreadable em').text('('+text+')');
+                } else {
+                    $('#recurr-humanreadable em').text('(Aucune récurrence.)');
+                }
+            });
+        }
+    });
+
+    $('#endOptionsSelectList').on('changed.fu.selectlist', function () {
+        var item = $(this).selectlist('selectedItem');
+        if(item['value'] && (item.value == "after" || item.value == "date")) {
+            $("#validateRecurrence").removeAttr('disabled');
+        } else {
+            $("#validateRecurrence").attr('disabled', 'disabled');
+        }
+    });
+
+    $('#recurr').on('hidden.bs.modal', function(e){
+        $('body').addClass('modal-open');
+    });
 };

@@ -21,6 +21,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
 use Application\Core\User;
+use Application\Entity\Recurrence;
 use Zend\Session\Container;
 use \Core\NMB2B\EAUPRSAs;
 use Application\Entity\TemporaryResource;
@@ -259,14 +260,16 @@ class EventRepository extends ExtendedRepository
      *            DateTime
      * @param unknown $end
      *            DateTime
+     * @param unknown $exclude
      */
-    public function getAllEvents($user, $start, $end)
+    public function getAllEvents($user, $start, $end, $exclude = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array(
-            'e'
+            'e, c'
         ))
             ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'c')
             ->andWhere($qb->expr()
             ->isNull('e.parent'))
             ->andWhere($qb->expr() // display only root events
@@ -290,7 +293,11 @@ class EventRepository extends ExtendedRepository
                 ->eq('e.punctual', 'true'), $qb->expr()
                 ->gte('e.startdate', '?1'), $qb->expr()
                 ->lte('e.startdate', '?2'))));
-        
+        //exclusion des catégories pour rapport IPO
+        if($exclude) {
+            $qb->andWhere($qb->expr()->eq('c.exclude', '?3'));
+            $parameters[3] = false;
+        }
         if ($user !== null && $user->hasIdentity()) {
             $org = $user->getIdentity()->getOrganisation();
             
@@ -376,7 +383,8 @@ class EventRepository extends ExtendedRepository
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 
-     * @param Application\Entity\Tab $tab            
+     * @param Application\Entity\Tab $tab
+     * @return array
      */
     public function getTabEvents(\Application\Entity\Tab $tab)
     {
@@ -407,14 +415,14 @@ class EventRepository extends ExtendedRepository
             ->from('Application\Entity\Event', 'e')
             ->innerJoin('e.category', 'cat')
             ->andWhere($qbEvents->expr()
-            ->in('e.status', '?1'))
+                ->in('e.status', '?1'))
             ->andWhere($qbEvents->expr()
-            ->andX($qbEvents->expr()
-            ->eq('e.punctual', 'false'), $qbEvents->expr()
-            ->lte('e.startdate', '?2'), $qbEvents->expr()
-            ->orX($qbEvents->expr()
-            ->isNull('e.enddate'), $qbEvents->expr()
-            ->gte('e.enddate', '?2'))))
+                ->andX($qbEvents->expr()
+                    ->eq('e.punctual', 'false'), $qbEvents->expr()
+                    ->lte('e.startdate', '?2'), $qbEvents->expr()
+                    ->orX($qbEvents->expr()
+                        ->isNull('e.enddate'), $qbEvents->expr()
+                        ->gte('e.enddate', '?2'))))
             ->setParameters(array(
             1 => array(
                 1,
@@ -606,8 +614,17 @@ class EventRepository extends ExtendedRepository
      * @param User $author            
      * @param type $messages            
      */
-    public function addChangeFrequencyCovEvent(Frequency $frequency, $cov, $freqstatus, $cause, \DateTime $startdate, \Core\Entity\User $author, Event $parent = null, &$messages = null)
-    {
+    public function addChangeFrequencyCovEvent(
+        Frequency $frequency,
+        $cov,
+        $freqstatus,
+        $cause,
+        \DateTime $startdate,
+        $enddate,
+        \Core\Entity\User $author,
+        Event $parent = null,
+        &$messages = null
+    ) {
         $em = $this->getEntityManager();
         $event = new Event();
         if ($parent) {
@@ -618,6 +635,7 @@ class EventRepository extends ExtendedRepository
         $event->setImpact($impact);
         $event->setStatus($status);
         $event->setStartdate($startdate);
+        $event->setEnddate($enddate);
         $event->setPunctual(false);
         // TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
         if ($frequency->getDefaultsector()) {
@@ -655,6 +673,7 @@ class EventRepository extends ExtendedRepository
             $causefield->setCustomField($cat->getCauseField());
             $causefield->setEvent($event);
             $causefield->setValue($cause);
+            $event->addCustomFieldValue($causefield);
             $em->persist($event);
             try {
                 $em->flush();
@@ -939,4 +958,66 @@ class EventRepository extends ExtendedRepository
             error_log($e->getMessage());
         }
     }
+
+    /**
+     * Renvoit un nouvel évènement créé à partir d'un évènement et d'une date de début
+     * Les notes ne sont pas copiées, le statut est mis à "nouveau"
+     * @param Event $event
+     * @param \DateTime $start UTC start date
+     */
+    public function createFromEvent(Event $event, $start) {
+        $newevent = new Event();
+        $newevent->setAuthor($event->getAuthor());
+        $newevent->setOrganisation($event->getOrganisation());
+        $newevent->setCategory($event->getCategory());
+        $newevent->setImpact($event->getImpact());
+        $newevent->setStatus($this->getEntityManager()->getRepository('Application\Entity\Status')->find(1));
+        if($event->getPlace() !== null) {
+            $newevent->setPlace($event->getPlace());
+        }
+        //horaires
+        $newevent->setScheduled($event->isScheduled());
+        $newevent->setPunctual($event->isPunctual());
+        if($start !== null) {//actions can have no start date
+            $newevent->setStartdate($start);
+            if (!$event->isPunctual() && $event->getEnddate() !== null) {
+                $diff = $event->getStartdate()->diff($event->getEnddate());
+                $end = clone $start;
+                $end->add($diff);
+                $newevent->setEnddate($end);
+            }
+        }
+        //enfants
+        foreach ($event->getChildren() as $child) {
+            $childdate = $start;
+            if($child->getCategory() instanceof AlarmCategory) {
+                $diff = $event->getStartdate()->diff($child->getStartdate());
+                $alarmdate = clone $newevent->getStartdate();
+                $alarmdate->add($diff);
+                $childdate = $alarmdate;
+            } else if($child->getCategory() instanceof ActionCategory) {
+                $childdate = null;
+            }
+            $childEvent = $this->createFromEvent($child, $childdate);
+            $childEvent->setParent($newevent);
+            $newevent->addChild($childEvent);
+        }
+        //champs
+        foreach ($event->getCustomFieldsValues() as $customFieldsValue){
+            error_log($this->getClassName($event->getCategory()));
+            error_log($customFieldsValue->getValue());
+            error_log($customFieldsValue->getCustomField()->getType()->getName());
+            $customFieldValue = new CustomFieldValue();
+            $customFieldValue->setEvent($newevent);
+            $customFieldValue->setCustomField($customFieldsValue->getCustomField());
+            $customFieldValue->setValue($customFieldsValue->getValue());
+            $newevent->addCustomFieldValue($customFieldValue);
+        }
+        //fichiers
+        foreach ($event->getFiles() as $file) {
+            $newevent->addFile($file);
+        }
+        return $newevent;
+    }
+    
 }

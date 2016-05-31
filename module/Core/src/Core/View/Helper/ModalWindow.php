@@ -50,11 +50,12 @@ class ModalWindow extends AbstractHelper
         $html = '<div class="modal fade" id="' . $id . '" ' . $headerstyle . '>';
         $html .= '<div class="modal-dialog '.$size.'">';
         $html .= '<div class="modal-content">';
-        $html .= '<div class="modal-header">';
-        $html .= '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span aria-hidden="true">&times;</span></button>';
-        $html .= $header;
-        $html .= '</div>';
-        
+        if($header !== null) {
+            $html .= '<div class="modal-header">';
+            $html .= '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span aria-hidden="true">&times;</span></button>';
+            $html .= $header;
+            $html .= '</div>';
+        }
         if ($content) {
             $html .= $content;
         } else {

@@ -71,6 +71,8 @@ class OpSupHelper extends AbstractHelper
 
                 $criteria['zone'] = $result->getZone()->getId();
 
+                $zoneid = $result->getZone()->getId();
+                
                 $opsups = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findBy($criteria, array(
                     'name' => 'asc'
                 ));
@@ -80,6 +82,7 @@ class OpSupHelper extends AbstractHelper
                         ->getOrganisation()
                         ->getId(),
                     'zone' => $result->getZone()->getId(),
+                    'type' => $id,
                     'current' => true
                 ));
 
@@ -104,26 +107,30 @@ class OpSupHelper extends AbstractHelper
 
                     $formView = $this->view->form();
 
-                    $form->setAttributes(array('class' => 'navbar-form navbar-left opsup-form'));
+                    $form->setAttributes(array('class' => 'navbar-form navbar-left opsup-form type-'.$id . ' zone-'.$zoneid,
+                                                'data-typeid' => $id,
+                                                'data-zoneid' => $zoneid));
 
                     $html .= $formView->openTag($form);
                     $html .= '<div class="form-group">';
                     $html .= '<label for="nameopsup">';
-                    $html .= '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
+                    $html .= ' <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
                         . $type->getName() . (count($zones) > 1 ? ' ('.$result->getZone()->getShortname().')' : '')
                         .' : </b>';
 
-                    $html .= '</label>';
+                    $html .= '<b class="caret"></b></label>';
                     $html .= $this->view->formSelect($form->get('nameopsup')->setAttribute('class', 'form-control'));
                     $html .= '</div>';
                     $html .= $formView->closeTag();
                 } else {
                     if ($currentopsup) {
-                        $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px">'
+                        $html .= '<p class="navbar-text navbar-left opsup-name type-'.$id . ' zone-'.$zoneid
+                                    .'" style="margin-left: 0px"'
+                                    .' data-typeid="'.$id.'" data-zoneid="'.$zoneid.'">'
                             . '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>'
                             . $type->getName() . (count($zones) > 1 ? ' ('.$result->getZone()->getShortname().')' : '')
                             .' : </b>'
-                            . $currentopsup->getName() . '</p>';
+                            . '<span class="opsupname">'.$currentopsup->getName() . '</span><b class="caret"></b></p>';
                     } else {
                         $html .= '<p class="navbar-text navbar-left" style="margin-left: 0px"><em>Aucun Op Sup configuré</em></p>';
                     }

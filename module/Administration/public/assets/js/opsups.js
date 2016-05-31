@@ -78,4 +78,55 @@ var opsups = function(url){
 			location.reload();
 		});
 	});
+
+	/**** Shift Hour ****/
+	$("#add-shifthour").on('click', function(){
+		$("#shifthour-title").html("Nouvelle heure de relève");
+		$("#shifthour-form").load(url+'/op-sups/formshifthour', function(){
+			$("#shifthour-form input[name=hour]").bootstrapMaterialDatePicker({
+                format: 'HH:mm',
+                date: false,
+                hour: true,
+                switchOnClick: true,
+                lang: 'fr',
+                cancelText: "Annuler"
+            });
+		});
+	});
+
+	$(".mod-shifthour").on('click', function(){
+		$("#shifthour-title").html('Modification de l\'heure de relève');
+		$("#shifthour-form").load(url+'/op-sups/formshifthour?shifthourid='+$(this).data('id'), function() {
+            $("#shifthour-form input[name=hour]").bootstrapMaterialDatePicker({
+                format: 'HH:mm',
+                date: false,
+                hour: true,
+                switchOnClick: true,
+                lang: 'fr',
+                cancelText: "Annuler"
+            });
+        });
+	});
+
+	$("#shifthour-container").on('submit', function(event){
+		event.preventDefault();
+		$.post(url+'/op-sups/saveshifthour', $("#ShiftHour").serialize(), function(data){
+			location.reload();
+		}, 'json');
+	});
+
+	$(".delete-shifthour").on('click', function(event){
+		$('a#delete-shifthour-href').attr('href', $(this).data('href'));
+		$("#delete-shifthour-href").data('id', $(this).data('id'));
+	});
+
+	$("#confirm-delete-shifthour").on('click', '#delete-shifthour-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$("#confirm-delete-shifthour").modal('hide');
+		$.post(me.attr('href'), function(){
+			location.reload();
+		});
+	});
+
 };
