@@ -15,7 +15,7 @@
 	],
     "require": {
         "php": ">=5.5.0",
-        "zendframework/zend-mvc": "^2.5",
+        "zendframework/zend-mvc": "2.5.* || 2.6.*",
         "zendframework/zend-view": "^2.5",
         "zendframework/zend-log": "^2.5",
         "zendframework/zend-i18n": "^2.5",
@@ -38,7 +38,7 @@
         "zf-commons/zfc-rbac": "~2.4",
         "mrclay/minify": "*",
         "murganikolay/doctrine-migrations-module": "dev-master",
-        "dino/dompdf-module": "dev-master",
+        "netiul/dompdf-module": "dev-master",
         "Kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^1.2"
     },
