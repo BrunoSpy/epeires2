@@ -166,6 +166,15 @@ var headerbar = function (url) {
                         callback: {
                             onClose: function(){
                                 updateShiftHours();
+                            },
+                            onShow: function() {
+                                $('ul#noty_topRight_layout_container').draggable({
+                                    stop: function (event, ui) {
+                                        $(event.originalEvent.target).one('click', function (e) {
+                                            e.stopImmediatePropagation();
+                                        })
+                                    }
+                                });
                             }
                         }
                     });
