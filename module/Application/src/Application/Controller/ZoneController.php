@@ -83,4 +83,15 @@ class ZoneController extends FormController
             return null;
         }
     }
+
+    public function savezoneAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $zone = $post['zone'];
+            $session = new Container('zone');
+            $session->zoneshortname = $zone;
+        }
+        return new JsonModel();
+    }
 }

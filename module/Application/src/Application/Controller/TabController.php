@@ -18,6 +18,8 @@
 namespace Application\Controller;
 
 use Zend\Session\Container;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * Sets all variables needed to a controller
@@ -27,9 +29,13 @@ use Zend\Session\Container;
 class TabController extends ZoneController
 {
 
+    protected $viewmodel;
+    
     public function indexAction()
     {
         parent::indexAction();
+        
+        $this->viewmodel = new ViewModel();
         
         $this->layout()->iponumber = "";
         if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -52,11 +58,40 @@ class TabController extends ZoneController
                     ->getShortname();
             }
         }
-        
+
+        //session de la vue courante : day and 24/6
+        $viewSession = $session->view;
+        if($viewSession !== null) {
+            $this->viewmodel->setVariable('view', $viewSession);
+        }
+        $daySession = $session->day;
+        if($daySession !== null) {
+            $this->viewmodel->setVariable('day', $daySession);
+        }
 
         $config = $this->getServiceLocator()->get('config');
         
         $this->layout()->lang = $config['lang'];
+    }
+
+    public function savedayAction()
+    {
+        $day = $this->params()->fromQuery('day', 0);
+        if($day !== 0) {
+            $session = new Container('zone');
+            $session->day = $day;
+        }
+        return new JsonModel(array('value' => $day));
+    }
+
+    public function saveviewAction()
+    {
+        $view = $this->params()->fromQuery('view', 0);
+        if($view !== 0) {
+            $session = new Container('zone');
+            $session->view = $view;
+        }
+        return new JsonModel(array('value' => $view));
     }
 }
 
