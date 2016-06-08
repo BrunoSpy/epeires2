@@ -66,6 +66,7 @@ class ShiftHour
      * @Annotation\Type("Zend\Form\Element\Text") //type=time not supported by Firefox...
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Heure", "format" : "H:i"})
+     * @Annotation\Attributes({"placeholder":"Heure locale Europe/Paris"})
      */
     protected $hour;
 
@@ -96,10 +97,25 @@ class ShiftHour
 
     public function getHour()
     {
-        return $this->hour;
+        $datetime = new \DateTime();
+        $datetime->setTime($this->hour->format('H'), $this->hour->format('i'));
+        return $datetime;
     }
 
     public function getFormattedHour() {
+        $formatterHour = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            new \DateTimeZone('Europe/Paris'),
+            \IntlDateFormatter::GREGORIAN,
+            'HH:mm'
+        );
+        return $formatterHour->format($this->getHour());
+    }
+
+    public function getFormattedHourUTC() {
+        error_log(print_r($this->getHour(), true));
         $formatterHour = \IntlDateFormatter::create(
             \Locale::getDefault(),
             \IntlDateFormatter::FULL,
@@ -119,7 +135,7 @@ class ShiftHour
     /**
      * @ORM\PostLoad
      */
-    public function doCorrectUTC()
+/*    public function doCorrectUTC()
     {
         // les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
         // mais à la création php les crée en temps local, il faut donc les corriger
@@ -128,7 +144,7 @@ class ShiftHour
             $this->hour->setTimezone(new \DateTimeZone("UTC"));
             $this->hour->add(new \DateInterval("PT" . $offset . "S"));
         }
-    }
+    }*/
 
     public function getArrayCopy()
     {

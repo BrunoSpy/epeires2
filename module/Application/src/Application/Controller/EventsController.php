@@ -2314,7 +2314,7 @@ class EventsController extends TabController
                                         'id' => $shifthour->getId(),
                                         'name' => $shifthour->getOpSupType()->getName(),
                                         'zone' => $shifthour->getQualificationZone()->getName(),
-                                        'hour' => $shifthour->getFormattedHour()
+                                        'hour' => $shifthour->getFormattedHourUTC()
                                 );
                             }
                         } else {
@@ -2322,7 +2322,7 @@ class EventsController extends TabController
                                     'id' => $shifthour->getId(),
                                     'name' => $shifthour->getOpSupType()->getName(),
                                     'zone' => '',
-                                    'hour' => $shifthour->getFormattedHour()
+                                    'hour' => $shifthour->getFormattedHourUTC()
                             );
                         }
                         //inutile de vérifier les autres rôles
