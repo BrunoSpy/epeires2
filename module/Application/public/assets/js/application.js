@@ -374,6 +374,24 @@ $(document).ready(function(){
         $('#timeline').timeline('forceUpdateView');
     });
 
+    $("#filter_none").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_deleted").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', function(evt) {return true;});
+        $('#timeline').timeline('forceUpdateView', false);
+    });
+
+    $("#filter_deleted").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_none").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', "default");
+        $('#timeline').timeline('forceUpdateView', false);
+    });
+
     $('#zoom').on('click', function() {
         if (this.checked) {
             $("#calendar").show();

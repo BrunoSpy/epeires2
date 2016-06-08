@@ -483,7 +483,7 @@
                 var txt = '<p class="elmt_tooltip actions">'
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
                 var event = self.events[self.eventsPosition[id]];
-                if(event.status_id !== 4 && event.modifiable){
+                if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
                     if(event.punctual === false){
                         if(event.star === true){
                             txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
@@ -494,7 +494,7 @@
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
                     txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
                 }
-                if(event.deleteable) {
+                if(event.status_id < 5 && event.deleteable) {
                     txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
                 txt += '</p>';
@@ -818,10 +818,11 @@
         //default callback : display all events except status_id == 5
         filter: function (callback) {
             var cb = callback;
-            if (cb === undefined && this.lastFilter === undefined) {
+            if (cb === "default" || (cb === undefined && this.lastFilter === undefined)) {
                 cb = function (event) {
                     return event.status_id != 5;
                 };
+                this.lastFilter = cb;
             } else if (cb === undefined && this.lastFilter !== undefined) {
                 cb = this.lastFilter;
             } else {
@@ -1922,6 +1923,7 @@
                     //label en italique
                     elmt_txt.css({'font-style': 'italic', 'color': 'black'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt');
                     //heure de début cliquable
                     elmt_deb.removeClass('disabled');
                     if (now > start) {
@@ -1973,6 +1975,7 @@
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt');
                     //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -2008,6 +2011,7 @@
                     //label normal
                     elmt_txt.css({'font-style': 'normal', 'color': 'black'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt');
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -2027,6 +2031,7 @@
                 case 4: //annulé
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2051,7 +2056,30 @@
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
-                    //non displayed
+                    //label barré
+                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
+                    elmt_txt.find('span.elmt_name').addClass('dlt');
+                    //heure de début et heure de fin : non cliquable, sur demande sans icone
+                    elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
+                    elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
+                    elmt_fin.addClass('disabled').tooltip('destroy');
+                    lien.filter('.leftlink').addClass('disp').show();
+                    if (event.punctual || event.end_date === null){
+                        elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
+                    } else {
+                        elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon');
+                        elmt_fin.addClass('disp').hide();
+                    }
+                    lien.filter('.rightlink').addClass('disp').show();
+                    //ne pas permettre la modification des heures
+                    move_deb.removeClass('disp');
+                    move_fin.removeClass('disp');
+                    //couleur estompée
+                    this._shadeEvent(event, elmt, 0.5);
+                    rect.removeClass('stripes');
+                    //un évènement supprimé ne peut pas être important
+                    this._highlightElmt(elmt, false);
                     break;
 
             }
