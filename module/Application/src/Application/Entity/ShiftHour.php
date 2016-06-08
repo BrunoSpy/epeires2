@@ -98,8 +98,8 @@ class ShiftHour
     public function getHour()
     {
         $datetime = new \DateTime();
-        $datetime->setTime($this->hour->format('H'), $this->hour->format('i'));
-        return $datetime;
+        $this->hour->setDate($datetime->format('Y'), $datetime->format('n'), $datetime->format('d'));
+        return $this->hour;
     }
 
     public function getFormattedHour() {
@@ -115,7 +115,6 @@ class ShiftHour
     }
 
     public function getFormattedHourUTC() {
-        error_log(print_r($this->getHour(), true));
         $formatterHour = \IntlDateFormatter::create(
             \Locale::getDefault(),
             \IntlDateFormatter::FULL,
@@ -129,22 +128,33 @@ class ShiftHour
 
     public function setHour($hour)
     {
+        $offset1 = $hour->getTimezone()->getOffset($hour);
+        $hour->setTimezone(new \DateTimeZone("Europe/Paris"));
+        $offset2 = $hour->getTimezone()->getOffset($hour);
+        if($offset1 !== $offset2) {
+            //$hour was not already in Europe/Paris
+            $hour->sub(new \DateInterval("PT" . $offset2 . "S"));
+        }
         $this->hour = $hour;
     }
 
     /**
      * @ORM\PostLoad
      */
-/*    public function doCorrectUTC()
+    public function doCorrectTimeZone()
     {
-        // les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
-        // mais à la création php les crée en temps local, il faut donc les corriger
-        if ($this->hour) {
-            $offset = $this->hour->getTimezone()->getOffset($this->hour);
-            $this->hour->setTimezone(new \DateTimeZone("UTC"));
-            $this->hour->add(new \DateInterval("PT" . $offset . "S"));
+        // les dates sont stockées sans information de timezone
+        // dans ce cas, on considère qu'elles sont dans le fuseau Europe/Paris
+        // mais à la création php les crée dans la timezone du serveur, il faut donc les corriger
+        if ($this->getHour()) {
+            $offset1 = $this->hour->getTimezone()->getOffset($this->hour);
+            $this->hour->setTimezone(new \DateTimeZone("Europe/Paris"));
+            $offset2 = $this->hour->getTimezone()->getOffset($this->hour);
+            if($offset1 !== $offset2){
+                $this->hour->sub(new \DateInterval("PT" . $offset2 . "S"));
+            }
         }
-    }*/
+    }
 
     public function getArrayCopy()
     {
