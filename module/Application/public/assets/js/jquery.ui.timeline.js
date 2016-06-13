@@ -1571,6 +1571,7 @@
          * @returns {undefined}
          */
         _doDrawEvent: function (event, elmt, categ) {
+            var self = this;
             var elmt_rect = elmt.find('.rect_elmt');
             var elmt_compl = elmt.find('.complement');
             var elmt_flecheG = elmt.find('.elmt_flecheG');
@@ -1606,6 +1607,7 @@
             elmt_txt.css({'background-color': '', 'border-style': ''});
             elmt_txt.find('a').removeClass('disabled');
             elmt_txt.find('span.elmt_name').removeClass('unvisible');
+            elmt_rect.find('.milestone').remove();
             //////   
 
             // libellé de l'évènement à mettre à jour
@@ -1825,6 +1827,17 @@
                     }
                 }
             }
+            //milestones
+            $.each(event.milestones, function(index, item){
+                var xMilestone = self._computeX(new Date(item));
+                if(xMilestone > x_deb && xMilestone < x_end) {
+                    var milestone = $('<div class="milestone"></div>');
+                    var left = xMilestone - x_deb;
+                    milestone.css('left', left+"px");
+                    elmt_rect.append(milestone);
+                }
+            });
+
             //highlight
             this._highlightElmt(elmt, event.star);
             //mise à jour du conteneur global

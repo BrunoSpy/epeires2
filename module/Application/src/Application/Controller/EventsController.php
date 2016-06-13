@@ -1625,6 +1625,7 @@ class EventsController extends TabController
             \IntlDateFormatter::GREGORIAN,
             'dd LLL HH:mm'
         );
+        $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
@@ -1646,8 +1647,20 @@ class EventsController extends TabController
                     $fields[$value->getCustomField()->getName()] = $formattedvalue;
                 }
             }
+            $i = 0;
+            if($value->getCustomField()->isMilestone()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                   //store only changes -> skip firt log
+                    if($i > 0) {
+                        $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
+                    }
+                    $i++;
+                }
+            }
         }
-        
+
+        $json['milestones'] = $milestones;
+
         $formatter = \IntlDateFormatter::create(
             \Locale::getDefault(),
             \IntlDateFormatter::FULL,

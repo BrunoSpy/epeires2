@@ -314,3 +314,13 @@
 	border-top: 1px solid grey;
 	border-bottom: 1px solid grey;
 }
+
+.milestone {
+	position: relative;
+	width: 1px;
+	height: 100%;
+	border-left-style: none;
+	border-right-style: solid;
+	border-width: 2px;
+    float:left;
+}
