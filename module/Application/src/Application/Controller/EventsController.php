@@ -47,8 +47,6 @@ class EventsController extends TabController
     {
         parent::indexAction();
         
-        $viewmodel = new ViewModel();
-        
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -61,11 +59,11 @@ class EventsController extends TabController
         
         $this->flashMessenger()->clearMessages();
         
-        $viewmodel->setVariables(array(
+        $this->viewmodel->setVariables(array(
             'messages' => $return
         ));
         
-        return $viewmodel;
+        return $this->viewmodel;
     }
     
     // TODO move to IPOController
@@ -121,17 +119,6 @@ class EventsController extends TabController
         }
         
         return new JsonModel($json);
-    }
-
-    public function savezoneAction()
-    {
-        if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
-            $zone = $post['zone'];
-            $session = new Container('zone');
-            $session->zoneshortname = $zone;
-        }
-        return new JsonModel();
     }
 
     /**
@@ -2327,7 +2314,7 @@ class EventsController extends TabController
                                         'id' => $shifthour->getId(),
                                         'name' => $shifthour->getOpSupType()->getName(),
                                         'zone' => $shifthour->getQualificationZone()->getName(),
-                                        'hour' => $shifthour->getFormattedHour()
+                                        'hour' => $shifthour->getFormattedHourUTC()
                                 );
                             }
                         } else {
@@ -2335,7 +2322,7 @@ class EventsController extends TabController
                                     'id' => $shifthour->getId(),
                                     'name' => $shifthour->getOpSupType()->getName(),
                                     'zone' => '',
-                                    'hour' => $shifthour->getFormattedHour()
+                                    'hour' => $shifthour->getFormattedHourUTC()
                             );
                         }
                         //inutile de vérifier les autres rôles

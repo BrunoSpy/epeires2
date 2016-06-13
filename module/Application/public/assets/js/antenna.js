@@ -203,9 +203,7 @@ var antenna = function(url, frequencyTestMenu){
             });
             var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
             for(var i = 0; i < dataArray.length; i++){
-                //$.each(data, function(key, value){
                 list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
-                //});
             }
             if(list.find('li').length > 0 ){
                 var div = $('<div class="vertical-scroll"></div>');

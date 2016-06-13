@@ -330,3 +330,14 @@ body {
   position: absolute;
   top: -100px;
 }
+
+/* Toggle buttons rouge */
+#radio .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after,
+#radars .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after {
+	background-color: #ff6f00;
+}
+
+#radio .togglebutton label .toggle,
+#radars .togglebutton label .toggle {
+	background-color: #bdbdbd;
+}

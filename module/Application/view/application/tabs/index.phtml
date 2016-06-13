@@ -46,7 +46,7 @@ echo $this->modalwindow("confirm-delete-file",
 					"",
 					null,
 					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
-					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
+					"<button class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</button>
 					<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
@@ -105,7 +105,18 @@ $('#timeline').timeline({
     leftOffset: 120,
     rightOffset: 85,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
-    initComplete: function(){$("#timeline .loading").hide();}
+    initComplete: function(){
+        $("#timeline .loading").hide();
+        <?php
+        if($this->view == "24") {
+            echo '$("#zoom").trigger("click");';
+            if($this->day !== null) {
+                echo '$("#calendar input[type=text].date").val('.$this->day.');';
+                echo '$("#calendar input[type=text].date").trigger("change");';
+            }
+        }
+        ?>
+    }
 });
 //init form
 form('<?php echo $this->url('application');?>', '<?php echo $this->tabid; ?>');

@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../view/application/frequencies/index.phtml:64
 msgid "Antennas"
-msgstr "Antennes"
+msgstr "Pylônes"
 
 #: ../view/error/404.phtml:1
 msgid "A 404 error occurred"

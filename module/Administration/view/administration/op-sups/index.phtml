@@ -11,6 +11,16 @@ $formatterHour = \IntlDateFormatter::create(
     'HH:mm'
 );
 
+$formatterHourLoc = \IntlDateFormatter::create(
+    \Locale::getDefault(),
+    \IntlDateFormatter::FULL,
+    \IntlDateFormatter::FULL,
+    new \DateTimeZone('Europe/Paris'),
+    \IntlDateFormatter::GREGORIAN,
+    'HH:mm'
+);
+
+
 ?>
 
 <div class="container-fluid">
@@ -100,7 +110,7 @@ $formatterHour = \IntlDateFormatter::create(
                         <th>Id</th>
                         <th data-sort="string" data-autosort="true">Type</th>
                         <th data-sort="string">Zone qualif.</th>
-                        <th>Heure</th>
+                        <th>Heure locale</th>
                         <th><a class="btn btn-xs btn-primary" href="#shifthour-container" data-toggle="modal" id="add-shifthour">Ajouter</a></th>
                     </tr>
                     </thead>
@@ -111,7 +121,7 @@ $formatterHour = \IntlDateFormatter::create(
                         echo '<td>' . $shifthour->getId() . '</td>';
                         echo '<td>' . $shifthour->getOpsuptype()->getName() . '</td>';
                         echo '<td>' . ($shifthour->getQualificationzone() == null ? '' : $shifthour->getQualificationzone()->getName()) . '</td>';
-                        echo '<td>' . $formatterHour->format($shifthour->getHour()) . '</td>';
+                        echo '<td>' . $formatterHourLoc->format($shifthour->getHour()) . '</td>';
                         echo '<td>';
                         echo "<a 
                                 title=\"Modifier\" 

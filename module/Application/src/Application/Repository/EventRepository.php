@@ -1004,9 +1004,6 @@ class EventRepository extends ExtendedRepository
         }
         //champs
         foreach ($event->getCustomFieldsValues() as $customFieldsValue){
-            error_log($this->getClassName($event->getCategory()));
-            error_log($customFieldsValue->getValue());
-            error_log($customFieldsValue->getCustomField()->getType()->getName());
             $customFieldValue = new CustomFieldValue();
             $customFieldValue->setEvent($newevent);
             $customFieldValue->setCustomField($customFieldsValue->getCustomField());

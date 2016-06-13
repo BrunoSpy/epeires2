@@ -57,7 +57,20 @@ class NavBar extends AbstractHelper
                                 'controller' => 'events',
                                 'action' => 'index'
         ));
-        $html .= '" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-home"></span> Évènements <span class="caret"></span></a>' . '<ul class="dropdown-menu dropdown-menu-material-purple-300">' . '<li class="dropdown-header">Tri</li>' . '<li class="active"><a href="#" id="tri_cat">Par catégorie</a></li>' . '<li><a href="#" id="tri_deb">Par heure de début</a></li>' . '</ul>' . '</li>' . '<li role="separator" class="divider"></li>';
+        $html .= '" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <span class="glyphicon glyphicon-home"></span> Évènements <span class="caret"></span></a>'
+            . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
+                . '<li class="dropdown-header">Tri</li>'
+                . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
+                . '<li class="tri"><a href="#" id="tri_deb">Par heure de début</a></li>';
+        if($this->view->isGranted('events.delete')) {
+            $html .= '<li role="separator" class="divider"></li>'
+                . '<li class="dropdown-header">Filtre</li>'
+                . '<li class="filter active"><a href="#" id="filter_deleted">Évènements supprimés non affichés</a></li>'
+                . '<li class="filter"><a href="#" id="filter_none">Évènements supprimés affichés</a></li>';
+        }
+        $html .= '</ul>';
+        $html .= '</li>' . '<li role="separator" class="divider"></li>';
         
         if ($this->view->isGranted('radars.read')) {
             $html .= '<li><a id="radartab" href="' . $urlHelper('application', array(

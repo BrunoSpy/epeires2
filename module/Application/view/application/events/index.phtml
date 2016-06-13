@@ -113,7 +113,18 @@ $('#timeline').timeline({
     topOffset: 100,
     leftOffset: 120,
     rightOffset: 85,
-    initComplete: function(){$("#timeline .loading").hide();}
+    initComplete: function(){
+        $("#timeline .loading").hide();
+        <?php
+        if($this->view == "24") {
+            echo '$("#zoom").trigger("click");';
+            if($this->day !== null) {
+                echo '$("#calendar input[type=text].date").val('.$this->day.');';
+                echo '$("#calendar input[type=text].date").trigger("change");';
+            }
+        }
+        ?>
+    }
 });
 
 //init form

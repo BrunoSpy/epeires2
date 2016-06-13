@@ -297,3 +297,20 @@
 .tooltip.tooltip-actions .table {
 	margin-bottom: 3px;
 }
+
+.dlt {
+	text-decoration: none;
+	position: relative;
+}
+.dlt:after {
+	content: ' ';
+	font-size: inherit;
+	display: block;
+	position: absolute;
+	right: 0;
+	left: 0;
+	top: 40%;
+	bottom: 40%;
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+}

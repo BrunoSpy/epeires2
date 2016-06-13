@@ -49,7 +49,7 @@ class NavBarTop extends AbstractHelper {
         if($return !== null) {
             $html .= '<span class="glyphicon glyphicon-home"></span> ';
         }
-        $html .= 'Epeires<sup>2</sup>'.$title.'</a>';
+        $html .= $this->view->translate('Epeires²').'</a>';
         $html .= '</div>';
 
         $html .= '<div class="collapse navbar-collapse" id="navbar-first-collapse">';

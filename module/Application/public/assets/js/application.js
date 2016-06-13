@@ -374,6 +374,24 @@ $(document).ready(function(){
         $('#timeline').timeline('forceUpdateView');
     });
 
+    $("#filter_none").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_deleted").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', function(evt) {return true;});
+        $('#timeline').timeline('forceUpdateView', false);
+    });
+
+    $("#filter_deleted").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_none").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', "default");
+        $('#timeline').timeline('forceUpdateView', false);
+    });
+
     $('#zoom').on('click', function() {
         if (this.checked) {
             $("#calendar").show();
@@ -385,10 +403,12 @@ $(document).ready(function(){
             var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
+            $.post(url + 'events/saveview?view=24')
         } else {
             $("#calendar").hide();
             $("#export").hide();
             $("#timeline").timeline('view', 'sixhours');
+            $.post(url + 'events/saveview?view=6');
         }
     });
 
@@ -404,6 +424,7 @@ $(document).ready(function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
         var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
         $("#timeline").timeline("day", date.toString());
+        $.post(url + 'events/saveday?day="' + $('#calendar input[type=text].date').val()+'"');
     });
     
     $("#day-backward").on('click', function(e) {

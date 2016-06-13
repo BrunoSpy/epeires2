@@ -51,7 +51,6 @@ var headerbar = function (url) {
     }, 10000);
 
     setInterval(function(){
-        console.log('update opsups');
         $('#navbar-first .opsup-form, #navbar-first .opsup-name').each(function(index, element){
             var me = $(this);
             var typeid = me.data('typeid');
@@ -147,7 +146,7 @@ var headerbar = function (url) {
                     nextHours = hours;
                     nextDay = true;
                 }
-                nextHour = hours.reduce(function(a, b, i, arr){return (a.hour <= b.hour ? a : b)});
+                nextHour = nextHours.reduce(function(a, b, i, arr){return (a.hour <= b.hour ? a : b)});
                 var nextDate = new Date(Date.UTC(now.getUTCFullYear(),
                     now.getUTCMonth(),
                     now.getUTCDate(),
@@ -159,7 +158,7 @@ var headerbar = function (url) {
                 var delta = new Date(nextDate) - new Date();
                 var timer = setTimeout(function(){
                     var n = noty({
-                        text: "Rappel :<br> Relève " + nextHour.name + (nextHour.zone.length > 0 ? "(zone "+nextHour.zone+")." : ".")
+                        text: "Rappel :<br> Relève de "+nextHour.hour+ " " + nextHour.name + (nextHour.zone.length > 0 ? " (zone "+nextHour.zone+")." : ".")
                                 + "<br>Penser à mettre à jour le nom du chef de salle en fonction.",
                         type: "information",
                         timeout: false,
@@ -167,6 +166,15 @@ var headerbar = function (url) {
                         callback: {
                             onClose: function(){
                                 updateShiftHours();
+                            },
+                            onShow: function() {
+                                $('ul#noty_topRight_layout_container').draggable({
+                                    stop: function (event, ui) {
+                                        $(event.originalEvent.target).one('click', function (e) {
+                                            e.stopImmediatePropagation();
+                                        })
+                                    }
+                                });
                             }
                         }
                     });
