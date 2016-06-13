@@ -309,28 +309,41 @@ var models = function(url, urlapp){
 	
 	$('#model-container').on('click', '#addalert', function(){
 		$("#alert-form").load(url+'/models/formalarm');
+        $("#add-alert h4").text("Ajout d'un mémo");
 	});
-	
+
+	$("#model-container").on('click', '.mod-alert', function(e){
+        $("#alert-form").load(url+'/models/formalarm?id='+$(this).data('id'));
+        $("#add-alert h4").text("Modification d'un mémo");
+    });
+
 	$('#add-alert').on('submit', function(e){
 		e.preventDefault();
 		var me = $('#add-alert form');
+        var id = $('#add-alert form input[name=id]').val();
 		$.post(me.attr('action'), me.serialize(), function(data){
 			if(!data.messages['error']){
 				$('#add-alert').modal('hide');
-				var count = Math.floor($("#alerts input").length / 3);
-				var tr = $('<tr id=fake-"'+count+'"></tr>');
-				tr.append('<td>'+data.alarm.deltabegin+' min</td>');
-                                tr.append('<td>'+data.alarm.deltaend+' min</td>');
-				tr.append('<td>'+data.alarm.name+'</td>');
-				tr.append('<td><a href="#" class="delete-fake-alarm"><i class="icon-trash"></i></a></td>');
-				var div = $('<div id="alarm-fake"'+count+'></div>');
-				div.append('<input type="hidden" name="alarm['+count+'][delta]" value="'+data.alarm.delta+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][name]" value="'+data.alarm.name+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][comment]" value="'+data.alarm.comment+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][deltabegin]" value="'+data.alarm.deltabegin+'"></input>');
-                                div.append('<input type="hidden" name="alarm['+count+'][deltaend]" value="'+data.alarm.deltaend+'"></input>');
-				$("#alerts").append(div);
-				$('#alerts tbody').append(tr);
+                if(id > 0) {
+                    $('#alerts #alarm-'+id).find('td:eq(0)').html(data.alarm.deltabegin+' min');
+                    $('#alerts #alarm-'+id).find('td:eq(1)').html(data.alarm.deltaend+' min');
+                    $('#alerts #alarm-'+id).find('td:eq(2)').html(data.alarm.name);
+                } else {
+                    var count = Math.floor($("#alerts input").length / 3);
+                    var tr = $('<tr id=fake-"' + count + '"></tr>');
+                    tr.append('<td>' + data.alarm.deltabegin + ' min</td>');
+                    tr.append('<td>' + data.alarm.deltaend + ' min</td>');
+                    tr.append('<td>' + data.alarm.name + '</td>');
+                    tr.append('<td><a href="#" class="delete-fake-alarm"><i class="icon-trash"></i></a></td>');
+                    var div = $('<div id="alarm-fake"' + count + '></div>');
+                    div.append('<input type="hidden" name="alarm[' + count + '][delta]" value="' + data.alarm.delta + '"></input>');
+                    div.append('<input type="hidden" name="alarm[' + count + '][name]" value="' + data.alarm.name + '"></input>');
+                    div.append('<input type="hidden" name="alarm[' + count + '][comment]" value="' + data.alarm.comment + '"></input>');
+                    div.append('<input type="hidden" name="alarm[' + count + '][deltabegin]" value="' + data.alarm.deltabegin + '"></input>');
+                    div.append('<input type="hidden" name="alarm[' + count + '][deltaend]" value="' + data.alarm.deltaend + '"></input>');
+                    $("#alerts").append(div);
+                    $('#alerts tbody').append(tr);
+                }
 			}
 			displayMessages(data.messages);
 		});

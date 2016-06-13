@@ -119,11 +119,14 @@ if($this->form->has('custom_fields')){
                                         }
                                     }
                                     $countalarms++;
-                                    echo '<tr>';
+                                    echo '<tr id="alarm-'.$alarm->getId().'">';
                                     echo '<td data-toggle="tooltip" title="Déclenchement du mémo x minutes après le début de l\'évènement">'.(strlen($deltabegin) > 0 ? $deltabegin : "0").' min</td>';
                                     echo '<td data-toggle="tooltip" title="Déclenchement du mémo x minutes après la fin de l\'évènement">'.(strlen($deltaend) > 0 ? $deltaend : "0").' min</td>';
                                     echo '<td>'.$this->eventName($alarm).'</td>';
-                                    echo '<td><a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><span class="glyphicon glyphicon-trash"></span></a></td>';
+                                    echo '<td>';
+									echo '<a href="#add-alert" data-toggle="modal" class="mod-alert" data-id="'.$alarm->getId().'"><span class="glyphicon glyphicon-pencil"></span></a> ';
+									echo '<a href="#" class="delete-alarm" data-id="'.$alarm->getId().'"><span class="glyphicon glyphicon-trash"></span></a>';
+									echo '</td>';
                                     echo '</tr>';
 				}
 			}
