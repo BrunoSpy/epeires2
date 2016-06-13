@@ -98,7 +98,9 @@ class ShiftHour
     public function getHour()
     {
         $datetime = new \DateTime();
-        $this->hour->setDate($datetime->format('Y'), $datetime->format('n'), $datetime->format('d'));
+        if($this->hour != null) {
+            $this->hour->setDate($datetime->format('Y'), $datetime->format('n'), $datetime->format('d'));
+        }
         return $this->hour;
     }
 
