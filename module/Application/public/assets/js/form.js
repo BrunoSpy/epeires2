@@ -422,6 +422,8 @@ var form = function(url, tabid){
             var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
             var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
             end = datestring + " " + timestring;
+			$("input[name=enddate]").val(end);
+			$("input[name=enddate]").data('duration', 0);
         }
 		if(end){
 			var daysplit = end.split(' ');
