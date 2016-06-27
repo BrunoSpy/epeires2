@@ -114,13 +114,24 @@ class EventsController extends TabController
                     ->getId(),
                 'current' => true
             ));
-            
-            $json[$currentipo->getId()] = $currentipo->getName();
+            if($currentipo) {
+                $json[$currentipo->getId()] = $currentipo->getName();
+            }
         }
         
         return new JsonModel($json);
     }
 
+    public function testAuthenticationAction() {
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+            $this->getResponse()->setStatusCode(200);
+            return new JsonModel();
+        } else {
+            $this->getResponse()->setStatusCode(401);
+            return new JsonModel();
+        }
+    }
+    
     /**
      * Returns a Json with all relevant events and models
      */

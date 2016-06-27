@@ -492,7 +492,25 @@ $(document).ready(function(){
     //à supprimer une fois corrigé upstream
     var color = $('#navbar-first').css('background-color');
     $("#navbar-first option").css('background-color', color);
-    
+
+    //vérification du maintien de l'authentification
+    //si on reçoit un 403 alors que précédemment on a reçu un 200
+    //cela veut dire que l'authentification a été réinitialisé par le serveur
+    //dans ce cas on force le rechargement de la page
+    var lastCode = 0;
+    var testAuthentication = function() {
+        $.getJSON(url + 'events/testAuthentication',
+            function (data, textStatus, jqHXR) {
+                lastCode = 200;
+            }).fail(function(jqHXR){
+            if (jqHXR.status === 401 && lastCode === 200) {
+                location.reload();
+            }
+        });
+    };
+    testAuthentication();
+    setInterval(testAuthentication, 10000);
+
 });
 
 
