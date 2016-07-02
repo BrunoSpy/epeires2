@@ -529,7 +529,7 @@ var form = function(url, tabid){
 		$("#event").html('');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
-		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&tabid='+tabid, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
@@ -546,7 +546,7 @@ var form = function(url, tabid){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
 
-		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&tabid='+tabid, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
