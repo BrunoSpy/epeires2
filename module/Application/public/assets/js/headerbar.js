@@ -200,7 +200,12 @@ var headerbar = function (url) {
     );
 
     $('#navbar-first .opsup-form label, #navbar-first .opsup-name').on('click', function(e){
-        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups', function(){
+        var day = '';
+        if($("#calendar:visible").length > 0) {
+            day = $('#date').val();
+            day = day.replace(/\//g,"-");
+        }
+        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups'+ (day.length > 0 ? '?day='+day : ''), function(){
             $("#opsupwindow").modal('show');
         });
     });

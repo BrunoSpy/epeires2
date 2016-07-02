@@ -80,8 +80,14 @@ class OpSupsController extends AbstractActionController
         $qb = $em->createQueryBuilder();
 
         $daystart = new \DateTime($day);
+        $offset = $daystart->getTimezone()->getOffset($daystart);
+        $daystart->setTimezone(new \DateTimeZone('UTC'));
+        $daystart->add(new \DateInterval("PT" . $offset . "S"));
         $daystart->setTime(0, 0, 0);
+
         $dayend = new \DateTime($day);
+        $dayend->setTimezone(new \DateTimeZone('UTC'));
+        $dayend->add(new \DateInterval("PT" . $offset . "S"));
         $dayend->setTime(23, 59, 59);
 
         $qb->select('l')
