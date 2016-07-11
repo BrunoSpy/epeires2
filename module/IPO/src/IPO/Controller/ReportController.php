@@ -296,7 +296,8 @@ class ReportController extends AbstractActionController
                         $this->zfcUserAuthentication(), 
                         $report->getStartDate(), 
                         $report->getEndDate(),
-                        true
+                        true,
+                        array(1,2,3,4)
                     );
                     
                     // ids des évènements inclus au rapport

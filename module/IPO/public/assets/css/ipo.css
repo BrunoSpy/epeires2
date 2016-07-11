@@ -67,3 +67,42 @@ tr.child {
   height:60px; /* fixed header height*/
   margin:-60px 0 0; /* negative fixed header height */
 }
+
+
+.tooltip.tooltip-actions .tooltip-arrow {
+    border-bottom-color: rgb(101, 101, 101);
+    border-top-color: rgb(101, 101, 101);
+    display: block;
+
+}
+
+.tooltip.tooltip-actions.top {
+    margin-top: 0px;
+}
+
+.tooltip.tooltip-actions.bottom {
+    margin-top: 0px;
+}
+
+.tooltip.tooltip-actions .tooltip-inner {
+    max-width: 250px;
+}
+
+.tooltip.tooltip-actions .table td {
+    padding: 0px;
+    line-height: 1.1;
+}
+
+.tooltip.tooltip-actions .table tr {
+    text-align: left;
+    border-bottom: 1px dashed #9D9D9D;
+}
+
+.tooltip.tooltip-actions .table > tbody > tr > td {
+    border-top: none;
+    vertical-align: middle;
+}
+
+.tooltip.tooltip-actions .table {
+    margin-bottom: 3px;
+}
