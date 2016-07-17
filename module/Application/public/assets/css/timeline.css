@@ -9,7 +9,7 @@
 }
 
 #TimeBar {
-	position: fixed;
+	position: absolute;
 	width: 3px;
 	z-index: 10;
 	background-color: red;
@@ -25,7 +25,7 @@
 }
 
 .Time_obj {
-	position: fixed;
+	position: absolute;
 	z-index: 2;
 }
 
@@ -146,14 +146,15 @@
 }
 
 .elmt .label_elmt {
-	color: black;
+	/*color: black;*/
 	white-space: nowrap;
 	font-weight: bold;
 	width: auto;
+	z-index: 10;
 }
 
 .elmt .label_elmt a > span.glyphicon {
-	color: black;
+	/*color: black;*/
 }
 
 .elmt .label_elmt.outside {
@@ -213,9 +214,9 @@
 	background-color: transparent;
 	border-right-style: solid;
 	border-left-style: solid;
-	border-width: 2px;
+	border-width: 1px;
 	display: none;
-	width: 2px;
+	width: 4px;
 }
 
 .move_deb {
@@ -286,6 +287,9 @@
 
 .tooltip.tooltip-actions .table tr {
 	text-align: left;
+}
+
+.tooltip.tooltip-actions .table tr:not(:last-child) {
   border-bottom: 1px dashed #9D9D9D;
 }
 
@@ -298,29 +302,13 @@
 	margin-bottom: 3px;
 }
 
-.dlt {
-	text-decoration: none;
-	position: relative;
-}
-.dlt:after {
-	content: ' ';
-	font-size: inherit;
-	display: block;
-	position: absolute;
-	right: 0;
-	left: 0;
-	top: 40%;
-	bottom: 40%;
-	border-top: 1px solid grey;
-	border-bottom: 1px solid grey;
-}
-
 .milestone {
 	position: relative;
 	width: 1px;
-	height: 100%;
+	height: 80%;
 	border-left-style: none;
 	border-right-style: solid;
 	border-width: 2px;
-    float:left;
+	float:left;
+	margin-top: 3px;
 }

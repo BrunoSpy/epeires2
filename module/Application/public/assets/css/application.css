@@ -48,6 +48,34 @@ body {
 
 
 /************** Slide panel **************/
+.page-wrap {
+	float: right;
+	width: 100%;
+	transition: width 0.3s ease;
+}
+
+.main-nav-check {
+	display: none;
+}
+
+.main-nav {
+	position: fixed;
+	width: 0;
+	height: calc(100% - 100px);
+	overflow-y: auto;
+	transition: width 0.3s ease;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+#main-nav-check:checked+.main-nav {
+	width: 20%;
+}
+
+#main-nav-check:checked ~ .page-wrap {
+	width: 80%;
+}
+
 #fiche {
 	padding-top: 5px;
 }
@@ -340,4 +368,40 @@ body {
 #radio .togglebutton label .toggle,
 #radars .togglebutton label .toggle {
 	background-color: #bdbdbd;
+}
+
+#calendarview {
+	margin-top: 10px;
+	margin-right: 1em;
+	margin-left: 1em;
+}
+
+.dlt {
+	text-decoration: none;
+	position: relative;
+}
+.dlt:after {
+	content: ' ';
+	font-size: inherit;
+	display: block;
+	position: absolute;
+	right: 0;
+	left: 0;
+	top: 40%;
+	bottom: 40%;
+}
+
+.dlt-grey:after {
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+}
+
+.dlt-black:after {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.dlt-white:after {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
 }

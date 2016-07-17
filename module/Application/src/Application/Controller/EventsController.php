@@ -924,7 +924,6 @@ class EventsController extends TabController
                         $objectManager->flush();
                         $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
                     } catch (\Exception $e) {
-                        error_log(print_r($e->getMessage(), true));
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
                         $messages['error'][] = $e->getMessage();
                         $events = array();
@@ -1566,7 +1565,8 @@ class EventsController extends TabController
         
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->zfcUserAuthentication(), 
-            $day, 
+            $day,
+            null,
             $lastmodified, 
             true, 
             $cats
@@ -1584,6 +1584,65 @@ class EventsController extends TabController
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
         
         return new JsonModel($json);
+    }
+
+    private function hex2rgb($hex) {
+        $hex = str_replace("#", "", $hex);
+
+        if(strlen($hex) == 3) {
+            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+        } else {
+            $r = hexdec(substr($hex,0,2));
+            $g = hexdec(substr($hex,2,2));
+            $b = hexdec(substr($hex,4,2));
+        }
+        $rgb = array($r, $g, $b);
+        return $rgb;
+    }
+
+
+    public function geteventsFCAction() {
+        $start = $this->params()->fromQuery('start', null);
+        $end = $this->params()->fromQuery('end', null);
+        $cats = $this->params()->fromQuery('cats', null);
+
+        $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $eventservice = $this->getServiceLocator()->get('EventService');
+
+        $events = array();
+
+        foreach ($om->getRepository('Application\Entity\Event')->getEvents(
+            $this->zfcUserAuthentication(),
+            $start,
+            $end,
+            null,
+            true,
+            $cats
+        ) as $event) {
+            $e = array();
+            $e = $this->getEventJson($event);
+            $e['title'] = $eventservice->getName($event);
+            $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
+            if($event->isPunctual()) {
+                $e['end'] = $event->getStartdate()->format(DATE_ISO8601);
+            }
+            if($event->getEnddate()) {
+                $e['end'] = $event->getEnddate()->format(DATE_ISO8601);
+            } else {
+                $tempEnd = new \DateTime($end);
+                $tempEnd->add(new \DateInterval('P2D'));
+                $e['end'] = $tempEnd->format(DATE_ISO8601);
+            }
+            $e['color'] = ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
+
+            $rgb = $this->hex2rgb($e['color']);
+            $yiq = 1 - ($rgb[0]*0.299 + $rgb[1]*0.587 + $rgb[2]*0.114)/255;
+            $e['textColor'] = ($yiq >= 0.5 ? '#fff' : '#000' );
+            $events[] = $e;
+        }
+        return new JsonModel($events);
     }
 
     private function getEventJson(Event $event)

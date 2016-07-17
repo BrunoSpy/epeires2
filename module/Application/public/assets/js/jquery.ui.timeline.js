@@ -1252,19 +1252,15 @@
             $("#timeline-base").remove();
 
             this._computeIntervalle();
-            //si la timeline est décalée, ajouter le décalage
-            var left = parseInt(this.element.css('left'));
-            if (isNaN(left)) {
-                left = 0;
-            }
+
             var h_temp = this.timelineBegin.getUTCHours();
             var time_obj = $('<div class="Time_obj horiz_bar"></div>');
             var base_elmt = $('<div id="timeline-base" class="Base"></div>');
             this.element.append(base_elmt);
             base_elmt.append(time_obj);
             time_obj.css({
-                'top': this.options.topOffset + this.params.topSpace + 'px',
-                'left': this.options.leftOffset + left + 'px',
+                'top': this.params.topSpace + 'px',
+                'left': this.options.leftOffset + 'px',
                 'width': this.intervalle * this.timelineDuration * 2 + 'px',
                 'height': 1});
 
@@ -1290,8 +1286,8 @@
                 var vert_bar = $('<div class="Time_obj vert_bar"></div>');
                 base_elmt.append(vert_bar);
                 vert_bar.css({
-                    'top': this.options.topOffset + this.params.topSpace - 5 + 'px',
-                    'left': this.intervalle * i + this.options.leftOffset + left + 'px',
+                    'top': this.params.topSpace - 5 + 'px',
+                    'left': this.intervalle * i + this.options.leftOffset + 'px',
                     'width': 1,
                     'height': this.element.height() - this.params.topSpace,
                     'background-color': '#C0C0C0'});
@@ -1300,16 +1296,16 @@
                         var halfHour = $('<div class="Time_obj halfhour">30</div>');
                         base_elmt.append(halfHour);
                         halfHour.css({
-                            'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
-                            'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
+                            'top': this.params.topHalfHourSpace + 'px',
+                            'left': this.intervalle * i + this.options.leftOffset - 10 + 'px'});
                     }
                 } else {
                     if( (i / 2) % modulo === 0) {
                         var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
                         base_elmt.append(roundHour);
                         roundHour.css({
-                            'top': this.options.topOffset + this.params.topHourSpace + 'px',
-                            'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
+                            'top': this.params.topHourSpace + 'px',
+                            'left': this.intervalle * i + this.options.leftOffset - 20 + 'px'});
                     }
                     if (h_temp === 23) {
                         h_temp = 0;
@@ -1328,7 +1324,7 @@
                 this.element.append(TimeBar);
                 var x = this._computeX(new Date());
                 TimeBar.css({
-                    'top': this.options.topOffset + this.params.topSpace + 'px',
+                    'top': /*this.options.topOffset + */this.params.topSpace + 'px',
                     'height': this.element.height() - this.params.topSpace});
                 if (x > 0) {
                     TimeBar.css('left', x + 'px');
@@ -1586,6 +1582,7 @@
             var move_fin = elmt.find('.move_fin');
             var lien = elmt.find('.lien');
             var couleur = categ.color;
+            var textColor = (self._yiq(self._hex2rgb(couleur)) >= 0.5 ? "#fff" : "#000");
             var startdate = new Date(event.start_date);
             var enddate;
             if (event.end_date !== null) {
@@ -1599,8 +1596,8 @@
             elmt.find('.disp').removeClass('disp');
             elmt_flecheG.hide();
             elmt_flecheD.hide();
-            move_deb.hide();
-            move_fin.hide();
+            move_deb.hide().css('border-color', textColor);
+            move_fin.hide().css('border-color', textColor);
             lien.removeClass('disp leftlink rightlink').hide();
             elmt_compl.hide();
             elmt_txt.show();
@@ -1608,7 +1605,7 @@
             elmt_txt.find('a').removeClass('disabled');
             elmt_txt.find('span.elmt_name').removeClass('unvisible');
             elmt_rect.find('.milestone').remove();
-            //////   
+            //////
 
             // libellé de l'évènement à mettre à jour
             var name = event.name;
@@ -1778,6 +1775,8 @@
                     lien.addClass('leftlink');
                     event.outside = 1;
                 }
+                elmt_txt.css('color', 'black');
+                elmt_txt.find('a > span.glyphicon').css('color', 'black');
             } else {
                 var lar_nec = txt_wid + 44; //+44 : place pour les barres de changement d'heure
                 // on place l'heure de début à gauche
@@ -1806,9 +1805,13 @@
                         'top': (this.options.eventHeight/2-11)+'px'});
 
                     x2 += endWidth + 5;
+                    elmt_txt.css('color', textColor);
+                    elmt_txt.find('a > span.glyphicon').css('color', textColor);
                 } else {
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
+                    elmt_txt.css('color', 'black');
+                    elmt_txt.find('a > span.glyphicon').css('color', 'black');
                     elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
                     x2 += endWidth + 10;
                     if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
@@ -1833,7 +1836,7 @@
                 if(xMilestone > x_deb && xMilestone < x_end) {
                     var milestone = $('<div class="milestone"></div>');
                     var left = xMilestone - x_deb;
-                    milestone.css('left', left+"px");
+                    milestone.css({'left': left+"px", 'color':textColor});
                     elmt_rect.append(milestone);
                 }
             });
@@ -1934,9 +1937,9 @@
             switch (event.status_id) {
                 case 1: //nouveau
                     //label en italique
-                    elmt_txt.css({'font-style': 'italic', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'italic'});
                     elmt_txt.find('span').css({'text-decoration': ''});
-                    elmt_txt.find('span.elmt_name').removeClass('dlt');
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début cliquable
                     elmt_deb.removeClass('disabled');
                     if (now > start) {
@@ -1986,9 +1989,9 @@
                     break;
                 case 2: //confirmé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'normal'});
                     elmt_txt.find('span').css({'text-decoration': ''});
-                    elmt_txt.find('span.elmt_name').removeClass('dlt');
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -2022,9 +2025,9 @@
                     break;
                 case 3: //terminé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'normal'});
                     elmt_txt.find('span').css({'text-decoration': ''});
-                    elmt_txt.find('span.elmt_name').removeClass('dlt');
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -2044,7 +2047,7 @@
                 case 4: //annulé
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
-                    elmt_txt.find('span.elmt_name').removeClass('dlt');
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2071,7 +2074,7 @@
                 case 5:
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
-                    elmt_txt.find('span.elmt_name').addClass('dlt');
+                    elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -2261,6 +2264,31 @@
             var width = newobj.outerWidth();
             fakediv.remove();
             return width;
+        },
+        _hexdec: function(hexString){
+            hexString = (hexString + '').replace(/[^a-f0-9]/gi, '');
+            return parseInt(hexString, 16);
+        },
+        /**
+         *
+         * @param color
+         */
+        _hex2rgb: function(color) {
+            var hex = color.replace("#", "");
+
+            if(hex.length == 3) {
+                var r = this._hexdec(hex.substr(0,1).substr(0,1));
+                var g = this._hexdec(hex.substr(1,1).substr(1,1));
+                var b = this._hexdec(hex.substr(2,1).substr(2,1));
+            } else {
+                var r = this._hexdec(hex.substr(0,2));
+                var g = this._hexdec(hex.substr(2,2));
+                var b = this._hexdec(hex.substr(4,2));
+            }
+            return [r, g, b];
+        },
+        _yiq: function(rgb) {
+            return 1 - (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114)/255;
         },
         /**
          * @param color Hex color (with #)

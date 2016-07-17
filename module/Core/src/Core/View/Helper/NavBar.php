@@ -114,10 +114,18 @@ class NavBar extends AbstractHelper
         $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
         $html .= '</div>';
         $html .= '</form>';
-        $html .= '<form class="navbar-form navbar-right visible-lg-block" id="zoomform">';
-        $html .= '<div class="togglebutton togglebutton-material-'.$color.'-200">';
-        $html .= '<label> Vue journée : <input id="zoom" type="checkbox" name="zoom-switch">';
-        $html .= '</label></div></form></div></div></nav>';
+        $html .= '<div class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
+        $html .= '<label class="btn btn-xs btn-info active">';
+        $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked>6h';
+        $html .= '</label>';
+        $html .= '<label class="btn btn-xs btn-info ">';
+        $html .= '<input name="viewOptions" id="viewday" type="radio" autocomplete="off" value="day">24h';
+        $html .= '</label>';
+        $html .= '<label class="btn btn-xs btn-info ">';
+        $html .= '<input name="viewOptions" id="viewmonth" type="radio" autocomplete="off" value="month">Mois';
+        $html .= '</label>';
+        $html .= '</div></div>';
+        $html .= '</div></div></nav>';
         
         return $html;
     }

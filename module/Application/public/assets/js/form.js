@@ -475,6 +475,7 @@ var form = function(url, tabid){
 				if(data['events']){
 					$('#timeline').timeline('addEvents', data.events);
 					$('#timeline').timeline('forceUpdateView');
+					$('#calendarview').fullCalendar('refetchEvents');
 				}
 				displayMessages(data.messages);
 			},
@@ -557,7 +558,7 @@ var form = function(url, tabid){
 	});
 
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(e){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #calendarview a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
         if(me.data('recurr') == true) {

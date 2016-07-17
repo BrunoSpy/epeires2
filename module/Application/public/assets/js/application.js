@@ -29,29 +29,59 @@ var displayMessages = function(messages){
 		});
 	}
 };
- 
- var displayPanel = function(id, files){
-        var timeline = $('#timeline');
-        if(timeline.css('left') === '330px' && $("#fiche").data('id') === id) {
-            //panneau ouvert avec la fiche actuelle : fermeture du panneau
-            hidePanel();
+
+/* **************** */
+/* Gestion panneau  */
+/* **************** */
+var timerFiche;
+
+var togglefiche = function(){
+    $("#main-nav-check").prop('checked', !$("#main-nav-check").is(':checked'));
+};
+var closeFiche = function() {
+    $("#fiche").empty();
+    $("#main-nav-check").prop('checked', false);
+    clearTimeout(timerFiche);
+};
+
+var openFiche = function() {
+    $("#main-nav-check").prop('checked', true);
+};
+
+var loadFiche = function(id, actionUrl, files) {
+    if($("#main-nav-check").is(':checked')){
+        if($('#fiche').data('id') === id){
+            closeFiche();
         } else {
-            if(timeline.css('left') !== '330px'){
-                //panneau fermé : on l'ouvre
-                $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
-                timeline.animate({
-                    left: '330px'
-                }, 300);
-            }
-            $('#fiche').load(url+'events/getfiche?id='+id, function(){
+            $('#fiche').load(url+actionUrl+'?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
-                if(files){
-                    $("#files-panel").trigger('click');
-                }
-                timerFiche = setTimeout(updateFiche, 10000, id);
-            }).data('id', id);
+                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+            });
         }
- };
+    } else {
+        $("#fiche").empty();
+        $('#fiche').load(url+actionUrl+'?id='+id, function(){
+            $('tr[data-toggle=tooltip]').tooltip();
+            if(files){
+                $("#files-panel").trigger('click');
+            }
+            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+        });
+
+        openFiche();
+    }
+};
+
+$(document).on('click', '.open-fiche, .checklist-evt', function(){
+    var id = $(this).data('id');
+    var actionUrl = $("#fiche").data('url');
+    loadFiche(id, actionUrl, false);
+});
+
+$("#fiche").on('click', "#close-panel", function(e){
+    e.preventDefault();
+    closeFiche();
+});
  
  var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
@@ -78,44 +108,10 @@ var displayMessages = function(messages){
 	timerFiche = setTimeout(updateFiche, 10000, id);
     });
  }
- 
- var hidePanel = function(){
-        var timeline = $('#timeline');
-        $('#fiche').empty();
-        if(timeline.css('left') === '330px') {
-            $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
-        }
-        timeline.animate({
-            left: '0px'
-        }, 300);
-        clearTimeout(timerFiche);
-        
- };
- 
- var togglePanel = function(id){
-        var panel = $('#timeline');
-        //on détermine si on affiche ou si on cache
-        var val = panel.css('left') === '330px' ? '0px' : '330px';
-        if(panel.css('left') === '330px') {
-            $('#fiche').empty();
-            $('#fiche').removeData('id');
-            $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
-            clearTimeout(timerFiche);
-        } else {
-            $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
-            $('#fiche').data('id', id);
-            $('#fiche').load(url+'events/getfiche?id='+id, function(){
-                $('tr[data-toggle=tooltip]').tooltip();
-                timerFiche = setTimeout(updateFiche, 10000, id);
-            });
-        }
-        panel.animate({
-            left: val
-        }, 300);
- };
- 
+
+/* End Left Panel */
  var url;
- var timerFiche;
+
 
  var setURL = function(urlt){
      url = urlt;
@@ -236,7 +232,7 @@ $(document).ready(function(){
     //slidepanel
     $(document).on('click', "#close-panel", function(e){
         e.preventDefault();
-        hidePanel();
+        closeFiche();
     });
     
     $(document).on('submit', '#add-note, #add-note-fiche', function(e){
@@ -261,6 +257,9 @@ $(document).ready(function(){
                 //mise à jour timeline si besoin
                 if($('#timeline').length > 0){
                     $('#timeline').timeline('addEvents',data.events);
+                }
+                if($('#calendarview').length > 0) {
+                    $('#calendarview').fullCalendar('refetchEvents');
                 }
             }
             displayMessages(data);
@@ -381,6 +380,7 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', function(evt) {return true;});
         $('#timeline').timeline('forceUpdateView', false);
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
     $("#filter_deleted").on('click', function(e){
@@ -390,10 +390,22 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', "default");
         $('#timeline').timeline('forceUpdateView', false);
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
-    $('#zoom').on('click', function() {
-        if (this.checked) {
+    $("input[name=viewOptions]").on('change', function(e){
+        closeFiche();
+        var view = $("input[name=viewOptions]:checked").val();
+        if(view.localeCompare("six") == 0){
+            $("#calendar").hide();
+            $("#export").hide();
+            $("#calendarview").hide();
+            $("#timeline").show();
+            $("#timeline").timeline('view', 'sixhours');
+            $.post(url + 'events/saveview?view=6');
+        } else if(view.localeCompare("day") == 0) {
+            $("#calendarview").hide();
+            $("#timeline").show();
             $("#calendar").show();
             $("#export").show();
             var now = new Date();
@@ -404,13 +416,194 @@ $(document).ready(function(){
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
             $.post(url + 'events/saveview?view=24')
-        } else {
-            $("#calendar").hide();
-            $("#export").hide();
-            $("#timeline").timeline('view', 'sixhours');
-            $.post(url + 'events/saveview?view=6');
+        } else if(view.localeCompare("month") == 0) {
+            $("#calendarview").show();
+            $("#timeline").hide();
+            $.post(url + 'events/saveview?view=30');
+            $("#calendarview").fullCalendar({
+                events: url+'events/geteventsFC'+(typeof(cats) == "undefined" ? '' : '?'+cats),
+                timezone: "UTC",
+                forceEventDuration: true,
+                defaultAllDayDuration: 60,
+                defaultTimedEventDuration: '40.00:00:00',
+                header: {
+                    left: '',
+                    center: 'title',
+                    right: 'today basicWeek,month prevYear,prev,next,nextYear',
+                    lang: "fr"
+                },
+                height: $(window).height() - 110,
+                eventMouseover: function(event, jsEvent, view){
+                    var text = '<table class="table"><tbody>';
+                    $.each(event.fields, function (nom, contenu) {
+                        text += "<tr>";
+                        text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
+                        text += "</tr>";
+                    });
+                    text += "</tbody></table>";
+                    $(this).tooltip({
+                        title: '<span class="elmt_tooltip">' + text + '</span>',
+                        container: 'body',
+                        html: 'true',
+                        placement:'auto top',
+                        viewport: '#calendarview',
+                        template: '<div class="tooltip tooltip-actions" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+                    }).tooltip('show');
+                    $(this).find('.actions').show();
+                },
+                eventMouseout: function(event, jsEvent, view){
+                    $(this).find('.actions').hide();
+                    $(this).tooltip('destroy');
+                },
+                eventRender: function(event, element){
+                    //add id
+                    element.addClass('cal-event-'+event.id);
+                    //change rendering accordind to status
+                    switch (event.status_id) {
+                        case 4:
+                            element.find('.fc-title').css('text-decoration', 'line-through');
+                            break;
+                        case 5:
+                            if($('#filter_none').closest('.filter').hasClass('active')) {
+                                element.find('.fc-title').addClass('dlt');
+                                if(event.textColor.localeCompare('white') == 0){
+                                    element.find('.fc-title').addClass('dlt-white');
+                                } else {
+                                    element.find('.fc-title').addClass('dlt-black');
+                                }
+                            } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
+                                element.hide();
+                            }
+                            break;
+                    }
+                    //actions
+                    var actions = $('<span class="actions"></span>');
+                    actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
+                                    ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
+                                    '</a>'));
+                    actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
+                                    ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
+                                    '</a>'));
+                    var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
+                                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
+                                '</a>');
+                    actions.append(tooltip)
+                    actions.css('display', "none");
+                    element.find('.fc-content').append(actions);
+                    var id = event.id;
+                    var txt = '<p class="elmt_tooltip actions">'
+                        + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                    if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
+                        if(event.punctual === false){
+                            if(event.star === true){
+                                txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                            } else {
+                                txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                            }
+                        }
+                        txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                        txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                    }
+                    if(event.status_id < 5 && event.deleteable) {
+                        txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+                    }
+                    txt += '</p>';
+                    tooltip.popover({
+                        container: '#calendarview',
+                        content: txt,
+                        placement:'auto top',
+                        html: 'true',
+                        viewport: '#calendarview',
+                        template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    });
+                }
+            });
         }
     });
+
+    $('#calendarview').on('click', '.tooltip-evt', function(){
+        var me = $(this);
+        me.popover('toggle');
+    });
+
+    $('#calendarview').on('click', '.evt-important', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=star&value=1',
+            function(data){
+                displayMessages(data.messages);
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.evt-non-important', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=star&value=0',
+            function(data){
+                displayMessages(data.messages);
+
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.send-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/sendevent?id='+id,
+            function(data){
+                displayMessages(data.messages);
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.cancel-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=status&value=4',
+            function(data){
+                displayMessages(data.messages);
+
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('destroy');
+    });
+
+    $('#calendarview').on('click', '.delete-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/deleteevent?id='+id,
+            function(data){
+                displayMessages(data.messages);
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $(document).on('click', function (e) {
+        $('#calendarview').find('.tooltip-evt').each(function () {
+            // hide any open popovers when the anywhere else in the body is clicked
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+            }
+        });
+    });
+
+    if(typeof(forceMonth) != "undefined" && forceMonth == true) {
+        $("#viewmonth").trigger('click');
+    }
 
     $("#date").bootstrapMaterialDatePicker({
             format: "DD/MM/YYYY",
@@ -459,12 +652,7 @@ $(document).ready(function(){
     	var date = new Date(temp[2],temp[1]-1,temp[0],"5");
         window.open(url+'report/daily?day='+date.toUTCString());
     });
-    
-    $("#timeline").on('click', ".checklist-evt", function(e){
-        e.preventDefault();
-        displayPanel($(this).data('id'));
-    });
-    
+
     /**
      * Ouverture des protections via le label
      */
@@ -478,10 +666,10 @@ $(document).ready(function(){
         		if(event.files === 1){
         			window.open(window.location.origin+url+event.url_file1);
         		} else {
-        			displayPanel(id, true);
+        			loadFiche(id, "events/getfiche", true);
         		}
         	} else {
-        		displayPanel(id, true);
+        		loadFiche(id, "events/getfiche", true);
         	}
         }
     })
