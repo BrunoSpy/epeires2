@@ -1409,6 +1409,11 @@
                     $('#category').append(cat);
                     cat.css({'background-color': curCat.color, 'height': 'auto',
                         'left': '15px'});
+                    if(this._yiq(this._hex2rgb(curCat.color)) < 0.5) {
+                        cat.css('color', "#000");
+                    } else {
+                        cat.css('color', "#fff");
+                    }
                 }
                 var minHeight = this._getCategoryMinHeight(curCat);
                 var height = this._getCategoryHeight(i);

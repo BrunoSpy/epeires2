@@ -540,7 +540,6 @@ $(document).ready(function(){
         if (typeof(cats) == "undefined") {
             urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '');
         } else {
-            console.log(cats);
             urlFC += '?'+cats + (lastupdateFC != 0 ? '&lastupdate=' + lastupdateFC.toUTCString() : '');
         }
         var view = $("#calendarview").fullCalendar('getView');
