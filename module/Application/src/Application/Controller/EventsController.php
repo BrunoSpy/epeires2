@@ -1607,6 +1607,7 @@ class EventsController extends TabController
         $start = $this->params()->fromQuery('start', null);
         $end = $this->params()->fromQuery('end', null);
         $cats = $this->params()->fromQuery('cats', null);
+        $lastmodified = $this->params()->fromQuery('lastupdate', null);
 
         $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $eventservice = $this->getServiceLocator()->get('EventService');
@@ -1617,7 +1618,7 @@ class EventsController extends TabController
             $this->zfcUserAuthentication(),
             $start,
             $end,
-            null,
+            $lastmodified,
             true,
             $cats
         ) as $event) {
@@ -1647,6 +1648,16 @@ class EventsController extends TabController
             $e['textColor'] = ($yiq >= 0.5 ? '#fff' : '#000' );
             $events[] = $e;
         }
+
+        if (count($events) === 0) {
+            $this->getResponse()->setStatusCode(304);
+            return new JsonModel();
+        }
+
+        $this->getResponse()
+            ->getHeaders()
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
+
         return new JsonModel($events);
     }
 

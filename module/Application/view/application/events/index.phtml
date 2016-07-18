@@ -42,7 +42,9 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
         <p><a href="#" id="day-backward"><span class="glyphicon glyphicon-backward"></span></a> <input id="date" type="text" class="date input-small"> <a href="#" id="day-forward"><span class="glyphicon glyphicon-forward"></span></a> <a href="#" id="export"><span class="glyphicon glyphicon-print"></span></a></p>
     </div>
 </div>
-<div id="calendarview"></div>
+<div id="calendarview">
+    <div class="loading" style="display: none;"></div>
+</div>
 </div>
 
 <?php 

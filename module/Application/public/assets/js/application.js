@@ -432,6 +432,17 @@ $(document).ready(function(){
                     lang: "fr"
                 },
                 height: $(window).height() - 110,
+                eventAfterAllRender: function(view) {
+                    updateFC();
+                },
+                loading: function(isLoading, view){
+                    if(isLoading) {
+                        var loading = $('<div class="loading" style="top:0px"></div>');
+                        $("#calendarview .fc-view").append(loading);
+                    } else {
+                        $("#calendarview .loading").remove();
+                    }
+                },
                 eventMouseover: function(event, jsEvent, view){
                     var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
@@ -519,6 +530,40 @@ $(document).ready(function(){
             });
         }
     });
+
+    /* update calendar view every 10s */
+    var lastupdateFC = 0;
+    var timerFC;
+    var updateFC = function() {
+        clearTimeout(timerFC);
+        var urlFC = url + 'events/geteventsFC'
+        if (typeof(cats) == "undefined") {
+            urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '');
+        } else {
+            console.log(cats);
+            urlFC += '?'+cats + (lastupdateFC != 0 ? '&lastupdate=' + lastupdateFC.toUTCString() : '');
+        }
+        var view = $("#calendarview").fullCalendar('getView');
+        var start = view.start.format("YYYY-MM-DD");
+        if(urlFC.indexOf('?') > 0){
+            urlFC += '&start='+start;
+        } else {
+            urlFC += '?start='+start;
+        }
+        var end = view.end.format("YYYY-MM-DD");
+        urlFC += '&end='+end;
+        return $.getJSON(urlFC,
+            function (data, textStatus, jqHXR) {
+                if (jqHXR.status !== 304) {
+                    lastupdateFC = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    $("#calendarview").fullCalendar('refetchEvents');
+                }
+            }).always(function () {
+            timerFC = setTimeout(function () {
+                updateFC();
+            }, 10000);
+        });
+    };
 
     $('#calendarview').on('click', '.tooltip-evt', function(){
         var me = $(this);
