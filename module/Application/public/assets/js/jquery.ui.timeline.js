@@ -1339,7 +1339,8 @@
             var diff = (now - this.timelineBegin) / (1000 * 60 * 60); //différence en heure
             //si vue six heures et diff > 2 heures : décaler d'une heure
             if (this.dayview === false && diff > 2) {
-                this._updateView();
+                //force la récupération de tous les évènements une fois par heure
+                this._updateEvents(true);
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
                 var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
@@ -1522,16 +1523,19 @@
         },
         /**
          * Get new and modified events every 10 seconds
+         * @param boolean refetch If true, refetch all events
          * @returns {undefined}
          */
-        _updateEvents: function () {
+        _updateEvents: function (refetch) {
             clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
-            if(url.indexOf('?') > 0){
-                url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
-            } else {
-                url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+            if(typeof(refetch) == "undefined" || refetch == false) {
+                if(url.indexOf('?') > 0){
+                    url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
+                } else {
+                    url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+                }
             }
             clearTimeout(this.timerUpdate);
             return $.getJSON(url,
