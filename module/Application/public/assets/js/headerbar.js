@@ -160,7 +160,7 @@ var headerbar = function (url) {
                     var n = noty({
                         text: "Rappel :<br> Relève de "+nextHour.hour+ " " + nextHour.name + (nextHour.zone.length > 0 ? " (zone "+nextHour.zone+")." : ".")
                                 + "<br>Penser à mettre à jour le nom du chef de salle en fonction.",
-                        type: "information",
+                        type: "warning",
                         timeout: false,
                         layout: "topRight",
                         callback: {
