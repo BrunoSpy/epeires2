@@ -423,9 +423,8 @@ $(document).ready(function(){
             $("#calendarview").fullCalendar({
                 events: url+'events/geteventsFC'+(typeof(cats) == "undefined" ? '' : '?'+cats),
                 timezone: "UTC",
+                timeFormat: 'H:mm',
                 forceEventDuration: true,
-                defaultAllDayDuration: 60,
-                defaultTimedEventDuration: '40.00:00:00',
                 header: {
                     left: '',
                     center: 'title',

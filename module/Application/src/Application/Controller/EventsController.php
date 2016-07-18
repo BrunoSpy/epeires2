@@ -1621,7 +1621,6 @@ class EventsController extends TabController
             true,
             $cats
         ) as $event) {
-            $e = array();
             $e = $this->getEventJson($event);
             $e['title'] = $eventservice->getName($event);
             $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
@@ -1631,9 +1630,15 @@ class EventsController extends TabController
             if($event->getEnddate()) {
                 $e['end'] = $event->getEnddate()->format(DATE_ISO8601);
             } else {
-                $tempEnd = new \DateTime($end);
-                $tempEnd->add(new \DateInterval('P2D'));
-                $e['end'] = $tempEnd->format(DATE_ISO8601);
+                if($event->isPunctual()) {
+                    $tempend = clone $event->getStartdate();
+                    $tempend->add(new \DateInterval('PT1M'));
+                    $e['end'] = $tempend->format(DATE_ISO8601);
+                } else {
+                    $tempEnd = new \DateTime($end);
+                    $tempEnd->add(new \DateInterval('P2D'));
+                    $e['end'] = $tempEnd->format(DATE_ISO8601);
+                }
             }
             $e['color'] = ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
 
