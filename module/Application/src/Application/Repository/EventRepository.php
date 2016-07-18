@@ -41,13 +41,14 @@ class EventRepository extends ExtendedRepository
      * intersecting <code>$day</code>
      * 
      * @param type $userauth            
-     * @param type $day
+     * @param \DateTime $day
      *            If null : use current day
      * @param DateTime $end
      * @param type $lastmodified
      *            If not null : only events modified since <code>$lastmodified</code>
      * @param type $orderbycat            
      * @param type $cats
+     * @param array $status If $cats != null, restrict events status
      * @return type
      */
     public function getEvents($userauth,
@@ -55,8 +56,8 @@ class EventRepository extends ExtendedRepository
                               $end = null,
                               $lastmodified = null,
                               $orderbycat = false,
-                              $cats = null
-    )
+                              $cats = null,
+                              $status = null)
     {
         $parameters = array();
         
@@ -77,6 +78,9 @@ class EventRepository extends ExtendedRepository
         if ($cats) {
             $qb->andWhere($qb->expr()
                 ->in('e.category', $cats));
+            if($status) {
+                $qb->andWhere($qb->expr()->in('e.status', $status));
+            }
         } else {
             // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
             $qb->andWhere($qb->expr()
@@ -95,7 +99,7 @@ class EventRepository extends ExtendedRepository
                     ->neq('e.scheduled', true), $qb->expr()
                     ->andX($qb->expr()
                         ->eq('c.timelineconfirmed', true), $qb->expr()
-                        ->in('e.status', array(2,3,4)), $qb->expr()
+                        ->in('e.status', array(2,3,4,5)), $qb->expr()
                         ->eq('e.scheduled',true)
                     )
                 )
@@ -301,8 +305,9 @@ class EventRepository extends ExtendedRepository
      * @param unknown $end
      *            DateTime
      * @param unknown $exclude
+     * @param array $status
      */
-    public function getAllEvents($user, $start, $end, $exclude = false, $filter = false)
+    public function getAllEvents($user, $start, $end, $exclude = false, $status = null)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array(
@@ -333,6 +338,10 @@ class EventRepository extends ExtendedRepository
                 ->eq('e.punctual', 'true'), $qb->expr()
                 ->gte('e.startdate', '?1'), $qb->expr()
                 ->lte('e.startdate', '?2'))));
+        //restriction sur le statut
+        if($status) {
+            $qb->andWhere($qb->expr()->in('e.status', $status));
+        }
         //exclusion des catégories pour rapport IPO
         if($exclude) {
             $qb->andWhere($qb->expr()->eq('c.exclude', '?3'));
