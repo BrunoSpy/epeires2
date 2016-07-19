@@ -11,6 +11,7 @@ install:
    - composer install --dev --no-interaction
 
 before_script:
+  - phpenv config-rm xdebug.ini
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
