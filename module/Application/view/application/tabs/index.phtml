@@ -3,6 +3,9 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/fullcalendar.material.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.css');
+
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
@@ -29,8 +32,13 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
         </div>
 </div>
 
-<div id="fiche" class="panel panel-fixed">
+<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+
+<div id="fiche" class="panel-left panel-fixed" data-url="events/getfiche">
 </div>
+
+<div class="page-wrap">
+
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
@@ -38,6 +46,10 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
     </div>
 </div>
 
+<div id="calendarview">
+    <div class="loading" style="display: none;"></div>
+</div>
+</div>
 
 <?php 
 //modal windows to modify or delete file
@@ -92,6 +104,26 @@ $("#home").removeClass("dropdown-toggle")
 		  .attr('data-toggle', '')
 		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
+<?php
+if($this->view == "30") {
+    echo 'forceMonth = true;';
+    if($this->cats) {
+        $catsString = "";
+        $i = 0;
+        foreach ($this->cats as $cat) {
+            if(strlen($catsString) > 0) {
+                $catsString .= "&";
+            }
+            $catsString .= 'cats[' . $i . ']=' . $cat;
+            $i++;
+        }
+        echo 'cats = "'.$catsString.'";';
+    } else {
+        echo 'cats = null;';
+    }
+}
+?>
+
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', 'action' => 'getevents'),
@@ -109,7 +141,7 @@ $('#timeline').timeline({
         $("#timeline .loading").hide();
         <?php
         if($this->view == "24") {
-            echo '$("#zoom").trigger("click");';
+            echo '$("#viewday").trigger("click");';
             if($this->day !== null) {
                 echo '$("#calendar input[type=text].date").val('.$this->day.');';
                 echo '$("#calendar input[type=text].date").trigger("change");';

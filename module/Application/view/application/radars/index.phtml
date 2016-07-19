@@ -4,6 +4,7 @@
 	<p></p>
 	<div class="row">
 		<div class="col-sm-4 col-sm-offset-4">
+            <?php if($this->radars) : ?>
 			<table class="table table-striped table-hover table-bordered sortable" id="radars">
 				<thead>
 					<tr>
@@ -39,36 +40,40 @@
 				?>
 				</tbody>
 			</table>
+            <?php else: ?>
+            <p>Aucun radar configuré.</p>
+            <?php endif; ?>
 		</div>
 	</div>
 </div>
 
 <?php 
+if($this->radars) {
+	$this->form->setAttribute('class', 'form-horizontal');
+	$this->form->prepare();
 
-$this->form->setAttribute('class', 'form-horizontal');
-$this->form->prepare();
+	$form = $this->form()->openTag($this->form);
 
-$form = $this->form()->openTag($this->form);
+	$form .= '<div class="modal-body">';
+	$form .= '<div id="message"></div>';
+	foreach ($this->form->get('custom_fields')->getElements() as $element) {
+		$form .= $this->controlGroup($element);
+	}
+	$form .= '</div>';
+	$form .= '<div class="modal-footer">';
+	$form .= '<button class="btn btn-danger" id="end-radar-href" type="submit">Confirmer</button>';
+	$form .= "<button class=\"btn\" href=\"#\" id=\"cancel-radar\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
 
-$form .= '<div class="modal-body">';
-$form .= '<div id="message"></div>';
-foreach ($this->form->get('custom_fields')->getElements() as $element) {
-    $form .= $this->controlGroup($element);
+	$form .= '</div>';
+	$form .= $this->form()->closeTag();
+
+
+	echo $this->modalwindow("confirm-end-event",
+		"<h3>Radar <em><span id=\"radar_name\"></span></em></h3>",
+		"",
+		null,
+		$form);
 }
-$form .= '</div>';
-$form .= '<div class="modal-footer">';
-$form .= '<button class="btn btn-danger" id="end-radar-href" type="submit">Confirmer</button>';
-$form .= "<button class=\"btn\" href=\"#\" id=\"cancel-radar\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
-
-$form .= '</div>';
-$form .= $this->form()->closeTag();
-
-
-echo $this->modalwindow("confirm-end-event", 
-						"<h3>Radar <em><span id=\"radar_name\"></span></em></h3>",
-						"",
-						null,
-						$form);
 ?>
 <?php $this->inlineScript()->captureStart();?>
 

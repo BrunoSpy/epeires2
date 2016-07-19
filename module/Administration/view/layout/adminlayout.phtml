@@ -180,7 +180,22 @@
 	if(!$this->zfcuserIdentity()){
 			echo $this->modalWindow("loginwindow", "<h4>Connexion</h4>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
 	} ?>
-        
+
+
+	<?php $this->inlineScript()->captureStart();?>
+
+	setURL('<?php echo $this->url('application');?>');
+
+	//init translation
+	i18n.init({
+	lng: '<?php echo $this->lang;?>',
+	fallbackLng: 'fr_FR',
+	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
+	});
+
+	<?php $this->inlineScript()->captureEnd();?>
+
+
     <?php echo $this->inlineScript() ?>
     </body>
 </html>

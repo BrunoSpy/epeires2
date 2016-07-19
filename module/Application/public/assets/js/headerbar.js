@@ -160,7 +160,7 @@ var headerbar = function (url) {
                     var n = noty({
                         text: "Rappel :<br> Relève de "+nextHour.hour+ " " + nextHour.name + (nextHour.zone.length > 0 ? " (zone "+nextHour.zone+")." : ".")
                                 + "<br>Penser à mettre à jour le nom du chef de salle en fonction.",
-                        type: "information",
+                        type: "warning",
                         timeout: false,
                         layout: "topRight",
                         callback: {
@@ -200,7 +200,12 @@ var headerbar = function (url) {
     );
 
     $('#navbar-first .opsup-form label, #navbar-first .opsup-name').on('click', function(e){
-        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups', function(){
+        var day = '';
+        if($("#calendar:visible").length > 0) {
+            day = $('#date').val();
+            day = day.replace(/\//g,"-");
+        }
+        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups'+ (day.length > 0 ? '?day='+day : ''), function(){
             $("#opsupwindow").modal('show');
         });
     });

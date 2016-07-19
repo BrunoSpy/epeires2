@@ -728,12 +728,55 @@ class ModelsController extends FormController
         $messages = array();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
-            
-            $datas = $this->getForm();
+            $id = $post['id'];
+            $datas = $this->getAlarmForm($id);
             $form = $datas['form'];
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             if ($form->isValid()) {
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                
+                if($id) {
+                    $alarm = $datas['alarm'];
+
+                    if (isset($post['custom_fields'])) {
+                        foreach ($post['custom_fields'] as $key => $value) {
+                            // génération des customvalues si un customfield dont le nom est $key est trouvé
+                            $customfield = $objectManager
+                                ->getRepository('Application\Entity\CustomField')
+                                ->findOneBy(array('id' => $key));
+                            if ($customfield) {
+                                if (is_array($value)) {
+                                    $temp = "";
+                                    foreach ($value as $v) {
+                                        $temp .= (string) $v . "\r";
+                                    }
+                                    $value = trim($temp);
+                                }
+                                $customvalue = $objectManager
+                                    ->getRepository('Application\Entity\CustomFieldValue')
+                                    ->findOneBy(array(
+                                            'customfield' => $customfield->getId(),
+                                            'event' => $alarm->getId())
+                                    );
+                                if (! $customvalue) {
+                                    $customvalue = new CustomFieldValue();
+                                    $customvalue->setEvent($alarm);
+                                    $customvalue->setCustomField($customfield);
+                                    $alarm->addCustomFieldValue($customvalue);
+                                }
+                                $customvalue->setValue($value);
+                            }
+                        }
+                    }
+
+                    $objectManager->persist($alarm);
+                    try {
+                        $objectManager->flush();
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                }
                 $event = $form->getData();
                 $alarm = array();
                 $alarm['name'] = $post['custom_fields'][$event->getCategory()
@@ -749,6 +792,7 @@ class ModelsController extends FormController
                     ->getDeltaEndField()
                     ->getId()];
                 $json['alarm'] = $alarm;
+
             } else {
                 $this->processFormMessages($form->getMessages(), $messages);
             }
@@ -791,6 +835,21 @@ class ModelsController extends FormController
         if ($alarmid) {
             $alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);
             if ($alarm) {
+
+                foreach ($objectManager->getRepository('Application\Entity\CustomField')->findBy(array(
+                    'category' => $alarmcat
+                )) as $customfield) {
+                    $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
+                        'event' => $alarm->getId(),
+                        'customfield' => $customfield->getId()
+                    ));
+                    if ($customfieldvalue) {
+                        $form->get('custom_fields')
+                            ->get($customfield->getId())
+                            ->setAttribute('value', $customfieldvalue->getValue());
+                    }
+                }
+
                 $form->bind($alarm);
                 $form->setData($alarm->getArrayCopy());
             }
@@ -815,7 +874,7 @@ class ModelsController extends FormController
             'name' => 'submit',
             'attributes' => array(
                 'type' => 'submit',
-                'value' => 'Ajouter',
+                'value' => $alarmid ? 'Enregistrer' : 'Ajouter',
                 'class' => 'btn btn-primary'
             )
         ));

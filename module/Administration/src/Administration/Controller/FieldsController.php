@@ -151,8 +151,9 @@ class FieldsController extends FormController
                 'type' => $customfield->getType()->getName(),
                 'help' => $customfield->getTooltip(),
                 'multiple' => $customfield->isMultiple() ? true : false,
+                'milestone' => $customfield->isMilestone() ? true : false,
                 'defaut' => $customfield->getDefaultValue(),
-                'trace' => $customfield->isTraceable()
+                'trace' => $customfield->isTraceable() ? true : false
             ));
         }
     }

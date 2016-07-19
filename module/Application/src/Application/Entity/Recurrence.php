@@ -168,8 +168,18 @@ class Recurrence
 
     private function getRRule() {
         if($this->rrule == null) {
-            $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
-                 RRULE:'.$this->getRecurrencePattern();
+            $rule = '';
+            $untilpos = strpos($this->getRecurrencePattern(), 'UNTIL');
+            if($untilpos !== false) {
+                //DTSTART and UNTIL must have the same type
+                $time = $this->getStartdate()->format('\This\Z');
+                $newpattern = substr_replace($this->getRecurrencePattern(), $time, $untilpos + 6 + 8, 0);
+                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\This') . '
+                 RRULE:' . $newpattern;
+            } else {
+                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
+                 RRULE:' . $this->getRecurrencePattern();
+            }
             $this->rrule = new RRule($rule);
         }
         return $this->rrule;

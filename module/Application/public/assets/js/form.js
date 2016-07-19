@@ -422,6 +422,8 @@ var form = function(url, tabid){
             var datestring = d.getUTCDate()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
             var timestring = FormatNumberLength(d.getUTCHours(), 2)+":"+FormatNumberLength(d.getUTCMinutes(), 2);
             end = datestring + " " + timestring;
+			$("input[name=enddate]").val(end);
+			$("input[name=enddate]").data('duration', 0);
         }
 		if(end){
 			var daysplit = end.split(' ');
@@ -473,6 +475,7 @@ var form = function(url, tabid){
 				if(data['events']){
 					$('#timeline').timeline('addEvents', data.events);
 					$('#timeline').timeline('forceUpdateView');
+					$('#calendarview').fullCalendar('refetchEvents');
 				}
 				displayMessages(data.messages);
 			},
@@ -527,7 +530,7 @@ var form = function(url, tabid){
 		$("#event").html('');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
-		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&tabid='+tabid, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
@@ -544,7 +547,7 @@ var form = function(url, tabid){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
 
-		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1', function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&tabid='+tabid, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
@@ -555,7 +558,7 @@ var form = function(url, tabid){
 	});
 
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt", function(e){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #calendarview a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
         if(me.data('recurr') == true) {

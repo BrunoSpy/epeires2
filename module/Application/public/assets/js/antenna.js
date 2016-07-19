@@ -2,19 +2,6 @@
  * @author Bruno Spyckerelle
  */
 
-var togglefiche = function(){
-    $("#main-nav-check").prop('checked', !$("#main-nav-check").is(':checked'));
-};
-var closeFiche = function() {
-    $("#fiche").empty();
-    $("#main-nav-check").prop('checked', false);
-    clearTimeout(timerFiche);
-};
-
-var openFiche = function() {
-    $("#main-nav-check").prop('checked', true);
-};
-
 var antenna = function(url, frequencyTestMenu){
 
     //if true, switch the button to its previous state
@@ -24,30 +11,6 @@ var antenna = function(url, frequencyTestMenu){
     var currentfrequencies;
 
     var timer;
-
-    $(document).on('click', '.open-fiche', function(){
-        var id = $(this).data('id');
-        if($("#main-nav-check").is(':checked')){
-            if($('#fiche').data('id') === id){
-                closeFiche();
-            } else {
-                $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
-                    timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
-                });
-            }
-        } else {
-            $("#fiche").empty();
-            $('#fiche').load(url+'frequencies/getfiche?id='+id, function(){
-                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
-            });
-            openFiche();
-        }
-    });
-
-    $("#fiche").on('click', "#close-panel", function(e){
-        e.preventDefault();
-        closeFiche();
-    });
 
     $(document).on('click','.switch-coverture', function(){
         var me = $(this);

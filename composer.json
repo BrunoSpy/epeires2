@@ -43,9 +43,6 @@
         "rlanvin/php-rrule": "^1.2"
     },
     "require-dev":{
-    	"zendframework/zend-developer-tools": "dev-master",
-        "zendframework/zftool": "dev-master",
-        "ocramius/ocra-service-manager": "dev-master",
         "zendframework/zend-test": "^2.5",
         "phpunit/phpunit": "^5.1",
         "hounddog/doctrine-data-fixture-module": "dev-master",

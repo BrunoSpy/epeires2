@@ -114,13 +114,24 @@ class EventsController extends TabController
                     ->getId(),
                 'current' => true
             ));
-            
-            $json[$currentipo->getId()] = $currentipo->getName();
+            if($currentipo) {
+                $json[$currentipo->getId()] = $currentipo->getName();
+            }
         }
         
         return new JsonModel($json);
     }
 
+    public function testAuthenticationAction() {
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+            $this->getResponse()->setStatusCode(200);
+            return new JsonModel();
+        } else {
+            $this->getResponse()->setStatusCode(401);
+            return new JsonModel();
+        }
+    }
+    
     /**
      * Returns a Json with all relevant events and models
      */
@@ -913,7 +924,6 @@ class EventsController extends TabController
                         $objectManager->flush();
                         $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
                     } catch (\Exception $e) {
-                        error_log(print_r($e->getMessage(), true));
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
                         $messages['error'][] = $e->getMessage();
                         $events = array();
@@ -1555,7 +1565,8 @@ class EventsController extends TabController
         
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->zfcUserAuthentication(), 
-            $day, 
+            $day,
+            null,
             $lastmodified, 
             true, 
             $cats
@@ -1573,6 +1584,81 @@ class EventsController extends TabController
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
         
         return new JsonModel($json);
+    }
+
+    private function hex2rgb($hex) {
+        $hex = str_replace("#", "", $hex);
+
+        if(strlen($hex) == 3) {
+            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+        } else {
+            $r = hexdec(substr($hex,0,2));
+            $g = hexdec(substr($hex,2,2));
+            $b = hexdec(substr($hex,4,2));
+        }
+        $rgb = array($r, $g, $b);
+        return $rgb;
+    }
+
+
+    public function geteventsFCAction() {
+        $start = $this->params()->fromQuery('start', null);
+        $end = $this->params()->fromQuery('end', null);
+        $cats = $this->params()->fromQuery('cats', null);
+        $lastmodified = $this->params()->fromQuery('lastupdate', null);
+
+        $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $eventservice = $this->getServiceLocator()->get('EventService');
+
+        $events = array();
+
+        foreach ($om->getRepository('Application\Entity\Event')->getEvents(
+            $this->zfcUserAuthentication(),
+            $start,
+            $end,
+            $lastmodified,
+            true,
+            $cats
+        ) as $event) {
+            $e = $this->getEventJson($event);
+            $e['title'] = $eventservice->getName($event);
+            $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
+            if($event->isPunctual()) {
+                $e['end'] = $event->getStartdate()->format(DATE_ISO8601);
+            }
+            if($event->getEnddate()) {
+                $e['end'] = $event->getEnddate()->format(DATE_ISO8601);
+            } else {
+                if($event->isPunctual()) {
+                    $tempend = clone $event->getStartdate();
+                    $tempend->add(new \DateInterval('PT1M'));
+                    $e['end'] = $tempend->format(DATE_ISO8601);
+                } else {
+                    $tempEnd = new \DateTime($end);
+                    $tempEnd->add(new \DateInterval('P2D'));
+                    $e['end'] = $tempEnd->format(DATE_ISO8601);
+                }
+            }
+            $e['color'] = ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
+
+            $rgb = $this->hex2rgb($e['color']);
+            $yiq = 1 - ($rgb[0]*0.299 + $rgb[1]*0.587 + $rgb[2]*0.114)/255;
+            $e['textColor'] = ($yiq >= 0.5 ? '#fff' : '#000' );
+            $events[] = $e;
+        }
+
+        if (count($events) === 0) {
+            $this->getResponse()->setStatusCode(304);
+            return new JsonModel();
+        }
+
+        $this->getResponse()
+            ->getHeaders()
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
+
+        return new JsonModel($events);
     }
 
     private function getEventJson(Event $event)
@@ -1625,6 +1711,7 @@ class EventsController extends TabController
             \IntlDateFormatter::GREGORIAN,
             'dd LLL HH:mm'
         );
+        $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
@@ -1646,8 +1733,20 @@ class EventsController extends TabController
                     $fields[$value->getCustomField()->getName()] = $formattedvalue;
                 }
             }
+            $i = 0;
+            if($value->getCustomField()->isMilestone()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                   //store only changes -> skip firt log
+                    if($i > 0) {
+                        $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
+                    }
+                    $i++;
+                }
+            }
         }
-        
+
+        $json['milestones'] = $milestones;
+
         $formatter = \IntlDateFormatter::create(
             \Locale::getDefault(),
             \IntlDateFormatter::FULL,

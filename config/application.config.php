@@ -39,7 +39,7 @@ $modules = array(
 );
 
 if ($env == 'development') {
-    // $modules [] = 'ZendDeveloperTools';
+
 }
 
 return array(

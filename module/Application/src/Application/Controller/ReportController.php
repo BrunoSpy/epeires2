@@ -97,15 +97,17 @@ class ReportController extends AbstractActionController
             foreach ($cats as $cat) {
                 $category = array();
                 $category['name'] = $cat->getName();
-                $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
-                    $cat->getId()
-                ));
+
+                //évènements lisibles par l'utilisateur, du jour spécifié, de la catégorie et non supprimés
+                $category['events'] = $objectManager
+                    ->getRepository('Application\Entity\Event')
+                    ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($cat->getId()), array(1,2,3,4));
                 $category['childs'] = array();
                 foreach ($cat->getChildren() as $subcat) {
                     $subcategory = array();
-                    $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
-                        $subcat->getId()
-                    ));
+                    $subcategory['events'] = $objectManager
+                        ->getRepository('Application\Entity\Event')
+                        ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                     $subcategory['name'] = $subcat->getName();
                     $category['childs'][] = $subcategory;
                 }
@@ -183,15 +185,15 @@ class ReportController extends AbstractActionController
         foreach ($cats as $cat) {
             $category = array();
             $category['name'] = $cat->getName();
-            $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
-                $cat->getId()
-            ));
+            $category['events'] = $objectManager
+                ->getRepository('Application\Entity\Event')
+                ->getEvents(null, $day, null, null, true, array($cat->getId()), array(1,2,3,4));
             $category['childs'] = array();
             foreach ($cat->getChildren() as $subcat) {
                 $subcategory = array();
-                $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
-                    $subcat->getId()
-                ));
+                $subcategory['events'] = $objectManager
+                    ->getRepository('Application\Entity\Event')
+                    ->getEvents(null, $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                 $subcategory['name'] = $subcat->getName();
                 $category['childs'][] = $subcategory;
             }

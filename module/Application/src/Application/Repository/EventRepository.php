@@ -41,15 +41,23 @@ class EventRepository extends ExtendedRepository
      * intersecting <code>$day</code>
      * 
      * @param type $userauth            
-     * @param type $day
+     * @param \DateTime $day
      *            If null : use current day
+     * @param DateTime $end
      * @param type $lastmodified
      *            If not null : only events modified since <code>$lastmodified</code>
      * @param type $orderbycat            
-     * @param type $onlytimeline            
+     * @param type $cats
+     * @param array $status If $cats != null, restrict events status
      * @return type
      */
-    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false, $cats = null)
+    public function getEvents($userauth,
+                              $day = null,
+                              $end = null,
+                              $lastmodified = null,
+                              $orderbycat = false,
+                              $cats = null,
+                              $status = null)
     {
         $parameters = array();
         
@@ -70,6 +78,9 @@ class EventRepository extends ExtendedRepository
         if ($cats) {
             $qb->andWhere($qb->expr()
                 ->in('e.category', $cats));
+            if($status) {
+                $qb->andWhere($qb->expr()->in('e.status', $status));
+            }
         } else {
             // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
             $qb->andWhere($qb->expr()
@@ -88,7 +99,7 @@ class EventRepository extends ExtendedRepository
                     ->neq('e.scheduled', true), $qb->expr()
                     ->andX($qb->expr()
                         ->eq('c.timelineconfirmed', true), $qb->expr()
-                        ->in('e.status', array(2,3,4)), $qb->expr()
+                        ->in('e.status', array(2,3,4,5)), $qb->expr()
                         ->eq('e.scheduled',true)
                     )
                 )
@@ -103,32 +114,65 @@ class EventRepository extends ExtendedRepository
             $parameters[1] = $lastmodified->format("Y-m-d H:i:s");
             $qb->setParameters($parameters);
         } else {
-            if ($day) { // restriction aux evts intersectant le jour spécifié
-                $daystart = new \DateTime($day);
-                $daystart->setTime(0, 0, 0);
-                $dayend = new \DateTime($day);
-                $dayend->setTime(23, 59, 59);
-                $daystart = $daystart->format("Y-m-d H:i:s");
-                $dayend = $dayend->format("Y-m-d H:i:s");
-                // tous les évènements ayant une intersection non nulle avec $day
-                $qb->andWhere($qb->expr()
-                    ->orX(
-                    // evt dont la date de début est le bon jour : inclus les ponctuels
-                    $qb->expr()
+            if ($day) {
+                if($end == null) {
+                    // restriction aux evts intersectant le jour spécifié
+                    $daystart = new \DateTime($day);
+                    $daystart->setTime(0, 0, 0);
+                    $dayend = new \DateTime($day);
+                    $dayend->setTime(23, 59, 59);
+                    $daystart = $daystart->format("Y-m-d H:i:s");
+                    $dayend = $dayend->format("Y-m-d H:i:s");
+                    // tous les évènements ayant une intersection non nulle avec $day
+                    $qb->andWhere($qb->expr()
+                        ->orX(
+                        // evt dont la date de début est le bon jour : inclus les ponctuels
+                            $qb->expr()
+                                ->andX($qb->expr()
+                                    ->gte('e.startdate', '?1'), $qb->expr()
+                                    ->lte('e.startdate', '?2')),
+                            // evt dont la date de début est passée : forcément non ponctuels
+                            $qb->expr()
+                                ->andX($qb->expr()
+                                    ->eq('e.punctual', 'false'), $qb->expr()
+                                    ->lt('e.startdate', '?1'), $qb->expr()
+                                    ->orX($qb->expr()
+                                        ->isNull('e.enddate'), $qb->expr()
+                                        ->gte('e.enddate', '?1')))));
+                    $parameters[1] = $daystart;
+                    $parameters[2] = $dayend;
+                    $qb->setParameters($parameters);
+                } else {
+                    $daystart = new \DateTime($day);
+                    $daystart->setTime(0, 0, 0);
+                    $daystart = $daystart->format("Y-m-d H:i:s");
+                    $dayend = new \DateTime($end);
+                    $dayend->setTime(23, 59, 59);
+                    $dayend = $dayend->format("Y-m-d H:i:s");
+                    //tous les évènements intersectant la période
+                    $qb->andWhere($qb->expr()
+                    ->orX($qb->expr() // sans date de fin et non ponctuel
                         ->andX($qb->expr()
-                        ->gte('e.startdate', '?1'), $qb->expr()
-                        ->lte('e.startdate', '?2')), 
-                    // evt dont la date de début est passée : forcément non ponctuels
-                    $qb->expr()
-                        ->andX($qb->expr()
-                        ->eq('e.punctual', 'false'), $qb->expr()
-                        ->lt('e.startdate', '?1'), $qb->expr()
-                        ->orX($qb->expr()
-                        ->isNull('e.enddate'), $qb->expr()
-                        ->gte('e.enddate', '?1')))));
-                $parameters[1] = $daystart;
-                $parameters[2] = $dayend;
-                $qb->setParameters($parameters);
+                            ->isNull('e.enddate'), $qb->expr()
+                            ->eq('e.punctual', 'false'), $qb->expr()
+                            ->lte('e.startdate', '?2')),
+                            // non ponctuel, avec date de fin
+                        $qb->expr()
+                            ->andX($qb->expr()
+                                ->isNotNull('e.enddate'), $qb->expr()
+                                ->eq('e.punctual', 'false'), $qb->expr()
+                                ->lte('e.startdate', '?2'), $qb->expr()
+                                ->gte('e.enddate', '?1')),
+                        // ponctuel
+                        $qb->expr()
+                            ->andX($qb->expr()
+                                ->eq('e.punctual', 'true'), $qb->expr()
+                                ->gte('e.startdate', '?1'), $qb->expr()
+                                ->lte('e.startdate', '?2'))));
+                    $parameters[1] = $daystart;
+                    $parameters[2] = $dayend;
+                    $qb->setParameters($parameters);
+                }
             } else {
                 // sinon restriction aux evts autour du jour présent
                 $now = new \DateTime('NOW');
@@ -261,8 +305,9 @@ class EventRepository extends ExtendedRepository
      * @param unknown $end
      *            DateTime
      * @param unknown $exclude
+     * @param array $status
      */
-    public function getAllEvents($user, $start, $end, $exclude = false)
+    public function getAllEvents($user, $start, $end, $exclude = false, $status = null)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array(
@@ -293,6 +338,10 @@ class EventRepository extends ExtendedRepository
                 ->eq('e.punctual', 'true'), $qb->expr()
                 ->gte('e.startdate', '?1'), $qb->expr()
                 ->lte('e.startdate', '?2'))));
+        //restriction sur le statut
+        if($status) {
+            $qb->andWhere($qb->expr()->in('e.status', $status));
+        }
         //exclusion des catégories pour rapport IPO
         if($exclude) {
             $qb->andWhere($qb->expr()->eq('c.exclude', '?3'));
@@ -307,9 +356,9 @@ class EventRepository extends ExtendedRepository
             $parameters[1] = $start->format("Y-m-d H:i:s");
             $parameters[2] = $end->format("Y-m-d H:i:s");
             $qb->setParameters($parameters);
-            
+
             $query = $qb->getQuery();
-            
+
             return $query->getResult();
         } else {
             return array();

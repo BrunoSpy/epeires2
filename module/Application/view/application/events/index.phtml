@@ -3,6 +3,9 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/fullcalendar.material.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.css');
+
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
@@ -29,13 +32,19 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
         </div>
 </div>
 
-<div id="fiche" class="panel-left panel-fixed">
-</div>
+<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+
+<div id="fiche" class="main-nav panel-left" data-url="events/getfiche"></div>
+<div class="page-wrap">
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
         <p><a href="#" id="day-backward"><span class="glyphicon glyphicon-backward"></span></a> <input id="date" type="text" class="date input-small"> <a href="#" id="day-forward"><span class="glyphicon glyphicon-forward"></span></a> <a href="#" id="export"><span class="glyphicon glyphicon-print"></span></a></p>
     </div>
+</div>
+<div id="calendarview">
+    <div class="loading" style="display: none;"></div>
+</div>
 </div>
 
 <?php 
@@ -105,6 +114,25 @@ if($this->isGranted('events.recurrent')) {
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
+<?php
+if($this->view == "30") {
+    echo 'forceMonth = true;';
+    if($this->cats) {
+        $catsString = "";
+        $i = 0;
+        foreach ($this->cats as $cat) {
+            if(strlen($catsString) > 0) {
+                $catsString .= "&";
+            }
+            $catsString .= 'cats[' . $i . ']=' . $cat;
+            $i++;
+        }
+        echo 'cats = "'.$catsString.'";';
+    } else {
+        echo 'cats = null;';
+    }
+}
+?>
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
@@ -117,7 +145,7 @@ $('#timeline').timeline({
         $("#timeline .loading").hide();
         <?php
         if($this->view == "24") {
-            echo '$("#zoom").trigger("click");';
+            echo '$("#viewday").trigger("click");';
             if($this->day !== null) {
                 echo '$("#calendar input[type=text].date").val('.$this->day.');';
                 echo '$("#calendar input[type=text].date").trigger("change");';
