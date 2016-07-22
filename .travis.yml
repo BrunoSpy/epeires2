@@ -10,6 +10,9 @@ services:
 install:
    - composer install --dev --no-interaction
 
+env:
+   - APP_ENV=development
+
 before_script:
   - phpenv config-rm xdebug.ini
   - mysql -e 'create database epeires2;'

@@ -23,7 +23,6 @@ $env = getenv('APP_ENV') ?  : 'production';
 $modules = array(
     'DoctrineModule',
     'DoctrineORMModule',
-    'DoctrineDataFixtureModule',
     'DoctrineMigrationsModule',
     'ZfcBase',
     'ZfcRbac',
@@ -39,7 +38,7 @@ $modules = array(
 );
 
 if ($env == 'development') {
-
+    $modules[] = 'DoctrineDataFixtureModule';
 }
 
 return array(
