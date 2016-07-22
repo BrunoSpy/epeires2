@@ -25,15 +25,17 @@ namespace Core\NMB2B;
 class EAUPRSAs
 {
 
-    private $xml;
+    private $xml = null;
 
     public function __construct($strxml)
     {
-        $this->xml = new \SimpleXMLElement($strxml);
-        // register namespaces
-        $this->xml->registerXPathNamespace('adrmsg', "http://www.eurocontrol.int/cfmu/b2b/ADRMessage");
-        $this->xml->registerXPathNamespace('gml', "http://www.opengis.net/gml/3.2");
-        $this->xml->registerXPathNamespace('aixm', 'http://www.aixm.aero/schema/5.1');
+        if($strxml != null) {
+            $this->xml = new \SimpleXMLElement($strxml);
+            // register namespaces
+            $this->xml->registerXPathNamespace('adrmsg', "http://www.eurocontrol.int/cfmu/b2b/ADRMessage");
+            $this->xml->registerXPathNamespace('gml', "http://www.opengis.net/gml/3.2");
+            $this->xml->registerXPathNamespace('aixm', 'http://www.aixm.aero/schema/5.1');
+        }
     }
 
     /**
@@ -44,7 +46,11 @@ class EAUPRSAs
      */
     public function getAirspacesWithDesignator($designator)
     {
-        return $this->xml->xpath('//aixm:Airspace//aixm:AirspaceTimeSlice[starts-with(aixm:designator,"' . $designator . '")]/../..');
+        if($this->xml != null) {
+            return $this->xml->xpath('//aixm:Airspace//aixm:AirspaceTimeSlice[starts-with(aixm:designator,"' . $designator . '")]/../..');
+        } else {
+            return null;
+        }
     }
 
     /**
