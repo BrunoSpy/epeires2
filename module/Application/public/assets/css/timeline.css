@@ -16,12 +16,9 @@
 }
 
 .Base {
-	margin-left: 50px;
-	margin-right: 50px;
-	margin-top: 10px;
-	margin-bottom: 0px;
-	z-index: -1;
+	position:fixed;
 	background-color: white;
+	z-index: 2;
 }
 
 .Time_obj {
