@@ -1778,7 +1778,7 @@
                     x2 += txt_wid;
                     event.outside = 2;
                 } else { // sinon on le met à gauche
-                    x1 -= debWidth + txt_wid - 10;
+                    x1 -= txt_wid + 10;
                     elmt_txt.css({'left': x1 + 'px'});
                     lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
                     lien.addClass('leftlink');
@@ -1994,7 +1994,9 @@
                     }
                     //couleur estompée
                     this._shadeEvent(event, elmt, 0.4);
-                    rect.addClass('stripes');
+                    if(!event.punctual) {
+                        rect.addClass('stripes');
+                    }
                     break;
                 case 2: //confirmé
                     //label normal

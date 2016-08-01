@@ -172,9 +172,9 @@ class Recurrence
             $untilpos = strpos($this->getRecurrencePattern(), 'UNTIL');
             if($untilpos !== false) {
                 //DTSTART and UNTIL must have the same type
-                $time = $this->getStartdate()->format('\This\Z');
+                $time = $this->getStartdate()->format('\THis\Z');
                 $newpattern = substr_replace($this->getRecurrencePattern(), $time, $untilpos + 6 + 8, 0);
-                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\This') . '
+                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
                  RRULE:' . $newpattern;
             } else {
                 $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
@@ -212,10 +212,10 @@ class Recurrence
         if($untilpos !== false) {
             $time = $startDateTime->format('\This\Z');
             $newpattern = substr_replace($pattern, $time, $untilpos + 6 + 8, 0);
-            $rule = 'DTSTART;TZID=Etc/GMT:' . $startDateTime->format('Ymd\This') . '
+            $rule = 'DTSTART;TZID=Etc/GMT:' . $startDateTime->format('Ymd\THis') . '
                  RRULE:' . $newpattern;
         } else {
-            $rule = 'DTSTART;TZID=Europe/Paris:' . $startDateTime->format('Ymd\This') . '
+            $rule = 'DTSTART;TZID=Etc/GMT:' . $startDateTime->format('Ymd\THis') . '
                 RRULE:' . $pattern;
         }
         $rrule = new RRule($rule);
