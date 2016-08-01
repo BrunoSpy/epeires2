@@ -203,15 +203,21 @@ class Recurrence
      */
     public function getHumanReadable()
     {
-        $rule = 'DTSTART;TZID=Europe/Paris:' . $this->getStartdate()->format('Ymd\THis') . '
-                 RRULE:'.$this->getRecurrencePattern();
-        $rrule = new RRule($rule);
-        return $rrule->humanReadable(array('locale' => 'fr'));
+        return $this->getRRule()->humanReadable(array('locale' => 'fr'));
     }
 
     public static function getHumanReadableFromPattern($start, $pattern) {
-        $rule = 'DTSTART;TZID=Europe/Paris:' . $start . '
-                RRULE:'.$pattern;
+        $untilpos = strpos($pattern, 'UNTIL');
+        $startDateTime = new \DateTime($start);
+        if($untilpos !== false) {
+            $time = $startDateTime->format('\This\Z');
+            $newpattern = substr_replace($pattern, $time, $untilpos + 6 + 8, 0);
+            $rule = 'DTSTART;TZID=Etc/GMT:' . $startDateTime->format('Ymd\This') . '
+                 RRULE:' . $newpattern;
+        } else {
+            $rule = 'DTSTART;TZID=Europe/Paris:' . $startDateTime->format('Ymd\This') . '
+                RRULE:' . $pattern;
+        }
         $rrule = new RRule($rule);
         return $rrule->humanReadable(array('locale' => 'fr'));
     }
