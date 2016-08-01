@@ -486,6 +486,16 @@ $(document).ready(function(){
                             }
                             break;
                     }
+                    //protection and recurrence
+                    if(event.recurr == true) {
+                        element.find('.fc-title').append(' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>');
+                        element.find('span.badge.recurrence').tooltip();
+                    } else {
+                        element.find('.modify-evt').data('recurr', '');
+                    }
+                    if(event.scheduled) {
+                        element.find('.fc-title').append(' <a href="#"><span class="badge scheduled">P</span></a>');
+                    }
                     //actions
                     var actions = $('<span class="actions"></span>');
                     actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
