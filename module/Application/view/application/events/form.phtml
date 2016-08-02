@@ -330,11 +330,18 @@ echo $this->formHidden($this->form->get('category'));
                             //TODO
                             //$html .= "<a href=\"#\"><i class=\"icon-pencil mod-file\"></i></a> ";
                             echo "<a href=\"#confirm-delete-file\"
-									class=\"delete-file\"
-									data-href=\"".$this->url('application',
+									class=\"delete-file\"";
+                            if($this->copy || $this->model) {
+                                echo " data-href=\"".$this->url('application',
+                                        array('controller'=>'events', 'action' => 'deletefile'),
+                                        array('query'=>array('id'=>$file->getId())))."\"";
+                            } else {
+                                echo " data-href=\"".$this->url('application',
                                     array('controller'=>'events', 'action' => 'deletefile'),
-                                    array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"
-									data-id=\"".$file->getId()."\"
+                                    array('query'=>array('id'=>$file->getId(), 'eventid' => $event->getId())))."\"";
+                            }
+
+							echo 	" data-id=\"".$file->getId()."\"
 									data-name=\"".($file->getName() ? $file->getname() : $file->getFilename())."\"
 									data-toggle=\"modal\"
 									><span class=\"glyphicon glyphicon-trash\"></span></a>";

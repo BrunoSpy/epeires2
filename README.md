@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/BrunoSpy/epeires2.svg?branch=master)](https://travis-ci.org/BrunoSpy/epeires2) [![Coverage Status](https://coveralls.io/repos/github/BrunoSpy/epeires2/badge.svg?branch=master)](https://coveralls.io/github/BrunoSpy/epeires2?branch=master)
+
 # Epeires²
 
 ## License

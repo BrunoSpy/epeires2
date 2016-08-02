@@ -9,7 +9,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
      * @var EntityManager
      */
     private $entityManager;    
-    
+
+    private $categoryService;
+
     /**
      * Get EntityManager.
      *
@@ -24,5 +26,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $serviceManager = Bootstrap::getServiceManager();
         $this->entityManager = $serviceManager->get('doctrine.entitymanager.orm_default');
         return $this->entityManager;
+    }
+
+    public function getCategoryService()
+    {
+        if($this->categoryService) {
+            return $this->categoryService;
+        }
+        $serviceManager = Bootstrap::getServiceManager();
+        $this->categoryService = $serviceManager->get('categoryfactory');
+        return $this->categoryService;
     }
 }

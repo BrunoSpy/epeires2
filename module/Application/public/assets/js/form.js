@@ -1010,8 +1010,10 @@ var form = function(url, tabid){
             $("input[name=recurrencepattern]").val('');
             $("#recurr-button").text('Configurer...');
             $('#recurr-humanreadable em').text('(Aucune récurrence.)');
-			$("input[name=enddate]").attr('required', '');
-			$("input[name=enddate]").trigger('change');
+			if(!$("#punctual").is(':checked')) {
+				$("input[name=enddate]").attr('required', '');
+				$("input[name=enddate]").trigger('change');
+			}
 		} else {
             $("input[name=recurrencepattern]").val(pattern);
             $("#recurr-button").text('Modifier...');
@@ -1021,13 +1023,32 @@ var form = function(url, tabid){
                 var text = data.text;
                 if(text !== '') {
                     $('#recurr-humanreadable em').text('('+text+')');
-					$("input[name=enddate]").attr('required', 'required');
+					if(!$("#punctual").is(':checked')) {
+						$("input[name=enddate]").attr('required', 'required');
+					}
                 } else {
                     $('#recurr-humanreadable em').text('(Aucune récurrence.)');
-					$("input[name=enddate]").attr('required', '');
+					if(!$("#punctual").is(':checked')) {
+						$("input[name=enddate]").attr('required', '');
+					}
                 }
 				$("input[name=enddate]").trigger('change');
 			});
+        }
+    });
+
+    $("#event").on("change", "input[name=startdate]", function(e){
+        var pattern = $("input[name=recurrencepattern]").val();
+        if(pattern.length > 0 && pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") != 0) {
+            var start = moment($('input[name=startdate]').val(), "DD-MM-YYYY HH:mm").format('YYYYMMDD[T]HHmm');
+            $.getJSON(url+'events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
+                var text = data.text;
+                if(text !== '') {
+                    $('#recurr-humanreadable em').text('('+text+')');
+                } else {
+                    $('#recurr-humanreadable em').text('(Aucune récurrence.)');
+                }
+            });
         }
     });
 

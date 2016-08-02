@@ -1497,8 +1497,10 @@ class EventsController extends TabController
                 }
             } else {
                 if ($file) {
-                    $objectManager->remove($file);
-                    $messages['success'][] = "Fichier correctement retiré.";
+                    if(count($file->getEvents()) == 0) {
+                        $objectManager->remove($file);
+                        $messages['success'][] = "Fichier correctement retiré.";
+                    } 
                 } else {
                     $messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
                 }
