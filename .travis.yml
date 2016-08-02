@@ -22,7 +22,7 @@ before_script:
 
 script: 
   - mkdir -p build/logs
-  - phpunit --stderr
+  - phpdbg -qrr phpunit --stderr
   
 after_success:
   - php vendor/bin/coveralls -v -x coverage.xml
