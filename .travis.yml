@@ -14,7 +14,7 @@ env:
    - APP_ENV=development
 
 before_script:
-  - phpenv config-rm xdebug.ini
+  - if [ $(phpenv version-name) = "7.0" ]; then phpenv config-rm xdebug.ini; fi
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
@@ -22,7 +22,8 @@ before_script:
 
 script: 
   - mkdir -p build/logs
-  - phpdbg -qrr phpunit --stderr
+  - if [ $(phpenv version-name) = "5.6" ]; then phpunit --stderr; fi
+  - if [ $(phpenv version-name) = "7.0" ]; then phpdbg -qrr phpunit --stderr; fi
   
 after_success:
   - php vendor/bin/coveralls -v -x coverage.xml
