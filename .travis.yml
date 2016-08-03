@@ -20,7 +20,7 @@ before_script:
   - php public/index.php data-fixture:import --no-interaction --append
 
 script:
-  - php codecept run --coverage-xml
+  - php vendor/bin/codecept run --coverage-xml
   
 after_success:
   - php vendor/bin/coveralls -v -x tests/_output/coverage.xml
