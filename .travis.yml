@@ -9,6 +9,8 @@ services:
 
 cache:
   directories:
+    - ${TRAVIS_BUILD_DIR}/travis/php-cache
+    - ${TRAVIS_BUILD_DIR}/travis/lib-cache
     - $HOME/.composer/cache
 
 before_install:
