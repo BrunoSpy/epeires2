@@ -50,7 +50,9 @@ class Module implements ConsoleUsageProviderInterface
         
         $container = new Container('initialized');
         if (! isset($container->init)) {
-            $session->regenerateId(true);
+            if(getenv('APP_ENV') !== "development"){
+                $session->regenerateId(true);
+            }
             $container->init = 1;
         }
     }

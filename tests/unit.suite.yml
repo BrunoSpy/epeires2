@@ -1,0 +1,22 @@
+# Codeception Test Suite Configuration
+#
+# Suite for unit (internal) tests.
+
+class_name: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - \Helper\Unit
+        - ZF2:
+            part: services
+        - Doctrine2:
+            depends: ZF2
+coverage:
+    enabled: true
+    whitelist:
+      include:
+        - module/*
+      exclude:
+        - module/Application/config/module.config.php
+        - module/Application/language/*
+        - module/Application/Module.php

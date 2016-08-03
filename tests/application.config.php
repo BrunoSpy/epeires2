@@ -16,18 +16,38 @@
  *
  */
 
-namespace ApplicationTest\Entity;
 
-use ApplicationTest\Common\TestCase;
+// Production modules
+$modules = array(
+    'DoctrineModule',
+    'DoctrineORMModule',
+    'DoctrineMigrationsModule',
+    'DoctrineDataFixtureModule',
+    'ZfcBase',
+    'ZfcRbac',
+    'ZfcUser',
+    'ZfcUserDoctrineORM',
+    'AssetManager',
+    'DOMPDFModule',
+    'OpentbsBundle',
+    'Core',
+    'Application',
+    'Administration',
+    'IPO'
+);
 
-class RecurrenceTest extends TestCase {
 
-    public function testGetRSet() {
-        $recurrence = $this->getEntityManager()->getRepository('Application\Entity\Recurrence')->find(1);
+return array(
+    'modules' => $modules,
 
-        $rset = $recurrence->getRSet();
+    'module_listener_options' => array(
+        'module_paths' => array(
+            './module',
+            './vendor'
+        ),
+        'config_glob_paths' => array(
+            'config/autoload/{,*.}{global,local}.php'
+        ),
 
-        $this->assertCount(25, $rset);
-    }
-
-}
+    )
+);
