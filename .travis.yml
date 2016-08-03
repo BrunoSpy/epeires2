@@ -30,7 +30,6 @@ env:
 before_script:
   # Disable xdebug when we don't need coverage to speed up testing
   #- phpenv config-rm xdebug.ini
-  - mkdir -p build/logs
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
@@ -44,4 +43,4 @@ script:
   - php vendor/bin/codecept run unit --coverage-xml
   
 after_success:
-  - php vendor/bin/coveralls -v -x tests/_output/coverage.xml
+  - travis_retry php vendor/bin/coveralls -v
