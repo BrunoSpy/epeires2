@@ -30,7 +30,7 @@ env:
 before_script:
   # Disable xdebug when we don't need coverage to speed up testing
   #- phpenv config-rm xdebug.ini
-
+  - mkdir -p tests/_output
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
