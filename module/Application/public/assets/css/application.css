@@ -19,6 +19,7 @@
 body {
 	/* Due to 2 navbars fixed-top */
 	padding-top: 100px;
+	background-color: white;
 }
 
 /************** Mémos ********************/
@@ -52,6 +53,8 @@ body {
 	float: right;
 	width: 100%;
 	transition: width 0.3s ease;
+	position: relative;
+	height: 100%;
 }
 
 .main-nav-check {
@@ -78,6 +81,7 @@ body {
 
 #fiche {
 	padding-top: 5px;
+	background-color: aliceblue;
 }
 
 #fiche div#close-button {
@@ -106,12 +110,13 @@ body {
 	position: fixed;
 	left: 0;
 	right: auto;
-	width: 310px;
-	height: 90%;
+	width: 20%;
 	z-index: 1;
 	margin-left: 10px;
 	overflow-x: hidden;
 	overflow-y: auto;
+	padding-right: 15px;
+	height: calc(100% - 104px)
 }
 
 .panel-left .panel-heading {
@@ -371,7 +376,6 @@ body {
 }
 
 #calendarview {
-	margin-top: 10px;
 	margin-right: 1em;
 	margin-left: 1em;
 }

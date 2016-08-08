@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "0.9.7",
+        version: "1.0.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -95,7 +95,11 @@
         /**
          * Intervalle entre deux barres "heure"
          */
-        intervalle: 0,
+        intervalle: 0.0,
+        /**
+         * Largeur disponible pour la timeline, en pixels
+         */
+        largeurDisponible: 0,
         /**
          * Memorize current scroll position
          */
@@ -132,8 +136,8 @@
             topHourSpace: 25,
             //espace entre le haut et les demi-heures
             topHalfHourSpace: 35,
-            //espace horizontal entre deux évènements
-            eventHorizSpace:10
+            //espace horizontal min entre deux évènements
+            eventHorizSpace:55
         },
         //default options
         options: {
@@ -155,7 +159,14 @@
             var self = this;
             var height = $(window).height() - this.options.topOffset + 'px';
             this.element.css('height', height);
-            this.element.css('top', this.options.topOffset+'px');
+            //this.element.css('top', this.options.topOffset+'px');
+            var eventsContainer = $('<div id="events"></div>');
+            eventsContainer.css({
+                'width': 'calc(100% - '+(this.options.rightOffset + this.options.leftOffset)+'px)',
+                'margin-left': this.options.leftOffset+'px'
+            });
+            this.element.append(eventsContainer);
+            this.largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //first : draw categories
             $.when(
                 $.getJSON(self.options.categoriesUrl, function (data) {
@@ -235,7 +246,11 @@
             $(window).resize(function () {
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
-                self._updateView(true);
+                self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
+            });
+
+            $(window).scroll(function(){
+                $('.Base').css('top', $(window).scrollTop());
             });
 
             //gestion des évènements souris
@@ -269,8 +284,6 @@
                     //suppression heure et boutons
                     $(this).find('.disp').hide();
                     $(this).find('.lien.disp').show();
-                    //suppression menu
-                    // $(this).find('.tooltip-evt').popover('destroy');
                 }
             }, '.elmt');
 
@@ -286,12 +299,11 @@
                 elmt.find('.elmt_deb').show();
 
                 var elmt_deb = elmt.find('.elmt_deb span.hour-txt');
-                var move_fin = elmt.find('.move_fin');
                 var rect_elmt = elmt.find('.rect_elmt');
                 var elmt_compl = elmt.find('.complement');
                 var rect_width = rect_elmt.width();
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / self.intervalle;
+                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
                 var elmt_fin = elmt.find('.elmt_fin');
 
                 var id = elmt.data('ident');
@@ -314,8 +326,6 @@
                         elmt.css({'left': '+=' + delt, 'width': '-=' + delt});
                         rect_elmt.css({'width': '-=' + delt});
                         elmt_compl.css({'left': '-=' + delt});
-                        elmt_fin.css({'left': '-=' + delt});
-                        move_fin.css({'left': '-=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')){
                             elmt_txt.css({'left':'-='+delt});
                         }
@@ -339,9 +349,8 @@
                 elmt.find('.complement').hide();
                 var rect_width = rect_elmt.width();
                 var elmt_fin = elmt.find('.elmt_fin');
-                var move_fin = $(this);
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / self.intervalle;
+                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
 
                 //récupération de l'heure de fin
                 var id = elmt.data('ident');
@@ -376,8 +385,6 @@
                         x_temp = e2.clientX;
                         elmt.css({'width': '+=' + delt});
                         rect_elmt.css({'width': '+=' + delt});
-                        elmt_fin.css({'left': '+=' + delt});
-                        move_fin.css({'left': '+=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')) {
                             elmt_txt.css({'left':'+='+delt});
                         }
@@ -440,7 +447,7 @@
                 e.preventDefault();
                 self.pauseUpdateView();
                 var me = $(this);
-                var elmt = me.parent('.elmt');
+                var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
                 var newstatus = 2;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
@@ -460,7 +467,7 @@
                 e.preventDefault();
                 self.pauseUpdateView();
                 var me = $(this);
-                var elmt = me.parent('.elmt');
+                var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
                 var newstatus = 3;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
@@ -915,9 +922,9 @@
                 this._hideCategories();
             }
             //then update height of timeline
-            var height = $(window).height() - this.options.topOffset;
-            maxY = (maxY > height ? maxY : height);
-            this.element.css('height', maxY + 'px');
+            //var height = $(window).height() - this.options.topOffset;
+            //maxY = (maxY > height ? maxY : height);
+            //this.element.css('height', maxY + 'px');
         },
         _getCategory: function (id) {
             if (id in this.catPositions) {
@@ -944,17 +951,16 @@
             }
         },
         /**
-         * Calcule l'abscisse correspondant à une date
+         * Calcule l'abscisse en % correspondant à une date
          * Retourne -1 si en dehors de la timeline
          * @param {type} date
-         * @returns {undefined}
+         * @returns number
          */
         _computeX: function (date) {
             if (date < this.timelineBegin || date > this.timelineEnd) {
                 return -1;
             } else {
-                return this.options.leftOffset
-                    +  ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
+                return ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
             }
         },
         /**
@@ -962,7 +968,7 @@
          * Les abscisses de l'évènement ainsi que des précédents doivent être calculées avant
          * pour décider si il y a de la place pour le compactage
          * @param {type} event Evènement
-         * @returns {undefined}
+         * @returns number
          */
         _computeY: function (event) {
             var i = this.eventsDisplayedPosition[event.id];
@@ -1058,11 +1064,13 @@
                                     //si compactage sur nom uniquement, on tente de supprimer le label
                                     if(cat.compact === false){
                                         var sizeWithoutLabel = this._tryRemoveLabel(evt);
+                                        //on tente en enlevant un seul label
                                         if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) ||
                                             (sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
-                                            //pas de place sans label non plus
                                             place = false;
-                                            break; //inutile de continuer la vérification
+                                            break;
+                                            //on ne tente pas d'enlever les deux labels
+                                            //de façon à ce qu'il en reste un sur la ligne à la fin
                                         } else {
                                             //on met l'evt de côté pour suppression du label si compactage effectif
                                             eventRemoveLabel.push(evt);
@@ -1235,13 +1243,12 @@
          */
         _computeIntervalle: function () {
             var nbIntervalles = this.timelineDuration * 2;
-            var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //if scrollbar visible, width is different
             //TODO : do it better
-            if ($(document).height() > $(window).height()) {
-                largeurDisponible += this._getScrollbarWidth();
-            }
-            this.intervalle = largeurDisponible / nbIntervalles;
+            //if ($(document).height() > $(window).height()) {
+            //    largeurDisponible += this._getScrollbarWidth();
+            //}
+            this.intervalle = 1 / nbIntervalles * 100;
         },
         /**
          * Dessine les heures et les barres verticales
@@ -1256,12 +1263,16 @@
             var h_temp = this.timelineBegin.getUTCHours();
             var time_obj = $('<div class="Time_obj horiz_bar"></div>');
             var base_elmt = $('<div id="timeline-base" class="Base"></div>');
+            base_elmt.css({
+                'margin-left': this.options.leftOffset+'px',
+                'width': 'calc(100% - '+(this.options.leftOffset + this.options.rightOffset)+'px)',
+                'height' : '100%'
+            });
             this.element.append(base_elmt);
             base_elmt.append(time_obj);
             time_obj.css({
                 'top': this.params.topSpace + 'px',
-                'left': this.options.leftOffset + 'px',
-                'width': this.intervalle * this.timelineDuration * 2 + 'px',
+                'width': '100%',
                 'height': 1});
 
             var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
@@ -1287,9 +1298,9 @@
                 base_elmt.append(vert_bar);
                 vert_bar.css({
                     'top': this.params.topSpace - 5 + 'px',
-                    'left': this.intervalle * i + this.options.leftOffset + 'px',
+                    'left': this.intervalle * i + '%',
                     'width': 1,
-                    'height': this.element.height() - this.params.topSpace,
+                    'height': 'calc(100% - '+(this.params.topSpace)+'px)',
                     'background-color': '#C0C0C0'});
                 if (i % 2 === 1) {
                     if(drawHalves){
@@ -1297,7 +1308,7 @@
                         base_elmt.append(halfHour);
                         halfHour.css({
                             'top': this.params.topHalfHourSpace + 'px',
-                            'left': this.intervalle * i + this.options.leftOffset - 10 + 'px'});
+                            'left': this.intervalle * i + '%'});
                     }
                 } else {
                     if( (i / 2) % modulo === 0) {
@@ -1305,7 +1316,7 @@
                         base_elmt.append(roundHour);
                         roundHour.css({
                             'top': this.params.topHourSpace + 'px',
-                            'left': this.intervalle * i + this.options.leftOffset - 20 + 'px'});
+                            'left': this.intervalle * i  + '%'});
                     }
                     if (h_temp === 23) {
                         h_temp = 0;
@@ -1325,9 +1336,9 @@
                 var x = this._computeX(new Date());
                 TimeBar.css({
                     'top': /*this.options.topOffset + */this.params.topSpace + 'px',
-                    'height': this.element.height() - this.params.topSpace});
+                    'height': 'calc(100% - '+(this.params.topSpace + 5)+'px)'});
                 if (x > 0) {
-                    TimeBar.css('left', x + 'px');
+                    TimeBar.css('left', x + '%');
                     TimeBar.show();
                 } else {
                     TimeBar.hide();
@@ -1376,11 +1387,11 @@
             var x = this._computeX(now);
             var timeBar = $('#TimeBar');
             if (x > 0) {
-                var left = parseInt($("#timeline").css('left'));
+                /*var left = parseInt($("#timeline").css('left'));
                 if (isNaN(left)) {
                     left = 0;
-                }
-                timeBar.css('left', x + left + 'px');
+                }*/
+                timeBar.css('left', x /*+ left*/ + '%');
                 timeBar.show();
             } else {
                 timeBar.hide();
@@ -1454,7 +1465,7 @@
                     //mise à jour des attributs
                     this._doDrawEvent(event, elmt, cat);
                     //ajout à la timeline
-                    this.element.append(elmt);
+                    this.element.find("#events").append(elmt);
                 } else {
                     //mise à jour des attributs
                     this._doDrawEvent(event, this.element.find('#event' + event.id), cat);
@@ -1616,6 +1627,17 @@
             elmt_rect.find('.milestone').remove();
             //////
 
+            //création de l'évènement en plusieurs étapes :
+            // 1* construction des éléments : libellé, heures de début et de fin, boutons
+            // 2* dessin
+            // 3* ajout du label
+            // 4* positionnement horizontal
+            // les étapes 2, 3 et 4 dépendent du caractère ponctuel ou non de l'évènement
+
+            /* **************** */
+            /* 1: Construction  */
+            /* **************** */
+
             // libellé de l'évènement à mettre à jour
             var name = event.name;
             if(event.recurr == true) {
@@ -1669,11 +1691,37 @@
             }
             elmt_tooltip.addClass('disp');
 
-            var x_deb, x_end;
+            //calcul des tailles des éléments pour le dessin
+            // et le positionnement
+            var x_deb = this._computeX(startdate);
+            if(x_deb == -1) {
+                x_deb = 0;
+            }
+            var x_end;
+            //décalage par rapport à l'heure de début = taille de tous les objets à gauche
+            var offset = 0;
+            //taille finale de la boite
+            var totalWidth = 0;
 
-            //cas 1 : évènement ponctuel
-            if (event.punctual) {
-                x_deb = this._computeX(startdate);
+            var txtSize = this._computeTextSize(elmt_txt.text().trim(), "RobotoDraft", "700", "14px");
+
+            event.txtSize = txtSize;
+            //taille totale de la boite contenant le texte et les icônes
+            var txt_wid = txtSize +
+                + 17*3
+                + (elmt_txt.find('.badge').length * 13)
+                + 4 //padding
+                + 2; //border-width*2
+            //place à droite du texte
+            var txtOffset = 17*3
+                + 2 //padding
+                + 1;
+            var debWidth = this._outerWidth(elmt_deb) + 2; //2 pixels pour décoller du rectangle
+            var endWidth = this._outerWidth(elmt_fin) + 2; //idem
+
+            if(event.punctual) {
+
+                /* 2: Dessin        */
                 var haut = this.options.eventHeight * 2 / 3;
                 var larg = haut * 5 / 8;
                 elmt.addClass('punctual');
@@ -1689,190 +1737,209 @@
                     'border-right-width': larg + 'px',
                     'border-top-width': haut + 'px',
                     'border-top-color': couleur,
-                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px'});
-                elmt_rect.css({'left': '+=' + x_deb});
-                elmt_compl.css({'left': x_deb + 'px'});
-            } else {
-                elmt.removeClass('punctual');
-                elmt.addClass('notpunctual');
-                //cas 2 : date début antérieure au début de la timeline
-                if (startdate < this.timelineBegin) {
-                    x_deb = this.options.leftOffset;
-                    elmt_flecheG.show();
-                    elmt_flecheG.css({'left': x_deb - 12 + 'px'});
-                } else {
-                    x_deb = this._computeX(startdate);
-                    if(event.modifiable && event.recurr == false){
-                        move_deb.addClass('disp');
-                        move_deb.css({'left': 8 + x_deb + 'px'});
-                    }
-                }
-                //cas 3 : date fin postérieure à la fin de la timeline
-                if (enddate > this.timelineEnd) {
-                    x_end = this._computeX(this.timelineEnd);
-                    elmt_flecheD.show();
-                    elmt_flecheD.css({'left': x_end + 'px'});
-                    if(event.modifiable){
-                        move_fin.addClass('disp');
-                        move_fin.css({'left': x_end - 14 + 'px'});
-                    }
-                    //cas 4 : date fin dans la timeline
-                } else if (enddate > 0) {
-                    x_end = this._computeX(enddate);
-                    if(event.modifiable){
-                        move_fin.addClass('disp');
-                        move_fin.css({'left': x_end - 14 + 'px'});
-                    }
-                    //cas 5 : pas de fin
-                } else {
-                    x_end = this._computeX(this.timelineEnd);
-                    if(event.modifiable){
-                        move_fin.addClass('disp');
-                        move_fin.css({'left': x_end - 14 + 'px'});
-                    }
-                    var haut = this.options.eventHeight;
-                    elmt_compl.css({'left': x_end + 4 + 'px',
-                        'border-left-width': haut + 'px',
-                        'border-left-color' : couleur,
-                        'border-top-width': haut / 2 + 1 + 'px',
-                        'border-bottom-width': haut / 2 + 1 + 'px'});
-                    elmt_compl.show();
-                }
-                elmt_rect.css({'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
-                    'height': this.options.eventHeight,
-                    'background-color': couleur});
-            }
+                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px',
+                    'left' : '0px'});
+                totalWidth += larg * 2;
+                x_end = x_deb;
 
-            /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
-            var x1 = x_deb;
-            var x0 = x_deb;
-            var x2 = x_end;
-            //taille du texte + place pour l'heure + place des boutons
-            var txtSize = this._computeTextSize(elmt_txt.text(), "Arial");
-            event.txtSize = txtSize;
-            var txt_wid = txtSize +
-                + 18*3
-                + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
-            var largeur = this._computeX(this.timelineEnd);
-            var debWidth = this._outerWidth(elmt_deb);
-            var endWidth = this._outerWidth(elmt_fin);
-            if (event.punctual) {
+                /* 3: Positionnement du label  */
                 lien.addClass('disp').show();
-                //FF renvoit 0 pour elmt_rect.outerWidth() ...
-                //x2 = x1 + elmt_rect.outerWidth() - 10;
-                x2 = x1 + 25 - 10;
                 // on place l'heure à droite
                 if (startdate.getDate() !== d_actuelle.getDate()) {
                     elmt_deb.css({'top':'-6px'});
                 } else {
                     elmt_deb.css({'top':'4px'});
                 }
-                elmt_deb.css({'left': x2 + 'px'});
+                elmt_deb.css({'left': larg + 1+ 'px'});
                 elmt_txt.addClass('outside');
                 elmt_txt.css({'top': '0px'});
-                x2 += debWidth + 5; //+5 pour décoller l'encart de l'heure
-                if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-                    elmt_txt.css({'left': x2 + 'px'});
-                    lien.css({'left': x2 - debWidth - 10 + 'px', 'width': debWidth + 10 + 'px'}); //+10 = moitié de l'étoile
+
+                //calcul de la place restante à droite
+                var place = (100 - x_deb) * this.largeurDisponible / 100;
+
+                if ( larg + debWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+                    elmt_txt.css({
+                        'left': larg + debWidth + 'px'
+                    });
+                    lien.css({
+                        'left': 'auto',
+                        'right': '100%',
+                        'top' : larg + 'px',
+                        'width': debWidth + 'px'});
                     lien.addClass('rightlink');
-                    x2 += txt_wid;
+
+                    offset = larg; // rien à gauche, la boite finalee est décalée de la moitié de l'étoile
+                    totalWidth = larg * 2 + debWidth + txt_wid;
                     event.outside = 2;
                 } else { // sinon on le met à gauche
-                    x1 -= txt_wid + 10;
-                    elmt_txt.css({'left': x1 + 'px'});
-                    lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
+                    offset = larg + txt_wid + 2; //2 = décollage
+                    elmt_txt.css({'left': - offset + 'px'});
+                    lien.css({'left': txtSize + 4 + 'px', //4 = padding
+                        'top' : larg + 'px',
+                        'width':  (txt_wid - txtSize) + 'px'});
                     lien.addClass('leftlink');
+
                     event.outside = 1;
                 }
+                totalWidth += debWidth + txt_wid;
                 elmt_txt.css('color', 'black');
                 elmt_txt.find('a > span.glyphicon').css('color', 'black');
+
+                /* 4: positionnement final de la boit englobante */
+                elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
+                    'width': totalWidth+'px'});
+                elmt.children().css({'left':'+='+offset+'px'});
+
             } else {
-                var lar_nec = txt_wid + 44; //+44 : place pour les barres de changement d'heure
-                // on place l'heure de début à gauche
-                x1 -= debWidth + 5; //+5 pour décoller l'heure de l'évènement
-                if(startdate < this.timelineBegin){
-                    //flèche gauche à prendre en compte
-                    x1 -= 10;
+                /* 2: Dessin        */
+                /* Consiste à ajouter les flèches, la fin du rectangle et les heures */
+                /* Positionnés par rapport au dessin du rectangle */
+                elmt.removeClass('punctual');
+                elmt.addClass('notpunctual');
+                //cas 2 : date début antérieure au début de la timeline
+                if (startdate < this.timelineBegin) {
+                    elmt_flecheG.show();
+                    elmt_flecheG.css({'left': - 14 + 'px'});
+                    offset += 14 + debWidth;
+                    totalWidth += offset;
+                    elmt_deb.css({'left': -(debWidth + 14)+'px'});
+                } else {
+                    if(event.modifiable && event.recurr == false){
+                        move_deb.addClass('disp');
+                        move_deb.css({'left': 8 + 'px'});
+                    }
+                    offset += debWidth;
+                    totalWidth += offset;
+                    elmt_deb.css({'left': - debWidth + 'px'});
                 }
-                if(enddate > this.timelineEnd) {
-                    //décalage cause flèche droite
-                    x2 += 10;
+                //cas 3 : date fin postérieure à la fin de la timeline
+                if (enddate > this.timelineEnd) {
+                    x_end = this._computeX(this.timelineEnd);
+                    elmt_flecheD.show();
+                    elmt_flecheD.css({'right': -14 + 'px', 'left': 'auto'});
+                    totalWidth += 14 + endWidth;
+                    elmt_fin.css({'left': 'auto',
+                        'right': - (14 + endWidth) + 'px'});
+                    //cas 4 : date fin dans la timeline
+                } else if (enddate > 0) {
+                    x_end = this._computeX(enddate);
+                    totalWidth += endWidth;
+                    elmt_fin.css({'left':'auto', 'right': - endWidth+'px'});
+                    //cas 5 : pas de fin
+                } else {
+                    x_end = this._computeX(this.timelineEnd);
+                    var haut = this.options.eventHeight;
+                    elmt_compl.css({'left': 'auto',
+                        'right' : - haut - 2 +'px',
+                        'border-left-width': haut + 'px',
+                        'border-left-color' : couleur,
+                        'border-top-width': haut / 2 + 1 + 'px',
+                        'border-bottom-width': haut / 2 + 1 + 'px'});
+                    elmt_compl.show();
+                    totalWidth += haut;
                 }
-                elmt_deb.css({'left': x1 + 'px'});
-                // on place l'heure de fin à droite
-                elmt_fin.css({'left': x2 + 5 + 'px'});
-                if(x_end - x_deb <= 40){
-                    //pas assez de place pour les poignées
+                //dans tous les cas
+                if(event.modifiable){
+                    move_fin.addClass('disp');
+                    move_fin.css({'right': 12 + 'px'});
+                }
+                elmt_rect.css({'left': 0 + 'px',
+                    'height': this.options.eventHeight,
+                    'background-color': couleur});
+
+                //milestones
+                $.each(event.milestones, function(index, item){
+                    var xMilestone = self._computeX(new Date(item));
+                    if(xMilestone > x_deb && xMilestone < x_end) {
+                        var milestone = $('<div class="milestone"></div>');
+                        var left = xMilestone - x_deb;
+                        milestone.css({'left': left+"%", 'color':textColor});
+                        elmt_rect.append(milestone);
+                    }
+                });
+
+
+                /* 3: Positionnement du label  */
+                //conversion en pixel de la taille du rectangle
+                var rectPixels = (x_end - x_deb) * this.largeurDisponible / 100;
+                if(rectPixels < 40) {
+                    // suppression des barres de modifcations des heures
+                    // qui se chevauchent
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                 }
-                if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
-                    var x_left = x0 + 22;
+                if(txt_wid + 40 < rectPixels) {
+                    //assez de place dans le rectangle
+                    //le label est positionnée par rapport à la boite
+                    //et non par rapport au rectangle
                     elmt_txt.removeClass('outside');
                     event.outside = 0;
-                    elmt_txt.css({'left': x_left + 'px',
+                    elmt_txt.css({'left': 22 + debWidth + 'px',
                         'top': (this.options.eventHeight/2-11)+'px'});
-
-                    x2 += endWidth + 5;
                     elmt_txt.css('color', textColor);
                     elmt_txt.find('a > span.glyphicon').css('color', textColor);
                 } else {
+                    elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
+                    //positionnement à droite ou à gauche
+                    var place = (100 - x_end) * this.largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
                     elmt_txt.css('color', 'black');
                     elmt_txt.find('a > span.glyphicon').css('color', 'black');
-                    elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
-                    x2 += endWidth + 10;
-                    if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-                        elmt_txt.css({'left': x2 + 'px'});
-                        lien.css({'left': x2 - (endWidth + 10) + 'px', 'width': endWidth + 10 + 'px'});
-                        x2 += txt_wid;
+                    if (endWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+                        elmt_txt.css({'left': 'calc(100% - '+txt_wid+'px)'});
+                        totalWidth += txt_wid;
+                        lien.css({'left': - endWidth + 'px',
+                            'width': endWidth + 'px'});
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                        x1 -= txt_wid + 8;
-                        var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
-                        lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
-                        elmt_txt.css({'left': x1 + 'px'});
+                        offset += txt_wid;
+                        lien.css({'left': txt_wid - txtOffset + 'px', 'width': debWidth + txtOffset + 'px'});
+                        elmt_txt.css({'left': 0 + 'px'});
                         lien.addClass('leftlink');
+                        totalWidth += txt_wid;
                         event.outside = 1;
                     }
                 }
+
+
+                /* 4: positionnement final de la boit englobante */
+                elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
+                    'width': 'calc('+(x_end-x_deb)+'% + '+totalWidth+'px)'});
+                elmt_rect.css({'width': 'calc(100% - '+totalWidth+'px)',
+                                'left': '+=' + offset + 'px'});
             }
-            //milestones
-            $.each(event.milestones, function(index, item){
-                var xMilestone = self._computeX(new Date(item));
-                if(xMilestone > x_deb && xMilestone < x_end) {
-                    var milestone = $('<div class="milestone"></div>');
-                    var left = xMilestone - x_deb;
-                    milestone.css({'left': left+"px", 'color':textColor});
-                    elmt_rect.append(milestone);
-                }
-            });
 
             //highlight
             this._highlightElmt(elmt, event.star);
-            //mise à jour du conteneur global
-            elmt.css({'left': x1+'px', 'width': x2 - x1});
-            elmt.children().css({'left':'-='+x1+'px'});
-//cette optimisation de fonctionne pas si les heures sont forcées en visu
-//TODO trouver une solution...
-//            if(event.outside === 0){
-//            	event.xleft = x1 + debWidth;
-//            	event.xright = x2 - endWidth;
-//            } else if(event.outside === 1){
-//            	event.xleft = x1;
-//            	event.xright = x2 - endWidth;
-//            } else if(event.outside === 2){
-//            	event.xleft = x1 + debWidth;
-//            	event.xright = x2;
-//            }
-            event.xleft = x1;
-            event.xright = x2;
+
+            //pour les besoins de comparaison des positions des évènements
+            //on a besoin de positions absolues
+            event.xleft = x_deb * this.largeurDisponible / 100 - offset;
+            event.xright = x_end * this.largeurDisponible / 100 + totalWidth - offset;
+            //impossible de récupérer la règle calc() par la suite
+            //on stocke donc les éléments permettant de la recalculer
+            event.xdeb = x_deb;
+            event.xend = x_end;
+            event.offset = offset;
+            event.totalWidth = totalWidth;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
 
-
+            //une fois le statut analysé, on sait si l'affichage de l'heure est forcé ou non
+            if(event.outside === 0) {//inside
+                if(event.hourBeginForced == false) {
+                    event.xleft += debWidth;
+                }
+                if(event.hourEndForced == false) {
+                    event.xright -= endWidth;
+                }
+            } else if (event.outside === 1 && event.hourBeginForced == false) { //left
+                event.xright -= endWidth;
+            } else if (event.outside === 2 && event.hourEndForced == false) { //right
+                event.xleft += debWidth;
+            }
         },
         /**
          * Remove label and update size
@@ -1880,24 +1947,30 @@
          */
         _removeLabel: function(event){
             var elmt = this.element.find('#event'+event.id);
+            var elmt_rect = elmt.find('.rect_elmt');
             var elmt_txt = elmt.find('.label_elmt.outside');
             if(elmt_txt.length > 0 && event.label === true){
                 event.label = false;
                 var lien = elmt.find('.lien');
                 //mise à jour des dimensions
-                var txt_width = this._computeTextSize(elmt_txt.text(), "Arial");
+                var txt_width = event.txtSize;
                 if(lien.hasClass('leftlink')){
-                    var x1 = event.xleft;
-                    x1 += txt_width;
-                    elmt.css({'left': x1+'px'});
-                    elmt.children().css({'left':'+='+txt_width+'px'});
-                    event.xleft = x1;
+
+                    event.offset -= txt_width;
+                    event.totalWidth += txt_width;
+                    event.xleft += txt_width;
+                    elmt.css({'left': 'calc('+event.xdeb+'% - '+event.offset+'px)',
+                        'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
+                    elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)',
+                        'left': '-=' + txt_width + 'px'});
+
                 } else if(lien.hasClass('rightlink')){
-                    var x1 = event.xleft;
-                    var x2 = event.xright;
-                    x2 -= txt_width;
-                    elmt.css({'width':x2-x1});
-                    event.xright = x2;
+                    event.totalWidth -= txt_width;
+                    elmt_txt.css({'left': 'calc(100% - '+txt_width+'px)'});
+                    elmt.css({'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
+                    elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)'});
+
+                    event.xright -= txt_width;
                 }
                 //suppression du lien
                 elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
@@ -1943,6 +2016,8 @@
             var now = new Date();
             var start = new Date(event.start_date);
             var end = new Date(event.end_date);
+            event.hourBeginForced = false;
+            event.hourEndForced = false;
             switch (event.status_id) {
                 case 1: //nouveau
                     //label en italique
@@ -1959,6 +2034,7 @@
                             container: 'body'
                         });
                         lien.filter('.leftlink').addClass('disp').show();
+                        event.hourBeginForced = true;
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
@@ -1982,6 +2058,7 @@
                                 container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
+                            event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
@@ -2021,6 +2098,7 @@
                                 container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
+                            event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
@@ -2124,14 +2202,14 @@
             var elmt_rect = $('<div class="rect_elmt"></div>');
             elmt.append(elmt_rect);
             var elmt_compl = $('<div class="complement"></div>');
-            elmt_rect.after(elmt_compl);
+            elmt_rect.append(elmt_compl);
             // si l'événement a commencé avant la timeline, ajout d'une flèche gauche
             var elmt_flecheG = $('<div class="elmt_flecheG"></div>');
-            elmt.append(elmt_flecheG);
+            elmt_rect.append(elmt_flecheG);
             elmt_flecheG.append('<span class="glyphicon glyphicon-arrow-left"></span>');
             // si l'événement se poursuit au-delà de la timeline, ajout d'une flèche droite
             var elmt_flecheD = $('<div class="elmt_flecheD"></div>');
-            elmt.append(elmt_flecheD);
+            elmt_rect.append(elmt_flecheD);
             elmt_flecheD.append('<span class="glyphicon glyphicon-arrow-right"></span>');
             // ajout du nom de l'événement
             var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
@@ -2139,26 +2217,26 @@
             // ajout du bouton "ouverture fiche"
             var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '"></a>');
             elmt_txt.append(elmt_b1);
-            elmt_b1.append('    <span class="glyphicon glyphicon-pencil"></span>');
+            elmt_b1.append(' <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"
             var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
             elmt_txt.append(elmt_b2);
-            elmt_b2.append('    <span class="glyphicon glyphicon-tasks"></span>');
+            elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
             //ajout bouton ouverture menu tooltip
             var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
-            elmt_b3.append('    <span class="glyphicon glyphicon-chevron-up"></span>');
+            elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
             elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
             var lien = $('<div class="lien"></div>');
-            elmt.append(lien);
+            elmt_txt.append(lien);
             var elmt_deb = $('<a href="#" class="elmt_deb"><span class="glyphicon"></span><span class="hour-txt"></span></a>');
-            elmt.append(elmt_deb);
+            elmt_rect.append(elmt_deb);
             var elmt_fin = $('<a href="#" class="elmt_fin"><span class="hour-txt"></span><span class="glyphicon"></span></a>');
-            elmt.append(elmt_fin);
+            elmt_rect.append(elmt_fin);
             var move_deb = $('<p class="move_deb"></p>');
-            elmt.append(move_deb);
+            elmt_rect.append(move_deb);
             var move_fin = $('<p class="move_fin"></p>');
-            elmt.append(move_fin);
+            elmt_rect.append(move_fin);
             var dy = this.options.eventHeight;
             var largeur = this.element.width();
             elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy, 'top': this.options.topOffset+'px'});
@@ -2261,12 +2339,24 @@
                 return false;
             }
         },
-        _computeTextSize: function (str, font) {
+        _computeTextSize: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);
-            fakeEl.text(str).css('font', font);
+            fakeEl.text(str).css({'font' : font,
+                                'font-weight' : fontWeight,
+                                'font-size' : fontSize});
             var size = fakeEl.width();
             fakeEl.remove();
             return size;
+        },
+        /**
+         * Returns original width and not calculated pixels
+         * @param element
+         * @returns {*}
+         * @private
+         */
+        _getCSSWidth: function (element) {
+            console.log(element);
+            return element.clone().appendTo('body').wrap('<div style="display: none"></div>').css('width');
         },
         _outerWidth: function(object){
             var fakediv = $('<div>').hide().appendTo(document.body);
