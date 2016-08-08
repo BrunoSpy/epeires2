@@ -703,9 +703,9 @@
                 }
                 var now = new Date();
                 if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
-                    this.element.css({'background-color':'Cornsilk'});
+                    this.element.addClass('anotherday');
                 } else {
-                    this.element.css({'background-color':'white'});
+                    this.element.removeClass('anotherday');
                 }
                 //on récupère les évènements
                 this._pauseUpdate();

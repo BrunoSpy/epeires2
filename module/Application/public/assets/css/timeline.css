@@ -258,6 +258,16 @@
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAoCAQAAAClM0ndAAAAhklEQVR4AdXO0QrCMBBE0bttkk38/w8WRERpdyjzVOc+HxhIHqJGMQcFFkpYRQotLLSw0IJ5aBdovruMYDA/kT8plF9ZKLFQcgF18hDj1SbQOMlCA4kao0iiXmah7qBWPdxpohsgVZyj7e5I9KcID+EhiDI5gxBYKLBQYKHAQoGFAoEks/YEGHYKB7hFxf0AAAAASUVORK5CYII=');
 }
 
+.anotherday  {
+	background: repeating-linear-gradient(
+			-55deg,
+			#FFFDC1,
+			#FFFDC1 15px,
+			#fff98f 15px,
+			#fff98f 30px
+	);
+}
+
 .tooltip.tooltip-actions .tooltip-arrow {
 	border-bottom-color: rgb(101, 101, 101);
 	border-top-color: rgb(101, 101, 101);
