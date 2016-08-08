@@ -663,7 +663,10 @@ $(document).ready(function(){
             time: false,
             lang: 'fr',
             cancelText: "Annuler",
-            weekStart : 1
+            weekStart : 1,
+            nowButton: true,
+            nowText: "Jour",
+            switchOnClick: true
     });
     
     $("#date").on('change', function(){

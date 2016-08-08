@@ -169,7 +169,9 @@
                     lang: 'fr',
                     cancelText: "Annuler",
                     weekStart : 1,
-                    switchOnClick: true
+                    switchOnClick: true,
+                    nowButton: true,
+                    nowText: "Jour"
                 });
 
                 div.on('click', 'span.glyphicon-calendar', function(e){
