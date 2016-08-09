@@ -1,3 +1,10 @@
+/**
+ * Licence : AGPL
+ * @author Bruno Spyckerelle
+ * @require application.js
+ */
+
+
 function updateClock ( )
     {
     moment.locale('fr_FR');
@@ -104,6 +111,7 @@ var headerbar = function (url) {
     					}
     				}
     			}
+    		updateNavbar();
     		});
 
     	});

@@ -76,10 +76,10 @@ class IPOHelper extends AbstractHelper
                 
                 $formView = $this->view->form();
                 
-                $form->setAttributes(array('class' => 'navbar-form navbar-left visible-xs-block visible-md-block visible-lg-block'));
+                $form->setAttributes(array('class' => 'navbar-form navbar-left'));
                 
                 $html .= $formView->openTag($form);
-                $html .= '<div class="form-group visible-xs-block visible-md-block visible-lg-block">';
+                $html .= '<div class="form-group">';
                 $html .= '<label>' . '<span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b>';
                 $html .= $this->view->formSelect($form->get('nameipo')->setAttribute('class', 'form-control'));
                 $html .= '</div>';
@@ -87,13 +87,13 @@ class IPOHelper extends AbstractHelper
                 
             } else {
                 if ($currentipo) {
-                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
+                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
                 } else { 
-                    $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
+                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
                 }
             }
         } else {
-            $html .= '<p class="navbar-text navbar-left visible-xs-block visible-md-block visible-lg-block"><em>Connexion nécessaire</em></p>';
+            $html .= '<p class="navbar-text navbar-left"><em>Connexion nécessaire</em></p>';
         }
         return $html;
     }

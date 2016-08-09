@@ -45,7 +45,7 @@ class NavBarTop extends AbstractHelper {
                           aria-expanded="false">
                       <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
                   </button>';
-        $html .= '<a class="navbar-brand visible-lg-block" href="'.($return !== null ? $this->view->url($return) : "#").'">';
+        $html .= '<a class="navbar-brand" href="'.($return !== null ? $this->view->url($return) : "#").'">';
         if($return !== null) {
             $html .= '<span class="glyphicon glyphicon-home"></span> ';
         }
@@ -93,7 +93,7 @@ class NavBarTop extends AbstractHelper {
         }
         
         $html .= $this->view->ipo($iponumber);
-        $html .= '<p class="navbar-text navbar-right visible-xs-block visible-lg-block" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
+        $html .= '<p class="navbar-text navbar-right" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
                        
         $html .= '</div></div></nav>';
         
