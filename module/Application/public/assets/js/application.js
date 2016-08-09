@@ -100,13 +100,10 @@ var updateNavbar = function() {
 
 var updateView = function(){
     if($(window).width() <= 768) {
-        $("#calendarview").fullCalendar('changeView', 'basicDay');
-        $("#timeline").hide();
-        $("#calendarview").show();
+        $("#viewmonth").trigger('click');
         $("#changeview").hide();
     } else {
         $("#changeview").show();
-        $("#calendarview").fullCalendar('changeView', 'basicWeek');
     }
 };
 /* **************** */
@@ -506,6 +503,7 @@ $(document).ready(function(){
             $.post(url + 'events/saveview?view=24')
         } else if(view.localeCompare("month") == 0) {
             $("#calendarview").show();
+            $("#calendarview").fullCalendar('changeView', 'basicWeek');
             $("#timeline").hide();
             $.post(url + 'events/saveview?view=30');
         }
