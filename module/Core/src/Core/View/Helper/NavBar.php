@@ -114,7 +114,7 @@ class NavBar extends AbstractHelper
         $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
         $html .= '</div>';
         $html .= '</form>';
-        $html .= '<div class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
+        $html .= '<div id="changeview" class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
         $html .= '<label class="btn btn-xs btn-info active">';
         $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked>6h';
         $html .= '</label>';

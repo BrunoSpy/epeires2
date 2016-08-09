@@ -30,6 +30,85 @@ var displayMessages = function(messages){
 	}
 };
 
+var updateNavbarTop = function() {
+    var windowWidth = $(window).width();
+    var totalWidth = 0;
+
+    var brandWidth = $("#navbar-first .navbar-header").show().innerWidth();
+    totalWidth += brandWidth;
+    totalWidth += $("#navbar-first .navbar-nav").innerWidth();
+
+    $('#navbar-first-collapse .navbar-form').each(function(index, elm){
+        totalWidth += $(this).innerWidth();
+    });
+    $("#ipo").show();
+    $('#day').show();
+    $('#navbar-clock').show();
+
+    totalWidth += 200; //width of clock depends on time and date...
+
+    totalWidth += 30; //some margin
+
+    if(windowWidth > 768) {
+        if(totalWidth > windowWidth) {
+            //remove day
+            $("#day").hide();
+            totalWidth -= 110;
+        }
+        if(totalWidth > windowWidth) {
+            //remove brand
+            $("#navbar-first .navbar-header").hide();
+            totalWidth -= brandWidth;
+        }
+        if(totalWidth > windowWidth) {
+            //remove hour completely
+            $("#navbar-clock").hide();
+            totalWidth -= 90;
+        }
+        if(totalWidth > windowWidth) {
+            //remove Ipo
+            $("#ipo").hide();
+        }
+    }
+};
+
+var updateNavbar = function() {
+    var windowWidth = $(window).width();
+    var totalWidth = 0;
+    var maxWidth = $("#navbar-collapse").width();
+    var padding = maxWidth / 4;
+    var centerWidth = $(".navbar-lower .navbar-center").width()
+                    + padding;
+    var searchWidth = $("#search").show().innerWidth();
+    var viewWidth = $("#changeview").innerWidth();
+
+    var totalWidth = centerWidth + searchWidth + viewWidth;
+
+    $(".navbar-lower .navbar-center").css('padding-left', '25%');
+    if(windowWidth > 768) {
+        if(totalWidth > maxWidth) {
+            $(".navbar-lower .navbar-center").css('padding-left', '0%');
+            totalWidth -= padding;
+        }
+        if(totalWidth > maxWidth) {
+            $("#search").hide();
+        }
+    } else {
+        $(".navbar-lower .navbar-center").css('padding-left', '0%');
+    }
+};
+
+var updateView = function(){
+    if($(window).width() <= 768) {
+        $("#calendarview").fullCalendar('changeView', 'basicDay');
+        $("#timeline").hide();
+        $("#calendarview").show();
+        $("#changeview").hide();
+    } else {
+        $("#changeview").show();
+        $("#calendarview").fullCalendar('changeView', 'basicWeek');
+    }
+};
 /* **************** */
 /* Gestion panneau  */
 /* **************** */
@@ -107,12 +186,11 @@ $("#fiche").on('click', "#close-panel", function(e){
 	}
 	timerFiche = setTimeout(updateFiche, 10000, id);
     });
- }
+ };
+/* **** End Left Panel  **** */
 
-/* End Left Panel */
+
  var url;
-
-
  var setURL = function(urlt){
      url = urlt;
  };
@@ -222,12 +300,22 @@ $(document).ready(function(){
 		    },
 		    buttons: false // an array of buttons
 		};
-    
-    //suppression des éléments inutiles en cas de nombreux champs dans la navbartop
-    if($('#navbar-first-collapse form').size() > 2) {
-        $('.navbar-brand').removeClass("visible-lg-block").hide();
-        $("#day").hide();
-    }
+
+	/* **************************************************************************** */
+	/* Gestion des éléments dans les navbars en fonction de la taille de la fenêtre */
+    /* **************************************************************************** */
+
+    updateNavbarTop();
+    updateNavbar();
+    updateView();
+    $(window).resize(function(){
+        updateNavbarTop();
+        updateNavbar();
+        updateView();
+    });
+
+
+    /* *************************** Fin gestion des navbars ************************ */
 
     //slidepanel
     $(document).on('click', "#close-panel", function(e){
@@ -420,123 +508,125 @@ $(document).ready(function(){
             $("#calendarview").show();
             $("#timeline").hide();
             $.post(url + 'events/saveview?view=30');
-            $("#calendarview").fullCalendar({
-                events: url+'events/geteventsFC'+(typeof(cats) == "undefined" ? '' : '?'+cats),
-                timezone: "UTC",
-                timeFormat: 'H:mm',
-                forceEventDuration: true,
-                header: {
-                    left: '',
-                    center: 'title',
-                    right: 'today basicWeek,month prevYear,prev,next,nextYear',
-                    lang: "fr"
-                },
-                height: $(window).height() - 110,
-                eventAfterAllRender: function(view) {
-                    updateFC();
-                },
-                loading: function(isLoading, view){
-                    if(isLoading) {
-                        var loading = $('<div class="loading" style="top:0px"></div>');
-                        $("#calendarview .fc-view").append(loading);
-                    } else {
-                        $("#calendarview .loading").remove();
-                    }
-                },
-                eventMouseover: function(event, jsEvent, view){
-                    var text = '<table class="table"><tbody>';
-                    $.each(event.fields, function (nom, contenu) {
-                        text += "<tr>";
-                        text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
-                        text += "</tr>";
-                    });
-                    text += "</tbody></table>";
-                    $(this).tooltip({
-                        title: '<span class="elmt_tooltip">' + text + '</span>',
-                        container: 'body',
-                        html: 'true',
-                        placement:'auto top',
-                        viewport: '#calendarview',
-                        template: '<div class="tooltip tooltip-actions" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
-                    }).tooltip('show');
-                    $(this).find('.actions').show();
-                },
-                eventMouseout: function(event, jsEvent, view){
-                    $(this).find('.actions').hide();
-                    $(this).tooltip('destroy');
-                },
-                eventRender: function(event, element){
-                    //add id
-                    element.addClass('cal-event-'+event.id);
-                    //change rendering accordind to status
-                    switch (event.status_id) {
-                        case 4:
-                            element.find('.fc-title').css('text-decoration', 'line-through');
-                            break;
-                        case 5:
-                            if($('#filter_none').closest('.filter').hasClass('active')) {
-                                element.find('.fc-title').addClass('dlt');
-                                if(event.textColor.localeCompare('white') == 0){
-                                    element.find('.fc-title').addClass('dlt-white');
-                                } else {
-                                    element.find('.fc-title').addClass('dlt-black');
-                                }
-                            } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
-                                element.hide();
-                            }
-                            break;
-                    }
-                    //protection and recurrence
-                    if(event.recurr == true) {
-                        element.find('.fc-title').append(' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>');
-                        element.find('span.badge.recurrence').tooltip();
-                    } else {
-                        element.find('.modify-evt').data('recurr', '');
-                    }
-                    if(event.scheduled) {
-                        element.find('.fc-title').append(' <a href="#"><span class="badge scheduled">P</span></a>');
-                    }
-                    //actions
-                    var actions = $('<span class="actions"></span>');
-                    actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
-                                    ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
-                                    '</a>'));
-                    actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
-                                    ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
-                                    '</a>'));
-                    var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
-                                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
-                                '</a>');
-                    actions.append(tooltip)
-                    actions.css('display', "none");
-                    element.find('.fc-content').append(actions);
-                    var id = event.id;
-                    var txt = '<p class="elmt_tooltip actions">'
-                        + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
-                    if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
-                        if(event.punctual === false){
-                            if(event.star === true){
-                                txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
-                            } else {
-                                txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
-                            }
+        }
+    });
+
+    $("#calendarview").fullCalendar({
+        events: url+'events/geteventsFC'+(typeof(cats) == "undefined" ? '' : '?'+cats),
+        timezone: "UTC",
+        timeFormat: 'H:mm',
+        forceEventDuration: true,
+        header: {
+            left: '',
+            center: 'title',
+            right: 'today basicDay,basicWeek,month prevYear,prev,next,nextYear',
+            lang: "fr"
+        },
+        defaultView: "basicWeek",
+        height: $(window).height() - 110,
+        eventAfterAllRender: function(view) {
+            updateFC();
+        },
+        loading: function(isLoading, view){
+            if(isLoading) {
+                var loading = $('<div class="loading" style="top:0px"></div>');
+                $("#calendarview .fc-view").append(loading);
+            } else {
+                $("#calendarview .loading").remove();
+            }
+        },
+        eventMouseover: function(event, jsEvent, view){
+            var text = '<table class="table"><tbody>';
+            $.each(event.fields, function (nom, contenu) {
+                text += "<tr>";
+                text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
+                text += "</tr>";
+            });
+            text += "</tbody></table>";
+            $(this).tooltip({
+                title: '<span class="elmt_tooltip">' + text + '</span>',
+                container: 'body',
+                html: 'true',
+                placement:'auto top',
+                viewport: '#calendarview',
+                template: '<div class="tooltip tooltip-actions" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+            }).tooltip('show');
+            $(this).find('.actions').show();
+        },
+        eventMouseout: function(event, jsEvent, view){
+            $(this).find('.actions').hide();
+            $(this).tooltip('destroy');
+        },
+        eventRender: function(event, element){
+            //add id
+            element.addClass('cal-event-'+event.id);
+            //change rendering accordind to status
+            switch (event.status_id) {
+                case 4:
+                    element.find('.fc-title').css('text-decoration', 'line-through');
+                    break;
+                case 5:
+                    if($('#filter_none').closest('.filter').hasClass('active')) {
+                        element.find('.fc-title').addClass('dlt');
+                        if(event.textColor.localeCompare('white') == 0){
+                            element.find('.fc-title').addClass('dlt-white');
+                        } else {
+                            element.find('.fc-title').addClass('dlt-black');
                         }
-                        txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                        txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                    } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
+                        element.hide();
                     }
-                    if(event.status_id < 5 && event.deleteable) {
-                        txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+                    break;
+            }
+            //protection and recurrence
+            if(event.recurr == true) {
+                element.find('.fc-title').append(' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>');
+                element.find('span.badge.recurrence').tooltip();
+            } else {
+                element.find('.modify-evt').data('recurr', '');
+            }
+            if(event.scheduled) {
+                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled">P</span></a>');
+            }
+            //actions
+            var actions = $('<span class="actions"></span>');
+            actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
+                ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
+                '</a>'));
+            actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
+                ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
+                '</a>'));
+            var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
+                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
+                '</a>');
+            actions.append(tooltip)
+            actions.css('display', "none");
+            element.find('.fc-content').append(actions);
+            var id = event.id;
+            var txt = '<p class="elmt_tooltip actions">'
+                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+            if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
+                if(event.punctual === false){
+                    if(event.star === true){
+                        txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                    } else {
+                        txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
                     }
-                    txt += '</p>';
-                    tooltip.popover({
-                        container: '#calendarview',
-                        content: txt,
-                        placement:'auto top',
-                        html: 'true',
-                        viewport: '#calendarview',
-                        template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-                    });
                 }
+                txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+            }
+            if(event.status_id < 5 && event.deleteable) {
+                txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+            }
+            txt += '</p>';
+            tooltip.popover({
+                container: '#calendarview',
+                content: txt,
+                placement:'auto top',
+                html: 'true',
+                viewport: '#calendarview',
+                template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             });
         }
     });

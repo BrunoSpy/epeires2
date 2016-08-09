@@ -682,7 +682,7 @@
                 this.forceUpdateView(true);
             } else if (viewName === "sixhours" && this.dayview) {
                 this.dayview = false;
-                this.element.css({'background-color':'white'});
+                this.element.removeClass('anotherday');
                 this.forceUpdateView(true);
             }
         },
