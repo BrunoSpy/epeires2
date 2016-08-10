@@ -30,7 +30,7 @@ if (count($this->actions) > 0) {
             } else {
                 echo "btn-sm ";
             }
-            echo ($action->getStatus()->isOpen() ? "btn-primary" : "active btn-success") . "\" data-eventid=\"" . $action->getParent()->getId() . "\" data-id=\"" . $action->getId() . "\">" . ($action->getStatus()->isOpen() ? "A faire" : "Fait") . "</a></td>";
+            echo ($action->getStatus()->isOpen() ? "btn-primary" : "active btn-success") . "\" data-eventid=\"" . $action->getParent()->getId() . "\" data-id=\"" . $action->getId() . "\"><strong>" . ($action->getStatus()->isOpen() ? "A faire" : "Fait") . "</strong></a></td>";
         }
         echo '</tr>';
     }

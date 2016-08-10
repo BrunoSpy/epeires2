@@ -96,7 +96,10 @@ if($this->isGranted('events.recurrent')) {
         null,
         "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
         . "<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
-        . "<p>Modifier uniquement cet évènement le supprimera de la série.</p>",
+        . "<p>Si vous modifiez toute la série :"
+        . "<ul><li>les évènements passés seront exclus de la série ;</li>"
+        . "<li>le changement d'heure de fin concernera uniquement l'évènement choisi.</li></ul></p>"
+        . "<p>Modifier uniquement cet évènement l'exclura de la série.</p>",
         "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
      <button class=\"btn btn-primary\" id=\"confirm-modify-one\">Seulement cet évènement</button>
 	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");

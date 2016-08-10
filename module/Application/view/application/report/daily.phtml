@@ -1,17 +1,17 @@
 <?php
-    $formatterJour = \IntlDateFormatter::create(\Locale::getDefault(),
+    $formatterJour = \IntlDateFormatter::create('fr_FR',
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
             'UTC',
             \IntlDateFormatter::GREGORIAN,
             'dd LLLL');
-    $formatterJourLong = \IntlDateFormatter::create(\Locale::getDefault(),
+    $formatterJourLong = \IntlDateFormatter::create("fr_FR",
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
             'UTC',
             \IntlDateFormatter::GREGORIAN,
             'dd LLLL yyyy');
-    $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
+    $formatterHeure = \IntlDateFormatter::create("fr_FR",
         \IntlDateFormatter::FULL,
         \IntlDateFormatter::FULL,
         'UTC',

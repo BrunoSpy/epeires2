@@ -641,9 +641,19 @@ var form = function(url, tabid){
 				}
 				$.each(data.customvalues, function(key, value){
 					var elt = $("#custom_fields [name='custom_fields["+key+"]']");
+					if(elt.length == 0) {
+						//select à choix multiples ?
+						elt = $("#custom_fields [name='custom_fields["+key+"][]']");
+					}
 					if(elt.is("select")){
-						if(value.length > 0) {
-							$("#custom_fields [name='custom_fields["+key+"]'] option[value="+value+"]").prop('selected', true);
+						if(Array.isArray(value)) {
+							for(var i = 0; i < value.length; i++) {
+								$("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
+							}
+						} else {
+							if (value.length > 0) {
+								$("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
+							}
 						}
 					} else if(elt.is('textarea')){
 						elt.html(value);

@@ -17,24 +17,28 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
-use Application\Entity\Recurrence;
-use Zend\View\Model\ViewModel;
-use Application\Entity\Event;
-use Application\Form\CategoryFormFieldset;
-use Application\Form\CustomFieldset;
-use Application\Entity\CustomFieldValue;
-use Zend\View\Model\JsonModel;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Doctrine\ORM\Query\Expr\Join;
-use Application\Entity\PredefinedEvent;
-use Doctrine\ORM\QueryBuilder;
-use Zend\Session\Container;
-use Zend\Form\Element;
-use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\Recurrence;
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
+use Application\Entity\PredefinedEvent;
+
+use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Form\Element;
+
+use Application\Form\CategoryFormFieldset;
+use Application\Form\CustomFieldset;
+
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\ORM\QueryBuilder;
+
+use ZfcRbac\Exception\UnauthorizedException;
+
 
 /**
  *
@@ -509,8 +513,12 @@ class EventsController extends TabController
                                 //si la règle de récurrence a changé, on exclut les évènements passés
                                 //on supprime les évènements restants
                                 //et on crée une nouvelle récurrence
-                                if($recurrence->getRecurrencePattern() !== $post['recurrencepattern'] ||
-                                    $recurrence->getStartdate() !== $startdate) {
+                                $test = $recurrence->getStartdate() == $startdate;
+                                //changement de récurrence si
+                                //* le pattern a changé ou
+                                //* la date de début de l'évènement a changé
+                                if(strcmp($recurrence->getRecurrencePattern(), $post['recurrencepattern']) !== 0 ||
+                                    !($event->getStartdate() == $startdate)) {
                                     $recurrentEvents = $recurrence->getEvents();
                                     foreach ($recurrentEvents as $e) {
                                         if ($e->isPast($now)) {
@@ -521,25 +529,29 @@ class EventsController extends TabController
                                         $objectManager->persist($e);
                                         $sendEvents[] = $e;
                                     }
-                                    //$objectManager->remove($recurrence);
-                                    $recurrence = new Recurrence($startdate, $post['recurrencepattern']);
-                                    $objectManager->persist($recurrence);
-                                    foreach ($recurrence->getRSet() as $occurrence) {
-                                        $e = new Event();
-                                        $e->setRecurrence($recurrence);
-                                        $e->setAuthor($this->zfcUserAuthentication()
-                                            ->getIdentity());
-                                        $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
-                                        $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
-                                        $e->setStatus($status);
-                                        $e->setStartdate($occurrence);
-                                        if($enddate !== null) {
-                                            $end = clone $occurrence;
-                                            $end->add($diff);
-                                            $e->setEnddate($end);
+                                    //si le statut est positionné à "Supprimé"
+                                    //on ne crée pas de nouveaux évènements
+                                    if($post['status'] != 5) {
+                                        //$objectManager->remove($recurrence);
+                                        $recurrence = new Recurrence($startdate, $post['recurrencepattern']);
+                                        $objectManager->persist($recurrence);
+                                        foreach ($recurrence->getRSet() as $occurrence) {
+                                            $e = new Event();
+                                            $e->setRecurrence($recurrence);
+                                            $e->setAuthor($this->zfcUserAuthentication()
+                                                ->getIdentity());
+                                            $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                                            $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
+                                            $e->setStatus($status);
+                                            $e->setStartdate($occurrence);
+                                            if ($enddate !== null) {
+                                                $end = clone $occurrence;
+                                                $end->add($diff);
+                                                $e->setEnddate($end);
+                                            }
+                                            $modrecurrence = true;
+                                            $events[] = $e;
                                         }
-                                        $modrecurrence = true;
-                                        $events[] = $e;
                                     }
                                 } else {
                                     //sinon on exclut simplement les evts passés
@@ -553,6 +565,10 @@ class EventsController extends TabController
                                             $sendEvents[] = $e;
                                         } else {
                                             $events[] = $e;
+                                            //exception pour la suppression : appliqué à tous les évènements futurs
+                                            if($post['status'] == 5) {
+                                                $e->setStatus($deleteStatus);
+                                            }
                                         }
                                     }
                                     //on mets à jour date de fin et statut de l'évènement sélectionné
@@ -674,10 +690,10 @@ class EventsController extends TabController
                             }
                         }
 
-
-
                         //une fois les évènements fils positionnés, on vérifie si il faut clore l'évènement
-                        if ($e->getStatus()->getId() == 3 || $e->getStatus()->getId() == 4) { // passage au statut terminé ou annulé
+                        if ($e->getStatus()->getId() == 3 // passage au statut terminé
+                            || $e->getStatus()->getId() == 4 // passage au statut annulé
+                            || $e->getStatus()->getId() == 5) { // passage au statut supprimé
                             $this->closeEvent($e);
                         }
 
@@ -691,7 +707,7 @@ class EventsController extends TabController
                             ), array(
                                 'place' => 'ASC'
                             )) as $action) {
-                                if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+                                if ($action->getCategory() instanceof ActionCategory) {
                                     $child = new Event();
                                     $child->setAuthor($e->getAuthor());
                                     $child->setParent($e);
@@ -736,9 +752,10 @@ class EventsController extends TabController
                                     $newcustomvalue->setValue($value->getValue());
                                     $objectManager->persist($newcustomvalue);
                                 }
+
                                 if($child->getCategory() instanceof AlarmCategory) {
-                                    $start = clone $child->getStartdate();
-                                    $diff = $child->getStartdate()->diff($event->getStartdate());
+                                    $start = clone $e->getStartdate();
+                                    $diff = $event->getStartdate()->diff($child->getStartdate());
                                     $start->add($diff);
                                     $newchild->setStartdate($start);
                                 }
@@ -1308,7 +1325,12 @@ class EventsController extends TabController
         $json['defaultvalues'] = $defaultvalues;
         
         foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue) {
-            $customvalues[$customfieldvalue->getCustomField()->getId()] = $customfieldvalue->getValue();
+            $value = $customfieldvalue->getValue();
+            if(strpos($value, "\r") > 0) {
+                $value = explode("\r", $value);
+            }
+
+            $customvalues[$customfieldvalue->getCustomField()->getId()] = $value;
         }
         
         $json['customvalues'] = $customvalues;

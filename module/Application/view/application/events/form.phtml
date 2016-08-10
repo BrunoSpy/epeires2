@@ -108,7 +108,7 @@ echo $this->formHidden($this->form->get('category'));
             echo $this->controlGroup($formEndDate, array('class'=>'compact', 'labelclass' => 'time-middle', 'large' => true));
             ?>
 
-            <?php if($this->isGranted('events.recurrent') && (($this->event && $this->event->getRecurrence())) || !$this->event): ?>
+            <?php if($this->isGranted('events.recurrent') && (($this->event && $this->event->getRecurrence()) || !$this->event)): ?>
                 <div class="form-group">
                     <label class="control-label col-sm-2">Répétitions :</label>
                     <div class="col-sm-10 col-lg-8">

@@ -600,9 +600,16 @@ class ModelsController extends FormController
                             'customfield' => $customfield->getId()
                         ));
                         if ($customfieldvalue) {
-                            $form->get('custom_fields')
-                                ->get($customfield->getId())
-                                ->setAttribute('value', $customfieldvalue->getValue());
+                            if ($customfield->isMultiple()) {
+                                $values = explode("\r", $customfieldvalue->getValue());
+                                $form->get('custom_fields')
+                                    ->get($customfield->getId())
+                                    ->setValue($values);
+                            } else {
+                                $form->get('custom_fields')
+                                    ->get($customfield->getId())
+                                    ->setAttribute('value', $customfieldvalue->getValue());
+                            }
                         }
                     }
 

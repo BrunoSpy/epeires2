@@ -168,10 +168,10 @@ $("#fiche").on('click', "#close-panel", function(e){
 	    var td = $('tr[data-id='+key+'] td:last a');
 	    if(value && td.hasClass('btn-success')) {
 		change = true;
-		td.removeClass('active btn-success').addClass('btn-primary').html('A faire');
+		td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
 	    } else if (!value && td.hasClass('btn-primary')) {
 		change = true;
-		td.addClass('active btn-success').removeClass('btn-primary').html('Fait');
+		td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
 	    }
 	});
 	//il faut aussi mettre l'historique à jour si il y a eu un changement
@@ -360,10 +360,10 @@ $(document).ready(function(){
 		$.getJSON(url+'events/togglefiche'+'?id='+id,
                     function(data){
 			if(data.open){
-				me.html("A faire");
+				me.html("<strong>A faire</strong>");
 				me.removeClass("active btn-success").addClass('btn-primary');
 			} else {
-				me.html("Fait");
+				me.html("<strong>Fait</strong>");
 				me.addClass("active btn-success");
 			}
                         $("#history").load(url+'events/gethistory?id='+me.data('eventid'), function(){
