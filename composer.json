@@ -4,15 +4,19 @@
     "license": "AGPL-3.0",
     "homepage": "http://vulcain.do.aviation/projects/pvcds",
     "repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/BrunoSpy/DoctrineMigrationsModule"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/kipperlenny/opentbsbundle"
-		}
-	],
+        {
+            "type": "vcs",
+            "url": "https://github.com/BrunoSpy/DoctrineMigrationsModule"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kipperlenny/opentbsbundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/BrunoSpy/DoctrineDataFixtureModule"
+        }
+    ],
     "require": {
         "php": ">=5.5.0",
         "zendframework/zend-mvc": "2.5.* || 2.6.*",
@@ -31,7 +35,7 @@
         "zendframework/zend-version": "^2.5",
         "zendframework/zend-text": "^2.5",
         "rwoverdijk/assetmanager": "1.*",
-        "doctrine/doctrine-orm-module": "~0.9.0",
+        "doctrine/doctrine-orm-module": "~1.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
         "zf-commons/zfc-user": "~1.2",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
@@ -46,11 +50,12 @@
         "zendframework/zend-test": "^2.5",
         "phpunit/phpunit": "^5.1",
         "hounddog/doctrine-data-fixture-module": "dev-master",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "codeception/codeception": "^2.2"
     },
     "autoload-dev": {
-    	"psr-4": {
-	        "ApplicationTest\\": "tests/ApplicationTest"
-	    }
-	}
+        "psr-4": {
+            "ApplicationTest\\": "tests/ApplicationTest"
+        }
+    }
 }
