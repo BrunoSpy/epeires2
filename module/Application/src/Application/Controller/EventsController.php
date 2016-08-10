@@ -1325,7 +1325,12 @@ class EventsController extends TabController
         $json['defaultvalues'] = $defaultvalues;
         
         foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue) {
-            $customvalues[$customfieldvalue->getCustomField()->getId()] = $customfieldvalue->getValue();
+            $value = $customfieldvalue->getValue();
+            if(strpos($value, "\r") > 0) {
+                $value = explode("\r", $value);
+            }
+
+            $customvalues[$customfieldvalue->getCustomField()->getId()] = $value;
         }
         
         $json['customvalues'] = $customvalues;
