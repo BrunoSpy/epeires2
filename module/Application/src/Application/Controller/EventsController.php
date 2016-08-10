@@ -19,23 +19,26 @@ namespace Application\Controller;
 
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
-use Application\Entity\Recurrence;
-use Zend\View\Model\ViewModel;
-use Application\Entity\Event;
-use Application\Form\CategoryFormFieldset;
-use Application\Form\CustomFieldset;
-use Application\Entity\CustomFieldValue;
-use Zend\View\Model\JsonModel;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Doctrine\ORM\Query\Expr\Join;
-use Application\Entity\PredefinedEvent;
-use Doctrine\ORM\QueryBuilder;
-use Zend\Session\Container;
-use Zend\Form\Element;
-use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\Recurrence;
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
+use Application\Entity\PredefinedEvent;
+
+use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Form\Element;
+
+use Application\Form\CategoryFormFieldset;
+use Application\Form\CustomFieldset;
+
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\ORM\QueryBuilder;
+
+use ZfcRbac\Exception\UnauthorizedException;
+
 
 /**
  *
@@ -704,7 +707,7 @@ class EventsController extends TabController
                             ), array(
                                 'place' => 'ASC'
                             )) as $action) {
-                                if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+                                if ($action->getCategory() instanceof ActionCategory) {
                                     $child = new Event();
                                     $child->setAuthor($e->getAuthor());
                                     $child->setParent($e);
