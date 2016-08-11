@@ -50,7 +50,6 @@ before_script:
 
   # Make sure Webdriver is running
   - curl http://localhost:4444/wd/hub/status
-  - curl http://127.0.0.1/
 
 script:
   - php vendor/bin/codecept run acceptance --env firefox
