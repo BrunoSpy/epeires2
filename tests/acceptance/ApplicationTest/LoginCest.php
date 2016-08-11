@@ -23,11 +23,10 @@ class LoginCest
         $I->seeElement("#navbar-first-collapse");
         $I->click('Non connecté');
         $I->click('#openloginwindow');
-        $I->submitForm('#loginwindow form', array('user' => array(
+        $I->submitForm('#loginwindow form', array(
             'identity' => 'admin',
             'credential' => 'adminadmin'
-        )));
-        $I->wait(10);//wait for the page to reload
-        $I->seeElement('#create-evt');
+        ));
+        $I->seeElement('#create-link');
     }
 }
