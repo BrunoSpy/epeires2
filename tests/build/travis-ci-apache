@@ -1,6 +1,6 @@
 <VirtualHost *:80>
 
-  DocumentRoot %TRAVIS_BUILD_DIR/public%
+  DocumentRoot %TRAVIS_BUILD_DIR%/public
 
   <Directory "%TRAVIS_BUILD_DIR%/public">
     DirectoryIndex index.php
