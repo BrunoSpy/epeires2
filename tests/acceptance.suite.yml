@@ -9,6 +9,6 @@ modules:
     enabled:
         - \Helper\Acceptance
         - WebDriver:
-            url: "http://127.0.0.1"
+            url: "http://127.0.0.1/"
             browser: firefox
             window_size: 1350x600
