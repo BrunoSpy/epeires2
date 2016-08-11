@@ -71,7 +71,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
             }
             $html .= "<li><a href=\"" . $urlHelper('zfcuser/logout') . "?redirect=" . $urlHelper('application') . "\">Se déconnecter</a></li>";
         } else {
-            $html .= "<li><a href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
+            $html .= "<li><a id=\"openloginwindow\" href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
         }
         $html .= '</ul>';
         $html .= '</li>';
