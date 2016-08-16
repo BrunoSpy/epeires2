@@ -10,7 +10,6 @@ services:
 cache:
   directories:
     - ${TRAVIS_BUILD_DIR}/travis/php-cache
-    - ${TRAVIS_BUILD_DIR}/travis/lib-cache
     - $HOME/.composer/cache
 
 before_install:
@@ -18,7 +17,7 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - sleep 3
-  - sh -c "if [ ! -e ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar ]; then wget -O ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar https://selenium-release.storage.googleapis.com/2.47/selenium-server-standalone-2.47.0.jar; fi;"
+  - sh -c "if [ ! -e ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar ]; then wget -O ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar; fi;"
   - java -jar ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar -port 4444 >/dev/null 2>&1 & # WARNING - Takes a long time to start up. Keep here
 
 install:
@@ -50,9 +49,11 @@ before_script:
 
   # Make sure Webdriver is running
   - curl http://localhost:4444/wd/hub/status
+  #Make sure webserver is running
+  - curl http://localhost/events/testAuthentication
 
 script:
-  - travis_retry php vendor/bin/codecept run acceptance --env firefox
+  - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-xml
   
 after_success:
