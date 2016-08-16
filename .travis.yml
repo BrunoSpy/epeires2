@@ -9,7 +9,6 @@ services:
 
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/travis/php-cache
     - $HOME/.composer/cache
 
 before_install:
@@ -40,8 +39,7 @@ before_script:
   - sudo cp -f tests/build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
-  # Disable xdebug when we don't need coverage to speed up testing
-  #- phpenv config-rm xdebug.ini
+
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
@@ -51,6 +49,7 @@ before_script:
   - curl http://localhost:4444/wd/hub/status
   #Make sure webserver is running
   - curl http://localhost/events/testAuthentication
+  - firefox --version
 
 script:
   - php vendor/bin/codecept run acceptance
