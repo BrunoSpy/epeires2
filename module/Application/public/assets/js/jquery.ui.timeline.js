@@ -315,6 +315,9 @@
                     e2.preventDefault();
                     //désactivaton de tous les liens des boutons
                     elmt.find('.label_elmt a').addClass('disabled');
+                    //les jalons sont à des positions fausses pendant le déplacement :
+                    //inutile de les afficher
+                    elmt.find('.milestone').hide();
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if (delt2 + 40 < rect_width) {
@@ -342,6 +345,9 @@
                 var x_ref = e1.clientX;
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
+                //les jalons sont à des positions fausses pendant le déplacement :
+                //inutile de les afficher
+                elmt.find('.milestone').hide();
                 elmt.addClass('on_drag');
                 elmt.find('.elmt_flecheD').hide();
                 elmt.find('.elmt_fin').show();
@@ -1856,7 +1862,7 @@
                     var xMilestone = self._computeX(new Date(item));
                     if(xMilestone > x_deb && xMilestone < x_end) {
                         var milestone = $('<div class="milestone"></div>');
-                        var left = xMilestone - x_deb;
+                        var left = (xMilestone - x_deb)/(x_end - x_deb)*100;
                         milestone.css({'left': left+"%", 'color':textColor});
                         elmt_rect.append(milestone);
                     }
@@ -2359,7 +2365,6 @@
          * @private
          */
         _getCSSWidth: function (element) {
-            console.log(element);
             return element.clone().appendTo('body').wrap('<div style="display: none"></div>').css('width');
         },
         _outerWidth: function(object){

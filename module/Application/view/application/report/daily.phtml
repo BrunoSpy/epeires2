@@ -115,7 +115,7 @@
             foreach ($this->events as $event){
                     echo '<div class="cat_title">'.$event['name'].'</div>';
                     foreach ($event['events'] as $e) {
-                        echo $this->partial('event.phtml', array('event' => $e));
+                        echo $this->partial('event.phtml', array('event' => $e, 'logs' => $this->logs));
                     }           
                     foreach ($event['childs'] as $subcat) {
                         if(count($subcat['events']) > 0 ) {

@@ -107,6 +107,7 @@
 
 .elmt.notpunctual .rect_elmt {
 	top: 0px;
+	z-index: 2;
 	border-width: 1px;
 	border-radius: 5px;
 	border-color: transparent;
@@ -153,6 +154,7 @@
 	z-index: 10;
 }
 
+
 .elmt .elmt_flecheG,
 .elmt .elmt_flecheD {
 	position: absolute;
@@ -176,7 +178,6 @@
 
 .label_elmt.popover-content {
 	font-weight: bold;
-	
 }
 
 .label_elmt.popover > .arrow {
@@ -312,12 +313,11 @@
 }
 
 .milestone {
-	position: relative;
+	position: absolute;
 	width: 1px;
 	height: 80%;
 	border-left-style: none;
 	border-right-style: solid;
 	border-width: 2px;
-	float:left;
 	margin-top: 3px;
 }
