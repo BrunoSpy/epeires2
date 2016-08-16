@@ -102,7 +102,7 @@
 
 .elmt.notpunctual .rect_elmt {
 	top: 0px;
-/*	z-index: 2;*/
+	z-index: 2;
 	border-width: 1px;
 	border-radius: 5px;
 	border-color: transparent;
@@ -143,15 +143,10 @@
 }
 
 .elmt .label_elmt {
-	/*color: black;*/
 	white-space: nowrap;
 	font-weight: bold;
 	width: auto;
 	z-index: 10;
-}
-
-.elmt .label_elmt a > span.glyphicon {
-	/*color: black;*/
 }
 
 .elmt .label_elmt.outside {
@@ -171,9 +166,7 @@
 }
 
 .label_elmt.popover-content {
-	/* padding-bottom: 0px;*/
 	font-weight: bold;
-	
 }
 
 .label_elmt.popover > .arrow {
@@ -231,7 +224,6 @@
 
 .category {
 	position: absolute;
-/*	border-style: solid;*/
 	border-width: 1px;
 	border-color: grey;
 	border-radius: 5px;
@@ -310,12 +302,11 @@
 }
 
 .milestone {
-	position: relative;
+	position: absolute;
 	width: 1px;
 	height: 80%;
 	border-left-style: none;
 	border-right-style: solid;
 	border-width: 2px;
-	float:left;
 	margin-top: 3px;
 }
