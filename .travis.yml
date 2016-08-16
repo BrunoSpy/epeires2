@@ -22,7 +22,7 @@ before_install:
   - java -jar ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar -port 4444 >/dev/null 2>&1 & # WARNING - Takes a long time to start up. Keep here
 
 install:
-   - composer install --dev --no-interaction --prefer-dist
+   - composer install --no-interaction --prefer-dist
 
 env:
    - APP_ENV=development
@@ -52,7 +52,7 @@ before_script:
   - curl http://localhost:4444/wd/hub/status
 
 script:
-  - php vendor/bin/codecept run acceptance --env firefox
+  - travis_retry php vendor/bin/codecept run acceptance --env firefox
   - php vendor/bin/codecept run unit --coverage-xml
   
 after_success:
