@@ -17,7 +17,7 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - sleep 3
-  - sh -c "if [ ! -e ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar ]; then wget -O ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar; fi;"
+  - wget -O ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
   - java -jar ${TRAVIS_BUILD_DIR}/travis/lib-cache/selenium.jar -port 4444 >/dev/null 2>&1 & # WARNING - Takes a long time to start up. Keep here
 
 install:
