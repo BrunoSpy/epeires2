@@ -49,7 +49,6 @@ before_script:
   - curl http://localhost:4444/wd/hub/status
   #Make sure webserver is running
   - curl http://localhost/events/testAuthentication
-  - firefox --version
 
 script:
   - php vendor/bin/codecept run acceptance
