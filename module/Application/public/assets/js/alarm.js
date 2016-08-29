@@ -63,25 +63,33 @@ var updateAlarms = function(){
 					//on ajoute l'alarme si statut nouveau ou en cours
 					if(item.status == 1 || item.status == 2) {
 						var delta = new Date(item.datetime) - new Date(); //durée avant l'alarme
-						var timer = setTimeout(function(){
-							alarmsnoty[item.id] = noty({
-								text:item.text,
-								type:'error',
-								layout:'topMiddleCenter',
-								timeout:false,
-								callback: {
-									onClose: function(){
-										$.post(url+'alarm/confirm?id='+item.id, function(data){displayMessages(data);});
-										delete(alarmsnoty[item.id]);
+						//32-bit signed integer overflow :
+						//si delta > MAX_INT, settimeout déclenche immédiatement
+						//max ~ 24 jours : donc on ne traite pas les alarmes
+						//car l'IHM sera forcément relancée dans la durée
+						if(delta < 2147483647) {
+							var timer = setTimeout(function () {
+								alarmsnoty[item.id] = noty({
+									text: item.text,
+									type: 'error',
+									layout: 'topMiddleCenter',
+									timeout: false,
+									callback: {
+										onClose: function () {
+											$.post(url + 'alarm/confirm?id=' + item.id, function (data) {
+												displayMessages(data);
+											});
+											delete(alarmsnoty[item.id]);
+										}
 									}
-								}
-							});
-							//à chaque ajout, réinitialiser le timer des animations
-							flash();
-							clearInterval(timerAnimation);
-							timerAnimation = setInterval(flash, 30000);
-						}, delta);
-						alarms[item.id] = timer;
+								});
+								//à chaque ajout, réinitialiser le timer des animations
+								flash();
+								clearInterval(timerAnimation);
+								timerAnimation = setInterval(flash, 30000);
+							}, delta);
+							alarms[item.id] = timer;
+						}
 					}
 				}
 
