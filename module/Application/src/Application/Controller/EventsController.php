@@ -1728,7 +1728,7 @@ class EventsController extends TabController
         
         $fields = array();
         $formatterSimple = \IntlDateFormatter::create(
-            \Locale::getDefault(),
+            'fr_FR',
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
             'UTC',
