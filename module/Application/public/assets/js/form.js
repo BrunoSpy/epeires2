@@ -266,23 +266,27 @@ var form = function(url, tabid){
 		updateIconTabs();
 	});
 
+    var updateFormError = function() {
+        var fail = false;
+        $("#event input, #event select, #event textarea").each(function(index){
+            if($(this).prop('required') && !$(this).val()) {
+                fail = true;
+                $(this).parents('.form-group').addClass('has-error');
+            } else {
+                $(this).parents('.form-group').removeClass('has-error');
+            }
+        });
+        if(fail) {
+            $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
+        } else {
+            $("#event input[name='submit']").prop('disabled', false).removeClass('disabled');
+        }
+        updateIconTabs();
+    };
+
 	//enable/disable submit button according to required fields
 	$("#event").on('change keyup', function(e){
-		var fail = false;
-		$("#event input, #event select, #event textarea").each(function(index){
-			if($(this).prop('required') && !$(this).val()) {
-				fail = true;
-				$(this).parents('.form-group').addClass('has-error');
-			} else if($(this).prop('required') && $(this).val()){
-				$(this).parents('.form-group').removeClass('has-error');
-			}
-		});
-		if(fail) {
-			$("#event input[name='submit']").prop('disabled', true).addClass('disabled');
-		} else {
-			$("#event input[name='submit']").prop('disabled', false).removeClass('disabled');
-		}
-		updateIconTabs();
+        updateFormError();
 	});
 
 	//specific functions to maintain coherence between end and start inputs
@@ -841,6 +845,21 @@ var form = function(url, tabid){
 		} else {
 			$("#end a").removeClass("disabled");
 		}
+        updateFormError();
+		var pattern = $("input[name=recurrencepattern]").val();
+		if(pattern.length > 0 && pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") != 0) {
+            if($(this).is(':checked')){
+                $("input[name=enddate]").prop('required', false);
+                $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', false);
+            } else {
+                $("input[name=enddate]").prop('required', true);
+                $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', true);
+            }
+        } else {
+            $("input[name=enddate]").prop('required', false);
+            $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', false);
+        }
+        updateFormError();
 		//updateHourTitle();
 	});
 
@@ -1021,7 +1040,8 @@ var form = function(url, tabid){
             $("#recurr-button").text('Configurer...');
             $('#recurr-humanreadable em').text('(Aucune récurrence.)');
 			if(!$("#punctual").is(':checked')) {
-				$("input[name=enddate]").attr('required', '');
+				$("input[name=enddate]").prop('required', false);
+                $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', false);
 				$("input[name=enddate]").trigger('change');
 			}
 		} else {
@@ -1034,13 +1054,13 @@ var form = function(url, tabid){
                 if(text !== '') {
                     $('#recurr-humanreadable em').text('('+text+')');
 					if(!$("#punctual").is(':checked')) {
-						$("input[name=enddate]").attr('required', 'required');
+						$("input[name=enddate]").prop('required', true);
+                        $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', true);
 					}
                 } else {
                     $('#recurr-humanreadable em').text('(Aucune récurrence.)');
-					if(!$("#punctual").is(':checked')) {
-						$("input[name=enddate]").attr('required', '');
-					}
+                    $("input[name=enddate]").prop('required', false);
+                    $("input[name=enddate]").siblings('.timepicker-form').find('input').prop('required', false);
                 }
 				$("input[name=enddate]").trigger('change');
 			});
