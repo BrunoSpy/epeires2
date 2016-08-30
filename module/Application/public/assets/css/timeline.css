@@ -114,11 +114,11 @@
 }
 
 .elmt.notpunctual .complement {
-	border-top-width: 16px !important;
 	border-top-color: transparent !important;
 	margin: 0px !important;
 	border-bottom-style: solid;
 	border-bottom-color: transparent;
+	top: -1px;
 }
 
 .elmt.star.notpunctual .rect_elmt {

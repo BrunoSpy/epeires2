@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.0.0",
+        version: "1.0.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1840,7 +1840,7 @@
                     x_end = this._computeX(this.timelineEnd);
                     var haut = this.options.eventHeight;
                     elmt_compl.css({'left': 'auto',
-                        'right' : - haut - 2 +'px',
+                        'right' : - haut - 3 +'px',
                         'border-left-width': haut + 'px',
                         'border-left-color' : couleur,
                         'border-top-width': haut / 2 + 1 + 'px',
