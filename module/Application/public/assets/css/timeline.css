@@ -107,7 +107,6 @@
 
 .elmt.notpunctual .rect_elmt {
 	top: 0px;
-	z-index: 2;
 	border-width: 1px;
 	border-radius: 5px;
 	border-color: transparent;

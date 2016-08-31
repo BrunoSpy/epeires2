@@ -171,7 +171,7 @@
                     weekStart : 1,
                     switchOnClick: true,
                     nowButton: true,
-                    nowText: "Jour"
+                    nowText: "Ce jour"
                 });
 
                 div.on('click', 'span.glyphicon-calendar', function(e){
