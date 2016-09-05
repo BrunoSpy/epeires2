@@ -111,17 +111,15 @@ var updateView = function(){
 /* **************** */
 var timerFiche;
 
-var togglefiche = function(){
-    $("#main-nav-check").prop('checked', !$("#main-nav-check").is(':checked'));
-};
 var closeFiche = function() {
-    $("#fiche").empty();
+    $("#fiche").empty();$("#fiche").hide();
     $("#main-nav-check").prop('checked', false);
     clearTimeout(timerFiche);
 };
 
 var openFiche = function() {
     $("#main-nav-check").prop('checked', true);
+    $("#fiche").show();
 };
 
 var loadFiche = function(id, actionUrl, files) {
@@ -500,7 +498,7 @@ $(document).ready(function(){
             var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
-            $.post(url + 'events/saveview?view=24')
+            $.post(url + 'events/saveview?view=24');
         } else if(view.localeCompare("month") == 0) {
             $("#calendarview").show();
             $("#calendarview").fullCalendar('changeView', 'basicWeek');
@@ -512,16 +510,29 @@ $(document).ready(function(){
     $("#calendarview").fullCalendar({
         events: url+'events/geteventsFC'+(typeof(cats) == "undefined" ? '' : '?'+cats),
         timezone: "UTC",
-        timeFormat: 'H:mm',
+        timeFormat: 'HH:mm',
         forceEventDuration: true,
         header: {
             left: '',
             center: 'title',
-            right: 'today basicDay,basicWeek,month prevYear,prev,next,nextYear',
-            lang: "fr"
+            right: 'today basicDay,basicWeek,month prevYear,prev,next,nextYear'
         },
+        locale: "fr",
         defaultView: "basicWeek",
         height: $(window).height() - 110,
+        navLinks: true,
+        navLinkDayClick: function(date, jsEvent) {
+            $("#viewday").prop("checked", true);
+            $("#calendarview").hide();
+            $("#timeline").show();
+            $("#calendar").show();
+            $("#export").show();
+            var dayString = date.format('DD/MM/YYYY');
+            $("#calendar input[type=text].date").val(dayString);
+            $('#timeline').timeline("view", "day");
+            $.post(url + 'events/saveview?view=24');
+            $("#calendar input[type=text].date").trigger('change');
+        },
         eventAfterAllRender: function(view) {
             updateFC();
         },

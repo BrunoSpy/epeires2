@@ -82,6 +82,7 @@ body {
 #fiche {
 	padding-top: 5px;
 	background-color: aliceblue;
+	display: none;
 }
 
 #fiche div#close-button {
@@ -379,6 +380,7 @@ body {
 	display: none;
 	margin-right: 1em;
 	margin-left: 1em;
+	background-color: white;
 }
 
 .dlt {
