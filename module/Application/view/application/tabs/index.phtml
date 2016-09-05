@@ -9,7 +9,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-    <div id="create-evt" data-toggle="modal" class="modal fade in" data-spy="affix" data-offset-top="80">
+    <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="loading"></div>
@@ -96,6 +96,34 @@ echo $this->modalwindow('add-note-modal',
             . "</div>"
         . "</div>"
         . "</form>");
+
+echo $this->partial('events/recurrence-form.html');
+
+if($this->isGranted('events.recurrent')) {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier tous les évènements ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
+        . "<p>Si vous modifiez toute la série :"
+        . "<ul><li>les évènements passés seront exclus de la série ;</li>"
+        . "<li>le changement d'heure de fin concernera uniquement l'évènement choisi.</li></ul></p>"
+        . "<p>Modifier uniquement cet évènement l'exclura de la série.</p>",
+        "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
+     <button class=\"btn btn-primary\" id=\"confirm-modify-one\">Seulement cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+} else {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier l\'évènement ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Le modifier le supprimera de la récurrence et le rendra indépendant.</p>",
+        "<button class=\"btn btn-primary\" id=\"confirm-modify-one\">Modifier cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+}
+
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
