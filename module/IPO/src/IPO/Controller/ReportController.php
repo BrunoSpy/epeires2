@@ -69,7 +69,7 @@ class ReportController extends AbstractActionController
             }
             
             $formatter = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
@@ -78,7 +78,7 @@ class ReportController extends AbstractActionController
             );
             
             $formatterYear = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
@@ -86,17 +86,8 @@ class ReportController extends AbstractActionController
                 'EEEE d MMMM Y'
             );
             
-            $formatterHour = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
-                \IntlDateFormatter::FULL, 
-                \IntlDateFormatter::FULL, 
-                'UTC', 
-                \IntlDateFormatter::GREGORIAN, 
-                'HH:mm'
-            );
-            
             $formatterDayHour = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
