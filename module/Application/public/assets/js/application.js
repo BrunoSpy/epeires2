@@ -343,7 +343,7 @@ $(document).ready(function(){
                 if($('#timeline').length > 0){
                     $('#timeline').timeline('addEvents',data.events);
                 }
-                if($('#calendarview').length > 0) {
+                if($('#calendarview').length > 0 && $("#calendarview").is(':visible')) {
                     $('#calendarview').fullCalendar('refetchEvents');
                 }
             }
@@ -465,7 +465,9 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', function(evt) {return true;});
         $('#timeline').timeline('forceUpdateView', false);
-        $("#calendarview").fullCalendar('refetchEvents');
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
     });
 
     $("#filter_deleted").on('click', function(e){
@@ -475,7 +477,9 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', "default");
         $('#timeline').timeline('forceUpdateView', false);
-        $("#calendarview").fullCalendar('refetchEvents');
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
     });
 
     $("input[name=viewOptions]").on('change', function(e){
@@ -523,7 +527,10 @@ $(document).ready(function(){
         defaultView: "basicWeek",
         height: $(window).height() - 110,
         eventAfterAllRender: function(view) {
-            updateFC();
+            if(lastupdateFC == 0) {
+                lastupdateFC = new Date();
+            }
+            timerFC = setTimeout(updateFC, 10000);
         },
         loading: function(isLoading, view){
             if(isLoading) {
@@ -634,7 +641,7 @@ $(document).ready(function(){
     var timerFC;
     var updateFC = function() {
         clearTimeout(timerFC);
-        var urlFC = url + 'events/geteventsFC'
+        var urlFC = url + 'events/geteventsFC';
         if (typeof(cats) == "undefined") {
             urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '');
         } else {
