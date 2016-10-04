@@ -289,6 +289,7 @@ class CategoriesController extends FormController
                 $category->setStateField(null);
                 $category->setFrequencyField(null);
                 $category->setOtherFrequencyField(null);
+                $category->setCauseField(null);
             }
             if ($category instanceof BrouillageCategory) {
                 $category->setFrequencyField(null);
