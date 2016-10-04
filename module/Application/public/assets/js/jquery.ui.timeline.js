@@ -1256,7 +1256,7 @@
             var h_temp = this.timelineBegin.getUTCHours();
             var time_obj = $('<div class="Time_obj horiz_bar"></div>');
             var base_elmt = $('<div id="timeline-base" class="Base"></div>');
-            this.element.append(base_elmt);
+            this.element.prepend(base_elmt);
             base_elmt.append(time_obj);
             time_obj.css({
                 'top': this.params.topSpace + 'px',
