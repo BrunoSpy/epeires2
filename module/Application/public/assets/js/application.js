@@ -591,7 +591,7 @@ $(document).ready(function(){
                 element.find('.modify-evt').data('recurr', '');
             }
             if(event.scheduled) {
-                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled">P</span></a>');
+                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled" data-url="'+event.url_file1+'" data-id="'+event.id+'" data-files="'+event.files+'">P</span></a>');
             }
             //actions
             var actions = $('<span class="actions"></span>');
@@ -740,6 +740,21 @@ $(document).ready(function(){
         $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
     });
 
+    $("#calendarview").on('click', "span.badge.scheduled", function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        var files = me.data('files');
+        var urlF = me.data('url');
+        if(!isNaN(id)){
+            if(files === 1 && typeof urlF != 'undefined'){
+                window.open(window.location.origin+url+urlF);
+            } else {
+                loadFiche(id, "events/getfiche", true);
+            }
+        }
+    });
+
     $(document).on('click', function (e) {
         $('#calendarview').find('.tooltip-evt').each(function () {
             // hide any open popovers when the anywhere else in the body is clicked
@@ -823,7 +838,7 @@ $(document).ready(function(){
         		loadFiche(id, "events/getfiche", true);
         	}
         }
-    })
+    });
     
     /* ******************************* */
 
