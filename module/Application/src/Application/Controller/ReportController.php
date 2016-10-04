@@ -154,8 +154,8 @@ class ReportController extends AbstractActionController
         if (! $organisation) {
             throw new \RuntimeException('Unable to find organisation.');
         } else {
-            $email = $organisation[0]->getIpoEmail();
-            if (empty($email)) {
+            $emailIPO = $organisation[0]->getIpoEmail();
+            if ($email && empty($emailIPO)) {
                 throw new \RuntimeException('Unable to find IPO email.');
             }
         }
