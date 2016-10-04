@@ -492,6 +492,11 @@ $(document).ready(function(){
             $("#timeline").show();
             $("#timeline").timeline('view', 'sixhours');
             $.post(url + 'events/saveview?view=6');
+            var now = new Date();
+            var date = FormatNumberLength(now.getUTCDate(), 2) + '/'
+                    + FormatNumberLength(now.getUTCMonth()+1, 2)+ '/'
+                    + FormatNumberLength(now.getUTCFullYear(), 4);
+            $.post(url + 'events/saveday?day="' + date+'"');
         } else if(view.localeCompare("day") == 0) {
             $("#calendarview").hide();
             $("#timeline").show();
