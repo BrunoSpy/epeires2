@@ -31,16 +31,16 @@ class CategoryRepository extends ExtendedRepository
      *
      * @return array
      */
-    public function getRootsAsArray($id = null, $timeline = null)
+    public function getRootsAsArray($id = null, $timeline = null, $system = true)
     {
         $res = array();
-        foreach ($this->getRoots($id, $timeline) as $element) {
+        foreach ($this->getRoots($id, $timeline, $system) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;
     }
 
-    public function getRoots($id = null, $timeline = null)
+    public function getRoots($id = null, $timeline = null, $system = true)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
         if ($timeline) {
@@ -48,6 +48,9 @@ class CategoryRepository extends ExtendedRepository
         }
         if ($id) {
             $criteria->andWhere(Criteria::expr()->neq('id', $id));
+        }
+        if($system == false) {
+            $criteria->andWhere(Criteria::expr()->eq('system', false));
         }
         $criteria->orderBy(array(
             'place' => Criteria::ASC

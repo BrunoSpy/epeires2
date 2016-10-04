@@ -117,7 +117,7 @@ class CategoriesController extends FormController
         $form->setHydrator(new DoctrineObject($objectManager))->setObject($category);
         
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getRootsAsArray($id));
+            ->getRootsAsArray($id, null, false));
         
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
