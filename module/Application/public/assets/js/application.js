@@ -341,7 +341,7 @@ $(document).ready(function(){
                 if($('#timeline').length > 0){
                     $('#timeline').timeline('addEvents',data.events);
                 }
-                if($('#calendarview').length > 0) {
+                if($('#calendarview').length > 0 && $("#calendarview").is(':visible')) {
                     $('#calendarview').fullCalendar('refetchEvents');
                 }
             }
@@ -463,7 +463,9 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', function(evt) {return true;});
         $('#timeline').timeline('forceUpdateView', false);
-        $("#calendarview").fullCalendar('refetchEvents');
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
     });
 
     $("#filter_deleted").on('click', function(e){
@@ -473,7 +475,9 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', "default");
         $('#timeline').timeline('forceUpdateView', false);
-        $("#calendarview").fullCalendar('refetchEvents');
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
     });
 
     $("input[name=viewOptions]").on('change', function(e){
@@ -486,6 +490,11 @@ $(document).ready(function(){
             $("#timeline").show();
             $("#timeline").timeline('view', 'sixhours');
             $.post(url + 'events/saveview?view=6');
+            var now = new Date();
+            var date = FormatNumberLength(now.getUTCDate(), 2) + '/'
+                    + FormatNumberLength(now.getUTCMonth()+1, 2)+ '/'
+                    + FormatNumberLength(now.getUTCFullYear(), 4);
+            $.post(url + 'events/saveday?day="' + date+'"');
         } else if(view.localeCompare("day") == 0) {
             $("#calendarview").hide();
             $("#timeline").show();
@@ -534,7 +543,10 @@ $(document).ready(function(){
             $("#calendar input[type=text].date").trigger('change');
         },
         eventAfterAllRender: function(view) {
-            updateFC();
+            if(lastupdateFC == 0) {
+                lastupdateFC = new Date();
+            }
+            timerFC = setTimeout(updateFC, 10000);
         },
         loading: function(isLoading, view){
             if(isLoading) {
@@ -595,7 +607,7 @@ $(document).ready(function(){
                 element.find('.modify-evt').data('recurr', '');
             }
             if(event.scheduled) {
-                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled">P</span></a>');
+                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled" data-url="'+event.url_file1+'" data-id="'+event.id+'" data-files="'+event.files+'">P</span></a>');
             }
             //actions
             var actions = $('<span class="actions"></span>');
@@ -645,7 +657,7 @@ $(document).ready(function(){
     var timerFC;
     var updateFC = function() {
         clearTimeout(timerFC);
-        var urlFC = url + 'events/geteventsFC'
+        var urlFC = url + 'events/geteventsFC';
         if (typeof(cats) == "undefined") {
             urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '');
         } else {
@@ -744,6 +756,21 @@ $(document).ready(function(){
         $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
     });
 
+    $("#calendarview").on('click', "span.badge.scheduled", function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        var files = me.data('files');
+        var urlF = me.data('url');
+        if(!isNaN(id)){
+            if(files === 1 && typeof urlF != 'undefined'){
+                window.open(window.location.origin+url+urlF);
+            } else {
+                loadFiche(id, "events/getfiche", true);
+            }
+        }
+    });
+
     $(document).on('click', function (e) {
         $('#calendarview').find('.tooltip-evt').each(function () {
             // hide any open popovers when the anywhere else in the body is clicked
@@ -827,7 +854,7 @@ $(document).ready(function(){
         		loadFiche(id, "events/getfiche", true);
         	}
         }
-    })
+    });
     
     /* ******************************* */
 

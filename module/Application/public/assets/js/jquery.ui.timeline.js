@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.0.1",
+        version: "1.0.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1274,7 +1274,7 @@
                 'width': 'calc(100% - '+(this.options.leftOffset + this.options.rightOffset)+'px)',
                 'height' : '100%'
             });
-            this.element.append(base_elmt);
+            this.element.prepend(base_elmt);
             base_elmt.append(time_obj);
             time_obj.css({
                 'top': this.params.topSpace + 'px',
