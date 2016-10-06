@@ -1404,7 +1404,8 @@ class EventsController extends TabController
             ->innerJoin('e.category', 'cat')
             ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
             ->andWhere($qb->expr()
-            ->eq('e.parent', $eventid));
+            ->eq('e.parent', $eventid))
+            ->orderBy("e.place", 'ASC');
         
         return $qb->getQuery()->getResult();
     }
