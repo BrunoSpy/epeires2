@@ -135,20 +135,20 @@ $("#home").removeClass("dropdown-toggle")
 <?php
 if($this->view == "30") {
     echo 'forceMonth = true;';
-    if($this->cats) {
-        $catsString = "";
-        $i = 0;
-        foreach ($this->cats as $cat) {
-            if(strlen($catsString) > 0) {
-                $catsString .= "&";
-            }
-            $catsString .= 'cats[' . $i . ']=' . $cat;
-            $i++;
+}
+if($this->cats) {
+    $catsString = "";
+    $i = 0;
+    foreach ($this->cats as $cat) {
+        if(strlen($catsString) > 0) {
+            $catsString .= "&";
         }
-        echo 'cats = "'.$catsString.'";';
-    } else {
-        echo 'cats = null;';
+        $catsString .= 'cats[' . $i . ']=' . $cat;
+        $i++;
     }
+    echo 'cats = "'.$catsString.'";';
+} else {
+    echo 'cats = null;';
 }
 if($this->onlyroot) {
     echo 'var onlyroot = 1';
