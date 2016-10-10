@@ -1338,7 +1338,7 @@
                 this._updateTimebar();
             } else {
                 var TimeBar = $('<div id="TimeBar"></div>');
-                this.element.find('#timeline-base').append(TimeBar);
+                this.element.prepend(TimeBar);
                 var x = this._computeX(new Date());
                 TimeBar.css({
                     'top': /*this.options.topOffset + */this.params.topSpace + 'px',

@@ -1404,7 +1404,8 @@ class EventsController extends TabController
             ->innerJoin('e.category', 'cat')
             ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
             ->andWhere($qb->expr()
-            ->eq('e.parent', $eventid));
+            ->eq('e.parent', $eventid))
+            ->orderBy("e.place", 'ASC');
         
         return $qb->getQuery()->getResult();
     }
@@ -1631,6 +1632,7 @@ class EventsController extends TabController
         $start = $this->params()->fromQuery('start', null);
         $end = $this->params()->fromQuery('end', null);
         $cats = $this->params()->fromQuery('cats', null);
+        $rootcolor = $this->params()->fromQuery('rootcolor', true);
         $lastmodified = $this->params()->fromQuery('lastupdate', null);
 
         $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -1665,7 +1667,7 @@ class EventsController extends TabController
                     $e['end'] = $tempEnd->format(DATE_ISO8601);
                 }
             }
-            $e['color'] = ($event->getCategory()->getParent() ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
+            $e['color'] = (($rootcolor && $event->getCategory()->getParent() !== null) ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
 
             $rgb = $this->hex2rgb($e['color']);
             $yiq = 1 - ($rgb[0]*0.299 + $rgb[1]*0.587 + $rgb[2]*0.114)/255;
