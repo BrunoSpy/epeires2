@@ -53,18 +53,11 @@
         "satooshi/php-coveralls": "dev-master",
         "codeception/codeception": "^2.2.1"
     },
-    "autoload-dev": {
-<<<<<<< HEAD
+    "autoload-dev":{
     	"psr-4": {
 	        "ApplicationTest\\": "tests/ApplicationTest",
             "Afis\\": "module/Afis/src",
             "FlightPlan\\": "module/FlightPlan/src"
 	    }
 	}
-=======
-        "psr-4": {
-            "ApplicationTest\\": "tests/ApplicationTest"
-        }
-    }
->>>>>>> refs/remotes/origin/test
 }
