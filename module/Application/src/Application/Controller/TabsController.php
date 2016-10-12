@@ -31,8 +31,6 @@ class TabsController extends TabController
     {
         parent::indexAction();
         
-        $viewmodel = new ViewModel();
-        
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -57,20 +55,20 @@ class TabsController extends TabController
                 foreach ($categories as $cat) {
                     $cats[] = $cat->getId();
                 }
-                $viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
-                $viewmodel->setVariable('cats', $cats);
-                $viewmodel->setVariable('tabid', $tabid);
+                $this->viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
+                $this->viewmodel->setVariable('cats', $cats);
+                $this->viewmodel->setVariable('tabid', $tabid);
             } else {
                 $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
             }
         } else {
             $return['error'][] = "Aucun onglet défini. Contactez votre administrateur.";
         }
-        
-        $viewmodel->setVariables(array(
+
+        $this->viewmodel->setVariables(array(
             'messages' => $return
         ));
         
-        return $viewmodel;
+        return $this->viewmodel;
     }
 }

@@ -58,6 +58,15 @@ class PredefinedEvent extends AbstractEvent
      */
     protected $programmed = false;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Durée :"})
+     * @Annotation\Attributes({"placeholder":"En minutes (facultatif)."})
+     */
+    protected $duration = -1;
+
     public function __construct()
     {
         parent::__construct();
@@ -111,5 +120,15 @@ class PredefinedEvent extends AbstractEvent
     public function setPlace($place)
     {
         $this->place = $place;
+    }
+
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
+    }
+
+    public function getDuration()
+    {
+        return $this->duration;
     }
 }

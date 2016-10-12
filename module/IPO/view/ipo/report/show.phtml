@@ -72,14 +72,18 @@ $formatter = \IntlDateFormatter::create(
 	           foreach ($this->unclassified as $event){
 	           		echo '<tr id="event_'.$event->getId().'">';
 	           		echo '<td><input type="checkbox" name="bulk" data-id="'.$event->getId().'" /></td>';
-	           		$title = "";
+	           		$title = '<span class="elmt_tooltip"><table class="table"><tbody>';
 	           		foreach ( $event->getCustomFieldsValues () as $value ) {
 						$formattedvalue = $this->customfieldvalue ($value);
 						if ($formattedvalue != '') {
-							$title .= $value->getCustomField ()->getName () . ' : '. $formattedvalue.'<br />';
+							$title .= '<tr><td>'.$value->getCustomField ()->getName () . '</td><td> :&nbsp;</td><td>'. $formattedvalue.'</td>';
 						}
 					}
-	           		echo '<td data-toggle="tooltip" title="'.$title.'" data-html="true" data-container="body">'.$this->eventname($event)."</td>";
+				    $title .= "</tbody></table></span>";
+	           		echo '<td data-toggle="tooltip" title="'.htmlentities($title, ENT_QUOTES).'" data-html="true" data-container="body"'
+						.' data-template="<div class=&quot;tooltip tooltip-actions&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-arrow&quot;></div><div class=&quot;tooltip-inner&quot;></div></div>">'
+						.$this->eventname($event)
+						."</td>";
 	           		echo "<td>".$formatter->format($event->getStartdate())."</td>";
 	           		echo "<td>"; 
 	           		if($event->getEnddate() !== null){

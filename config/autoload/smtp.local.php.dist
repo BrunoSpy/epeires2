@@ -5,11 +5,11 @@ return array(
         'name'              => 'DGAC',
         'host'              => 'mail.****.aviation-civile.gouv.fr',
         'connection_class'  => 'plain',
-        'port'              => 587,
+        //'port'              => 587, //optionnel
         'connection_config' => array(
             'username'  => 'user',
             'password'  => 'pass',
-            'ssl'       => 'tls',
+            //'ssl'       => 'tls', //optionnel : à n'utiliser que si besoin
         ),
     ),
     'emailfrom' => 'user@aviation-civile.gouv.fr',

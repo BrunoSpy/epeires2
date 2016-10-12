@@ -69,7 +69,7 @@ class ReportController extends AbstractActionController
             }
             
             $formatter = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
@@ -78,7 +78,7 @@ class ReportController extends AbstractActionController
             );
             
             $formatterYear = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
@@ -86,17 +86,8 @@ class ReportController extends AbstractActionController
                 'EEEE d MMMM Y'
             );
             
-            $formatterHour = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
-                \IntlDateFormatter::FULL, 
-                \IntlDateFormatter::FULL, 
-                'UTC', 
-                \IntlDateFormatter::GREGORIAN, 
-                'HH:mm'
-            );
-            
             $formatterDayHour = \IntlDateFormatter::create(
-                \Locale::getDefault(), 
+                'fr_FR',
                 \IntlDateFormatter::FULL, 
                 \IntlDateFormatter::FULL, 
                 'UTC', 
@@ -127,10 +118,21 @@ class ReportController extends AbstractActionController
                                 $newevent['author'] = $event->getAuthor()->getDisplayName();
                                 $newevent['fields'] = array();
                                 foreach ($event->getCustomFieldsValues() as $value) {
-                                    $val = array();
-                                    $val['name'] = $value->getCustomfield()->getName();
-                                    $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-                                    $newevent['fields'][] = $val;
+                                    if(!$value->getCustomField()->isTraceable()) {
+                                        $val = array();
+                                        $val['name'] = $value->getCustomfield()->getName();
+                                        $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                                        $newevent['fields'][] = $val;
+                                    } else {
+                                        $repo = $em->getRepository('Application\Entity\Log');
+                                        $logs = $repo->getLogEntries($value);
+                                        foreach(array_reverse($logs) as $log) {
+                                            $val = array();
+                                            $val['name'] = $formatterDayHour->format($log->getLoggedAt()) . " " . $value->getCustomfield()->getName();
+                                            $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $log->getData()["value"]);
+                                            $newevent['fields'][] = $val;
+                                        }
+                                    }
                                 }
                                 $newevent['updates'] = array();
                                 foreach ($event->getUpdates() as $update) {
@@ -284,7 +286,9 @@ class ReportController extends AbstractActionController
                     $events = $em->getRepository('Application\Entity\Event')->getAllEvents(
                         $this->zfcUserAuthentication(), 
                         $report->getStartDate(), 
-                        $report->getEndDate()
+                        $report->getEndDate(),
+                        true,
+                        array(1,2,3,4)
                     );
                     
                     // ids des évènements inclus au rapport

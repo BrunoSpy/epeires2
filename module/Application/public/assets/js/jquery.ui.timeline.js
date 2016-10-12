@@ -34,14 +34,14 @@
  */
 
 (function ($, undefined) {
-	
+
     $.widget("epeires.timeline", {
-    	
-    	/**
-    	 * 
-    	 * @memberOf $
-    	 */
-        version: "0.9.6",
+
+        /**
+         *
+         * @memberOf $
+         */
+        version: "1.0.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -95,7 +95,11 @@
         /**
          * Intervalle entre deux barres "heure"
          */
-        intervalle: 0,
+        intervalle: 0.0,
+        /**
+         * Largeur disponible pour la timeline, en pixels
+         */
+        largeurDisponible: 0,
         /**
          * Memorize current scroll position
          */
@@ -105,7 +109,7 @@
          */
         lastupdate: 0,
         /**
-         * 
+         *
          */
         lastUpdateTimebar: undefined,
         timerUpdate: 0,
@@ -132,8 +136,8 @@
             topHourSpace: 25,
             //espace entre le haut et les demi-heures
             topHalfHourSpace: 35,
-            //espace horizontal entre deux évènements
-            eventHorizSpace:10
+            //espace horizontal min entre deux évènements
+            eventHorizSpace:55
         },
         //default options
         options: {
@@ -155,18 +159,25 @@
             var self = this;
             var height = $(window).height() - this.options.topOffset + 'px';
             this.element.css('height', height);
-            this.element.css('top', this.options.topOffset+'px');
+            //this.element.css('top', this.options.topOffset+'px');
+            var eventsContainer = $('<div id="events"></div>');
+            eventsContainer.css({
+                'width': 'calc(100% - '+(this.options.rightOffset + this.options.leftOffset)+'px)',
+                'margin-left': this.options.leftOffset+'px'
+            });
+            this.element.append(eventsContainer);
+            this.largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //first : draw categories
             $.when(
-                    $.getJSON(self.options.categoriesUrl, function (data) {
-                        var pos = 0;
-                        $.each(data, function (key, value) {
-                            self.categories.push(value);
-                            self.catPositions[value.id] = pos;
-                            pos++;
-                        });
-                    })
-                    ).then(function () {
+                $.getJSON(self.options.categoriesUrl, function (data) {
+                    var pos = 0;
+                    $.each(data, function (key, value) {
+                        self.categories.push(value);
+                        self.catPositions[value.id] = pos;
+                        pos++;
+                    });
+                })
+            ).then(function () {
                 //unable user to select objects
                 self._setUnselectable();
                 //sort categories by place
@@ -200,34 +211,34 @@
                 });
                 //get events and display them
                 $.when($.getJSON(self.options.eventUrl,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                var pos = 0;
-                                $.each(data, function (key, value) {
-                                    //ajout des attributs aux évènements
-                                    value.display = true;
-                                    value.shade = false;
-                                    self.events.push(value);
-                                    self.eventsPosition[pos] = value.id;
-                                    pos++;
-                                });
-                                self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
-                            }
-                        })).then(
-                        function () {
-                            //sort events by categories which will trigger events' drawing
-                            self.sortEvents();
-                            //update timebar every minute
-                            setInterval(function () {
-                                self._updateTimebar();
-                            }, 60000);
-                            //update events every 10s
-                            self.timerUpdate = setTimeout(function () {
-                                self._updateEvents();
-                            }, 10000);
-                            //trigger event when init is finished
-                            self._trigger("initComplete");
+                    function (data, textStatus, jqHXR) {
+                        if (jqHXR.status !== 304) {
+                            var pos = 0;
+                            $.each(data, function (key, value) {
+                                //ajout des attributs aux évènements
+                                value.display = true;
+                                value.shade = false;
+                                self.events.push(value);
+                                self.eventsPosition[pos] = value.id;
+                                pos++;
+                            });
+                            self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
                         }
+                    })).then(
+                    function () {
+                        //sort events by categories which will trigger events' drawing
+                        self.sortEvents();
+                        //update timebar every minute
+                        setInterval(function () {
+                            self._updateTimebar();
+                        }, 60000);
+                        //update events every 10s
+                        self.timerUpdate = setTimeout(function () {
+                            self._updateEvents();
+                        }, 10000);
+                        //trigger event when init is finished
+                        self._trigger("initComplete");
+                    }
                 );
             });
 
@@ -235,7 +246,11 @@
             $(window).resize(function () {
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
-                self._updateView(true);
+                self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
+            });
+
+            $(window).scroll(function(){
+                $('.Base').css('top', $(window).scrollTop());
             });
 
             //gestion des évènements souris
@@ -244,10 +259,13 @@
                     //affichage du tooltip
                     var id = $(this).data('ident');
                     var event = self.events[self.eventsPosition[id]];
-                    var text = "";
+                    var text = '<table class="table"><tbody>';
                     $.each(event.fields, function (nom, contenu) {
-                        text += nom + " : " + contenu + "<br />";
+                        text += "<tr>";
+                        text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
+                        text += "</tr>";
                     });
+                    text += "</tbody></table>";
                     $(this).tooltip({
                         title: '<span class="elmt_tooltip">' + text + '</span>',
                         container: 'body',
@@ -266,8 +284,6 @@
                     //suppression heure et boutons
                     $(this).find('.disp').hide();
                     $(this).find('.lien.disp').show();
-                    //suppression menu
-                   // $(this).find('.tooltip-evt').popover('destroy');
                 }
             }, '.elmt');
 
@@ -283,12 +299,11 @@
                 elmt.find('.elmt_deb').show();
 
                 var elmt_deb = elmt.find('.elmt_deb span.hour-txt');
-                var move_fin = elmt.find('.move_fin');
                 var rect_elmt = elmt.find('.rect_elmt');
                 var elmt_compl = elmt.find('.complement');
                 var rect_width = rect_elmt.width();
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / self.intervalle;
+                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
                 var elmt_fin = elmt.find('.elmt_fin');
 
                 var id = elmt.data('ident');
@@ -297,9 +312,12 @@
                 var temp_deb = new Date();
 
                 self.element.mousemove(function (e2) {
-                	e2.preventDefault();
-                	//désactivaton de tous les liens des boutons
-                	elmt.find('.label_elmt a').addClass('disabled');
+                    e2.preventDefault();
+                    //désactivaton de tous les liens des boutons
+                    elmt.find('.label_elmt a').addClass('disabled');
+                    //les jalons sont à des positions fausses pendant le déplacement :
+                    //inutile de les afficher
+                    elmt.find('.milestone').hide();
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if (delt2 + 40 < rect_width) {
@@ -311,10 +329,8 @@
                         elmt.css({'left': '+=' + delt, 'width': '-=' + delt});
                         rect_elmt.css({'width': '-=' + delt});
                         elmt_compl.css({'left': '-=' + delt});
-                        elmt_fin.css({'left': '-=' + delt});
-                        move_fin.css({'left': '-=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')){
-                        	elmt_txt.css({'left':'-='+delt});
+                            elmt_txt.css({'left':'-='+delt});
                         }
                     }
                 });
@@ -329,16 +345,18 @@
                 var x_ref = e1.clientX;
                 var x_temp = x_ref;
                 var elmt = $(this).closest('.elmt');
+                //les jalons sont à des positions fausses pendant le déplacement :
+                //inutile de les afficher
+                elmt.find('.milestone').hide();
                 elmt.addClass('on_drag');
-                
+                elmt.find('.elmt_flecheD').hide();
                 elmt.find('.elmt_fin').show();
                 var rect_elmt = elmt.find('.rect_elmt');
                 elmt.find('.complement').hide();
                 var rect_width = rect_elmt.width();
                 var elmt_fin = elmt.find('.elmt_fin');
-                var move_fin = $(this);
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / self.intervalle;
+                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
 
                 //récupération de l'heure de fin
                 var id = elmt.data('ident');
@@ -346,21 +364,23 @@
                 var enddate = new Date(event.end_date);
                 var d_fin = new Date();
                 elmt.data('end', d_fin.getTime());
-                if (event.end_date !== null && self._isValidDate(enddate)) {
+                if (event.end_date !== null
+                    && self._isValidDate(enddate)
+                    && enddate <= self.timelineEnd) {
                     d_fin = enddate;
                 } else {
                     d_fin = self.timelineEnd;
                 }
                 //à chaque mouvement, calcul et mise à jour de l'heure
                 self.element.mousemove(function (e2) {
-                	e2.preventDefault();
+                    e2.preventDefault();
                     //désactivaton de tous les liens des boutons
-                	elmt.find('.label_elmt a').addClass('disabled');
+                    elmt.find('.label_elmt a').addClass('disabled');
                     var delt = e2.clientX - x_temp;
                     var delt2 = e2.clientX - x_ref;
                     if(delt !== 0){
-                    	//mouvement effectif
-                    	self.on_drag = 2;
+                        //mouvement effectif
+                        self.on_drag = 2;
                     }
                     if (rect_width + delt2 > 40) {
                         var temp_fin = new Date();
@@ -371,10 +391,8 @@
                         x_temp = e2.clientX;
                         elmt.css({'width': '+=' + delt});
                         rect_elmt.css({'width': '+=' + delt});
-                        elmt_fin.css({'left': '+=' + delt});
-                        move_fin.css({'left': '+=' + delt});
                         if(elmt.find('.lien').hasClass('rightlink')) {
-                        	elmt_txt.css({'left':'+='+delt});
+                            elmt_txt.css({'left':'+='+delt});
                         }
                     }
                 });
@@ -393,38 +411,38 @@
                         var time = new Date();
                         time.setTime(elmt.data('start'));
                         $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=startdate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     } else if (self.on_drag === 2) {
                         var time = new Date();
                         time.setTime(elmt.data('end'));
                         $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     } else if (self.on_drag === -2){
-                    	//clic simple : heure de fin = heure actuelle
-                    	var time = new Date();
-                    	$.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                                function (data) {
-                                    displayMessages(data.messages);
-                                    if (data['event']) {
-                                        self.addEvents(data.event);
-                                    }
-                                }).always(function(){
-                                	self.forceUpdateView(false);
-                                });
+                        //clic simple : heure de fin = heure actuelle
+                        var time = new Date();
+                        $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
+                            function (data) {
+                                displayMessages(data.messages);
+                                if (data['event']) {
+                                    self.addEvents(data.event);
+                                }
+                            }).always(function(){
+                            self.forceUpdateView(false);
+                        });
                     }
                 }
                 self.on_drag = 0;
@@ -432,137 +450,167 @@
             });
             //clic sur les heures de début => passage à confirmé
             this.element.on('click', '.elmt_deb', function(e){
-            	e.preventDefault();
-            	self.pauseUpdateView();
-            	var me = $(this);
-            	var elmt = me.parent('.elmt');
-            	var id = elmt.data('ident');
-            	var newstatus = 2;
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus, 
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-            		self.forceUpdateView(false);
-            	});
+                e.preventDefault();
+                self.pauseUpdateView();
+                var me = $(this);
+                var elmt = me.closest('.elmt');
+                var id = elmt.data('ident');
+                var newstatus = 2;
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
             });
-            
+
             //clic sur heure de fin => passage à terminé
             this.element.on('click', '.elmt_fin', function(e){
-            	e.preventDefault();
-            	self.pauseUpdateView();
-            	var me = $(this);
-            	var elmt = me.parent('.elmt');
-            	var id = elmt.data('ident');
-            	var newstatus = 3;
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-    				self.forceUpdateView(false);
-    			});
+                e.preventDefault();
+                self.pauseUpdateView();
+                var me = $(this);
+                var elmt = me.closest('.elmt');
+                var id = elmt.data('ident');
+                var newstatus = 3;
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
             });
-            
+
             //clic sur ouverture de tooltip
             this.element.on('click', '.tooltip-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	var txt = '<p class="elmt_tooltip actions">'
-                	+ '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
-            	var event = self.events[self.eventsPosition[id]];
-            	if(event.status_id !== 4 && event.modifiable){
-            		if(event.punctual === false){
-	            		if(event.star === true){
-	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
-	                	} else {
-	                		txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
-	                	}
-            		}
-            		txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-            		txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-trash"></span> Annuler</a></p>';
-            	}
-            	txt += '</p>';
-            	me.popover({
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                var txt = '<p class="elmt_tooltip actions">'
+                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                var event = self.events[self.eventsPosition[id]];
+                if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
+                    if(event.punctual === false){
+                        if(event.star === true){
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                        } else {
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                        }
+                    }
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                }
+                if(event.status_id < 5 && event.deleteable) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+                }
+                txt += '</p>';
+                me.popover({
+                    container: '#timeline',
                     content: txt,
-                    trigger:'focus',
                     placement:'auto top',
                     html: 'true',
-                    viewport: '#timeline'
+                    viewport: '#timeline',
+                    template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 }).popover('show');
-            	me.parents('.elmt').tooltip('hide');
+                me.parents('.elmt').tooltip('hide');
             });
-            
+            //fermeture des popover sur clic en dehors
+            this.element.on('click', function (e) {
+                self.element.find('.tooltip-evt').each(function () {
+                    // hide any open popovers when the anywhere else in the body is clicked
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                        $(this).popover('destroy');
+                    }
+                });
+            });
+
             this.element.on('click', '.add-note', function(e){
-            	e.preventDefault();
-        		$("#add-note").data('id', $(this).data('id'));
+                e.preventDefault();
+                $("#add-note").data('id', $(this).data('id'));
             });
-            
+
             this.element.on('click', '.evt-important', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=1',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self._highlightEvent(id, true);
-            				}
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=1',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self._highlightEvent(id, true);
+                        }
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.evt-non-important', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=0',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self._highlightEvent(id, false);
-            				}
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=star&value=0',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self._highlightEvent(id, false);
+                        }
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.send-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	$.post(self.options.controllerUrl+'/sendevent?id='+id,
-            			function(data){
-            				displayMessages(data.messages);
-            			}
-            	);
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/sendevent?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            
+
             this.element.on('click', '.cancel-evt', function(e){
-            	e.preventDefault();
-            	var me = $(this);
-            	var id = me.data('id');
-            	self.pauseUpdateView();
-            	$.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value=4',
-            			function(data){
-            				displayMessages(data.messages);
-            				if(data['event']){
-            					self.addEvents(data.event);
-            				}
-            			}
-            	).always(function(){
-    				self.forceUpdateView(false);
-    			});
-            	self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                self.pauseUpdateView();
+                $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value=4',
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event);
+                        }
+                    }
+                ).always(function(){
+                    self.forceUpdateView(false);
+                });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+
+            this.element.on('click', '.delete-evt', function(e){
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                self.pauseUpdateView();
+                $.post(self.options.controllerUrl + '/deleteevent?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                        if(data['event']) {
+                            self.addEvents(data.event);
+                        }
+                    }).always(function(){
+                    self.forceUpdateView(false);
+                });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
         },
         _setOption: function (key, value) {
@@ -595,7 +643,6 @@
             } else {
                 //ajout de l'évènement en fin de tableau
                 var pos = this.events.length;
-                event.display = true;
                 event.shade = false;
                 this.events.push(event);
                 this.eventsPosition[event.id] = pos;
@@ -622,11 +669,11 @@
          * @param id
          */
         getEvent:function (id) {
-        	if(id in this.eventsPosition) {
-        		return this.events[this.eventsPosition[id]];
-        	} else {
-        		return null;
-        	}
+            if(id in this.eventsPosition) {
+                return this.events[this.eventsPosition[id]];
+            } else {
+                return null;
+            }
         },
         removeEvent: function (event) {
             this._hideEvent(event);
@@ -648,7 +695,7 @@
                 this.forceUpdateView(true);
             } else if (viewName === "sixhours" && this.dayview) {
                 this.dayview = false;
-                this.element.css({'background-color':'white'});
+                this.element.removeClass('anotherday');
                 this.forceUpdateView(true);
             }
         },
@@ -664,36 +711,36 @@
                 if (this._isValidDate(tempday)) {
                     this.currentDay = tempday;
                 } else {
-                	var now = new Date();
+                    var now = new Date();
                     this.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                 }
                 var now = new Date();
                 if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
-                    this.element.css({'background-color':'Cornsilk'});
+                    this.element.addClass('anotherday');
                 } else {
-                    this.element.css({'background-color':'white'});
+                    this.element.removeClass('anotherday');
                 }
                 //on récupère les évènements
                 this._pauseUpdate();
                 this.element.find(".loading").show();
                 var url = self.options.eventUrl;
                 if(url.indexOf('?') > 0){
-                	url += '&day=' + self.currentDay.toUTCString();
+                    url += '&day=' + self.currentDay.toUTCString();
                 } else {
-                	url += '?day=' + self.currentDay.toUTCString();
+                    url += '?day=' + self.currentDay.toUTCString();
                 }
                 $.when($.getJSON(url,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                self.pauseUpdateView();
-                                self.addEvents(data);
-                            }
-                        }))
-                        .then(function () {
-                            self.forceUpdateView();
-                            self._restoreUpdate();
-                            self.element.find('.loading').hide();
-                        });
+                    function (data, textStatus, jqHXR) {
+                        if (jqHXR.status !== 304) {
+                            self.pauseUpdateView();
+                            self.addEvents(data);
+                        }
+                    }))
+                    .then(function () {
+                        self.forceUpdateView();
+                        self._restoreUpdate();
+                        self.element.find('.loading').hide();
+                    });
             }
             //else : do nothing
         },
@@ -709,10 +756,10 @@
                 if (this.options.showCategories === true) {
                     //catégorie racine, puis catégorie, puis nom, puis date de début
                     this.events.sort(function (a, b) {
-                    	var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
-                    	var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
+                        var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
+                        var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
                         if (aPosition < bPosition) {
-                        	return -1;
+                            return -1;
                         } else if (aPosition > bPosition) {
                             return 1;
                         }
@@ -736,17 +783,17 @@
                         return 0;
                     });
                 } else {
-                	this.events.sort(function (a, b) {
-	                    //tri par date de début uniquement
-	                    var aStartdate = new Date(a.start_date);
-	                    var bStartdate = new Date(b.start_date);
-	                    if (aStartdate < bStartdate) {
-	                        return -1;
-	                    } else if (aStartdate > bStartdate) {
-	                        return 1;
-	                    }
-	                    return 0;
-                	});
+                    this.events.sort(function (a, b) {
+                        //tri par date de début uniquement
+                        var aStartdate = new Date(a.start_date);
+                        var bStartdate = new Date(b.start_date);
+                        if (aStartdate < bStartdate) {
+                            return -1;
+                        } else if (aStartdate > bStartdate) {
+                            return 1;
+                        }
+                        return 0;
+                    });
                 }
                 this.lastEventComparator = undefined;
             } else if (comparator === undefined && this.lastEventComparator !== undefined) {
@@ -781,12 +828,14 @@
                 this.catPositions[this.categories[i].id] = i;
             }
         },
+        //default callback : display all events except status_id == 5
         filter: function (callback) {
             var cb = callback;
-            if (cb === undefined && this.lastFilter === undefined) {
+            if (cb === "default" || (cb === undefined && this.lastFilter === undefined)) {
                 cb = function (event) {
-                    return true;
+                    return event.status_id != 5;
                 };
+                this.lastFilter = cb;
             } else if (cb === undefined && this.lastFilter !== undefined) {
                 cb = this.lastFilter;
             } else {
@@ -829,7 +878,7 @@
                 this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
                 this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
                 this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
-                				this.timelineDuration, 0, 0));
+                    this.timelineDuration, 0, 0));
             } else {
                 this.timelineDuration = 6;
                 var now = new Date();
@@ -853,8 +902,8 @@
                 evt.display = evt.display && this._isEventInTimeline(evt);
                 //ne pas afficher les évènements dont on n'a pas la catégorie
                 evt.display = evt.display && (this.options.showOnlyRootCategories ?
-                        evt.category_root_id in this.catPositions :
-                        evt.category_id in this.catPositions);
+                    evt.category_root_id in this.catPositions :
+                    evt.category_id in this.catPositions);
             }
             this.eventsDisplayed = this.events.filter(function (event) {
                 return event.display;
@@ -870,7 +919,7 @@
             }
             //then update y position
             var maxY = this._updateYPosition(true) + this.options.eventHeight;
-            
+
             //draw categories
             if (this.options.showCategories) {
                 var y = this._drawCategories();
@@ -879,9 +928,9 @@
                 this._hideCategories();
             }
             //then update height of timeline
-            var height = $(window).height() - this.options.topOffset;
-            maxY = (maxY > height ? maxY : height);
-            this.element.css('height', maxY + 'px');
+            //var height = $(window).height() - this.options.topOffset;
+            //maxY = (maxY > height ? maxY : height);
+            //this.element.css('height', maxY + 'px');
         },
         _getCategory: function (id) {
             if (id in this.catPositions) {
@@ -908,17 +957,16 @@
             }
         },
         /**
-         * Calcule l'abscisse correspondant à une date
+         * Calcule l'abscisse en % correspondant à une date
          * Retourne -1 si en dehors de la timeline
          * @param {type} date
-         * @returns {undefined}
+         * @returns number
          */
         _computeX: function (date) {
             if (date < this.timelineBegin || date > this.timelineEnd) {
                 return -1;
             } else {
-                return this.options.leftOffset 
-                        +  ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
+                return ((date - this.timelineBegin)/(1000*60*60))* this.intervalle * 2;
             }
         },
         /**
@@ -926,14 +974,14 @@
          * Les abscisses de l'évènement ainsi que des précédents doivent être calculées avant
          * pour décider si il y a de la place pour le compactage
          * @param {type} event Evènement
-         * @returns {undefined}
+         * @returns number
          */
         _computeY: function (event) {
             var i = this.eventsDisplayedPosition[event.id];
             if (this.options.showCategories) {
                 var catPos = (this.options.showOnlyRootCategories ?
-                        this._getCategoryPosition(event.category_root_id) :
-                        this._getCategoryPosition(event.category_id));
+                    this._getCategoryPosition(event.category_root_id) :
+                    this._getCategoryPosition(event.category_id));
                 var cat = this.categories[catPos];
                 if (i === 0) {
                     //premier élément : somme des hauteurs min des cat précédentes (vides par conséquent)
@@ -950,11 +998,11 @@
                     //si c'est le cas, il faut prendre en compte les possibles catégories vides précédentes
                     //le calcul de la catégorie précédente est différent si on affiche les cat non racines ou pas
                     if ((this.options.showOnlyRootCategories && prevEvent.category_root_id !== event.category_root_id) ||
-                            (!this.options.showOnlyRootCategories && prevEvent.category_id !== event.category_id)) {
+                        (!this.options.showOnlyRootCategories && prevEvent.category_id !== event.category_id)) {
                         //calcul du bas de la catégorie non vide précédente
                         var prevCatPos = (this.options.showOnlyRootCategories ?
-                                this._getCategoryPosition(prevEvent.category_root_id) :
-                                this._getCategoryPosition(prevEvent.category_id));
+                            this._getCategoryPosition(prevEvent.category_root_id) :
+                            this._getCategoryPosition(prevEvent.category_id));
                         catOffset += this._getCategoryBottom(prevCatPos);
                         //si la cat précédente est celle juste avant : rien à faire
                         if (prevCatPos < catPos - 1) {
@@ -971,29 +1019,29 @@
                         var catEvents = this.eventsDisplayed.slice(0,i);
                         if (cat.compact) {
                             catEvents = (this.options.showOnlyRootCategories ?
-                                    catEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id;
-                                    }) :
-                                    catEvents.filter(function (val) {
-                                        return val.category_id === cat.id;
-                                    }));
+                                catEvents.filter(function (val) {
+                                    return val.category_root_id === cat.id;
+                                }) :
+                                catEvents.filter(function (val) {
+                                    return val.category_id === cat.id;
+                                }));
                         } else {
                             catEvents = (this.options.showOnlyRootCategories ?
-                                    catEvents.filter(function (val) {
-                                    	//warning name can be an integer
-                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
-                                    		return val.category_root_id === cat.id && val.name === event.name;
-                                    	} else {
-                                    		return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
-                                    	}
-                                    }) :
-                                    catEvents.filter(function (val) {
-                                    	if(typeof val.name !== 'string' || typeof event.name !== 'string') {
-                                    		return val.category_id === cat.id && val.name === event.name;
-                                    	} else {    
-                                    		return val.category_id === cat.id && val.name.trim() === event.name.trim();
-                                    	}
-                                    }));
+                                catEvents.filter(function (val) {
+                                    //warning name can be an integer
+                                    if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                        return val.category_root_id === cat.id && val.name === event.name;
+                                    } else {
+                                        return val.category_root_id === cat.id && val.name.trim() === event.name.trim();
+                                    }
+                                }) :
+                                catEvents.filter(function (val) {
+                                    if(typeof val.name !== 'string' || typeof event.name !== 'string') {
+                                        return val.category_id === cat.id && val.name === event.name;
+                                    } else {
+                                        return val.category_id === cat.id && val.name.trim() === event.name.trim();
+                                    }
+                                }));
                         }
                         //pour toutes les lignes dessinées de la catégorie, on cherche si il y a de la place
                         //liste des lignes dessinées
@@ -1016,32 +1064,34 @@
                             var eventRemoveLabel = [];
                             for(var k = 0; k < eventsLine.length; k++){
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[k]]];
-                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
-                                        (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                                	//pas de place
-                                	//si compactage sur nom uniquement, on tente de supprimer le label
-                                	if(cat.compact === false){
-                                		var sizeWithoutLabel = this._tryRemoveLabel(evt);
-                                		if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) || 
-                                				(sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
-                                			//pas de place sans label non plus
-                                			place = false;
-                                    		break; //inutile de continuer la vérification
-                                		} else {
-                                			//on met l'evt de côté pour suppression du label si compactage effectif
-                                			eventRemoveLabel.push(evt);
-                                		}
-                                	} else {
-                                		//pas de place
-                                		place = false;
-                                		break; //inutile de continuer la vérification
-                                	}
+                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) ||
+                                    (evt.xleft - this.params.eventHorizSpace > event.xright))){
+                                    //pas de place
+                                    //si compactage sur nom uniquement, on tente de supprimer le label
+                                    if(cat.compact === false){
+                                        var sizeWithoutLabel = this._tryRemoveLabel(evt);
+                                        //on tente en enlevant un seul label
+                                        if(!((sizeWithoutLabel[1] + this.params.eventHorizSpace < event.xleft) ||
+                                            (sizeWithoutLabel[0] - this.params.eventHorizSpace > event.xright))){
+                                            place = false;
+                                            break;
+                                            //on ne tente pas d'enlever les deux labels
+                                            //de façon à ce qu'il en reste un sur la ligne à la fin
+                                        } else {
+                                            //on met l'evt de côté pour suppression du label si compactage effectif
+                                            eventRemoveLabel.push(evt);
+                                        }
+                                    } else {
+                                        //pas de place
+                                        place = false;
+                                        break; //inutile de continuer la vérification
+                                    }
                                 }
                             }
                             if(place === true){
-                            	for(var l = 0; l < eventRemoveLabel.length; l++){
-                            		this._removeLabel(eventRemoveLabel[l]);
-                            	}
+                                for(var l = 0; l < eventRemoveLabel.length; l++){
+                                    this._removeLabel(eventRemoveLabel[l]);
+                                }
                                 return lines[j];
                             }
                         }
@@ -1049,12 +1099,12 @@
                         //ensemble des evts de la catégorie déjà dessinés
                         var allCatEvents = this.eventsDisplayed.slice(0,i);
                         allCatEvents = (this.options.showOnlyRootCategories ?
-                                    allCatEvents.filter(function (val) {
-                                        return val.category_root_id === cat.id;
-                                    }) :
-                                    allCatEvents.filter(function (val) {
-                                        return val.category_id === cat.id;
-                                    }));
+                            allCatEvents.filter(function (val) {
+                                return val.category_root_id === cat.id;
+                            }) :
+                            allCatEvents.filter(function (val) {
+                                return val.category_id === cat.id;
+                            }));
                         var max = 0;
                         for(var j = 0; j < allCatEvents.length; j++){
                             var ypos = this.eventsYPosition[allCatEvents[j].id];
@@ -1087,14 +1137,14 @@
                             //si le nouvel élément n'intersecte pas les précédents
                             for(var j = 0; j < eventsLine.length; j++){
                                 var evt = this.eventsDisplayed[this.eventsDisplayedPosition[eventsLine[j]]];
-                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) || 
+                                if(!((evt.xright + this.params.eventHorizSpace < event.xleft) ||
                                     (evt.xleft - this.params.eventHorizSpace > event.xright))){
-                            		//pas de place
-                            		hasPlace = false;
-                            		break; //inutile de continuer la vérification
+                                    //pas de place
+                                    hasPlace = false;
+                                    break; //inutile de continuer la vérification
                                 }
                             }
-                            if(hasPlace === true){                            	
+                            if(hasPlace === true){
                                 return lines[index];
                             }
                         }
@@ -1140,12 +1190,12 @@
         _getCategoryBottom: function (i) {
             var cat = this.categories[i];
             var catEvents = (this.options.showOnlyRootCategories ?
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_root_id === cat.id;
-                    }) :
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_id === cat.id;
-                    }));
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_root_id === cat.id;
+                }) :
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_id === cat.id;
+                }));
             var top = 0;
             var bottom = 0;
             for (var j = 0; j < catEvents.length; j++) {
@@ -1173,12 +1223,12 @@
         _getCategoryHeight: function (i) {
             var cat = this.categories[i];
             var catEvents = (this.options.showOnlyRootCategories ?
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_root_id === cat.id;
-                    }) :
-                    this.eventsDisplayed.filter(function (val) {
-                        return val.category_id === cat.id;
-                    }));
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_root_id === cat.id;
+                }) :
+                this.eventsDisplayed.filter(function (val) {
+                    return val.category_id === cat.id;
+                }));
             var top = 0;
             var bottom = 0;
             for (var j = 0; j < catEvents.length; j++) {
@@ -1199,13 +1249,12 @@
          */
         _computeIntervalle: function () {
             var nbIntervalles = this.timelineDuration * 2;
-            var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //if scrollbar visible, width is different
             //TODO : do it better
-            if ($(document).height() > $(window).height()) {
-                largeurDisponible += this._getScrollbarWidth();
-            }
-            this.intervalle = largeurDisponible / nbIntervalles;
+            //if ($(document).height() > $(window).height()) {
+            //    largeurDisponible += this._getScrollbarWidth();
+            //}
+            this.intervalle = 1 / nbIntervalles * 100;
         },
         /**
          * Dessine les heures et les barres verticales
@@ -1216,22 +1265,22 @@
             $("#timeline-base").remove();
 
             this._computeIntervalle();
-            //si la timeline est décalée, ajouter le décalage
-            var left = parseInt(this.element.css('left'));
-            if (isNaN(left)) {
-                left = 0;
-            }
+
             var h_temp = this.timelineBegin.getUTCHours();
             var time_obj = $('<div class="Time_obj horiz_bar"></div>');
             var base_elmt = $('<div id="timeline-base" class="Base"></div>');
-            this.element.append(base_elmt);
+            base_elmt.css({
+                'margin-left': this.options.leftOffset+'px',
+                'width': 'calc(100% - '+(this.options.leftOffset + this.options.rightOffset)+'px)',
+                'height' : '100%'
+            });
+            this.element.prepend(base_elmt);
             base_elmt.append(time_obj);
             time_obj.css({
-                'top': this.options.topOffset + this.params.topSpace + 'px',
-                'left': this.options.leftOffset + left + 'px',
-                'width': this.intervalle * this.timelineDuration * 2 + 'px',
+                'top': this.params.topSpace + 'px',
+                'width': '100%',
                 'height': 1});
-            
+
             var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //if scrollbar visible, width is different
             //TODO : do it better
@@ -1247,34 +1296,34 @@
             //on supprime l'affichage de certaines heures jusqu'à ce que ça tienne
             var modulo = 1;
             while( (tailleTotaleHours / modulo) > largeurDisponible) {
-            	modulo++;
+                modulo++;
             }
-            
+
             for (var i = 0; i < this.timelineDuration * 2 + 1; i++) {
                 var vert_bar = $('<div class="Time_obj vert_bar"></div>');
                 base_elmt.append(vert_bar);
                 vert_bar.css({
-                    'top': this.options.topOffset + this.params.topSpace - 5 + 'px',
-                    'left': this.intervalle * i + this.options.leftOffset + left + 'px',
+                    'top': this.params.topSpace - 5 + 'px',
+                    'left': this.intervalle * i + '%',
                     'width': 1,
-                    'height': this.element.height() - this.params.topSpace,
+                    'height': 'calc(100% - '+(this.params.topSpace)+'px)',
                     'background-color': '#C0C0C0'});
                 if (i % 2 === 1) {
-                	if(drawHalves){
-	                    var halfHour = $('<div class="Time_obj halfhour">30</div>');
-	                    base_elmt.append(halfHour);
-	                    halfHour.css({
-	                        'top': this.options.topOffset + this.params.topHalfHourSpace + 'px',
-	                        'left': this.intervalle * i + this.options.leftOffset - 10 + left + 'px'});
-                	}
+                    if(drawHalves){
+                        var halfHour = $('<div class="Time_obj halfhour">30</div>');
+                        base_elmt.append(halfHour);
+                        halfHour.css({
+                            'top': this.params.topHalfHourSpace + 'px',
+                            'left': this.intervalle * i + '%'});
+                    }
                 } else {
-                	if( (i / 2) % modulo === 0) {
-	                    var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
-	                    base_elmt.append(roundHour);
-	                    roundHour.css({
-	                        'top': this.options.topOffset + this.params.topHourSpace + 'px',
-	                        'left': this.intervalle * i + this.options.leftOffset - 20 + left + 'px'});
-                	}
+                    if( (i / 2) % modulo === 0) {
+                        var roundHour = $('<div class="Time_obj roundhour">' + this._formatNumberLength(h_temp, 2) + ':00</div>');
+                        base_elmt.append(roundHour);
+                        roundHour.css({
+                            'top': this.params.topHourSpace + 'px',
+                            'left': this.intervalle * i  + '%'});
+                    }
                     if (h_temp === 23) {
                         h_temp = 0;
                     } else {
@@ -1289,13 +1338,13 @@
                 this._updateTimebar();
             } else {
                 var TimeBar = $('<div id="TimeBar"></div>');
-                this.element.append(TimeBar);
+                this.element.prepend(TimeBar);
                 var x = this._computeX(new Date());
                 TimeBar.css({
-                    'top': this.options.topOffset + this.params.topSpace + 'px',
-                    'height': this.element.height() - this.params.topSpace});
+                    'top': /*this.options.topOffset + */this.params.topSpace + 'px',
+                    'height': 'calc(100% - '+(this.params.topSpace + 5)+'px)'});
                 if (x > 0) {
-                    TimeBar.css('left', x + 'px');
+                    TimeBar.css('left', x + '%');
                     TimeBar.show();
                 } else {
                     TimeBar.hide();
@@ -1307,27 +1356,28 @@
             var diff = (now - this.timelineBegin) / (1000 * 60 * 60); //différence en heure
             //si vue six heures et diff > 2 heures : décaler d'une heure
             if (this.dayview === false && diff > 2) {
-                this._updateView();
+                //force la récupération de tous les évènements une fois par heure
+                this._updateEvents(true);
                 //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
             } else if (this.dayview === true) {
-        	var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-        	var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
-        	if(this.lastUpdateTimebar !== undefined) {
-        	    var lastUpUTC = Date.UTC(this.lastUpdateTimebar.getUTCFullYear(), this.lastUpdateTimebar.getUTCMonth(), this.lastUpdateTimebar.getUTCDate());
-        	}
+                var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+                var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
+                if(this.lastUpdateTimebar !== undefined) {
+                    var lastUpUTC = Date.UTC(this.lastUpdateTimebar.getUTCFullYear(), this.lastUpdateTimebar.getUTCMonth(), this.lastUpdateTimebar.getUTCDate());
+                }
                 if(lastUpUTC !== undefined
                         //changement de jour depuis la dernière mise à jour
-                        && Math.ceil((nowUTC - lastUpUTC) / (1000 * 60 * 60 * 24)) !== 0
+                    && Math.ceil((nowUTC - lastUpUTC) / (1000 * 60 * 60 * 24)) !== 0
                         //si le jour affiché est la veille
-                        && Math.ceil((nowUTC - currentDayUTC) / (1000 * 60 * 60 * 24)) === 1){
+                    && Math.ceil((nowUTC - currentDayUTC) / (1000 * 60 * 60 * 24)) === 1){
                     this.day(now);
                     //ne pas oublier de mettre à jour le widget date si il existe
                     if($("#date").length > 0){
-                	var day = now.getUTCDate();
+                        var day = now.getUTCDate();
                         var month = now.getUTCMonth() + 1;
                         var year = now.getUTCFullYear();
                         var daystring = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
-                	$("#date").val(daystring);
+                        $("#date").val(daystring);
                     }
                     this.lastUpdateTimebar = now;
                     return;
@@ -1343,11 +1393,11 @@
             var x = this._computeX(now);
             var timeBar = $('#TimeBar');
             if (x > 0) {
-                var left = parseInt($("#timeline").css('left'));
+                /*var left = parseInt($("#timeline").css('left'));
                 if (isNaN(left)) {
                     left = 0;
-                }
-                timeBar.css('left', x + left + 'px');
+                }*/
+                timeBar.css('left', x /*+ left*/ + '%');
                 timeBar.show();
             } else {
                 timeBar.hide();
@@ -1371,11 +1421,16 @@
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
                     var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'
-                            + text_cat
-                            + '</div>');
+                        + text_cat
+                        + '</div>');
                     $('#category').append(cat);
                     cat.css({'background-color': curCat.color, 'height': 'auto',
                         'left': '15px'});
+                    if(this._yiq(this._hex2rgb(curCat.color)) < 0.5) {
+                        cat.css('color', "#000");
+                    } else {
+                        cat.css('color', "#fff");
+                    }
                 }
                 var minHeight = this._getCategoryMinHeight(curCat);
                 var height = this._getCategoryHeight(i);
@@ -1405,8 +1460,8 @@
          */
         _drawEvent: function (event) {
             var cat = (this.options.showOnlyRootCategories ?
-                    this._getCategory(event.category_root_id) :
-                    this._getCategory(event.category_id));
+                this._getCategory(event.category_root_id) :
+                this._getCategory(event.category_id));
             //si l'evt est affiché et que la catégorie existe
             if (event.display && cat !== null) {
                 //si oui, déterminer si il existe déjà ou non
@@ -1416,7 +1471,7 @@
                     //mise à jour des attributs
                     this._doDrawEvent(event, elmt, cat);
                     //ajout à la timeline
-                    this.element.append(elmt);
+                    this.element.find("#events").append(elmt);
                 } else {
                     //mise à jour des attributs
                     this._doDrawEvent(event, this.element.find('#event' + event.id), cat);
@@ -1433,48 +1488,48 @@
          * @returns {undefined}
          */
         _highlightEvent: function (eventid, highlight) {
-        	var elmt = this.element.find('#event'+eventid);
-        	if(highlight !== undefined && highlight === true){
-        		if(eventid in this.eventsPosition){
-        			this.events[this.eventsPosition[eventid]].star = true;
-        		}
-        	} else {
-        		if(eventid in this.eventsPosition){
-        			this.events[this.eventsPosition[eventid]].star = false;
-        		}
-        	}
-        	this._highlightElmt(elmt, highlight);
+            var elmt = this.element.find('#event'+eventid);
+            if(highlight !== undefined && highlight === true){
+                if(eventid in this.eventsPosition){
+                    this.events[this.eventsPosition[eventid]].star = true;
+                }
+            } else {
+                if(eventid in this.eventsPosition){
+                    this.events[this.eventsPosition[eventid]].star = false;
+                }
+            }
+            this._highlightElmt(elmt, highlight);
         },
         _highlightElmt: function(elmt, highlight){
-        	if(highlight !== undefined && highlight === true){
-        		if(!elmt.hasClass('star')){
-        			elmt.addClass('star');
-        		}
-        	} else {
-        		elmt.removeClass('star');
-        		elmt.find('.rect_shadow').remove();
-        	}
+            if(highlight !== undefined && highlight === true){
+                if(!elmt.hasClass('star')){
+                    elmt.addClass('star');
+                }
+            } else {
+                elmt.removeClass('star');
+                elmt.find('.rect_shadow').remove();
+            }
         },
         /**
-         * 
+         *
          * @param {type} event
          * @returns {undefined}
          */
         _shadeEvent: function (event, elmt, rate) {
-        	var rect = elmt.find('.rect_elmt');
-        	var compl = elmt.find('.complement');
-        	var cat = (this.options.showOnlyRootCategories ?
-                    this._getCategory(event.category_root_id) :
-                    this._getCategory(event.category_id));
-        	var color = cat.color;
-        	var newcolor = this._shadeHexColor(color, rate);
-        	if(event.punctual){
-        		rect.css('border-bottom-color', newcolor);
-        		compl.css('border-top-color', newcolor);
-        	} else {
-        		rect.css('background-color', newcolor);
-        		compl.css('border-left-color', newcolor);
-        	}
+            var rect = elmt.find('.rect_elmt');
+            var compl = elmt.find('.complement');
+            var cat = (this.options.showOnlyRootCategories ?
+                this._getCategory(event.category_root_id) :
+                this._getCategory(event.category_id));
+            var color = cat.color;
+            var newcolor = this._shadeHexColor(color, rate);
+            if(event.punctual){
+                rect.css('border-bottom-color', newcolor);
+                compl.css('border-top-color', newcolor);
+            } else {
+                rect.css('background-color', newcolor);
+                compl.css('border-left-color', newcolor);
+            }
         },
         /**
          * Hide an event if displayed
@@ -1483,37 +1538,42 @@
          */
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
+            //remove tooltips before
+            elmt.find('span.badge.recurrence').tooltip('destroy');
+            elmt.tooltip('destroy');
             elmt.fadeOut(function () {
-                //destroy popups
-                $(this).tooltip('destroy');
+
                 //remove from DOM
                 $(this).remove();
             });
         },
         /**
          * Get new and modified events every 10 seconds
+         * @param boolean refetch If true, refetch all events
          * @returns {undefined}
          */
-        _updateEvents: function () {
-        	clearTimeout(this.timerUpdate);
+        _updateEvents: function (refetch) {
+            clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
-            if(url.indexOf('?') > 0){
-            	url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
-            } else {
-            	url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+            if(typeof(refetch) == "undefined" || refetch == false) {
+                if(url.indexOf('?') > 0){
+                    url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
+                } else {
+                    url += (self.lastupdate != 0 ? '?lastupdate=' + self.lastupdate.toUTCString() : '')
+                }
             }
             clearTimeout(this.timerUpdate);
             return $.getJSON(url,
-                    function (data, textStatus, jqHXR) {
-                        if (jqHXR.status !== 304) {
-                            self.addEvents(data);
-                            self.forceUpdateView();
-                            self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
-                        }
-                    }).always(function () {
-                    	self.timerUpdate = setTimeout(function () {
-                    		self._updateEvents();
+                function (data, textStatus, jqHXR) {
+                    if (jqHXR.status !== 304) {
+                        self.addEvents(data);
+                        self.forceUpdateView();
+                        self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    }
+                }).always(function () {
+                self.timerUpdate = setTimeout(function () {
+                    self._updateEvents();
                 }, 10000);
             });
         },
@@ -1528,7 +1588,7 @@
             clearTimeout(this.timerUpdate);
             var self = this;
             this.timerUpdate = setTimeout(function(){
-            	self._updateEvents();
+                self._updateEvents();
             }, 10000);
         },
         /**
@@ -1537,6 +1597,7 @@
          * @returns {undefined}
          */
         _doDrawEvent: function (event, elmt, categ) {
+            var self = this;
             var elmt_rect = elmt.find('.rect_elmt');
             var elmt_compl = elmt.find('.complement');
             var elmt_flecheG = elmt.find('.elmt_flecheG');
@@ -1551,6 +1612,7 @@
             var move_fin = elmt.find('.move_fin');
             var lien = elmt.find('.lien');
             var couleur = categ.color;
+            var textColor = (self._yiq(self._hex2rgb(couleur)) >= 0.5 ? "#fff" : "#000");
             var startdate = new Date(event.start_date);
             var enddate;
             if (event.end_date !== null) {
@@ -1564,30 +1626,48 @@
             elmt.find('.disp').removeClass('disp');
             elmt_flecheG.hide();
             elmt_flecheD.hide();
-            move_deb.hide();
-            move_fin.hide();
+            move_deb.hide().css('border-color', textColor);
+            move_fin.hide().css('border-color', textColor);
             lien.removeClass('disp leftlink rightlink').hide();
             elmt_compl.hide();
             elmt_txt.show();
             elmt_txt.css({'background-color': '', 'border-style': ''});
             elmt_txt.find('a').removeClass('disabled');
             elmt_txt.find('span.elmt_name').removeClass('unvisible');
-            //////   
+            elmt_rect.find('.milestone').remove();
+            //////
+
+            //création de l'évènement en plusieurs étapes :
+            // 1* construction des éléments : libellé, heures de début et de fin, boutons
+            // 2* dessin
+            // 3* ajout du label
+            // 4* positionnement horizontal
+            // les étapes 2, 3 et 4 dépendent du caractère ponctuel ou non de l'évènement
+
+            /* **************** */
+            /* 1: Construction  */
+            /* **************** */
 
             // libellé de l'évènement à mettre à jour
-            if (event.scheduled > 0) {
-                elmt_txt.find('span.elmt_name').html(event.name + ' <a href="#"><span class="badge">P</span></a>');
+            var name = event.name;
+            if(event.recurr == true) {
+                name += ' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>';
             } else {
-                elmt_txt.find('span.elmt_name').text(event.name);
+                elmt.find('.modify-evt').data('recurr', '');
             }
-            
+            if (event.scheduled > 0) {
+                name += ' <a href="#"><span class="badge scheduled">P</span></a>';
+            }
+            elmt_txt.find('span.elmt_name').html(name);
+            elmt_txt.find('span.badge.recurrence').tooltip();
+
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début
             var hDeb = this._formatNumberLength(startdate.getUTCHours(), 2) + ":" + this._formatNumberLength(startdate.getMinutes(), 2);
             var d_actuelle = new Date();
             if (startdate.getDate() !== d_actuelle.getDate()) {
                 hDeb = '<span style="display: inline-block; vertical-align: middle;">' + this._formatNumberLength(startdate.getUTCDate(), 2) + "/" +
-                        this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
+                    this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
                 yDeb = -5;
             } else {
                 yDeb = 6;
@@ -1599,10 +1679,10 @@
             if (enddate !== -1) {
                 var hEnd = this._formatNumberLength(enddate.getUTCHours(), 2) + ":" + this._formatNumberLength(enddate.getMinutes(), 2);
                 if (enddate.getDate() !== d_actuelle.getDate()) {
-                    hEnd = '<span style="display: inline-block; vertical-align: middle;">' 
-                            + this._formatNumberLength(enddate.getUTCDate(), 2) + "/" 
-                            + this._formatNumberLength(enddate.getUTCMonth() + 1, 2) 
-                            + "<br/>" + hEnd + '</span>';
+                    hEnd = '<span style="display: inline-block; vertical-align: middle;">'
+                        + this._formatNumberLength(enddate.getUTCDate(), 2) + "/"
+                        + this._formatNumberLength(enddate.getUTCMonth() + 1, 2)
+                        + "<br/>" + hEnd + '</span>';
                     yEnd = -5;
                 } else {
                     yEnd = 6;
@@ -1621,11 +1701,37 @@
             }
             elmt_tooltip.addClass('disp');
 
-            var x_deb, x_end;
-            
-            //cas 1 : évènement ponctuel
-            if (event.punctual) {
-                x_deb = this._computeX(startdate);
+            //calcul des tailles des éléments pour le dessin
+            // et le positionnement
+            var x_deb = this._computeX(startdate);
+            if(x_deb == -1) {
+                x_deb = 0;
+            }
+            var x_end;
+            //décalage par rapport à l'heure de début = taille de tous les objets à gauche
+            var offset = 0;
+            //taille finale de la boite
+            var totalWidth = 0;
+
+            var txtSize = this._computeTextSize(elmt_txt.text().trim(), "RobotoDraft", "700", "14px");
+
+            event.txtSize = txtSize;
+            //taille totale de la boite contenant le texte et les icônes
+            var txt_wid = txtSize +
+                + 17*3
+                + (elmt_txt.find('.badge').length * 13)
+                + 4 //padding
+                + 2; //border-width*2
+            //place à droite du texte
+            var txtOffset = 17*3
+                + 2 //padding
+                + 1;
+            var debWidth = this._outerWidth(elmt_deb) + 2; //2 pixels pour décoller du rectangle
+            var endWidth = this._outerWidth(elmt_fin) + 2; //idem
+
+            if(event.punctual) {
+
+                /* 2: Dessin        */
                 var haut = this.options.eventHeight * 2 / 3;
                 var larg = haut * 5 / 8;
                 elmt.addClass('punctual');
@@ -1638,204 +1744,250 @@
                 elmt_compl.show();
                 elmt_compl.css({
                     'border-left-width': larg + 'px',
-                    'border-right-width': larg + 'px', 
-                    'border-top-width': haut + 'px', 
+                    'border-right-width': larg + 'px',
+                    'border-top-width': haut + 'px',
                     'border-top-color': couleur,
-                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px'});
-                elmt_rect.css({'left': '+=' + x_deb});
-                elmt_compl.css({'left': x_deb + 'px'});
+                    'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px',
+                    'left' : '0px'});
+                totalWidth += larg * 2;
+                x_end = x_deb;
+
+                /* 3: Positionnement du label  */
+                lien.addClass('disp').show();
+                // on place l'heure à droite
+                if (startdate.getDate() !== d_actuelle.getDate()) {
+                    elmt_deb.css({'top':'-6px'});
+                } else {
+                    elmt_deb.css({'top':'4px'});
+                }
+                elmt_deb.css({'left': larg + 1+ 'px'});
+                elmt_txt.addClass('outside');
+                elmt_txt.css({'top': '0px'});
+
+                //calcul de la place restante à droite
+                var place = (100 - x_deb) * this.largeurDisponible / 100;
+
+                if ( larg + debWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+                    elmt_txt.css({
+                        'left': larg + debWidth + 'px'
+                    });
+                    lien.css({
+                        'left': 'auto',
+                        'right': '100%',
+                        'top' : larg + 'px',
+                        'width': debWidth + 'px'});
+                    lien.addClass('rightlink');
+
+                    offset = larg; // rien à gauche, la boite finalee est décalée de la moitié de l'étoile
+                    totalWidth = larg * 2 + debWidth + txt_wid;
+                    event.outside = 2;
+                } else { // sinon on le met à gauche
+                    offset = larg + txt_wid + 2; //2 = décollage
+                    elmt_txt.css({'left': - offset + 'px'});
+                    lien.css({'left': txtSize + 4 + 'px', //4 = padding
+                        'top' : larg + 'px',
+                        'width':  (txt_wid - txtSize) + 'px'});
+                    lien.addClass('leftlink');
+
+                    event.outside = 1;
+                }
+                totalWidth += debWidth + txt_wid;
+                elmt_txt.css('color', 'black');
+                elmt_txt.find('a > span.glyphicon').css('color', 'black');
+
+                /* 4: positionnement final de la boit englobante */
+                elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
+                    'width': totalWidth+'px'});
+                elmt.children().css({'left':'+='+offset+'px'});
+
             } else {
-            	elmt.removeClass('punctual');
-            	elmt.addClass('notpunctual');
+                /* 2: Dessin        */
+                /* Consiste à ajouter les flèches, la fin du rectangle et les heures */
+                /* Positionnés par rapport au dessin du rectangle */
+                elmt.removeClass('punctual');
+                elmt.addClass('notpunctual');
                 //cas 2 : date début antérieure au début de la timeline
                 if (startdate < this.timelineBegin) {
-                    x_deb = this.options.leftOffset;
                     elmt_flecheG.show();
-                    elmt_flecheG.css({'left': x_deb - 12 + 'px'});
+                    elmt_flecheG.css({'left': - 14 + 'px'});
+                    offset += 14 + debWidth;
+                    totalWidth += offset;
+                    elmt_deb.css({'left': -(debWidth + 14)+'px'});
                 } else {
-                    x_deb = this._computeX(startdate);
-                    if(event.modifiable){
-                    	move_deb.addClass('disp');
-                    	move_deb.css({'left': 8 + x_deb + 'px'});
+                    if(event.modifiable && event.recurr == false){
+                        move_deb.addClass('disp');
+                        move_deb.css({'left': 8 + 'px'});
                     }
+                    offset += debWidth;
+                    totalWidth += offset;
+                    elmt_deb.css({'left': - debWidth + 'px'});
                 }
                 //cas 3 : date fin postérieure à la fin de la timeline
                 if (enddate > this.timelineEnd) {
                     x_end = this._computeX(this.timelineEnd);
                     elmt_flecheD.show();
-                    elmt_flecheD.css({'left': x_end + 'px'});
+                    elmt_flecheD.css({'right': -14 + 'px', 'left': 'auto'});
+                    totalWidth += 14 + endWidth;
+                    elmt_fin.css({'left': 'auto',
+                        'right': - (14 + endWidth) + 'px'});
                     //cas 4 : date fin dans la timeline
                 } else if (enddate > 0) {
                     x_end = this._computeX(enddate);
-                    if(event.modifiable){
-                    	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px'});
-                    }
+                    totalWidth += endWidth;
+                    elmt_fin.css({'left':'auto', 'right': - endWidth+'px'});
                     //cas 5 : pas de fin
                 } else {
                     x_end = this._computeX(this.timelineEnd);
-                    if(event.modifiable){
-                    	move_fin.addClass('disp');
-                    	move_fin.css({'left': x_end - 14 + 'px'});
-                    }
                     var haut = this.options.eventHeight;
-                    elmt_compl.css({'left': x_end + 4 + 'px',
+                    elmt_compl.css({'left': 'auto',
+                        'right' : - haut - 3 +'px',
                         'border-left-width': haut + 'px',
                         'border-left-color' : couleur,
                         'border-top-width': haut / 2 + 1 + 'px',
                         'border-bottom-width': haut / 2 + 1 + 'px'});
                     elmt_compl.show();
+                    totalWidth += haut;
                 }
-                elmt_rect.css({'left': x_deb + 'px', 'width': (x_end - x_deb) + 'px',
+                //dans tous les cas
+                if(event.modifiable){
+                    move_fin.addClass('disp');
+                    move_fin.css({'right': 12 + 'px'});
+                }
+                elmt_rect.css({'left': 0 + 'px',
                     'height': this.options.eventHeight,
                     'background-color': couleur});
-            }
 
-            /// positionnement des heures de début, heure de fin, texte et trait éventuel associé
-            var x1 = x_deb;
-            var x0 = x_deb;
-            var x2 = x_end;
-            //taille du texte + place pour l'heure + place des boutons
-            var txtSize = this._computeTextSize(elmt_txt.text(), "Arial");
-            event.txtSize = txtSize;
-            var txt_wid = txtSize +
-                    + 18*3 
-                    + (elmt_txt.find('.badge').length === 0 ? 0 : 32);
-            var largeur = this._computeX(this.timelineEnd);
-            var debWidth = this._outerWidth(elmt_deb);
-            var endWidth = this._outerWidth(elmt_fin);
-            if (event.punctual) {
-                lien.addClass('disp').show();
-                //FF renvoit 0 pour elmt_rect.outerWidth() ...
-                //x2 = x1 + elmt_rect.outerWidth() - 10;
-                x2 = x1 + 25 - 10;
-                // on place l'heure à droite
-                if (startdate.getDate() !== d_actuelle.getDate()) {
-                	elmt_deb.css({'top':'-6px'});
+                //milestones
+                $.each(event.milestones, function(index, item){
+                    var xMilestone = self._computeX(new Date(item));
+                    if(xMilestone > x_deb && xMilestone < x_end) {
+                        var milestone = $('<div class="milestone"></div>');
+                        var left = (xMilestone - x_deb)/(x_end - x_deb)*100;
+                        milestone.css({'left': left+"%", 'color':textColor});
+                        elmt_rect.append(milestone);
+                    }
+                });
+
+
+                /* 3: Positionnement du label  */
+                //conversion en pixel de la taille du rectangle
+                var rectPixels = (x_end - x_deb) * this.largeurDisponible / 100;
+                if(rectPixels < 40) {
+                    // suppression des barres de modifcations des heures
+                    // qui se chevauchent
+                    move_deb.removeClass('disp');
+                    move_fin.removeClass('disp');
+                }
+                if(txt_wid + 40 < rectPixels) {
+                    //assez de place dans le rectangle
+                    //le label est positionnée par rapport à la boite
+                    //et non par rapport au rectangle
+                    elmt_txt.removeClass('outside');
+                    event.outside = 0;
+                    elmt_txt.css({'left': 22 + debWidth + 'px',
+                        'top': (this.options.eventHeight/2-11)+'px'});
+                    elmt_txt.css('color', textColor);
+                    elmt_txt.find('a > span.glyphicon').css('color', textColor);
                 } else {
-                	elmt_deb.css({'top':'4px'});
-                }
-                elmt_deb.css({'left': x2 + 'px'});
-                elmt_txt.addClass('outside');
-                elmt_txt.css({'top': '0px'});
-                x2 += debWidth + 5; //+5 pour décoller l'encart de l'heure
-                if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-                    elmt_txt.css({'left': x2 + 'px'});
-                    lien.css({'left': x2 - debWidth - 10 + 'px', 'width': debWidth + 10 + 'px'}); //+10 = moitié de l'étoile
-                    lien.addClass('rightlink');
-                    x2 += txt_wid;
-                    event.outside = 2;
-                } else { // sinon on le met à gauche
-                    x1 -= debWidth + txt_wid - 10;
-                    elmt_txt.css({'left': x1 + 'px'});
-                    lien.css({'left': x1 + 'px', 'width': x0 - x1 + 'px'});
-                    lien.addClass('leftlink');
-                    event.outside = 1;
-                }
-            } else {
-                var lar_nec = txt_wid + 44; //+44 : place pour les barres de changement d'heure
-                // on place l'heure de début à gauche
-                x1 -= debWidth + 5; //+5 pour décoller l'heure de l'évènement
-                if(startdate < this.timelineBegin){
-                	//flèche gauche à prendre en compte
-                	x1 -= 10;
-                }
-                if(enddate > this.timelineEnd) {
-                	//décalage cause flèche droite
-                	x2 += 10;
-                }
-                elmt_deb.css({'left': x1 + 'px'});
-                // on place l'heure de fin à droite
-                elmt_fin.css({'left': x2 + 5 + 'px'});
-                if(x_end - x_deb <= 40){
-                	//pas assez de place pour les poignées
-                	move_deb.removeClass('disp');
-                	move_fin.removeClass('disp');
-                }
-                if (x_end - x_deb > lar_nec) { //assez de place dans le rectangle
-                	var x_left = x0 + 22;
-                	elmt_txt.removeClass('outside');
-                	event.outside = 0;
-                    elmt_txt.css({'left': x_left + 'px',
-                                   'top': (this.options.eventHeight/2-11)+'px'});
-                    
-                    x2 += endWidth + 5;
-                } else {
+                    elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
+                    //positionnement à droite ou à gauche
+                    var place = (100 - x_end) * this.largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
-                    elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
-                    x2 += endWidth + 10;
-                    if (x2 + txt_wid < largeur) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
-                        elmt_txt.css({'left': x2 + 'px'});
-                        lien.css({'left': x2 - (endWidth + 10) + 'px', 'width': endWidth + 10 + 'px'});
-                        x2 += txt_wid;
+                    elmt_txt.css('color', 'black');
+                    elmt_txt.find('a > span.glyphicon').css('color', 'black');
+                    if (endWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+                        elmt_txt.css({'left': 'calc(100% - '+txt_wid+'px)'});
+                        totalWidth += txt_wid;
+                        lien.css({'left': - endWidth + 'px',
+                            'width': endWidth + 'px'});
                         lien.addClass('rightlink');
                         event.outside = 2;
                     } else { // sinon on le met à gauche
-                    	x1 -= txt_wid - 5;
-                    	var x1lien = x1 + txt_wid - 18*3 - 20; //le lien part de la fin du txt pas du début
-                        lien.css({'left': x1lien + 'px', 'width': x0 - x1lien + 'px'});
-                        elmt_txt.css({'left': x1 + 'px'});
+                        offset += txt_wid;
+                        lien.css({'left': txt_wid - txtOffset + 'px', 'width': debWidth + txtOffset + 'px'});
+                        elmt_txt.css({'left': 0 + 'px'});
                         lien.addClass('leftlink');
+                        totalWidth += txt_wid;
                         event.outside = 1;
                     }
                 }
+
+
+                /* 4: positionnement final de la boit englobante */
+                elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
+                    'width': 'calc('+(x_end-x_deb)+'% + '+totalWidth+'px)'});
+                elmt_rect.css({'width': 'calc(100% - '+totalWidth+'px)',
+                                'left': '+=' + offset + 'px'});
             }
+
             //highlight
             this._highlightElmt(elmt, event.star);
-            //mise à jour du conteneur global
-            elmt.css({'left': x1+'px', 'width': x2 - x1});
-            elmt.children().css({'left':'-='+x1+'px'});
-//cette optimisation de fonctionne pas si les heures sont forcées en visu
-//TODO trouver une solution...
-//            if(event.outside === 0){
-//            	event.xleft = x1 + debWidth;
-//            	event.xright = x2 - endWidth;
-//            } else if(event.outside === 1){
-//            	event.xleft = x1;
-//            	event.xright = x2 - endWidth;
-//            } else if(event.outside === 2){
-//            	event.xleft = x1 + debWidth;
-//            	event.xright = x2;
-//            }
-            event.xleft = x1;
-            event.xright = x2;
+
+            //pour les besoins de comparaison des positions des évènements
+            //on a besoin de positions absolues
+            event.xleft = x_deb * this.largeurDisponible / 100 - offset;
+            event.xright = x_end * this.largeurDisponible / 100 + totalWidth - offset;
+            //impossible de récupérer la règle calc() par la suite
+            //on stocke donc les éléments permettant de la recalculer
+            event.xdeb = x_deb;
+            event.xend = x_end;
+            event.offset = offset;
+            event.totalWidth = totalWidth;
             //mise à jour des attributs en fonction du statut
             this._updateStatus(event, elmt);
-            
 
+            //une fois le statut analysé, on sait si l'affichage de l'heure est forcé ou non
+            if(event.outside === 0) {//inside
+                if(event.hourBeginForced == false) {
+                    event.xleft += debWidth;
+                }
+                if(event.hourEndForced == false) {
+                    event.xright -= endWidth;
+                }
+            } else if (event.outside === 1 && event.hourBeginForced == false) { //left
+                event.xright -= endWidth;
+            } else if (event.outside === 2 && event.hourEndForced == false) { //right
+                event.xleft += debWidth;
+            }
         },
-        /** 
+        /**
          * Remove label and update size
          * Only if label is outside
          */
         _removeLabel: function(event){
-        	var elmt = this.element.find('#event'+event.id);
-        	var elmt_txt = elmt.find('.label_elmt.outside');
-        	if(elmt_txt.length > 0 && event.label === true){
-        		event.label = false;
-        		var lien = elmt.find('.lien');
-        		//mise à jour des dimensions 
-        		var txt_width = this._computeTextSize(elmt_txt.text(), "Arial");
-        		if(lien.hasClass('leftlink')){
-        			var x1 = event.xleft;
-        			x1 += txt_width;
-        			elmt.css({'left': x1+'px'});
-        			elmt.children().css({'left':'+='+txt_width+'px'});
-        			event.xleft = x1;
-        		} else if(lien.hasClass('rightlink')){
-        			var x1 = event.xleft;
-        			var x2 = event.xright;
-        			x2 -= txt_width;
-        			elmt.css({'width':x2-x1});
-        			event.xright = x2;
-        		}
-        		//suppression du lien
-        		elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
-        		//on cache le txt
-        		elmt_txt.find('span.elmt_name').addClass('unvisible');
-        		elmt_txt.addClass('disp').hide();
-        	}
+            var elmt = this.element.find('#event'+event.id);
+            var elmt_rect = elmt.find('.rect_elmt');
+            var elmt_txt = elmt.find('.label_elmt.outside');
+            if(elmt_txt.length > 0 && event.label === true){
+                event.label = false;
+                var lien = elmt.find('.lien');
+                //mise à jour des dimensions
+                var txt_width = event.txtSize;
+                if(lien.hasClass('leftlink')){
+
+                    event.offset -= txt_width;
+                    event.totalWidth += txt_width;
+                    event.xleft += txt_width;
+                    elmt.css({'left': 'calc('+event.xdeb+'% - '+event.offset+'px)',
+                        'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
+                    elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)',
+                        'left': '-=' + txt_width + 'px'});
+
+                } else if(lien.hasClass('rightlink')){
+                    event.totalWidth -= txt_width;
+                    elmt_txt.css({'left': 'calc(100% - '+txt_width+'px)'});
+                    elmt.css({'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
+                    elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)'});
+
+                    event.xright -= txt_width;
+                }
+                //suppression du lien
+                elmt.find('.lien').removeClass('disp leftlink rightlink').hide();
+                //on cache le txt
+                elmt_txt.find('span.elmt_name').addClass('unvisible');
+                elmt_txt.addClass('disp').hide();
+            }
         },
         /**
          * Compute size of an event if label removed
@@ -1844,13 +1996,13 @@
          * @return array [x1, x2]
          */
         _tryRemoveLabel: function(event){
-        	var result = [event.xleft, event.xright];
-    		if(event.outside === 1){
-    			result[0] = event.xleft + event.txtSize;
-    		} else if(event.outside === 2){
-    			result[1] = event.xright - event.txtSize;
-        	}
-        	return result;
+            var result = [event.xleft, event.xright];
+            if(event.outside === 1){
+                result[0] = event.xleft + event.txtSize;
+            } else if(event.outside === 2){
+                result[1] = event.xright - event.txtSize;
+            }
+            return result;
         },
         /**
          * Update an event according to its status and dates :
@@ -1874,27 +2026,31 @@
             var now = new Date();
             var start = new Date(event.start_date);
             var end = new Date(event.end_date);
+            event.hourBeginForced = false;
+            event.hourEndForced = false;
             switch (event.status_id) {
                 case 1: //nouveau
                     //label en italique
-                    elmt_txt.css({'font-style': 'italic', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'italic'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début cliquable
                     elmt_deb.removeClass('disabled');
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                         elmt_deb.removeClass('disp').show().tooltip({
-                        	title: "Cliquer pour confirmer l'heure de début.",
-                        	container: 'body'
+                            title: "Cliquer pour confirmer l'heure de début.",
+                            container: 'body'
                         });
                         lien.filter('.leftlink').addClass('disp').show();
+                        event.hourBeginForced = true;
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                         elmt_deb.addClass('disp').tooltip({
-                        	title: "Cliquer pour confirmer l'heure de début.",
-                        	container: 'body'
+                            title: "Cliquer pour confirmer l'heure de début.",
+                            container: 'body'
                         });
                         lien.filter('.leftlink').addClass('disp').show();
                     }
@@ -1908,28 +2064,32 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
+                            event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
                     //couleur estompée
                     this._shadeEvent(event, elmt, 0.4);
-                    rect.addClass('stripes');
+                    if(!event.punctual) {
+                        rect.addClass('stripes');
+                    }
                     break;
                 case 2: //confirmé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'normal'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -1944,16 +2104,17 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').removeClass('disp').hide();
+                            event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide().tooltip({
-                            	title: "Cliquer pour confirmer l'heure de fin.",
-                            	container: 'body'
+                                title: "Cliquer pour confirmer l'heure de fin.",
+                                container: 'body'
                             });
                             lien.filter('.rightlink').addClass('disp').show();
                         }
@@ -1963,8 +2124,9 @@
                     break;
                 case 3: //terminé
                     //label normal
-                    elmt_txt.css({'font-style': 'normal', 'color': 'black'});
+                    elmt_txt.css({'font-style': 'normal'});
                     elmt_txt.find('span').css({'text-decoration': ''});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-check');
                     elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
@@ -1984,6 +2146,7 @@
                 case 4: //annulé
                     //label barré
                     elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
+                    elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2007,6 +2170,33 @@
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
+                case 5:
+                    //label barré
+                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
+                    elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
+                    //heure de début et heure de fin : non cliquable, sur demande sans icone
+                    elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
+                    elmt_deb.addClass('disp disabled').hide().tooltip('destroy');
+                    elmt_fin.addClass('disabled').tooltip('destroy');
+                    lien.filter('.leftlink').addClass('disp').show();
+                    if (event.punctual || event.end_date === null){
+                        elmt_fin.removeClass('disp').hide();
+                        elmt_compl.show();
+                    } else {
+                        elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon');
+                        elmt_fin.addClass('disp').hide();
+                    }
+                    lien.filter('.rightlink').addClass('disp').show();
+                    //ne pas permettre la modification des heures
+                    move_deb.removeClass('disp');
+                    move_fin.removeClass('disp');
+                    //couleur estompée
+                    this._shadeEvent(event, elmt, 0.5);
+                    rect.removeClass('stripes');
+                    //un évènement supprimé ne peut pas être important
+                    this._highlightElmt(elmt, false);
+                    break;
+
             }
         },
         /**
@@ -2022,41 +2212,41 @@
             var elmt_rect = $('<div class="rect_elmt"></div>');
             elmt.append(elmt_rect);
             var elmt_compl = $('<div class="complement"></div>');
-            elmt_rect.after(elmt_compl);
+            elmt_rect.append(elmt_compl);
             // si l'événement a commencé avant la timeline, ajout d'une flèche gauche
             var elmt_flecheG = $('<div class="elmt_flecheG"></div>');
-            elmt.append(elmt_flecheG);
+            elmt_rect.append(elmt_flecheG);
             elmt_flecheG.append('<span class="glyphicon glyphicon-arrow-left"></span>');
             // si l'événement se poursuit au-delà de la timeline, ajout d'une flèche droite
             var elmt_flecheD = $('<div class="elmt_flecheD"></div>');
-            elmt.append(elmt_flecheD);
+            elmt_rect.append(elmt_flecheD);
             elmt_flecheD.append('<span class="glyphicon glyphicon-arrow-right"></span>');
             // ajout du nom de l'événement
             var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
             elmt.append(elmt_txt);
             // ajout du bouton "ouverture fiche"
-            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
+            var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '"></a>');
             elmt_txt.append(elmt_b1);
-            elmt_b1.append('    <span class="glyphicon glyphicon-pencil"></span>');
+            elmt_b1.append(' <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"
             var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
             elmt_txt.append(elmt_b2);
-            elmt_b2.append('    <span class="glyphicon glyphicon-tasks"></span>');
+            elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
             //ajout bouton ouverture menu tooltip
             var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
-            elmt_b3.append('    <span class="glyphicon glyphicon-chevron-up"></span>');
+            elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
             elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
             var lien = $('<div class="lien"></div>');
-            elmt.append(lien);
+            elmt_txt.append(lien);
             var elmt_deb = $('<a href="#" class="elmt_deb"><span class="glyphicon"></span><span class="hour-txt"></span></a>');
-            elmt.append(elmt_deb);
+            elmt_rect.append(elmt_deb);
             var elmt_fin = $('<a href="#" class="elmt_fin"><span class="hour-txt"></span><span class="glyphicon"></span></a>');
-            elmt.append(elmt_fin);
+            elmt_rect.append(elmt_fin);
             var move_deb = $('<p class="move_deb"></p>');
-            elmt.append(move_deb);
+            elmt_rect.append(move_deb);
             var move_fin = $('<p class="move_fin"></p>');
-            elmt.append(move_fin);
+            elmt_rect.append(move_fin);
             var dy = this.options.eventHeight;
             var largeur = this.element.width();
             elmt.css({'position': 'absolute', 'left': '0px', 'width': largeur, 'height': dy, 'top': this.options.topOffset+'px'});
@@ -2074,7 +2264,7 @@
         /* *********************** */
         /* ** Utilitary methods ** */
         /* *********************** */
-        
+
         /**
          * Format a number into a string with a predefined length
          * @param {type} num
@@ -2122,14 +2312,14 @@
          */
         _setUnselectable: function () {
             this.element.attr('unselectable', 'on')
-                    .css({'-moz-user-select': '-moz-none',
-                        '-moz-user-select':'none',
-                                '-o-user-select': 'none',
-                        '-khtml-user-select': 'none',
-                        '-webkit-user-select': 'none',
-                        '-ms-user-select': 'none',
-                        'user-select': 'none'
-                    }).bind('selectstart', function () {
+                .css({'-moz-user-select': '-moz-none',
+                    '-moz-user-select':'none',
+                    '-o-user-select': 'none',
+                    '-khtml-user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
+                    'user-select': 'none'
+                }).bind('selectstart', function () {
                 return false;
             });
         },
@@ -2139,7 +2329,7 @@
             return !isNaN(d.getTime());
         },
         /**
-         * 
+         *
          * @param {type} event
          * @returns {boolean}
          */
@@ -2151,20 +2341,31 @@
             }
             // si l'evt intersecte la timeline
             if ((event.punctual && startdate >= this.timelineBegin && startdate <= this.timelineEnd) ||
-                    (!event.punctual && startdate < this.timelineEnd && enddate === null) ||
-                    (!event.punctual && enddate !== null &&
-                            (enddate > this.timelineBegin && startdate < this.timelineEnd))) {
+                (!event.punctual && startdate < this.timelineEnd && enddate === null) ||
+                (!event.punctual && enddate !== null &&
+                (enddate > this.timelineBegin && startdate < this.timelineEnd))) {
                 return true;
             } else {
                 return false;
             }
         },
-        _computeTextSize: function (str, font) {
+        _computeTextSize: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);
-            fakeEl.text(str).css('font', font);
+            fakeEl.text(str).css({'font' : font,
+                                'font-weight' : fontWeight,
+                                'font-size' : fontSize});
             var size = fakeEl.width();
             fakeEl.remove();
             return size;
+        },
+        /**
+         * Returns original width and not calculated pixels
+         * @param element
+         * @returns {*}
+         * @private
+         */
+        _getCSSWidth: function (element) {
+            return element.clone().appendTo('body').wrap('<div style="display: none"></div>').css('width');
         },
         _outerWidth: function(object){
             var fakediv = $('<div>').hide().appendTo(document.body);
@@ -2174,11 +2375,36 @@
             fakediv.remove();
             return width;
         },
+        _hexdec: function(hexString){
+            hexString = (hexString + '').replace(/[^a-f0-9]/gi, '');
+            return parseInt(hexString, 16);
+        },
+        /**
+         *
+         * @param color
+         */
+        _hex2rgb: function(color) {
+            var hex = color.replace("#", "");
+
+            if(hex.length == 3) {
+                var r = this._hexdec(hex.substr(0,1).substr(0,1));
+                var g = this._hexdec(hex.substr(1,1).substr(1,1));
+                var b = this._hexdec(hex.substr(2,1).substr(2,1));
+            } else {
+                var r = this._hexdec(hex.substr(0,2));
+                var g = this._hexdec(hex.substr(2,2));
+                var b = this._hexdec(hex.substr(4,2));
+            }
+            return [r, g, b];
+        },
+        _yiq: function(rgb) {
+            return 1 - (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114)/255;
+        },
         /**
          * @param color Hex color (with #)
          * @param percent Value between -1.0 and 1.0. Negative : darker, positive : lighter
          */
-        _shadeHexColor: function(color, percent) {   
+        _shadeHexColor: function(color, percent) {
             var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
             return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
         },

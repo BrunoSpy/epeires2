@@ -71,19 +71,72 @@ class MilController extends AbstractActionController
                 $day->add($interval);
             }
         }
-        
+        $startImport = microtime(true);
+        $totalDL = 0;
+        $totalTR = 0;
+        echo "Lancement du téléchargement de l'AUP pour " . $organisation->getName()."\n";
+
         $nmservice = $this->serviceLocator->get('nmb2b');
-        
-        $eaupchain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPCHain($day));
+
+        try {
+            $startSeq = microtime(true);
+            echo "Récupération du nombre de séquences\n";
+            $eaupchain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPCHain($day));
+            $dl = microtime(true) - $startSeq;
+            $totalDL += $dl;
+            echo "Séquences récupérées en ".$dl." secondes\n";
+        } catch(\RuntimeException $e) {
+            echo "Erreur fatale pendant le téléchargement"."\n";
+            echo "Les données téléchargées sont incomplètes"."\n";
+            echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
+            return;
+        }
+
         $lastSequence = $eaupchain->getLastSequenceNumber();
         $milcats = $objectManager->getRepository('Application\Entity\MilCategory')->findBy(array(
             'nmB2B' => true
         ));
-        for ($i = 1; $i <= $lastSequence; $i ++) {
-            $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA(NULL, $day, $i));
-            foreach ($milcats as $cat) {
-                $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+
+        $designators = array();
+        foreach ($milcats as $cat){
+            $regex = $cat->getZonesRegex();
+            if(strlen($regex) > 2) {
+                $start = substr($regex, 1, 2);
+                if(!in_array($start, $designators)){
+                    $designators[] = $start;
+                }
             }
         }
+
+        for ($i = 1; $i <= $lastSequence; $i ++) {
+            foreach ($designators as $designator) {
+                try {
+                    $startSeq = microtime(true);
+                    echo "Téléchargement des zones ".$designator.", séquence ".$i."\n";
+                    $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA($designator.'*', $day, $i));
+                    $dl = microtime(true) - $startSeq;
+                    $totalDL += $dl;
+                    echo "Téléchargement terminé en ".$dl." secondes"."\n";
+                } catch(\RuntimeException $e) {
+                    echo "Erreur fatale pendant le téléchargement"."\n";
+                    echo "Les données téléchargées sont incomplètes"."\n";
+                    echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
+                    //abort import
+                    //email sent by service
+                    return;
+                }
+                $startEpeires = microtime(true);
+                echo "Création des évènements ".$designator.' séquence '.$i." dans Epeires..."."\n";
+                foreach ($milcats as $cat) {
+                    $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+                }
+                $tr = microtime(true) - $startEpeires;
+                $totalTR += $tr;
+                echo "Evènements créés en ".$tr.' secondes'."\n";
+            }
+        }
+        echo "Fin de l'import de l'AUP en ".(microtime(true)-$startImport).' secondes'."\n";
+        echo 'Téléchargement : '.$totalDL.' secondes'."\n";
+        echo 'Traitement : '.$totalTR.' secondes';
     }
 }

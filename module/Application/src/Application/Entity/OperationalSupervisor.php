@@ -57,6 +57,14 @@ class OperationalSupervisor
     protected $organisation;
 
     /**
+     * @ORM\ManyToOne(targetEntity="OpSupType", inversedBy="opsups")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Type :", "empty_option":"Choisir le type"})
+     */
+    protected $type;
+
+    /**
      * @ORM\ManyToOne(targetEntity="QualificationZone")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
@@ -115,10 +123,21 @@ class OperationalSupervisor
         $this->organisation = $organisation;
     }
 
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
         $object_vars['organisation'] = $this->organisation->getId();
+        $object_vars['type'] = $this->type->getId();
         $object_vars['zone'] = $this->zone->getId();
         return $object_vars;
     }

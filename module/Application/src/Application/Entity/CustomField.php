@@ -97,6 +97,22 @@ class CustomField
     protected $multiple = false;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Traçable"})
+     */
+    protected $traceable = false;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Jalon"})
+     */
+    protected $milestone = false;
+
+    /**
      * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
      */
     protected $values;
@@ -154,6 +170,25 @@ class CustomField
     public function setMultiple($multiple)
     {
         $this->multiple = $multiple;
+    }
+
+    public function isTraceable()
+    {
+        return $this->traceable;
+    }
+
+    public function setTraceable($traceable)
+    {
+        $this->traceable = $traceable;
+    }
+    
+    public function setMilestone($milestone)
+    {
+        $this->milestone = $milestone;
+    }
+
+    public function isMilestone() {
+        return $this->milestone;
     }
 
     public function getDefaultValue()

@@ -11,11 +11,15 @@
 		{
 			"type": "vcs",
 			"url": "https://github.com/kipperlenny/opentbsbundle"
-		}
+		},
+        {
+          "type": "vcs",
+          "url": "https://github.com/BrunoSpy/DoctrineDataFixtureModule"
+        }
 	],
     "require": {
-        "php": ">=5.5.0",
-        "zendframework/zend-mvc": "^2.5",
+        "php": ">=5.6.0",
+        "zendframework/zend-mvc": "2.5.* || 2.6.*",
         "zendframework/zend-view": "^2.5",
         "zendframework/zend-log": "^2.5",
         "zendframework/zend-i18n": "^2.5",
@@ -31,30 +35,36 @@
         "zendframework/zend-version": "^2.5",
         "zendframework/zend-text": "^2.5",
         "rwoverdijk/assetmanager": "1.*",
-        "doctrine/doctrine-orm-module": "~0.9.0",
+        "doctrine/doctrine-orm-module": "~1.0",
         "gedmo/doctrine-extensions": ">=2.3.0",
         "zf-commons/zfc-user": "~1.2",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
         "zf-commons/zfc-rbac": "~2.4",
         "mrclay/minify": "*",
         "murganikolay/doctrine-migrations-module": "dev-master",
-        "dino/dompdf-module": "dev-master",
-        "Kipperlenny/opentbs-bundle": "dev-master"
+        "netiul/dompdf-module": "dev-master",
+        "Kipperlenny/opentbs-bundle": "dev-master",
+        "rlanvin/php-rrule": "^1.2"
     },
     "require-dev":{
-    	"zendframework/zend-developer-tools": "dev-master",
-        "zendframework/zftool": "dev-master",
-        "ocramius/ocra-service-manager": "dev-master",
         "zendframework/zend-test": "^2.5",
         "phpunit/phpunit": "^5.1",
         "hounddog/doctrine-data-fixture-module": "dev-master",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "codeception/codeception": "^2.2.1"
     },
     "autoload-dev": {
+<<<<<<< HEAD
     	"psr-4": {
 	        "ApplicationTest\\": "tests/ApplicationTest",
             "Afis\\": "module/Afis/src",
             "FlightPlan\\": "module/FlightPlan/src"
 	    }
 	}
+=======
+        "psr-4": {
+            "ApplicationTest\\": "tests/ApplicationTest"
+        }
+    }
+>>>>>>> refs/remotes/origin/test
 }

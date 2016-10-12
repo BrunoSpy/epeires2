@@ -74,7 +74,7 @@ var createEventEntry = function(id, event){
 	var now = new Date();
 	if(encours){
 		//evt en cours : modifier l'evt
-		html += '<a data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm pull-right btn-primary modify-evt">Modifier</a>';
+		html += '<a data-recurr="'+event.recurr+'" data-name="'+event.name+'" data-id="'+id+'" class="btn btn-sm pull-right btn-primary modify-evt">Modifier</a>';
 	} else {
 		//evt terminé : copier
 		html += '<a data-id='+id+' class="btn btn-sm pull-right btn-primary copy-event">Copier</a>';

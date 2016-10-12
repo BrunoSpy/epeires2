@@ -71,6 +71,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface
         $namefield->setType($stringtype);
         $namefield->setPlace(1);
         $namefield->setDefaultValue("");
+        $namefield->setTooltip("");
         $milcat->setFieldname($namefield);
         
         $lower = new CustomField();
@@ -79,6 +80,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface
         $lower->setType($stringtype);
         $lower->setPlace(2);
         $lower->setDefaultValue("");
+        $lower->setTooltip("");
         $milcat->setLowerLevelField($lower);
         
         $upper = new CustomField();
@@ -87,6 +89,7 @@ class CategoryEntityFactory implements ServiceLocatorAwareInterface
         $upper->setType($stringtype);
         $upper->setPlace(3);
         $upper->setDefaultValue("");
+        $upper->setTooltip("");
         $milcat->setUpperLevelField($upper);
         
         $milcat->setZonesRegex('');

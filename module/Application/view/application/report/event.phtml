@@ -1,5 +1,5 @@
 <?php
-$formatterJour = \IntlDateFormatter::create(\Locale::getDefault(),
+$formatterJour = \IntlDateFormatter::create("fr_FR",
     \IntlDateFormatter::FULL,
     \IntlDateFormatter::FULL,
     'UTC',
@@ -33,11 +33,24 @@ $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
 <?php 
 foreach ($this->event->getCustomFieldsValues() as $value){
     if($this->customfieldvalue($value) != ''){
-        echo '<tr>';
-        echo '<td></td>';
-        echo '<td>' . $value->getCustomfield()->getName().' : </td>';
-        echo '<td colspan="3">'.nl2br($this->customfieldvalue($value)).'</td>';
-        echo '</tr>';
+        if($value->getCustomField()->isTraceable() && $this->logs != null) {
+            foreach(array_reverse($this->logs->getLogEntries($value)) as $log) {
+                echo '<tr>';
+                echo '<td></td>';
+                echo '<td>' . $formatterJour->format($log->getLoggedAt())
+                    . ' ' . $formatterHeure->format($log->getLoggedAt())
+                    . ' ' . $value->getCustomField()->getName()
+                    . ' : </td>';
+                echo '<td colspan="3">' . nl2br($this->customfieldvalue($value, $log->getData()["value"])).'</td>';
+                echo '</tr>';
+            }
+        } else {
+            echo '<tr>';
+            echo '<td></td>';
+            echo '<td>' . $value->getCustomfield()->getName().' : </td>';
+            echo '<td colspan="3">'.nl2br($this->customfieldvalue($value)).'</td>';
+            echo '</tr>';
+        }
     }
 }
 foreach ($this->event->getUpdates() as $update){

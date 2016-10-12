@@ -17,8 +17,7 @@
 var url;
 
 var setUrl = function(urlt){
-    console.log(urlt);
-  url = urlt;  
+  url = urlt;
 };
 
 $(document).ready(function(){

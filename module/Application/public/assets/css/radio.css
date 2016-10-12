@@ -15,33 +15,6 @@
  *
  */
  
-.page-wrap {
-	float: right;
-	width: 100%;
-	transition: width 0.3s ease;
-}
-
-.main-nav-check {
-	display: none;
-}
-
-.main-nav {
-	position: fixed;
-	width: 0;
-	height: calc(100% - 100px);
-	overflow-y: auto;
-	transition: width 0.3s ease;
-	padding-left: 15px;
-}
-
-#main-nav-check:checked+.main-nav {
-	width: 20%;
-}
-
-#main-nav-check:checked ~ .page-wrap {
-	width: 80%;
-}
-
 /******* Page radio *******/
 #radio.container-fluid {
 	margin-top: 10px;

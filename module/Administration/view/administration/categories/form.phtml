@@ -32,6 +32,10 @@ echo '<div id="tcdiv" title="Seulement si Timeline est actif" data-toggle="toolt
 echo $this->controlGroup($this->form->get('timelineconfirmed'));
 echo '</div>';
 
+echo '<div title="Exclure automatiquement du rapport IPO" data-toggle="tooltip">';
+echo $this->controlGroup($this->form->get('exclude'));
+echo '</div>';
+
 echo $this->controlGroup($this->form->get('parent'));
 if($this->system) {
     echo "</div>";

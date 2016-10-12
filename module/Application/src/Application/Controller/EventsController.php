@@ -17,23 +17,28 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
-use Zend\View\Model\ViewModel;
-use Application\Entity\Event;
-use Application\Form\CategoryFormFieldset;
-use Application\Form\CustomFieldset;
-use Application\Entity\CustomFieldValue;
-use Zend\View\Model\JsonModel;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Doctrine\ORM\Query\Expr\Join;
-use Application\Entity\PredefinedEvent;
-use Doctrine\ORM\QueryBuilder;
-use Zend\Session\Container;
-use Zend\Form\Element;
-use ZfcRbac\Exception\UnauthorizedException;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\Recurrence;
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
+use Application\Entity\PredefinedEvent;
+
+use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Form\Element;
+
+use Application\Form\CategoryFormFieldset;
+use Application\Form\CustomFieldset;
+
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\ORM\QueryBuilder;
+
+use ZfcRbac\Exception\UnauthorizedException;
+
 
 /**
  *
@@ -45,8 +50,6 @@ class EventsController extends TabController
     public function indexAction()
     {
         parent::indexAction();
-        
-        $viewmodel = new ViewModel();
         
         $return = array();
         
@@ -60,11 +63,11 @@ class EventsController extends TabController
         
         $this->flashMessenger()->clearMessages();
         
-        $viewmodel->setVariables(array(
+        $this->viewmodel->setVariables(array(
             'messages' => $return
         ));
         
-        return $viewmodel;
+        return $this->viewmodel;
     }
     
     // TODO move to IPOController
@@ -115,59 +118,24 @@ class EventsController extends TabController
                     ->getId(),
                 'current' => true
             ));
-            
-            $json[$currentipo->getId()] = $currentipo->getName();
+            if($currentipo) {
+                $json[$currentipo->getId()] = $currentipo->getName();
+            }
         }
         
         return new JsonModel($json);
     }
 
-    public function saveopsupAction()
-    {
-        $messages = array();
-        if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
-            $opsupid = $post['nameopsup'];
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
-            if ($opsup) {
-                // un seul IPO par organisation et par zone
-                $opsups = $em->getRepository('Application\Entity\OperationalSupervisor')->findBy(array(
-                    'organisation' => $opsup->getOrganisation()
-                        ->getId(),
-                    'zone' => $opsup->getZone()
-                        ->getId()
-                ));
-                foreach ($opsups as $i) {
-                    $i->setCurrent(false);
-                    $em->persist($i);
-                }
-                $opsup->setCurrent(true);
-                $em->persist($opsup);
-                try {
-                    $em->flush();
-                    $messages['success'][] = "Op Sup en fonction modifié";
-                } catch (\Exception $e) {
-                    $messages['error'][] = $e->getMessage();
-                }
-            } else {
-                $messages['error'][] = "Impossible de modifier le chef OP";
-            }
+    public function testAuthenticationAction() {
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+            $this->getResponse()->setStatusCode(200);
+            return new JsonModel();
+        } else {
+            $this->getResponse()->setStatusCode(401);
+            return new JsonModel();
         }
-        return new JsonModel($messages);
     }
-
-    public function savezoneAction()
-    {
-        if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
-            $zone = $post['zone'];
-            $session = new Container('zone');
-            $session->zoneshortname = $zone;
-        }
-        return new JsonModel();
-    }
-
+    
     /**
      * Returns a Json with all relevant events and models
      */
@@ -444,6 +412,8 @@ class EventsController extends TabController
     {
         $messages = array();
         $event = null;
+        $events = array();
+        $sendEvents = array();
         $return = $this->params()->fromQuery('return', null);
         
         if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -457,9 +427,11 @@ class EventsController extends TabController
                 $id = $post['id'] ? $post['id'] : null;
                 
                 $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                
+
+                $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find('5');
+
                 $credentials = false;
-                
+
                 if ($id) {
                     // modification
                     $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
@@ -480,6 +452,7 @@ class EventsController extends TabController
                         $event = new Event();
                         $event->setAuthor($this->zfcUserAuthentication()
                             ->getIdentity());
+                        $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
                         // si utilisateur n'a pas les droits events.status, le champ est désactivé et aucune valeur n'est envoyée
                         if (! isset($post['status'])) {
                             $post['status'] = 1;
@@ -489,75 +462,209 @@ class EventsController extends TabController
                 }
                 
                 if ($credentials) {
-                    
-                    $form = $this->getSkeletonForm(null, $event);
-                    $form->setPreferFormInputFilter(true);
-                    $form->setData($post);
-                    
-                    if ($form->isValid()) {
-                        
-                        $now = new \DateTime('now');
-                        $now->setTimezone(new \DateTimeZone('UTC'));
-                        
-                        // TODO find why hydrator can't set a null value to a datetime
-                        if (isset($post['enddate']) && empty($post['enddate'])) {
-                            $this->changeEndDate($event, null);
-                        }
-                        
-                        // hydrator can't guess timezone, force UTC of end and start dates
-                        if (isset($post['startdate']) && ! empty($post['startdate'])) {
-                            $startdate = new \DateTime($post['startdate']);
-                            $offset = $startdate->getTimezone()->getOffset($startdate);
-                            $startdate->setTimezone(new \DateTimeZone("UTC"));
-                            $startdate->add(new \DateInterval("PT" . $offset . "S"));
-                            if (isset($post['enddate']) && ! empty($post['enddate'])) {
-                                $enddate = new \DateTime($post['enddate']);
-                                $offset = $enddate->getTimezone()->getOffset($enddate);
-                                $enddate->setTimezone(new \DateTimeZone("UTC"));
-                                $enddate->add(new \DateInterval("PT" . $offset . "S"));
-                                // on change les deux dates d'un coup pour éviter les incohérences temporaires
-                                $event->setDates($startdate, $enddate);
-                                // vérification de cohérence
-                                $this->changeStartDate($event, $startdate);
+                    //préparation de certains champs
+                    $startdate = new \DateTime($post['startdate']);
+                    $offset = $startdate->getTimezone()->getOffset($startdate);
+                    $startdate->setTimezone(new \DateTimeZone("UTC"));
+                    $startdate->add(new \DateInterval("PT" . $offset . "S"));
+
+                    $enddate = null;
+                    if(isset($post['enddate']) && !empty($post['enddate'])) {
+                        $enddate = new \DateTime($post['enddate']);
+                        $offset = $enddate->getTimezone()->getOffset($enddate);
+                        $enddate->setTimezone(new \DateTimeZone("UTC"));
+                        $enddate->add(new \DateInterval("PT" . $offset . "S"));
+                    }
+
+                    $diff = 0;
+                    if($enddate !== null) {
+                        $diff = $startdate->diff($enddate);
+                    }
+
+                    $now = new \DateTime('now');
+                    $now->setTimezone(new \DateTimeZone('UTC'));
+
+                    $modrecurrence = false;
+
+                    $recurrence = null;
+
+                    if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern'])) {
+                        if($id) {
+                            //récurrence existante
+                            $recurrence = $event->getRecurrence();
+                            if($recurrence === null) {
+                                //en cas de modification d'un évènement seul et ajout d'une recurrence
+                                $recurrence = new Recurrence($startdate, "");
+                                $event->setStatus($deleteStatus);
+                                $this->closeEvent($event);
+                            }
+                            if(isset($post['exclude']) && $post['exclude'] == "true") {
+                                $recurrence->exclude($event);
+                                $event->setRecurrence(null);
+                                $status = $objectManager->getRepository('Application\Entity\Status')->find($post['status']);
+                                $event->setStatus($status);
+                                if($enddate !== null) {
+                                    $event->setDates($startdate, $enddate);
+                                }
                                 $this->changeEndDate($event, $enddate);
-                            } else {
                                 $this->changeStartDate($event, $startdate);
+                                $events[] = $event;
+                            } else {
+                                //si la règle de récurrence a changé, on exclut les évènements passés
+                                //on supprime les évènements restants
+                                //et on crée une nouvelle récurrence
+                                $test = $recurrence->getStartdate() == $startdate;
+                                //changement de récurrence si
+                                //* le pattern a changé ou
+                                //* la date de début de l'évènement a changé
+                                if(strcmp($recurrence->getRecurrencePattern(), $post['recurrencepattern']) !== 0 ||
+                                    !($event->getStartdate() == $startdate)) {
+                                    $recurrentEvents = $recurrence->getEvents();
+                                    foreach ($recurrentEvents as $e) {
+                                        if ($e->isPast($now)) {
+                                            $e->setRecurrence(null);
+                                        } else {
+                                            $e->setStatus($deleteStatus);
+                                        }
+                                        $objectManager->persist($e);
+                                        $sendEvents[] = $e;
+                                    }
+                                    //si le statut est positionné à "Supprimé"
+                                    //on ne crée pas de nouveaux évènements
+                                    if($post['status'] != 5) {
+                                        //$objectManager->remove($recurrence);
+                                        $recurrence = new Recurrence($startdate, $post['recurrencepattern']);
+                                        $objectManager->persist($recurrence);
+                                        foreach ($recurrence->getRSet() as $occurrence) {
+                                            $e = new Event();
+                                            $e->setRecurrence($recurrence);
+                                            $e->setAuthor($this->zfcUserAuthentication()
+                                                ->getIdentity());
+                                            $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                                            $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
+                                            $e->setStatus($status);
+                                            $e->setStartdate($occurrence);
+                                            if ($enddate !== null) {
+                                                $end = clone $occurrence;
+                                                $end->add($diff);
+                                                $e->setEnddate($end);
+                                            }
+                                            $modrecurrence = true;
+                                            $events[] = $e;
+                                        }
+                                    }
+                                } else {
+                                    //sinon on exclut simplement les evts passés
+                                    //mise à jour des évènements futurs en fonction des champs modifiés
+                                    $recurrentEvents = $recurrence->getEvents();
+                                    foreach ($recurrentEvents as $e){
+                                        if($e->isPast($now)) {
+                                            $recurrence->exclude($e);
+                                            $e->setRecurrence(null);
+                                            $objectManager->persist($e);
+                                            $sendEvents[] = $e;
+                                        } else {
+                                            $events[] = $e;
+                                            //exception pour la suppression : appliqué à tous les évènements futurs
+                                            if($post['status'] == 5) {
+                                                $e->setStatus($deleteStatus);
+                                            }
+                                        }
+                                    }
+                                    //on mets à jour date de fin et statut de l'évènement sélectionné
+                                    $status = $objectManager->getRepository('Application\Entity\Status')->find($post['status']);
+                                    $event->setStatus($status);
+                                    if($enddate !== null) {
+                                        $event->setDates($startdate, $enddate);
+                                    }
+                                    $this->changeEndDate($event, $enddate);
+                                    $this->changeStartDate($event, $startdate);
+                                }
+                            }
+                        } else {
+                            //nouvelle récurrence
+                            $pattern = $post['recurrencepattern'];
+                            $recurrence = new Recurrence($startdate, $pattern);
+                            $objectManager->persist($recurrence);
+                            $rset = $recurrence->getRSet();
+                            foreach ($rset as $occurrence) {
+                                $e = new Event();
+                                $e->setRecurrence($recurrence);
+                                $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
+                                $e->setStatus($status);
+                                $e->setStartdate($occurrence);
+                                $e->setAuthor($this->zfcUserAuthentication()
+                                    ->getIdentity());
+                                $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                                if($enddate !== null) {
+                                    $end = clone $occurrence;
+                                    $end->add($diff);
+                                    $e->setEnddate($end);
+                                }
+                                $events[] = $e;
                             }
                         }
-                        
+                    } else {
+                        //un seul évènement
+                        $status = $objectManager->getRepository('Application\Entity\Status')->find($post['status']);
+                        $event->setStatus($status);
+                        if($enddate !== null) {
+                            $event->setDates($startdate, $enddate);
+                        }
+                        $this->changeEndDate($event, $enddate);
+                        $this->changeStartDate($event, $startdate);
+                        $events[] = $event;
+                    }
+
+                    foreach ($events as $e) {
+
+                        //statut et date de fin sont gérés au dessus
+                        //car les traitements sont spécifiques à chaque cas
+
+                        //impact
+                        $impact = $objectManager->getRepository('Application\Entity\Impact')->find($post['impact']);
+                        $e->setImpact($impact);
+
+                        //catégorie
+                        $e->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
+
+                        //champs horaires : ponctuel, programmé
+                        $e->setPunctual($post['punctual']);
+                        $e->setScheduled($post['scheduled']);
+
+                        //cohérence horaires, statut
                         // si statut terminé, non ponctuel et pas d'heure de fin
                         // alors l'heure de fin est mise auto à l'heure actuelle
                         // sauf si heure de début future (cas improbable)
-                        if (! $event->isPunctual() && $event->getStatus()->getId() == 3 && $event->getEnddate() == null) {
-                            if ($event->getStartdate() < $now && $event->setEnddate($now)) {
-                                $this->changeEndDate($event, $now);
+                        if (! $e->isPunctual() && $e->getStatus()->getId() == 3 && $e->getEnddate() == null) {
+                            if ($e->getStartdate() < $now && $e->setEnddate($now)) {
+                                $this->changeEndDate($e, $now);
                             } else {
                                 // dans le cas contraire, retour au statut confirmé
                                 $confirm = $objectManager->getRepository('Application\Entity\Status')->find(2);
-                                $event->setStatus($confirm);
+                                $e->setStatus($confirm);
                                 $messages['error'][] = "Impossible de passer l'évènement au statut terminé.";
                             }
                         }
-                        
                         // si annulé, non ponctuel et pas d'heure de fin
                         // alors on met l'heure de fin à heure de début +90min
-                        if (! $event->isPunctual() && $event->getStatus()->getId() == 4 && $event->getEnddate() == null) {
-                            if ($event->getStartdate() < $now) {
-                                $this->changeEndDate($event, $now);
+                        if (! $e->isPunctual() && $e->getStatus()->getId() == 4 && $e->getEnddate() == null) {
+                            if ($e->getStartdate() < $now) {
+                                $this->changeEndDate($e, $now);
                             } else {
-                                $enddate = clone $event->getStartdate();
+                                $enddate = clone $e->getStartdate();
                                 $enddate->add(new \DateInterval("PT90M"));
-                                $this->changeEndDate($event, $enddate);
+                                $this->changeEndDate($e, $enddate);
                             }
                         }
-                        
-                        // save optional datas
+
+                        //custom fields
                         if (isset($post['custom_fields'])) {
                             foreach ($post['custom_fields'] as $key => $value) {
                                 // génération des customvalues si un customfield dont le nom est $key est trouvé
-                                $customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
-                                    'id' => $key
-                                ));
+                                $customfield = $objectManager
+                                    ->getRepository('Application\Entity\CustomField')
+                                    ->findOneBy(array('id' => $key));
                                 if ($customfield) {
                                     if (is_array($value)) {
                                         $temp = "";
@@ -566,22 +673,32 @@ class EventsController extends TabController
                                         }
                                         $value = trim($temp);
                                     }
-                                    $customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
-                                        'customfield' => $customfield->getId(),
-                                        'event' => $id
-                                    ));
+                                    $customvalue = $objectManager
+                                        ->getRepository('Application\Entity\CustomFieldValue')
+                                        ->findOneBy(array(
+                                            'customfield' => $customfield->getId(),
+                                            'event' => $e->getId())
+                                        );
                                     if (! $customvalue) {
                                         $customvalue = new CustomFieldValue();
-                                        $customvalue->setEvent($event);
+                                        $customvalue->setEvent($e);
                                         $customvalue->setCustomField($customfield);
-                                        $event->addCustomFieldValue($customvalue);
+                                        $e->addCustomFieldValue($customvalue);
                                     }
                                     $customvalue->setValue($value);
-                                    $objectManager->persist($customvalue);
                                 }
                             }
                         }
+
+                        //une fois les évènements fils positionnés, on vérifie si il faut clore l'évènement
+                        if ($e->getStatus()->getId() == 3 // passage au statut terminé
+                            || $e->getStatus()->getId() == 4 // passage au statut annulé
+                            || $e->getStatus()->getId() == 5) { // passage au statut supprimé
+                            $this->closeEvent($e);
+                        }
+
                         // create associated actions (only relevant if creation from a model)
+                        //en cas d'évènements récurrents, seuls les nouveaux évènements doivent être impactés
                         if (isset($post['modelid'])) {
                             $parentID = $post['modelid'];
                             // get actions
@@ -590,17 +707,17 @@ class EventsController extends TabController
                             ), array(
                                 'place' => 'ASC'
                             )) as $action) {
-                                if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
+                                if ($action->getCategory() instanceof ActionCategory) {
                                     $child = new Event();
-                                    $child->setAuthor($event->getAuthor());
-                                    $child->setParent($event);
-                                    $child->setOrganisation($event->getOrganisation());
+                                    $child->setAuthor($e->getAuthor());
+                                    $child->setParent($e);
+                                    $child->setOrganisation($e->getOrganisation());
                                     $child->createFromPredefinedEvent($action);
                                     $child->setStatus($objectManager->getRepository('Application\Entity\Status')
                                         ->findOneBy(array(
-                                        'defaut' => true,
-                                        'open' => true
-                                    )));
+                                            'defaut' => true,
+                                            'open' => true
+                                        )));
                                     // customfields
                                     foreach ($action->getCustomFieldsValues() as $customvalue) {
                                         $newcustomvalue = new CustomFieldValue();
@@ -609,10 +726,49 @@ class EventsController extends TabController
                                         $newcustomvalue->setValue($customvalue->getValue());
                                         $objectManager->persist($newcustomvalue);
                                     }
+                                    $e->addChild($child);
                                     $objectManager->persist($child);
                                 }
                             }
                         }
+
+                        //en cas de mod de récurrence, les actions et fichiers ne sont as inclus dans le formulaire
+                        //on les reprend de l'évènement modifié
+                        if($modrecurrence) {
+                            //actions et alarmes
+                            foreach($event->getChildren() as $child) {
+                                $newchild = new Event();
+                                $newchild->createFromEvent($child);
+                                $newchild->setParent($e);
+                                $newchild->setStatus($objectManager->getRepository('Application\Entity\Status')
+                                    ->findOneBy(array(
+                                        'defaut' => true,
+                                        'open' => true
+                                    )));
+                                foreach ($child->getCustomFieldsValues() as $value) {
+                                    $newcustomvalue = new CustomFieldValue();
+                                    $newcustomvalue->setEvent($newchild);
+                                    $newcustomvalue->setCustomField($value->getCustomField());
+                                    $newcustomvalue->setValue($value->getValue());
+                                    $objectManager->persist($newcustomvalue);
+                                }
+
+                                if($child->getCategory() instanceof AlarmCategory) {
+                                    $start = clone $e->getStartdate();
+                                    $diff = $event->getStartdate()->diff($child->getStartdate());
+                                    $start->add($diff);
+                                    $newchild->setStartdate($start);
+                                }
+                                $e->addChild($newchild);
+                                $objectManager->persist($newchild);
+                            }
+                            //fichiers
+                            foreach ($event->getFiles() as $f) {
+                                $f->addEvent($e);
+                                $objectManager->persist($f);
+                            }
+                        }
+
                         // associated actions to be copied
                         if (isset($post['fromeventid'])) {
                             $parentID = $post['fromeventid'];
@@ -623,58 +779,61 @@ class EventsController extends TabController
                             )) as $action) {
                                 if ($action->getCategory() instanceof \Application\Entity\ActionCategory) {
                                     $child = new Event();
-                                    $child->setAuthor($event->getAuthor());
-                                    $child->setParent($event);
+                                    $child->setAuthor($e->getAuthor());
+                                    $child->setParent($e);
                                     $child->setOrganisation($event->getOrganisation());
                                     $child->setCategory($action->getCategory());
                                     $child->setImpact($action->getImpact());
                                     $child->setPunctual($action->isPunctual());
                                     $child->setStatus($objectManager->getRepository('Application\Entity\Status')
                                         ->findOneBy(array(
-                                        'defaut' => true,
-                                        'open' => true
-                                    )));
+                                            'defaut' => true,
+                                            'open' => true
+                                        )));
                                     foreach ($action->getCustomFieldsValues() as $customvalue) {
                                         $newcustomvalue = new CustomFieldValue();
                                         $newcustomvalue->setEvent($child);
                                         $newcustomvalue->setCustomField($customvalue->getCustomField());
                                         $newcustomvalue->setValue($customvalue->getValue());
-                                        $objectManager->persist($newcustomvalue);
+                                        $child->addCustomFieldValue($newcustomvalue);
+                                        //$objectManager->persist($newcustomvalue);
                                     }
-                                    $objectManager->persist($child);
+                                    $e->addChild($child);
+                                    //$objectManager->persist($child);
                                 }
                             }
                         }
-                        
+
                         // fichiers
                         if (isset($post['fichiers']) && is_array($post['fichiers'])) {
                             foreach ($post['fichiers'] as $key => $f) {
                                 $file = $objectManager->getRepository('Application\Entity\File')->find($key);
                                 if ($file) {
-                                    $file->addEvent($event);
-                                    $objectManager->persist($file);
+                                    $file->addEvent($e);
+                                   // $e->addFile($file);
+                                    //$objectManager->persist($file);
                                 }
                             }
                         }
-                        
+
                         // alertes
                         if (isset($post['alarm']) && is_array($post['alarm'])) {
                             foreach ($post['alarm'] as $key => $alarmpost) {
                                 // les modifications d'alarmes existantes sont faites en direct
-                                // et ne passe pas par le formulaire
+                                // et ne passent pas par le formulaire
                                 // voir AlarmController.php
                                 $alarm = new Event();
                                 $alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')
                                     ->findAll()[0]);
                                 $alarm->setAuthor($this->zfcUserAuthentication()
                                     ->getIdentity());
-                                $alarm->setOrganisation($event->getOrganisation());
-                                $alarm->setParent($event);
+                                $alarm->setOrganisation($e->getOrganisation());
+                                $alarm->setParent($e);
                                 $alarm->setStatus($objectManager->getRepository('Application\Entity\Status')
                                     ->findOneBy(array(
-                                    'open' => true,
-                                    'defaut' => true
-                                )));
+                                        'open' => true,
+                                        'defaut' => true
+                                    )));
                                 $startdate = new \DateTime($alarmpost['date']);
                                 $offset = $startdate->getTimezone()->getOffset($startdate);
                                 $startdate->setTimezone(new \DateTimeZone("UTC"));
@@ -707,28 +866,23 @@ class EventsController extends TabController
                                 $deltaend->setValue($alarmpost['deltaend']);
                                 $deltaend->setEvent($alarm);
                                 $alarm->addCustomFieldValue($deltaend);
-                                $event->addChild($alarm);
-                                $objectManager->persist($name);
-                                $objectManager->persist($comment);
-                                $objectManager->persist($deltabegin);
-                                $objectManager->persist($deltaend);
+                                $e->addChild($alarm);
+                                //$objectManager->persist($name);
+                                //$objectManager->persist($comment);
+                                //$objectManager->persist($deltabegin);
+                                //$objectManager->persist($deltaend);
                                 $objectManager->persist($alarm);
                             }
                         }
-                        if ($event->getStatus()->getId() == 3 || $event->getStatus()->getId() == 4) { // passage au statut terminé ou annulé
-                            $this->closeEvent($event);
-                        }
-                        
-                        $event->updateAlarms();
-                        $objectManager->persist($event);
+
 
                         //certains évènements induisent des évènements fils
                         //il faut les créer à ce moment
                         if( !$id ) { //uniquement lors d'une création d'évènement
-                            if( $event->getCategory() instanceof AntennaCategory ) {
-                                $frequencies = $event->getCustomFieldValue($event->getCategory()->getFrequenciesField());
-                                $antennaState = $event->getCustomFieldValue($event->getCategory()->getStatefield())->getValue();
-                                $antennaId = $event->getCustomFieldValue($event->getCategory()->getAntennafield())->getValue();
+                            if( $e->getCategory() instanceof AntennaCategory ) {
+                                $frequencies = $e->getCustomFieldValue($e->getCategory()->getFrequenciesField());
+                                $antennaState = $e->getCustomFieldValue($e->getCategory()->getStatefield())->getValue();
+                                $antennaId = $e->getCustomFieldValue($e->getCategory()->getAntennafield())->getValue();
                                 $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
                                 $freqs = array();
                                 if($frequencies) {
@@ -761,9 +915,10 @@ class EventsController extends TabController
                                                     1, // couv secours
                                                     0, // toujours dispo
                                                     "Antenne principale indisponible",
-                                                    $event->getStartdate(),
+                                                    $e->getStartdate(),
+                                                    $e->getEnddate(),
                                                     $this->zfcUserAuthentication()->getIdentity(),
-                                                    $event,
+                                                    $e,
                                                     $messages
                                                 );
                                         }
@@ -772,20 +927,25 @@ class EventsController extends TabController
                             }
                         }
 
-                        try {
-                            $objectManager->flush();
-                            $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
-                        } catch (\Exception $e) {
-                            $messages['error'][] = $e->getMessage();
-                        }
-                    } else {
-                        // erase event
-                        $event = null;
-                        // formulaire invalide
-                        $messages['error'][] = "Impossible d'enregistrer l'évènement.";
-                        // traitement des erreurs de validation
-                        $this->processFormMessages($form->getMessages(), $messages);
+
+                        //mises en cohérence des alarmes
+                        $e->updateAlarms();
+                        $objectManager->persist($e);
                     }
+
+                    try {
+                        if($recurrence !== null) {
+                            $objectManager->persist($recurrence);
+                            $messages['success'][] = "Récurrence correctement enregistrée.";
+                        }
+                        $objectManager->flush();
+                        $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                    } catch (\Exception $e) {
+                        $messages['error'][] = "Impossible d'enregistrer l'évènement.";
+                        $messages['error'][] = $e->getMessage();
+                        $events = array();
+                    }
+
                 } else {
                     $messages['error'][] = "Création ou modification impossible, droits insuffisants.";
                 }
@@ -807,10 +967,15 @@ class EventsController extends TabController
         } else {
             $json = array();
             $json['messages'] = $messages;
-            if ($event) {
-                $json['events'] = array(
-                    $event->getId() => $this->getEventJson($event)
-                );
+            $jsonevents = array();
+            foreach ($events as $e) {
+                $jsonevents[$e->getId()] = $this->getEventJson($e);
+            }
+            foreach ($sendEvents as $e) {
+                $jsonevents[$e->getId()] = $this->getEventJson($e);
+            }
+            if (count($jsonevents) > 0) {
+                $json['events'] = $jsonevents;
             }
             return new JsonModel($json);
         }
@@ -1078,9 +1243,14 @@ class EventsController extends TabController
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($event);
         $form->setHydrator(new DoctrineObject($em))->setObject($event);
-        
-        $form->get('status')->setValueOptions($em->getRepository('Application\Entity\Status')
-            ->getAllAsArray());
+
+        $status = $em->getRepository('Application\Entity\Status')
+            ->getAllAsArray();
+        if(!$this->isGranted('events.delete')) {
+            unset($status[5]);
+        }
+
+        $form->get('status')->setValueOptions($status);
         
         $form->get('impact')->setValueOptions($em->getRepository('Application\Entity\Impact')
             ->getAllAsArray());
@@ -1145,6 +1315,8 @@ class EventsController extends TabController
         $defaultvalues['impact'] = $predefinedEvt->getImpact()->getId();
         
         $defaultvalues['programmed'] = $predefinedEvt->isProgrammed();
+
+        $defaultvalues['duration'] = $predefinedEvt->getDuration();
         
         foreach ($predefinedEvt->getZonefilters() as $filter) {
             $defaultvalues['zonefilters'][] = $filter->getId();
@@ -1153,7 +1325,12 @@ class EventsController extends TabController
         $json['defaultvalues'] = $defaultvalues;
         
         foreach ($predefinedEvt->getCustomFieldsValues() as $customfieldvalue) {
-            $customvalues[$customfieldvalue->getCustomField()->getId()] = $customfieldvalue->getValue();
+            $value = $customfieldvalue->getValue();
+            if(strpos($value, "\r") > 0) {
+                $value = explode("\r", $value);
+            }
+
+            $customvalues[$customfieldvalue->getCustomField()->getId()] = $value;
         }
         
         $json['customvalues'] = $customvalues;
@@ -1227,7 +1404,8 @@ class EventsController extends TabController
             ->innerJoin('e.category', 'cat')
             ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
             ->andWhere($qb->expr()
-            ->eq('e.parent', $eventid));
+            ->eq('e.parent', $eventid))
+            ->orderBy("e.place", 'ASC');
         
         return $qb->getQuery()->getResult();
     }
@@ -1342,8 +1520,10 @@ class EventsController extends TabController
                 }
             } else {
                 if ($file) {
-                    $objectManager->remove($file);
-                    $messages['success'][] = "Fichier correctement retiré.";
+                    if(count($file->getEvents()) == 0) {
+                        $objectManager->remove($file);
+                        $messages['success'][] = "Fichier correctement retiré.";
+                    } 
                 } else {
                     $messages['error'][] = "Impossible de supprimer le fichier : aucun fichier correspondant.";
                 }
@@ -1410,7 +1590,8 @@ class EventsController extends TabController
         
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->zfcUserAuthentication(), 
-            $day, 
+            $day,
+            null,
             $lastmodified, 
             true, 
             $cats
@@ -1430,14 +1611,93 @@ class EventsController extends TabController
         return new JsonModel($json);
     }
 
+    private function hex2rgb($hex) {
+        $hex = str_replace("#", "", $hex);
+
+        if(strlen($hex) == 3) {
+            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+        } else {
+            $r = hexdec(substr($hex,0,2));
+            $g = hexdec(substr($hex,2,2));
+            $b = hexdec(substr($hex,4,2));
+        }
+        $rgb = array($r, $g, $b);
+        return $rgb;
+    }
+
+
+    public function geteventsFCAction() {
+        $start = $this->params()->fromQuery('start', null);
+        $end = $this->params()->fromQuery('end', null);
+        $cats = $this->params()->fromQuery('cats', null);
+        $rootcolor = $this->params()->fromQuery('rootcolor', true);
+        $lastmodified = $this->params()->fromQuery('lastupdate', null);
+
+        $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $eventservice = $this->getServiceLocator()->get('EventService');
+
+        $events = array();
+
+        foreach ($om->getRepository('Application\Entity\Event')->getEvents(
+            $this->zfcUserAuthentication(),
+            $start,
+            $end,
+            $lastmodified,
+            true,
+            $cats
+        ) as $event) {
+            $e = $this->getEventJson($event);
+            $e['title'] = $eventservice->getName($event);
+            $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
+            if($event->isPunctual()) {
+                $e['end'] = $event->getStartdate()->format(DATE_ISO8601);
+            }
+            if($event->getEnddate()) {
+                $e['end'] = $event->getEnddate()->format(DATE_ISO8601);
+            } else {
+                if($event->isPunctual()) {
+                    $tempend = clone $event->getStartdate();
+                    $tempend->add(new \DateInterval('PT1M'));
+                    $e['end'] = $tempend->format(DATE_ISO8601);
+                } else {
+                    $tempEnd = new \DateTime($end);
+                    $tempEnd->add(new \DateInterval('P2D'));
+                    $e['end'] = $tempEnd->format(DATE_ISO8601);
+                }
+            }
+            $e['color'] = (($rootcolor && $event->getCategory()->getParent() !== null) ? $event->getCategory()->getParent()->getColor() : $event->getCategory()->getColor() );
+
+            $rgb = $this->hex2rgb($e['color']);
+            $yiq = 1 - ($rgb[0]*0.299 + $rgb[1]*0.587 + $rgb[2]*0.114)/255;
+            $e['textColor'] = ($yiq >= 0.5 ? '#fff' : '#000' );
+            $events[] = $e;
+        }
+
+        if (count($events) === 0) {
+            $this->getResponse()->setStatusCode(304);
+            return new JsonModel();
+        }
+
+        $this->getResponse()
+            ->getHeaders()
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
+
+        return new JsonModel($events);
+    }
+
     private function getEventJson(Event $event)
     {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $logsRepo = $objectManager->getRepository("Application\Entity\Log");
         $eventservice = $this->getServiceLocator()->get('EventService');
         $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         $json = array(
             'id' => $event->getId(),
             'name' => $eventservice->getName($event),
             'modifiable' => ($eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'deleteable' => $this->isGranted('events.delete') ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
             'punctual' => $event->isPunctual() ? true : false,
@@ -1463,18 +1723,64 @@ class EventsController extends TabController
             'files' => count($event->getFiles()),
             'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
             'star' => $event->isStar() ? true : false,
-            'scheduled' => $event->isScheduled() ? true : false
+            'scheduled' => $event->isScheduled() ? true : false,
+            'recurr' => $event->getRecurrence() ? true : false,
+            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : ''
         );
         
         $fields = array();
+        $formatterSimple = \IntlDateFormatter::create(
+            'fr_FR',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL HH:mm'
+        );
+        $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
-            $formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-            if ($formattedvalue != null) {
-                $fields[$value->getCustomField()->getName()] = $formattedvalue;
+            if($value->getCustomField()->isTraceable()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                    $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
+                    $i = 0;
+                    while(array_key_exists($name, $fields)) {
+                        $i++;
+                        $name = $formatterSimple->format($log->getLoggedAt()) . '-' . $i . ' ' . $value->getCustomField()->getName();
+                    }
+                    $formattedvalue = $customfieldservice->getFormattedValue(
+                        $value->getCustomField(),
+                        $log->getData()["value"]
+                    );
+                    $fields[$name] = $formattedvalue;
+                }
+            } else {
+                $formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                if ($formattedvalue != null) {
+                    $fields[$value->getCustomField()->getName()] = $formattedvalue;
+                }
+            }
+            $i = 0;
+            if($value->getCustomField()->isMilestone()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                   //store only changes -> skip firt log
+                    if($i > 0) {
+                        $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
+                    }
+                    $i++;
+                }
             }
         }
-        
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
+
+        $json['milestones'] = $milestones;
+
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL, HH:mm'
+        );
         foreach ($event->getUpdates() as $update) {
             $key = $formatter->format($update->getCreatedOn());
             $tempkey = $formatter->format($update->getCreatedOn());
@@ -1498,7 +1804,8 @@ class EventsController extends TabController
             'category_root' => ($model->getCategory()->getParent() ? $model->getCategory()
                 ->getParent()
                 ->getName() : $model->getCategory()->getName()),
-            'category' => $model->getCategory()->getName()
+            'category' => $model->getCategory()->getName(),
+            'duration' => $model->getDuration()
         );
         $fields = array();
         foreach ($model->getCustomFieldsValues() as $value) {
@@ -1508,6 +1815,18 @@ class EventsController extends TabController
         return $json;
     }
 
+    public function getRecurrHumanReadableAction() {
+        $json = array();
+        $pattern = $this->params()->fromQuery('pattern', null);
+        $start = $this->params()->fromQuery('start', null);
+        $text = '';
+        if($pattern !== null) {
+            $text = Recurrence::getHumanReadableFromPattern($start, $pattern);
+        }
+        $json['text'] = $text;
+        return new JsonModel($json);
+    }
+    
     /**
      * Liste des catégories racines visibles timeline
      * Au format JSON
@@ -1740,6 +2059,46 @@ class EventsController extends TabController
     }
 
     /**
+     * Change the status of an event to "Supprimé"
+     * @return JsonModel
+     */
+    public function deleteeventAction()
+    {
+        $id = $this->params()->fromQuery('id', 0);
+        $messages = array();
+        $json = array();
+        if($this->isGranted('events.delete')) {
+            if ($id) {
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+                if ($event) {
+                    $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
+                    $event->setStatus($deleteStatus);
+                    $this->closeEvent($event);
+                    try {
+                        $objectManager->persist($event);
+                        $objectManager->flush();
+                        $messages['success'][] = "Évènement correctement supprimé";
+                        $json['event'] = array(
+                            $event->getId() => $this->getEventJson($event)
+                        );
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                } else {
+                    $messages['error'][] = "Suppression d'évènement impossible : évènment non trouvé.";
+                }
+            } else {
+                $messages['error'][] = "Suppression d'évènement impossible : ID non valide.";
+            }
+        } else {
+            $messages['error'][] = "Suppression impossible : droits insuffisants";
+        }
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    /**
      * Send an event by email to the corresponding IPO
      */
     public function sendEventAction()
@@ -1928,7 +2287,6 @@ class EventsController extends TabController
     private function closeEvent(Event $event)
     {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $cancelStatus = $objectManager->getRepository('Application\Entity\Status')->find(4);
         foreach ($event->getChildren() as $child) {
             if ($child->getCategory() instanceof FrequencyCategory) {
                 // on termine les évènements fils de type fréquence
@@ -1940,8 +2298,8 @@ class EventsController extends TabController
             } else 
                 if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
                     // si evt annulé uniquement : on annule toutes les alarmes
-                    if ($event->getStatus()->getId() == 4) {
-                        $child->setStatus($cancelStatus);
+                    if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
+                        $child->setStatus($event->getStatus());
                     }
                 }
             $objectManager->persist($child);
@@ -2060,69 +2418,45 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
+
     /**
-     * Renvoie les evts les plus créés de la catégorie
-     * 
-     * @return \Zend\View\Model\JsonModel
+     * Renvoie les heures de relève pour chaque opsup affiché
      */
-    public function suggestEventsAction()
-    {
+    public function getshifthoursAction() {
         $json = array();
-        $catid = $this->params()->fromQuery('id', null);
-        
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        // search in category and its children
-        $children = $em->getRepository('Application\Entity\Category')->findBy(array(
-            'parent' => $catid
-        ));
-        $catids = array();
-        foreach ($children as $child) {
-            $catids[] = $child->getId();
+        if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.mod-opsup')) {
+            $user =  $this->zfcUserAuthentication()->getIdentity();
+            $shifthours = array();
+            foreach ($em->getRepository('Application\Entity\ShiftHour')->findAll() as $shifthour) {
+                foreach ($shifthour->getOpSupType()->getRoles() as $role) {
+                    if($user->hasRole($role->getName())) { //l'utilisateur peut afficher le type d'opsup
+                        //on vérifie si il y a une restriction sur la zone
+                        if($shifthour->getQualificationZone() !== null) {
+                            if ($user->getZone() !== null
+                                && $shifthour->getQualificationZone()->getId() == $user->getZone()->getId()) {
+                                $shifthours[] = array(
+                                        'id' => $shifthour->getId(),
+                                        'name' => $shifthour->getOpSupType()->getName(),
+                                        'zone' => $shifthour->getQualificationZone()->getName(),
+                                        'hour' => $shifthour->getFormattedHourUTC()
+                                );
+                            }
+                        } else {
+                            $shifthours[] = array(
+                                    'id' => $shifthour->getId(),
+                                    'name' => $shifthour->getOpSupType()->getName(),
+                                    'zone' => '',
+                                    'hour' => $shifthour->getFormattedHourUTC()
+                            );
+                        }
+                        //inutile de vérifier les autres rôles
+                        break;
+                    }
+                }
+            }
+            $json = $shifthours;
         }
-        $catids[] = $catid;
-        
-        // search relevant customfields
-        $qb = $em->createQueryBuilder();
-        $qb->select(array(
-            'e',
-            'v',
-            'f',
-            'c',
-            'count(v.value) as cc'
-        ))
-            ->from('Application\Entity\Event', 'e')
-            ->leftJoin('e.category', 'c')
-            ->leftJoin('e.custom_fields_values', 'v')
-            ->innerJoin('v.customfield', 'f', Join::WITH, $qb->expr()
-            ->eq('f.id', 'c.fieldname'))
-            ->andWhere($qb->expr()
-            ->in('c.id', '?1'))
-            ->andWhere($qb->expr()
-            ->isNull('e.parent'))
-            ->andWhere($qb->expr()
-            ->in('e.status', '?2'))
-            ->groupBy('v.value')
-            ->orderBy('cc', 'DESC')
-            ->setMaxResults(6)
-            ->setParameter(1, $catids)
-            ->setParameter(2, array(
-            3,
-            4,
-            5
-        ));
-        
-        $events = array();
-        foreach ($qb->getQuery()->getResult() as $event) {
-            $events[] = $event[0]->getId();
-        }
-        
-        $em->clear();
-        foreach ($events as $id) {
-            $json[$id] = $this->getEventJson($em->getRepository('Application\Entity\Event')
-                ->find($id));
-        }
-        
         return new JsonModel($json);
     }
 }

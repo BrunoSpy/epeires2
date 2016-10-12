@@ -31,26 +31,26 @@ class ControlGroup extends AbstractHelper
     public function __invoke($element, $options = array())
     {
         $view = $this->getView();
-        
+
         $control_id = (isset($options['control_id'])) ? "id=\"" . $options['control_id'] . "\"" : "";
-        
+
         $group_id = (isset($options['group_id'])) ? "id=\"" . $options['group_id'] . "\"" : "";
-        
+
         $class = (isset($options['class'])) ? " " . $options['class'] : "";
-        
+
         $labelclass = (isset($options['labelclass'])) ? " " . $options['labelclass'] : "";
-        
+
         $large = (isset($options['large'])) ? $options['large'] : false ;
-        
+
         $controlForm;
-        
+
         $element->setLabelAttributes(array('class' => 'control-label '.($large ? 'col-sm-2' : 'col-sm-3').$labelclass));
         $elementClass = $element->getAttribute('class');
         $element->setAttributes(
             array_merge(
                 $element->getAttributes(),
                 array('class' => 'form-control '.$elementClass)));
-        
+
         if ($element instanceof \Zend\Form\Element\Select) {
             $controlForm = $view->formSelect($element);
         } elseif ($element instanceof \Zend\Form\Element\Checkbox) {
