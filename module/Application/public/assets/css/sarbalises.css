@@ -1,0 +1,217 @@
+html {
+    background-color: #FFF;
+}
+
+html,
+body,
+.content,
+.row,
+.col-sm-9,
+#mapid {
+    height: 100%;
+}
+
+#mapid {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    background-color: #FFF;
+}
+
+.content {
+    background-color: #FFF;
+}
+
+.row {}
+
+.fill {
+    height: 100%;
+    min-height: 100%;
+    background-color: #FFF;
+}
+
+#tabs {
+    margin: 0px;
+    padding: 0px;
+    border: 0;
+}
+
+#tabs h4 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+#tabs-1,
+#tabs-2,
+#tabs-3 {
+    margin: 0px;
+    margin-right: 30px;
+    padding: 0px;
+    background-color: #FFF;
+}
+
+#tabs-2 li {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#pio {
+    margin: 0px;
+    padding: 0px;
+}
+
+#pio h4 {}
+
+#pio select {
+    margin-bottom: 5px;
+}
+
+.cache {
+    display: none;
+}
+
+.baldejavu {}
+
+.btn-ctr-bal {
+    margin-right: 5px;
+}
+
+#btn-rech-bal,
+#btn-rech-coo,
+#btn-rech-ter,
+#btn-mod-pi,
+#btn-sav-pi,
+#btn-mail-pi,
+#btn-print-pi
+{
+    margin: 0;
+    padding: 10px;
+    display: inline-block;
+}
+
+.raz-cherche {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    bottom: 0;
+    height: 14px;
+    margin: auto;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-warning:not(.btn-link):not(.btn-flat) {
+    background-color: lightgrey;
+}
+
+#pio {}
+
+#pio ol.list-group {
+    margin: 0px;
+    padding: 0px;
+    list-style: decimal inside;
+}
+
+#pio ol>li.list-group-item {
+    display: list-item;
+    margin: 0px;
+    padding: 0px;
+    margin-bottom: 5px;
+}
+
+#pio-int {
+    background: inherit;
+}
+
+.btn-icon {
+    position: absolute;
+    left: -6px;
+    top: px;
+    width: 26px;
+}
+
+.lspio {
+    margin: 0;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.lspio p {
+    margin: 0;
+    padding: 0px;
+}
+
+.lspio a {
+    margin-left: 3px;
+}
+
+.lspio button {
+    margin: 1px;
+    padding: 0;
+}
+
+a.list-group-item {
+    margin-bottom: 3px;
+    border: none;
+}
+
+#myCarousel {
+    margin: 0;
+    padding: 0;
+    margin-top: 15px;
+}
+
+#myCarousel .row {
+    background-color: #FFF;
+}
+
+.carousel-indicators {
+    position: static;
+    display: block;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+    color: #000;
+    bottom: 0;
+    width: 100%;
+}
+
+.carousel-control {
+    position: static;
+    margin: 0;
+    padding: 0;
+}
+
+.carousel-indicators li.active {
+    background-color: lightgrey;
+}
+
+.carousel-indicators li {
+    border: 1px solid lightgrey;
+}
+
+.glyphicon-chevron-left,
+.carousel-control .right {
+    position: static;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+}
+
+#f-pio {
+    border: 0;
+    margin-bottom: 30px;
+}
+
+#pio-mod-form ul{
+    margin-top: 20px;
+    list-style: none;
+}
+
+#pio-mod-form li{
+    margin-top:5px;
+}
