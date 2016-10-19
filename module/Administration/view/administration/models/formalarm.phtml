@@ -23,14 +23,14 @@ echo $this->formHidden($this->form->get('organisation'));
 
 echo $this->formHidden($this->form->get('impact'));
 
-echo $this->formHidden($this->form->get('programmed'));
+echo $this->formHidden($this->form->get('programmed')->setAttribute('value', false));
 
 echo $this->formHidden($this->form->get('listable')->setAttribute('value', false));
 
 echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
 
 foreach ($this->form->get('custom_fields')->getElements() as $element){
-	echo $this->customFieldGroup($element);
+	echo $this->controlgroup($element);
 }
 
 ?>

@@ -24,7 +24,6 @@ $env = "developement";
 $modules = array(
     'DoctrineModule',
     'DoctrineORMModule',
-    'DoctrineDataFixtureModule',
     'DoctrineMigrationsModule',
     'ZfcBase',
     'ZfcRbac',
@@ -42,7 +41,11 @@ $modules = array(
 );
 
 if ($env == 'development') {
+<<<<<<< HEAD
     $modules [] = 'ZendDeveloperTools';
+=======
+    $modules[] = 'DoctrineDataFixtureModule';
+>>>>>>> refs/remotes/origin/test
 }
 
 return array(

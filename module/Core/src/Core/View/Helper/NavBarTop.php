@@ -45,44 +45,55 @@ class NavBarTop extends AbstractHelper {
                           aria-expanded="false">
                       <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
                   </button>';
-        $html .= '<a class="navbar-brand visible-lg-block" href="'.($return !== null ? $this->view->url($return) : "#").'">';
+        $html .= '<a class="navbar-brand" href="'.($return !== null ? $this->view->url($return) : "#").'">';
         if($return !== null) {
             $html .= '<span class="glyphicon glyphicon-home"></span> ';
         }
-        $html .= 'Epeires<sup>2</sup>'.$title.'</a>';
+        $html .= $this->view->translate('Epeires²').'</a>';
         $html .= '</div>';
 
         $html .= '<div class="collapse navbar-collapse" id="navbar-first-collapse">';
         $html .= '<ul class="nav navbar-nav navbar-left">';
         $html .= $this->view->userMenu($color);
         $html .= '</ul>';
-
+        /* Non utilisé pour l'instant
+        
         if($auth->getIdentity() && !$zoneform) {
             $html .= '<p class="navbar-text navbar-left visible-lg-block">';
             $html .= '<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b>' . $auth->getIdentity()->getOrganisation()->getName();
             $html .= '</p>';
         }
-        
+
         if($zoneform) {
             $form = $zoneform;
             $form->setAttributes(array('action' => $this->view->url('application', array('controller'=>'events', 'action'=>'savezone')),
                 'class'=>'navbar-form navbar-left'));
             $form->prepare();
             $html .= $this->view->form()->openTag($form);
-            $html .= '<div class="form-group">';
+            $html .= '<div class="form-group visible-xs-block visible-lg-block">';
             $html .= '<label for="zoneInput"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span><b> Zone : </b></label>';
             $html .= $this->view->formSelect($form->get('zone')->setAttributes(array('id' => 'zoneInput', 'class' => 'form-control')));
             $html .= '</div>';
             $html .= $this->view->form()->closeTag();
         }
-        
-        if ($auth->getIdentity() && $auth->getIdentity()->getZone()) {
-            $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <b>Chef de salle : </b></p>';
-            $html .= $this->view->opsup();
+        */
+
+        if ($auth->getIdentity() /*&& $zoneform*/) {
+            $opsuptypes = array();
+            foreach($auth->getIdentity()->getRoles() as $role) {
+                foreach ($role->getOpsuptypes() as $type) {
+                    if( ! array_key_exists($type->getId(), $opsuptypes)) {
+                        $opsuptypes[$type->getId()] = $type->getName();
+                    }
+                }
+            }
+            foreach($opsuptypes as $id => $name) {
+                $html .= $this->view->opsup($id);
+            }
         }
         
         $html .= $this->view->ipo($iponumber);
-        $html .= '<p class="navbar-text navbar-right visible-xs-block visible-lg-block" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
+        $html .= '<p class="navbar-text navbar-right" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
                        
         $html .= '</div></div></nav>';
         

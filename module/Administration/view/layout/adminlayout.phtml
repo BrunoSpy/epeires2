@@ -26,6 +26,7 @@
                                       ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')  
         							  ->prependFile($this->basePath() . '/components/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js')
         							  ->prependFile($this->basePath() . '/components/tinycolor/dist/tinycolor-min.js')
+						->prependFile($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
                         ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
@@ -36,6 +37,7 @@
                         ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-ui/ui/minified/i18n/datepicker-fr.min.js')
                         ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
+						->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
                         ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
         							   ?>
 
@@ -107,7 +109,7 @@
     						</li>
     						<li><a
     							data-title="Utilisateurs > Op Sup"
-    							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Liste Op Sup</a>
+    							href="<?php echo $this->url('administration', array('controller'=>'opsups', 'action'=>'index')) ?>">Superviseurs opérationnels</a>
     						</li>
     					</ul>
 					</li>
@@ -180,7 +182,22 @@
 	if(!$this->zfcuserIdentity()){
 			echo $this->modalWindow("loginwindow", "<h4>Connexion</h4>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
 	} ?>
-        
+
+
+	<?php $this->inlineScript()->captureStart();?>
+
+	setURL('<?php echo $this->url('application');?>');
+
+	//init translation
+	i18n.init({
+	lng: '<?php echo $this->lang;?>',
+	fallbackLng: 'fr_FR',
+	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
+	});
+
+	<?php $this->inlineScript()->captureEnd();?>
+
+
     <?php echo $this->inlineScript() ?>
     </body>
 </html>

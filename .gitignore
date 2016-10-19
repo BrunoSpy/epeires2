@@ -41,3 +41,5 @@ local.properties
 /temp/
 
 *.local.php
+
+tests/_output/*

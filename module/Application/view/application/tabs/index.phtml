@@ -3,10 +3,13 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/fullcalendar.material.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.css');
+
 ?>
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-    <div id="create-evt" data-toggle="modal" class="modal fade in" data-spy="affix" data-offset-top="80">
+    <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="loading"></div>
@@ -29,8 +32,13 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
         </div>
 </div>
 
-<div id="fiche" class="panel panel-fixed">
+<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+
+<div id="fiche" class="panel-left panel-fixed" data-url="events/getfiche">
 </div>
+
+<div class="page-wrap">
+
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
@@ -38,6 +46,10 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
     </div>
 </div>
 
+<div id="calendarview">
+    <div class="loading" style="display: none;"></div>
+</div>
+</div>
 
 <?php 
 //modal windows to modify or delete file
@@ -46,7 +58,7 @@ echo $this->modalwindow("confirm-delete-file",
 					"",
 					null,
 					"<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
-					"<a class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</a>
+					"<button class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</button>
 					<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 
@@ -84,6 +96,34 @@ echo $this->modalwindow('add-note-modal',
             . "</div>"
         . "</div>"
         . "</form>");
+
+echo $this->partial('events/recurrence-form.html');
+
+if($this->isGranted('events.recurrent')) {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier tous les évènements ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Voulez-vous modifier toute la série ou seulement cet évènement ?</p>"
+        . "<p>Si vous modifiez toute la série :"
+        . "<ul><li>les évènements passés seront exclus de la série ;</li>"
+        . "<li>le changement d'heure de fin concernera uniquement l'évènement choisi.</li></ul></p>"
+        . "<p>Modifier uniquement cet évènement l'exclura de la série.</p>",
+        "<button class=\"btn btn-danger\" id=\"confirm-modify-series\">Toute la série</button>
+     <button class=\"btn btn-primary\" id=\"confirm-modify-one\">Seulement cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+} else {
+    echo $this->modalwindow('confirm-recurr',
+        '<h4 class="modal-title">Modifier l\'évènement ?</h4>',
+        "",
+        null,
+        "<p>Cet évènement fait partie d'une série d'évènements récurrents.</p>"
+        . "<p>Le modifier le supprimera de la récurrence et le rendra indépendant.</p>",
+        "<button class=\"btn btn-primary\" id=\"confirm-modify-one\">Modifier cet évènement</button>
+	 <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+}
+
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
@@ -91,6 +131,31 @@ echo $this->modalwindow('add-note-modal',
 $("#home").removeClass("dropdown-toggle")
 		  .attr('data-toggle', '')
 		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+
+<?php
+if($this->view == "30") {
+    echo 'forceMonth = true;';
+}
+if($this->cats) {
+    $catsString = "";
+    $i = 0;
+    foreach ($this->cats as $cat) {
+        if(strlen($catsString) > 0) {
+            $catsString .= "&";
+        }
+        $catsString .= 'cats[' . $i . ']=' . $cat;
+        $i++;
+    }
+    echo 'cats = "'.$catsString.'";';
+} else {
+    echo 'cats = null;';
+}
+if($this->onlyroot) {
+    echo 'var onlyroot = 1';
+} else {
+    echo 'var onlyroot = 0';
+}
+?>
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
@@ -105,7 +170,18 @@ $('#timeline').timeline({
     leftOffset: 120,
     rightOffset: 85,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
-    initComplete: function(){$("#timeline .loading").hide();}
+    initComplete: function(){
+        $("#timeline .loading").hide();
+        <?php
+        if($this->view == "24") {
+            echo '$("#viewday").trigger("click");';
+            if($this->day !== null) {
+                echo '$("#calendar input[type=text].date").val('.$this->day.');';
+                echo '$("#calendar input[type=text].date").trigger("change");';
+            }
+        }
+        ?>
+    }
 });
 //init form
 form('<?php echo $this->url('application');?>', '<?php echo $this->tabid; ?>');

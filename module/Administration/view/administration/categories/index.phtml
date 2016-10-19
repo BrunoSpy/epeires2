@@ -19,8 +19,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>Couleur</th>
 						<th>Compact</th>
 						<th data-container="body" data-toggle="tooltip" title="Afficher les évènements sur la page d'accueil.">Timeline<sup>?</sup></th>
-						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé ou Terminé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
-						<th>Onglets</th>
+						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé, Terminé ou Annulé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
+                        <th data-container="body" data-toggle="tooltip" title="Exclure la catégorie du rapport IPO.">Exclure IPO<sup>?</sup></th>
+                        <th>Onglets</th>
 						<th>Modèles</th>
 						<th>Champs</th>
 						<th>Champ titre</th>
@@ -40,7 +41,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					echo '<td>'.($category->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>'.($category->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>'.($category->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-					echo '<td>';
+					echo '<td>' . ($category->isExclude()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                    echo '<td>';
                     	if(count($category->getTabs()) > 0) {
                     		foreach ($category->getTabs() as $tab) {
                     			echo $tab->getName().'<br/>';
@@ -81,7 +83,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo '<td>'.($subcategory->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>'.($subcategory->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>'.($subcategory->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-							echo '<td>';
+                            echo '<td>' . ($subcategory->isExclude()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                            echo '<td>';
 							if(count($subcategory->getTabs()) > 0) {
 								foreach ($subcategory->getTabs() as $tab) {
 									echo $tab->getName().'<br/>';
@@ -188,7 +191,8 @@ echo $this->modalwindow(
 		.'" method="POST" name="CustomField" id="CustomField">'
 		.'<div id="fields-table">'
 		.'</div>'
-		.'</form>'
+		.'</form>',
+	null, null, "modal-lg"
 	);
 
 echo $this->modalwindow(

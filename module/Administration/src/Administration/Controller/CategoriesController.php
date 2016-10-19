@@ -117,7 +117,7 @@ class CategoriesController extends FormController
         $form->setHydrator(new DoctrineObject($objectManager))->setObject($category);
         
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getRootsAsArray($id));
+            ->getRootsAsArray($id, null, false));
         
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
@@ -289,6 +289,7 @@ class CategoriesController extends FormController
                 $category->setStateField(null);
                 $category->setFrequencyField(null);
                 $category->setOtherFrequencyField(null);
+                $category->setCauseField(null);
             }
             if ($category instanceof BrouillageCategory) {
                 $category->setFrequencyField(null);

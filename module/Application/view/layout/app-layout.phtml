@@ -13,6 +13,7 @@
                         ->prependStylesheet($this->basePath() . '/assets/css/core.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
+                        ->prependStylesheet($this->basePath() . '/components/fuelux/dist/css/fuelux.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
@@ -31,6 +32,9 @@
                         ->prependFile($this->basePath() . '/assets/js/form.js')
                         ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
                         ->prependFile($this->basePath() . '/assets/js/application.js')
+            ->prependFile($this->basePath() . '/components/fullcalendar/dist/locale/fr.js')
+                        ->prependFile($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.js')
+                        ->prependFile($this->basePath() . '/components/fuelux/dist/js/fuelux.min.js')
                         ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
                         ->prependFile($this->basePath() . '/components/momentjs/locale/fr.js')
                         ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
@@ -48,7 +52,7 @@
         ?>
 
     </head>
-    <body>
+    <body class="fuelux">
 
 	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform); ?>
 
@@ -66,24 +70,57 @@
 		if(!$this->zfcuserIdentity()){
 				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
 		} ?>
-        
+
+    <?php
+    echo $this->modalWindow(
+        "opsupwindow",
+        null,
+        "",
+        '<div class="panel panel-info filterable">
+          <div class="panel-heading">
+            <h3 class="panel-title">Historique des superviseurs opérationnels</h3>
+              <div class="pull-right">
+                <button class="btn btn-default btn-xs btn-calendar"><span class="glyphicon glyphicon-calendar"></span> Date</button>
+                <input type="text" name="opsup-date">
+                <button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filtre</button>
+              </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr class="filters">
+                <th><input type="text" class="form-control" placeholder="Nom" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Zone" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Type" disabled></th>
+                <th><input type="text" class="form-control" placeholder="Jusqu\'à" disabled></th>
+              </tr>
+            </thead>
+            <tbody id="opsup-content">
+            </tbody>
+           </table>
+        </div>',
+        null,
+        null,
+        "modal-lg");
+    ?>
+
         <?php $this->inlineScript()->captureStart();?>
                 
-                setURL('<?php echo $this->url('application');?>');
+        setURL('<?php echo $this->url('application');?>');
 		
 		//init header bar
-		headerbar('<?php echo $this->url('application', array('controller' => 'events'));?>');
+		headerbar('<?php echo $this->url('application');?>');
                 
-                //gestion des alertes
+        //gestion des alertes
 		setURLAlarm('<?php echo $this->url('application');?>');
 		updateAlarms();
-                        
+    
         //init translation
         i18n.init({
         	lng: '<?php echo $this->lang;?>',
         	fallbackLng: 'fr_FR',
         	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
-        });                
+        });
+
 		<?php $this->inlineScript()->captureEnd();?>
                         
         <?php echo $this->inlineScript() ?>

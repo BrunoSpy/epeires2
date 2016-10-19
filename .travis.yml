@@ -7,18 +7,52 @@ php:
 services:
   - mysql
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  # Setup Selenium
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - sleep 3
+  - wget -O selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
+  - java -jar selenium.jar -port 4444 >/dev/null 2>&1 & # WARNING - Takes a long time to start up. Keep here
+
 install:
-   - composer install --dev --no-interaction
+   - composer install --no-interaction --prefer-dist
+
+env:
+   - APP_ENV=development
 
 before_script:
+  #Install apache
+  - sudo apt-get update
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  # enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp tests/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # configure apache virtual hosts
+  - sudo cp -f tests/build/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo service apache2 restart
+
   - mysql -e 'create database epeires2;'
   - php public/index.php migrations:migrate --no-interaction
   - php public/index.php orm:generate-proxies
   - php public/index.php data-fixture:import --no-interaction --append
 
-script: 
-  - mkdir -p build/logs
-  - phpunit --stderr
+  # Make sure Webdriver is running
+  - curl http://localhost:4444/wd/hub/status
+  #Make sure webserver is running
+  - curl http://localhost/events/testAuthentication
+
+script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-xml
   
 after_success:
-  - php vendor/bin/coveralls -v -x coverage.xml
+  - travis_retry php vendor/bin/coveralls -v

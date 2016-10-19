@@ -19,6 +19,7 @@
 body {
 	/* Due to 2 navbars fixed-top */
 	padding-top: 100px;
+	background-color: white;
 }
 
 /************** Mémos ********************/
@@ -48,8 +49,40 @@ body {
 
 
 /************** Slide panel **************/
+.page-wrap {
+	float: right;
+	width: 100%;
+	transition: width 0.3s ease;
+	position: relative;
+	height: 100%;
+}
+
+.main-nav-check {
+	display: none;
+}
+
+.main-nav {
+	position: fixed;
+	width: 0;
+	height: calc(100% - 100px);
+	overflow-y: auto;
+	transition: width 0.3s ease;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+#main-nav-check:checked+.main-nav {
+	width: 20%;
+}
+
+#main-nav-check:checked ~ .page-wrap {
+	width: 80%;
+}
+
 #fiche {
 	padding-top: 5px;
+	background-color: aliceblue;
+	display: none;
 }
 
 #fiche div#close-button {
@@ -78,12 +111,13 @@ body {
 	position: fixed;
 	left: 0;
 	right: auto;
-	width: 310px;
-	height: 90%;
+	width: 20%;
 	z-index: 1;
 	margin-left: 10px;
 	overflow-x: hidden;
 	overflow-y: auto;
+	padding-right: 15px;
+	height: calc(100% - 104px)
 }
 
 .panel-left .panel-heading {
@@ -274,7 +308,9 @@ body {
 
 #calendar input {
 	margin-bottom: 0px;
-	width: 82px;
+	height: 25px;
+	width: 86px;
+	padding-bottom: 0px;
 }
 
 #Event blockquote, #updates blockquote {
@@ -292,4 +328,87 @@ body {
 
 #Event #inner-actionsTitle .table tr td.todo {
 	width: 57px;
+}
+
+/*** Filterable tables ***/
+.filterable {
+    margin-top: 15px;
+}
+.filterable .panel-heading .pull-right {
+    margin-top: -20px;
+}
+.filterable .filters input[disabled] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    cursor: auto;
+    box-shadow: none;
+    padding: 0;
+    height: auto;
+}
+.filterable .filters input[disabled]::-webkit-input-placeholder {
+    color: #333;
+}
+.filterable .filters input[disabled]::-moz-placeholder {
+    color: #333;
+}
+.filterable .filters input[disabled]:-ms-input-placeholder {
+    color: #333;
+}
+
+.filterable .btn-xs {
+  margin-top: 0px;
+}
+
+.filterable input[name=opsup-date] {
+  position: absolute;
+  top: -100px;
+}
+
+/* Toggle buttons rouge */
+#radio .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after,
+#radars .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after {
+	background-color: #ff6f00;
+}
+
+#radio .togglebutton label .toggle,
+#radars .togglebutton label .toggle {
+	background-color: #bdbdbd;
+}
+
+#calendarview {
+	display: none;
+	margin-right: 1em;
+	margin-left: 1em;
+	background-color: white;
+}
+
+.dlt {
+	text-decoration: none;
+	position: relative;
+}
+.dlt:after {
+	content: ' ';
+	font-size: inherit;
+	display: block;
+	position: absolute;
+	right: 0;
+	left: 0;
+	top: 40%;
+	bottom: 40%;
+}
+
+.dlt-grey:after {
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+}
+
+.dlt-black:after {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.dlt-white:after {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
 }

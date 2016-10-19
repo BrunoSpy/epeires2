@@ -29,29 +29,133 @@ var displayMessages = function(messages){
 		});
 	}
 };
- 
- var displayPanel = function(id, files){
-        var timeline = $('#timeline');
-        if(timeline.css('left') === '330px' && $("#fiche").data('id') === id) {
-            //panneau ouvert avec la fiche actuelle : fermeture du panneau
-            hidePanel();
-        } else {
-            if(timeline.css('left') !== '330px'){
-                //panneau fermé : on l'ouvre
-                $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
-                timeline.animate({
-                    left: '330px'
-                }, 300);
-            }
-            $('#fiche').load(url+'events/getfiche?id='+id, function(){
-                $('tr[data-toggle=tooltip]').tooltip();
-                if(files){
-                    $("#files-panel").trigger('click');
-                }
-                timerFiche = setTimeout(updateFiche, 10000, id);
-            }).data('id', id);
+
+var updateNavbarTop = function() {
+    var windowWidth = $(window).width();
+    var totalWidth = 0;
+
+    var brandWidth = $("#navbar-first .navbar-header").show().innerWidth();
+    totalWidth += brandWidth;
+    totalWidth += $("#navbar-first .navbar-nav").innerWidth();
+
+    $('#navbar-first-collapse .navbar-form').each(function(index, elm){
+        totalWidth += $(this).innerWidth();
+    });
+    $("#ipo").show();
+    $('#day').show();
+    $('#navbar-clock').show();
+
+    totalWidth += 200; //width of clock depends on time and date...
+
+    totalWidth += 30; //some margin
+
+    if(windowWidth > 768) {
+        if(totalWidth > windowWidth) {
+            //remove day
+            $("#day").hide();
+            totalWidth -= 110;
         }
- };
+        if(totalWidth > windowWidth) {
+            //remove brand
+            $("#navbar-first .navbar-header").hide();
+            totalWidth -= brandWidth;
+        }
+        if(totalWidth > windowWidth) {
+            //remove hour completely
+            $("#navbar-clock").hide();
+            totalWidth -= 90;
+        }
+        if(totalWidth > windowWidth) {
+            //remove Ipo
+            $("#ipo").hide();
+        }
+    }
+};
+
+var updateNavbar = function() {
+    var windowWidth = $(window).width();
+    var totalWidth = 0;
+    var maxWidth = $("#navbar-collapse").width();
+    var padding = maxWidth / 4;
+    var centerWidth = $(".navbar-lower .navbar-center").width()
+                    + padding;
+    var searchWidth = $("#search").show().innerWidth();
+    var viewWidth = $("#changeview").innerWidth();
+
+    var totalWidth = centerWidth + searchWidth + viewWidth;
+
+    $(".navbar-lower .navbar-center").css('padding-left', '25%');
+    if(windowWidth > 768) {
+        if(totalWidth > maxWidth) {
+            $(".navbar-lower .navbar-center").css('padding-left', '0%');
+            totalWidth -= padding;
+        }
+        if(totalWidth > maxWidth) {
+            $("#search").hide();
+        }
+    } else {
+        $(".navbar-lower .navbar-center").css('padding-left', '0%');
+    }
+};
+
+var updateView = function(){
+    if($(window).width() <= 768) {
+        $("#viewmonth").trigger('click');
+        $("#changeview").hide();
+    } else {
+        $("#changeview").show();
+    }
+};
+/* **************** */
+/* Gestion panneau  */
+/* **************** */
+var timerFiche;
+
+var closeFiche = function() {
+    $("#fiche").empty();$("#fiche").hide();
+    $("#main-nav-check").prop('checked', false);
+    clearTimeout(timerFiche);
+};
+
+var openFiche = function() {
+    $("#main-nav-check").prop('checked', true);
+    $("#fiche").show();
+};
+
+var loadFiche = function(id, actionUrl, files) {
+    if($("#main-nav-check").is(':checked')){
+        if($('#fiche').data('id') === id){
+            closeFiche();
+        } else {
+            $('#fiche').load(url+actionUrl+'?id='+id, function(){
+                $('tr[data-toggle=tooltip]').tooltip();
+                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+            });
+        }
+    } else {
+        $("#fiche").empty();
+        $('#fiche').load(url+actionUrl+'?id='+id, function(){
+            $('tr[data-toggle=tooltip]').tooltip();
+            if(files){
+                $("#files-panel").trigger('click');
+            }
+            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+        });
+
+        openFiche();
+    }
+};
+
+$(document).on('click', '.open-fiche, .checklist-evt', function(){
+    var id = $(this).data('id');
+    var actionUrl = $("#fiche").data('url');
+    loadFiche(id, actionUrl, false);
+});
+
+$("#fiche").on('click', "#close-panel", function(e){
+    e.preventDefault();
+    closeFiche();
+});
  
  var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
@@ -62,10 +166,10 @@ var displayMessages = function(messages){
 	    var td = $('tr[data-id='+key+'] td:last a');
 	    if(value && td.hasClass('btn-success')) {
 		change = true;
-		td.removeClass('active btn-success').addClass('btn-primary').html('A faire');
+		td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
 	    } else if (!value && td.hasClass('btn-primary')) {
 		change = true;
-		td.addClass('active btn-success').removeClass('btn-primary').html('Fait');
+		td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
 	    }
 	});
 	//il faut aussi mettre l'historique à jour si il y a eu un changement
@@ -77,46 +181,11 @@ var displayMessages = function(messages){
 	}
 	timerFiche = setTimeout(updateFiche, 10000, id);
     });
- }
- 
- var hidePanel = function(){
-        var timeline = $('#timeline');
-        $('#fiche').empty();
-        if(timeline.css('left') === '330px') {
-            $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
-        }
-        timeline.animate({
-            left: '0px'
-        }, 300);
-        clearTimeout(timerFiche);
-        
  };
- 
- var togglePanel = function(id){
-        var panel = $('#timeline');
-        //on détermine si on affiche ou si on cache
-        var val = panel.css('left') === '330px' ? '0px' : '330px';
-        if(panel.css('left') === '330px') {
-            $('#fiche').empty();
-            $('#fiche').removeData('id');
-            $('.Time_obj, #TimeBar').animate({left: '-=330px'}, 300);
-            clearTimeout(timerFiche);
-        } else {
-            $('.Time_obj, #TimeBar').animate({left: '+=330px'}, 300);
-            $('#fiche').data('id', id);
-            $('#fiche').load(url+'events/getfiche?id='+id, function(){
-                $('tr[data-toggle=tooltip]').tooltip();
-                timerFiche = setTimeout(updateFiche, 10000, id);
-            });
-        }
-        panel.animate({
-            left: val
-        }, 300);
- };
- 
- var url;
- var timerFiche;
+/* **** End Left Panel  **** */
 
+
+ var url;
  var setURL = function(urlt){
      url = urlt;
  };
@@ -226,12 +295,27 @@ $(document).ready(function(){
 		    },
 		    buttons: false // an array of buttons
 		};
-    
-    
+
+	/* **************************************************************************** */
+	/* Gestion des éléments dans les navbars en fonction de la taille de la fenêtre */
+    /* **************************************************************************** */
+
+    updateNavbarTop();
+    updateNavbar();
+    updateView();
+    $(window).resize(function(){
+        updateNavbarTop();
+        updateNavbar();
+        updateView();
+    });
+
+
+    /* *************************** Fin gestion des navbars ************************ */
+
     //slidepanel
     $(document).on('click', "#close-panel", function(e){
         e.preventDefault();
-        hidePanel();
+        closeFiche();
     });
     
     $(document).on('submit', '#add-note, #add-note-fiche', function(e){
@@ -257,6 +341,9 @@ $(document).ready(function(){
                 if($('#timeline').length > 0){
                     $('#timeline').timeline('addEvents',data.events);
                 }
+                if($('#calendarview').length > 0 && $("#calendarview").is(':visible')) {
+                    $('#calendarview').fullCalendar('refetchEvents');
+                }
             }
             displayMessages(data);
             me.parents('.modal').modal('hide');
@@ -271,10 +358,10 @@ $(document).ready(function(){
 		$.getJSON(url+'events/togglefiche'+'?id='+id,
                     function(data){
 			if(data.open){
-				me.html("A faire");
+				me.html("<strong>A faire</strong>");
 				me.removeClass("active btn-success").addClass('btn-primary');
 			} else {
-				me.html("Fait");
+				me.html("<strong>Fait</strong>");
 				me.addClass("active btn-success");
 			}
                         $("#history").load(url+'events/gethistory?id='+me.data('eventid'), function(){
@@ -369,8 +456,48 @@ $(document).ready(function(){
         $('#timeline').timeline('forceUpdateView');
     });
 
-    $('#zoom').on('click', function() {
-        if (this.checked) {
+    $("#filter_none").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_deleted").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', function(evt) {return true;});
+        $('#timeline').timeline('forceUpdateView', false);
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
+    });
+
+    $("#filter_deleted").on('click', function(e){
+        e.preventDefault();
+        $(this).parent().addClass('active');
+        $("#filter_none").parent().removeClass('active');
+        $("#timeline").timeline('pauseUpdateView');
+        $("#timeline").timeline('filter', "default");
+        $('#timeline').timeline('forceUpdateView', false);
+        if($("#calendarview").is(':visible')) {
+            $("#calendarview").fullCalendar('refetchEvents');
+        }
+    });
+
+    $("input[name=viewOptions]").on('change', function(e){
+        closeFiche();
+        var view = $("input[name=viewOptions]:checked").val();
+        if(view.localeCompare("six") == 0){
+            $("#calendar").hide();
+            $("#export").hide();
+            $("#calendarview").hide();
+            $("#timeline").show();
+            $("#timeline").timeline('view', 'sixhours');
+            $.post(url + 'events/saveview?view=6');
+            var now = new Date();
+            var date = FormatNumberLength(now.getUTCDate(), 2) + '/'
+                    + FormatNumberLength(now.getUTCMonth()+1, 2)+ '/'
+                    + FormatNumberLength(now.getUTCFullYear(), 4);
+            $.post(url + 'events/saveday?day="' + date+'"');
+        } else if(view.localeCompare("day") == 0) {
+            $("#calendarview").hide();
+            $("#timeline").show();
             $("#calendar").show();
             $("#export").show();
             var now = new Date();
@@ -380,25 +507,303 @@ $(document).ready(function(){
             var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
-        } else {
-            $("#calendar").hide();
-            $("#export").hide();
-            $("#timeline").timeline('view', 'sixhours');
+            $.post(url + 'events/saveview?view=24');
+        } else if(view.localeCompare("month") == 0) {
+            $("#calendarview").show();
+            $("#calendarview").fullCalendar('changeView', 'basicWeek');
+            $("#timeline").hide();
+            $.post(url + 'events/saveview?view=30');
         }
     });
+
+    $("#calendarview").fullCalendar({
+        events: url+'events/geteventsFC'
+            +(typeof(cats) == "undefined" ? '' : '?'+cats)
+            +(typeof(cats) == "undefined" ? '?' : '&') + 'rootcolor='+(typeof(onlyroot) == "undefined" ? '1' : onlyroot),
+        timezone: "UTC",
+        timeFormat: 'HH:mm',
+        forceEventDuration: true,
+        header: {
+            left: '',
+            center: 'title',
+            right: 'today basicDay,basicWeek,month prevYear,prev,next,nextYear'
+        },
+        locale: "fr",
+        defaultView: "basicWeek",
+        height: $(window).height() - 110,
+        navLinks: true,
+        navLinkDayClick: function(date, jsEvent) {
+            $("#viewday").prop("checked", true);
+            $("#calendarview").hide();
+            $("#timeline").show();
+            $("#calendar").show();
+            $("#export").show();
+            var dayString = date.format('DD/MM/YYYY');
+            $("#calendar input[type=text].date").val(dayString);
+            $('#timeline').timeline("view", "day");
+            $.post(url + 'events/saveview?view=24');
+            $("#calendar input[type=text].date").trigger('change');
+        },
+        eventAfterAllRender: function(view) {
+            if(lastupdateFC == 0) {
+                lastupdateFC = new Date();
+            }
+            timerFC = setTimeout(updateFC, 10000);
+        },
+        loading: function(isLoading, view){
+            if(isLoading) {
+                var loading = $('<div class="loading" style="top:0px"></div>');
+                $("#calendarview .fc-view").append(loading);
+            } else {
+                $("#calendarview .loading").remove();
+            }
+        },
+        eventMouseover: function(event, jsEvent, view){
+            var text = '<table class="table"><tbody>';
+            $.each(event.fields, function (nom, contenu) {
+                text += "<tr>";
+                text += "<td>" + nom + "</td><td> :&nbsp;</td><td>" + contenu + "</td>";
+                text += "</tr>";
+            });
+            text += "</tbody></table>";
+            $(this).tooltip({
+                title: '<span class="elmt_tooltip">' + text + '</span>',
+                container: 'body',
+                html: 'true',
+                placement:'auto top',
+                viewport: '#calendarview',
+                template: '<div class="tooltip tooltip-actions" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+            }).tooltip('show');
+            $(this).find('.actions').show();
+        },
+        eventMouseout: function(event, jsEvent, view){
+            $(this).find('.actions').hide();
+            $(this).tooltip('destroy');
+        },
+        eventRender: function(event, element){
+            //add id
+            element.addClass('cal-event-'+event.id);
+            //change rendering accordind to status
+            switch (event.status_id) {
+                case 4:
+                    element.find('.fc-title').css('text-decoration', 'line-through');
+                    break;
+                case 5:
+                    if($('#filter_none').closest('.filter').hasClass('active')) {
+                        element.find('.fc-title').addClass('dlt');
+                        if(event.textColor.localeCompare('white') == 0){
+                            element.find('.fc-title').addClass('dlt-white');
+                        } else {
+                            element.find('.fc-title').addClass('dlt-black');
+                        }
+                    } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
+                        element.hide();
+                    }
+                    break;
+            }
+            //protection and recurrence
+            if(event.recurr == true) {
+                element.find('.fc-title').append(' <span data-toggle="tooltip" data-container="body" data-placement="bottom" data-title="'+event.recurr_readable+'" class="badge recurrence">R</span>');
+                element.find('span.badge.recurrence').tooltip();
+            } else {
+                element.find('.modify-evt').data('recurr', '');
+            }
+            if(event.scheduled) {
+                element.find('.fc-title').append(' <a href="#"><span class="badge scheduled" data-url="'+event.url_file1+'" data-id="'+event.id+'" data-files="'+event.files+'">P</span></a>');
+            }
+            //actions
+            var actions = $('<span class="actions"></span>');
+            actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
+                ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
+                '</a>'));
+            actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
+                ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
+                '</a>'));
+            var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
+                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
+                '</a>');
+            actions.append(tooltip)
+            actions.css('display', "none");
+            element.find('.fc-content').append(actions);
+            var id = event.id;
+            var txt = '<p class="elmt_tooltip actions">'
+                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+            if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
+                if(event.punctual === false){
+                    if(event.star === true){
+                        txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                    } else {
+                        txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                    }
+                }
+                txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+            }
+            if(event.status_id < 5 && event.deleteable) {
+                txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+            }
+            txt += '</p>';
+            tooltip.popover({
+                container: '#calendarview',
+                content: txt,
+                placement:'auto top',
+                html: 'true',
+                viewport: '#calendarview',
+                template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+            });
+        }
+    });
+
+    /* update calendar view every 10s */
+    var lastupdateFC = 0;
+    var timerFC;
+    var updateFC = function() {
+        clearTimeout(timerFC);
+        var urlFC = url + 'events/geteventsFC';
+        if (typeof(cats) == "undefined") {
+            urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '') ;
+        } else {
+            urlFC += '?'+cats + (lastupdateFC != 0 ? '&lastupdate=' + lastupdateFC.toUTCString() : '');
+        }
+
+        var view = $("#calendarview").fullCalendar('getView');
+        var start = view.start.format("YYYY-MM-DD");
+        if(urlFC.indexOf('?') > 0){
+            urlFC += '&start='+start;
+        } else {
+            urlFC += '?start='+start;
+        }
+        urlFC += '&rootcolor='+onlyroot;
+        var end = view.end.format("YYYY-MM-DD");
+        urlFC += '&end='+end;
+        return $.getJSON(urlFC,
+            function (data, textStatus, jqHXR) {
+                if (jqHXR.status !== 304) {
+                    lastupdateFC = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                    $("#calendarview").fullCalendar('refetchEvents');
+                }
+            }).always(function () {
+            timerFC = setTimeout(function () {
+                updateFC();
+            }, 10000);
+        });
+    };
+
+    $('#calendarview').on('click', '.tooltip-evt', function(){
+        var me = $(this);
+        me.popover('toggle');
+    });
+
+    $('#calendarview').on('click', '.evt-important', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=star&value=1',
+            function(data){
+                displayMessages(data.messages);
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.evt-non-important', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=star&value=0',
+            function(data){
+                displayMessages(data.messages);
+
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.send-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/sendevent?id='+id,
+            function(data){
+                displayMessages(data.messages);
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $('#calendarview').on('click', '.cancel-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/changefield?id='+id+'&field=status&value=4',
+            function(data){
+                displayMessages(data.messages);
+
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('destroy');
+    });
+
+    $('#calendarview').on('click', '.delete-evt', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(url+'events/deleteevent?id='+id,
+            function(data){
+                displayMessages(data.messages);
+                $('#calendarview').fullCalendar('refetchEvents');
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+
+    $("#calendarview").on('click', "span.badge.scheduled", function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        var files = me.data('files');
+        var urlF = me.data('url');
+        if(!isNaN(id)){
+            if(files === 1 && typeof urlF != 'undefined'){
+                window.open(window.location.origin+url+urlF);
+            } else {
+                loadFiche(id, "events/getfiche", true);
+            }
+        }
+    });
+
+    $(document).on('click', function (e) {
+        $('#calendarview').find('.tooltip-evt').each(function () {
+            // hide any open popovers when the anywhere else in the body is clicked
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+            }
+        });
+    });
+
+    if(typeof(forceMonth) != "undefined" && forceMonth == true) {
+        $("#viewmonth").trigger('click');
+    }
 
     $("#date").bootstrapMaterialDatePicker({
             format: "DD/MM/YYYY",
             time: false,
             lang: 'fr',
             cancelText: "Annuler",
-            weekStart : 1
+            weekStart : 1,
+            nowButton: true,
+            nowText: "Jour",
+            switchOnClick: true
     });
     
     $("#date").on('change', function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
         var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
         $("#timeline").timeline("day", date.toString());
+        $.post(url + 'events/saveday?day="' + $('#calendar input[type=text].date').val()+'"');
     });
     
     $("#day-backward").on('click', function(e) {
@@ -433,16 +838,11 @@ $(document).ready(function(){
     	var date = new Date(temp[2],temp[1]-1,temp[0],"5");
         window.open(url+'report/daily?day='+date.toUTCString());
     });
-    
-    $("#timeline").on('click', ".checklist-evt", function(e){
-        e.preventDefault();
-        displayPanel($(this).data('id'));
-    });
-    
+
     /**
      * Ouverture des protections via le label
      */
-    $("#timeline").on('click', ".label_elmt span.badge", function(e){
+    $("#timeline").on('click', ".label_elmt span.badge.scheduled", function(e){
         e.preventDefault();
         var me = $(this);
         var id = parseInt(me.closest(".elmt").data('ident'));
@@ -452,13 +852,13 @@ $(document).ready(function(){
         		if(event.files === 1){
         			window.open(window.location.origin+url+event.url_file1);
         		} else {
-        			displayPanel(id, true);
+        			loadFiche(id, "events/getfiche", true);
         		}
         	} else {
-        		displayPanel(id, true);
+        		loadFiche(id, "events/getfiche", true);
         	}
         }
-    })
+    });
     
     /* ******************************* */
 
@@ -466,7 +866,25 @@ $(document).ready(function(){
     //à supprimer une fois corrigé upstream
     var color = $('#navbar-first').css('background-color');
     $("#navbar-first option").css('background-color', color);
-    
+
+    //vérification du maintien de l'authentification
+    //si on reçoit un 403 alors que précédemment on a reçu un 200
+    //cela veut dire que l'authentification a été réinitialisé par le serveur
+    //dans ce cas on force le rechargement de la page
+    var lastCode = 0;
+    var testAuthentication = function() {
+        $.getJSON(url + 'events/testAuthentication',
+            function (data, textStatus, jqHXR) {
+                lastCode = 200;
+            }).fail(function(jqHXR){
+            if (jqHXR.status === 401 && lastCode === 200) {
+                location.reload();
+            }
+        });
+    };
+    testAuthentication();
+    setInterval(testAuthentication, 10000);
+
 });
 
 

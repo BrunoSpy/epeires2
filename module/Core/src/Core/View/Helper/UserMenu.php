@@ -62,7 +62,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
             if ($router->match($request) && $router->match($request)->getMatchedRouteName() == 'administration') {
                 $html .= "<li><a href=\"" . $urlHelper('application') . "\">Interface OPE</a></li>";
             } else {
-                if ($this->auth->isGranted('admin.centre') || $this->auth->isGranted('admin.users') || $this->auth->isGranted('admin.categories') || $this->auth->isGranted('admin.models') || $this->auth->isGranted('admin.radio')) {
+                if ($this->auth->isGranted('admin.access') || $this->auth->isGranted('admin.centre') || $this->auth->isGranted('admin.users') || $this->auth->isGranted('admin.categories') || $this->auth->isGranted('admin.models') || $this->auth->isGranted('admin.radio')) {
                     $html .= "<li><a href=\"" . $urlHelper('administration', array(
                         'controller' => 'home',
                         'action' => 'index'
@@ -71,7 +71,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
             }
             $html .= "<li><a href=\"" . $urlHelper('zfcuser/logout') . "?redirect=" . $urlHelper('application') . "\">Se déconnecter</a></li>";
         } else {
-            $html .= "<li><a href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
+            $html .= "<li><a id=\"openloginwindow\" href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
         }
         $html .= '</ul>';
         $html .= '</li>';

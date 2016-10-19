@@ -31,6 +31,8 @@ class NMB2BService implements ServiceLocatorAwareInterface
 
     private $nmb2b;
 
+    private $client = null;
+
     public function getServiceLocator()
     {
         return $this->sl;
@@ -50,42 +52,57 @@ class NMB2BService implements ServiceLocatorAwareInterface
 
     private function getSoapClient()
     {
-        $options = array();
-        $options['trace'] = 1;
-        $options['connection_timeout'] = 2000;
-        $options['exceptions'] = true;
-        $options['cache_wsdl'] = WSDL_CACHE_NONE;
-        $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
-        $options['passphrase'] = $this->nmb2b['cert_password'];
-        
-        $options['stream_context'] = stream_context_create(array(
-            'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            )
-        ));
-        
-        if (array_key_exists('proxy_host', $this->nmb2b)) {
-            $options['proxy_host'] = $this->nmb2b['proxy_host'];
+        if($this->client == null) {
+            $options = array();
+            $options['trace'] = 1;
+            $options['connection_timeout'] = 100000;
+            $options['exceptions'] = true;
+            $options['cache_wsdl'] = WSDL_CACHE_NONE;
+            $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
+            $options['passphrase'] = $this->nmb2b['cert_password'];
+
+            $options['stream_context'] = stream_context_create(array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            ));
+
+            if (array_key_exists('proxy_host', $this->nmb2b)) {
+                $options['proxy_host'] = $this->nmb2b['proxy_host'];
+            }
+            if (array_key_exists('proxy_port', $this->nmb2b)) {
+                $options['proxy_port'] = $this->nmb2b['proxy_port'];
+            }
+            if (array_key_exists('force_url', $this->nmb2b)) {
+                $options['location'] = $this->nmb2b['force_url'];
+            }
+            try {
+                $this->client = new \SoapClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['airspace_wsdl_filename'], $options);
+            } catch (\SoapFault $e) {
+                $text = "Message d'erreur : \n";
+                $text .= $e->getMessage()."\n";
+                $text .= "Last Request Header\n";
+                $text .= $this->client->__getLastRequestHeaders()."\n";
+                $text .= "Last Request\n";
+                $text .= $this->client->__getLastRequest();
+                $text .= "Last Response Header\n";
+                $text .= $this->client->__getLastResponseHeaders()."\n";
+                $text .= "Last Response\n";
+                $text .= $this->client->__getLastResponse()."\n";
+                $this->sendErrorEmail($text);
+            }
         }
-        if (array_key_exists('proxy_port', $this->nmb2b)) {
-            $options['proxy_port'] = $this->nmb2b['proxy_port'];
-        }
-        
-        try {
-            $client = new \SoapClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['airspace_wsdl_filename'], $options);
-        } catch (\SoapFault $e) {
-            error_log(print_r($e, true));
-        }
-        return $client;
+        return $this->client;
     }
 
     /**
      * Retrieve RSAs for a specific date
      * 
      * @param type $designators            
-     * @param \DateTime $date            
+     * @param \DateTime $date
+     * @param int $sequencenumber
      * @return type
      */
     public function getEAUPRSA($designators, \DateTime $date, $sequencenumber)
@@ -105,9 +122,22 @@ class NMB2BService implements ServiceLocatorAwareInterface
         if ($designators !== null && strlen($designators) > 0) {
             $params['rsaDesignators'] = $designators;
         }
-        
-        $client->retrieveEAUPRSAs($params);
-        
+        try {
+            $client->retrieveEAUPRSAs($params);
+        } catch (\SoapFault $e) {
+            $text = "Message d'erreur : \n";
+            $text .= $e->getMessage()."\n\n";
+            $text .= "Last Request Header\n";
+            $text .= $client->__getLastRequestHeaders()."\n\n";
+            $text .= "Last Request\n";
+            $text .= $client->__getLastRequest()."\n\n";
+            $text .= "Last Response Header\n";
+            $text .= $client->__getLastResponseHeaders()."\n\n";
+            $text .= "Last Response\n";
+            $text .= $client->__getLastResponse()."\n";
+            $this->sendErrorEmail($text);
+            throw new \RuntimeException('Erreur NM B2B');
+        }
         return $client->__getLastResponse();
     }
 
@@ -124,8 +154,55 @@ class NMB2BService implements ServiceLocatorAwareInterface
             'sendTime' => $now->format('Y-m-d H:i:s'),
             'chainDate' => $date->format('Y-m-d')
         );
-        $client->retrieveEAUPChain($params);
+        try {
+            $client->retrieveEAUPChain($params);
+        } catch(\SoapFault $e){
+            $text = "Message d'erreur : \n";
+            $text .= $e->getMessage()."\n\n";
+            $text .= "Last Request Header\n";
+            $text .= $client->__getLastRequestHeaders()."\n\n";
+            $text .= "Last Request\n";
+            $text .= $client->__getLastRequest()."\n\n";
+            $text .= "Last Response Header\n";
+            $text .= $client->__getLastResponseHeaders()."\n\n";
+            $text .= "Last Response\n";
+            $text .= $client->__getLastResponse()."\n";
+            $this->sendErrorEmail($text);
+            throw new \RuntimeException('Erreur NM B2B');
+            return null;
+        }
         return $client->__getLastResponse();
+    }
+
+    public function sendErrorEmail($textError) {
+
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        //TODO récupérer proprement l'organisation concernée
+        $org = $objectManager->getRepository('Application\Entity\Organisation')->findAll();
+        $ipoEmail = $org[0]->getIpoEmail();
+
+        // prepare body with file attachment
+        $text = new \Zend\Mime\Part($textError);
+        $text->type = \Zend\Mime\Mime::TYPE_TEXT;
+        $text->charset = 'utf-8';
+
+        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage->setParts(array(
+            $text
+        ));
+
+        $config = $this->getServiceLocator()->get('config');
+        $message = new \Zend\Mail\Message();
+        $message->addTo($ipoEmail)
+            ->addFrom($config['emailfrom'])
+            ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
+            ->setBody($mimeMessage);
+
+        $transport = new \Zend\Mail\Transport\Smtp();
+        $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
+        $transport->setOptions($transportOptions);
+        $transport->send($message);
     }
 }
 

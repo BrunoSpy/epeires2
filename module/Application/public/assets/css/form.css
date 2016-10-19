@@ -124,3 +124,34 @@
 	padding-left:6px;
 	padding-right:6px;
 }
+
+/* **************************************** */
+/* Fuel UX Scheduler compatibility with BMD */
+/* **************************************** */
+
+.scheduler .btn-group {
+	margin-top: 2px;
+}
+
+.scheduler .btn-group.btn-toggle .btn.active {
+	box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset !important;
+}
+.scheduler .btn-group.btn-toggle {
+	box-shadow: none !important;
+}
+.scheduler .btn-group.btn-toggle .btn {
+	margin-right: 5px !important;
+	margin-bottom: 2px;
+}
+
+.scheduler .start-date {
+	max-width: 110px;
+}
+
+.scheduler .start-time {
+	max-width: 70px;
+}
+
+#recurr-button {
+	margin-top: 2px;
+}

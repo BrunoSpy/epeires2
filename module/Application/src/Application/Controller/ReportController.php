@@ -97,15 +97,17 @@ class ReportController extends AbstractActionController
             foreach ($cats as $cat) {
                 $category = array();
                 $category['name'] = $cat->getName();
-                $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
-                    $cat->getId()
-                ));
+
+                //évènements lisibles par l'utilisateur, du jour spécifié, de la catégorie et non supprimés
+                $category['events'] = $objectManager
+                    ->getRepository('Application\Entity\Event')
+                    ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($cat->getId()), array(1,2,3,4));
                 $category['childs'] = array();
                 foreach ($cat->getChildren() as $subcat) {
                     $subcategory = array();
-                    $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents($this->zfcUserAuthentication(), $day, null, true, array(
-                        $subcat->getId()
-                    ));
+                    $subcategory['events'] = $objectManager
+                        ->getRepository('Application\Entity\Event')
+                        ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                     $subcategory['name'] = $subcat->getName();
                     $category['childs'][] = $subcategory;
                 }
@@ -115,7 +117,8 @@ class ReportController extends AbstractActionController
             $pdf = new PdfModel();
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
-                'day' => $day
+                'day' => $day,
+                'logs' => $objectManager->getRepository('Application\Entity\Log')
             ));
             $pdf->setOption('paperSize', 'a4');
             
@@ -151,8 +154,8 @@ class ReportController extends AbstractActionController
         if (! $organisation) {
             throw new \RuntimeException('Unable to find organisation.');
         } else {
-            $email = $organisation[0]->getIpoEmail();
-            if (empty($email)) {
+            $emailIPO = $organisation[0]->getIpoEmail();
+            if ($email && empty($emailIPO)) {
                 throw new \RuntimeException('Unable to find IPO email.');
             }
         }
@@ -182,15 +185,15 @@ class ReportController extends AbstractActionController
         foreach ($cats as $cat) {
             $category = array();
             $category['name'] = $cat->getName();
-            $category['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
-                $cat->getId()
-            ));
+            $category['events'] = $objectManager
+                ->getRepository('Application\Entity\Event')
+                ->getEvents(null, $day, null, null, true, array($cat->getId()), array(1,2,3,4));
             $category['childs'] = array();
             foreach ($cat->getChildren() as $subcat) {
                 $subcategory = array();
-                $subcategory['events'] = $objectManager->getRepository('Application\Entity\Event')->getEvents(null, $day, null, true, array(
-                    $subcat->getId()
-                ));
+                $subcategory['events'] = $objectManager
+                    ->getRepository('Application\Entity\Event')
+                    ->getEvents(null, $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                 $subcategory['name'] = $subcat->getName();
                 $category['childs'][] = $subcategory;
             }
@@ -207,7 +210,7 @@ class ReportController extends AbstractActionController
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
                 ->setTemplate('application/report/daily')
-                ->setVariables(array('events' => $eventsByCats, 'day' => $day));
+                ->setVariables(array('events' => $eventsByCats, 'day' => $day, 'logs' => $objectManager->getRepository('Application\Entity\Log')));
 
         $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
         $engine = $this->getServiceLocator()->get('viewpdfrenderer')->getEngine();

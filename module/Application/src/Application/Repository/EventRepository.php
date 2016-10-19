@@ -21,6 +21,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
 use Application\Core\User;
+use Application\Entity\Recurrence;
 use Zend\Session\Container;
 use \Core\NMB2B\EAUPRSAs;
 use Application\Entity\TemporaryResource;
@@ -40,15 +41,23 @@ class EventRepository extends ExtendedRepository
      * intersecting <code>$day</code>
      * 
      * @param type $userauth            
-     * @param type $day
+     * @param \DateTime $day
      *            If null : use current day
+     * @param DateTime $end
      * @param type $lastmodified
      *            If not null : only events modified since <code>$lastmodified</code>
      * @param type $orderbycat            
-     * @param type $onlytimeline            
+     * @param type $cats
+     * @param array $status If $cats != null, restrict events status
      * @return type
      */
-    public function getEvents($userauth, $day = null, $lastmodified = null, $orderbycat = false, $cats = null)
+    public function getEvents($userauth,
+                              $day = null,
+                              $end = null,
+                              $lastmodified = null,
+                              $orderbycat = false,
+                              $cats = null,
+                              $status = null)
     {
         $parameters = array();
         
@@ -69,6 +78,9 @@ class EventRepository extends ExtendedRepository
         if ($cats) {
             $qb->andWhere($qb->expr()
                 ->in('e.category', $cats));
+            if($status) {
+                $qb->andWhere($qb->expr()->in('e.status', $status));
+            }
         } else {
             // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
             $qb->andWhere($qb->expr()
@@ -84,9 +96,10 @@ class EventRepository extends ExtendedRepository
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()
                     ->neq('c.timelineconfirmed', true), $qb->expr()
+                    ->neq('e.scheduled', true), $qb->expr()
                     ->andX($qb->expr()
                         ->eq('c.timelineconfirmed', true), $qb->expr()
-                        ->in('e.status', array(2,3,4)), $qb->expr()
+                        ->in('e.status', array(2,3,4,5)), $qb->expr()
                         ->eq('e.scheduled',true)
                     )
                 )
@@ -101,32 +114,65 @@ class EventRepository extends ExtendedRepository
             $parameters[1] = $lastmodified->format("Y-m-d H:i:s");
             $qb->setParameters($parameters);
         } else {
-            if ($day) { // restriction aux evts intersectant le jour spécifié
-                $daystart = new \DateTime($day);
-                $daystart->setTime(0, 0, 0);
-                $dayend = new \DateTime($day);
-                $dayend->setTime(23, 59, 59);
-                $daystart = $daystart->format("Y-m-d H:i:s");
-                $dayend = $dayend->format("Y-m-d H:i:s");
-                // tous les évènements ayant une intersection non nulle avec $day
-                $qb->andWhere($qb->expr()
-                    ->orX(
-                    // evt dont la date de début est le bon jour : inclus les ponctuels
-                    $qb->expr()
+            if ($day) {
+                if($end == null) {
+                    // restriction aux evts intersectant le jour spécifié
+                    $daystart = new \DateTime($day);
+                    $daystart->setTime(0, 0, 0);
+                    $dayend = new \DateTime($day);
+                    $dayend->setTime(23, 59, 59);
+                    $daystart = $daystart->format("Y-m-d H:i:s");
+                    $dayend = $dayend->format("Y-m-d H:i:s");
+                    // tous les évènements ayant une intersection non nulle avec $day
+                    $qb->andWhere($qb->expr()
+                        ->orX(
+                        // evt dont la date de début est le bon jour : inclus les ponctuels
+                            $qb->expr()
+                                ->andX($qb->expr()
+                                    ->gte('e.startdate', '?1'), $qb->expr()
+                                    ->lte('e.startdate', '?2')),
+                            // evt dont la date de début est passée : forcément non ponctuels
+                            $qb->expr()
+                                ->andX($qb->expr()
+                                    ->eq('e.punctual', 'false'), $qb->expr()
+                                    ->lt('e.startdate', '?1'), $qb->expr()
+                                    ->orX($qb->expr()
+                                        ->isNull('e.enddate'), $qb->expr()
+                                        ->gte('e.enddate', '?1')))));
+                    $parameters[1] = $daystart;
+                    $parameters[2] = $dayend;
+                    $qb->setParameters($parameters);
+                } else {
+                    $daystart = new \DateTime($day);
+                    $daystart->setTime(0, 0, 0);
+                    $daystart = $daystart->format("Y-m-d H:i:s");
+                    $dayend = new \DateTime($end);
+                    $dayend->setTime(23, 59, 59);
+                    $dayend = $dayend->format("Y-m-d H:i:s");
+                    //tous les évènements intersectant la période
+                    $qb->andWhere($qb->expr()
+                    ->orX($qb->expr() // sans date de fin et non ponctuel
                         ->andX($qb->expr()
-                        ->gte('e.startdate', '?1'), $qb->expr()
-                        ->lte('e.startdate', '?2')), 
-                    // evt dont la date de début est passée : forcément non ponctuels
-                    $qb->expr()
-                        ->andX($qb->expr()
-                        ->eq('e.punctual', 'false'), $qb->expr()
-                        ->lt('e.startdate', '?1'), $qb->expr()
-                        ->orX($qb->expr()
-                        ->isNull('e.enddate'), $qb->expr()
-                        ->gte('e.enddate', '?1')))));
-                $parameters[1] = $daystart;
-                $parameters[2] = $dayend;
-                $qb->setParameters($parameters);
+                            ->isNull('e.enddate'), $qb->expr()
+                            ->eq('e.punctual', 'false'), $qb->expr()
+                            ->lte('e.startdate', '?2')),
+                            // non ponctuel, avec date de fin
+                        $qb->expr()
+                            ->andX($qb->expr()
+                                ->isNotNull('e.enddate'), $qb->expr()
+                                ->eq('e.punctual', 'false'), $qb->expr()
+                                ->lte('e.startdate', '?2'), $qb->expr()
+                                ->gte('e.enddate', '?1')),
+                        // ponctuel
+                        $qb->expr()
+                            ->andX($qb->expr()
+                                ->eq('e.punctual', 'true'), $qb->expr()
+                                ->gte('e.startdate', '?1'), $qb->expr()
+                                ->lte('e.startdate', '?2'))));
+                    $parameters[1] = $daystart;
+                    $parameters[2] = $dayend;
+                    $qb->setParameters($parameters);
+                }
             } else {
                 // sinon restriction aux evts autour du jour présent
                 $now = new \DateTime('NOW');
@@ -258,14 +304,17 @@ class EventRepository extends ExtendedRepository
      *            DateTime
      * @param unknown $end
      *            DateTime
+     * @param unknown $exclude
+     * @param array $status
      */
-    public function getAllEvents($user, $start, $end)
+    public function getAllEvents($user, $start, $end, $exclude = false, $status = null)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array(
-            'e'
+            'e, c'
         ))
             ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'c')
             ->andWhere($qb->expr()
             ->isNull('e.parent'))
             ->andWhere($qb->expr() // display only root events
@@ -289,7 +338,15 @@ class EventRepository extends ExtendedRepository
                 ->eq('e.punctual', 'true'), $qb->expr()
                 ->gte('e.startdate', '?1'), $qb->expr()
                 ->lte('e.startdate', '?2'))));
-        
+        //restriction sur le statut
+        if($status) {
+            $qb->andWhere($qb->expr()->in('e.status', $status));
+        }
+        //exclusion des catégories pour rapport IPO
+        if($exclude) {
+            $qb->andWhere($qb->expr()->eq('c.exclude', '?3'));
+            $parameters[3] = false;
+        }
         if ($user !== null && $user->hasIdentity()) {
             $org = $user->getIdentity()->getOrganisation();
             
@@ -299,9 +356,9 @@ class EventRepository extends ExtendedRepository
             $parameters[1] = $start->format("Y-m-d H:i:s");
             $parameters[2] = $end->format("Y-m-d H:i:s");
             $qb->setParameters($parameters);
-            
+
             $query = $qb->getQuery();
-            
+
             return $query->getResult();
         } else {
             return array();
@@ -375,7 +432,8 @@ class EventRepository extends ExtendedRepository
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 
-     * @param Application\Entity\Tab $tab            
+     * @param Application\Entity\Tab $tab
+     * @return array
      */
     public function getTabEvents(\Application\Entity\Tab $tab)
     {
@@ -406,14 +464,14 @@ class EventRepository extends ExtendedRepository
             ->from('Application\Entity\Event', 'e')
             ->innerJoin('e.category', 'cat')
             ->andWhere($qbEvents->expr()
-            ->in('e.status', '?1'))
+                ->in('e.status', '?1'))
             ->andWhere($qbEvents->expr()
-            ->andX($qbEvents->expr()
-            ->eq('e.punctual', 'false'), $qbEvents->expr()
-            ->lte('e.startdate', '?2'), $qbEvents->expr()
-            ->orX($qbEvents->expr()
-            ->isNull('e.enddate'), $qbEvents->expr()
-            ->gte('e.enddate', '?2'))))
+                ->andX($qbEvents->expr()
+                    ->eq('e.punctual', 'false'), $qbEvents->expr()
+                    ->lte('e.startdate', '?2'), $qbEvents->expr()
+                    ->orX($qbEvents->expr()
+                        ->isNull('e.enddate'), $qbEvents->expr()
+                        ->gte('e.enddate', '?2'))))
             ->setParameters(array(
             1 => array(
                 1,
@@ -605,8 +663,17 @@ class EventRepository extends ExtendedRepository
      * @param User $author            
      * @param type $messages            
      */
-    public function addChangeFrequencyCovEvent(Frequency $frequency, $cov, $freqstatus, $cause, \DateTime $startdate, \Core\Entity\User $author, Event $parent = null, &$messages = null)
-    {
+    public function addChangeFrequencyCovEvent(
+        Frequency $frequency,
+        $cov,
+        $freqstatus,
+        $cause,
+        \DateTime $startdate,
+        $enddate,
+        \Core\Entity\User $author,
+        Event $parent = null,
+        &$messages = null
+    ) {
         $em = $this->getEntityManager();
         $event = new Event();
         if ($parent) {
@@ -617,6 +684,7 @@ class EventRepository extends ExtendedRepository
         $event->setImpact($impact);
         $event->setStatus($status);
         $event->setStartdate($startdate);
+        $event->setEnddate($enddate);
         $event->setPunctual(false);
         // TODO fix horrible en attendant de gérer correctement les fréquences sans secteur
         if ($frequency->getDefaultsector()) {
@@ -654,10 +722,7 @@ class EventRepository extends ExtendedRepository
             $causefield->setCustomField($cat->getCauseField());
             $causefield->setEvent($event);
             $causefield->setValue($cause);
-            $em->persist($frequencyfieldvalue);
-            $em->persist($statusfield);
-            $em->persist($covfield);
-            $em->persist($causefield);
+            $event->addCustomFieldValue($causefield);
             $em->persist($event);
             try {
                 $em->flush();
@@ -798,6 +863,11 @@ class EventRepository extends ExtendedRepository
                     $this->getEntityManager()->persist($alarm);
                 }
             }
+            //ajout des fichiers
+            foreach($model->getFiles() as $file) {
+                $file->addEvent($event);
+                $this->getEntityManager()->persist($file);
+            }
             $event->updateAlarms();
         }
         
@@ -937,4 +1007,63 @@ class EventRepository extends ExtendedRepository
             error_log($e->getMessage());
         }
     }
+
+    /**
+     * Renvoit un nouvel évènement créé à partir d'un évènement et d'une date de début
+     * Les notes ne sont pas copiées, le statut est mis à "nouveau"
+     * @param Event $event
+     * @param \DateTime $start UTC start date
+     */
+    public function createFromEvent(Event $event, $start) {
+        $newevent = new Event();
+        $newevent->setAuthor($event->getAuthor());
+        $newevent->setOrganisation($event->getOrganisation());
+        $newevent->setCategory($event->getCategory());
+        $newevent->setImpact($event->getImpact());
+        $newevent->setStatus($this->getEntityManager()->getRepository('Application\Entity\Status')->find(1));
+        if($event->getPlace() !== null) {
+            $newevent->setPlace($event->getPlace());
+        }
+        //horaires
+        $newevent->setScheduled($event->isScheduled());
+        $newevent->setPunctual($event->isPunctual());
+        if($start !== null) {//actions can have no start date
+            $newevent->setStartdate($start);
+            if (!$event->isPunctual() && $event->getEnddate() !== null) {
+                $diff = $event->getStartdate()->diff($event->getEnddate());
+                $end = clone $start;
+                $end->add($diff);
+                $newevent->setEnddate($end);
+            }
+        }
+        //enfants
+        foreach ($event->getChildren() as $child) {
+            $childdate = $start;
+            if($child->getCategory() instanceof AlarmCategory) {
+                $diff = $event->getStartdate()->diff($child->getStartdate());
+                $alarmdate = clone $newevent->getStartdate();
+                $alarmdate->add($diff);
+                $childdate = $alarmdate;
+            } else if($child->getCategory() instanceof ActionCategory) {
+                $childdate = null;
+            }
+            $childEvent = $this->createFromEvent($child, $childdate);
+            $childEvent->setParent($newevent);
+            $newevent->addChild($childEvent);
+        }
+        //champs
+        foreach ($event->getCustomFieldsValues() as $customFieldsValue){
+            $customFieldValue = new CustomFieldValue();
+            $customFieldValue->setEvent($newevent);
+            $customFieldValue->setCustomField($customFieldsValue->getCustomField());
+            $customFieldValue->setValue($customFieldsValue->getValue());
+            $newevent->addCustomFieldValue($customFieldValue);
+        }
+        //fichiers
+        foreach ($event->getFiles() as $file) {
+            $newevent->addFile($file);
+        }
+        return $newevent;
+    }
+    
 }
