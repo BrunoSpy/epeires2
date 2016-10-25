@@ -1,0 +1,5 @@
+.background-status-planned {
+  background: linear-gradient(to bottom, rgb(47, 150, 180), rgb(91, 192, 222)) repeat-x;
+  color: white;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}

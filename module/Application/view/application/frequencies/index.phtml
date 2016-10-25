@@ -1,6 +1,11 @@
 <?php 
 $this->headScript()->appendFile($this->basePath() . '/assets/js/antenna.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/radio.css');
+
+foreach ($this->frequencyColors as $status => $color) {
+	$this->headLink()->appendStylesheet($this->basePath() . '/assets/css/radio-'.$status.'-'.$color.'.css');
+}
+
 ?>
 
 

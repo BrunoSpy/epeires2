@@ -113,13 +113,14 @@ class FrequenciesController extends TabController
         
         $config = $this->getServiceLocator()->get('config');
         $frequencyMenu = isset($config['frequency_test_menu']) ? $config['frequency_test_menu'] : false;
-        
+        $frequencyColors = $config['frequency_tab_colors'];
         $viewmodel->setVariables(array(
             'antennas' => $this->getAntennas(),
             'messages' => $return,
             'groups' => $groups,
             'other' => $otherfrequencies,
-            'frequencyTestMenu' => $frequencyMenu
+            'frequencyTestMenu' => $frequencyMenu,
+            'frequencyColors' => $frequencyColors
         ));
         
         return $viewmodel;
