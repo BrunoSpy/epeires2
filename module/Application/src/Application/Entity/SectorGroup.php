@@ -57,13 +57,9 @@ class SectorGroup
     protected $zone;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Sector", mappedBy="sectorsgroups")
-     * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Secteurs :"})
-     * @Annotation\Attributes({"multiple":true})
+     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation", mappedBy="sectorgroup")
      */
-    protected $sectors;
+    protected $sectorsgroupsrelations;
 
     /**
      * Affiché ou non dans la page fréquence
@@ -130,32 +126,11 @@ class SectorGroup
 
     public function getSectors()
     {
-        return $this->sectors;
-    }
-
-    public function setSectors($sectors)
-    {
-        $this->sectors = $sectors;
-    }
-
-    public function addSectors(Collection $sectors)
-    {
-        foreach ($sectors as $sector) {
-            $collection = new ArrayCollection();
-            $collection->add($this);
-            $sector->addSectorsGroups($collection);
-            $this->sectors->add($sector);
+        $sectors = new ArrayCollection();
+        foreach ($this->sectorsgroupsrelations as $relation) {
+            $sectors->add($relation->getSector());
         }
-    }
-
-    public function removeSectors(Collection $sectors)
-    {
-        foreach ($sectors as $sector) {
-            $collection = new ArrayCollection();
-            $collection->add($this);
-            $sector->removeSectorsGroups($collection);
-            $this->sectors->removeElement($sector);
-        }
+        return $sectors;
     }
 
     public function getArrayCopy()

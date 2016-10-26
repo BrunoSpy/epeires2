@@ -42,7 +42,8 @@ class ShiftHour
     protected $id;
 
 
-    /** @ORM\ManyToOne(targetEntity="OpSupType")
+    /**
+     * @ORM\ManyToOne(targetEntity="OpSupType", inversedBy="shifthours")
      * @ORM\JoinColumn(nullable=false)
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
