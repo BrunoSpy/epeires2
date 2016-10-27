@@ -127,13 +127,14 @@ class FrequenciesController extends TabController
         $otherfrequencies = $this->entityManager->getRepository('Application\Entity\Frequency')->matching($criteria);
         
         $frequencyMenu = isset($this->config['frequency_test_menu']) ? $this->config['frequency_test_menu'] : false;
-        
+        $frequencyColors = $this->config['frequency_tab_colors'];
         $viewmodel->setVariables(array(
             'antennas' => $this->getAntennas(),
             'messages' => $return,
             'groups' => $groups,
             'other' => $otherfrequencies,
-            'frequencyTestMenu' => $frequencyMenu
+            'frequencyTestMenu' => $frequencyMenu,
+            'frequencyColors' => $frequencyColors
         ));
         
         return $viewmodel;

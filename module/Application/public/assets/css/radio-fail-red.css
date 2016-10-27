@@ -1,0 +1,6 @@
+.background-status-fail {
+  background-image: linear-gradient(to bottom, #bd362f, #ee5f5b);
+  background-repeat: repeat-x;
+  color: white;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}

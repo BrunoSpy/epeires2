@@ -17,9 +17,9 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Table(name="sectors")
@@ -39,14 +39,9 @@ class Sector
     protected $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SectorGroup", inversedBy="sectors")
-     * @ORM\JoinTable(name="sectors_groups")
-     * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Regroupements :"})
-     * @Annotation\Attributes({"multiple":true})
+     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation", mappedBy="sector")
      */
-    protected $sectorsgroups;
+    protected $sectorsgroupsrelations;
 
     /**
      * @ORM\Column(type="string")
@@ -71,7 +66,7 @@ class Sector
 
     public function __construct()
     {
-        $this->sectorsgroups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sectorsgroupsrelations = new ArrayCollection();
     }
 
     public function getId()
@@ -101,34 +96,22 @@ class Sector
 
     public function getSectorsgroups()
     {
-        return $this->sectorsgroups;
-    }
-
-    public function setSectorsgroups($sectorsgroups)
-    {
-        $this->sectorsgroups = $sectorsgroups;
-    }
-
-    public function addSectorsgroups(Collection $sectorsgroups)
-    {
-        foreach ($sectorsgroups as $sectorsgroup) {
-            $this->sectorsgroups->add($sectorsgroup);
+        $sectorsgroups = new ArrayCollection();
+        foreach ($this->sectorsgroupsrelations as $relation) {
+            $sectorsgroups->add($relation->getSectorGroup());
         }
+        return $sectorsgroups;
     }
 
-    public function removeSectorsgroups(Collection $sectorsgroups)
-    {
-        foreach ($sectorsgroups as $sectorsgroup) {
-            $this->sectorsgroups->removeElement($sectorsgroup);
-        }
-    }
-
+    /**
+     * @return Frequency
+     */
     public function getFrequency()
     {
         return $this->frequency;
     }
 
-    public function setFrequency($frequency)
+    public function setFrequency(Frequency $frequency)
     {
         $this->frequency = $frequency;
     }
@@ -136,11 +119,6 @@ class Sector
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
-        $sectorsgroups = array();
-        foreach ($this->sectorsgroups as $sectorsgroup) {
-            $sectorsgroups[] = $sectorsgroup->getId();
-        }
-        $object_vars['sectorsgroups'] = $sectorsgroups;
         $object_vars['frequency'] = ($this->frequency ? $this->frequency->getId() : null);
         return $object_vars;
     }

@@ -31,4 +31,17 @@ return array(
     ),
     //activate special radio menu for frequencies test
     'frequency_test_menu' => true,
+
+    //change frequency colors
+    //available pairs :
+    //  'ok' => 'green' (default)
+    //  'ok' => 'grey'
+    //  'warning' => 'yellow'
+    //  'warning' => 'orange' (default)
+    //  'fail' => 'red' (default)
+    //  'planned' => 'blue' (default)
+    //example : change warning color to yellow
+    'frequency_tab_colors' => array(
+        'warning' => 'yellow'
+    )
 );

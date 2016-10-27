@@ -1,0 +1,10 @@
+.background-status-warning {
+  background-image: linear-gradient(to bottom, #FFF666, #E5E500);
+  background-repeat: repeat-x;
+  color: black;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.background-status-warning  .sector-freq>a,.background-status-warning .antenna-color>li>a {
+  color: black;
+}
