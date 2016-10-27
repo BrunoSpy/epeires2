@@ -17,8 +17,10 @@
  */
 namespace Application\Services;
 
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
+use Application\Entity\EventUpdate;
+use Application\Entity\MilCategory;
+use Application\Entity\PredefinedEvent;
+use Doctrine\ORM\EntityManager;
 use Application\Entity\Event;
 use Application\Entity\AbstractEvent;
 
@@ -26,13 +28,8 @@ use Application\Entity\AbstractEvent;
  *
  * @author Bruno Spyckerelle
  */
-class EventService implements ServiceManagerAwareInterface
+class EventService
 {
-
-    /**
-     * Service Manager
-     */
-    protected $sm;
 
     /**
      * Entity Manager
@@ -41,34 +38,32 @@ class EventService implements ServiceManagerAwareInterface
 
     private $rbac;
 
+    private $auth;
+
+    private $customfieldService;
+
+    public function __construct(EntityManager $entityManager, $authService, $rbac, $customfieldservice)
+    {
+        $this->em = $entityManager;
+        $this->rbac = $rbac;
+        $this->auth = $authService;
+        $this->customfieldService = $customfieldservice;
+    }
+
     public function getRbac()
     {
-        if (! $this->rbac) {
-            $this->rbac = $this->sm->get('ZfcRbac\Service\AuthorizationService');
-        }
         return $this->rbac;
-    }
-
-    public function setEntityManager(\Doctrine\ORM\EntityManager $em)
-    {
-        $this->em = $em;
-    }
-
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->sm = $serviceManager;
     }
 
     /**
      * An event is modifiable if the current user is the author of the event or if he has the 'events.write' permission
-     *
+     * @param Event $event
      * @return boolean
      */
     public function isModifiable(Event $event)
     {
-        $auth = $this->sm->get('zfcuser_auth_service');
-        if ($auth->hasIdentity()) {
-            if ($this->getRbac()->isGranted('events.write') || ($event->getAuthor() && $event->getAuthor()->getId() === $auth->getIdentity()->getId())) {
+        if ($this->auth->hasIdentity()) {
+            if ($this->getRbac()->isGranted('events.write') || ($event->getAuthor() && $event->getAuthor()->getId() === $this->auth->getIdentity()->getId())) {
                 return true;
             }
         }
@@ -79,12 +74,12 @@ class EventService implements ServiceManagerAwareInterface
      * Get the name of an event depending on the title field of the category.
      * If no title field is set, returns the event's id
      *
-     * @param
-     *            $event
+     * @param $event
+     * @return string
      */
     public function getName(AbstractEvent $event)
     {
-        if ($event instanceof \Application\Entity\PredefinedEvent) {
+        if ($event instanceof PredefinedEvent) {
             if ($event->getParent() == null && $event->getName()) {
                 return $event->getName();
             }
@@ -119,11 +114,11 @@ class EventService implements ServiceManagerAwareInterface
                 }
             }
         } else 
-            if ($category instanceof \Application\Entity\MilCategory) {
+            if ($category instanceof MilCategory) {
                 $namefield = $event->getCustomFieldValue($category->getFieldname());
                 $name = "???"; // TODO $namefield ne peut jamais être vide !!
                 if ($namefield) {
-                    $name = $this->sm->get('CustomFieldService')->getFormattedValue($namefield->getCustomField(), $namefield->getValue());
+                    $name = $this->customfieldService->getFormattedValue($namefield->getCustomField(), $namefield->getValue());
                 }
                 $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
                 $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
@@ -133,7 +128,7 @@ class EventService implements ServiceManagerAwareInterface
                 if ($titlefield) {
                     foreach ($event->getCustomFieldsValues() as $fieldvalue) {
                         if ($fieldvalue->getCustomField()->getId() == $titlefield->getId()) {
-                            $tempname = $this->sm->get('CustomFieldService')->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
+                            $tempname = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
                             
                             if ($tempname) {
                                 $name = ($category->getParent() != null ? $category->getShortName() : '') . ' ' . $tempname;
@@ -150,7 +145,7 @@ class EventService implements ServiceManagerAwareInterface
         return \DateTime::createFromFormat(DATE_RFC2822, $a) > \DateTime::createFromFormat(DATE_RFC2822, $b);
     }
 
-    public function getUpdateAuthor(\Application\Entity\EventUpdate $eventupdate)
+    public function getUpdateAuthor(EventUpdate $eventupdate)
     {
         $repo = $this->em->getRepository('Application\Entity\Log');
         
@@ -162,7 +157,7 @@ class EventService implements ServiceManagerAwareInterface
         }
     }
 
-    public function getLastUpdateAuthorName(\Application\Entity\Event $action)
+    public function getLastUpdateAuthorName(Event $action)
     {
         $repo = $this->em->getRepository('Application\Entity\Log');
         $logentries = $repo->getLogEntries($action);
@@ -180,9 +175,10 @@ class EventService implements ServiceManagerAwareInterface
      * 'changes' => array(array ('fieldname', 'oldvalue', 'newvalue'))
      * )
      *
-     * @param Application\Entity\Event $event            
+     * @param Event $event
+     * @return array
      */
-    public function getHistory($event)
+    public function getHistory(Event $event)
     {
         $history = array();
         
@@ -277,8 +273,8 @@ class EventService implements ServiceManagerAwareInterface
                                 }
                                 $historyentry = array();
                                 $historyentry['fieldname'] = $customfieldvalue->getCustomField()->getName();
-                                $historyentry['oldvalue'] = $this->sm->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $ref[$key]);
-                                $historyentry['newvalue'] = $this->sm->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $value);
+                                $historyentry['oldvalue'] = $this->customfieldService->getFormattedValue($customfieldvalue->getCustomField(), $ref[$key]);
+                                $historyentry['newvalue'] = $this->customfieldService->getFormattedValue($customfieldvalue->getCustomField(), $value);
                                 $history[$fieldlogentry->getLoggedAt()->format(DATE_RFC2822)]['changes'][] = $historyentry;
                                 // update ref
                                 $ref[$key] = $value;

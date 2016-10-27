@@ -26,6 +26,9 @@ use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\PredefinedEvent;
 
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -47,10 +50,33 @@ use ZfcRbac\Exception\UnauthorizedException;
 class EventsController extends TabController
 {
 
+    private $entityManager;
+    private $eventservice;
+    private $customfieldservice;
+    private $zfcRbacOptions;
+
+    public function __construct(EntityManager $entityManager,
+                                EventService $eventService,
+                                CustomFieldService $customfieldService,
+                                $zfcrbacOptions,
+                                $config)
+    {
+        parent::__construct($config);
+        $this->entityManager = $entityManager;
+        $this->eventservice = $eventService;
+        $this->customfieldservice = $customfieldService;
+        $this->zfcRbacOptions = $zfcrbacOptions;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+    
     public function indexAction()
     {
         parent::indexAction();
-        
+
         $return = array();
         
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -77,7 +103,7 @@ class EventsController extends TabController
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $ipoid = $post['nameipo'];
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $em = $this->getEntityManager();
             $ipo = $em->getRepository('Application\Entity\IPO')->find($ipoid);
             if ($ipo) {
                 // un seul IPO par organisation
@@ -108,7 +134,7 @@ class EventsController extends TabController
     public function getIPOAction()
     {
         $json = array();
-        $objectmanager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectmanager = $this->getEntityManager();
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             
             $currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(array(
@@ -141,7 +167,7 @@ class EventsController extends TabController
      */
     public function searchAction()
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         $results = array();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
@@ -222,7 +248,7 @@ class EventsController extends TabController
 
     private function addCustomFieldsSearch(QueryBuilder &$qbEvents, QueryBuilder &$qbModels, $search)
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         // search relevant customfields
         $qb = $em->createQueryBuilder();
         $qb->select(array(
@@ -426,7 +452,7 @@ class EventsController extends TabController
                     ->toArray());
                 $id = $post['id'] ? $post['id'] : null;
                 
-                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $objectManager = $this->getEntityManager();
 
                 $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find('5');
 
@@ -991,7 +1017,7 @@ class EventsController extends TabController
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         $form = $this->getSkeletonForm(null);
         
@@ -1031,7 +1057,7 @@ class EventsController extends TabController
                     break;
                 case 'predefined_events':
                     $id = $this->params()->fromQuery('id');
-                    $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                    $em = $this->getEntityManager();
                     $category = $em->getRepository('Application\Entity\Category')->find($id);
                     $viewmodel->setVariables(array(
                         'part' => $part,
@@ -1043,7 +1069,7 @@ class EventsController extends TabController
                     $viewmodel->setVariables(array(
                         'part' => $part
                     ));
-                    $form->add(new CustomFieldset($this->getServiceLocator(), $this->params()
+                    $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $this->params()
                         ->fromQuery('id')));
                     break;
                 default:
@@ -1070,7 +1096,7 @@ class EventsController extends TabController
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         // création du formulaire : identique en cas de modif ou création
         
@@ -1131,7 +1157,7 @@ class EventsController extends TabController
                     ->setAttribute('value', $cat->getId());
             }
             // custom fields
-            $form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
+            $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
         }
         if (! $zonefilters) { // si aucun filtre => cas d'un nouvel evt
             if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -1234,7 +1260,7 @@ class EventsController extends TabController
 
     private function getSkeletonForm($tabid, $event = null)
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         if (! $event) {
             $event = new Event();
@@ -1305,9 +1331,8 @@ class EventsController extends TabController
         $defaultvalues = array();
         $customvalues = array();
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $entityService = $this->getServiceLocator()->get('EventService');
-        
+        $objectManager = $this->getEntityManager();
+
         $predefinedEvt = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($predefinedId);
         
         $defaultvalues['punctual'] = $predefinedEvt->isPunctual();
@@ -1342,7 +1367,7 @@ class EventsController extends TabController
     {
         $parentId = $this->params()->fromQuery('id', null);
         $json = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
             'parent' => $parentId
@@ -1354,9 +1379,7 @@ class EventsController extends TabController
                     ->getColorfield());
                 $json[$action->getId()] = array(
                     'id' => $action->getId(),
-                    'name' => $this->getServiceLocator()
-                        ->get('EventService')
-                        ->getName($action),
+                    'name' => $this->eventservice->getName($action),
                     'place' => $action->getPlace(),
                     'color' => ($color !== null ? $color->getValue() : ''),
                     'impactname' => $action->getImpact()->getName(),
@@ -1393,7 +1416,7 @@ class EventsController extends TabController
     
     private function getActions($eventid)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $qb = $objectManager->createQueryBuilder();
         $qb->select(array(
@@ -1417,7 +1440,7 @@ class EventsController extends TabController
     {
         $eventid = $this->params()->fromQuery('id', null);
         $json = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')
             ->find($eventid)
             ->getFiles() as $file) {
@@ -1440,7 +1463,7 @@ class EventsController extends TabController
     {
         $eventid = $this->params()->fromQuery('id', null);
         $json = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         foreach ($objectManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
             'parent' => $eventid
         )) as $alarm) {
@@ -1480,7 +1503,7 @@ class EventsController extends TabController
     {
         $evtId = $this->params()->fromQuery('id', null);
         $json = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
         
@@ -1502,7 +1525,7 @@ class EventsController extends TabController
 
     public function deletefileAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $fileid = $this->params()->fromQuery('id', null);
         $eventid = $this->params()->fromQuery('eventid', null);
@@ -1544,7 +1567,7 @@ class EventsController extends TabController
      */
     public function getNumberEventsTabAction()
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         $json = array();
         foreach ($em->getRepository('Application\Entity\Tab')->findAll() as $tab) {
             $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab);
@@ -1586,7 +1609,7 @@ class EventsController extends TabController
         
         $json = array();
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->zfcUserAuthentication(), 
@@ -1635,8 +1658,7 @@ class EventsController extends TabController
         $rootcolor = $this->params()->fromQuery('rootcolor', true);
         $lastmodified = $this->params()->fromQuery('lastupdate', null);
 
-        $om = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $eventservice = $this->getServiceLocator()->get('EventService');
+        $om = $this->getEntityManager();
 
         $events = array();
 
@@ -1649,7 +1671,7 @@ class EventsController extends TabController
             $cats
         ) as $event) {
             $e = $this->getEventJson($event);
-            $e['title'] = $eventservice->getName($event);
+            $e['title'] = $this->eventservice->getName($event);
             $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
             if($event->isPunctual()) {
                 $e['end'] = $event->getStartdate()->format(DATE_ISO8601);
@@ -1689,14 +1711,12 @@ class EventsController extends TabController
 
     private function getEventJson(Event $event)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $logsRepo = $objectManager->getRepository("Application\Entity\Log");
-        $eventservice = $this->getServiceLocator()->get('EventService');
-        $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         $json = array(
             'id' => $event->getId(),
-            'name' => $eventservice->getName($event),
-            'modifiable' => ($eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'name' => $this->eventservice->getName($event),
+            'modifiable' => ($this->eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
             'deleteable' => $this->isGranted('events.delete') ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
@@ -1747,14 +1767,14 @@ class EventsController extends TabController
                         $i++;
                         $name = $formatterSimple->format($log->getLoggedAt()) . '-' . $i . ' ' . $value->getCustomField()->getName();
                     }
-                    $formattedvalue = $customfieldservice->getFormattedValue(
+                    $formattedvalue = $this->customfieldservice->getFormattedValue(
                         $value->getCustomField(),
                         $log->getData()["value"]
                     );
                     $fields[$name] = $formattedvalue;
                 }
             } else {
-                $formattedvalue = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                $formattedvalue = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
                 if ($formattedvalue != null) {
                     $fields[$value->getCustomField()->getName()] = $formattedvalue;
                 }
@@ -1798,7 +1818,6 @@ class EventsController extends TabController
 
     private function getModelJson(PredefinedEvent $model)
     {
-        $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         $json = array(
             'name' => $model->getName(),
             'category_root' => ($model->getCategory()->getParent() ? $model->getCategory()
@@ -1809,7 +1828,7 @@ class EventsController extends TabController
         );
         $fields = array();
         foreach ($model->getCustomFieldsValues() as $value) {
-            $fields[$value->getCustomField()->getName()] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+            $fields[$value->getCustomField()->getName()] = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
         }
         $json['fields'] = $fields;
         return $json;
@@ -1833,7 +1852,7 @@ class EventsController extends TabController
      */
     public function getcategoriesAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $qb = $objectManager->createQueryBuilder();
         $qb->select('c')->from('Application\Entity\Category', 'c');
         
@@ -1883,7 +1902,7 @@ class EventsController extends TabController
 
     private function filterReadableCategories($categories)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $readablecat = array();
         foreach ($categories as $category) {
             if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -1897,9 +1916,7 @@ class EventsController extends TabController
                     }
                 }
             } else {
-                $role = $this->getServiceLocator()
-                    ->get('ZfcRbac\Options\ModuleOptions')
-                    ->getGuestRole();
+                $role = $this->zfcRbacOptions->getGuestRole();
                 $roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array(
                     'name' => $role
                 ));
@@ -1918,7 +1935,7 @@ class EventsController extends TabController
      */
     public function getimpactsAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $json = array();
         $impacts = $objectManager->getRepository('Application\Entity\Impact')->findAll();
         foreach ($impacts as $impact) {
@@ -1941,14 +1958,13 @@ class EventsController extends TabController
         
         $evtId = $this->params()->fromQuery('id', null);
         
-        $eventservice = $this->getServiceLocator()->get('EventService');
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $event = $objectManager->getRepository('Application\Entity\Event')->find($evtId);
         
         $history = null;
         if ($event) {
-            $history = $eventservice->getHistory($event);
+            $history = $this->eventservice->getHistory($event);
         }
         
         $viewmodel->setVariable('history', $history);
@@ -1972,7 +1988,7 @@ class EventsController extends TabController
         $messages = array();
         $event = null;
         if ($id) {
-            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $objectManager = $this->getEntityManager();
             $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
             if ($event) {
                 // modification autorisée à l'auteur ou aux utilisateurs disposant des droits en écriture
@@ -2069,7 +2085,7 @@ class EventsController extends TabController
         $json = array();
         if($this->isGranted('events.delete')) {
             if ($id) {
-                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $objectManager = $this->getEntityManager();
                 $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
                 if ($event) {
                     $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
@@ -2106,17 +2122,15 @@ class EventsController extends TabController
         $id = $this->params()->fromQuery('id', 0);
         $messages = array();
         if ($id) {
-            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $eventservice = $this->getServiceLocator()->get('EventService');
-            $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
+            $objectManager = $this->getEntityManager();
             $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
             $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
             if ($event) {
-                $content = 'Nom : ' . $eventservice->getName($event) . '<br />';
+                $content = 'Nom : ' . $this->eventservice->getName($event) . '<br />';
                 $content .= 'Début : ' . $formatter->format($event->getStartdate()) . '<br />';
                 $content .= 'Fin : ' . ($event->getEnddate() ? $formatter->format($event->getEnddate()) : 'Inconnu') . '<br />';
                 foreach ($event->getCustomFieldsValues() as $value) {
-                    $content .= $value->getCustomField()->getName() . ' : ' . $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
+                    $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
                 }
                 
                 $text = new \Zend\Mime\Part($content);
@@ -2128,19 +2142,18 @@ class EventsController extends TabController
                     $text
                 ));
                 
-                $config = $this->serviceLocator->get('config');
-                if (! $config['emailfrom'] || ! $config['smtp']) {
+                if (! $this->config['emailfrom'] || ! $this->config['smtp']) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
                     $message = new \Zend\Mail\Message();
                     $message->addTo($event->getOrganisation()
                         ->getIpoEmail())
-                        ->addFrom($config['emailfrom'])
-                        ->setSubject("Envoi d'un évènement par le CDS : " . $eventservice->getName($event))
+                        ->addFrom($this->config['emailfrom'])
+                        ->setSubject("Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event))
                         ->setBody($mimeMessage);
                     
                     $transport = new \Zend\Mail\Transport\Smtp();
-                    $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
+                    $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
                     $transport->setOptions($transportOptions);
                     try {
                         $transport->send($message);
@@ -2170,7 +2183,7 @@ class EventsController extends TabController
      */
     private function changeEndDate(Event $event, $enddate, &$messages = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
         if ($event->setEnddate($enddate)) {
             if ($enddate) {
@@ -2234,7 +2247,7 @@ class EventsController extends TabController
      */
     private function changeStartDate(Event $event, \DateTime $startdate, &$messages = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $formatter = \IntlDateFormatter::create(
             \Locale::getDefault(), 
             \IntlDateFormatter::FULL, 
@@ -2286,7 +2299,7 @@ class EventsController extends TabController
      */
     private function closeEvent(Event $event)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         foreach ($event->getChildren() as $child) {
             if ($child->getCategory() instanceof FrequencyCategory) {
                 // on termine les évènements fils de type fréquence
@@ -2316,14 +2329,13 @@ class EventsController extends TabController
         
         $id = $this->params()->fromQuery('id', null);
         
-        $eventservice = $this->getServiceLocator()->get('EventService');
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
         
         $history = null;
         if ($event) {
-            $history = $eventservice->getHistory($event);
+            $history = $this->eventservice->getHistory($event);
         }
         
         $viewmodel->setVariable('history', $history);
@@ -2336,7 +2348,7 @@ class EventsController extends TabController
     public function addnoteAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         $messages = array();
         
@@ -2372,7 +2384,7 @@ class EventsController extends TabController
     public function savenoteAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         $messages = array();
         
@@ -2404,7 +2416,7 @@ class EventsController extends TabController
     {
         $id = $this->params()->fromQuery('id', null);
         
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
@@ -2424,7 +2436,7 @@ class EventsController extends TabController
      */
     public function getshifthoursAction() {
         $json = array();
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $em = $this->getEntityManager();
         if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.mod-opsup')) {
             $user =  $this->zfcUserAuthentication()->getIdentity();
             $shifthours = array();

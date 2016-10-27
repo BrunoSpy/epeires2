@@ -17,6 +17,9 @@
  */
 namespace Application\Controller;
 
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Session\Container;
@@ -25,7 +28,6 @@ use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
-use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
 use Application\Form\CustomFieldset;
 
@@ -35,6 +37,21 @@ use Application\Form\CustomFieldset;
  */
 class FrequenciesController extends TabController
 {
+
+    private $entityManager;
+    private $customfieldservice;
+    private $eventservice;
+
+    public function __construct(EntityManager $entityManager,
+                                EventService $eventservice,
+                                CustomFieldService $customfieldService,
+                                $config)
+    {
+        parent::__construct($config);
+        $this->entityManager = $entityManager;
+        $this->eventservice = $eventservice;
+        $this->customfieldservice = $customfieldService;
+    }
 
     public function indexAction()
     {
@@ -53,10 +70,8 @@ class FrequenciesController extends TabController
         }
         
         $this->flashMessenger()->clearMessages();
-        
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        $qb = $em->createQueryBuilder();
+
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select(array(
             's',
             'z'
@@ -72,14 +87,14 @@ class FrequenciesController extends TabController
         
         if ($zonesession != null) {
             if ($zonesession != '0') {
-                $orga = $em->getRepository('Application\Entity\Organisation')->findOneBy(array(
+                $orga = $this->entityManager->getRepository('Application\Entity\Organisation')->findOneBy(array(
                     'shortname' => $zonesession
                 ));
                 if ($orga) {
                     $qb->andWhere($qb->expr()
                         ->eq('z.organisation', $orga->getId()));
                 } else {
-                    $zone = $em->getRepository('Application\Entity\QualificationZone')->findOneBy(array(
+                    $zone = $this->entityManager->getRepository('Application\Entity\QualificationZone')->findOneBy(array(
                         'shortname' => $zonesession
                     ));
                     if ($zone) {
@@ -109,10 +124,9 @@ class FrequenciesController extends TabController
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()->isNull('defaultsector'));
         $criteria->andWhere(Criteria::expr()->eq('decommissionned', false));
-        $otherfrequencies = $em->getRepository('Application\Entity\Frequency')->matching($criteria);
+        $otherfrequencies = $this->entityManager->getRepository('Application\Entity\Frequency')->matching($criteria);
         
-        $config = $this->getServiceLocator()->get('config');
-        $frequencyMenu = isset($config['frequency_test_menu']) ? $config['frequency_test_menu'] : false;
+        $frequencyMenu = isset($this->config['frequency_test_menu']) ? $this->config['frequency_test_menu'] : false;
         
         $viewmodel->setVariables(array(
             'antennas' => $this->getAntennas(),
@@ -138,15 +152,14 @@ class FrequenciesController extends TabController
             $now->setTimezone(new \DateTimeZone("UTC"));
             
             if ($fromid && $toid) {
-                $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                
-                $fromfreq = $em->getRepository('Application\Entity\Frequency')->find($fromid);
-                $tofreq = $em->getRepository('Application\Entity\Frequency')->find($toid);
+
+                $fromfreq = $this->entityManager->getRepository('Application\Entity\Frequency')->find($fromid);
+                $tofreq = $this->entityManager->getRepository('Application\Entity\Frequency')->find($toid);
                 
                 if ($fromfreq && $tofreq) {
                     
                     // recherche des évènements sur la fréquence d'origine
-                    $events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory');
+                    $events = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory');
                     $frequencyEvents = array();
                     foreach ($events as $event) {
                         $frequencyfield = $event->getCategory()->getFrequencyField();
@@ -162,7 +175,7 @@ class FrequenciesController extends TabController
                     // 1 evt : on modifie
                     // 2 ou + : indécidable -> erreur
                     if (count($frequencyEvents) == 0) {
-                        $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
+                        $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
                             ->getIdentity(), null, $messages);
                     } else 
                         if (count($frequencyEvents) == 1) {
@@ -170,7 +183,7 @@ class FrequenciesController extends TabController
                             // une exception : si l'évènement a un parent, il faut créer un nouvel évènement
                             // sinon il sera fermé automatiquement à la fermeture du parent
                             if ($event->getParent() != null) {
-                                $em->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
+                                $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
                                     ->getIdentity(), null, $messages);
                             } else {
                                 // deux cas : changement de fréquence ou retour à la fréquence nominale
@@ -197,15 +210,15 @@ class FrequenciesController extends TabController
                                         // sinon on ferme
                                         if ($otherfields) {
                                             $previousfield->setValue($toid);
-                                            $em->persist($previousfield);
+                                            $this->entityManager->persist($previousfield);
                                         } else {
-                                            $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                                            $endstatus = $this->entityManager->getRepository('Application\Entity\Status')->find('3');
                                             $event->setEnddate($now);
                                             $event->setStatus($endstatus);
                                         }
-                                        $em->persist($event);
+                                        $this->entityManager->persist($event);
                                         try {
-                                            $em->flush();
+                                            $this->entityManager->flush();
                                             $messages['success'][] = "Fréquence mise à jour";
                                         } catch (\Exception $ex) {
                                             $messages['error'][] = $ex->getMessage();
@@ -224,7 +237,7 @@ class FrequenciesController extends TabController
                                     }
                                     if ($previousfield) {
                                         $previousfield->setValue($toid);
-                                        $em->persist($previousfield);
+                                        $this->entityManager->persist($previousfield);
                                     } else {
                                         $customvalue = new CustomFieldValue();
                                         $customvalue->setEvent($event);
@@ -232,11 +245,11 @@ class FrequenciesController extends TabController
                                             ->getOtherFrequencyField());
                                         $customvalue->setValue($toid);
                                         $event->addCustomFieldValue($customvalue);
-                                        $em->persist($customvalue);
-                                        $em->persist($event);
+                                        $this->entityManager->persist($customvalue);
+                                        $this->entityManager->persist($event);
                                     }
                                     try {
-                                        $em->flush();
+                                        $this->entityManager->flush();
                                         $messages['success'][] = "Evénement modifié";
                                     } catch (\Exception $ex) {
                                         $messages['error'][] = $ex->getMessage();
@@ -262,7 +275,6 @@ class FrequenciesController extends TabController
         $json = array();
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $state = $this->params()->fromQuery('state', null);
             $antennaid = $this->params()->fromQuery('antennaid', null);
             $freqid = $this->params()->fromQuery('freq', null);
@@ -270,7 +282,7 @@ class FrequenciesController extends TabController
             $now->setTimezone(new \DateTimeZone("UTC"));
             
             if ($state != null && $antennaid) {
-                $events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
+                $events = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
                 // on récupère les évènements de l'antenne
                 $antennaEvents = array();
                 foreach ($events as $event) {
@@ -303,29 +315,29 @@ class FrequenciesController extends TabController
                                     $newfreqvalue = trim($newfreqvalue);
                                     if (strlen($newfreqvalue) === 0) {
                                         // fermer l'evt
-                                        $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                                        $endstatus = $this->entityManager->getRepository('Application\Entity\Status')->find('3');
                                         $event->setStatus($endstatus);
                                         // ferme evts fils de type frequencycategory
                                         foreach ($event->getChildren() as $child) {
                                             if ($child->getCategory() instanceof FrequencyCategory) {
                                                 $child->setEnddate($now);
                                                 $child->setStatus($endstatus);
-                                                $em->persist($child);
+                                                $this->entityManager->persist($child);
                                             }
                                         }
                                         $event->setEnddate($now);
-                                        $em->persist($event);
+                                        $this->entityManager->persist($event);
                                         try {
-                                            $em->flush();
+                                            $this->entityManager->flush();
                                             $messages['success'][] = "Evènement antenne correctement terminé.";
                                         } catch (\Exception $e) {
                                             $messages['error'][] = $e->getMessage();
                                         }
                                     } else {
                                         $freqidEventValue->setValue(trim($newfreqvalue));
-                                        $em->persist($freqidEventValue);
+                                        $this->entityManager->persist($freqidEventValue);
                                         try {
-                                            $em->flush();
+                                            $this->entityManager->flush();
                                             $messages['success'][] = "Evènement antenne correctement terminé.";
                                         } catch (\Exception $e) {
                                             $messages['error'][] = $e->getMessage();
@@ -338,20 +350,20 @@ class FrequenciesController extends TabController
                                 $messages['error'][] = "Evènement en cours incompatible.";
                             }
                         } else {
-                            $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                            $endstatus = $this->entityManager->getRepository('Application\Entity\Status')->find('3');
                             $event->setStatus($endstatus);
                             // ferme evts fils de type frequencycategory
                             foreach ($event->getChildren() as $child) {
                                 if ($child->getCategory() instanceof FrequencyCategory) {
                                     $child->setEnddate($now);
                                     $child->setStatus($endstatus);
-                                    $em->persist($child);
+                                    $this->entityManager->persist($child);
                                 }
                             }
                             $event->setEnddate($now);
-                            $em->persist($event);
+                            $this->entityManager->persist($event);
                             try {
-                                $em->flush();
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Evènement antenne correctement terminé.";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();
@@ -365,25 +377,27 @@ class FrequenciesController extends TabController
                         $messages['error'][] = "Un évènement est déjà en cours, impossible d'en créer un nouveau.";
                     } else {
                         $event = new Event();
-                        $status = $em->getRepository('Application\Entity\Status')->find('2');
-                        $impact = $em->getRepository('Application\Entity\Impact')->find('3');
+                        $status = $this->entityManager->getRepository('Application\Entity\Status')->find('2');
+                        $impact = $this->entityManager->getRepository('Application\Entity\Impact')->find('3');
                         $event->setStatus($status);
                         $event->setStartdate($now);
                         $event->setImpact($impact);
                         $event->setPunctual(false);
-                        $antenna = $em->getRepository('Application\Entity\Antenna')->find($antennaid);
+                        $antenna = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
                         $event->setOrganisation($antenna->getOrganisation()); // TODO et si une antenne appartient à plusieurs orga ?
                         $event->setAuthor($this->zfcUserAuthentication()
                             ->getIdentity());
-                        $categories = $em->getRepository('Application\Entity\AntennaCategory')->findBy(array(
+                        $categories = $this->entityManager
+                            ->getRepository('Application\Entity\AntennaCategory')
+                            ->findBy(array(
                             'defaultantennacategory' => true
                         ));
                         $frequency = null;
                         if ($freqid) {
-                            $frequency = $em->getRepository('Application\Entity\Frequency')->find($freqid);
+                            $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($freqid);
                         }
                         if ($categories) {
-                            $em->persist($event);
+                            $this->entityManager->persist($event);
                             $cat = $categories[0];
                             $antennafieldvalue = new CustomFieldValue();
                             $antennafieldvalue->setCustomField($cat->getAntennaField());
@@ -401,14 +415,14 @@ class FrequenciesController extends TabController
                                 $freqvalue->setValue($frequency->getId());
                                 $freqvalue->setEvent($event);
                                 $event->addCustomFieldValue($freqvalue);
-                                $em->persist($freqvalue);
+                                $this->entityManager->persist($freqvalue);
                             }
                             $event->setCategory($categories[0]);
                             // création des evts fils pour le passage en secours
                             if ($frequency && $frequency->hasAntenna($antenna)) {
                                 // une seule fréquence impactée
                                 if ($frequency->hasMainAntenna($antenna) || $frequency->hasMainClimaxAntenna($antenna)) {
-                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                    $this->entityManager->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
@@ -423,7 +437,7 @@ class FrequenciesController extends TabController
                             } else {
                                 // toutes les fréquences impactées
                                 foreach ($antenna->getMainfrequencies() as $frequency) {
-                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                    $this->entityManager->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
@@ -436,7 +450,7 @@ class FrequenciesController extends TabController
                                     );
                                 }
                                 foreach ($antenna->getMainfrequenciesclimax() as $frequency) {
-                                    $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                                    $this->entityManager->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
                                         $frequency, 
                                         1, // couv secours
                                         0, // toujours dispo
@@ -450,7 +464,7 @@ class FrequenciesController extends TabController
                                 }
                                 // création de la fiche réflexe
                                 if ($antenna->getModel()) {
-                                    foreach ($em->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
+                                    foreach ($this->entityManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
                                         'parent' => $antenna->getModel()
                                             ->getId()
                                     )) as $action) {
@@ -459,7 +473,7 @@ class FrequenciesController extends TabController
                                         $child->setAuthor($event->getAuthor());
                                         $child->setOrganisation($event->getOrganisation());
                                         $child->createFromPredefinedEvent($action);
-                                        $child->setStatus($em->getRepository('Application\Entity\Status')
+                                        $child->setStatus($this->entityManager->getRepository('Application\Entity\Status')
                                             ->findOneBy(array(
                                             'defaut' => true,
                                             'open' => true
@@ -470,10 +484,10 @@ class FrequenciesController extends TabController
                                             $newvalue->setCustomField($value->getCustomField());
                                             $newvalue->setValue($value->getValue());
                                             $child->addCustomFieldValue($newvalue);
-                                            $em->persist($newvalue);
+                                            $this->entityManager->persist($newvalue);
                                         }
                                         $child->updateAlarmDate();
-                                        $em->persist($child);
+                                        $this->entityManager->persist($child);
                                     }
                                     // ajout des fichiers
                                     foreach ($antenna->getModel()->getFiles() as $file) {
@@ -483,8 +497,8 @@ class FrequenciesController extends TabController
                             }
                             try {
                                 $event->updateAlarms();
-                                $em->persist($event);
-                                $em->flush();
+                                $this->entityManager->persist($event);
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Nouvel évènement antenne créé.";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();
@@ -509,17 +523,16 @@ class FrequenciesController extends TabController
     {
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $state = $this->params()->fromQuery('state', null);
             $frequencyid = $this->params()->fromQuery('freqid', null);
             
             if ($state != null && $frequencyid != null) {
                 $now = new \DateTime('NOW');
                 $now->setTimezone(new \DateTimeZone("UTC"));
-                $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+                $freq = $this->entityManager->getRepository('Application\Entity\Frequency')->find($frequencyid);
                 if ($freq) {
                     $frequencyevents = array();
-                    foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+                    foreach ($this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
                         if ($event->getCustomFieldValue($event->getCategory()
                             ->getFrequencyField())
                             ->getValue() == $freq->getId()) {
@@ -535,10 +548,10 @@ class FrequenciesController extends TabController
                             // - pas d'evt
                             // - 1 evt : création si il y a un parent
                             // pour éviter la fermeture inopinée
-                            $em->getRepository('Application\Entity\Event')->addSwitchFrequencyStateEvent($freq, $now, $this->zfcUserAuthentication()
+                            $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyStateEvent($freq, $now, $this->zfcUserAuthentication()
                                 ->getIdentity(), null, $messages);
                             try {
-                                $em->flush();
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Nouvel évènement fréquence créé.";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();
@@ -558,7 +571,7 @@ class FrequenciesController extends TabController
                                 if (($otherfreq == null || $otherfreq == 0) && ($antenna == null || $antenna == 0) && $stateva != null && $stateva == true && $state == 'true') {
                                     // passage en disponible
                                     // les autres champs sont vides -> fermeture
-                                    $freqEvent->close($em->getRepository('Application\Entity\Status')
+                                    $freqEvent->close($this->entityManager->getRepository('Application\Entity\Status')
                                         ->find(3), $now);
                                 } else {
                                     // on met à jour le champ correspondant sans fermer l'évènement
@@ -569,12 +582,12 @@ class FrequenciesController extends TabController
                                         $statefield->setEvent($freqEvent);
                                     }
                                     $statefield->setValue(($state != 'true'));
-                                    $em->persist($statefield);
+                                    $this->entityManager->persist($statefield);
                                 }
-                                $em->persist($freqEvent);
+                                $this->entityManager->persist($freqEvent);
                             }
                             try {
-                                $em->flush();
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Evènement fréquence modifié.";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();
@@ -596,20 +609,19 @@ class FrequenciesController extends TabController
     {
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $cov = $this->params()->fromQuery('cov', null);
             $frequencyid = $this->params()->fromQuery('frequencyid', null);
             $cause = $this->params()->fromQuery('cause', '');
             if ($cov != null && $frequencyid) {
                 $now = new \DateTime('NOW');
                 $now->setTimezone(new \DateTimeZone("UTC"));
-                $freq = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
+                $freq = $this->entityManager->getRepository('Application\Entity\Frequency')->find($frequencyid);
                 $cov = intval($cov);
                 if ($freq) {
                     // there's only two possibilities on a switch cov action : open a new event or close the previous one
                     // on recherche les évènements Fréquence en cours
                     $frequencyevents = array();
-                    foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+                    foreach ($this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
                         if ($event->getCustomFieldValue($event->getCategory()
                             ->getFrequencyField())
                             ->getValue() == $freq->getId()) {
@@ -627,7 +639,7 @@ class FrequenciesController extends TabController
                             // - 0 evt en cours
                             // - 1 evt en cours mais avec parent, pour éviter fermeture inopinée
                             // création d'un nouvel évènement
-                            $em->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
+                            $this->entityManager->getRepository('Application\Entity\Event')->addChangeFrequencyCovEvent(
                                 $freq, 
                                 $cov, 
                                 false, // sur un changement de couverture, la fréquence reste disponible
@@ -656,7 +668,7 @@ class FrequenciesController extends TabController
                                     $cov == 0) { // prochaine couv : normale
                                                // retour en couv normale
                                                // les autres champs sont vides -> fermeture
-                                    $freqEvent->close($em->getRepository('Application\Entity\Status')
+                                    $freqEvent->close($this->entityManager->getRepository('Application\Entity\Status')
                                         ->find(3), $now);
                                 } else {
                                     // on met à jour le champ correspondant
@@ -667,13 +679,13 @@ class FrequenciesController extends TabController
                                             ->getCurrentAntennaField());
                                     }
                                     $antennafield->setValue($cov);
-                                    $em->persist($antennafield);
+                                    $this->entityManager->persist($antennafield);
                                 }
-                                $em->persist($freqEvent);
+                                $this->entityManager->persist($freqEvent);
                             }
                         }
                     try {
-                        $em->flush();
+                        $this->entityManager->flush();
                         $messages['success'][] = 'Evènement correctement mis à jour.';
                     } catch (\Exception $ex) {
                         $messages['error'][] = $ex->getMessage();
@@ -707,10 +719,9 @@ class FrequenciesController extends TabController
 
     private function getFrequencies()
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $frequencies = array();
-        $results = $em->getRepository('Application\Entity\Frequency')->findBy(array(
+        $results = $this->entityManager->getRepository('Application\Entity\Frequency')->findBy(array(
             'decommissionned' => false
         ));
         
@@ -770,7 +781,7 @@ class FrequenciesController extends TabController
             }
         }
         
-        foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
+        foreach ($this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\FrequencyCategory') as $event) {
             $statefield = $event->getCategory()
                 ->getStateField()
                 ->getId();
@@ -802,7 +813,7 @@ class FrequenciesController extends TabController
                 
                 $frequencies[$frequencyid]['status'] *= $available;
                 $frequencies[$frequencyid]['cov'] = $cov;
-                $otherfreq = $em->getRepository('Application\Entity\Frequency')->find($otherfreqid);
+                $otherfreq = $this->entityManager->getRepository('Application\Entity\Frequency')->find($otherfreqid);
                 if ($otherfreq) {
                     $frequencies[$frequencyid]['otherfreq'] = $otherfreq->getValue();
                     $frequencies[$frequencyid]['otherfreqname'] = $otherfreq->getName();
@@ -827,7 +838,7 @@ class FrequenciesController extends TabController
         }
         
         // on donne aussi les evènements dans les 12h
-        foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
+        foreach ($this->entityManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\FrequencyCategory') as $event) {
             $frequencyidfield = $event->getCustomFieldValue($event->getCategory()
                 ->getFrequencyField());
             $frequencyid = ($frequencyidfield == null ? null : $frequencyidfield->getValue());
@@ -841,11 +852,10 @@ class FrequenciesController extends TabController
 
     private function getAntennas($full = true)
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $antennas = array();
         
-        foreach ($em->getRepository('Application\Entity\Antenna')->findBy(array(
+        foreach ($this->entityManager->getRepository('Application\Entity\Antenna')->findBy(array(
             'decommissionned' => false
         )) as $antenna) {
             // avalaible by default
@@ -861,7 +871,7 @@ class FrequenciesController extends TabController
             }
         }
         
-        foreach ($em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
+        foreach ($this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
             $statefield = $result->getCategory()
                 ->getStateField()
                 ->getId();
@@ -894,7 +904,7 @@ class FrequenciesController extends TabController
         }
         
         if ($full) {
-            foreach ($em->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
+            foreach ($this->entityManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
                 $statefield = $result->getCategory()
                     ->getStateField()
                     ->getId();
@@ -926,12 +936,11 @@ class FrequenciesController extends TabController
 
     public function getfrequenciesAction()
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $frequencyid = $this->params()->fromQuery('id', null);
         $frequencies = array();
         if ($frequencyid) {
-            $frequency = $em->getRepository('Application\Entity\Frequency')->find($frequencyid);
-            $qb = $em->createQueryBuilder();
+            $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($frequencyid);
+            $qb = $this->entityManager->createQueryBuilder();
             $qb->select(array(
                 'f'
             ))
@@ -964,16 +973,13 @@ class FrequenciesController extends TabController
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         
         $antennaId = $this->params()->fromQuery('id', null);
-        
-        $eventservice = $this->getServiceLocator()->get('EventService');
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
+
+        $antenna = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaId);
         
         $fiche = null;
         $history = null;
         if ($antenna) {
-            $events = $objectManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
+            $events = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
             $antennaEvents = array();
             foreach ($events as $event) {
                 foreach ($event->getCustomFieldsValues() as $value) {
@@ -987,7 +993,7 @@ class FrequenciesController extends TabController
                 }
             }
             // recherche aussi sur les evts planifiés
-            $events = $objectManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory');
+            $events = $this->entityManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory');
             foreach ($events as $event) {
                 foreach ($event->getCustomFieldsValues() as $value) {
                     if ($value->getCustomField()->getId() == $event->getCategory()
@@ -1003,11 +1009,11 @@ class FrequenciesController extends TabController
             if (count($antennaEvents) >= 1) {
                 $event = $antennaEvents[0];
                 $fiche = $event;
-                $history = $eventservice->getHistory($event);
+                $history = $this->eventservice->getHistory($event);
             }
         }
         
-        $qb = $objectManager->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select(array(
             'e',
             'cat'
@@ -1035,10 +1041,8 @@ class FrequenciesController extends TabController
         
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        $brouillagecat = $objectManager->getRepository('Application\Entity\BrouillageCategory')->findOneBy(array(
+
+        $brouillagecat = $this->entityManager->getRepository('Application\Entity\BrouillageCategory')->findOneBy(array(
             'defaultbrouillagecategory' => true
         ));
         if ($brouillagecat) {
@@ -1059,9 +1063,7 @@ class FrequenciesController extends TabController
         $return = $this->params()->fromQuery('return', null);
         
         $freqId = $this->params()->fromQuery('freqid', null);
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.create')) {
             if ($this->getRequest()->isPost()) {
                 $post = $this->getRequest()->getPost();
@@ -1088,7 +1090,7 @@ class FrequenciesController extends TabController
                     if (isset($post['custom_fields'])) {
                         foreach ($post['custom_fields'] as $key => $value) {
                             // génération des customvalues si un customfield dont le nom est $key est trouvé
-                            $customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                            $customfield = $this->entityManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
                                 'id' => $key
                             ));
                             if ($customfield) {
@@ -1101,13 +1103,13 @@ class FrequenciesController extends TabController
                                 $event->addCustomFieldValue($customvalue);
                                 // }
                                 $customvalue->setValue($value);
-                                $objectManager->persist($customvalue);
+                                $this->entityManager->persist($customvalue);
                             }
                         }
                     }
-                    $objectManager->persist($event);
+                    $this->entityManager->persist($event);
                     try {
-                        $objectManager->flush();
+                        $this->entityManager->flush();
                         $messages['success'][] = "Brouillage enregistré";
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();
@@ -1127,10 +1129,9 @@ class FrequenciesController extends TabController
 
     private function getFormBrouillage($idfreq, $event = null)
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         if (! $event) {
             $event = new Event();
-            $event->setCategory($em->getRepository('Application\Entity\BrouillageCategory')
+            $event->setCategory($this->entityManager->getRepository('Application\Entity\BrouillageCategory')
                 ->findOneBy(array(
                 'defaultbrouillagecategory' => true
             )));
@@ -1138,12 +1139,12 @@ class FrequenciesController extends TabController
         
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($event);
-        $form->setHydrator(new DoctrineObject($em))->setObject($event);
+        $form->setHydrator(new DoctrineObject($this->entityManager))->setObject($event);
         
         $form->bind($event);
         $form->setData($event->getArrayCopy());
         
-        $form->get('impact')->setValueOptions($em->getRepository('Application\Entity\Impact')
+        $form->get('impact')->setValueOptions($this->entityManager->getRepository('Application\Entity\Impact')
             ->getAllAsArray());
         
         if ($this->zfcUserAuthentication()->hasIdentity()) {
@@ -1158,7 +1159,7 @@ class FrequenciesController extends TabController
         $form->get('status')->setValue(3);
         $form->get('punctual')->setValue(true);
         
-        $form->add(new CustomFieldset($this->getServiceLocator(), $event->getCategory()
+        $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $event->getCategory()
             ->getId()));
         
         $form->get('custom_fields')

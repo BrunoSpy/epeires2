@@ -18,6 +18,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -34,6 +35,17 @@ use Application\Controller\FormController;
  */
 class RolesController extends FormController
 {
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
 
     public function indexAction()
     {
@@ -43,7 +55,7 @@ class RolesController extends FormController
         
         $config = $this->serviceLocator->get('config');
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $roles = $objectManager->getRepository('Core\Entity\Role')->findAll();
         
@@ -71,7 +83,7 @@ class RolesController extends FormController
     {
         $permission = $this->params()->fromQuery('permission', null);
         $roleid = $this->params()->fromQuery('roleid', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($permission && $roleid) {
             $perm = $objectManager->getRepository('Core\Entity\Permission')->findOneBy(array(
@@ -108,7 +120,7 @@ class RolesController extends FormController
     {
         $permission = $this->params()->fromQuery('permission', null);
         $roleid = $this->params()->fromQuery('roleid', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($permission && $roleid) {
             $perm = $objectManager->getRepository('Core\Entity\Permission')->findOneBy(array(
@@ -145,7 +157,7 @@ class RolesController extends FormController
     public function saveroleAction()
     {
         $messages = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $guest = false;
         $admin = false;
         if ($this->getRequest()->isPost()) {
@@ -190,7 +202,7 @@ class RolesController extends FormController
     public function deleteroleAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $role = $objectManager->getRepository('Core\Entity\Role')->find($id);
         if ($role) {
             $objectManager->remove($role);
@@ -219,7 +231,7 @@ class RolesController extends FormController
 
     private function getForm($id = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $role = new Role();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($role);

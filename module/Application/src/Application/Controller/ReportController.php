@@ -18,7 +18,7 @@
  */
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Core\Controller\AbstractEntityManagerAwareController;
 use DOMPDFModule\View\Model\PdfModel;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
@@ -29,25 +29,32 @@ use Doctrine\Common\Collections\Criteria;
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
-class ReportController extends AbstractActionController
+class ReportController extends AbstractEntityManagerAwareController
 {
+    private $viewpdfrenderer;
+    private $config;
+
+    public function __construct(EntityManager $entityManager, $viewpdfrenderer, $config)
+    {
+        parent::__construct($entityManager);
+        $this->viewpdfrenderer = $viewpdfrenderer;
+        $this->config = $config;
+    }
 
     public function fnebrouillageAction()
     {
         $view = $this->params()->fromQuery('view', null);
         
         $brouillageid = $this->params()->fromQuery('id', null);
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        $brouillage = $objectManager->getRepository('Application\Entity\Event')->find($brouillageid);
+
+        $brouillage = $this->getEntityManager()->getRepository('Application\Entity\Event')->find($brouillageid);
         
         if ($brouillage) {
             $fields = array();
             foreach ($brouillage->getCustomFieldsValues() as $values) {
                 $fields[$values->getCustomField()->getId()] = $values->getValue();
             }
-            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()
+            $frequency = $this->getEntityManager()->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()
                 ->getFrequencyField()
                 ->getId()]);
             
@@ -80,7 +87,6 @@ class ReportController extends AbstractActionController
 
     public function dailyAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $day = $this->params()->fromQuery('day', null);
         
         if ($day) {
@@ -90,7 +96,7 @@ class ReportController extends AbstractActionController
                 'place' => Criteria::ASC
             ));
             
-            $cats = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+            $cats = $this->getEntityManager()->getRepository('Application\Entity\Category')->matching($criteria);
             
             $eventsbycats = array();
             
@@ -99,13 +105,13 @@ class ReportController extends AbstractActionController
                 $category['name'] = $cat->getName();
 
                 //évènements lisibles par l'utilisateur, du jour spécifié, de la catégorie et non supprimés
-                $category['events'] = $objectManager
+                $category['events'] = $this->getEntityManager()
                     ->getRepository('Application\Entity\Event')
                     ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($cat->getId()), array(1,2,3,4));
                 $category['childs'] = array();
                 foreach ($cat->getChildren() as $subcat) {
                     $subcategory = array();
-                    $subcategory['events'] = $objectManager
+                    $subcategory['events'] = $this->getEntityManager()
                         ->getRepository('Application\Entity\Event')
                         ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                     $subcategory['name'] = $subcat->getName();
@@ -118,7 +124,7 @@ class ReportController extends AbstractActionController
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
                 'day' => $day,
-                'logs' => $objectManager->getRepository('Application\Entity\Log')
+                'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log')
             ));
             $pdf->setOption('paperSize', 'a4');
             
@@ -138,16 +144,14 @@ class ReportController extends AbstractActionController
         if (! $request instanceof ConsoleRequest) {
             throw new \RuntimeException('Action only available from console.');
         }
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $j = $request->getParam('delta');
         
         $email = $request->getParam('email');
         
         $org = $request->getParam('orgshortname');
         
-        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findBy(array(
+        $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findBy(array(
             'shortname' => $org
         ));
         
@@ -179,19 +183,19 @@ class ReportController extends AbstractActionController
         ->andWhere(Criteria::expr()->eq('system', false))
         ->orderBy(array('place' => Criteria::ASC));
         
-        $cats = $objectManager->getRepository('Application\Entity\Category')->matching($criteria);
+        $cats = $this->getEntityManager()->getRepository('Application\Entity\Category')->matching($criteria);
         
         $eventsByCats = array();
         foreach ($cats as $cat) {
             $category = array();
             $category['name'] = $cat->getName();
-            $category['events'] = $objectManager
+            $category['events'] = $this->getEntityManager()
                 ->getRepository('Application\Entity\Event')
                 ->getEvents(null, $day, null, null, true, array($cat->getId()), array(1,2,3,4));
             $category['childs'] = array();
             foreach ($cat->getChildren() as $subcat) {
                 $subcategory = array();
-                $subcategory['events'] = $objectManager
+                $subcategory['events'] = $this->getEntityManager()
                     ->getRepository('Application\Entity\Event')
                     ->getEvents(null, $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                 $subcategory['name'] = $subcat->getName();
@@ -203,17 +207,27 @@ class ReportController extends AbstractActionController
         $pdf = new PdfModel();
         $pdf->setOption('paperSize', 'a4');
         
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd_LL_yyyy');
         
         $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime($day)));
         
         $pdfView = new ViewModel($pdf);
         $pdfView->setTerminal(true)
                 ->setTemplate('application/report/daily')
-                ->setVariables(array('events' => $eventsByCats, 'day' => $day, 'logs' => $objectManager->getRepository('Application\Entity\Log')));
+                ->setVariables(array(
+                    'events' => $eventsByCats,
+                    'day' => $day,
+                    'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log')
+                ));
 
-        $html = $this->getServiceLocator()->get('viewpdfrenderer')->getHtmlRenderer()->render($pdfView);
-        $engine = $this->getServiceLocator()->get('viewpdfrenderer')->getEngine();
+        $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
+        $engine = $this->viewpdfrenderer->getEngine();
 
         $engine->load_html($html);
         $engine->render();
@@ -244,15 +258,14 @@ class ReportController extends AbstractActionController
                 $attachment
             ));
             
-            $config = $this->serviceLocator->get('config');
             $message = new \Zend\Mail\Message();
             $message->addTo($organisation[0]->getIpoEmail())
-                ->addFrom($config['emailfrom'])
+                ->addFrom($this->config['emailfrom'])
                 ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
                 ->setBody($mimeMessage);
             
             $transport = new \Zend\Mail\Transport\Smtp();
-            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
+            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
             $transport->setOptions($transportOptions);
             $transport->send($message);
         }

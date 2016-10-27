@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -30,12 +31,24 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 class MilController extends \Application\Controller\FormController
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     public function configAction()
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Onglets > Zones militaires";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $viewmodel->setVariables(array(
             'cats' => $objectManager->getRepository('Application\Entity\MilCategory')
@@ -64,7 +77,7 @@ class MilController extends \Application\Controller\FormController
 
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         $json = array();
         if ($this->getRequest()->isPost()) {
@@ -134,7 +147,7 @@ class MilController extends \Application\Controller\FormController
 
     private function getForm($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $milcat = new \Application\Entity\MilCategory();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($milcat);

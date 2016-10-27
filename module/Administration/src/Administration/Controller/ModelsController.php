@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
@@ -35,12 +36,24 @@ use Application\Controller\FormController;
 class ModelsController extends FormController
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+    
     public function indexAction()
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Personnalisation > Modèles";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
         $models = $objectManager->getRepository('Application\Entity\PredefinedEvent')->matching($criteria);
@@ -93,7 +106,7 @@ class ModelsController extends FormController
     {
         $messages = array();
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($id) {
             $pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
             if ($pevent) {
@@ -131,7 +144,7 @@ class ModelsController extends FormController
     public function upAction(){
     	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$objectManager = $this->getEntityManager();
     	if($id){
     	    $pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
@@ -203,7 +216,7 @@ class ModelsController extends FormController
     public function downAction(){
     	$messages = array();
     	$id = $this->params()->fromQuery('id', null);
-    	$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+    	$objectManager = $this->getEntityManager();
     	if($id){
     		$pevent = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($id);
     		if($pevent){
@@ -272,7 +285,7 @@ class ModelsController extends FormController
 
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         
         if ($this->getRequest()->isPost()) {
@@ -471,7 +484,7 @@ class ModelsController extends FormController
     public function formAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -518,7 +531,7 @@ class ModelsController extends FormController
 
     private function getForm($id = null, $parentid = null, $catid = null, $orgid = null, $action = false)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $pevent = new PredefinedEvent();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($pevent);
@@ -637,7 +650,7 @@ class ModelsController extends FormController
     public function listAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $id = $this->params()->fromQuery('id', null); // categoryid
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
@@ -660,7 +673,7 @@ class ModelsController extends FormController
     public function customfieldsAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -681,7 +694,7 @@ class ModelsController extends FormController
     public function getzonefiltersAction()
     {
         $orgid = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $org = $objectManager->getRepository('Application\Entity\Organisation')->find($orgid);
         $zonefilters = null;
         if ($org) {
@@ -694,7 +707,7 @@ class ModelsController extends FormController
 
     public function deletefileAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $fileid = $this->params()->fromQuery('id', null);
         $modelid = $this->params()->fromQuery('modelid', null);
@@ -741,7 +754,7 @@ class ModelsController extends FormController
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             if ($form->isValid()) {
-                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $objectManager = $this->getEntityManager();
                 
                 if($id) {
                     $alarm = $datas['alarm'];
@@ -828,7 +841,7 @@ class ModelsController extends FormController
 
     private function getAlarmForm($alarmid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $alarm = new PredefinedEvent();
         
         $builder = new AnnotationBuilder();
@@ -895,7 +908,7 @@ class ModelsController extends FormController
     public function deletealarmAction()
     {
         $alarmid = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         
         if ($alarmid) {
@@ -921,7 +934,7 @@ class ModelsController extends FormController
     {
         $messages = array();
         $json = array();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $modelid = $this->params()->fromQuery('id', null);
         $listable = $this->params()->fromQuery('listable', null);

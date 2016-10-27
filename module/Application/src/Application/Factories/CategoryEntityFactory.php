@@ -17,43 +17,32 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Application\Entity\RadarCategory;
 use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
+use Doctrine\ORM\EntityManager;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class CategoryEntityFactory implements ServiceLocatorAwareInterface
+class CategoryEntityFactory
 {
 
-    private $sm;
+    private $entityManager;
 
-    private $em = null;
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->sm = $serviceLocator;
+        $this->entityManager = $entityManager;
     }
 
-    public function getServiceLocator()
+    public function getEntityManager()
     {
-        return $this->sm;
-    }
-
-    private function getEntityManager()
-    {
-        if (! $this->em) {
-            $this->em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        }
-        return $this->em;
+        return $this->entityManager;
     }
 
     public function createMilCategory()

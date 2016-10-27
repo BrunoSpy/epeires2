@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\Session\Container;
 use Zend\ProgressBar;
 use Zend\View\Model\ViewModel;
@@ -36,9 +37,12 @@ class FileController extends FormController
      */
     protected $sessionContainer;
 
-    public function __construct()
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
     {
         $this->sessionContainer = new Container('file_upload');
+        $this->entityManager = $entityManager;
     }
 
     public function sessionprogressAction()
@@ -55,8 +59,6 @@ class FileController extends FormController
 
     public function formAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
         
@@ -103,9 +105,9 @@ class FileController extends FormController
                     if (isset($data['reference'])) {
                         $file->setReference($data['reference']);
                     }
-                    $objectManager->persist($file);
+                    $this->entityManager->persist($file);
                     try {
-                        $objectManager->flush();
+                        $this->entityManager->flush();
                         $messages['success'][] = "Nouveau fichier ajouté";
                     } catch (\Exception $ex) {
                         $messages['error'][] = $ex->getMessage();

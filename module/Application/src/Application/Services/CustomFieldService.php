@@ -17,41 +17,30 @@
  */
 namespace Application\Services;
 
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
+use Doctrine\ORM\EntityManager;
 
 /**
  *
  * @author Bruno Spyckerelle
  */
-class CustomFieldService implements ServiceManagerAwareInterface
+class CustomFieldService
 {
-
-    /**
-     * Service Manager
-     */
-    protected $sm;
 
     /**
      * Entity Manager
      */
     private $em;
 
-    public function setEntityManager(\Doctrine\ORM\EntityManager $em)
+    public function setEntityManager(EntityManager $em)
     {
         $this->em = $em;
-    }
-
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->sm = $serviceManager;
     }
 
     /**
      * Get the name of a customfield, depends on the customfield type
      * 
-     * @param
-     *            $customfield
+     * @param $customfield
+     * @return string
      */
     public function getFormattedValue(\Application\Entity\CustomField $customfield, $fieldvalue)
     {
@@ -185,7 +174,8 @@ class CustomFieldService implements ServiceManagerAwareInterface
 
     /**
      *
-     * @param \Application\Entity\CustomFieldType $customfieldtype            
+     * @param \Application\Entity\CustomFieldType $customfieldtype
+     * @return array
      */
     public function getFormAttributes(\Application\Entity\CustomField $customfield)
     {
@@ -279,7 +269,7 @@ class CustomFieldService implements ServiceManagerAwareInterface
     public function getFormValueOptions(\Application\Entity\CustomField $customfield)
     {
         $value_options = null;
-        $om = $this->sm->get('Doctrine\ORM\EntityManager');
+        $om = $this->em;
         switch ($customfield->getType()->getType()) {
             case 'string':
                 break;

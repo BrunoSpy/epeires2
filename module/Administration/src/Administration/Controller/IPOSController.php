@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -27,13 +28,23 @@ use Application\Entity\IPO;
 class IPOSController extends FormController
 {
 
-    private $options;
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
 
     public function indexAction()
     {
         $this->layout()->title = "Utilisateurs > IPO";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $ipos = $objectManager->getRepository('Application\Entity\IPO')->findAll();
         
@@ -61,7 +72,7 @@ class IPOSController extends FormController
 
     public function saveipoAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -88,7 +99,7 @@ class IPOSController extends FormController
     public function deleteipoAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $ipo = $objectManager->getRepository('Application\Entity\IPO')->find($id);
         if ($ipo) {
             $objectManager->remove($ipo);
@@ -121,7 +132,7 @@ class IPOSController extends FormController
 
     private function getForm($ipoid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $ipo = new IPO();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($ipo);

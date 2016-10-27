@@ -30,7 +30,14 @@ class TabController extends ZoneController
 {
 
     protected $viewmodel;
-    
+
+    protected $config;
+
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
+
     public function indexAction()
     {
         parent::indexAction();
@@ -69,9 +76,7 @@ class TabController extends ZoneController
             $this->viewmodel->setVariable('day', $daySession);
         }
 
-        $config = $this->getServiceLocator()->get('config');
-        
-        $this->layout()->lang = $config['lang'];
+        $this->layout()->lang = $this->config['lang'];
     }
 
     public function savedayAction()

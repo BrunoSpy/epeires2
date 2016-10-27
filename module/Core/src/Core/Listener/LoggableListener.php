@@ -11,7 +11,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class LoggableListener extends \Gedmo\Loggable\LoggableListener implements ServiceManagerAwareInterface
+class LoggableListener extends \Gedmo\Loggable\LoggableListener
 {
 
     /**

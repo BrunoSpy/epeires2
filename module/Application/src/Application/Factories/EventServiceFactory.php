@@ -30,8 +30,11 @@ class EventServiceFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $eventservice = new \Application\Services\EventService();
-        $eventservice->setEntityManager($serviceLocator->get('Doctrine\ORM\EntityManager'));
-        return $eventservice;
+        return new \Application\Services\EventService(
+            $serviceLocator->get('Doctrine\ORM\EntityManager'),
+            $serviceLocator->get('zfcuser_auth_service'),
+            $serviceLocator->get('ZfcRbac\Service\AuthorizationService'),
+            $serviceLocator->get('CustomFieldService')
+        );
     }
 }

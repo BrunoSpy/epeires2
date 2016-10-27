@@ -17,6 +17,9 @@
  */
 namespace Application\Controller;
 
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -26,6 +29,15 @@ use Zend\View\Model\ViewModel;
  */
 class TabsController extends TabController
 {
+
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager,
+                                $config)
+    {
+        parent::__construct($config);
+        $this->entityManager = $entityManager;
+    }
 
     public function indexAction()
     {
@@ -42,13 +54,11 @@ class TabsController extends TabController
         }
         
         $this->flashMessenger()->clearMessages();
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $tabid = $this->params()->fromQuery('tabid', null);
         
         if ($tabid) {
-            $tab = $objectManager->getRepository('Application\Entity\Tab')->find($tabid);
+            $tab = $this->entityManager->getRepository('Application\Entity\Tab')->find($tabid);
             if ($tab) {
                 $categories = $tab->getCategories();
                 $cats = array();

@@ -59,23 +59,23 @@ return array(
         )
     ),
     'controllers' => array(
-        'invokables' => array(
-            'Administration\Controller\Home' => 'Administration\Controller\HomeController',
-            'Administration\Controller\Categories' => 'Administration\Controller\CategoriesController',
-            'Administration\Controller\Fields' => 'Administration\Controller\FieldsController',
-            'Administration\Controller\Models' => 'Administration\Controller\ModelsController',
-            'Administration\Controller\Config' => 'Administration\Controller\ConfigController',
-            'Administration\Controller\Centre' => 'Administration\Controller\CentreController',
-            'Administration\Controller\Maintenance' => 'Administration\Controller\MaintenanceController',
-            'Administration\Controller\Radio' => 'Administration\Controller\RadioController',
-            'Administration\Controller\Users' => 'Administration\Controller\UsersController',
-            'Administration\Controller\Roles' => 'Administration\Controller\RolesController',
-            'Administration\Controller\Radars' => 'Administration\Controller\RadarsController',
-            'Administration\Controller\IPOS' => 'Administration\Controller\IPOSController',
-            'Administration\Controller\OpSups' => 'Administration\Controller\OpSupsController',
-            'Administration\Controller\Mil' => 'Administration\Controller\MilController',
-            'Administration\Controller\Tabs' => 'Administration\Controller\TabsController'
-        )
+        'factories' => array(
+            'Administration\Controller\Home' => 'Administration\Controller\Factory\HomeControllerFactory',
+            'Administration\Controller\Config' => 'Administration\Controller\Factory\ConfigControllerFactory',
+            'Administration\Controller\Centre' => 'Administration\Controller\Factory\CentreControllerFactory',
+            'Administration\Controller\Radio' => 'Administration\Controller\Factory\RadioControllerFactory',
+            'Administration\Controller\Radars' => 'Administration\Controller\Factory\RadarsControllerFactory',
+            'Administration\Controller\Users' => 'Administration\Controller\Factory\UsersControllerFactory',
+            'Administration\Controller\Roles' => 'Administration\Controller\Factory\RolesControllerFactory',
+            'Administration\Controller\IPOS' => 'Administration\Controller\Factory\IPOSControllerFactory',
+            'Administration\Controller\OpSups' => 'Administration\Controller\Factory\OpSupsControllerFactory',
+            'Administration\Controller\Categories' => 'Administration\Controller\Factory\CategoriesControllerFactory',
+            'Administration\Controller\Models' => 'Administration\Controller\Factory\ModelsControllerFactory',
+            'Administration\Controller\Tabs' => 'Administration\Controller\Factory\TabsControllerFactory',
+            'Administration\Controller\Mil' => 'Administration\Controller\Factory\MilControllerFactory',
+            'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
+            'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
+        ),
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,

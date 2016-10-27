@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -36,12 +37,19 @@ use Application\Entity\Stack;
 class CentreController extends FormController
 {
 
+    private $entityManager;
+
+    public function __construct($entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function indexAction()
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Centre > Général";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         
         $qualifzones = $objectManager->getRepository('Application\Entity\QualificationZone')->findAll();
         
@@ -85,7 +93,6 @@ class CentreController extends FormController
     public function formorganisationAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -112,7 +119,7 @@ class CentreController extends FormController
 
     public function saveorganisationAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $messages = array();
         $json = array();
         if ($this->getRequest()->isPost()) {
@@ -150,7 +157,7 @@ class CentreController extends FormController
 
     public function deleteorganisationAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
             $org = $objectManager->getRepository('Application\Entity\Organisation')->find($id);
@@ -164,7 +171,7 @@ class CentreController extends FormController
 
     private function getFormOrganisation($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $organisation = new Organisation();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($organisation);
@@ -189,7 +196,6 @@ class CentreController extends FormController
     public function formqualifAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -216,7 +222,7 @@ class CentreController extends FormController
 
     public function savequalifAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $qualif = null;
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
@@ -253,7 +259,7 @@ class CentreController extends FormController
 
     public function deletequalifAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
             $qualif = $objectManager->getRepository('Application\Entity\QualificationZone')->find($id);
@@ -267,7 +273,7 @@ class CentreController extends FormController
 
     private function getFormQualif($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $qualif = new QualificationZone();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($qualif);
@@ -294,8 +300,7 @@ class CentreController extends FormController
     /* **************************** */
     public function getgroupsAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $request = $this->getRequest();
+        $objectManager = $this->entityManager;
         $zone = $this->params()->fromQuery('zone', null);
         $groups = array();
         if ($zone) {
@@ -311,7 +316,6 @@ class CentreController extends FormController
     public function formgroupAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -338,7 +342,7 @@ class CentreController extends FormController
 
     public function savegroupAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -370,7 +374,7 @@ class CentreController extends FormController
 
     public function deletegroupAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
             $group = $objectManager->getRepository('Application\Entity\SectorGroup')->find($id);
@@ -384,7 +388,7 @@ class CentreController extends FormController
 
     private function getFormGroup($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $group = new SectorGroup();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($group);
@@ -419,8 +423,7 @@ class CentreController extends FormController
     /* **************************** */
     public function getsectorsAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $request = $this->getRequest();
+        $objectManager = $this->entityManager;
         $zone = $this->params()->fromQuery('zone', null);
         $sectors = array();
         if ($zone) {
@@ -436,7 +439,6 @@ class CentreController extends FormController
     public function formsectorAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -463,7 +465,7 @@ class CentreController extends FormController
 
     public function savesectorAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $messages = array();
         $sector = null;
         if ($this->getRequest()->isPost()) {
@@ -503,7 +505,7 @@ class CentreController extends FormController
 
     public function deletesectorAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
             $sector = $objectManager->getRepository('Application\Entity\Sector')->find($id);
@@ -521,7 +523,7 @@ class CentreController extends FormController
 
     private function getFormSector($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $sector = new Sector();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($sector);
@@ -558,7 +560,6 @@ class CentreController extends FormController
     public function formstackAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -585,7 +586,7 @@ class CentreController extends FormController
 
     public function savestackAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $stack = null;
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
@@ -626,7 +627,7 @@ class CentreController extends FormController
 
     public function deletestackAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
             $stack = $objectManager->getRepository('Application\Entity\Stack')->find($id);
@@ -640,7 +641,7 @@ class CentreController extends FormController
 
     private function getFormStack($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->entityManager;
         $stack = new Stack();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($stack);

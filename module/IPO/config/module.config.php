@@ -71,9 +71,9 @@ return array(
         )
     ),
     'controllers' => array(
-        'invokables' => array(
-            'IPO\Controller\Index' => 'IPO\Controller\IndexController',
-            'IPO\Controller\Report' => 'IPO\Controller\ReportController'
+        'factories' => array(
+            'IPO\Controller\Index' => 'IPO\Controller\Factory\IndexControllerFactory',
+            'IPO\Controller\Report' => 'IPO\Controller\Factory\ReportControllerFactory'
         )
     ),
     'view_manager' => array(

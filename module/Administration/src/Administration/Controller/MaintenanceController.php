@@ -17,14 +17,14 @@
  */
 namespace Administration\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Core\Controller\AbstractEntityManagerAwareController;
 use Zend\Console\Request as ConsoleRequest;
 
 /**
  *
  * @author Bruno Spyckerelle
  */
-class MaintenanceController extends AbstractActionController
+class MaintenanceController extends AbstractEntityManagerAwareController
 {
 
     public function deleteEventsAction()
@@ -35,7 +35,7 @@ class MaintenanceController extends AbstractActionController
             throw new \RuntimeException('Action only available from console.');
         }
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $org = $request->getParam('orgshortname');
         

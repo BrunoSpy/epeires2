@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Application\Controller\FormController;
@@ -32,10 +33,22 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 class FieldsController extends FormController
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+    
     public function fieldupAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($id) {
             $customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
             if ($customfield) {
@@ -52,7 +65,7 @@ class FieldsController extends FormController
     public function fielddownAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($id) {
             $customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
             if ($customfield) {
@@ -71,7 +84,7 @@ class FieldsController extends FormController
         $id = $this->params()->fromQuery('id', null);
         $returnRoute = $this->params()->fromQuery('return', null);
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $customfield = $objectManager->getRepository('Application\Entity\CustomField')->find($id);
         
@@ -101,7 +114,7 @@ class FieldsController extends FormController
     {
         $returnRoute = $this->params()->fromQuery('return', null);
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
@@ -185,7 +198,7 @@ class FieldsController extends FormController
 
     private function getForm($id = null, $categoryid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $customfield = new CustomField();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($customfield);

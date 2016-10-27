@@ -18,6 +18,8 @@
  */
 namespace Application\Controller;
 
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -33,9 +35,23 @@ use Application\Entity\Event;
 class AlarmController extends FormController
 {
 
+    private $entityManager;
+    private $eventservice;
+    private $customfieldservice;
+
+    public function __construct(EntityManager $entityManager,
+                                EventService $eventService,
+                                CustomFieldService $customfieldService,
+                                $config)
+    {
+        parent::__construct($config);
+        $this->entityManager = $entityManager;
+        $this->eventservice = $eventService;
+        $this->customfieldservice = $customfieldService;
+    }
+
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $json = array();
         $messages = array();
         if ($this->getRequest()->isPost()) {
@@ -70,11 +86,11 @@ class AlarmController extends FormController
                 if ($event->getId() > 0) {
                     foreach ($post['custom_fields'] as $key => $value) {
                         // génération des customvalues si un customfield dont le nom est $key est trouvé
-                        $customfield = $objectManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                        $customfield = $this->entityManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
                             'id' => $key
                         ));
                         if ($customfield) {
-                            $customvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
+                            $customvalue = $this->entityManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
                                 'customfield' => $customfield->getId(),
                                 'event' => $event->getId()
                             ));
@@ -85,12 +101,12 @@ class AlarmController extends FormController
                                 $event->addCustomFieldValue($customvalue);
                             }
                             $customvalue->setValue($value);
-                            $objectManager->persist($customvalue);
+                            $this->entityManager->persist($customvalue);
                         }
                     }
                     // mod -> save it now
-                    $objectManager->persist($event);
-                    $objectManager->flush();
+                    $this->entityManager->persist($event);
+                    $this->entityManager->flush();
                 } else {
                     // new : do nothing
                 }
@@ -122,26 +138,25 @@ class AlarmController extends FormController
 
     private function getForm($alarmid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $alarm = new Event();
         
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($alarm);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($alarm);
+        $form->setHydrator(new DoctrineObject($this->entityManager))->setObject($alarm);
         
-        $alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; // TODO
+        $alarmcat = $this->entityManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; // TODO
         
-        $form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
+        $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $alarmcat->getId()));
         $form->get('scheduled')->setValue(false);
         if ($alarmid) {
-            $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
+            $alarm = $this->entityManager->getRepository('Application\Entity\Event')->find($alarmid);
             if ($alarm) {
                 // custom fields values
-                foreach ($objectManager->getRepository('Application\Entity\CustomField')->findBy(array(
+                foreach ($this->entityManager->getRepository('Application\Entity\CustomField')->findBy(array(
                     'category' => $alarm->getCategory()
                         ->getId()
                 )) as $customfield) {
-                    $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
+                    $customfieldvalue = $this->entityManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
                         'event' => $alarm->getId(),
                         'customfield' => $customfield->getId()
                     ));
@@ -168,7 +183,7 @@ class AlarmController extends FormController
             $form->get('impact')->setValue(5);
             $form->get('punctual')->setValue(true);
             $form->get('category')->setValue($alarmcat->getId());
-            $form->get('status')->setValue($objectManager->getRepository('Application\Entity\Status')
+            $form->get('status')->setValue($this->entityManager->getRepository('Application\Entity\Status')
                 ->findOneBy(array(
                 'open' => true,
                 'defaut' => true
@@ -201,15 +216,14 @@ class AlarmController extends FormController
     public function deleteAction()
     {
         $alarmid = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $messages = array();
         
         if ($alarmid) {
-            $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarmid);
+            $alarm = $this->entityManager->getRepository('Application\Entity\Event')->find($alarmid);
             if ($alarm) {
-                $objectManager->remove($alarm);
+                $this->entityManager->remove($alarm);
                 try {
-                    $objectManager->flush();
+                    $this->entityManager->flush();
                     $messages['success'][] = "Mémo supprimé";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
@@ -248,8 +262,6 @@ class AlarmController extends FormController
                 ->getOrganisation()
                 ->getId();
             $lastupdate = $this->params()->fromQuery('lastupdate', null);
-            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $eventservice = $this->getServiceLocator()->get('EventService');
             
             $userroles = array();
             foreach ($this->zfcUserAuthentication()
@@ -257,7 +269,7 @@ class AlarmController extends FormController
                 ->getRoles() as $role) {
                 $userroles[] = $role->getId();
             }
-            $qbEvents = $objectManager->createQueryBuilder();
+            $qbEvents = $this->entityManager->createQueryBuilder();
             $qbEvents->select(array(
                 'e',
                 'cat',
@@ -315,7 +327,7 @@ class AlarmController extends FormController
             }
             $result = $qbEvents->getQuery()->getResult();
             foreach ($result as $alarm) {
-                $alarm = $objectManager->getRepository('Application\Entity\Event')->find($alarm->getId());
+                $alarm = $this->entityManager->getRepository('Application\Entity\Event')->find($alarm->getId());
                 if ($alarm->getParent()) { // les alarmes ont forcément un parent
                     $deltaend = "";
                     $alarmcomment = "";
@@ -339,8 +351,8 @@ class AlarmController extends FormController
                         $alarmjson['id'] = $alarm->getId();
                         $alarmjson['datetime'] = $startdate->format(DATE_RFC2822);
                         $alarmjson['status'] = $alarm->getStatus()->getId();
-                        $parentname = $eventservice->getName($alarm->getParent());
-                        $alarmname = $eventservice->getName($alarm);
+                        $parentname = $this->eventservice->getName($alarm->getParent());
+                        $alarmname = $this->eventservice->getName($alarm);
                         $alarmjson['text'] = "<div id=\"alarmnoty-" . $alarm->getId() . "\" class=\"noty_big\"><b>" . $formatter->format($alarm->getStartDate()) . " : Mémo</b> pour <b>" . $parentname . "</b><br />" . $alarmname . (strlen($alarmcomment) > 0 ? " : <br />" . $alarmcomment : "");
                         
                         $alarms[] = $alarmjson;
@@ -370,21 +382,20 @@ class AlarmController extends FormController
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             if ($this->isGranted('events.write')) {
                 $id = $this->params()->fromQuery('id', null);
-                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                 $messages = array();
                 if ($id) {
-                    $alarm = $objectManager->getRepository('Application\Entity\Event')->find($id);
+                    $alarm = $this->entityManager->getRepository('Application\Entity\Event')->find($id);
                     if ($alarm) {
-                        $status = $objectManager->getRepository('Application\Entity\Status')->findOneBy(array(
+                        $status = $this->entityManager->getRepository('Application\Entity\Status')->findOneBy(array(
                             'open' => false,
                             'defaut' => true
                         ));
                         // ne pas enregistrer si pas de changement
                         if ($alarm->getStatus()->getId() != $status->getId()) {
                             $alarm->setStatus($status);
-                            $objectManager->persist($alarm);
+                            $this->entityManager->persist($alarm);
                             try {
-                                $objectManager->flush();
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Mémo acquitté";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();

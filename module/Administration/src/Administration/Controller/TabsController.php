@@ -17,6 +17,8 @@
  */
 namespace Administration\Controller;
 
+use Application\Controller\FormController;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -28,15 +30,27 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
  * @author Bruno Spyckerelle
  *        
  */
-class TabsController extends \Application\Controller\FormController
+class TabsController extends FormController 
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+    
     public function indexAction()
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Onglets > Gestion";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $viewmodel->setVariables(array(
             'tabs' => $objectManager->getRepository('Application\Entity\Tab')
@@ -63,7 +77,7 @@ class TabsController extends \Application\Controller\FormController
 
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         $json = array();
         if ($this->getRequest()->isPost()) {
@@ -124,7 +138,7 @@ class TabsController extends \Application\Controller\FormController
 
     private function getForm($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $tab = new \Application\Entity\Tab();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($tab);
@@ -153,7 +167,7 @@ class TabsController extends \Application\Controller\FormController
     public function removeAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
         if ($tab) {
             $objectManager->remove($tab);

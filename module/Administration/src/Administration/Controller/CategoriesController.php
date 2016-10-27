@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
@@ -40,6 +41,20 @@ use Application\Entity\MilCategory;
 class CategoriesController extends FormController
 {
 
+    private $entityManager;
+    private $categoryFactory;
+
+    public function __construct(EntityManager $entityManager, $categoryfactory)
+    {
+        $this->entityManager = $entityManager;
+        $this->categoryFactory = $categoryfactory;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     public function indexAction()
     {
         $viewmodel = new ViewModel();
@@ -56,7 +71,7 @@ class CategoriesController extends FormController
         
         $this->flashMessenger()->clearMessages();
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('parent'));
         $criteria->orderBy(array(
@@ -104,7 +119,7 @@ class CategoriesController extends FormController
     public function formAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -181,7 +196,7 @@ class CategoriesController extends FormController
 
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $fieldname = null;
@@ -189,25 +204,15 @@ class CategoriesController extends FormController
                 $category = $objectManager->getRepository('Application\Entity\Category')->find($post['id']);
             } else {
                 if ($post['type'] == 'radar') {
-                    $category = $this->getServiceLocator()
-                        ->get('categoryfactory')
-                        ->createRadarCategory();
+                    $category = $this->categoryFactory->createRadarCategory();
                 } elseif ($post['type'] == 'antenna') {
-                    $category = $this->getServiceLocator()
-                        ->get('categoryfactory')
-                        ->createAntennaCategory();
+                    $category = $this->categoryFactory->createAntennaCategory();
                 } elseif ($post['type'] == 'frequency') {
-                    $category = $this->getServiceLocator()
-                        ->get('categoryfactory')
-                        ->createFrequencyCategory();
+                    $category = $this->categoryFactory->createFrequencyCategory();
                 } elseif ($post['type'] == 'brouillage') {
-                    $category = $this->getServiceLocator()
-                        ->get('categoryfactory')
-                        ->createBrouillageCategory();
+                    $category = $this->categoryFactory->createBrouillageCategory();
                 } elseif ($post['type'] == 'mil') {
-                    $category = $this->getServiceLocator()
-                        ->get('categoryfactory')
-                        ->createMilCategory();
+                    $category = $this->categoryFactory->createMilCategory();
                 } else {
                     $category = new Category();
                     $fieldname = new CustomField();
@@ -262,7 +267,7 @@ class CategoriesController extends FormController
     public function deleteAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $category = $objectManager->getRepository('Application\Entity\Category')->find($id);
         
         if ($category) {
@@ -323,7 +328,7 @@ class CategoriesController extends FormController
     public function fieldsAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -347,7 +352,7 @@ class CategoriesController extends FormController
     {
         $messages = array();
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($id) {
             $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
             if ($cat) {
@@ -370,7 +375,7 @@ class CategoriesController extends FormController
     {
         $messages = array();
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($id) {
             $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
             if ($cat) {
@@ -393,7 +398,7 @@ class CategoriesController extends FormController
     {
         $this->layout()->title = "Personnalisation > Catégories par défaut";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $freqcategories = $objectManager->getRepository('Application\Entity\FrequencyCategory')->findAll();
         
         $radarcategories = $objectManager->getRepository('Application\Entity\RadarCategory')->findAll();
@@ -413,7 +418,7 @@ class CategoriesController extends FormController
     public function changedefaultfrequencyAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($id) {
             $freq = $objectManager->getRepository('Application\Entity\FrequencyCategory')->find($id);
@@ -436,7 +441,7 @@ class CategoriesController extends FormController
     public function changedefaultradarAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($id) {
             $radar = $objectManager->getRepository('Application\Entity\RadarCategory')->find($id);
@@ -459,7 +464,7 @@ class CategoriesController extends FormController
     public function changedefaultantennaAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($id) {
             $antenna = $objectManager->getRepository('Application\Entity\AntennaCategory')->find($id);
@@ -482,7 +487,7 @@ class CategoriesController extends FormController
     public function changedefaultbrouillageAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $messages = array();
         if ($id) {
             $brouillage = $objectManager->getRepository('Application\Entity\BrouillageCategory')->find($id);

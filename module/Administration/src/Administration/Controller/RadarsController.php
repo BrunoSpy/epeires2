@@ -17,7 +17,7 @@
  */
 namespace Administration\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Core\Controller\AbstractEntityManagerAwareController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -29,14 +29,14 @@ use Application\Entity\Radar;
  * @author Bruno Spyckerelle
  *        
  */
-class RadarsController extends AbstractActionController
+class RadarsController extends AbstractEntityManagerAwareController
 {
 
     public function indexAction()
     {
         $this->layout()->title = "Centres > Radars";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $radars = $objectManager->getRepository('Application\Entity\Radar')->findAll();
         
@@ -47,7 +47,7 @@ class RadarsController extends AbstractActionController
 
     public function saveAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -73,7 +73,7 @@ class RadarsController extends AbstractActionController
     public function deleteAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
         if ($radar) {
             $objectManager->remove($radar);
@@ -102,7 +102,7 @@ class RadarsController extends AbstractActionController
 
     private function getForm($id = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $radar = new Radar();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($radar);

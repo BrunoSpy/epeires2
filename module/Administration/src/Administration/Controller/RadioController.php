@@ -33,6 +33,13 @@ use Doctrine\Common\Collections\Criteria;
 class RadioController extends \Application\Controller\FormController
 {
 
+    private $objectManager;
+
+    public function __construct($entityManager)
+    {
+        $this->objectManager = $entityManager;
+    }
+
     public function indexAction()
     {
         $viewmodel = new ViewModel();
@@ -47,10 +54,8 @@ class RadioController extends \Application\Controller\FormController
             $return['success'] = $this->flashMessenger()->getSuccessMessages();
         }
         $this->flashMessenger()->clearMessages();
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-        $decommissionnedAntennas = $objectManager->getRepository('Application\Entity\Antenna')->findBy(array(
+
+        $decommissionnedAntennas = $this->objectManager->getRepository('Application\Entity\Antenna')->findBy(array(
             'decommissionned' => true
         ));
         
@@ -58,16 +63,16 @@ class RadioController extends \Application\Controller\FormController
         $criteria->where(Criteria::expr()->eq('decommissionned', false));
         $criteria->andWhere(Criteria::expr()->orX(Criteria::expr()->in('mainantenna', $decommissionnedAntennas), Criteria::expr()->in('backupantenna', $decommissionnedAntennas), Criteria::expr()->in('mainantennaclimax', $decommissionnedAntennas), Criteria::expr()->in('backupantennaclimax', $decommissionnedAntennas)));
         
-        $errorFrequencies = $objectManager->getRepository('Application\Entity\Frequency')->matching($criteria);
+        $errorFrequencies = $this->objectManager->getRepository('Application\Entity\Frequency')->matching($criteria);
         
         if (count($errorFrequencies) > 0) {
             $return['error'][] = 'Attention, une ou plusieures fréquences ont des antennes qui ne sont plus en service.<br />Cette incohérence peut faire planter la page radio.';
         }
         
         $viewmodel->setVariables(array(
-            'antennas' => $objectManager->getRepository('Application\Entity\Antenna')
+            'antennas' => $this->objectManager->getRepository('Application\Entity\Antenna')
                 ->findAll(),
-            'frequencies' => $objectManager->getRepository('Application\Entity\Frequency')
+            'frequencies' => $this->objectManager->getRepository('Application\Entity\Frequency')
                 ->findAll(),
             'messages' => $return
         ));
@@ -81,7 +86,6 @@ class RadioController extends \Application\Controller\FormController
     public function formantennaAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -108,7 +112,6 @@ class RadioController extends \Application\Controller\FormController
 
     public function saveantennaAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -120,14 +123,14 @@ class RadioController extends \Application\Controller\FormController
             $antenna = $datas['antenna'];
             
             if ($form->isValid()) {
-                $antenna->setOrganisation($objectManager->getRepository('Application\Entity\Organisation')
+                $antenna->setOrganisation($this->objectManager->getRepository('Application\Entity\Organisation')
                     ->find($post['organisation']));
                 
-                $objectManager->persist($antenna);
-                $objectManager->flush();
+                $this->objectManager->persist($antenna);
+                $this->objectManager->flush();
                 
                 if ($antenna->isDecommissionned()) {
-                    $objectManager->getRepository('Application\Entity\Event')->setReadOnly($antenna);
+                    $this->objectManager->getRepository('Application\Entity\Event')->setReadOnly($antenna);
                 }
             }
         }
@@ -142,13 +145,12 @@ class RadioController extends \Application\Controller\FormController
 
     public function deleteantennaAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
-            $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($id);
+            $antenna = $this->objectManager->getRepository('Application\Entity\Antenna')->find($id);
             if ($antenna) {
-                $objectManager->remove($antenna);
-                $objectManager->flush();
+                $this->objectManager->remove($antenna);
+                $this->objectManager->flush();
             }
         }
         return new JsonModel();
@@ -156,17 +158,16 @@ class RadioController extends \Application\Controller\FormController
 
     private function getFormAntenna($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $antenna = new Antenna();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($antenna);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($antenna);
+        $form->setHydrator(new DoctrineObject($this->objectManager))->setObject($antenna);
         
-        $form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')
+        $form->get('organisation')->setValueOptions($this->objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
         
         if ($id) {
-            $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($id);
+            $antenna = $this->objectManager->getRepository('Application\Entity\Antenna')->find($id);
             if ($antenna) {
                 
                 $form->bind($antenna);
@@ -185,7 +186,6 @@ class RadioController extends \Application\Controller\FormController
     public function formfrequencyAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -212,7 +212,6 @@ class RadioController extends \Application\Controller\FormController
 
     public function savefrequencyAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -226,8 +225,8 @@ class RadioController extends \Application\Controller\FormController
             if ($form->isValid()) {
                 // $antenna->setOrganisation($objectManager->getRepository('Application\Entity\Organisation')->find($post['organisation']));
                 
-                $objectManager->persist($frequency);
-                $objectManager->flush();
+                $this->objectManager->persist($frequency);
+                $this->objectManager->flush();
             }
         }
         
@@ -241,15 +240,14 @@ class RadioController extends \Application\Controller\FormController
 
     public function deletefrequencyAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $id = $this->params()->fromQuery('id', null);
         $messages = array();
         if ($id) {
-            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
+            $frequency = $this->objectManager->getRepository('Application\Entity\Frequency')->find($id);
             if ($frequency) {
-                $objectManager->remove($frequency);
+                $this->objectManager->remove($frequency);
                 try {
-                    $objectManager->flush();
+                    $this->objectManager->flush();
                     $messages['success'][] = "Fréquence " . $frequency->getValue() . " correctement supprimée";
                 } catch (\Exception $e) {
                     $messages['error'][] = "Impossible de supprimer la fréquence";
@@ -264,28 +262,27 @@ class RadioController extends \Application\Controller\FormController
 
     private function getFormFrequency($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $frequency = new Frequency();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($frequency);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($frequency);
+        $form->setHydrator(new DoctrineObject($this->objectManager))->setObject($frequency);
         
-        $form->get('mainantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')
+        $form->get('mainantenna')->setValueOptions($this->objectManager->getRepository('Application\Entity\Antenna')
             ->getAllAsArray());
-        $form->get('backupantenna')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')
+        $form->get('backupantenna')->setValueOptions($this->objectManager->getRepository('Application\Entity\Antenna')
             ->getAllAsArray());
-        $form->get('mainantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')
+        $form->get('mainantennaclimax')->setValueOptions($this->objectManager->getRepository('Application\Entity\Antenna')
             ->getAllAsArray());
-        $form->get('backupantennaclimax')->setValueOptions($objectManager->getRepository('Application\Entity\Antenna')
+        $form->get('backupantennaclimax')->setValueOptions($this->objectManager->getRepository('Application\Entity\Antenna')
             ->getAllAsArray());
-        $form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')
+        $form->get('organisation')->setValueOptions($this->objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
         
-        $unsetsectors = $objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
+        $unsetsectors = $this->objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
         $form->get('defaultsector')->setValueOptions($unsetsectors);
         
         if ($id) {
-            $frequency = $objectManager->getRepository('Application\Entity\Frequency')->find($id);
+            $frequency = $this->objectManager->getRepository('Application\Entity\Frequency')->find($id);
             if ($frequency) {
                 
                 if ($frequency->getDefaultsector()) {
@@ -311,15 +308,13 @@ class RadioController extends \Application\Controller\FormController
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Onglets > Radio";
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $viewmodel->setVariables(array(
-            'sectorsgroups' => $objectManager->getRepository('Application\Entity\SectorGroup')
+            'sectorsgroups' => $this->objectManager->getRepository('Application\Entity\SectorGroup')
                 ->findBy(array(), array(
                 'position' => 'ASC'
             )),
-            'antennas' => $objectManager->getRepository('Application\Entity\Antenna')
+            'antennas' => $this->objectManager->getRepository('Application\Entity\Antenna')
                 ->findBy(array(), array(
                 'name' => 'ASC'
             ))
@@ -331,15 +326,14 @@ class RadioController extends \Application\Controller\FormController
     public function groupdownAction()
     {
         $messages = array();
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
-            $sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+            $sectorgroup = $this->objectManager->getRepository('Application\Entity\SectorGroup')->find($id);
             if ($sectorgroup) {
                 $sectorgroup->setPosition($sectorgroup->getPosition() + 1);
-                $em->persist($sectorgroup);
+                $this->objectManager->persist($sectorgroup);
                 try {
-                    $em->flush();
+                    $this->objectManager->flush();
                     $messages['success'][] = "Groupe correctement modifié.";
                 } catch (\Exception $e) {
                     $messages['error'][] = "Impossible d'enregistrer la modification";
@@ -355,15 +349,14 @@ class RadioController extends \Application\Controller\FormController
     public function groupupAction()
     {
         $messages = array();
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
-            $sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+            $sectorgroup = $this->objectManager->getRepository('Application\Entity\SectorGroup')->find($id);
             if ($sectorgroup) {
                 $sectorgroup->setPosition($sectorgroup->getPosition() - 1);
-                $em->persist($sectorgroup);
+                $this->objectManager->persist($sectorgroup);
                 try {
-                    $em->flush();
+                    $this->objectManager->flush();
                     $messages['success'][] = "Groupe correctement modifié.";
                 } catch (\Exception $e) {
                     $messages['error'][] = "Impossible d'enregistrer la modification";
@@ -379,15 +372,14 @@ class RadioController extends \Application\Controller\FormController
     public function switchdisplayAction()
     {
         $messages = array();
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $id = $this->params()->fromQuery('id', null);
         if ($id) {
-            $sectorgroup = $em->getRepository('Application\Entity\SectorGroup')->find($id);
+            $sectorgroup = $this->objectManager->getRepository('Application\Entity\SectorGroup')->find($id);
             if ($sectorgroup) {
                 $sectorgroup->setDisplay(! $sectorgroup->isDisplay());
-                $em->persist($sectorgroup);
+                $this->objectManager->persist($sectorgroup);
                 try {
-                    $em->flush();
+                    $this->objectManager->flush();
                     $messages['success'][] = "Groupe correctement modifié.";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
@@ -402,7 +394,6 @@ class RadioController extends \Application\Controller\FormController
     public function formantennamodelAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -429,7 +420,6 @@ class RadioController extends \Application\Controller\FormController
 
     public function saveantennamodelAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -440,12 +430,12 @@ class RadioController extends \Application\Controller\FormController
             
             if ($form->isValid()) {
                 $antenna = $getform['antenna'];
-                $antenna->setModel($objectManager->getRepository('Application\Entity\PredefinedEvent')
+                $antenna->setModel($this->objectManager->getRepository('Application\Entity\PredefinedEvent')
                     ->find($form->get("models")
                     ->getValue()));
-                $objectManager->persist($antenna);
+                $this->objectManager->persist($antenna);
                 try {
-                    $objectManager->flush();
+                    $this->objectManager->flush();
                     $this->flashMessenger()->addSuccessMessage("Modèle correctement associé.");
                 } catch (\Exception $ex) {
                     $this->flashMessenger()->addErrorMessage($ex->getMessage());
@@ -465,14 +455,13 @@ class RadioController extends \Application\Controller\FormController
 
     private function getFormAntennaModel($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $datas = array();
         $form = null;
         if ($id) {
-            $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($id);
+            $antenna = $this->objectManager->getRepository('Application\Entity\Antenna')->find($id);
             if ($antenna) {
                 $datas['antenna'] = $antenna;
-                $qb = $objectManager->createQueryBuilder();
+                $qb = $this->objectManager->createQueryBuilder();
                 $qb->select(array(
                     'p',
                     'c'

@@ -19,11 +19,11 @@
 namespace Application\Controller;
 
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Core\Controller\AbstractEntityManagerAwareController;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
-class OpSupsController extends AbstractActionController
+class OpSupsController extends AbstractEntityManagerAwareController
 {
 
     public function saveopsupAction()
@@ -32,11 +32,10 @@ class OpSupsController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $opsupid = $post['nameopsup'];
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
+            $opsup = $this->getEntityManager()->getRepository('Application\Entity\OperationalSupervisor')->find($opsupid);
             if ($opsup) {
                 // un seul op sup par organisation, par zone et par type
-                $opsups = $em->getRepository('Application\Entity\OperationalSupervisor')->findBy(array(
+                $opsups = $this->getEntityManager()->getRepository('Application\Entity\OperationalSupervisor')->findBy(array(
                     'organisation' => $opsup->getOrganisation()
                         ->getId(),
                     'zone' => $opsup->getZone()
@@ -45,12 +44,12 @@ class OpSupsController extends AbstractActionController
                 ));
                 foreach ($opsups as $i) {
                     $i->setCurrent(false);
-                    $em->persist($i);
+                    $this->getEntityManager()->persist($i);
                 }
                 $opsup->setCurrent(true);
-                $em->persist($opsup);
+                $this->getEntityManager()->persist($opsup);
                 try {
-                    $em->flush();
+                    $this->getEntityManager()->flush();
                     $messages['success'][] = $opsup->getType()->getName()
                         . " ("
                         . $opsup->getZone()->getShortname()
@@ -75,9 +74,7 @@ class OpSupsController extends AbstractActionController
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
 
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
-        $qb = $em->createQueryBuilder();
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
         $daystart = new \DateTime($day);
         $offset = $daystart->getTimezone()->getOffset($daystart);
@@ -108,7 +105,7 @@ class OpSupsController extends AbstractActionController
 
         foreach ($query->getResult() as $log) {
             if(!$log->getData()["current"]) {
-                $opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($log->getObjectId());
+                $opsup = $this->getEntityManager()->getRepository('Application\Entity\OperationalSupervisor')->find($log->getObjectId());
                 $entry = array('opsup' => $opsup, 'date' => $log->getLoggedAt());
                 $opsups[] = $entry;
             }
@@ -126,10 +123,9 @@ class OpSupsController extends AbstractActionController
         $zone = $this->params()->fromQuery('zoneid', '');
         
         $json = array();
-        $objectmanager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             
-            $current = $objectmanager->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
+            $current = $this->getEntityManager()->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
                 'organisation' => $this->zfcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()

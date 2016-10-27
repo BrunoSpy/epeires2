@@ -17,6 +17,8 @@
  */
 namespace Application\Controller;
 
+use Application\Services\CustomFieldService;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
@@ -31,6 +33,18 @@ use Application\Form\CustomFieldset;
  */
 class RadarsController extends TabController
 {
+
+    private $entityManager;
+    private $customfieldservice;
+
+    public function __construct(EntityManager $entityManager,
+                                CustomFieldService $customfieldService,
+                                $config)
+    {
+        parent::__construct($config);
+        $this->entityManager = $entityManager;
+        $this->customfieldservice = $customfieldService;
+    }
 
     public function indexAction()
     {
@@ -61,18 +75,17 @@ class RadarsController extends TabController
     }
 
     private function getRadarForm() {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $event = new Event();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($event);
-        $form->setHydrator(new DoctrineObject($em))->setObject($event);
+        $form->setHydrator(new DoctrineObject($this->entityManager))->setObject($event);
         
-        $categories = $em->getRepository('Application\Entity\RadarCategory')->findBy(array(
+        $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(
             'defaultradarcategory' => true
         ));
         if ($categories) {
             $cat = $categories[0];
-            $form->add(new CustomFieldset($this->getServiceLocator(), $cat->getId()));
+            $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
             //uniquement les champs ajoutés par conf
             $form->get('custom_fields')->remove($cat->getRadarfield()->getId());
             $form->get('custom_fields')->remove($cat->getStatefield()->getId());
@@ -85,7 +98,7 @@ class RadarsController extends TabController
     {
         $messages = array();
         if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
             $post = $this->getRequest()->getPost();
             $state = $this->params()->fromQuery('state', null);
             $radarid = $this->params()->fromQuery('radarid', null);
@@ -94,7 +107,9 @@ class RadarsController extends TabController
             $now->setTimezone(new \DateTimeZone("UTC"));
             
             if ($state != null && $radarid) {
-                $events = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');
+                $events = $this->entityManager
+                    ->getRepository('Application\Entity\Event')
+                    ->getCurrentEvents('Application\Entity\RadarCategory');
                 
                 $radarevents = array();
                 foreach ($events as $event) {
@@ -112,12 +127,12 @@ class RadarsController extends TabController
                     // passage d'un radar à l'état OPE -> recherche de l'evt à fermer
                     if (count($radarevents) == 1) {
                         $event = $radarevents[0];
-                        $endstatus = $em->getRepository('Application\Entity\Status')->find('3');
+                        $endstatus = $this->entityManager->getRepository('Application\Entity\Status')->find('3');
                         $event->setStatus($endstatus);
                         $event->setEnddate($now);
-                        $em->persist($event);
+                        $this->entityManager->persist($event);
                         try {
-                            $em->flush();
+                            $this->entityManager->flush();
                             $messages['success'][] = "Evènement radar correctement terminé.";
                         } catch (\Exception $e) {
                             $messages['error'][] = $e->getMessage();
@@ -131,18 +146,18 @@ class RadarsController extends TabController
                         $messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
                     } else {
                         $event = new Event();
-                        $status = $em->getRepository('Application\Entity\Status')->find('2');
-                        $impact = $em->getRepository('Application\Entity\Impact')->find('3');
+                        $status = $this->entityManager->getRepository('Application\Entity\Status')->find('2');
+                        $impact = $this->entityManager->getRepository('Application\Entity\Impact')->find('3');
                         $event->setStatus($status);
                         $event->setStartdate($now);
                         $event->setImpact($impact);
                         $event->setPunctual(false);
-                        $radar = $em->getRepository('Application\Entity\Radar')->find($radarid);
+                        $radar = $this->entityManager->getRepository('Application\Entity\Radar')->find($radarid);
                         $event->setOrganisation($radar->getOrganisation());
                         $event->setAuthor($this->zfcUserAuthentication()
                             ->getIdentity());
                         
-                        $categories = $em->getRepository('Application\Entity\RadarCategory')->findBy(array(
+                        $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(
                             'defaultradarcategory' => true
                         ));
                         if ($categories) {
@@ -158,13 +173,13 @@ class RadarsController extends TabController
                             $statusvalue->setEvent($event);
                             $event->addCustomFieldValue($statusvalue);
                             $event->setCategory($categories[0]);
-                            $em->persist($radarfieldvalue);
-                            $em->persist($statusvalue);
+                            $this->entityManager->persist($radarfieldvalue);
+                            $this->entityManager->persist($statusvalue);
                             //on ajoute les valeurs des champs persos
                             if (isset($post['custom_fields'])) {
                                 foreach ($post['custom_fields'] as $key => $value) {
                                     // génération des customvalues si un customfield dont le nom est $key est trouvé
-                                    $customfield = $em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                                    $customfield = $this->entityManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
                                         'id' => $key
                                     ));
                                     if ($customfield) {
@@ -181,14 +196,14 @@ class RadarsController extends TabController
                                         $event->addCustomFieldValue($customvalue);
                                         
                                         $customvalue->setValue($value);
-                                        $em->persist($customvalue);
+                                        $this->entityManager->persist($customvalue);
                                     }
                                 }
                             }
                             //et on sauve le tout
-                            $em->persist($event);
+                            $this->entityManager->persist($event);
                             try {
-                                $em->flush();
+                                $this->entityManager->flush();
                                 $messages['success'][] = "Nouvel évènement radar créé.";
                             } catch (\Exception $e) {
                                 $messages['error'][] = $e->getMessage();
@@ -214,11 +229,10 @@ class RadarsController extends TabController
 
     private function getRadars($full = true)
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $radars = array();
         
-        foreach ($em->getRepository('Application\Entity\Radar')->findBy(array(
+        foreach ($this->entityManager->getRepository('Application\Entity\Radar')->findBy(array(
             'decommissionned' => false
         )) as $radar) {
             // avalaible by default
@@ -231,7 +245,7 @@ class RadarsController extends TabController
             }
         }
         
-        $results = $em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');
+        $results = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');
         
         foreach ($results as $result) {
             $statefield = $result->getCategory()

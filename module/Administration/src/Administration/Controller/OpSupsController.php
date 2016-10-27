@@ -19,6 +19,7 @@ namespace Administration\Controller;
 
 use Application\Entity\OpSupType;
 use Application\Entity\ShiftHour;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -35,11 +36,23 @@ use Application\Entity\OperationalSupervisor;
 class OpSupsController extends FormController
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     public function indexAction()
     {
         $this->layout()->title = "Utilisateurs > Op Sups";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $opsups = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->findAll();
 
@@ -73,7 +86,7 @@ class OpSupsController extends FormController
 
     public function saveopsupAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -101,7 +114,7 @@ class OpSupsController extends FormController
     public function deleteopsupAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $opsup = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->find($id);
         if ($opsup) {
             $objectManager->remove($opsup);
@@ -134,7 +147,7 @@ class OpSupsController extends FormController
 
     public function getqualifzoneAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $orgid = $this->params()->fromQuery('id', null);
         $json = array();
         if ($orgid) {
@@ -151,7 +164,7 @@ class OpSupsController extends FormController
 
     private function getForm($opsupid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $opsup = new OperationalSupervisor();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($opsup);
@@ -207,7 +220,7 @@ class OpSupsController extends FormController
 
     private function getFormType($opsuptypeid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $opsuptype = new OpSupType();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($opsuptype);
@@ -240,7 +253,7 @@ class OpSupsController extends FormController
 
     public function saveopsuptypeAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -268,7 +281,7 @@ class OpSupsController extends FormController
     public function deleteopsuptypeAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $opsuptype = $objectManager->getRepository('Application\Entity\OpSupType')->find($id);
         if ($opsuptype) {
             $objectManager->remove($opsuptype);
@@ -299,7 +312,7 @@ class OpSupsController extends FormController
     }
 
     private function getFormShifthour($id = null) {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $shifthour = new ShiftHour();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($shifthour);
@@ -333,7 +346,7 @@ class OpSupsController extends FormController
 
     public function saveshifthourAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -361,7 +374,7 @@ class OpSupsController extends FormController
     public function deleteshifthourAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $shifthour = $objectManager->getRepository('Application\Entity\ShiftHour')->find($id);
         if ($shifthour) {
             $objectManager->remove($shifthour);

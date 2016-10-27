@@ -17,7 +17,7 @@
  */
 namespace Administration\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Core\Controller\AbstractEntityManagerAwareController;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -25,7 +25,7 @@ use Zend\View\Model\ViewModel;
  * @author Bruno Spyckerelle
  *
  */
-class ConfigController extends AbstractActionController
+class ConfigController extends AbstractEntityManagerAwareController
 {
 
     public function indexAction()
@@ -33,7 +33,7 @@ class ConfigController extends AbstractActionController
         $viewmodel = new ViewModel();
         $this->layout()->title = "Paramètres";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $viewmodel->setVariables(array(
             'status' => $objectManager->getRepository('Application\Entity\Status')

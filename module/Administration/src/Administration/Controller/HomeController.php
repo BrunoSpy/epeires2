@@ -27,26 +27,28 @@ use Zend\Mvc\Controller\AbstractActionController;
 class HomeController extends AbstractActionController
 {
 
-    public function indexAction()
-    {
-        $doctrinemigrations = $this->getServiceLocator()->get('doctrine.migrations.configuration');
-        
-        $doctrinemigrations->setMigrationsTableName($this->getServiceLocator()
-            ->get('config')['doctrine']['migrations']['migrations_table']);
-        
-        $doctrinemigrations->validate();
-        
-        $executedMigrations = $doctrinemigrations->getMigratedVersions();
-        $availableMigrations = $doctrinemigrations->getAvailableVersions();
+    private $doctrinemigrations;
+    private $config;
+
+    public function __construct($doctrinemigrations, $config) {
+        $this->doctrinemigrations = $doctrinemigrations;
+        $this->config = $config;
+    }
+
+    public function indexAction() {
+        $this->doctrinemigrations->setMigrationsTableName($this->config['doctrine']['migrations']['migrations_table']);
+        $this->doctrinemigrations->validate();
+        $executedMigrations = $this->doctrinemigrations->getMigratedVersions();
+        $availableMigrations = $this->doctrinemigrations->getAvailableVersions();
         $executedUnavailableMigrations = array_diff($executedMigrations, $availableMigrations);
         $numExecutedUnavailableMigrations = count($executedUnavailableMigrations);
         $newMigrations = count($availableMigrations) - count($executedMigrations);
         
         return array(
-            'db' => $doctrinemigrations->getConnection()->getDatabase(),
-            'version' => $doctrinemigrations->formatVersion($doctrinemigrations->getCurrentVersion()),
-            'latestversion' => $doctrinemigrations->formatVersion($doctrinemigrations->getLatestVersion()),
-            'table' => $doctrinemigrations->getMigrationsTableName(),
+            'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
+            'version' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getCurrentVersion()),
+            'latestversion' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getLatestVersion()),
+            'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations
         );
     }

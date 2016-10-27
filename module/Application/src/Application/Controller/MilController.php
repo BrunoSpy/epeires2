@@ -17,16 +17,25 @@
  */
 namespace Application\Controller;
 
+use Core\Controller\AbstractEntityManagerAwareController;
+use Core\Service\NMB2BService;
 use Zend\Console\Request as ConsoleRequest;
-use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class MilController extends AbstractActionController
+class MilController extends AbstractEntityManagerAwareController
 {
+
+    private $nmb2b;
+
+    public function __construct(EntityManager $entityManager, NMB2BService $nmb2b)
+    {
+        parent::__construct($entityManager);
+        $this->nmb2b = $nmb2b;
+    }
 
     public function importNMB2BAction()
     {
@@ -35,14 +44,12 @@ class MilController extends AbstractActionController
         if (! $request instanceof ConsoleRequest) {
             throw new \RuntimeException('Action only available from console.');
         }
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
+
         $j = $request->getParam('delta');
         
         $org = $request->getParam('orgshortname');
         
-        $organisation = $objectManager->getRepository('Application\Entity\Organisation')->findOneBy(array(
+        $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
             'shortname' => $org
         ));
         
@@ -52,7 +59,7 @@ class MilController extends AbstractActionController
         
         $username = $request->getParam('username');
         
-        $user = $objectManager->getRepository('Core\Entity\User')->findOneBy(array(
+        $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
             'username' => $username
         ));
         
@@ -76,12 +83,10 @@ class MilController extends AbstractActionController
         $totalTR = 0;
         echo "Lancement du téléchargement de l'AUP pour " . $organisation->getName()."\n";
 
-        $nmservice = $this->serviceLocator->get('nmb2b');
-
         try {
             $startSeq = microtime(true);
             echo "Récupération du nombre de séquences\n";
-            $eaupchain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPCHain($day));
+            $eaupchain = new \Core\NMB2B\EAUPChain($this->nmb2b->getEAUPCHain($day));
             $dl = microtime(true) - $startSeq;
             $totalDL += $dl;
             echo "Séquences récupérées en ".$dl." secondes\n";
@@ -93,7 +98,7 @@ class MilController extends AbstractActionController
         }
 
         $lastSequence = $eaupchain->getLastSequenceNumber();
-        $milcats = $objectManager->getRepository('Application\Entity\MilCategory')->findBy(array(
+        $milcats = $this->getEntityManager()->getRepository('Application\Entity\MilCategory')->findBy(array(
             'nmB2B' => true
         ));
 
@@ -113,7 +118,7 @@ class MilController extends AbstractActionController
                 try {
                     $startSeq = microtime(true);
                     echo "Téléchargement des zones ".$designator.", séquence ".$i."\n";
-                    $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA($designator.'*', $day, $i));
+                    $eauprsas = new \Core\NMB2B\EAUPRSAs($this->nmb2b->getEAUPRSA($designator.'*', $day, $i));
                     $dl = microtime(true) - $startSeq;
                     $totalDL += $dl;
                     echo "Téléchargement terminé en ".$dl." secondes"."\n";
@@ -128,7 +133,7 @@ class MilController extends AbstractActionController
                 $startEpeires = microtime(true);
                 echo "Création des évènements ".$designator.' séquence '.$i." dans Epeires..."."\n";
                 foreach ($milcats as $cat) {
-                    $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+                    $this->getEntityManager()->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
                 }
                 $tr = microtime(true) - $startEpeires;
                 $totalTR += $tr;

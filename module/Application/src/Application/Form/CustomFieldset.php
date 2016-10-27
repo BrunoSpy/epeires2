@@ -17,11 +17,11 @@
  */
 namespace Application\Form;
 
+use Application\Services\CustomFieldService;
+use Doctrine\ORM\EntityManager;
 use Zend\Form\Fieldset;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Collections\Criteria;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * Fieldset for custom fields
@@ -29,29 +29,19 @@ use Zend\ServiceManager\ServiceManager;
  * @author Bruno Spyckerelle
  *        
  */
-class CustomFieldset extends Fieldset implements InputFilterProviderInterface, ServiceManagerAwareInterface
+class CustomFieldset extends Fieldset implements InputFilterProviderInterface
 {
 
     private $names;
 
-    private $sm;
-
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->sm = $serviceManager;
-    }
-
-    public function __construct(ServiceManager $sm, $categoryid, $model = false)
+    public function __construct(EntityManager $entityManager, CustomFieldService $customFieldService, $categoryid, $model = false)
     {
         parent::__construct('custom_fields');
-        
-        $this->setServiceManager($sm);
-        $om = $sm->get('Doctrine\ORM\EntityManager');
-        
+
         $this->names = array();
         
-        $category = $om->getRepository('Application\Entity\Category')->find($categoryid);
-        $customfields = $om->getRepository('Application\Entity\CustomField')->matching(Criteria::create()->where(Criteria::expr()->eq('category', $category))
+        $category = $entityManager->getRepository('Application\Entity\Category')->find($categoryid);
+        $customfields = $entityManager->getRepository('Application\Entity\CustomField')->matching(Criteria::create()->where(Criteria::expr()->eq('category', $category))
             ->orderBy(array(
             "place" => Criteria::ASC
         )));
@@ -72,21 +62,19 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface, S
             $options = array(
                 'label' => $customfield->getName() . " :"
             );
-            
-            $customfieldservice = $sm->get('CustomFieldService');
-            
-            $value_options = $customfieldservice->getFormValueOptions($customfield);
+
+            $value_options = $customFieldService->getFormValueOptions($customfield);
             if ($value_options) {
                 $options['value_options'] = $value_options;
             }
-            $empty_option = $customfieldservice->getEmptyOption($customfield);
+            $empty_option = $customFieldService->getEmptyOption($customfield);
             if ($empty_option) {
                 $options['empty_option'] = $empty_option;
             }
             
-            $definition['type'] = $customfieldservice->getZendType($customfield->getType());
+            $definition['type'] = $customFieldService->getZendType($customfield->getType());
             
-            foreach ($customfieldservice->getFormAttributes($customfield) as $key => $attribute) {
+            foreach ($customFieldService->getFormAttributes($customfield) as $key => $attribute) {
                 $definition['attributes'][$key] = $attribute;
             }
             

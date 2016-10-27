@@ -86,16 +86,16 @@ return array(
         )
     ),
     'controllers' => array(
-        'invokables' => array(
-            'Application\Controller\Events' => 'Application\Controller\EventsController',
-            'Application\Controller\Frequencies' => 'Application\Controller\FrequenciesController',
-            'Application\Controller\Radars' => 'Application\Controller\RadarsController',
-            'Application\Controller\Report' => 'Application\Controller\ReportController',
-            'Application\Controller\File' => 'Application\Controller\FileController',
-            'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
-            'Application\Controller\Mil' => 'Application\Controller\MilController',
-            'Application\Controller\Tabs' => 'Application\Controller\TabsController',
-            'Application\Controller\OpSups' => 'Application\Controller\OpSupsController'
+        'factories' => array(
+            'Application\Controller\Events' => 'Application\Controller\Factory\EventsControllerFactory',
+            'Application\Controller\Radars' => 'Application\Controller\Factory\RadarsControllerFactory',
+            'Application\Controller\Frequencies' => 'Application\Controller\Factory\FrequenciesControllerFactory',
+            'Application\Controller\Tabs' => 'Application\Controller\Factory\TabsControllerFactory',
+            'Application\Controller\Alarm' => 'Application\Controller\Factory\AlarmControllerFactory',
+            'Application\Controller\OpSups' => 'Application\Controller\Factory\OpSupsControllerFactory',
+            'Application\Controller\Mil' => 'Application\Controller\Factory\MilControllerFactory',
+            'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
+            'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
         )
     ),
     'view_helpers' => array(

@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Core\Entity\User;
@@ -36,11 +37,23 @@ use Application\Controller\FormController;
 class UsersController extends FormController
 {
 
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     public function indexAction()
     {
         $this->layout()->title = "Utilisateurs > Administration";
         
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         
         $users = $objectManager->getRepository('Core\Entity\User')->findAll();
         
@@ -68,7 +81,7 @@ class UsersController extends FormController
 
     public function saveuserAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -103,7 +116,7 @@ class UsersController extends FormController
     public function deleteuserAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $user = $objectManager->getRepository('Core\Entity\User')->find($id);
         if ($user) {
             $objectManager->remove($user);
@@ -132,7 +145,7 @@ class UsersController extends FormController
 
     public function changepasswordAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             
@@ -186,7 +199,7 @@ class UsersController extends FormController
 
     public function getqualifzoneAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $orgid = $this->params()->fromQuery('id', null);
         $json = array();
         if ($orgid) {
@@ -203,7 +216,7 @@ class UsersController extends FormController
 
     private function getForm($userid = null)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $objectManager = $this->getEntityManager();
         $user = new User();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($user);

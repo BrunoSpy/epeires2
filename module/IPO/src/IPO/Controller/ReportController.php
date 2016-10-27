@@ -17,7 +17,10 @@
  */
 namespace IPO\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
+use Core\Controller\AbstractEntityManagerAwareController;
+use Doctrine\ORM\EntityManager;
 use OpentbsBundle\Factory\TBSFactory as TBS;
 use IPO\Entity\Report;
 use Zend\View\Model\ViewModel;
@@ -31,17 +34,24 @@ use IPO\Entity\Element;
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
-class ReportController extends AbstractActionController
+class ReportController extends AbstractEntityManagerAwareController
 {
+
+    private $eventService;
+    private $customFieldService;
+
+    public function __construct(EntityManager $entityManager, EventService $eventService, CustomFieldService $customFieldService)
+    {
+        parent::__construct($entityManager);
+        $this->eventService = $eventService;
+        $this->customFieldService = $customFieldService;
+    }
 
     /**
      * Export a report in ODF
      */
     public function exportAction()
     {
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $eventservice = $this->getServiceLocator()->get('EventService');
-        $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         
         $id = $this->params()->fromQuery('id', null);
         
@@ -54,9 +64,9 @@ class ReportController extends AbstractActionController
                 ->getIdentity()
                 ->getOrganisation()
                 ->getId();
-            $org = $em->getRepository('Application\Entity\Organisation')->find($org_id);
+            $org = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->find($org_id);
             
-            $report = $em->getRepository('IPO\Entity\Report')->find($id);
+            $report = $this->getEntityManager()->getRepository('IPO\Entity\Report')->find($id);
             
             $startdate = $report->getStartDate();
             
@@ -96,7 +106,7 @@ class ReportController extends AbstractActionController
             );
             
             // pour chaque catégorie
-            foreach ($em->getRepository('IPO\Entity\ReportCategory')->findAll() as $cat) {
+            foreach ($this->getEntityManager()->getRepository('IPO\Entity\ReportCategory')->findAll() as $cat) {
                 $catevents = array();
                 // pour chaque jour de la semaine
                 for ($i = 0; $i <= 6; $i ++) {
@@ -112,7 +122,7 @@ class ReportController extends AbstractActionController
                             // on l'ajoute à la liste du jour si l'évènement intersecte le jour
                             if ($this->intersectDates($event, $tempdate0, $tempdate1)) {
                                 $newevent = array();
-                                $newevent['name'] = $eventservice->getName($event);
+                                $newevent['name'] = $this->eventService->getName($event);
                                 $newevent['start'] = $formatterDayHour->format($event->getStartdate());
                                 $newevent['end'] = ($event->getEnddate() !== null ? $formatterDayHour->format($event->getEnddate()) : '');
                                 $newevent['author'] = $event->getAuthor()->getDisplayName();
@@ -121,15 +131,15 @@ class ReportController extends AbstractActionController
                                     if(!$value->getCustomField()->isTraceable()) {
                                         $val = array();
                                         $val['name'] = $value->getCustomfield()->getName();
-                                        $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                                        $val['value'] = $this->customFieldService->getFormattedValue($value->getCustomField(), $value->getValue());
                                         $newevent['fields'][] = $val;
                                     } else {
-                                        $repo = $em->getRepository('Application\Entity\Log');
+                                        $repo = $this->getEntityManager()->getRepository('Application\Entity\Log');
                                         $logs = $repo->getLogEntries($value);
                                         foreach(array_reverse($logs) as $log) {
                                             $val = array();
                                             $val['name'] = $formatterDayHour->format($log->getLoggedAt()) . " " . $value->getCustomfield()->getName();
-                                            $val['value'] = $customfieldservice->getFormattedValue($value->getCustomField(), $log->getData()["value"]);
+                                            $val['value'] = $this->customFieldService->getFormattedValue($value->getCustomField(), $log->getData()["value"]);
                                             $newevent['fields'][] = $val;
                                         }
                                     }
@@ -138,7 +148,7 @@ class ReportController extends AbstractActionController
                                 foreach ($event->getUpdates() as $update) {
                                     $up = array();
                                     $up['hour'] = $formatterDayHour->format($update->getCreatedOn());
-                                    $up['author'] = $eventservice->getUpdateAuthor($update);
+                                    $up['author'] = $this->eventService->getUpdateAuthor($update);
                                     $up['note'] = $update->getText();
                                     $newevent['updates'][] = $up;
                                 }
@@ -183,7 +193,6 @@ class ReportController extends AbstractActionController
     public function newreportAction()
     {
         $request = $this->getRequest();
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $viewmodel = new ViewModel();
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
@@ -210,7 +219,6 @@ class ReportController extends AbstractActionController
 
     public function savereportAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $messages = array();
         $json = array();
         if ($this->getRequest()->isPost()) {
@@ -224,9 +232,9 @@ class ReportController extends AbstractActionController
             $report = $datas['report'];
             
             if ($form->isValid()) {
-                $objectManager->persist($report);
+                $this->getEntityManager()->persist($report);
                 try {
-                    $objectManager->flush();
+                    $this->getEntityManager()->flush();
                     $this->flashMessenger()->addSuccessMessage("Rapport enregistré.");
                 } catch (\Exception $e) {
                     $this->flashMessenger()->addErrorMessage($e->getMessage());
@@ -241,14 +249,13 @@ class ReportController extends AbstractActionController
 
     private function getFormReport($id)
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $report = new Report();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($report);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($report);
+        $form->setHydrator(new DoctrineObject($this->getEntityManager()))->setObject($report);
         
         if ($id) {
-            $report = $objectManager->getRepository('IPO\Entity\Report')->find($id);
+            $report = $this->getEntityManager()->getRepository('IPO\Entity\Report')->find($id);
             if ($report) {
                 $form->bind($report);
                 $form->setData($report->getArrayCopy());
@@ -263,13 +270,12 @@ class ReportController extends AbstractActionController
     public function showAction()
     {
         if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            
+
             $id = $this->params()->fromQuery('id', null);
             if ($id !== null) {
-                $report = $em->getRepository('IPO\Entity\Report')->find($id);
+                $report = $this->getEntityManager()->getRepository('IPO\Entity\Report')->find($id);
                 $reportcategories = array();
-                foreach ($em->getRepository('IPO\Entity\ReportCategory')->findBy(array(), array(
+                foreach ($this->getEntityManager()->getRepository('IPO\Entity\ReportCategory')->findBy(array(), array(
                     'place' => 'ASC'
                 )) as $reportcategory) {
                     $reportcategories[$reportcategory->getId()] = array(
@@ -283,7 +289,7 @@ class ReportController extends AbstractActionController
                     'events' => array()
                 );
                 if ($report) {
-                    $events = $em->getRepository('Application\Entity\Event')->getAllEvents(
+                    $events = $this->getEntityManager()->getRepository('Application\Entity\Event')->getAllEvents(
                         $this->zfcUserAuthentication(), 
                         $report->getStartDate(), 
                         $report->getEndDate(),
@@ -334,13 +340,12 @@ class ReportController extends AbstractActionController
         $id = $this->params()->fromQuery('id', null);
         $catid = $this->params()->fromQuery('catid', null);
         $reportid = $this->params()->fromQuery('reportid', null);
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $json = array();
         $messages = array();
         if ($id !== null && $reportid !== null) {
-            $event = $em->getRepository('Application\Entity\Event')->find($id);
+            $event = $this->getEntityManager()->getRepository('Application\Entity\Event')->find($id);
             // search if report already owns this event
-            $report = $em->getRepository('IPO\Entity\Report')->find($reportid);
+            $report = $this->getEntityManager()->getRepository('IPO\Entity\Report')->find($reportid);
             $element = null;
             foreach ($report->getElements() as $elmt) {
                 if ($elmt->getEvent()->getId() === $event->getId()) {
@@ -354,15 +359,15 @@ class ReportController extends AbstractActionController
                 $report->addElement($element);
             }
             if ($catid !== null) {
-                $cat = $em->getRepository('IPO\Entity\ReportCategory')->find($catid);
+                $cat = $this->getEntityManager()->getRepository('IPO\Entity\ReportCategory')->find($catid);
                 $element->setCategory($cat);
             } else {
                 $element->setCategory(null);
             }
-            $em->persist($element);
-            $em->persist($report);
+            $this->getEntityManager()->persist($element);
+            $this->getEntityManager()->persist($report);
             try {
-                $em->flush();
+                $this->getEntityManager()->flush();
                 $json['id'] = $event->getId();
                 $json['catid'] = $catid;
                 $messages['success'][] = "Evènement correctement associé.";
@@ -379,15 +384,14 @@ class ReportController extends AbstractActionController
     public function deleteAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $json = array();
         $messages = array();
         if ($id !== null) {
-            $report = $em->getRepository('IPO\Entity\Report')->find($id);
+            $report = $this->getEntityManager()->getRepository('IPO\Entity\Report')->find($id);
             if ($report) {
-                $em->remove($report);
+                $this->getEntityManager()->remove($report);
                 try {
-                    $em->flush();
+                    $this->getEntityManager()->flush();
                     $messages['success'][] = "Rapport supprimé";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
