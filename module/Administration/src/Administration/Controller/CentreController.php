@@ -17,7 +17,11 @@
  */
 namespace Administration\Controller;
 
+use Application\Entity\SectorsGroupsRelation;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
+use Zend\Form\Element\Select;
+use Zend\InputFilter\Input;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -39,7 +43,7 @@ class CentreController extends FormController
 
     private $entityManager;
 
-    public function __construct($entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
@@ -335,7 +339,9 @@ class CentreController extends FormController
         ));
         
         $viewmodel->setVariables(array(
-            'form' => $form
+            'form' => $form,
+            'avalaiblesectors' => $getform['avalaiblesectors'],
+            'sectors' => $getform['sectors']
         ));
         return $viewmodel;
     }
@@ -352,13 +358,46 @@ class CentreController extends FormController
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             $group = $datas['group'];
-            
             if ($form->isValid()) {
                 $group->setZone($objectManager->getRepository('Application\Entity\QualificationZone')
                     ->find($post['zone']));
-                
+                $sectorsgroupsrelation = new ArrayCollection();
+                if(isset($post['sectors'])) {
+                    $place = 0;
+                    foreach ($post['sectors'] as $sectorid) {
+                        $sector = $objectManager->getRepository('Application\Entity\Sector')->find($sectorid);
+                        if($sector) {
+                            $relation = null;
+                            if($id) {
+                                
+                                $relation = $objectManager->getRepository('Application\Entity\SectorsGroupsRelation')
+                                    ->findOneBy(array('sector' => $sectorid, 'sectorgroup' => $id));
+                            }
+                            if(!$relation) {
+                                $relation = new SectorsGroupsRelation();
+                                $relation->setSector($sector);
+                                $relation->setSectorgroup($group);
+                            }
+                            $relation->setPlace($place);
+                            $place++;
+                            $sectorsgroupsrelation->add($relation);
+                        }
+                    }
+                }
+                $actualrelations = $group->getSectorsGroupsRelations();
+                foreach ($sectorsgroupsrelation as $newrelation) {
+                    $actualrelations->removeElement($newrelation);
+                }
+                foreach ($actualrelations as $relation) {
+                    $objectManager->remove($relation);
+                }
+                $group->setSectorsGroupsRelations($sectorsgroupsrelation);
                 $objectManager->persist($group);
-                $objectManager->flush();
+                try{
+                    $objectManager->flush();
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
             } else {
                 $this->processFormMessages($form->getMessages());
             }
@@ -397,24 +436,28 @@ class CentreController extends FormController
         $form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')
             ->getAllAsArray());
         
+        $avalaibleSectors = array();
+        $sectors = array();
+        
         if ($id) {
             $group = $objectManager->getRepository('Application\Entity\SectorGroup')->find($id);
             if ($group) {
-                $sectors = array();
-                foreach ($objectManager->getRepository('Application\Entity\Sector')->findBy(array(
-                    'zone' => $group->getZone()
-                        ->getId()
-                )) as $sector) {
-                    $sectors[$sector->getId()] = $sector->getName();
+                $sectors = $group->getSectors();
+                $allSectors = $objectManager->getRepository('Application\Entity\Sector')->findBy(array('zone' => $group->getZone()->getId()));
+                foreach ($allSectors as $s) {
+                    if(!$sectors->contains($s)) {
+                        $avalaibleSectors[] = $s;
+                    }
                 }
-                $form->get('sectors')->setValueOptions($sectors);
                 $form->bind($group);
                 $form->setData($group->getArrayCopy());
             }
         }
         return array(
             'form' => $form,
-            'group' => $group
+            'group' => $group,
+            'avalaiblesectors' => $avalaibleSectors,
+            'sectors' => $sectors
         );
     }
 
@@ -481,16 +524,48 @@ class CentreController extends FormController
             if ($form->isValid()) {
                 $sector->setZone($objectManager->getRepository('Application\Entity\QualificationZone')
                     ->find($post['zone']));
-                
+
+                $sectorsgroupsrelations = new ArrayCollection();
+                if(isset($post['sectorsgroups'])) {
+                    foreach ($post['sectorsgroups'] as $sectorgroupId) {
+                        $sectorGroup = $objectManager->getRepository('Application\Entity\SectorGroup')->find($sectorgroupId);
+                        if($sectorGroup) {
+                            $relation = null;
+                            if ($id) {
+                                $relation = $objectManager
+                                    ->getRepository('Application\Entity\SectorsGroupsRelation')
+                                    ->findOneBy(array('sector' => $id, 'sectorgroup' => $sectorgroupId));
+                            }
+                            if(!$relation) {
+                                $relation = new SectorsGroupsRelation();
+                                $relation->setSector($sector);
+                                $relation->setSectorgroup($sectorGroup);
+                            }
+                            $sectorsgroupsrelations->add($relation);
+                        }
+                    }
+                }
+                $actualrelations = $sector->getSectorsGroupsRelations();
+                foreach ($sectorsgroupsrelations as $newrelation) {
+                    $actualrelations->removeElement($newrelation);
+                }
+                foreach ($actualrelations as $relation) {
+                    $objectManager->remove($relation);
+                }
+                $sector->setSectorsGroupsRelations($sectorsgroupsrelations);
                 $objectManager->persist($sector);
                 try {
                     $objectManager->flush();
-                    $this->flashMessenger()->addSuccessMessage('Nouveau secteur enregistré');
+                    if(!$id) {
+                        $this->flashMessenger()->addSuccessMessage('Nouveau secteur enregistré.');
+                    } else {
+                        $this->flashMessenger()->addSuccessMessage('Secteur '.$sector->getName().' modifié.');
+                    }
                 } catch (\Exception $e) {
                     $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
             } else {
-                $this->flashMessenger()->addErrorMessage("Impossible d'enregistrer le secteur");
+                $this->flashMessenger()->addErrorMessage("Impossible d'enregistrer le secteur.");
                 $this->processFormMessages($form->getMessages());
             }
         }
@@ -532,13 +607,21 @@ class CentreController extends FormController
         $form->get('zone')->setValueOptions($objectManager->getRepository('Application\Entity\QualificationZone')
             ->getAllAsArray());
         
+        $sectorsgroups = new Select('sectorsgroups');
+        $sectorsgroups->setAttribute('multiple', 'true');
+        $sectorsgroups->setLabel('Regroupements : ');
+        $sectorsgroups->setDisableInArrayValidator(true);
+        $filter = new Input('sectorsgroups');
+        $filter->setRequired(false);
+        $form->add($sectorsgroups);
+        
+        $form->getInputFilter()->add($filter);
         if ($id) {
             $sector = $objectManager->getRepository('Application\Entity\Sector')->find($id);
             if ($sector) {
                 $groups = array();
                 foreach ($objectManager->getRepository('Application\Entity\SectorGroup')->findBy(array(
-                    'zone' => $sector->getZone()
-                        ->getId()
+                    'zone' => $sector->getZone()->getId()
                 )) as $group) {
                     $groups[$group->getId()] = $group->getName();
                 }

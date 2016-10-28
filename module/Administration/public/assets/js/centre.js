@@ -96,28 +96,53 @@ var centre = function(url){
 	/* **************************** */
 	$("#add-group").on('click', function(){
 		$("#group-title").html("Nouveau groupe de secteurs");
-		$("#group-form").load(url+'/centre/formgroup');
+		$("#group-form").load(url+'/centre/formgroup', function(e){
+            $("#sectors").sortable();
+            $("#sectors li").draggable({
+                connectToSortable: "#avalaiblesectors, #sectors"
+            });
+            $("#avalaiblesectors").sortable();
+            $("#avalaiblesectors li").draggable({
+                connectToSortable: "#sectors, #avalaiblesectors"
+            });
+        });
 	});
 	
 	$(".mod-group").on('click', function(){
 		$("#group-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#group-form").load(url+'/centre/formgroup?id='+$(this).data('id'));
+		$("#group-form").load(url+'/centre/formgroup?id='+$(this).data('id'), function(e){
+            $("#sectors").sortable();
+            $("#sectors li").draggable({
+                connectToSortable: "#avalaiblesectors, #sectors"
+            });
+            $("#avalaiblesectors").sortable();
+            $("#avalaiblesectors li").draggable({
+                connectToSortable: "#sectors, #avalaiblesectors"
+            });
+        });
 	});
 	
 	$("#group-container").on('change', 'select[name=zone]', function(){
 		$.getJSON(url+'/centre/getsectors?zone='+$(this).val(), function(data){
-			var select = $("#group-container select[name=sectors\\[\\]]");
-			var options = select.prop('options');
-			$('option', select).remove();
 			$.each(data, function(key, value){
-				options[options.length] = new Option(value, key);
+				$("#avalaiblesectors").append('<li class="list-group-item shadow-z-1" id="sectors_'+key+'">'+value+'</li>');
 			});
+            $("#sectors").sortable();
+            $("#sectors li").draggable({
+                connectToSortable: "#avalaiblesectors, #sectors"
+            });
+            $("#avalaiblesectors").sortable();
+            $("#avalaiblesectors li").draggable({
+                connectToSortable: "#sectors, #avalaiblesectors"
+            });
 		});
 	});
 	
 	$("#group-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/centre/savegroup', $("#SectorGroup").serialize(), function(data){
+		var postData = $("#SectorGroup").serialize()+'&' + $("#sectors").sortable("serialize");
+        console.log(postData);
+		$.post(url+'/centre/savegroup', postData, function(data){
 			location.reload();
 		}, 'json');
 	});

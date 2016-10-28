@@ -42,17 +42,15 @@ class SectorsGroupsRelation {
 
     /**
      * @ORM\ManyToOne(targetEntity="SectorGroup", inversedBy="sectorsgroupsrelations")
-     * @Gedmo\SortableGroup
      */
     protected $sectorgroup;
 
     /**
      * Position of a sector in a sectorgroup
      * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\SortablePosition
      */
     protected $place;
-
+    
     public function getId()
     {
         return $this->id;

@@ -78,3 +78,15 @@ table .btn-xs {
 #fields-table input {
 	max-width: 120px;
 }
+
+/* ajustements pour les listes draggables des regroupement de secteurs */
+#sectors .list-group-item, #avalaiblesectors .list-group-item {
+    border: 1px solid #ddd !important;
+    cursor: move;
+    margin-bottom: 3px;
+    background-color: white;
+}
+
+#sectors {
+    min-height: 100px;
+}

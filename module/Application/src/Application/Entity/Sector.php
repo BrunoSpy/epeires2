@@ -18,6 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
@@ -39,7 +40,9 @@ class Sector
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation", mappedBy="sector")
+     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation",
+     *     mappedBy="sector",
+     *     cascade={"persist", "remove"})
      */
     protected $sectorsgroupsrelations;
 
@@ -102,7 +105,19 @@ class Sector
         }
         return $sectorsgroups;
     }
-
+    
+    public function setSectorsGroupsRelations(Collection $sectorsgroupsrelations) {
+        $this->sectorsgroupsrelations = $sectorsgroupsrelations;
+    }
+    
+    /**
+     * @return ArrayCollection
+     */
+    public function getSectorsGroupsRelations()
+    {
+        return $this->sectorsgroupsrelations;
+    }
+    
     /**
      * @return Frequency
      */
@@ -119,6 +134,11 @@ class Sector
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
+        $sectorsgroups = array();
+        foreach ($this->getSectorsgroups() as $sectorsgroup) {
+            $sectorsgroups[] = $sectorsgroup->getId();
+        }
+        $object_vars['sectorsgroups'] = $sectorsgroups;
         $object_vars['frequency'] = ($this->frequency ? $this->frequency->getId() : null);
         return $object_vars;
     }

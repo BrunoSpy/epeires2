@@ -17,10 +17,35 @@ echo $this->controlGroup($this->form->get('zone'));
 
 echo $this->controlGroup($this->form->get('name'));
 
-echo $this->controlGroup($this->form->get('sectors'));
-
 ?>
 
+	<div class="form-group">
+		<label class="control-label col-sm-3" for="sectors">Secteurs : </label>
+		<div class="col-sm-9 col-lg-8">
+			<div class="row">
+				<div class="col-sm-6">
+                    Secteurs :
+                    <ul id="sectors" class="list-group">
+                    <?php
+                    foreach ($this->sectors as $sector) {
+                        echo '<li class="list-group-item shadow-z-1" id="sectors_'.$sector->getId().'">'.$sector->getName().'</li>';
+                    }
+                    ?>
+                    </ul>
+				</div>
+				<div class="col-sm-6">
+                    Secteurs disponibles :
+					<ul id="avalaiblesectors" class="list-group">
+                        <?php
+                        foreach ($this->avalaiblesectors as $sector){
+                            echo '<li class="list-group-item shadow-z-1" id="sectors_'.$sector->getId().'">'.$sector->getName().'</li>';
+                        }
+                        ?>
+                    </ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </div>
 <div class="modal-footer">

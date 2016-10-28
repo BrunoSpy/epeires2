@@ -44,7 +44,8 @@ class Version20161026211806 extends AbstractMigration
         foreach ($sectors_groups as $sectors_group) {
             $this->connection->insert('sectorsgroupsrelations', array(
                 'sector_id' => $sectors_group['sector_id'],
-                'sectorgroup_id' => $sectors_group['sectorgroup_id']
+                'sectorgroup_id' => $sectors_group['sectorgroup_id'],
+                'place' => 0
             ));
         }
         $this->connection->executeQuery("DROP TABLE sectors_groups");

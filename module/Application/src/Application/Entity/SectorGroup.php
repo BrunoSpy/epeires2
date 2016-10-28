@@ -17,6 +17,7 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 use Doctrine\Common\Collections\Collection;
@@ -57,7 +58,7 @@ class SectorGroup
     protected $zone;
 
     /**
-     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation", mappedBy="sectorgroup")
+     * @ORM\OneToMany(targetEntity="SectorsGroupsRelation", mappedBy="sectorgroup", cascade={"persist", "remove"})
      */
     protected $sectorsgroupsrelations;
 
@@ -76,7 +77,7 @@ class SectorGroup
 
     public function __construct()
     {
-        $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sectorsgroupsrelations = new ArrayCollection();
     }
 
     public function getId()
@@ -123,11 +124,25 @@ class SectorGroup
     {
         $this->zone = $zone;
     }
-
+    
+    public function setSectorsGroupsRelations(Collection $sectorsgroupsrelations) {
+        $this->sectorsgroupsrelations = $sectorsgroupsrelations;
+    }
+    
+    /**
+     * @return ArrayCollection
+     */
+    public function getSectorsGroupsRelations()
+    {
+        return $this->sectorsgroupsrelations;
+    }
+    
+    
     public function getSectors()
     {
         $sectors = new ArrayCollection();
-        foreach ($this->sectorsgroupsrelations as $relation) {
+        $criteria = Criteria::create()->orderBy(array('place' => Criteria::ASC));
+        foreach ($this->sectorsgroupsrelations->matching($criteria) as $relation) {
             $sectors->add($relation->getSector());
         }
         return $sectors;
@@ -137,7 +152,7 @@ class SectorGroup
     {
         $object_vars = get_object_vars($this);
         $sectors = array();
-        foreach ($this->sectors as $sector) {
+        foreach ($this->getSectors() as $sector) {
             $sectors[] = $sector->getId();
         }
         $object_vars['sectors'] = $sectors;
