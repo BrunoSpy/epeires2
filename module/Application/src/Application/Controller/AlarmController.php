@@ -20,6 +20,7 @@ namespace Application\Controller;
 
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -41,10 +42,8 @@ class AlarmController extends FormController
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
-                                CustomFieldService $customfieldService,
-                                $config)
+                                CustomFieldService $customfieldService)
     {
-        parent::__construct($config);
         $this->entityManager = $entityManager;
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
@@ -254,7 +253,6 @@ class AlarmController extends FormController
             \IntlDateFormatter::GREGORIAN, 
             'HH:mm'
         );
-        
         $alarms = array();
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             $organisation = $this->zfcUserAuthentication()
@@ -360,12 +358,10 @@ class AlarmController extends FormController
                 }
             }
         }
-        
         if (empty($alarms)) {
             $this->getResponse()->setStatusCode(304);
             return new JsonModel();
         }
-        
         $this->getResponse()
             ->getHeaders()
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');

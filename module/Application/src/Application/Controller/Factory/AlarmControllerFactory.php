@@ -29,8 +29,7 @@ class AlarmControllerFactory implements FactoryInterface {
         return new AlarmController(
             $service->get('Doctrine\ORM\EntityManager'),
             $service->get('EventService'),
-            $service->get('CustomFieldService'),
-            $service->get('config'));
+            $service->get('CustomFieldService'));
     }
 
 }
