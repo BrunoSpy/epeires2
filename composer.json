@@ -19,6 +19,11 @@
 	],
     "require": {
         "php": ">=5.6.0",
+        "ext-gd": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-soap": "*",
+        "ext-openssl": "*",
         "zendframework/zend-mvc": "^2.5",
         "zendframework/zend-view": "^2.5",
         "zendframework/zend-log": "^2.5",
