@@ -36,8 +36,6 @@ $modules = array(
     'Application',
     'Administration',
     'IPO',
-    'Afis',
-    'FlightPlan'
 );
 
 if ($env == 'development') {

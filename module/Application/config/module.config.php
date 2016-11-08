@@ -95,7 +95,8 @@ return array(
             'Application\Controller\Alarm' => 'Application\Controller\AlarmController',
             'Application\Controller\Mil' => 'Application\Controller\MilController',
             'Application\Controller\Tabs' => 'Application\Controller\TabsController',
-            'Application\Controller\OpSups' => 'Application\Controller\OpSupsController'
+            'Application\Controller\OpSups' => 'Application\Controller\OpSupsController',
+            'Application\Controller\SarBeacons' => 'Application\Controller\SarBeaconsController'
         )
     ),
     'view_helpers' => array(
@@ -215,26 +216,16 @@ return array(
                 'description' => ''
             )
         ),
-        'Afis' => array(
-            'afis.read' => array(
+        'SarBeacons' => array(
+            'sarbeacons.read' => array(
                 'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet Afis.'
+                'description' => 'Donne accès à l\'onglet de recherche de terrains'
             ),
-            'afis.write' => array(
+            'sarbeacons.write' => array(
                 'name' => 'Ecriture',
-                'description' => 'Permet de modifier l\'état des Afis.'
+                'description' => 'Permet d\'effectuer des plans d\'interrogations'
             )
-        ),
-        'FlightPlan' => array(
-            'fp.read' => array(
-                'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet de gestion des plans de vol.'
-            ),
-            'fp.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de créer/modifier des plans de vol.'
-            )
-        ),
+        )
     ),
     
     'zfc_rbac' => array(

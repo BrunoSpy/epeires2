@@ -60,4 +60,8 @@
             "FlightPlan\\": "module/FlightPlan/src"
 	    }
 	}
+        "psr-4": {
+            "ApplicationTest\\": "tests/ApplicationTest"
+        }
+    }
 }
