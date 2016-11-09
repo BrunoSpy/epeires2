@@ -59,4 +59,14 @@ class SarBeaconsController extends TabController
         
         return $viewmodel;
     }
+
+    public function sauverAction()
+    {
+        $request    = $this->getRequest();
+        if ($request->isPost()) {
+            $post   = $request->getPost();
+            print_r($post);
+        }
+        return new JsonModel();
+    }
 }

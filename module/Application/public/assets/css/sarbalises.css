@@ -215,3 +215,7 @@ a.list-group-item {
 #pio-mod-form li{
     margin-top:5px;
 }
+
+.form-group textarea{
+    background-color: white;
+}

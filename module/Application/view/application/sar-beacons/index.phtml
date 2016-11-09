@@ -1,10 +1,10 @@
 <?php
 $this->headLink()->prependStylesheet($this->basePath() . '/css/jquery-ui.css');
-$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/leaflet.css');
-$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/easy-button.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/leaflet/dist/leaflet.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbalises.css');
-$this->headScript()->appendFile($this->basePath() . '/assets/js/leaflet.js');
-$this->headScript()->appendFile($this->basePath() . '/assets/js/easy-button.js');
+$this->headScript()->appendFile($this->basePath() . '/components/leaflet/dist/leaflet.js');
+$this->headScript()->appendFile($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/lib-btiv.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
 ?>

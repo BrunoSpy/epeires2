@@ -189,6 +189,8 @@ $(function() {
 
     $bRecB.click(rechercheParBalise);
     $bRecT.click(rechercheParTerrain);
+    $bModPi.click(rafraichirPIO);
+    $bSavPi.click(sauverPIO);
 
     $('.raz-cherche').click(razCherche);
 
@@ -535,11 +537,31 @@ $(function() {
                     $('<a class="list-group-item">'+
                         '<span class="badge">d = ' + Math.trunc(ter.d) + ' km, cap = ' + Math.trunc(ter.cap) + '°</span>'+
                         '<h5><strong>' + (i + 1) + ' - ' + props.code + '</strong> <br /><em>' + props.name + '</em> </h5>' +
-                        '</a>')
+                      '</a>')
                     .click({ 'latLon': [coord[1], coord[0]] }, cliqueTerrainHandler);
+
+                var $fOptCom = $('<div class="form-group"></div>')
+                    .appendTo($ter)
+                    .hide();
+
+                var $optCom =
+                    $('<textarea rows="1" class="form-control" placeholder="commentaire optionnel"></textarea>')
+                    .data({
+                        "idt": i,
+                        "name": props.name,
+                    })
+                    .blur(function() { 
+                        // var p = pio.filter(x => x.nom == props.name);
+                        var p =  pio[$(this).data().idt];
+                        // console.log(p);
+                        p["com"] = $(this).val();
+                        // console.log(p);
+                     })
+                    .appendTo($fOptCom);
 
                 var $btnContact = $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
                     .data({
+                        "idt": i,
                         "name": props.name,
                     })
                     .click(clickContactHandler)
@@ -569,6 +591,7 @@ $(function() {
                 }
 
                 function clickContactHandler(e) {
+                    var $fOptCom = $(this).parent().find('.form-group');
 
                     $carInner.find('a.active')
                         .removeClass('active');
@@ -584,25 +607,19 @@ $(function() {
                         .toggleClass('list-group-item-success')
                         .addClass('active');
 
-                    pio = pio.filter(x => x.nom !=  $(this).data().name);
+                    pio = pio.filter(x => x.nom != $(this).data().name);
 
                     if($(this).hasClass('btn-danger')){
-                        pio.push({ nom: $(this).data().name, t: moment().format('hh:mm:ss')});
+                        $fOptCom.show();
+                        pio[$(this).data().idt] = { 
+                            nom: $(this).data().name, 
+                            t: moment().format('hh:mm:ss'), 
+                            com: $fOptCom.find('textarea').val()
+                        };
+                    } else {
+                        $fOptCom.hide();
+                        pio[$(this).data().idt] = null;
                     }
-
-                    $fModPi.find("li").remove();
-
-                    var $ul = $fModPi.find('ul');
-                    $.each(pio, function(index, val) {
-                        var $li = $('<li class="list-group-item"><button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><strong> ' + val.t + '</strong> ' + val.nom + '</li>');
-                        $li.find('button')
-                            .data({'nom': val.nom})
-                            .click(function(){
-                                pio = pio.filter(x => x.nom !=  $(this).data().nom);
-                                $(this).parent().remove();
-                            });
-                        $ul.append($li);
-                    });
                 }
             }
         }
@@ -681,6 +698,29 @@ $(function() {
             sltedTerMk = majMarker(sltedTerMk, e.data.latLon);
         }
     }
+
+    function rafraichirPIO(e) {
+        var $ul = $fModPi.find("ul");
+        $ul.find('li').remove();
+        
+        $.each(pio, function(index, val) {
+            var $li = $('<li class="list-group-item"><button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><strong> ' + val.t + '</strong> ' + val.nom + '<br />' + val.com + '</li>');
+            $li.find('button')
+                .data({'nom': val.nom})
+                .click(function(){
+                    pio = pio.filter(x => x.nom !=  $(this).data().nom);
+                    $(this).parent().remove();
+                });
+            $ul.append($li);
+        });
+    }
+
+    function sauverPIO(e) {
+        var jqxhr = $.post("/sarbeacons/sauver", {pio: pio}, function() {
+            alert( "success" );
+        });
+    }
+    
     /* chargement ajax des données de la map */
     function chargerTerrains() {
         $.getJSON("data/testter.geojson")

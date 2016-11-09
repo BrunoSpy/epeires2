@@ -1,4 +1,8 @@
 {
     "directory": "public/components/",
-    "analytics": false
+    "analytics": false,
+    "strict-ssl": true,
+    "shorthand-resolver": "git://github.com//.git",
+    "proxy": "http://proxy.crna-n.aviation:8080",
+    "https-proxy": "http://proxy.crna-n.aviation:8080"
 }
