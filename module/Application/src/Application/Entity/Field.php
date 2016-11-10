@@ -50,11 +50,12 @@ class Field
      * @Annotation\Required({"required":"false"})
      */
     protected $comment;
-
+    
     /**
-     * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\DateTime")
      * @Annotation\Required({"required":"true"})
+     * @Annotation\Attributes({"class":"datetime"})
      */
     protected $intTime;
     /** 
@@ -97,6 +98,16 @@ class Field
     {
         $this->intTime = $intTime;
     }  
+
+    public function setInterrogationPlan(InterrogationPlan $interrogationPlan = null)
+    {
+        $this->interrogationPlan = $interrogationPlan;
+    }
+
+    public function getInterrogationPlan()
+    {
+        return $this->interrogationPlan;
+    }
     // public function getArrayCopy()
     // {
     //     $object_vars = get_object_vars($this);

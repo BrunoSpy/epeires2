@@ -60,7 +60,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
             <div id="f-pio" class="cache">
                 <h4></h4>
 
-                <button class="btn btn-info" id="btn-mod-pi" data-toggle="modal" href="#f-mod-pi"><span class="glyphicon glyphicon-edit"></span></button>
+                <button class="btn btn-info" id="btn-mod-pi" data-toggle="modal" href="#mdl-mod-pi"><span class="glyphicon glyphicon-edit"></span></button>
 
                 <button class="btn btn-warning disabled" id="btn-sav-pi"><span class="glyphicon glyphicon-floppy-save"></span></button>
 
@@ -97,6 +97,12 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
         </div>
     </div>
 </div>
+
+<?=$this->modalWindow(  "mdl-mod-pi", 
+                        "<h3 id='title-mod-pi'></h3>", 
+                        "", 
+                        "<div id='f-mod-pi'></div>")
+                        ?>
 
 <?php $this->inlineScript()->captureStart();?>
 

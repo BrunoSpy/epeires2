@@ -17,6 +17,8 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
@@ -41,17 +43,17 @@ class InterrogationPlan
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Type :"})
+     * @Annotation\Options({"label":"Type :","value_options" : {"0":"PIO", "1":"PIA"}})
      */
     protected $type;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Options({"label":"Nom :"})
+     * @Annotation\Options({"label":"Type d'alerte :","value_options" : {"0":"INERFA", "1":"ALERTFA", "2":"DETRESSFA"}})
      */
-    protected $name;
+    protected $typeAlerte;
 
     /**
      * @ORM\Column(type="string")
@@ -70,10 +72,17 @@ class InterrogationPlan
     protected $firDest;
 
     /**
-     * @ORM\OneToMany(targetEntity="Field", mappedBy="interrogationPlan")
+
+     * @ORM\OneToMany(targetEntity="Field", mappedBy="interrogationPlan", cascade={"persist"})
+     * @Annotation\Type("Zend\Form\Element\Collection")
      * @Annotation\Required({"required":"false"})
      */   
     protected $fields;
+
+    public function __construct()
+    {
+        $this->fields = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -90,14 +99,14 @@ class InterrogationPlan
         $this->type = $type;
     }
 
-    public function getName()
+    public function getTypeAlerte()
     {
-        return $this->name;
+        return $this->typeAlerte;
     }
 
-    public function setName($name)
+    public function setTypeAlerte($typeAlerte)
     {
-        $this->name = $name;
+        $this->typeAlerte = $typeAlerte;
     }
 
     public function getFirSource()
@@ -120,14 +129,25 @@ class InterrogationPlan
         $this->firDest = $firDest;
     }
 
+    public function addFields(Collection $fields)
+    {
+        foreach ($fields as $field) {
+            $field->setInterrogationPlan($this);
+            $this->fields->add($field);
+        }
+    }
+
+    public function removeFields(Collection $fields)
+    {
+        foreach ($fields as $field) {
+            $field->setInterrogationPlan(null);
+            $this->fields->removeElement($field);
+        }
+    }
+
     public function getFields()
     {
         return $this->fields;
-    }
-
-    public function setFields($fields)
-    {
-        $this->fields = $fields;
     }
 
     // public function getArrayCopy()

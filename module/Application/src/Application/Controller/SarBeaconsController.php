@@ -17,20 +17,32 @@
  */
 namespace Application\Controller;
 
+
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Zend\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Form\CustomFieldset;
 
+use Zend\Mvc\Controller\AbstractActionController;
+use Application\Entity\InterrogationPlan;
+use Application\Entity\Field;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 /**
  *
- * @author Bruno Spyckerelle
+ * @author Loïc Perrin
  */
-class SarBeaconsController extends TabController
+class SarBeaconsController extends AbstractActionController
 {
+    // const DEFAULT_METHOD = "post";
+    // protected $em;
+
+    // public function __invoke($em)
+    // {
+    //     if(null === $this->em) $this->em = $em;
+    //     return $this;
+    // }
 
     public function indexAction()
     {
@@ -60,13 +72,83 @@ class SarBeaconsController extends TabController
         return $viewmodel;
     }
 
+    private function get($id = null)
+    {
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if ($id) {
+            $intPlan = $em->getRepository(InterrogationPlan::class)->find($id);
+            if ($intPlan == null or !$intPlan->isValid()) return null;
+        } else {
+            $intPlan = new InterrogationPlan();
+        }
+        return $intPlan;
+    }
+
     public function sauverAction()
     {
         $request    = $this->getRequest();
         if ($request->isPost()) {
             $post   = $request->getPost();
             print_r($post);
+            $f = [];
+            $f1 = new Field();
+            $f1->setName("test");
+            $f1->setComment("test baodfjed");
+            $f1->setIntTime(new \DateTime());
+
+            $f[] = $f1;
+            $data = [];
+            foreach ($post as $key => $value) {
+                $data[$key] = $value;
+            }
+            $data['fields'] = $f;
+
+            // print_r($data);
+            $form = $this->getForm();
+            $form->setData($data);
+            if($form->isValid()){
+                $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                // print_r($form->getData());
+                $intPlan = (new DoctrineHydrator($em))->hydrate($form->getData(), $this->get());
+                // print_r($intPlan);
+                $em->persist($intPlan);
+                $em->flush();
+            } else {
+                // print_r($form->getData());
+            }
+            // print_r($form);
+            // print_r($post);
         }
         return new JsonModel();
     }
+
+    public function formAction() {
+        // print_r($this->getForm());
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'form' => $this->getForm()
+            ])
+        ;
+    }
+
+    private function getForm() {
+        $form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
+            // ->get('organisation')
+            // ->setValueOptions($organisations->getAllAsArray())
+        ;
+
+        $form->add([
+            'type' => \Zend\Form\Element\Collection::class,
+            'options' => [
+                'label' => 'Terrains',
+                'count' => 2,
+                'should_create_template' => true,
+                'target_element' => new \Zend\Form\Element\Color()
+            ],
+        ]);
+        return $form;
+    }
+
 }

@@ -128,32 +128,11 @@ $(function() {
         $bSavPi = $('#btn-sav-pi'),
         $bModPi = $('#btn-mod-pi'),
 
-        $fModPi = $('<div id = "f-mod-pi"></div>'),
+        $fModPi = $('#f-mod-pi'),
         $carousel = $("#req-pio"),
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators');
 
-    var lsPioProp = [{
-            label: "Type",
-            name: "pio",
-            type: "select",
-            options: { 'pio': 'PIO', 'pia': 'PIA' },
-            required: true
-        }, {
-            label: "Alerte",
-            name: "alerte",
-            type: "select",
-            options: { '0': 'INERFA', '1': 'ALERTFA', '2': 'DETRESSFA' },
-            required: true
-        }, {
-            label: "FIR Source",
-            name: "fir-src",
-            type: "text"
-        }, {
-            label: "FIR interrogée",
-            name: "fir-int",
-            type: "text"
-        }];
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
@@ -189,7 +168,7 @@ $(function() {
 
     $bRecB.click(rechercheParBalise);
     $bRecT.click(rechercheParTerrain);
-    $bModPi.click(rafraichirPIO);
+    $bModPi.click(btnModPiHandler);
     $bSavPi.click(sauverPIO);
 
     $('.raz-cherche').click(razCherche);
@@ -205,25 +184,6 @@ $(function() {
         centrerMap();     
     }).addTo(orbit);
 
-    creerModals();
-
-    function creerModals() {
-        var $f = $('<form method="post" action="#" class="form-horizontal"></form>');
-
-        $f.fhtml(lsPioProp, '');
-
-        $f.append('<h3>Terrains interrogés</h3><ul></ul>');
-
-        $content.append(
-            $fModPi.addModal(
-                'Editer le PI',
-                $f,
-                '<button class="btn btn-primary btn-small"><span class="glyphicon glyphicon-edit"></span></button>'
-            )
-        );
-
-        $fModPi.find('.btn').click(modPiHandler);
-    }
 
     function modPiHandler() {
             $('#btn-mod-pi')
@@ -699,28 +659,56 @@ $(function() {
         }
     }
 
-    function rafraichirPIO(e) {
-        var $ul = $fModPi.find("ul");
-        $ul.find('li').remove();
-        
-        $.each(pio, function(index, val) {
-            var $li = $('<li class="list-group-item"><button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><strong> ' + val.t + '</strong> ' + val.nom + '<br />' + val.com + '</li>');
-            $li.find('button')
-                .data({'nom': val.nom})
-                .click(function(){
-                    pio = pio.filter(x => x.nom !=  $(this).data().nom);
-                    $(this).parent().remove();
-                });
-            $ul.append($li);
+    function btnModPiHandler(e) {
+
+                    $('#btn-mod-pi')
+                .removeClass('btn-info')
+                .addClass('btn-success');
+            $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
+                .removeClass('btn-warning disabled')
+                .addClass('btn-info');
+
+        $('#title-mod-pi').html("Editer le Plan d'Interrogation");
+        $fModPi.load('/sarbeacons/form', function() {
+            var $ul = $fModPi.find("ul");
+            $ul.find('li').remove();
+                        console.log(pio)
+            $.each(pio, function(index, val) {
+                var $li = $('<li class="list-group-item"><button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><strong> ' + val.t + '</strong> ' + val.nom + '<br />' + val.com + '</li>');
+
+                $li.find('button')
+                    .data({'nom': val.nom})
+                    .click(function(){
+                        pio = pio.filter(x => x.nom !=  $(this).data().nom);
+                        $(this).parent().remove();
+                    });
+                $ul.append($li);
+            });
+
+            $fModPi.find('input[type="submit"]')
+                .click(function(e){
+                    e.preventDefault();
+                    $("#mdl-mod-pi").modal('hide');
+                })
         });
     }
 
     function sauverPIO(e) {
-        var jqxhr = $.post("/sarbeacons/sauver", {pio: pio}, function() {
-            alert( "success" );
-        });
+        e.preventDefault();
+        pio = JSON.stringify({ 'pio': pio });
+
+        // $.ajax({
+        //     contentType: 'application/json; charset=utf-8',
+        //     dataType: 'json',
+        //     type: 'POST',
+        //     url: '/sarbeacons/sauver',
+        //     data: $('#InterrogationPlan').serialize()
+        // }); 
+        $.post("/sarbeacons/sauver", $("#InterrogationPlan").serialize() , function(data){
+           // location.reload();
+        }, 'json');
     }
-    
+
     /* chargement ajax des données de la map */
     function chargerTerrains() {
         $.getJSON("data/testter.geojson")
