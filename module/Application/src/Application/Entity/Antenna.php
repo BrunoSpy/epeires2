@@ -17,6 +17,7 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
@@ -163,7 +164,28 @@ class Antenna extends TemporaryResource
     {
         return $this->backupfrequenciesclimax;
     }
-
+    
+    /**
+     * @return ArrayCollection All frequencies on this antenna
+     */
+    public function getAllFrequencies()
+    {
+        $allFreq = new ArrayCollection();
+        foreach ($this->mainfrequencies as $f) {
+            $allFreq->add($f);
+        }
+        foreach ($this->backupfrequencies as $f) {
+            $allFreq->add($f);
+        }
+        foreach ($this->mainfrequenciesclimax as $f) {
+            $allFreq->add($f);
+        }
+        foreach ($this->backupfrequenciesclimax as $f) {
+            $allFreq->add($f);
+        }
+        return $allFreq;
+    }
+    
     public function getModel()
     {
         return $this->model;

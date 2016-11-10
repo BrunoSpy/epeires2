@@ -41,9 +41,7 @@ class ControlGroup extends AbstractHelper
         $labelclass = (isset($options['labelclass'])) ? " " . $options['labelclass'] : "";
 
         $large = (isset($options['large'])) ? $options['large'] : false ;
-
-        $controlForm;
-
+        
         $element->setLabelAttributes(array('class' => 'control-label '.($large ? 'col-sm-2' : 'col-sm-3').$labelclass));
         $elementClass = $element->getAttribute('class');
         $element->setAttributes(

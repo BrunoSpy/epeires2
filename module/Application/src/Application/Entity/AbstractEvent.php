@@ -88,6 +88,7 @@ abstract class AbstractEvent
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Catégorie", "empty_option":"Choisir la catégorie"})
+     * @var Category $category
      */
     protected $category;
 
@@ -181,13 +182,16 @@ abstract class AbstractEvent
             $this->zonefilters->removeElement($zonefilter);
         }
     }
-
+    
+    /**
+     * @return Category
+     */
     public function getCategory()
     {
         return $this->category;
     }
 
-    public function setCategory($category)
+    public function setCategory(Category $category)
     {
         $this->category = $category;
     }
@@ -217,10 +221,10 @@ abstract class AbstractEvent
 
     /**
      * Return the CustomFieldValue corresponding to a given <code>$customfield</code>
-     * Return null if event doesn't has a matching <code>$customfield</code>
+     * Return null if event doesn't have a matching <code>$customfield</code>
      *
      * @param \Application\Entity\CustomField $customfield            
-     * @return type
+     * @return mixed
      */
     public function getCustomFieldValue(CustomField $customfield)
     {

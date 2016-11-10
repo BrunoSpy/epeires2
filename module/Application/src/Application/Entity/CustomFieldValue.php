@@ -63,7 +63,10 @@ class CustomFieldValue
     {
         $this->event = $event;
     }
-
+    
+    /**
+     * @return CustomField
+     */
     public function getCustomField()
     {
         return $this->customfield;

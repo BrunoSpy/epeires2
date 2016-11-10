@@ -121,7 +121,7 @@ foreach ($this->frequencyColors as $status => $color) {
 <?php
 
 echo $this->modalwindow("confirm-end-event", "<h4>Antenne <em><span id=\"antenna_name\"></span></em></h4>", "", null, "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>
-						<p>L'heure actuelle sera utilisée comme heure de fin.</p>", "<button class=\"btn btn-danger\" id=\"end-antenna-href\">Confirmer</button>
+						<p>L'heure actuelle sera utilisée comme heure de fin.</p><div id='frequencies_impacted'></div>", "<button class=\"btn btn-danger\" id=\"end-antenna-href\">Confirmer</button>
 						<button class=\"btn\" href=\"#\" id=\"cancel-antenna\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
 ?>
 

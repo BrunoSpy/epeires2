@@ -68,15 +68,28 @@ var antenna = function(url, frequencyTestMenu){
         $("#cancel-antenna").data('antenna', $(this).data('antennaid')) ;
 
         if(!newState){
-            $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
-                "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
+            var select = $('<select class="form-control" id="freqsImpacted" name="frequencies" multiple></select>');
+            $.getJSON(url+'frequencies/getFrequenciesOnAntenna?antennaid='+$(this).data('antennaid'), function(data){
+                $.each(data, function(key, value){
+                    select.append($('<option>', {
+                        value: key,
+                        text: value
+                    }))
+                });
+                var form = $('<form class="form-horizontal"><div class="form-group">' +
+                    '<label class="control-label col-sm-3" for="frequencies">Fréquences impactées : </label>' +
+                    '<div class="col-sm-9">'+select[0].outerHTML+'</div>'+
+                    '</div></form>')
+                $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
+                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>").append(form);
+            });
+
         } else {
             $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>"+
                 "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
         }
         $("#confirm-end-event").modal('show');
     });
-
 
     $("#confirm-end-event").on('hide.bs.modal', function(){
         if(back){
@@ -89,7 +102,7 @@ var antenna = function(url, frequencyTestMenu){
         event.preventDefault();
         back=false;
         $("#confirm-end-event").modal('hide');
-        $.post($("#end-antenna-href").attr('href'), function(data){
+        $.post($("#end-antenna-href").attr('href')+'&'+$('#freqsImpacted').serialize(), function(data){
             back = true;
             displayMessages(data.messages);
             var switchbtn = $('#switch_'+$("#cancel-antenna").data('antenna'));
