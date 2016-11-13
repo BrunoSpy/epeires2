@@ -42,7 +42,7 @@ class InterrogationPlan
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required({"required":"true"})
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Type :","value_options" : {"0":"PIO", "1":"PIA"}})
      */
     protected $type;
@@ -50,32 +50,30 @@ class InterrogationPlan
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required({"required":"true"})
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Type d'alerte :","value_options" : {"0":"INERFA", "1":"ALERTFA", "2":"DETRESSFA"}})
      */
     protected $typeAlerte;
 
     /**
      * @ORM\Column(type="string")
+     * @Annotation\Required(false)
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"false"})
      * @Annotation\Options({"label":"FIR Source :"})
      */
     protected $firSource;
 
     /**
      * @ORM\Column(type="string")
+     * @Annotation\Required(false)  
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"false"})
      * @Annotation\Options({"label":"FIR Dest :"})
      */
     protected $firDest;
 
     /**
-
      * @ORM\OneToMany(targetEntity="Field", mappedBy="interrogationPlan", cascade={"persist"})
-     * @Annotation\Type("Zend\Form\Element\Collection")
-     * @Annotation\Required({"required":"false"})
+     * @Annotation\Required(true)  
      */   
     protected $fields;
 
@@ -150,10 +148,14 @@ class InterrogationPlan
         return $this->fields;
     }
 
-    // public function getArrayCopy()
-    // {
-    //     $object_vars = get_object_vars($this);
-    //     $object_vars['organisation'] = $this->organisation->getId();
-    //     return $object_vars;
-    // }
+    public function getArrayCopy()
+    {
+        $object_vars = get_object_vars($this);
+        $object_vars['fields'] = null;
+        return $object_vars;
+    }
+
+    public function isValid() {
+        return true;
+    }
 }

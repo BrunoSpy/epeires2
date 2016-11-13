@@ -2,11 +2,11 @@
 $this->headLink()->prependStylesheet($this->basePath() . '/css/jquery-ui.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/components/leaflet/dist/leaflet.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.css');
-$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbalises.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbeacons.css');
 $this->headScript()->appendFile($this->basePath() . '/components/leaflet/dist/leaflet.js');
 $this->headScript()->appendFile($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/lib-btiv.js');
-$this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
 ?>
 <div class="row">
     <div class="col-sm-9 fill">
@@ -60,7 +60,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
             <div id="f-pio" class="cache">
                 <h4></h4>
 
-                <button class="btn btn-info" id="btn-mod-pi" data-toggle="modal" href="#mdl-mod-pi"><span class="glyphicon glyphicon-edit"></span></button>
+                <button class="btn btn-info" id="btn-edit-pi" data-toggle="modal" href="#mdl-edit-pi"><span class="glyphicon glyphicon-edit"></span></button>
 
                 <button class="btn btn-warning disabled" id="btn-sav-pi"><span class="glyphicon glyphicon-floppy-save"></span></button>
 
@@ -98,10 +98,10 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbalises.js');
     </div>
 </div>
 
-<?=$this->modalWindow(  "mdl-mod-pi", 
-                        "<h3 id='title-mod-pi'></h3>", 
+<?=$this->modalWindow(  "mdl-edit-pi", 
+                        "<h3 id='title-edit-pi'></h3>", 
                         "", 
-                        "<div id='f-mod-pi'></div>")
+                        "<div id='f-edit-pi'></div>")
                         ?>
 
 <?php $this->inlineScript()->captureStart();?>

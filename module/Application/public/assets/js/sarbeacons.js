@@ -16,7 +16,7 @@
 $(function() {
     "use strict";
     /** constantes **/
-    const ALERTES = ["INERFA", "ALERFA", "DETRESSFA"];
+
     /* nombre de résultats à afficher pour un PI */
     const NB_RESULT_PIO_AFF = 5;
     const NB_RESULT_PIO = 30;
@@ -82,30 +82,33 @@ $(function() {
         accessToken: 'pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw'
     }).addTo(orbit);
 
-    /* calques contenant résultat des pi, balises et terrains */
+    /* calques contenant résultat des pi, beacons et fields */
     var pioLay,
         balLay,
         terLay;
 
     var mapLayers = {
-        'bal': chargerBalises(),
-        'ter': chargerTerrains()
+        'bal': loadBeacons(),
+        'ter': loadFields()
     }
 
     /* marqueurs SAR et terrain sélectionné */
-    var SARMk,
-        sltedTerMk;
+    var mkSAR,
+        mkSelected;
     /* données :
-        terrains : tableau créée à partir des données GeoJson avec la liste des features.
-        nomTerrains : tableau ne contenant que le nom des terrains pour l'autocompletion. 
-        balises : tableau créée à partir des données GeoJson avec la liste des features.
-        nomBalises : tableau ne contenant que le nom des balises pour l'autocompletion.
+        fields : tableau créée à partir des données GeoJson avec la liste des features.
+        fieldNames : tableau ne contenant que le nom des fields pour l'autocompletion. 
+        beacons : tableau créée à partir des données GeoJson avec la liste des features.
+        beaconNames : tableau ne contenant que le nom des beacons pour l'autocompletion.
+        pio : tableau contenant les terrains interrogés.
+        idIp : contient l'id de la BDD du plan d'interrogation s'il a été créée.
     */
-    var terrains = [],
-        nomTerrains = [],
-        balises = [],
-        nomBalises = [],
-        pio = [];
+    var fields = [],
+        fieldNames = [],
+        beacons = [],
+        beaconNames = [],
+        pio = [],
+        idIp = null;
     /* DOM */
     var $content = $('.content'),
 
@@ -120,15 +123,15 @@ $(function() {
         $bRecB = $('#btn-rech-bal'),
         $bRecT = $('#btn-rech-ter'),
 
-        $onglets = $('#tabs'),
+        $tabs = $('#tabs'),
         $tab1 = $('#tabs-1'),
         $tab2 = $('#tabs-2'),
         $tab1 = $('#tabs-3'),
         $fPio = $('#f-pio'),
         $bSavPi = $('#btn-sav-pi'),
-        $bModPi = $('#btn-mod-pi'),
+        $bEditPi = $('#btn-edit-pi'),
 
-        $fModPi = $('#f-mod-pi'),
+        $fEditPi = $('#f-edit-pi'),
         $carousel = $("#req-pio"),
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators');
@@ -141,62 +144,64 @@ $(function() {
     $('input').val('');
 
     /* init des onglets */
-    $onglets.tabs();
+    $tabs.tabs();
 
     /** Evenements **/
-    $iLat.keyup(toucheLat);
-    $iLon.keyup(toucheLon);
-    $bRecC.click(rechercheParCoord);
+    $iLat.keyup(keyPressedLat);
+    $iLon.keyup(keyPressedLon);
+    $bRecC.click(findByCoord);
 
-    $iBal.keyup(toucheBalise);
+    $iBal.keyup(keyPressedBeacon);
     $iBal.autocomplete({
         autofocus: true,
         source: function(request, response) {
-            source(request, response, nomBalises);
+            source(request, response, beaconNames);
         },
         select: select
     });
 
-    $iTer.keyup(toucheTerrain);
+    $iTer.keyup(keyPressedFields);
     $iTer.autocomplete({
         autofocus: true,
         source: function(request, response) {
-            source(request, response, nomTerrains);
+            source(request, response, fieldNames);
         },
         select: select
     });
 
-    $bRecB.click(rechercheParBalise);
-    $bRecT.click(rechercheParTerrain);
-    $bModPi.click(btnModPiHandler);
-    $bSavPi.click(sauverPIO);
+    $bRecB.click(findByBeacon);
+    $bRecT.click(findByField);
+    $bEditPi.click(btnEditPiHandler);
+    $bSavPi.click(saveIp);
 
-    $('.raz-cherche').click(razCherche);
+    $('.raz-cherche').click(resetSearches);
 
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
         var coord = [e.latlng.lat, e.latlng.lng];
-        centrerMap(coord, PIO_ZOOM);
-        declencherPIO(coord);
+        centerMap(coord, PIO_ZOOM);
+        triggerIp(coord);
     });
 
     L.easyButton('glyphicon-refresh', function() { 
-        centrerMap();     
+        centerMap();     
     }).addTo(orbit);
 
+    function centerMap(latLon, zoom) {
+        orbit.setView(latLon || DFLT_LAT_LNG, zoom || DFLT_ZOOM);
+    }
+    // function modPiHandler() {
+    //         $bEditPi
+    //             .removeClass('btn-info')
+    //             .addClass('btn-success');
+    //         $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
+    //             .removeClass('btn-warning disabled')
+    //             .addClass('btn-info');
 
-    function modPiHandler() {
-            $('#btn-mod-pi')
-                .removeClass('btn-info')
-                .addClass('btn-success');
-            $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
-                .removeClass('btn-warning disabled')
-                .addClass('btn-info');
+    //         $fEditPi.modal('hide');
+    //     }
 
-            $fModPi.modal('hide');
-        }
-
-    function changeEtatBtn($btn, etat) {
+    function editBtnState($btn, etat) {
         if (etat)
             $btn
             .removeClass('btn-warning disabled')
@@ -207,55 +212,41 @@ $(function() {
             .removeClass('btn-success');
     }
 
-    function source(request, response, data) {
-        var results = $.ui.autocomplete.filter(data, request.term);
-        response(results.slice(0, NB_RESULT_AUTOCOMP));
-    }
-
-    function select(ev, ui) {
-        $(this).val(ui.item.value);
-        $(this).trigger("keyup");
-    }
-
-    function centrerMap(latLon, zoom) {
-        orbit.setView(latLon || DFLT_LAT_LNG, zoom || DFLT_ZOOM);
-    }
-
-    function basculeRazCherche($raz) {
+    function activateResetSearches($raz) {
         ($raz.prev().val() == '') ? $raz.addClass('cache'): $raz.removeClass('cache');
     }
 
-    function razCherche() {
+    function resetSearches() {
         $(this).addClass('cache')
             .prev().val('')
             .parent().addClass('has-error');
 
-        changeEtatBtn($(this).closest('.row').find('button'), 0);
+        editBtnState($(this).closest('.row').find('button'), 0);
     }
 
     /** fn recherche par coordonnées **/
 
-    function toucheLat(key) {
-        basculeRazCherche($(this).next());
-        toucheLatLon(key);
+    function keyPressedLat(key) {
+        activateResetSearches($(this).next());
+        keyPressedLatLon(key);
     }
 
-    function toucheLon(key) {
-        basculeRazCherche($(this).next());
-        toucheLatLon(key);
+    function keyPressedLon(key) {
+        activateResetSearches($(this).next());
+        keyPressedLatLon(key);
     }
 
-    function toucheLatLon(key) {
-        var lat = validerLat(),
-            lon = validerLon();
+    function keyPressedLatLon(key) {
+        var lat = validateLat(),
+            lon = validateLon();
         if (lat && lon) {
-            changeEtatBtn($bRecC, 1);
+            editBtnState($bRecC, 1);
             (key.keyCode == '13') ? $bRecC.trigger('click'): '';
         } else
-            changeEtatBtn($bRecC, 0);
+            editBtnState($bRecC, 0);
     }
 
-    function validerLat() {
+    function validateLat() {
         var lat = $iLat.val();
         if (lat !== '' && lat >= MIN_LAT && lat <= MAX_LAT) {
             $iLat.parent()
@@ -268,7 +259,7 @@ $(function() {
         }
     }
 
-    function validerLon() {
+    function validateLon() {
         var lon = $iLon.val();
         if (lon !== '' && lon >= MIN_LON && lon <= MAX_LON) {
             $iLon.parent()
@@ -281,31 +272,38 @@ $(function() {
         }
     }
 
-    function rechercheParCoord(e) {
+    function findByCoord(e) {
         if (!$(this).hasClass('btn-warning')) {
-            declencherPIO([$iLat.val(), $iLon.val()]);
+            triggerIp([$iLat.val(), $iLon.val()]);
         }
     };
 
-    /** fn recherche par balises **/
-    function toucheBalise(e) {
-        basculeRazCherche($(this).next());
+    function source(request, response, data) {
+        var results = $.ui.autocomplete.filter(data, request.term);
+        response(results.slice(0, NB_RESULT_AUTOCOMP));
+    }
+
+    function select(ev, ui) {
+        $(this).val(ui.item.value);
+        $(this).trigger("keyup");
+    }
+    /** fn recherche par beacons **/
+    function keyPressedBeacon(e) {
+        activateResetSearches($(this).next());
         var nomBal = $(this).val();
         if (!nomBal) {
-            changeEtatBtn($bRecB, 0);
+            editBtnState($bRecB, 0);
             return false;
         }
-        var iBal = trouveNomBalise(nomBal);
+        var iBal = findByBeaconsName(nomBal);
         if (typeof iBal == 'undefined') {
-            $(this).parent()
-                .addClass('has-error');
-            changeEtatBtn($bRecB, 0);
+            $(this).parent().addClass('has-error');
+            editBtnState($bRecB, 0);
         } else {
-            $(this).parent()
-                .removeClass('has-error');
-            changeEtatBtn($bRecB, 1);
+            $(this).parent().removeClass('has-error');
+            editBtnState($bRecB, 1);
 
-            var coord = balises[iBal].geometry.coordinates;
+            var coord = beacons[iBal].geometry.coordinates;
             $(this).data('latLon', [coord[1], coord[0]]);
 
             if (e.keyCode == '13') {
@@ -315,17 +313,17 @@ $(function() {
         }
     };
 
-    function rechercheParBalise() {
+    function findByBeacon() {
         if (!$(this).hasClass('btn-warning')) {
             var latlon = $iBal.data('latLon');
-            centrerMap(latlon);
-            declencherPIO(latlon);
+            centerMap(latlon);
+            triggerIp(latlon);
         }
     }
 
-    function trouveNomBalise(bal) {
+    function findByBeaconsName(bal) {
         var iBal;
-        $.each(nomBalises, function(i, b) {
+        $.each(beaconNames, function(i, b) {
             if (bal.toUpperCase() === b.toUpperCase()) {
                 iBal = i;
                 return false;
@@ -334,25 +332,23 @@ $(function() {
         return iBal;
     }
 
-    /** fn recherche par terrains **/
-    function toucheTerrain(e) {
-        basculeRazCherche($(this).next());
+    /** fn recherche par fields **/
+    function keyPressedFields(e) {
+        activateResetSearches($(this).next());
         var nomTer = $(this).val();
         if (!nomTer) {
-            changeEtatBtn($bRecT, 0);
+            editBtnState($bRecT, 0);
             return false;
         }
-        var iTer = trouveNomTerrain(nomTer);
+        var iTer = findByFieldsName(nomTer);
         if (typeof iTer == 'undefined') {
-            $(this).parent()
-                .addClass('has-error');
-            changeEtatBtn($bRecT, 0);
+            $(this).parent().addClass('has-error');
+            editBtnState($bRecT, 0);
         } else {
-            $(this).parent()
-                .removeClass('has-error');
-            changeEtatBtn($bRecT, 1);
+            $(this).parent().removeClass('has-error');
+            editBtnState($bRecT, 1);
 
-            var coord = terrains[iTer].geometry.coordinates;
+            var coord = fields[iTer].geometry.coordinates;
             $(this).data('latLon', [coord[1], coord[0]]);
 
             if (e.keyCode == '13') {
@@ -362,17 +358,17 @@ $(function() {
         }
     };
 
-    function rechercheParTerrain() {
+    function findByField() {
         if (!$(this).hasClass('btn-warning')) {
             var latlon = $iTer.data('latLon');
-            centrerMap(latlon);
-            declencherPIO(latlon);
+            centerMap(latlon);
+            triggerIp(latlon);
         }
     }
 
-    function trouveNomTerrain(ter) {
+    function findByFieldsName(ter) {
         var iTer;
-        $.each(nomTerrains, function(i, t) {
+        $.each(fieldNames, function(i, t) {
             if (ter.toUpperCase() === t.toUpperCase()) {
                 iTer = i;
                 return false;
@@ -381,17 +377,17 @@ $(function() {
         return iTer;
     }
 
-    function nouveauPIO(obj) {
+    function newIp(obj) {
 
         var $li = $(
             '<li class="list-group-item lspio"></li>'
             );
 
-        var $a = $('<a href = "#"><strong>' + ALERTES[obj.typeAl] + '</strong> le '+ obj.date + '</a>')
-            .click(function() {
+        // var $a = $('<a href = "#"><strong>' + ALERTES[obj.typeAl] + '</strong> le '+ obj.date + '</a>')
+        //     .click(function() {
                 
-            })
-            .prependTo($li);
+        //     })
+        //     .prependTo($li);
 
         // var $ol = $('<ol class="cache"></ol>').appendTo($li);
         // $(obj.pio).each(function(index, val) {
@@ -413,21 +409,21 @@ $(function() {
         $('#pio li').removeClass('list-group-item-warning').addClass('list-group-item-success');
     }
 
-    function declencherPIO(latLon) {
+    function triggerIp(latLon) {
         rafraichir();
         /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
-        SARMk = majMarker(SARMk, latLon, icSAR);
+        mkSAR = updateMarker(mkSAR, latLon, icSAR);
         /* AFFICHE EN-TETE */
         infoPI();
-        /* [] CONTENANT LES MARQUEURS DES TERRAINS LES PLUS PROCHES */
+        /* [] CONTENANT LES MARQUEURS DES fields LES PLUS PROCHES */
         var markersPIO = [];
-        var tabDist = calculTerrains(latLon);
-        traiterListeTerrains();
+        var tabDist = calculEachFieldsDistance(latLon);
+        processFieldsList();
 
         if (pioLay) orbit.removeLayer(pioLay);
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
 
-        $onglets.tabs("option", "active", 1);
+        $tabs.tabs("option", "active", 1);
 
         function rafraichir() {
             pio = [];
@@ -436,13 +432,13 @@ $(function() {
             $tab2.find('h4').eq(0).html('');
             $fPio.hasClass('cache') ? $fPio.removeClass('cache') : '';
             $carousel.hasClass('cache') ? $carousel.removeClass('cache') : '';
-            $bModPi.removeClass('btn-success').addClass('btn-info');
+            $bEditPi.removeClass('btn-success').addClass('btn-info');
             $('#btn-sav-pi, #btn-mail-pi, #btn-print-pi')
                 .addClass('btn-warning disabled')
                 .removeClass('btn-info');
 
-            $fModPi.find('input').val('');
-            $fModPi.find('li').remove();
+            $fEditPi.find('input').val('');
+            $fEditPi.find('li').remove();
         }
 
         function infoPI() {
@@ -452,21 +448,21 @@ $(function() {
 
             $fPio.find('.label').html(Number(latLon[0]).toFixed(4) + ', ' + Number(latLon[1]).toFixed(4));
 
-            $bSavPi.click(savePioHandler);
+            $bSavPi.click(saveIpHandler);
 
-            function savePioHandler(e){
-                nouveauPIO({
-                    "typePi": $fModPi.find('select').eq(0).val(),
-                    "typeAl": $fModPi.find('select').eq(1).val(),
-                    "firInt": $fModPi.find('input').eq(0).val(),
-                    "firSrc": $fModPi.find('input').eq(1).val(),
+            function saveIpHandler(e){
+                newIp({
+                    "typePi": $fEditPi.find('select').eq(0).val(),
+                    "typeAl": $fEditPi.find('select').eq(1).val(),
+                    "firInt": $fEditPi.find('input').eq(0).val(),
+                    "firSrc": $fEditPi.find('input').eq(1).val(),
                     "date": moment().format('DD/MM hh:mm:ss'),
                     "pio": pio
                 });
             }
         }
 
-        function traiterListeTerrains() {
+        function processFieldsList() {
 
             for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
 
@@ -480,7 +476,7 @@ $(function() {
 
                 for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
 
-                    var $ter = traiterTerrain(i, tabDist[i]);;
+                    var $ter = processField(i, tabDist[i]);;
                     $dItem.append($ter);
                 }
 
@@ -488,7 +484,7 @@ $(function() {
                 $carInner.append($dItem);
             }
 
-            function traiterTerrain(i, ter) {
+            function processField(i, ter) {
 
                 var coord = ter.geometry.coordinates;
                 var props = ter.properties;
@@ -498,7 +494,7 @@ $(function() {
                         '<span class="badge">d = ' + Math.trunc(ter.d) + ' km, cap = ' + Math.trunc(ter.cap) + '°</span>'+
                         '<h5><strong>' + (i + 1) + ' - ' + props.code + '</strong> <br /><em>' + props.name + '</em> </h5>' +
                       '</a>')
-                    .click({ 'latLon': [coord[1], coord[0]] }, cliqueTerrainHandler);
+                    .click({ 'latLon': [coord[1], coord[0]] }, clickFieldHandler);
 
                 var $fOptCom = $('<div class="form-group"></div>')
                     .appendTo($ter)
@@ -513,9 +509,9 @@ $(function() {
                     .blur(function() { 
                         // var p = pio.filter(x => x.nom == props.name);
                         var p =  pio[$(this).data().idt];
-                        // console.log(p);
-                        p["com"] = $(this).val();
-                        // console.log(p);
+
+                        p["comment"] = $(this).val();
+
                      })
                     .appendTo($fOptCom);
 
@@ -532,20 +528,20 @@ $(function() {
                 var $btnCentrer = $('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
                     .data({ 'latLon': [coord[1], coord[0]] })
                     .click(function(e) {
-                        centrerMap($(this).data().latLon, orbit.getZoom());
+                        centerMap($(this).data().latLon, orbit.getZoom());
                     })
                     .prependTo($ter);
 
                 if (i == 0) {
                     $ter.addClass('active');
-                    sltedTerMk = majMarker(sltedTerMk, [coord[1], coord[0]], null);
+                    mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], null);
                 }
-                markersPIO.push(creerMarkerPio(i, [coord[1], coord[0]]));
+                markersPIO.push(createIpMarker(i, [coord[1], coord[0]]));
 
                 return $ter;
 
-                function cliqueTerrainHandler(e) {
-                    detaillerBalise(e);
+                function clickFieldHandler(e) {
+                    detailBeacon(e);
                     $('.carousel-inner a.active').removeClass('active');
                     $(this).addClass('active');
                 }
@@ -567,24 +563,25 @@ $(function() {
                         .toggleClass('list-group-item-success')
                         .addClass('active');
 
-                    pio = pio.filter(x => x.nom != $(this).data().name);
+                    // pio = pio.filter(x => x.name != $(this).data().name);
 
                     if($(this).hasClass('btn-danger')){
                         $fOptCom.show();
                         pio[$(this).data().idt] = { 
-                            nom: $(this).data().name, 
-                            t: moment().format('hh:mm:ss'), 
-                            com: $fOptCom.find('textarea').val()
+                            name: $(this).data().name, 
+                            intTime: moment().format('hh:mm:ss'), 
+                            comment: $fOptCom.find('textarea').val()
                         };
                     } else {
                         $fOptCom.hide();
-                        pio[$(this).data().idt] = null;
+                        pio.splice($(this).data().idt, 1);
                     }
+
                 }
             }
         }
 
-        function creerMarkerPio(i, latlon) {
+        function createIpMarker(i, latlon) {
             var icon = L.icon({
                 iconUrl: IMG_PIO,
                 iconSize: [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i]
@@ -595,7 +592,7 @@ $(function() {
             }).bindPopup(tabDist[i].properties.name);
         }
 
-        function majMarker(marker, latLon, icon) {
+        function updateMarker(marker, latLon, icon) {
             if (!(marker === undefined)) orbit.removeLayer(marker);
             marker = L.marker(latLon);
             if (icon) marker.setIcon(icon);
@@ -635,9 +632,9 @@ $(function() {
 
         }
 
-        function calculTerrains(latLon) {
+        function calculEachFieldsDistance(latLon) {
             var tabDist = [];
-            $.each(terrains, function(i, val) {
+            $.each(fields, function(i, val) {
                 var tmp = val;
                 var coord = val.geometry.coordinates;
                 var dRad = distRad(latLon[0], latLon[1], coord[1], coord[0]);
@@ -653,49 +650,67 @@ $(function() {
             return tabDist;
         }
 
-        function detaillerBalise(e) {
+        function detailBeacon(e) {
             e.preventDefault();
-            sltedTerMk = majMarker(sltedTerMk, e.data.latLon);
+            mkSelected = updateMarker(mkSelected, e.data.latLon);
         }
     }
 
-    function btnModPiHandler(e) {
-
-                    $('#btn-mod-pi')
-                .removeClass('btn-info')
-                .addClass('btn-success');
-            $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
-                .removeClass('btn-warning disabled')
-                .addClass('btn-info');
+    function btnEditPiHandler(e) {
+        console.log(idIp)
+        $bEditPi
+            .removeClass('btn-info')
+            .addClass('btn-success');
+        $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
+            .removeClass('btn-warning disabled')
+            .addClass('btn-info');
 
         $('#title-mod-pi').html("Editer le Plan d'Interrogation");
-        $fModPi.load('/sarbeacons/form', function() {
-            var $ul = $fModPi.find("ul");
+
+        // if(idIp == null && !$fEditPi.find('form').length) {
+
+            $fEditPi.load('/sarbeacons/form', {'id' : idIp}, function() {
+
+                refreshFieldList();
+
+                $fEditPi.find('input[type="submit"]')
+                .click(function(e){
+                    e.preventDefault();
+                    $("#mdl-edit-pi").modal('hide');
+                })
+            });
+        // } else refreshFieldList();
+
+        function refreshFieldList() {
+            var $ul = $fEditPi.find("ul");
             $ul.find('li').remove();
-                        console.log(pio)
             $.each(pio, function(index, val) {
-                var $li = $('<li class="list-group-item"><button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><strong> ' + val.t + '</strong> ' + val.nom + '<br />' + val.com + '</li>');
+                if(!val) return true;
+                var $li = $('<li class="list-group-item"><strong> ' + val.intTime + '</strong> ' + val.name + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + val.comment + '</li>');
 
                 $li.find('button')
-                    .data({'nom': val.nom})
+                    .data({'name': val.name, 'idt': index})
                     .click(function(){
-                        pio = pio.filter(x => x.nom !=  $(this).data().nom);
+                        pio = pio.filter(x => x.name !=  $(this).data().name);
+                        var $a = $carInner.find('a').eq($(this).data().idt);
+                            $a.find('.form-group').hide();
+                            $a.toggleClass('list-group-item-success')
+                                .find('button').eq(1)
+                                .toggleClass('btn-info')
+                                .toggleClass('btn-danger')
+                                .find('span')
+                                .toggleClass('glyphicon-check')
+                                .toggleClass('glyphicon-remove');
                         $(this).parent().remove();
                     });
                 $ul.append($li);
             });
-
-            $fModPi.find('input[type="submit"]')
-                .click(function(e){
-                    e.preventDefault();
-                    $("#mdl-mod-pi").modal('hide');
-                })
-        });
+        }
     }
 
-    function sauverPIO(e) {
+    function saveIp(e) {
         e.preventDefault();
-        pio = JSON.stringify({ 'pio': pio });
+        // pio = JSON.stringify({ 'pio': pio });
 
         // $.ajax({
         //     contentType: 'application/json; charset=utf-8',
@@ -704,13 +719,14 @@ $(function() {
         //     url: '/sarbeacons/sauver',
         //     data: $('#InterrogationPlan').serialize()
         // }); 
-        $.post("/sarbeacons/sauver", $("#InterrogationPlan").serialize() , function(data){
-           // location.reload();
-        }, 'json');
+        $.post("/sarbeacons/sauver", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) {
+            idIp = data.id;
+
+        });
     }
 
     /* chargement ajax des données de la map */
-    function chargerTerrains() {
+    function loadFields() {
         $.getJSON("data/testter.geojson")
             .done(function(data) {
                 var lay = L.geoJson(data, {
@@ -731,45 +747,45 @@ $(function() {
                         marker = L.marker(latlng, { icon: icon })
                             .bindPopup(prop.name);
 
-                        terrains.push(feature);
-                        nomTerrains.push(prop.code);
+                        fields.push(feature);
+                        fieldNames.push(prop.code);
 
                         return marker;
                     }
                 });
                 lay.addTo(orbit);
-                ajouterBoutonMap('ter', lay);
+                addBtnToMap('ter', lay);
             })
-            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des terrains") });
+            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des fields") });
     }
 
-    function chargerBalises() {
+    function loadBeacons() {
         $.getJSON("data/bal.GeoJson")
             .done(function(data) {
                 var lay = L.geoJson(data, {
                     pointToLayer: function(feature, latlng) {
-                        balises.push(feature);
-                        nomBalises.push(feature.properties.code);
+                        beacons.push(feature);
+                        beaconNames.push(feature.properties.code);
                         var marker = L.marker(latlng, { icon: icBal });
                         marker.bindPopup(feature.properties.code);
                         return marker;
                     }
                 });
                 lay.addTo(orbit);
-                ajouterBoutonMap('bal', lay);
+                addBtnToMap('bal', lay);
 
                 return lay;
 
             })
-            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises.") });
+            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des beacons.") });
     }
 
-    function ajouterBoutonMap(nom, layer) {
+    function addBtnToMap(nom, layer) {
         L.easyButton({
             states: [{
                 stateName: nom + "-on",
                 icon: '<img src="' + URL_IMG + 'btn-' + nom + '-on.png" class="btn-icon">',
-                title: "Désactiver marqueurs terrains.",
+                title: "Désactiver marqueurs fields.",
                 onClick: function(btn, map) {
                     map.removeLayer(layer);
                     btn.state(nom + "-off");
@@ -777,7 +793,7 @@ $(function() {
             }, {
                 stateName: nom + "-off",
                 icon: '<img src="' + URL_IMG + 'btn-' + nom + '-off.png" class="btn-icon">',
-                title: "Activer marqueurs terrains.",
+                title: "Activer marqueurs fields.",
                 onClick: function(btn, map) {
                     map.addLayer(layer);
                     btn.state(nom + "-on");
