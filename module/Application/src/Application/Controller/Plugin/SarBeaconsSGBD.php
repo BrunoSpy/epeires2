@@ -24,6 +24,17 @@ class SarBeaconsSGBD extends AbstractPlugin
         return ($intPlan == null or !$intPlan->isValid()) ? null : $intPlan;
     }
 
+
+    public function getAll($params = [])
+    {        
+        $intPlans = [];
+        foreach ($this->em->getRepository(InterrogationPlan::class)->findBy($params) as $intPlan)
+        {
+            $intPlans[] = $intPlan;
+        }
+        return $intPlans;
+    }
+
     public function save($p)
     {
         $c = $this->getController();
@@ -36,7 +47,7 @@ class SarBeaconsSGBD extends AbstractPlugin
         if($form->isValid()) {
             $intPlan = (new DoctrineHydrator($this->em))
                             ->hydrate($form->getData(), $this->get($p['id']));
-
+                            
             $this->em->persist($intPlan);
             $this->em->flush();
 
@@ -54,22 +65,6 @@ class SarBeaconsSGBD extends AbstractPlugin
                 ];
         }
         return $return;
-
-        // if ($afisForm->getForm()->isValid()) {
-        //     try {
-        //         $afis = (new DoctrineHydrator($this->em))->hydrate($afisForm->getForm()->getData(), $afis);
-
-        //         $this->em->persist($afis);
-        //         $this->em->flush();
-
-        //         if ($id) $pluginMessages->add('edit', 'success', [$afis->getName()]);
-        //         else $pluginMessages->add('add', 'success', [$afis->getName()]);
-        //     } catch (\Exception $ex) {
-        //         if ($id) $pluginMessages->add('edit', 'error', [$ex]);
-        //         else $pluginMessages->add('add', 'error', [$ex]);
-        //     }
-        // } else {
-        //     $pluginMessages->add('form', 'error', [$afisForm->showErrors()]);
         // }
     }
 

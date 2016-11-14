@@ -64,6 +64,7 @@ class Field
      * @Annotation\Required({"required":"false"})
      */
     protected $comment;  
+
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
@@ -85,6 +86,35 @@ class Field
         }
     }
 
+    public function setIntTime($intTime)
+    {
+        if(is_a($intTime, \DateTime::class)) {
+            $this->intTime = $intTime;
+        } else {
+            $this->intTime = new \DateTime();
+        }
+    }
+
+    public function getIntTime()
+    {
+        return $this->intTime;
+    }
+
+    public function setInterrogationPlan(InterrogationPlan $interrogationPlan = null)
+    {
+        $this->interrogationPlan = $interrogationPlan;
+    }
+
+    public function getInterrogationPlan()
+    {
+        return $this->interrogationPlan;
+    }
+
+    public function getArrayCopy()
+    {
+        return get_object_vars($this);
+    }
+    
     public function getId()
     {
         return $this->id;
@@ -130,33 +160,4 @@ class Field
         $this->comment = $comment;
     }
 
-    public function getIntTime()
-    {
-        return $this->intTime;
-    }
-
-    public function setIntTime($intTime)
-    {
-        if(is_a($intTime, \DateTime::class)) {
-            $this->intTime = $intTime;
-        } else {
-            $this->intTime = new \DateTime();
-        }
-    }  
-
-    public function setInterrogationPlan(InterrogationPlan $interrogationPlan = null)
-    {
-        $this->interrogationPlan = $interrogationPlan;
-    }
-
-    public function getInterrogationPlan()
-    {
-        return $this->interrogationPlan;
-    }
-    // public function getArrayCopy()
-    // {
-    //     $object_vars = get_object_vars($this);
-    //     $object_vars['organisation'] = $this->organisation->getId();
-    //     return $object_vars;
-    // }
 }

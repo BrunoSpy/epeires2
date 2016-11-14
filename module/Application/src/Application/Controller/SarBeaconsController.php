@@ -57,7 +57,7 @@ class SarBeaconsController extends AbstractActionController
             ]);
     }
 
-    public function sauverAction()
+    public function saveAction()
     {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
@@ -65,7 +65,7 @@ class SarBeaconsController extends AbstractActionController
 
         $pdatas = $request->getPost('datas');
         $ppio = $request->getPost('pio');
-        // print_r($pdatas);
+
         $datasIntPlan = []; 
         parse_str($pdatas, $datasIntPlan);
 
@@ -79,5 +79,15 @@ class SarBeaconsController extends AbstractActionController
         $datasIntPlan['fields'] = $fields;
 
         return new JsonModel($this->SarBeaconsSGBD($em)->save($datasIntPlan));
+    }
+
+    public function listAction() {
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'intPlans' => $this->SarBeaconsSGBD($em)->getAll()
+            ]);
     }
 }

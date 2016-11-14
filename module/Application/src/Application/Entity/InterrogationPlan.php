@@ -31,6 +31,22 @@ use Zend\Form\Annotation;
  */
 class InterrogationPlan
 {
+    CONST TYPE_IP = [
+        0 => "PIO",
+        1 => "PIA"
+    ];
+
+    CONST TYPE_ALERT = [
+        0 => "INERFA",
+        1 => "ALERTFA",
+        2 => "DETRESSFA"
+    ];   
+
+    CONST CLASS_ALERT = [
+        0 => "info",
+        1 => "warning",
+        2 => "danger"
+    ];   
 
     /**
      * @ORM\Id
@@ -38,6 +54,14 @@ class InterrogationPlan
      * @ORM\Column(type="integer")
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\DateTime")
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"class":"datetime"})
+     */
+    protected $startTime;
 
     /**
      * @ORM\Column(type="string")
@@ -72,9 +96,16 @@ class InterrogationPlan
     protected $firDest;
 
     /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Commentaire"})
+     */
+    protected $comment; 
+
+    /**
      * @ORM\Column(type="float")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
      * @Annotation\Attributes({"disabled":"disabled"})
      * @Annotation\Options({"label":"Latitude"})
      */
@@ -83,7 +114,6 @@ class InterrogationPlan
      /**
      * @ORM\Column(type="float")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
      * @Annotation\Attributes({"disabled":"disabled"})
      * @Annotation\Options({"label":"Longitude"})
      */
@@ -98,6 +128,57 @@ class InterrogationPlan
     public function __construct()
     {
         $this->fields = new ArrayCollection();
+    }
+
+    public function addFields(Collection $fields)
+    {
+        foreach ($fields as $field) {
+            $field->setInterrogationPlan($this);
+            $this->fields->add($field);
+        }
+    }
+
+    public function removeFields(Collection $fields)
+    {
+        foreach ($fields as $field) {
+            $field->setInterrogationPlan(null);
+            $this->fields->removeElement($field);
+        }
+    }
+
+    public function getArrayCopy()
+    {
+        $object_vars = get_object_vars($this);
+        $object_vars['fields'] = [];
+        foreach($this->fields as $field) {
+            $object_vars['fields'][] = $field->getArrayCopy();
+        }
+        return $object_vars;
+    }
+
+    public function isValid() {
+        return true;
+    }
+
+
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    public function setStartTime($startTime)
+    {
+        echo 'aa';
+        if(is_a($startTime, \DateTime::class)) {
+            $this->startTime = $startTime;
+        } else {
+            $this->startTime = new \DateTime();
+        }
+    }
+      
+    public function getStartTime()
+    {
+        return $this->startTime;
     }
 
     public function getId()
@@ -145,6 +226,16 @@ class InterrogationPlan
         $this->firDest = $firDest;
     }
 
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
     public function getLatitude()
     {
         return $this->latitude;
@@ -165,35 +256,5 @@ class InterrogationPlan
         $this->longitude = $longitude;
     }
 
-    public function addFields(Collection $fields)
-    {
-        foreach ($fields as $field) {
-            $field->setInterrogationPlan($this);
-            $this->fields->add($field);
-        }
-    }
 
-    public function removeFields(Collection $fields)
-    {
-        foreach ($fields as $field) {
-            $field->setInterrogationPlan(null);
-            $this->fields->removeElement($field);
-        }
-    }
-
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    public function getArrayCopy()
-    {
-        $object_vars = get_object_vars($this);
-        $object_vars['fields'] = null;
-        return $object_vars;
-    }
-
-    public function isValid() {
-        return true;
-    }
 }

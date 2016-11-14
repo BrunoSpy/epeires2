@@ -36,11 +36,11 @@ body,
     border: 0;
 }
 
-#tabs h4 {
+/*#tabs h4 {
     margin-top: 15px;
     margin-bottom: 10px;
 }
-
+*/
 #tabs-1,
 #tabs-2,
 #tabs-3 {
@@ -59,8 +59,6 @@ body,
     margin: 0px;
     padding: 0px;
 }
-
-#pio h4 {}
 
 #pio select {
     margin-bottom: 5px;
@@ -104,9 +102,9 @@ body,
     background-color: lightgrey;
 }
 
-#pio {}
+/*#pio {}*/
 
-#pio ol.list-group {
+/*#pio ol.list-group {
     margin: 0px;
     padding: 0px;
     list-style: decimal inside;
@@ -117,7 +115,7 @@ body,
     margin: 0px;
     padding: 0px;
     margin-bottom: 5px;
-}
+}*/
 
 #pio-int {
     background: inherit;
@@ -130,13 +128,13 @@ body,
     width: 26px;
 }
 
-.lspio {
+/*.lspio {
     margin: 0;
     margin-top: 5px;
     padding: 5px;
 }
-
-.lspio p {
+*/
+/*.lspio p {
     margin: 0;
     padding: 0px;
 }
@@ -149,11 +147,11 @@ body,
     margin: 1px;
     padding: 0;
 }
-
-a.list-group-item {
+*/
+/*a.list-group-item {
     margin-bottom: 3px;
     border: none;
-}
+}*/
 
 #myCarousel {
     margin: 0;
@@ -202,11 +200,17 @@ a.list-group-item {
     font-size: 10px;
 }
 
-#f-pio {
+#f-ip {
     border: 0;
     margin-bottom: 30px;
 }
 
+#list-ip a{
+    margin:10px;
+    padding-top:10px;
+    padding-bottom:15px;
+    border: 1px solid lightgrey;   
+}
 #pio-mod-form ul{
     margin-top: 20px;
     list-style: none;
@@ -214,6 +218,7 @@ a.list-group-item {
 
 #pio-mod-form li{
     margin-top:5px;
+
 }
 
 .form-group textarea{

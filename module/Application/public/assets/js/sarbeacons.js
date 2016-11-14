@@ -127,22 +127,24 @@ $(function() {
         $tab1 = $('#tabs-1'),
         $tab2 = $('#tabs-2'),
         $tab1 = $('#tabs-3'),
-        $fPio = $('#f-pio'),
+        $fIp = $('#f-ip'),
         $bSavPi = $('#btn-sav-pi'),
         $bEditPi = $('#btn-edit-pi'),
 
         $fEditPi = $('#f-edit-pi'),
         $carousel = $("#req-pio"),
         $carInner = $('.carousel-inner'),
-        $carIndic = $('.carousel-indicators');
+        $carIndic = $('.carousel-indicators'),
 
+        $listIp = $('#list-ip'),
+        $tplList = $listIp.find('.tpl');
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
     });
     /* raz des inputs */
     $('input').val('');
-
+    // $('.tpl').hide();
     /* init des onglets */
     $tabs.tabs();
 
@@ -175,6 +177,9 @@ $(function() {
     $bSavPi.click(saveIp);
 
     $('.raz-cherche').click(resetSearches);
+
+
+    $tabs.find('a[href="#tabs-3"]').click(loadListIp);
 
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
@@ -430,7 +435,7 @@ $(function() {
             $carIndic.find('li').remove();
             $carInner.find('div.item').remove();
             $tab2.find('h4').eq(0).html('');
-            $fPio.hasClass('cache') ? $fPio.removeClass('cache') : '';
+            $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
             $carousel.hasClass('cache') ? $carousel.removeClass('cache') : '';
             $bEditPi.removeClass('btn-success').addClass('btn-info');
             $('#btn-sav-pi, #btn-mail-pi, #btn-print-pi')
@@ -444,9 +449,9 @@ $(function() {
         function infoPI() {
             var dateDebut = moment().format('DD/MM hh:mm:ss');
 
-            $fPio.find('h4').html('<span class="glyphicon glyphicon-alert"></span> PI démarré à ' + moment().format('hh:mm:ss') + ' le ' + moment().format('DD/MM'));
+            $fIp.find('h4').html('<span class="glyphicon glyphicon-alert"></span> PI démarré à ' + moment().format('hh:mm:ss') + ' le ' + moment().format('DD/MM'));
 
-            $fPio.find('.label').html(Number(latLon[0]).toFixed(4) + ', ' + Number(latLon[1]).toFixed(4));
+            $fIp.find('.label').html(Number(latLon[0]).toFixed(4) + ', ' + Number(latLon[1]).toFixed(4));
 
             $bSavPi.click(saveIpHandler);
 
@@ -722,9 +727,9 @@ $(function() {
         //     url: '/sarbeacons/sauver',
         //     data: $('#InterrogationPlan').serialize()
         // }); 
-        $.post("/sarbeacons/sauver", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) 
+        $.post("/sarbeacons/save", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) 
         {
-            console.log(data);
+            // console.log(data);
             idIp = data.id;
             noty({
                 text: data.message,
@@ -734,6 +739,29 @@ $(function() {
 
         })
     }
+
+    function loadListIp(e) {
+        $listIp.load('sarbeacons/list', function(data) {
+            console.log($(this))
+            $.each($listIp.find('a'), function() {
+                $(this).click(function() {
+                    $(this).find('.list-ip-content').toggleClass('cache');
+                });
+            });
+        });
+    }
+
+    // function printListIp(listIp) {
+    //     $.each(listIp, function(i, ip){
+    //         $listIp.append(printIp(ip));
+    //     });
+    // }
+
+    // function printIp(ip) {
+    //     var $item = new IpList(ip);
+    //     return $item.getHtml();
+    // }
+
 
     /* chargement ajax des données de la map */
     function loadFields() {
