@@ -519,6 +519,8 @@ $(function() {
                     .data({
                         "idt": i,
                         "name": props.name,
+                        "lat": coord[1],
+                        "lon": coord[0]
                     })
                     .click(clickContactHandler)
                     .prependTo($ter);
@@ -570,7 +572,9 @@ $(function() {
                         pio[$(this).data().idt] = { 
                             name: $(this).data().name, 
                             intTime: moment().format('hh:mm:ss'), 
-                            comment: $fOptCom.find('textarea').val()
+                            comment: $fOptCom.find('textarea').val(),
+                            latitude: $(this).data().lat,
+                            longitude: $(this).data().lon
                         };
                     } else {
                         $fOptCom.hide();
@@ -657,7 +661,6 @@ $(function() {
     }
 
     function btnEditPiHandler(e) {
-        console.log(idIp)
         $bEditPi
             .removeClass('btn-info')
             .addClass('btn-success');
@@ -668,8 +671,7 @@ $(function() {
         $('#title-mod-pi').html("Editer le Plan d'Interrogation");
 
         // if(idIp == null && !$fEditPi.find('form').length) {
-
-            $fEditPi.load('/sarbeacons/form', {'id' : idIp}, function() {
+            $fEditPi.load('/sarbeacons/form', {'id' : idIp, 'lat' : mkSAR._latlng.lat, 'lon' : mkSAR._latlng.lng}, function() {
 
                 refreshFieldList();
 
@@ -710,6 +712,7 @@ $(function() {
 
     function saveIp(e) {
         e.preventDefault();
+        $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
         // pio = JSON.stringify({ 'pio': pio });
 
         // $.ajax({

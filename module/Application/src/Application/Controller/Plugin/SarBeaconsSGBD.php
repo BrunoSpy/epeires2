@@ -15,16 +15,6 @@ class SarBeaconsSGBD extends AbstractPlugin
         return $this;
     }
 
-    // public function getAll(array $params = [])
-    // {
-    //     $allAfis = [];
-    //     foreach ($this->em->getRepository(Afis::class)->findBy($params) as $afis)
-    //     {
-    //         $allAfis[] = $afis;
-    //     }
-    //     return $allAfis;
-    }
-
     public function get($id = null)
     {
         if (!$id) return new InterrogationPlan();

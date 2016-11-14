@@ -72,6 +72,24 @@ class InterrogationPlan
     protected $firDest;
 
     /**
+     * @ORM\Column(type="float")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Attributes({"disabled":"disabled"})
+     * @Annotation\Options({"label":"Latitude"})
+     */
+    protected $latitude;
+ 
+     /**
+     * @ORM\Column(type="float")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Attributes({"disabled":"disabled"})
+     * @Annotation\Options({"label":"Longitude"})
+     */
+    protected $longitude;
+
+    /**
      * @ORM\OneToMany(targetEntity="Field", mappedBy="interrogationPlan", cascade={"persist"})
      * @Annotation\Required(true)  
      */   
@@ -125,6 +143,26 @@ class InterrogationPlan
     public function setFirDest($firDest)
     {
         $this->firDest = $firDest;
+    }
+
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+    }
+
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
     }
 
     public function addFields(Collection $fields)

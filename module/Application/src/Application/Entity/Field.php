@@ -45,12 +45,25 @@ class Field
     protected $name;
 
     /**
+     * @ORM\Column(type="float")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     */
+    protected $latitude;
+ 
+     /**
+     * @ORM\Column(type="float")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     */
+    protected $longitude;
+
+    /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Required({"required":"false"})
      */
-    protected $comment;
-    
+    protected $comment;  
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
@@ -63,6 +76,14 @@ class Field
      * @ORM\JoinColumn(name="interplan_id", referencedColumnName="id")
      */
     protected $interrogationPlan;
+
+    public function __construct($p) {
+        if(is_array($p)) {
+            foreach($p as $prop => $value) {
+                $this->{"set".ucfirst($prop)}($value);
+            }
+        }
+    }
 
     public function getId()
     {
@@ -77,6 +98,26 @@ class Field
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude($latitude)
+    {
+        $this->latitude = (float) $latitude;
+    }
+
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude($longitude)
+    {
+        $this->longitude = (float) $longitude;
     }
 
     public function getComment()
@@ -96,7 +137,11 @@ class Field
 
     public function setIntTime($intTime)
     {
-        $this->intTime = $intTime;
+        if(is_a($intTime, \DateTime::class)) {
+            $this->intTime = $intTime;
+        } else {
+            $this->intTime = new \DateTime();
+        }
     }  
 
     public function setInterrogationPlan(InterrogationPlan $interrogationPlan = null)

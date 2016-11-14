@@ -44,17 +44,15 @@ class SarBeaconsController extends AbstractActionController
     {
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
-        $form = $this->getForm();
-        $request = $this->getRequest();
+        $post = $this->getRequest()->getPost();
+        $intPlan = $this->sarBeaconsSGBD($em)->get($post['id']);
+        $intPlan->setLatitude($post['lat']);
+        $intPlan->setLongitude($post['lon']);     
 
-        if ($request->isPost()) {
-            $intPlan = $this->sarBeaconsSGBD($em)->get($request->getPost()['id']);
-            $form->setData($intPlan->getArrayCopy());
-        }
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'form' => $form
+                'form' => $this->getForm()->setData($intPlan->getArrayCopy())
             ]);
     }
 
@@ -69,30 +67,23 @@ class SarBeaconsController extends AbstractActionController
 
         $request = $this->getRequest();
 
-        $id = null;
+        $pdatas = $request->getPost('datas');
+        $ppio = $request->getPost('pio');
+        // print_r($pdatas);
+        $datasIntPlan = []; 
+        parse_str($pdatas, $datasIntPlan);
 
-        if ($request->isPost()) {
-            $pdatas = $request->getPost('datas');
-            $ppio = $request->getPost('pio');
-
-            $datasIntPlan = []; 
-            parse_str($pdatas, $datasIntPlan);
-
-            $fields = [];
-            if(is_array($ppio)){
-                foreach ($ppio as $i => $field) {
-                    if($field != NULL) {
-                        $f = new Field();
-                        $f->setName($field['name']);
-                        $f->setComment($field['comment']);
-                        $f->setIntTime(new \DateTime());
-                        $fields[] = $f;
-                    }
-                }
+        $fields = [];
+        if (is_array($ppio)) {
+            foreach ($ppio as $i => $field) 
+            {
+                $fields[] = new Field($field);
             }
-            $datasIntPlan['fields'] = $fields;
-            $id = $this->SarBeaconsSGBD($em)->save($datasIntPlan);
         }
+        $datasIntPlan['fields'] = $fields;
+
+        $id = $this->SarBeaconsSGBD($em)->save($datasIntPlan);
+
         return new JsonModel([
             'id' => $id
         ]);
