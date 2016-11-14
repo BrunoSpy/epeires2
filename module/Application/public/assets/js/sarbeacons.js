@@ -722,10 +722,17 @@ $(function() {
         //     url: '/sarbeacons/sauver',
         //     data: $('#InterrogationPlan').serialize()
         // }); 
-        $.post("/sarbeacons/sauver", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) {
+        $.post("/sarbeacons/sauver", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) 
+        {
+            console.log(data);
             idIp = data.id;
+            noty({
+                text: data.message,
+                type: data.type,
+                timeout: 4000,
+            });
 
-        });
+        })
     }
 
     /* chargement ajax des données de la map */

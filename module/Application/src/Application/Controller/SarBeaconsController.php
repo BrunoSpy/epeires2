@@ -24,6 +24,7 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Mvc\Controller\AbstractActionController;
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
+use Application\Form\SarBeaconsForm;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 /**
  *
@@ -31,14 +32,14 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  */
 class SarBeaconsController extends AbstractActionController
 {
-    public function indexAction()
-    {
-        parent::indexAction();  
-        return (new ViewModel())
-            ->setVariables([
-                'messages' => $this->SarBeaconsMessages()->get()
-            ]);
-    }
+    // public function indexAction()
+    // {
+    //     parent::indexAction();  
+    //     // return (new ViewModel())
+    //     //     ->setVariables([
+    //     //         'messages' => $this->SarBeaconsMessages()->get()
+    //     //     ]);
+    // }
 
     public function formAction() 
     {
@@ -52,13 +53,8 @@ class SarBeaconsController extends AbstractActionController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'form' => $this->getForm()->setData($intPlan->getArrayCopy())
+                'form' => (new SarBeaconsForm($em))->getForm()->setData($intPlan->getArrayCopy())
             ]);
-    }
-
-    public function getForm() 
-    {
-        return (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
     public function sauverAction()
@@ -82,10 +78,6 @@ class SarBeaconsController extends AbstractActionController
         }
         $datasIntPlan['fields'] = $fields;
 
-        $id = $this->SarBeaconsSGBD($em)->save($datasIntPlan);
-
-        return new JsonModel([
-            'id' => $id
-        ]);
+        return new JsonModel($this->SarBeaconsSGBD($em)->save($datasIntPlan));
     }
 }

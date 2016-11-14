@@ -5,6 +5,8 @@ namespace Application\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Application\Entity\InterrogationPlan;
+use Application\Form\SarBeaconsForm;
+
 class SarBeaconsSGBD extends AbstractPlugin
 {
     protected $em;
@@ -25,27 +27,32 @@ class SarBeaconsSGBD extends AbstractPlugin
     public function save($p)
     {
         $c = $this->getController();
-        $pm = $c->SarBeaconsMessages();
+        // $pm = $c->SarBeaconsMessages();
 
-        $form = $c->getForm();
+        $sbForm = new SarBeaconsForm($this->em);
+        $form = $sbForm->getForm();
         $form->setData($p);
 
-        $return = null;
-
-        if($form->isValid()){
-
+        if($form->isValid()) {
             $intPlan = (new DoctrineHydrator($this->em))
                             ->hydrate($form->getData(), $this->get($p['id']));
 
             $this->em->persist($intPlan);
             $this->em->flush();
-            $return = $intPlan->getId();
 
-        } else {
-            $pm->add('form', 'error', [$form->getMessages()]);
-            print_r($form->getMessages());
+            $return = [
+                'id' => $intPlan->getId(), 
+                'type' => 'success',
+                'message' => 'Plan d\'interrogation sauvegardé.'
+                ];
+
+        } else { 
+            $return = [
+                'id' => '', 
+                'type' => 'error',
+                'message' => 'Données invalides : '.$sbForm->printErrors()
+                ];
         }
-
         return $return;
 
         // if ($afisForm->getForm()->isValid()) {
