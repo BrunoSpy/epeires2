@@ -1,5 +1,5 @@
 html {
-    background-color: #FFF;
+/*    background-color: #FFF;*/
 }
 
 html,
@@ -19,7 +19,7 @@ body,
 }
 
 .content {
-    background-color: #FFF;
+/*    background-color: #FFF;*/
 }
 
 .row {}
@@ -47,7 +47,7 @@ body,
     margin: 0px;
     margin-right: 30px;
     padding: 0px;
-    background-color: #FFF;
+/*    background-color: #FFF;*/
 }
 
 #tabs-2 li {
@@ -207,8 +207,7 @@ body,
 
 #list-ip a{
     margin:10px;
-    padding-top:10px;
-    padding-bottom:15px;
+    padding:10px;
     border: 1px solid lightgrey;   
 }
 #pio-mod-form ul{

@@ -8,9 +8,10 @@
 foreach ($intPlans as $iP) 
 {
     ?>
-    <a href="#" class="list-group-item tpl list-group-item-<?php echo $iP::CLASS_ALERT[$iP->getTypeAlerte()]?>">
+    <a data-id="<?php echo $iP->getId() ?>" class="list-group-item tpl list-group-item-<?php echo $iP::CLASS_ALERT[$iP->getTypeAlerte()]?>">
+        <span class = "badge danger"><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?></span>
         <h4 class="list-group-item-heading"><?php echo $iP->getStartTime()->format('Y-m-d à H:i:s') ?></h4>
-        <div class = "list-ip-content cache">
+        <div class = "list-ip-content">
             <p class="list-group-item-text">Type : <?php echo $iP::TYPE_IP[$iP->getType()]?></p>
             <p class="list-group-item-text">FIR Source : <?php echo $iP->getFirSource()?></p>
             <p class="list-group-item-text">FIR Source : <?php echo $iP->getFirDest()?></p>
@@ -25,6 +26,8 @@ foreach ($intPlans as $iP)
                 <?php
             }
             ?>
+
+            <btn class = "btn btn-info btn-show"><span class="glyphicon glyphicon-reset">REJOUER</span>
         </div>
     </a>
 <?php

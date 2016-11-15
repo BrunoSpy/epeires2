@@ -126,7 +126,7 @@ $(function() {
         $tabs = $('#tabs'),
         $tab1 = $('#tabs-1'),
         $tab2 = $('#tabs-2'),
-        $tab1 = $('#tabs-3'),
+        $tab3 = $('#tabs-3'),
         $fIp = $('#f-ip'),
         $bSavPi = $('#btn-sav-pi'),
         $bEditPi = $('#btn-edit-pi'),
@@ -136,6 +136,7 @@ $(function() {
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators'),
 
+        $aHist = $('#a-hist'),
         $listIp = $('#list-ip'),
         $tplList = $listIp.find('.tpl');
     /*  Le carousel reste statique */
@@ -178,8 +179,7 @@ $(function() {
 
     $('.raz-cherche').click(resetSearches);
 
-
-    $tabs.find('a[href="#tabs-3"]').click(loadListIp);
+    $aHist.click(aHistHandler);
 
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
@@ -205,6 +205,10 @@ $(function() {
 
     //         $fEditPi.modal('hide');
     //     }
+
+    function aHistHandler(e) {
+        if(!$listIp.children('a').length) loadListIp();
+    }
 
     function editBtnState($btn, etat) {
         if (etat)
@@ -729,7 +733,7 @@ $(function() {
         // }); 
         $.post("/sarbeacons/save", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) 
         {
-            // console.log(data);
+            loadListIp();
             idIp = data.id;
             noty({
                 text: data.message,
@@ -742,10 +746,16 @@ $(function() {
 
     function loadListIp(e) {
         $listIp.load('sarbeacons/list', function(data) {
-            console.log($(this))
             $.each($listIp.find('a'), function() {
-                $(this).click(function() {
-                    $(this).find('.list-ip-content').toggleClass('cache');
+                var id = $(this).data().id;
+                // $(this).click(function() {
+                //     $(this).find('.list-ip-content').toggleClass('cache');
+                // });
+
+                $(this).find('.btn-show').click(function(){
+                    $.post('sarbeacons/get', {'id' : id}, function(data) {
+                     // triggerIp("")
+                    })
                 });
             });
         });

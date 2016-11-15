@@ -87,7 +87,23 @@ class SarBeaconsController extends AbstractActionController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'intPlans' => $this->SarBeaconsSGBD($em)->getAll()
+                'intPlans' => $this->SarBeaconsSGBD($em)
+                    ->getAll([
+                        'where' => '',
+                        'order' => [
+                            'startTime' => 'DESC'
+                        ]
+                    ])
             ]);
+    }
+
+    public function getAction() {
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $post = $this->getRequest()->getPost();
+
+        $intPlan = $this->SarBeaconsSGBD($em)->get($post['id']);
+        print_r($intPlan->getArrayCopy());
+        return new JsonModel();
     }
 }

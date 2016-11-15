@@ -110,7 +110,7 @@ class Field
         return $this->interrogationPlan;
     }
 
-    public function getArrayCopy()
+    public function toArray()
     {
         return get_object_vars($this);
     }

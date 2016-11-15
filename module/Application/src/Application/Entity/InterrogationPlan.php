@@ -168,7 +168,6 @@ class InterrogationPlan
 
     public function setStartTime($startTime)
     {
-        echo 'aa';
         if(is_a($startTime, \DateTime::class)) {
             $this->startTime = $startTime;
         } else {

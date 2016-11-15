@@ -28,7 +28,12 @@ class SarBeaconsSGBD extends AbstractPlugin
     public function getAll($params = [])
     {        
         $intPlans = [];
-        foreach ($this->em->getRepository(InterrogationPlan::class)->findBy($params) as $intPlan)
+
+        $where = ($params['where']) ? $params['where'] : [];
+        $order = ($params['order']) ? $params['order'] : []; 
+        $limit = (array_key_exists('limit', $params)) ? $params['limit'] : 5; 
+
+        foreach ($this->em->getRepository(InterrogationPlan::class)->findBy($where, $order, $limit) as $intPlan)
         {
             $intPlans[] = $intPlan;
         }
