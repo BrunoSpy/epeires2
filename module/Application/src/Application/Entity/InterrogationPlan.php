@@ -151,7 +151,7 @@ class InterrogationPlan
         $object_vars = get_object_vars($this);
         $object_vars['fields'] = [];
         foreach($this->fields as $field) {
-            $object_vars['fields'][] = $field->getArrayCopy();
+            $object_vars['fields'][] = $field->toArray();
         }
         return $object_vars;
     }

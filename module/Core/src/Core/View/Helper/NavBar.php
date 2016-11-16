@@ -89,6 +89,16 @@ class NavBar extends AbstractHelper
                 . '">Radio</a></li>';
         }
 
+        if ($this->view->isGranted('afis.read')) {
+            $html .= '<li><a id="afis" href="'
+                . $urlHelper('application',
+                    [
+                        'controller' => 'afis',
+                        'action' => 'index'
+                    ])
+                . '">AFIS</a></li>';
+        }
+
         if ($this->view->isGranted('sarbeacons.read')) {
             $html .= '<li><a id="sarbeacons" href="'
                 . $urlHelper('application',

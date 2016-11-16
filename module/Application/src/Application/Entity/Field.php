@@ -45,6 +45,13 @@ class Field
     protected $name;
 
     /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     */
+    protected $code;
+
+    /**
      * @ORM\Column(type="float")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
@@ -84,6 +91,10 @@ class Field
                 $this->{"set".ucfirst($prop)}($value);
             }
         }
+    }
+
+    public function isValid() {
+        if($this->name && $this->code && $this->latitude && $this->longitude && $this->intTime) return true;
     }
 
     public function setIntTime($intTime)
@@ -128,6 +139,16 @@ class Field
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 
     public function getLatitude()

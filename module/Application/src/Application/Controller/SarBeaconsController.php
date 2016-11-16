@@ -46,7 +46,7 @@ class SarBeaconsController extends AbstractActionController
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $post = $this->getRequest()->getPost();
-        $intPlan = $this->sarBeaconsSGBD($em)->get($post['id']);
+        $intPlan = $this->sbSGBD($em)->get($post['id']);
         $intPlan->setLatitude($post['lat']);
         $intPlan->setLongitude($post['lon']);     
 
@@ -62,7 +62,6 @@ class SarBeaconsController extends AbstractActionController
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $request = $this->getRequest();
-
         $pdatas = $request->getPost('datas');
         $ppio = $request->getPost('pio');
 
@@ -70,15 +69,16 @@ class SarBeaconsController extends AbstractActionController
         parse_str($pdatas, $datasIntPlan);
 
         $fields = [];
-        if (is_array($ppio)) {
+        // if (is_array($ppio)) {
             foreach ($ppio as $i => $field) 
             {
-                $fields[] = new Field($field);
+                $f = new Field($field);
+                if($f->isValid()) $fields[] = $f;
             }
-        }
+        // }
         $datasIntPlan['fields'] = $fields;
 
-        return new JsonModel($this->SarBeaconsSGBD($em)->save($datasIntPlan));
+        return new JsonModel($this->sbSGBD($em)->save($datasIntPlan));
     }
 
     public function listAction() {
@@ -87,7 +87,7 @@ class SarBeaconsController extends AbstractActionController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'intPlans' => $this->SarBeaconsSGBD($em)
+                'intPlans' => $this->sbSGBD($em)
                     ->getAll([
                         'where' => '',
                         'order' => [
@@ -101,9 +101,8 @@ class SarBeaconsController extends AbstractActionController
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $post = $this->getRequest()->getPost();
-
-        $intPlan = $this->SarBeaconsSGBD($em)->get($post['id']);
-        print_r($intPlan->getArrayCopy());
-        return new JsonModel();
+        $intPlan = $this->sbSGBD($em)->get($post['id']);
+        return new JsonModel($intPlan->getArrayCopy());
     }
+
 }

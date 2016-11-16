@@ -418,7 +418,9 @@ $(function() {
         $('#pio li').removeClass('list-group-item-warning').addClass('list-group-item-success');
     }
 
-    function triggerIp(latLon) {
+    function triggerIp(latLon) 
+    {
+        console.log(latLon);
         rafraichir();
         /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
         mkSAR = updateMarker(mkSAR, latLon, icSAR);
@@ -505,7 +507,7 @@ $(function() {
                       '</a>')
                     .click({ 'latLon': [coord[1], coord[0]] }, clickFieldHandler);
 
-                var $fOptCom = $('<div class="form-group"></div>')
+                var $fOptCom = $('<div class="form-group comment"></div>')
                     .appendTo($ter)
                     .hide();
 
@@ -527,6 +529,7 @@ $(function() {
                 var $btnContact = $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
                     .data({
                         "idt": i,
+                        "code": props.code,
                         "name": props.name,
                         "lat": coord[1],
                         "lon": coord[0]
@@ -579,7 +582,8 @@ $(function() {
                     if($(this).hasClass('btn-danger')){
                         $fOptCom.show();
                         pio[$(this).data().idt] = { 
-                            name: $(this).data().name, 
+                            name: $(this).data().name,
+                            code: $(this).data().code, 
                             intTime: moment().format('hh:mm:ss'), 
                             comment: $fOptCom.find('textarea').val(),
                             latitude: $(this).data().lat,
@@ -748,13 +752,29 @@ $(function() {
         $listIp.load('sarbeacons/list', function(data) {
             $.each($listIp.find('a'), function() {
                 var id = $(this).data().id;
-                // $(this).click(function() {
-                //     $(this).find('.list-ip-content').toggleClass('cache');
-                // });
+                $(this).click(function(e) {
+                    $(this).find('.list-ip-content').toggleClass('cache');
+                });
 
-                $(this).find('.btn-show').click(function(){
+                $(this).find('.btn-show').click(function(e){
+                    e.stopPropagation();
                     $.post('sarbeacons/get', {'id' : id}, function(data) {
-                     // triggerIp("")
+                        triggerIp([
+                            data.latitude,
+                            data.longitude
+                        ]);
+                        $.each(data.fields, function(i, field) {
+                            $.each($carInner.find('em'), function() {
+                                if($(this).html() == field.name) {
+                                    var $a = $(this).parents('a')
+                                    $a.addClass('list-group-item-success')
+                                    if(field.comment) {    
+                                        $a.find('.comment').show();
+                                        $a.find('textarea').html(field.comment);
+                                    }    
+                                }
+                            });
+                        });
                     })
                 });
             });

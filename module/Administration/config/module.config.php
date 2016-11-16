@@ -74,7 +74,8 @@ return array(
             'Administration\Controller\IPOS' => 'Administration\Controller\IPOSController',
             'Administration\Controller\OpSups' => 'Administration\Controller\OpSupsController',
             'Administration\Controller\Mil' => 'Administration\Controller\MilController',
-            'Administration\Controller\Tabs' => 'Administration\Controller\TabsController'
+            'Administration\Controller\Tabs' => 'Administration\Controller\TabsController',
+            'Administration\Controller\Afis' => 'Administration\Controller\AfisController'
         )
     ),
     'view_manager' => array(
@@ -86,13 +87,19 @@ return array(
         'template_map' => array(
             'admin/layout' => __DIR__ . '/../view/layout/adminlayout.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index.phtml'
+            'error/index' => __DIR__ . '/../view/error/index.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
             __DIR__ . '/../view/administration'
         )
     ),
+
+    'view_helpers' => array(
+        'invokables' => array(
+            'afViewHelper' => 'Application\View\Helper\AfisHelper',
+        ),
+    ),  
     /**
      * Automatically use module assets
      */
@@ -135,6 +142,10 @@ return array(
             ),
             'admin.tabs' => array(
                 'name' => 'Onglets',
+                'description' => ''
+            ),
+            'admin.afis' => array(
+                'name' => 'Afis',
                 'description' => ''
             )
         )
