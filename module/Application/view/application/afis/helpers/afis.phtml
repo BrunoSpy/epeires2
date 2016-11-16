@@ -1,0 +1,19 @@
+
+<tr>
+    <td><?=$afis->getName()?></td>
+    <td>
+        <div class="togglebutton">
+        <label>
+            <input 
+                   data-afis-id="<?=$afis->getId()?>"
+                   class="afis-switch" type="checkbox" <?=($afis->getState() ? 'checked="checked"' : '')?>
+                   
+                   <?php
+                        //($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
+                   ?>
+            />
+<!--             <span class="toggle"></span> -->
+        </label>
+        </div>
+    </td>
+</tr>

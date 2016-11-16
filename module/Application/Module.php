@@ -23,6 +23,7 @@ use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\ModuleManager\ModuleManager;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
@@ -30,7 +31,7 @@ use Zend\Console\Adapter\AdapterInterface as Console;
  * @author Bruno Spyckerelle
  *        
  */
-class Module implements ConsoleUsageProviderInterface
+class Module implements ConsoleUsageProviderInterface,ControllerPluginProviderInterface
 {
 
     public function onBootstrap(MvcEvent $e)
@@ -122,6 +123,10 @@ class Module implements ConsoleUsageProviderInterface
                 )
             )
         );
+    }
+
+    public function getControllerPluginConfig() {
+        return include __DIR__ . '/config/controllers_plugin.config.php';
     }
 
     public function init(ModuleManager $moduleManager)

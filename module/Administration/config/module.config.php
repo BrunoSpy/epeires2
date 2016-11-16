@@ -75,7 +75,8 @@ return array(
             'Administration\Controller\Mil' => 'Administration\Controller\Factory\MilControllerFactory',
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
             'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
-        ),
+            'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory'
+        )
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,
@@ -86,13 +87,19 @@ return array(
         'template_map' => array(
             'admin/layout' => __DIR__ . '/../view/layout/adminlayout.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index.phtml'
+            'error/index' => __DIR__ . '/../view/error/index.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
             __DIR__ . '/../view/administration'
         )
     ),
+
+    'view_helpers' => array(
+        'invokables' => array(
+            'afViewHelper' => 'Application\View\Helper\AfisHelper',
+        ),
+    ),  
     /**
      * Automatically use module assets
      */
@@ -135,6 +142,10 @@ return array(
             ),
             'admin.tabs' => array(
                 'name' => 'Onglets',
+                'description' => ''
+            ),
+            'admin.afis' => array(
+                'name' => 'Afis',
                 'description' => ''
             )
         )

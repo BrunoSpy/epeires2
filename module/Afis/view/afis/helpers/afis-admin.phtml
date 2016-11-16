@@ -1,0 +1,27 @@
+<?php ($afis->isDecommissionned()) ? $classicon = 'remove': $classicon = 'ok'; ?>
+<tr>
+    <td id = '<?=$afis->getId()?>'><?=$afis->getId()?></td>
+    <td><?=$afis->getName()?></td>
+    <td><?=$afis->getShortname()?></td>
+    <td><?=$afis->getOrganisation()->getName()?></td>
+    <td>
+        <span class="glyphicon glyphicon-<?=$classicon?>"></span>
+    </td>
+    <td>
+        <a  title="Modifier"
+            href="#afis-cont-form"
+            class="afis-a-edit"
+            data-afis-id="<?=$afis->getId()?>"
+            data-toggle="modal">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </a> 
+        <a  title="Supprimer"
+            href="#afis-cont-del"
+            class="afis-a-del"
+            data-afis-id="<?=$afis->getId()?>"
+            data-afis-name="<?=$afis->getName()?>"
+            data-toggle="modal">
+            <span class="glyphicon glyphicon-trash"></span>
+        </a>
+    </td>
+</tr>

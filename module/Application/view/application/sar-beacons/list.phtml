@@ -1,0 +1,35 @@
+<?php
+// $alerts = [
+//     0 => 'info',
+//     1 => 'warning',
+//     2 => 'danger'
+// ];
+
+foreach ($intPlans as $iP) 
+{
+    ?>
+    <a data-id="<?php echo $iP->getId() ?>" class="list-group-item tpl list-group-item-<?php echo $iP::CLASS_ALERT[$iP->getTypeAlerte()]?>">
+        <span class = "badge danger"><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?></span>
+        <h4 class="list-group-item-heading"><?php echo $iP->getStartTime()->format('d-m-Y H:i:s') ?></h4>
+        <div class = "list-ip-content cache">
+            <p class="list-group-item-text">Type : <?php echo $iP::TYPE_IP[$iP->getType()]?></p>
+            <p class="list-group-item-text">FIR Source : <?php echo $iP->getFirSource()?></p>
+            <p class="list-group-item-text">FIR Source : <?php echo $iP->getFirDest()?></p>
+            <p class="list-group-item-text"><?php echo $iP->getComment()?></p>
+            <h4 class="list-group-item-heading">Terrains interrogés</h4>
+
+            <?php
+            foreach ($iP->getFields() as $i => $f) 
+            {
+                ?>
+                <p class="list-group-item-text">#<?php echo $i++?> <?php echo $f->getName()?> [<?php echo $f->getIntTime()->format('H:i:s')?>]<br /><?php echo $f->getComment()?></p>
+                <?php
+            }
+            ?>
+
+            <btn class = "btn btn-info btn-show"><span class="glyphicon glyphicon-reset">REJOUER</span>
+        </div>
+    </a>
+<?php
+}
+

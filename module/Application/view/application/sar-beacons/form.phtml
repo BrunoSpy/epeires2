@@ -1,0 +1,60 @@
+<?php
+
+$form = $this->form;
+$form
+    // ->setAttributes([
+    //     'method'    => 'post',
+    //     'action'    => '/sarbeacons/sauver',
+    //     'class'     => 'form-horizontal'
+    // ])
+    ->add([
+        'name' => 'submit',
+        'attributes' => [
+            'type' => 'submit',
+            'value' => 'OK',
+            'class' => 'btn btn-primary btn-small'
+        ]
+    ]);
+$form->prepare();
+
+?>
+
+<?php echo $this->form()->openTag($form) ?>
+
+<div class="modal-body">
+
+<?php 
+
+echo $this->formHidden($form->get('id'));
+
+echo $this->controlGroup($form->get('type'));
+
+echo $this->controlGroup($form->get('typeAlerte'));
+
+echo $this->controlGroup($form->get('firSource'));
+
+echo $this->controlGroup($form->get('firDest'));
+
+echo $this->controlGroup($form->get('latitude'));
+
+echo $this->controlGroup($form->get('longitude'));
+
+echo $this->controlGroup($form->get('comment'));
+?>
+
+<h3>Terrains Interrogés</h3>
+
+<ul></ul>
+<?php
+// echo $this->controlGroup($form->get('fields'));
+?>
+</div>
+
+<div class="modal-footer">
+<?php
+echo $this->formSubmit($this->form->get('submit'));
+?>
+</div>
+
+    
+<?php echo $this->form()->closeTag() ?>

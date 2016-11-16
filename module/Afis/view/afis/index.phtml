@@ -1,0 +1,55 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js')?>
+
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <a class="btn btn-primary" href = 'afis/admin'>Administration</a>
+                <table class="table table-striped table-hover table-bordered sortable">
+                    <thead>
+                        <tr>
+                            <th data-sort="string">Nom</th>
+                            <th>État</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($allAfis as $afis) : ?>
+                    <?php echo $this->afis()->renderRow($afis)?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$("#home").removeClass("dropdown-toggle")
+		  .attr('data-toggle', '')
+		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+
+$("#create-link").remove();		  
+
+$("#zoomform").remove();
+
+$('#search').remove();
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+	var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+//sort the table by name
+$("table th:first").trigger('click');
+	
+afis('<?php echo $this->url('afis'); ?>');
+
+<?=$this->notifications($messages)?>
+
+<?php $this->inlineScript()->captureEnd();?>

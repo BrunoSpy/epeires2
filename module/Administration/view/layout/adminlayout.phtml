@@ -166,6 +166,13 @@
     					</ul>
     				</li>
                     <?php endif;?>
+
+                    <?php if($this->isGranted('admin.afis')) : ?>
+                    <li>
+                        <a 
+                        href="<?php echo $this->url('administration', array('controller'=> 'afis', 'action' => 'index'))?>"">Afis</a>
+                    </li>
+                    <?php endif;?>
 				</ul>
 			</div>
 			

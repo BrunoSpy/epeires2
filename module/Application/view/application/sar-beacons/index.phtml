@@ -1,0 +1,120 @@
+<?php
+$this->headLink()->prependStylesheet($this->basePath() . '/css/jquery-ui.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/leaflet/dist/leaflet.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbeacons.css');
+$this->headScript()->appendFile($this->basePath() . '/components/leaflet/dist/leaflet.js');
+$this->headScript()->appendFile($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/lib-btiv.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
+?>
+<div class="row">
+    <div class="col-sm-9 fill">
+        <div id="mapid"></div>
+    </div>
+
+    <div id="tabs" class="col-sm-3">
+        <ul>
+            <li><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li>
+            <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li>
+            <li><a href="#tabs-3" id="a-hist"><span class="glyphicon glyphicon-list"></span></a></li>
+        </ul>
+        <div id="tabs-1">
+            <h4>Recherche par coordonnées</h4>
+            <div class="row">
+                <div class="col-sm-5 form-group has-error">
+                    <input id="inp-lat" type="search" class="form-control" placeholder="Lat" />
+                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                </div>
+                <div class="col-sm-5 form-group has-error">
+                    <input id="inp-lon" type="text" class="form-control" placeholder="Lon" />
+                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                </div>
+                <div class="col-sm-2">
+                    <button id="btn-rech-coo" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
+                </div>
+            </div>
+            <h4>Recherche par Balise</h4>
+            <div class="row">
+                <div class="col-sm-10 form-group has-error">
+                    <input id="inp-bal" type="text" class="form-control"  placeholder="ex : 'OKIPA'" />
+                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                </div>
+                <div class="col-sm-2">
+                    <button id="btn-rech-bal" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
+                </div>
+            </div>
+            <h4>Recherche par Terrain</h4>
+            <div class="row">
+                <div class="col-sm-10 form-group has-error">
+                    <input id="inp-ter" type="text" class="form-control" placeholder="ex : 'LFH464'" />
+                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                </div>
+                <div class="col-sm-2">
+                    <button id="btn-rech-ter" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
+                </div>
+            </div>
+        </div>
+        <div id="tabs-2">
+            <h4>Résultats</h4>
+            <div id="f-ip" class="cache">
+                <h4></h4>
+
+                <button class="btn btn-info" id="btn-edit-pi" data-toggle="modal" href="#mdl-edit-pi"><span class="glyphicon glyphicon-edit"></span></button>
+
+                <button class="btn btn-warning disabled" id="btn-sav-pi"><span class="glyphicon glyphicon-floppy-save"></span></button>
+
+                <button class="btn btn-warning disabled" id="btn-mail-pi"><span class="glyphicon glyphicon-envelope"></span></button>
+
+                <button class="btn btn-warning disabled" id="btn-print-pi"><span class="glyphicon glyphicon-print"></span></button>
+            </div>
+<!--                     <h4>Résultats des recherches de terrains</h4> -->
+            <div id="req-pio" class="carousel slide cache" data-ride="carousel">
+                <div class ="row">
+                    <div class="col-sm-2">
+                        <a class="carousel-control left" href="#req-pio" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        </a>
+                    </div>
+                    <div class="col-sm-8">
+                        <ol class="carousel-indicators"></ol> 
+                    </div>
+                    <div class="col-sm-2">
+                        <a class="carousel-control right" href="#req-pio" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Carousel indicators -->  
+                <!-- Wrapper for carousel items -->
+                <div class="carousel-inner"></div>
+            </div>
+        </div>
+        <div id="tabs-3">
+            <h4>Historique</h4>
+            <div id="list-ip" class="list-group">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<?=$this->modalWindow(  "mdl-edit-pi", 
+                        "<h3 id='title-edit-pi'></h3>", 
+                        "", 
+                        "<div id='f-edit-pi'></div>")
+                        ?>
+
+<?php $this->inlineScript()->captureStart();?>
+
+$("#home").removeClass("dropdown-toggle")
+		  .attr('data-toggle', '')
+		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+
+$("#create-link").remove();		  
+
+$("#zoomform").remove();
+
+$('#search').remove();
+		  
+<?php $this->inlineScript()->captureEnd();?>

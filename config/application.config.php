@@ -34,11 +34,14 @@ $modules = array(
     'Core',
     'Application',
     'Administration',
-    'IPO'
+    'IPO',
 );
 
 if ($env == 'development') {
+
+//    $modules [] = 'ZendDeveloperTools';
     $modules[] = 'DoctrineDataFixtureModule';
+
 }
 
 return array(

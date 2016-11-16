@@ -96,6 +96,8 @@ return array(
             'Application\Controller\Mil' => 'Application\Controller\Factory\MilControllerFactory',
             'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
             'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
+            'Application\Controller\Afis' => 'Application\Controller\Factory\AfisControllerFactory',
+            'Application\Controller\SarBeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
         )
     ),
     'view_helpers' => array(
@@ -104,7 +106,8 @@ return array(
             'impact' => 'Application\View\Helper\Impact',
             'eventfieldname' => 'Application\View\Helper\EventFieldName',
             'block' => 'Application\View\Helper\Block',
-            'sector' => 'Application\View\Helper\Sector'
+            'sector' => 'Application\View\Helper\Sector',
+            'afViewHelper' => 'Application\View\Helper\AfisHelper',
         ),
         'factories' => array(
             'eventName' => 'Application\Factories\EventNameFactory',
@@ -124,7 +127,9 @@ return array(
         'template_map' => array(
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index.phtml'
+            'error/index' => __DIR__ . '/../view/error/index.phtml',
+            'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
+            'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml'
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
@@ -213,6 +218,26 @@ return array(
             'radars.read' => array(
                 'name' => 'Lecture',
                 'description' => ''
+            )
+        ),
+        'SarBeacons' => array(
+            'sarbeacons.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet de recherche de terrains'
+            ),
+            'sarbeacons.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet d\'effectuer des plans d\'interrogations'
+            )
+        ),
+        'Afis' => array(
+            'afis.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet Afis'
+            ),
+            'afis.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet de modifier les afis'
             )
         )
     ),
