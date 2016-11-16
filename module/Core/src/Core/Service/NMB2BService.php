@@ -55,7 +55,7 @@ class NMB2BService implements ServiceLocatorAwareInterface
         if($this->client == null) {
             $options = array();
             $options['trace'] = 1;
-            $options['connection_timeout'] = 100000;
+            $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
             $options['exceptions'] = true;
             $options['cache_wsdl'] = WSDL_CACHE_NONE;
             $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
