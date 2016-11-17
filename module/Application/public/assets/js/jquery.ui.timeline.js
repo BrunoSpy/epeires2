@@ -1250,10 +1250,6 @@
         _computeIntervalle: function () {
             var nbIntervalles = this.timelineDuration * 2;
             //if scrollbar visible, width is different
-            //TODO : do it better
-            //if ($(document).height() > $(window).height()) {
-            //    largeurDisponible += this._getScrollbarWidth();
-            //}
             this.intervalle = 1 / nbIntervalles * 100;
         },
         /**
@@ -1338,7 +1334,8 @@
                 this._updateTimebar();
             } else {
                 var TimeBar = $('<div id="TimeBar"></div>');
-                this.element.prepend(TimeBar);
+                //attach Timebar to #events to be able to be above events
+                this.element.find('#events').prepend(TimeBar);
                 var x = this._computeX(new Date());
                 TimeBar.css({
                     'top': /*this.options.topOffset + */this.params.topSpace + 'px',

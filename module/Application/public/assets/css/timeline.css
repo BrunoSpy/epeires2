@@ -23,6 +23,7 @@
 #events {
 	position: absolute;
 	z-index: 3;
+	height: 100%;
 }
 
 .Time_obj {
