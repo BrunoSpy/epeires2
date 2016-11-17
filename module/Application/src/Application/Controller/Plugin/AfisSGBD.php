@@ -53,11 +53,14 @@ class AfisSGBD extends AbstractPlugin
     public function get($id = null)
     {
         if ($id) {
-            $afis = $this->em->getRepository(Afis::class)->find($id);
-            if ($afis == null or !$afis->isValid()) return null;
+            // print_r($this->em->getRepository(Afis::class));
+            // $afis = $this->em->getRepository(Afis::class)->find($id);
+
+            // if ($afis == null or !$afis->isValid()) return null;
         } else {
             $afis = new Afis();
         }
+        $afis = new Afis();
         return $afis;
     }
 
@@ -68,6 +71,7 @@ class AfisSGBD extends AbstractPlugin
 
         $afisForm = new AfisForm($this->em);
         $afisForm->getForm()->setData($p);
+
         $pluginMessages = $this->getController()->afMessages();
         if ($afisForm->getForm()->isValid()) {
             try {

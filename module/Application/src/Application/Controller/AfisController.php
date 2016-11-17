@@ -71,9 +71,11 @@ class AfisController extends AbstractActionController
     {
         $form = (new AfisForm($this->entityManager))->getForm();
         $request = $this->getRequest();
-        
+
         if ($request->isPost()) {
-            $afis = $this->afisSGBD($this->entityManager)->get($request->getPost()['afisid']);
+            $afis = $this->afSGBD($this->entityManager)->get($request->getPost()['id']);
+            // print_r($form);
+            print_r($afis->getArrayCopy());
             $form->setData($afis->getArrayCopy());
         }
         return 

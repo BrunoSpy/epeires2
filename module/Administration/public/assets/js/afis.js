@@ -21,16 +21,26 @@ $(function() {
     "use strict";
     $("#btn-af-add").click(function() {
         $("#title-edit-af").html("Nouvel AFIS");
-        $("#f-edit-af").load('/afis/form', function(e){
-        	$.material.checkbox();
-           	$(this).find('input[type="submit"]')
+        loadAfisForm();
+
+    });
+
+    $('.a-edit-af').click(function() {
+        $("#title-edit-af").html("Modifier un AFIS");
+        loadAfisForm($(this).data('id'));
+    })
+
+    function loadAfisForm(id=null) {
+        $("#f-edit-af").load('/afis/form', {id : id}, function(e){
+            $.material.checkbox();
+            $(this).find('input[type="submit"]')
                 .click(function(e){
                     e.preventDefault();
                     $("#mdl-edit-af").modal('hide');
                     $.post('/afis/save', $('#Afis').serialize(), function(data) {
-                    	location.reload();
+                        location.reload();
                     });
                 })
         });
-    });
+    }
 });

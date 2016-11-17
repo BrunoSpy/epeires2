@@ -124,8 +124,10 @@ class Afis extends TemporaryResource
     
     public function getArrayCopy()
     {
+        echo 'aaa';
         $object_vars = get_object_vars($this);
         $object_vars['organisation'] = $this->organisation->getId();
+
         return $object_vars;
     }
     
