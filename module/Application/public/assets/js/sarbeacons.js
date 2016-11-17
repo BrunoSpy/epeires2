@@ -127,6 +127,7 @@ $(function() {
         $tab1 = $('#tabs-1'),
         $tab2 = $('#tabs-2'),
         $tab3 = $('#tabs-3'),
+
         $fIp = $('#f-ip'),
         $bSavPi = $('#btn-sav-pi'),
         $bEditPi = $('#btn-edit-pi'),
@@ -146,9 +147,15 @@ $(function() {
     /* raz des inputs */
     $('input').val('');
     // $('.tpl').hide();
+
     /* init des onglets */
     $tabs.tabs();
-
+    $tabs.find('.nav-pills>li').each(function(){
+        $(this).click(function(){
+            $(this).addClass('active')
+                .siblings('.active').removeClass('active');
+        })
+    })
     /** Evenements **/
     $iLat.keyup(keyPressedLat);
     $iLon.keyup(keyPressedLon);
@@ -420,8 +427,7 @@ $(function() {
 
     function triggerIp(latLon) 
     {
-        console.log(latLon);
-        rafraichir();
+        refreshIp();
         /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
         mkSAR = updateMarker(mkSAR, latLon, icSAR);
         /* AFFICHE EN-TETE */
@@ -435,8 +441,9 @@ $(function() {
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
 
         $tabs.tabs("option", "active", 1);
+        $tabs.find('.nav-pills>li').eq(1).trigger('click');
 
-        function rafraichir() {
+        function refreshIp() {
             pio = [];
             $carIndic.find('li').remove();
             $carInner.find('div.item').remove();

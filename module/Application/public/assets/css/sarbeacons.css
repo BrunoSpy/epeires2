@@ -13,16 +13,9 @@ body,
 
 #mapid {
     width: 100%;
-    height: 100%;
     min-height: 100%;
     background-color: #FFF;
 }
-
-.content {
-/*    background-color: #FFF;*/
-}
-
-.row {}
 
 .fill {
     height: 100%;
@@ -30,17 +23,21 @@ body,
     background-color: #FFF;
 }
 
-#tabs {
-    margin: 0px;
-    padding: 0px;
-    border: 0;
+#tabs{
+    margin:0px;
+    padding:0px;
 }
 
-/*#tabs h4 {
+#tabs .nav-pills {
+    margin-top:10px;
+    margin-left:0px;
+}
+
+#tabs h4 {
     margin-top: 15px;
     margin-bottom: 10px;
 }
-*/
+
 #tabs-1,
 #tabs-2,
 #tabs-3 {
@@ -222,4 +219,30 @@ body,
 
 .form-group textarea{
     background-color: white;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    z-index: 1000;
+    cursor: default;
+    padding: 0;
+    margin-top: 2px;
+    list-style: none;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 5px;
+       -moz-border-radius: 5px;
+            border-radius: 5px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+       -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+.ui-autocomplete > li {
+  padding: 3px 20px;
+}
+.ui-autocomplete > li.ui-state-focus {
+  background-color: #DDD;
+}
+.ui-helper-hidden-accessible {
+  display: none;
 }

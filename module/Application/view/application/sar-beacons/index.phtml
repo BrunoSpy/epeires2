@@ -1,5 +1,4 @@
 <?php
-$this->headLink()->prependStylesheet($this->basePath() . '/css/jquery-ui.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/components/leaflet/dist/leaflet.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/components/Leaflet.EasyButton/src/easy-button.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbeacons.css');
@@ -14,11 +13,12 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
     </div>
 
     <div id="tabs" class="col-sm-3">
-        <ul>
-            <li><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li>
+        <ul class="nav nav-pills">
+            <li class="active"><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li>
             <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li>
             <li><a href="#tabs-3" id="a-hist"><span class="glyphicon glyphicon-list"></span></a></li>
         </ul>
+
         <div id="tabs-1">
             <h4>Recherche par coordonnées</h4>
             <div class="row">
