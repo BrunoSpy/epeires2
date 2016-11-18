@@ -34,7 +34,6 @@ class AfisForm
         $this->form
             ->setAttributes([
                 'method'    => self::DEFAULT_METHOD,
-                'action'    => 'afis/save',
                 'class'     => 'form-horizontal'
             ])
             ->add([

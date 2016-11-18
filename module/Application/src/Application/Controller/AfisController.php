@@ -30,54 +30,37 @@ use Application\Form\AfisForm;
  */
 class AfisController extends AbstractActionController
 {
-    /*
-     * Entity Manager
-     */
-    // protected $em;
+    private $em;
 
-    // public function setEntityManager($em)
-    // {
-    //     $this->em = $em;
-    // }
-
-    // public function getEntityManager()
-    // {
-    //     return $this->em;
-    // }
-    /*
-     * Pages d'accueil
-     */
-
-    private $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $em)
     {
-        $this->entityManager = $entityManager;
+        $this->em = $em;
     }
-
+    /*
+     * Page d'accueil
+     */
     public function indexAction()
     {
+        if (!$this->authAfis('read')) return new JsonModel();
+        
         return (new ViewModel())
-            ->setVariables(
-                [
-                    'messages'  => $this->afMessages()->get(),
-                    'allAfis'   => $this->afSGBD($this->entityManager)->getAll(['decommissionned' => 0])
-                ]);
+            ->setVariables([
+                'messages'  => $this->afMessages()->get(),
+                'allAfis'   => $this->afSGBD($this->em)->getAll(['decommissionned' => 0])
+            ]);
     }
     /*
      * Affiche formulaire d'ajout/modification
      */
     public function formAction()
     {
-        $form = (new AfisForm($this->entityManager))->getForm();
-        $request = $this->getRequest();
+        if (!$this->authAfis('write')) return new JsonModel();
 
-        if ($request->isPost()) {
-            $afis = $this->afSGBD($this->entityManager)->get($request->getPost()['id']);
-            // print_r($form);
-            print_r($afis->getArrayCopy());
-            $form->setData($afis->getArrayCopy());
-        }
+        $id = intval($this->getRequest()->getPost()['id']);
+        $afis = $this->afSGBD($this->em)->get($id);
+        $form = (new AfisForm($this->em))->getForm();
+
+        ($afis->getId()) ? $form->bind($afis) : $form->setObject($afis);
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
@@ -91,15 +74,12 @@ class AfisController extends AbstractActionController
     */
     public function switchafisAction()
     {
+        if (!$this->authAfis('write')) return new JsonModel();
+        $post = $this->getRequest()->getPost();
+        $id = intval($post['id']);
+        $state = boolval($post['state']);
 
-        if (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.write'))
-            return new JsonModel();
-
-        $request    = $this->getRequest();
-        if ($request->isPost()) {
-            $post   = $request->getPost();
-            $this->afisSGBD($this->entityManager)->switchState($post);
-        }
+        $this->afSGBD($this->em)->switchState($id, $state);
         return new JsonModel();
     }
     /*
@@ -107,14 +87,10 @@ class AfisController extends AbstractActionController
      */
     public function saveAction()
     {
-        if (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.write'))
-            return new JsonModel();
+        if (!$this->authAfis('write')) return new JsonModel();
 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $post = $request->getPost();
-            $this->afSGBD($this->entityManager)->save($post);
-        }
+        $post = $this->getRequest()->getPost();
+        $this->afSGBD($this->em)->save($post);
         return new JsonModel();
     }
     /*
@@ -122,21 +98,21 @@ class AfisController extends AbstractActionController
      */
     public function deleteAction()
     {
-        if (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.write'))
-            return new JsonModel();
+        if (!$this->authAfis('write')) return new JsonModel();
 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $id = $this->getRequest()->getPost()['afisid'];
-            if ($id) {
-                $this->afisSGBD($this->entityManager)->del($id);
-            }
-        }
+        $id = intval($this->getRequest()->getPost()['id']);
+        $this->afSGBD($this->em)->del($id);
         return new JsonModel();
     }
 
     public function getAllAction($params = []) 
     {
-        return $this->afSGBD($this->entityManager)->getAll($params);
+        if (!$this->authAfis('write')) return new JsonModel();
+
+        return $this->afSGBD($this->em)->getAll($params);
+    }
+
+    private function authAfis($action) {
+        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 }

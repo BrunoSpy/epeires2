@@ -5,11 +5,11 @@
         <div class="togglebutton">
         <label>
             <input 
-                   data-afis-id="<?=$afis->getId()?>"
-                   class="afis-switch" type="checkbox" <?=($afis->getState() ? 'checked="checked"' : '')?>
+                   data-id="<?=$afis->getId()?>"
+                   class="btn-switch-af" type="checkbox" <?=($afis->getState() ? 'checked="checked"' : '')?>
                    
                    <?php
-                        //($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
+                        ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
                    ?>
             />
 <!--             <span class="toggle"></span> -->

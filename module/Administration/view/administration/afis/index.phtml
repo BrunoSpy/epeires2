@@ -71,7 +71,7 @@
                         "", 
                         null, 
                         "<p>Voulez-vous vraiment supprimer l'AFIS <em><span id ='s-del-af-name'></span></em> ?</p>",
-                        "<a class='btn btn-danger' id='s-del-af-ok'>Confirmer</a>
+                        "<a class='btn btn-danger' id='a-del-af-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>	
 
 
@@ -86,6 +86,8 @@ $("#zoomform").remove();
 $('#search').remove();
 
 $('body').scrollspy({target:'#sidebar', offset:120});
+
+afis('<?php echo $this->url('application')?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

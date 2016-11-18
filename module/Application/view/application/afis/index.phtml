@@ -47,6 +47,8 @@ $(".sortable").bind('aftertablesort', function(event, data){
 //sort the table by name
 $("table th:first").trigger('click');
 
+afis('<?php echo $this->url('application'); ?>');
+
 <?=$this->notifications($messages)?>
 
 <?php $this->inlineScript()->captureEnd();?>
