@@ -19,6 +19,7 @@
 namespace Application\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
+use Doctrine\ORM\EntityManager;
 use DOMPDFModule\View\Model\PdfModel;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
@@ -257,17 +258,18 @@ class ReportController extends AbstractEntityManagerAwareController
                 $text,
                 $attachment
             ));
-            
-            $message = new \Zend\Mail\Message();
-            $message->addTo($organisation[0]->getIpoEmail())
-                ->addFrom($this->config['emailfrom'])
-                ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
-                ->setBody($mimeMessage);
-            
-            $transport = new \Zend\Mail\Transport\Smtp();
-            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
-            $transport->setOptions($transportOptions);
-            $transport->send($message);
+            if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
+                $message = new \Zend\Mail\Message();
+                $message->addTo($organisation[0]->getIpoEmail())
+                    ->addFrom($this->config['emailfrom'])
+                    ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
+                    ->setBody($mimeMessage);
+    
+                $transport = new \Zend\Mail\Transport\Smtp();
+                $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
+                $transport->setOptions($transportOptions);
+                $transport->send($message);
+            }
         }
     }
 }

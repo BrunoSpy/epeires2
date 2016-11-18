@@ -184,17 +184,18 @@ class NMB2BService
         $mimeMessage->setParts(array(
             $text
         ));
-
-        $message = new \Zend\Mail\Message();
-        $message->addTo($ipoEmail)
-            ->addFrom($this->config['emailfrom'])
-            ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
-            ->setBody($mimeMessage);
-
-        $transport = new \Zend\Mail\Transport\Smtp();
-        $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
-        $transport->setOptions($transportOptions);
-        $transport->send($message);
+        if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
+            $message = new \Zend\Mail\Message();
+            $message->addTo($ipoEmail)
+                ->addFrom($this->config['emailfrom'])
+                ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
+                ->setBody($mimeMessage);
+    
+            $transport = new \Zend\Mail\Transport\Smtp();
+            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
+            $transport->setOptions($transportOptions);
+            $transport->send($message);
+        }
     }
 }
 
