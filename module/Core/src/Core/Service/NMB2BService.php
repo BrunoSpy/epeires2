@@ -17,6 +17,7 @@
  */
 namespace Core\Service;
 
+use Doctrine\ORM\EntityManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
@@ -24,29 +25,22 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
  *
  * @author Bruno Spyckerelle
  */
-class NMB2BService implements ServiceLocatorAwareInterface
+class NMB2BService
 {
-
-    private $sl;
 
     private $nmb2b;
 
+    private $entityManager;
+    
+    private $config;
+    
     private $client = null;
 
-    public function getServiceLocator()
-    {
-        return $this->sl;
-    }
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function __construct(EntityManager $entityManager, $config)
     {
-        $this->sl = $serviceLocator;
-    }
-
-    public function __construct(ServiceLocatorInterface $sl)
-    {
-        $this->setServiceLocator($sl);
-        $config = $this->sl->get('config');
+        $this->entityManager = $entityManager;
+        $this->config = $config;
         $this->nmb2b = $config['nm_b2b'];
     }
 
@@ -176,10 +170,9 @@ class NMB2BService implements ServiceLocatorAwareInterface
 
     public function sendErrorEmail($textError) {
 
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         //TODO récupérer proprement l'organisation concernée
-        $org = $objectManager->getRepository('Application\Entity\Organisation')->findAll();
+        $org = $this->entityManager->getRepository('Application\Entity\Organisation')->findAll();
         $ipoEmail = $org[0]->getIpoEmail();
 
         // prepare body with file attachment
@@ -192,15 +185,14 @@ class NMB2BService implements ServiceLocatorAwareInterface
             $text
         ));
 
-        $config = $this->getServiceLocator()->get('config');
         $message = new \Zend\Mail\Message();
         $message->addTo($ipoEmail)
-            ->addFrom($config['emailfrom'])
+            ->addFrom($this->config['emailfrom'])
             ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
             ->setBody($mimeMessage);
 
         $transport = new \Zend\Mail\Transport\Smtp();
-        $transportOptions = new \Zend\Mail\Transport\SmtpOptions($config['smtp']);
+        $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
         $transport->setOptions($transportOptions);
         $transport->send($message);
     }

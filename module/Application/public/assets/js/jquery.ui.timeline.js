@@ -251,6 +251,7 @@
 
             $(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
+                $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
             });
 
             //gestion des évènements souris

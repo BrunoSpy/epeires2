@@ -19,6 +19,7 @@ namespace Application\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
 use Core\Service\NMB2BService;
+use Doctrine\ORM\EntityManager;
 use Zend\Console\Request as ConsoleRequest;
 
 /**

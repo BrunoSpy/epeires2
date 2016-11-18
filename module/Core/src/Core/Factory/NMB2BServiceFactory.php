@@ -30,7 +30,7 @@ class NMB2BServiceFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new \Core\Service\NMB2BService($serviceLocator);
+        return new \Core\Service\NMB2BService($serviceLocator->get('Doctrine\ORM\EntityManager'), $serviceLocator->get('config'));
     }
 }
 
