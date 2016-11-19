@@ -25,12 +25,6 @@ use Zend\Form\Annotation\AnnotationBuilder;
 
 use Application\Entity\FlightPlan;
 
-use Application\Entity\Event;
-use Application\Entity\Organisation;
-use Application\Entity\CustomFieldValue;
-use Application\Entity\Status;
-use Application\Entity\Impact;
-
 use Core\Controller\AbstractEntityManagerAwareController;
 
 /**
@@ -76,6 +70,17 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ]);
     }
     
+    public function listAction() {
+        $post = $this->getRequest()->getPost();
+        $dateTime = new DateTime($post['date']);
+        return 
+            (new ViewModel())
+                ->setTerminal($this->getRequest()->isXmlHttpRequest())
+                ->setVariables([
+                    'flightplans' => $this->fpSGBD($this->em)->getByDate($dateTime)
+            ]);
+    }
+
     public function formAction()
     {
         if (!$this->authFlightPlans('write')) return new JsonModel();

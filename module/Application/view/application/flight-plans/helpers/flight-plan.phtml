@@ -4,19 +4,6 @@
     <td><?=$fp->getDestinationterrain()?></td>
     <td><?=($fp->getEstimatedtimeofarrival()) ? $fp->getEstimatedtimeofarrival()->format('H:i') : null?></td>
     <td><?=($fp->getTimeofarrival()) ? $fp->getTimeofarrival()->format('H:i') : null?></td>
-    <!-- <td> -->
-        <?php //foreach ($typesAlerte as $type => $params) :?>
-<!--         <a title="alerfa"
-           href="#fp-cont-alt"
-           class="btn btn-<?=$params['btnType']?> btn-xs fp-a-alt"
-           data-fp-id="<?=$fp->getId()?>"
-           data-fp-alt-type="<?=$type?>"
-           data-fp-aircraft-id="<?=$fp->getAircraftid()?>"
-           data-toggle="modal">
-            <span><?=''//$type?></span>
-        </a> -->
-        <?php //endforeach;?>
-<!--     </td> -->
 <td>
     <a title="Modifier" 
        href="#mdl-edit-fp" 

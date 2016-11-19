@@ -10,17 +10,19 @@
                             Suivre un nouveau Vol
                         </a>
                     </h3>
-                    <div id="chx-fp-day">
-                            <a href="#" id="fp-day-back">
-                                <span class="glyphicon glyphicon-backward"></span>
-                            </a>
-                            <input id="fp-day" type="text" class="date input-small"></input>
-                            <a href="#" id="fp-day-forward">
-                                <span class="glyphicon glyphicon-forward"></span>
-                            </a>
-                            <a href="#" id="fp-day-today">
-                                <span class="glyphicon glyphicon-refresh"></span>
-                            </a>
+                    <div>
+                        <a href="#" id="a-date-back">
+                            <span class="glyphicon glyphicon-backward"></span>
+                        </a>
+
+                        <input id="i-date" type="text" class="date input-small"></input>
+
+                        <a href="#" id="a-date-forward">
+                            <span class="glyphicon glyphicon-forward"></span>
+                        </a>
+                        <a href="#" id="a-date-today">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </a>
                     </div>
 		        </div>
                 <div class="panel-body">
@@ -34,7 +36,7 @@
                                 <th>TOA</th>
                             </tr>    
                         </thead>
-                        <tbody>
+                        <tbody id = "list-fp">
                             <?php foreach ($allFp as $fp) : ?>
                             <?php echo $this->fpViewHelper()->renderRow($fp)?>
                             <?php endforeach; ?>

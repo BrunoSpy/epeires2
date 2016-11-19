@@ -34,7 +34,6 @@ class FlightPlansSGBD extends SGBDPlugin
             ->from(FlightPlan::class,'fp')
             ->where('DATE_DIFF(fp.estimatedtimeofarrival, :date) = 0')
             ->setParameter('date', $dt);
-
         return $qb->getQuery()->getResult();
     }
 }

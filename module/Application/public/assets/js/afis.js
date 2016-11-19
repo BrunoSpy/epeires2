@@ -29,7 +29,7 @@ var afis = function(url){
     });
 
     function loadAfisForm(id = null) {
-        $("#f-edit-af").load(url+'afis/form', {id: id}, function(e){
+        $("#f-edit-af").load(url+'afis/form', {id: id}, function(){
             $.material.checkbox();
             $(this).find('input[type="submit"]')
                 .click(function(e){
