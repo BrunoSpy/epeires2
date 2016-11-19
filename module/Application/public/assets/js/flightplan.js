@@ -1,43 +1,48 @@
-var flightplan=function(url){
+var flightplan = function(url){
 /*
  *  Clique sur le bouton Ajouter.
- *  Chargement du formulaire. Puis transformation des saisies de temps avec timepicker.
  */       
-    $("#fp-add").on('click',function(){
-        $("#fp-title").html("Suivi du Vol");
-        $("#fp-form").load(url+'/form',function(e){
-            $("#fp-cont-form input[name=timeofarrival]").timepickerform({'id':'start', 'clearable':true});
-            $("#fp-cont-form input[name=estimatedtimeofarrival]").timepickerform({'id':'end', 'clearable':true});
-        });
+    $("#btn-add-fp").click(function() {
+        $("#title-edit-fp").html("Suivi du Vol");
+        loadFpForm();
     });
 /*
  *  Clique sur modifier d'un flight plan
- *  Chargement du formulaire avec les données du flight plan. Puis transformation des saisies de temps avec timepicker.
  */  
-    $(".fp-a-edit").on('click',function(){
-        $("#fp-title").html('Modification du Plan de Vol - <em>'+$(this).data('fp-aircraft-id')+'</em>');
-        $("#fp-form").load(url+'/form', {fpid:$(this).data('fp-id')},function(){
-            $("#fp-cont-form input[name=timeofarrival]").timepickerform({'id':'start', 'clearable':true});
-            $("#fp-cont-form input[name=estimatedtimeofarrival]").timepickerform({'id':'end', 'clearable':true});
+    $(".a-edit-fp").click(function() {
+        $("#title-edit-fp").html('Modification du Plan de Vol - <em>'+$(this).data('aircraft-id')+'</em>');
+        loadFpForm($(this).data('id'));
+    });
+
+    function loadFpForm(id = null) {
+        console.log(id);
+        $("#f-edit-fp").load(url+'flightplans/form', {id: id}, function(e) {
+            $(this).find('input[name=timeofarrival]').timepickerform({'id':'start', 'clearable':true});
+            $(this).find('input[name=estimatedtimeofarrival]').timepickerform({'id':'end', 'clearable':true});
+             /*
+              * Clique sur le bouton Enregistrer.
+              * Envoie du formulaire serializé au contrôleur save puis rechargement.
+              */      
+            $(this).find('input[type=submit]').click(function(e) {
+                e.preventDefault();
+                $.post(url+'flightplans/save',$("#FlightPlan").serialize(),function(data){
+                   location.reload();
+                },'json');
+            });
         });
-    });
- /*
-  * Clique sur le bouton Enregistrer.
-  * Envoie du formulaire serializé au contrôleur save puis rechargement.
-  */      
-    $("#fp-cont-form").on('click','input[type=submit]',function(event){
-        event.preventDefault();
-        $.post(url+'/save',$("#FlightPlan").serialize(),function(data){
-            location.reload();
-        },'json');
-    });
+    };
     
     /*
      * Supprimer
      */
-    $(".fp-a-del").on('click', function (){
-        $("#fp-cont-del-airid").html($(this).data('fp-aircraft-id'));
-        $("#fp-cont-del-ok").data('fp-id', $(this).data('fp-id'));
+    $(".a-del-fp").click(function() {
+        var id = $(this).data('id');
+        $('#s-del-fp-airid').html($(this).data('aircraft-id'));
+        $('#a-del-fp-ok').click(function(){
+            $.post(url+'flightplans/delete', {id: id}, function(){
+                location.reload();
+            }, 'json');      
+        });
     });
     
     $("#fp-cont-del-ok").on('click', function (){

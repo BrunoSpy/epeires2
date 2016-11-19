@@ -1,3 +1,18 @@
+<?php 
+$form = $this->form;
+$form->add(	
+	['name' => 'submit',
+    	'attributes' => [
+            'type' => 'submit',
+            'value' => 'Enregistrer',
+            'class' => 'btn btn-primary btn-small'
+        ]
+    ]);
+$form->setAttribute('action', $this->url('application', array('controller'=>'afis', 'action'=>'save')));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+$form->prepare();
+?>
 
 <?php echo $this->form()->openTag($form) ?>
 

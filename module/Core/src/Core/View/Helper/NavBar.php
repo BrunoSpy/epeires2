@@ -99,6 +99,16 @@ class NavBar extends AbstractHelper
                 . '">AFIS</a></li>';
         }
 
+        if ($this->view->isGranted('flightplans.read')) {
+            $html .= '<li><a id="flightplans" href="'
+                . $urlHelper('application',
+                    [
+                        'controller' => 'flightplans',
+                        'action' => 'index'
+                    ])
+                . '">Gestion PLN</a></li>';
+        }
+
         if ($this->view->isGranted('sarbeacons.read')) {
             $html .= '<li><a id="sarbeacons" href="'
                 . $urlHelper('application',

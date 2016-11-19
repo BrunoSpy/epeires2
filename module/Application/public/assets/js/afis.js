@@ -18,10 +18,9 @@
  * @author Loïc Perrin
  */
 var afis = function(url){
-    $("#btn-af-add").click(function() {
+    $("#btn-add-af").click(function() {
         $("#title-edit-af").html("Nouvel AFIS");
         loadAfisForm();
-
     });
 
     $('.a-edit-af').click(function() {
@@ -29,7 +28,7 @@ var afis = function(url){
         loadAfisForm($(this).data('id'));
     });
 
-    function loadAfisForm(id=null) {
+    function loadAfisForm(id = null) {
         $("#f-edit-af").load(url+'afis/form', {id: id}, function(e){
             $.material.checkbox();
             $(this).find('input[type="submit"]')
@@ -53,13 +52,13 @@ var afis = function(url){
         });
     });
 
-    $('.btn-switch-af').on('change', function(e){
+    $('.btn-switch-af').change(function() {
         var boolState = 0;
         if ($(this).is(':checked')) {
             boolState = 1;
         } 
         
-        $.post(url+'afis/switchafis',{id: $(this).data('id'),state: boolState},function(){
+        $.post(url+'afis/switchafis',{id: $(this).data('id'),state: boolState}, function(){
             location.reload();
         },'json');
     });

@@ -1,6 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js')?>
-
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
         <div class="panel panel-default">
@@ -49,6 +48,6 @@ $("table th:first").trigger('click');
 
 afis('<?php echo $this->url('application'); ?>');
 
-<?=$this->notifications($messages)?>
+<?php echo $this->notifications($messages)?>
 
 <?php $this->inlineScript()->captureEnd();?>

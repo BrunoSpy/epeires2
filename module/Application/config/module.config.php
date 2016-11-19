@@ -97,6 +97,7 @@ return array(
             'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
             'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
             'Application\Controller\Afis' => 'Application\Controller\Factory\AfisControllerFactory',
+            'Application\Controller\FlightPlans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
             'Application\Controller\SarBeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
         )
     ),
@@ -108,6 +109,7 @@ return array(
             'block' => 'Application\View\Helper\Block',
             'sector' => 'Application\View\Helper\Sector',
             'afViewHelper' => 'Application\View\Helper\AfisHelper',
+            'fpViewHelper' => 'Application\View\Helper\FlightPlanHelper',
         ),
         'factories' => array(
             'eventName' => 'Application\Factories\EventNameFactory',
@@ -129,7 +131,8 @@ return array(
             'error/404' => __DIR__ . '/../view/error/404.phtml',
             'error/index' => __DIR__ . '/../view/error/index.phtml',
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
-            'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml'
+            'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
+            'fp/helper/fp' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
@@ -220,7 +223,7 @@ return array(
                 'description' => ''
             )
         ),
-        'SarBeacons' => array(
+        'SAR Balises' => array(
             'sarbeacons.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet de recherche de terrains'
@@ -228,6 +231,16 @@ return array(
             'sarbeacons.write' => array(
                 'name' => 'Ecriture',
                 'description' => 'Permet d\'effectuer des plans d\'interrogations'
+            )
+        ),
+        'SAR PLN' => array(
+            'flightplans.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
+            ),
+            'flightplans.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet de gèrer des plans de vol'
             )
         ),
         'Afis' => array(
@@ -239,7 +252,8 @@ return array(
                 'name' => 'Ecriture',
                 'description' => 'Permet de modifier les afis'
             )
-        )
+        ),
+
     ),
     
     'zfc_rbac' => array(

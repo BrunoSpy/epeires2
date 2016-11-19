@@ -18,90 +18,98 @@
 namespace Application\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 
-use Application\Form\AfisForm;
-
+use Zend\Form\Annotation\AnnotationBuilder;
+use Application\Entity\Organisation;
+use Application\Entity\Afis;
+use Core\Controller\AbstractEntityManagerAwareController;
 /**
  *
  * @author Loïc Perrin
  */
-class AfisController extends AbstractActionController
+class AfisController extends AbstractEntityManagerAwareController
 {
-    private $em;
+    private $em, $form;
+    public static $class = Afis::class;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);
+        $organisations = $this->em->getRepository(Organisation::class);
+        $this->form->get('organisation')->setValueOptions($organisations->getAllAsArray());
     }
-    /*
-     * Page d'accueil
-     */
+
+    public function getEntityManager() {
+        return $this->em;
+    }
+
+    public function getForm() {
+        return $this->form;   
+    }
+
     public function indexAction()
     {
         if (!$this->authAfis('read')) return new JsonModel();
-        
+
         return (new ViewModel())
             ->setVariables([
-                'messages'  => $this->afMessages()->get(),
-                'allAfis'   => $this->afSGBD($this->em)->getAll(['decommissionned' => 0])
+                'messages'  => $this->msg()->get(),
+                'allAfis'   => $this->sgbd()->getAll(['decommissionned' => 0])
             ]);
     }
-    /*
-     * Affiche formulaire d'ajout/modification
-     */
+
     public function formAction()
     {
         if (!$this->authAfis('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        $afis = $this->afSGBD($this->em)->get($id);
-        $form = (new AfisForm($this->em))->getForm();
+        $afis = $this->sgbd()->get($id);
+        $this->form->bind($afis);
 
-        ($afis->getId()) ? $form->bind($afis) : $form->setObject($afis);
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
-                    'form' => $form
-        ]);
+                    'form' => $this->form
+                ]);
     }
 
-    /*
-    * Changement d'état 0/1
-    */
     public function switchafisAction()
     {
         if (!$this->authAfis('write')) return new JsonModel();
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
-        $state = boolval($post['state']);
+        $afis = $this->sgbd()->get($id);
+        $afis->setState((boolean) $post['state']);
 
-        $this->afSGBD($this->em)->switchState($id, $state);
+        $result = $this->sgbd()->save($afis);
+        $msg = ($result['type'] == 'success') ? [$result['msg']->getName(), $result['msg']->getStrState()] : [$result['msg']];
+        $this->msg()->add('afis','switch', $result['type'], $msg);
         return new JsonModel();
     }
-    /*
-     * Traitement ajout/modification si formulaire valide
-     */
+
     public function saveAction()
     {
         if (!$this->authAfis('write')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
-        $this->afSGBD($this->em)->save($post);
+        $result = $this->sgbd()->save($post);
+        $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
+        $this->msg()->add('afis','edit', $result['type'], $msg);
         return new JsonModel();
     }
-    /*
-     * Suppression d'une entitée Afis
-     */
+
     public function deleteAction()
     {
         if (!$this->authAfis('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        $this->afSGBD($this->em)->del($id);
+        $result = $this->sgbd()->del($id);
+        $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
+        $this->msg()->add('afis','del', $result['type'], $msg);
         return new JsonModel();
     }
 
@@ -109,7 +117,7 @@ class AfisController extends AbstractActionController
     {
         if (!$this->authAfis('write')) return new JsonModel();
 
-        return $this->afSGBD($this->em)->getAll($params);
+        return $this->sgbd()->getAll($params);
     }
 
     private function authAfis($action) {

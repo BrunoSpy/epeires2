@@ -45,7 +45,7 @@ class AfisController extends FormController
 
         $this->layout('layout/adminlayout'); 
         return [
-            'messages'  => $this->afMessages()->get(),
+            'messages'  => $this->msg()->get(),
             'allAfis'   => $allAfis,
         ];
     }

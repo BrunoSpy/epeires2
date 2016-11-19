@@ -1,17 +1,16 @@
 <?php
-namespace FlightPlan\View\Helper;
+namespace Application\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use FlightPlan\Entity\FlightPlan;
+use Application\Entity\FlightPlan;
 
 class FlightPlanHelper extends AbstractHelper
 {
     
-    public function renderRow(FlightPlan $fp, $typesAlerte)
+    public function renderRow(FlightPlan $fp)
     {
         return $this->getView()->render('fp/helper/fp', [
             'fp' => $fp,
-            'typesAlerte' => $typesAlerte
         ]);
     }
     

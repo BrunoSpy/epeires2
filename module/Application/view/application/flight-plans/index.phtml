@@ -1,0 +1,89 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js')?>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a class="btn btn-primary btn-xs" href="#mdl-edit-fp" data-toggle="modal" id="btn-add-fp">
+                            Suivre un nouveau Vol
+                        </a>
+                    </h3>
+                    <div id="chx-fp-day">
+                            <a href="#" id="fp-day-back">
+                                <span class="glyphicon glyphicon-backward"></span>
+                            </a>
+                            <input id="fp-day" type="text" class="date input-small"></input>
+                            <a href="#" id="fp-day-forward">
+                                <span class="glyphicon glyphicon-forward"></span>
+                            </a>
+                            <a href="#" id="fp-day-today">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                            </a>
+                    </div>
+		        </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-hover table-bordered sortable">
+                        <thead>
+                            <tr>
+                                <th data-sort="string">Indicatif</th>
+                                <th>Départ</th>
+                                <th>Arrivée</th>
+                                <th>ETA</th>
+                                <th>TOA</th>
+                            </tr>    
+                        </thead>
+                        <tbody>
+                            <?php foreach ($allFp as $fp) : ?>
+                            <?php echo $this->fpViewHelper()->renderRow($fp)?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?=$this->modalWindow(  "mdl-edit-fp", 
+                        "<h4 id='title-edit-fp'></h4>",
+                        "", 
+                        "<div id='f-edit-fp'></div>"); ?>
+
+<?=$this->modalwindow(  "mdl-del-fp",
+                        "<h3>Confirmer la suppression ?</h3>",
+                        "", 
+                        null, 
+                        "<p>Voulez-vous vraiment supprimer le vol <em><span id ='s-del-fp-airid'></span></em> ?</p>",
+                        "<a class='btn btn-danger' id='a-del-fp-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
+<?php $this->inlineScript()->captureStart(); ?>
+
+$("#home").removeClass("dropdown-toggle")
+		  .attr('data-toggle', '')
+		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+
+$("#create-link").remove();		  
+
+$("#zoomform").remove();
+
+$('#search').remove();
+
+$(".sortable").stupidtable();
+
+$(".sortable").bind('aftertablesort', function(event, data){
+    var th = $(this).find("th");
+    th.find(".arrow").remove();
+    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+});
+
+//sort the table by name
+$("table th:first").trigger('click');
+
+flightplan('<?php echo $this->url('application'); ?>');
+
+<?php echo $this->notifications($messages)?>
+
+<?php $this->inlineScript()->captureEnd(); ?>

@@ -1,0 +1,41 @@
+<?php
+$form = $this->form;
+$form->add(	
+	['name' => 'submit',
+    	'attributes' => [
+            'type' => 'submit',
+            'value' => 'Enregistrer',
+            'class' => 'btn btn-primary btn-small'
+        ]
+    ]);
+$form->setAttribute('action', $this->url('application', array('controller'=>'flightplan', 'action'=>'save')));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+$form->prepare();
+
+?>
+
+<?=$this->form()->openTag($form) ?>
+
+<div class="modal-body">
+<?=$this->formHidden($form->get('id'))?>
+<?=$this->controlGroup($form->get('aircraftid'))?>
+<?=$this->controlGroup($form->get('startterrain'))?>
+<?=$this->controlGroup($form->get('destinationterrain'))?>
+<?=$this->controlGroup($form->get('estimatedtimeofarrival'), [
+                                                        'class'=>'compact', 
+                                                        'labelclass' => 'time-middle', 
+                                                        'large' => true
+                                                    ])?>
+<?=$this->controlGroup($form->get('timeofarrival'), [
+                                                        'class'=>'compact',
+                                                        'labelclass' => 'time-middle', 
+                                                        'large' => true
+                                                    ])?>
+</div>
+
+<div class="modal-footer">
+<?=$this->formSubmit($form->get('submit'))?>
+</div>    
+
+<?=$this->form()->closeTag() ?>

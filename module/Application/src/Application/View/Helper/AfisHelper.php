@@ -21,11 +21,4 @@ class AfisHelper extends AbstractHelper
         ]);
     }
     
-    public function renderSideNav(array $allAfis)
-    {
-        return $this->getView()->render('afis/helper/sidenav', [
-            'allAfis' => $allAfis
-        ]);
-    }
-    
 }
