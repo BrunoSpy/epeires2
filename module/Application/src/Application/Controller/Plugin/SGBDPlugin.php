@@ -39,9 +39,23 @@ class SGBDPlugin extends AbstractPlugin
     }
 
     public function getAll(array $params = [])
-    {
+    {        
         $allObj = [];
-        foreach ($this->repository->findBy($params) as $obj) $allObj[] = $obj;
+
+        $where = (array_key_exists('where', $params) && is_array($params['where'])) ? $params['where'] : null;
+        $order = (array_key_exists('order', $params) && is_array($params['order'])) ? $params['order'] : null; 
+        $limit = (array_key_exists('limit', $params) && is_array($params['limit'])) ? $params['limit'] : null; 
+
+        if ($where | $order | $limit) { 
+            foreach ($this->repository->findBy($where, $order, $limit) as $obj)
+            {
+                $allObj[] = $obj;
+            }
+        } 
+        else 
+        {
+            foreach ($this->repository->findBy($params) as $obj) $allObj[] = $obj;
+        }
         return $allObj;
     }
 
@@ -54,7 +68,7 @@ class SGBDPlugin extends AbstractPlugin
 
     public function save($p)
     {
-        if (is_a($p, Parameters::class)) 
+        if (is_a($p, Parameters::class) || is_array($p))
         { 
             $obj = $this->get(intval($p['id']));
             $form = $this->ctrller->getForm()->setData($p);

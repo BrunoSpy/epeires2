@@ -17,84 +17,99 @@
  */
 namespace Application\Controller;
 
-
 use Core\Controller\AbstractEntityManagerAwareController;
+
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Mvc\Controller\AbstractActionController;
+
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
 use Application\Form\SarBeaconsForm;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+
 /**
  *
  * @author Loïc Perrin
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    // public function indexAction()
-    // {
-    //     parent::indexAction();  
-    //     // return (new ViewModel())
-    //     //     ->setVariables([
-    //     //         'messages' => $this->SarBeaconsMessages()->get()
-    //     //     ]);
-    // }
+    private $em, $form;
+    public static $class = InterrogationPlan::class;
+
+    public function __construct(EntityManager $em)
+    {
+        $this->em = $em;
+        $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
+    }
+
+    public function getEntityManager() {
+        return $this->em;
+    }
+
+    public function getForm() {
+        return $this->form;   
+    }
 
     public function formAction() 
     {
+        // if (!$this->authSarBeacons('write')) return new JsonModel();
         $post = $this->getRequest()->getPost();
-        $intPlan = $this->sbSGBD($this->getEntityManager())->get($post['id']);
+        $id = intval($post['id']);
+        $intPlan = $this->sgbd()->get($id);
         $intPlan->setLatitude($post['lat']);
         $intPlan->setLongitude($post['lon']);     
+        $this->form->bind($intPlan);
 
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'form' => (new SarBeaconsForm($this->getEntityManager()))->getForm()->setData($intPlan->getArrayCopy())
+                'form' => $this->form
             ]);
     }
 
+    // TODO BOF BOF
     public function saveAction()
     {
-        $request = $this->getRequest();
-        $pdatas = $request->getPost('datas');
-        $ppio = $request->getPost('pio');
+        $post = $this->getRequest()->getPost();
+        $pdatas = $post['datas'];
+        $ppio = $post['pio'];
 
         $datasIntPlan = []; 
         parse_str($pdatas, $datasIntPlan);
 
         $fields = [];
-        // if (is_array($ppio)) {
-            foreach ($ppio as $i => $field) 
-            {
-                $f = new Field($field);
-                if($f->isValid()) $fields[] = $f;
-            }
-        // }
+        foreach ($ppio as $i => $field) 
+        {
+            $f = new Field($field);
+            if($f->isValid()) $fields[] = $f;
+        }
         $datasIntPlan['fields'] = $fields;
 
-        return new JsonModel($this->sbSGBD($this->getEntityManager())->save($datasIntPlan));
+        $result = $this->sgbd()->save($datasIntPlan);
+        // $msg = ($result['type'] == 'success') ? [$result['msg']->getName(), $result['msg']->getStrState()] : [$result['msg']];
+        // $this->msg()->add('afis','switch', $result['type'], $msg);      
+        return new JsonModel($result);
     }
 
-    public function listAction() {
-
+    public function listAction() 
+    {
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'intPlans' => $this->sbSGBD($this->getEntityManager())
+                'intPlans' => $this->sgbd()
                     ->getAll([
-                        'where' => '',
+                        'where' => [],
                         'order' => [
                             'startTime' => 'DESC'
-                        ]
+                        ],
+                        'limit' => 10
                     ])
             ]);
     }
 
-    public function getAction() {
-
+    public function getAction() 
+    {
         $post = $this->getRequest()->getPost();
         $intPlan = $this->sbSGBD($this->getEntityManager())->get($post['id']);
         return new JsonModel($intPlan->getArrayCopy());

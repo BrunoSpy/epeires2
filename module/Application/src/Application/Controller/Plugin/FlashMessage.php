@@ -31,6 +31,16 @@ class FlashMessage extends AbstractPlugin
                 'success'    => 'Le plan de vol d\'indicatif "%s" a bien été supprimé',
                 'error'      => 'Impossible de supprimer le plan de vol. %s'
             ],
+        ],
+        'sarbeacons' => [
+            'edit' => [
+                'success'    => 'Le plan d\'interrogation a bien été enregistré',
+                'error'      => 'Impossible d\'enregistrer le plan d\'interrogation. %s'
+            ],
+            'del' => [
+                'success'    => 'Le plan d\'interrogation a bien été supprimé',
+                'error'      => 'Impossible de supprimer le plan d\'interrogation. %s'
+            ],
         ]
     ];
 

@@ -746,6 +746,7 @@ $(function() {
         {
             loadListIp();
             idIp = data.id;
+            if(data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
             noty({
                 text: data.message,
                 type: data.type,

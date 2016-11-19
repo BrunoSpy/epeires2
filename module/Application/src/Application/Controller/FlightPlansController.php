@@ -17,6 +17,8 @@
  */
 namespace Application\Controller;
 
+use Core\Controller\AbstractEntityManagerAwareController;
+
 use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -25,7 +27,7 @@ use Zend\Form\Annotation\AnnotationBuilder;
 
 use Application\Entity\FlightPlan;
 
-use Core\Controller\AbstractEntityManagerAwareController;
+
 
 /**
  *
