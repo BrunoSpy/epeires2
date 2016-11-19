@@ -25,7 +25,12 @@ class ModelsControllerFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new ModelsController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        $service = $serviceLocator->getServiceLocator();
+        return new ModelsController(
+            $service->get('Doctrine\ORM\EntityManager'),
+            $service->get('EventService'),
+            $service->get('CustomFieldService')
+            );
     }
 
 }

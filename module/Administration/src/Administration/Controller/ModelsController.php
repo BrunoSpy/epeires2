@@ -17,6 +17,8 @@
  */
 namespace Administration\Controller;
 
+use Application\Services\CustomFieldService;
+use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -37,10 +39,14 @@ class ModelsController extends FormController
 {
 
     private $entityManager;
+    private $eventService;
+    private $customFieldService;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, EventService $eventService, CustomFieldService $customFieldService)
     {
         $this->entityManager = $entityManager;
+        $this->eventService = $eventService;
+        $this->customFieldService = $customFieldService;
     }
 
     public function getEntityManager()
@@ -465,9 +471,7 @@ class ModelsController extends FormController
         
         if ($pevent) {
             $json['id'] = $pevent->getId();
-            $json['name'] = $this->getServiceLocator()
-                ->get('EventService')
-                ->getName($pevent);
+            $json['name'] = $this->eventService->getName($pevent);
             $json['impactstyle'] = $pevent->getImpact()->getStyle();
             $json['impactname'] = $pevent->getImpact()->getName();
             if ($pevent->getParent()) {
@@ -558,14 +562,14 @@ class ModelsController extends FormController
                 // set category
                 $form->get('category')->setAttribute('value', $catid);
                 // add custom fields input
-                $form->add(new CustomFieldset($this->getServiceLocator(), $catid));
+                $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $catid));
             } else {
                 $catactions = $objectManager->getRepository('Application\Entity\ActionCategory')->findAll();
                 // TODO rendre paramétrable
                 $cataction = $catactions[0];
                 // add custom fields input
                 $form->get('category')->setAttribute('value', $cataction->getId());
-                $form->add(new CustomFieldset($this->getServiceLocator(), $cataction->getId(), !$action));
+                $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $cataction->getId(), !$action));
                 $colorfield = $form->get('custom_fields')->get($cataction->getColorfield()
                     ->getId());
                 $colorfield->setAttribute('class', 'pick-a-color');
@@ -604,7 +608,7 @@ class ModelsController extends FormController
                 ));
                 if (count($customfields) > 0) {
                     if (! ($catid || $action)) { // customfieldset already added
-                        $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
+                        $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $pevent->getCategory()
                             ->getId(), !$action));
                     }
                     foreach ($customfields as $customfield) {
@@ -684,7 +688,7 @@ class ModelsController extends FormController
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($pevent);
         $form->setHydrator(new DoctrineObject($objectManager))->setObject($pevent);
-        $form->add(new CustomFieldset($this->getServiceLocator(), $id, true));
+        $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $id, true));
         $viewmodel->setVariables(array(
             'form' => $form
         ));
@@ -850,7 +854,7 @@ class ModelsController extends FormController
         
         $alarmcat = $objectManager->getRepository('Application\Entity\AlarmCategory')->findAll()[0]; // TODO
         
-        $form->add(new CustomFieldset($this->getServiceLocator(), $alarmcat->getId()));
+        $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $alarmcat->getId()));
         
         if ($alarmid) {
             $alarm = $objectManager->getRepository('Application\Entity\PredefinedEvent')->find($alarmid);

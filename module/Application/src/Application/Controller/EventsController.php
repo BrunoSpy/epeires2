@@ -1083,6 +1083,26 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
+    public function getCustomValuesAction()
+    {
+        $origin = $this->params()->fromQuery('origin', null);
+        $value = $this->params()->fromQuery('value', null);
+        $target = $this->params()->fromQuery('target', null);
+        $values = array();
+        if($origin !== null && $value !== null && $target !== null) {
+            $fieldOrigin = $this->getEntityManager()->getRepository('Application\Entity\CustomField')->find($origin);
+            //TODO étendre le principe à n'importe quels champs
+            $antenna = $this->getEntityManager()->getRepository('Application\Entity\Antenna')->find($value);
+            foreach ($antenna->getAllFrequencies() as $f) {
+                $pair = array();
+                $pair["name"] = $f->getName();
+                $pair["id"] = $f->getId();
+                $values[] = $pair;
+            }
+        }
+        return new JsonModel($values);
+    }
+
     /**
      * Create a new form
      * 

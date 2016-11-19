@@ -630,6 +630,7 @@ var form = function(url, tabid){
 	$("#event").on("click", "#predefined_events button", function(e){
 		e.preventDefault();
 		var me = $(this);
+		var customvalues;
 		$.getJSON(
 			url+'events/getpredefinedvalues?id='+me.data('id'),
 			function(data){
@@ -643,6 +644,7 @@ var form = function(url, tabid){
 						$("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
 					});
 				}
+				customvalues = data.customvalues;
 				$.each(data.customvalues, function(key, value){
 					var elt = $("#custom_fields [name='custom_fields["+key+"]']");
 					if(elt.length == 0) {
@@ -675,7 +677,35 @@ var form = function(url, tabid){
 				$("#event").trigger('change');
                 //update hours in case of duration
                 updateHours();
+			}).done(function(){
+			$.when(refreshField($("#description-tab [data-trigger-refresh-to]"))).then(function(){
+				//must do a second pass to reset values erased by trigger-refresh
+				$.each(customvalues, function(key, value){
+					var elt = $("#custom_fields [name='custom_fields["+key+"]']");
+					if(elt.length == 0) {
+						//select à choix multiples ?
+						elt = $("#custom_fields [name='custom_fields["+key+"][]']");
+					}
+					if(elt.is("select")){
+						if(Array.isArray(value)) {
+							for(var i = 0; i < value.length; i++) {
+								$("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
+							}
+						} else {
+							if (value.length > 0) {
+								$("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
+							}
+						}
+					} else if(elt.is('textarea')){
+						elt.html(value);
+					} else if (elt.is(':checkbox')){
+						elt.attr('checked', (value == 1));
+					} else if(elt.is('input')){
+						elt.prop('value', value);
+					}
+				});
 			});
+		});
 		//get actions
 		$("#actions-tab").load(url+'events/actions?id='+me.data('id'), function(e){
 			$('#actions-tab [data-toggle="tooltip"]').tooltip();
@@ -1094,4 +1124,38 @@ var form = function(url, tabid){
     $('#recurr').on('hidden.bs.modal', function(e){
         $('body').addClass('modal-open');
     });
+
+
+	var refreshField = function(elmt) {
+		if(elmt.is('select')) {
+			var value = elmt.find(':selected').val();
+		}
+		var id = elmt.attr('name').substr(14).slice(0, -1);
+		var target = elmt.data('trigger-refresh-to');
+		var values = $.map($("[name='custom_fields["+target+"][]'] option:selected"), function(option) {
+			return option.value;
+		});
+		return $.getJSON(url + 'events/getCustomValues?origin='+id+'&target='+target+'&value='+value, function(data){
+			var elt = $("[name='custom_fields["+target+"][]']");
+			elt.empty();
+			var options = [];
+			$.each(data, function(index, val){
+				options.push(val);
+			});
+			options.sort(function(a,b){
+				return a.name.localeCompare(b.name);
+			});
+			options.forEach(function(element){
+				elt.append($('<option>',{
+					value: element.id,
+					text: element.name
+				}));
+			});
+			elt.prepend("<option value=''>Toutes les fréquences.</option>");
+		});
+	};
+
+	$("#event").on('change', '[data-trigger-refresh-to]', function(e){
+		refreshField($(this));
+	});
 };
