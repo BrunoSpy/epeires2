@@ -41,32 +41,24 @@ class AfisSGBD extends AbstractPlugin
     {
         $allAfis = [];
         foreach ($this->em->getRepository(Afis::class)->findBy($params) as $afis)
-        {
             $allAfis[] = $afis;
-        }
+
         return $allAfis;
     }
 
     /*
      * Retourne une entité Afis suivant un ID, Si pas d'ID on retourne un new Afis.
      */
-    public function get($id = null)
+    public function get(Int $id)
     {
-        if ($id) {
-            // print_r($this->em->getRepository(Afis::class));
-            // $afis = $this->em->getRepository(Afis::class)->find($id);
-
-            // if ($afis == null or !$afis->isValid()) return null;
-        } else {
-            $afis = new Afis();
-        }
-        $afis = new Afis();
+        $afis = $this->em->getRepository(Afis::class)->find($id);
+        if ($afis == null or !$afis->isValid()) $afis = new Afis();
         return $afis;
     }
 
     public function save(Parameters $p)
     {
-        $id = $p['id'];
+        $id = intval($p['id']);
         $afis   = $this->get($id);
 
         $afisForm = new AfisForm($this->em);
@@ -91,13 +83,13 @@ class AfisSGBD extends AbstractPlugin
         }
     }
 
-    public function switchState(Parameters $p)
+    public function switchState(Int $id, Bool $state)
     {
-        $afis   = $this->get($p['afisid']);
+        $afis = $this->get($id);
         if(is_a($afis,Afis::class)) {
-            $pluginMessages = $this->getController()->afisMessages();
+            $pluginMessages = $this->getController()->afMessages();
             try {
-                $afis->setState((boolean) $p['state']);
+                $afis->setState($state);
 
                 $this->em->persist($afis);
                 $this->em->flush();
@@ -113,7 +105,7 @@ class AfisSGBD extends AbstractPlugin
     {
         $afis = $this->get($id);
         if (is_a($afis, Afis::class)) {
-            $pluginMessages = $this->getController()->afisMessages();
+            $pluginMessages = $this->getController()->afMessages();
             try {
                 $this->em->remove($afis);
                 $this->em->flush();
