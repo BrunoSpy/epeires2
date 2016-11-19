@@ -68,7 +68,7 @@ var antenna = function(url, frequencyTestMenu){
         $("#cancel-antenna").data('antenna', $(this).data('antennaid')) ;
 
         if(!newState){
-            var select = $('<select class="form-control" id="freqsImpacted" name="frequencies" multiple></select>');
+            var select = $('<select class="form-control" id="freqsImpacted" name="frequencies[]" multiple></select>');
             $.getJSON(url+'frequencies/getFrequenciesOnAntenna?antennaid='+$(this).data('antennaid'), function(data){
                 $.each(data, function(key, value){
                     select.append($('<option>', {

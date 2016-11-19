@@ -289,9 +289,10 @@ class FrequenciesController extends TabController
                     $antenna = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
                     if ($antenna) {
                         if ($freqid) {
+                            //only 1 freq -> change from freq widget
                             $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($freqid);
                             if ($frequency) {
-                                $frequencies[] = $frequency;
+                                $frequencies = $frequency;
                             }
                         } else {
                             if ($freqids) {

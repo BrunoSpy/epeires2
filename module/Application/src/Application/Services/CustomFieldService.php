@@ -17,6 +17,7 @@
  */
 namespace Application\Services;
 
+use Application\Entity\AntennaCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -198,6 +199,11 @@ class CustomFieldService
                 break;
             default:
                 break;
+        }
+        if($customfield->getCategory() instanceof AntennaCategory) {
+            if($customfield->getType()->getType() == 'antenna') {
+                $attributes['data-trigger-refresh-to'] = $customfield->getCategory()->getFrequenciesField()->getId();
+            }
         }
         return $attributes;
     }

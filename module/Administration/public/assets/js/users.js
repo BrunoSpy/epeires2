@@ -59,5 +59,16 @@ var users = function(url){
 			});
 		});
 	});
-	
+	$("#user-container").arrive("#User", function() {
+		$('#User input').on('keypress', function(){
+			$("#User").validate({
+				highlight: function(element) {
+					$(element).closest('.form-group').addClass('has-error');
+				},
+				unhighlight: function(element) {
+					$(element).closest('.form-group').removeClass('has-error');
+				}
+			});
+		});
+	});
 };

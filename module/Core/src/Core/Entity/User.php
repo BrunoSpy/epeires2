@@ -70,6 +70,9 @@ class User implements UserInterface, IdentityInterface
      * @ORM\Column(type="string", length=128)
      * @Annotation\Type("Zend\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe :"})
+     * @Annotation\Attributes({"data-rule-minlength":"6"})
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":"6"}})
      */
     protected $password;
 

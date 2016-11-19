@@ -172,16 +172,24 @@ class Antenna extends TemporaryResource
     {
         $allFreq = new ArrayCollection();
         foreach ($this->mainfrequencies as $f) {
-            $allFreq->add($f);
+            if(!$allFreq->contains($f)) {
+                $allFreq->add($f);
+            }
         }
         foreach ($this->backupfrequencies as $f) {
-            $allFreq->add($f);
+            if(!$allFreq->contains($f)) {
+                $allFreq->add($f);
+            }
         }
         foreach ($this->mainfrequenciesclimax as $f) {
-            $allFreq->add($f);
+            if(!$allFreq->contains($f)) {
+                $allFreq->add($f);
+            }
         }
         foreach ($this->backupfrequenciesclimax as $f) {
-            $allFreq->add($f);
+            if(!$allFreq->contains($f)) {
+                $allFreq->add($f);
+            }
         }
         return $allFreq;
     }

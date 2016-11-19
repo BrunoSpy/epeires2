@@ -622,7 +622,6 @@ class EventRepository extends ExtendedRepository
                             return;
                         }
                     } else {
-                        error_log('test20');
                         //toutes les fréquences impactées
                         foreach ($antenna->getMainfrequencies() as $frequency) {
                             $this->addChangeFrequencyCovEvent(
@@ -650,7 +649,6 @@ class EventRepository extends ExtendedRepository
                                 $messages
                             );
                         }
-                        error_log('test30');
                         //TODO ajout de la fiche réflexe dans tous les cas ou seulement pour l'antenne complètement en panne ?
                         
                         // création de la fiche réflexe
@@ -713,18 +711,24 @@ class EventRepository extends ExtendedRepository
                 }
                 $newFreqIds = array();
                 if(!is_array($frequencies)) {
-                    //changement sur une seule fréquence -> delta à faire
-                    if($state) {
-                        $newFreqIds = array_diff($initialFreqIds, array($frequencies->getId()));
-                    } else {
-                        if(!in_array($frequencies->getId(), $initialFreqIds)) {
-                            $newFreqIds = array_merge($initialFreqIds, array($frequencies->getId()));
+                    //changement sur une seule fréquence
+                    // -> changement via freq widget
+                    // -> delta à faire
+                    if($frequencies->hasAntenna($antenna)) {
+                        if ($state) {
+                            $newFreqIds = array_diff($initialFreqIds, array($frequencies->getId()));
+                        } else {
+                            if (!in_array($frequencies->getId(), $initialFreqIds)) {
+                                $newFreqIds = array_merge($initialFreqIds, array($frequencies->getId()));
+                            }
                         }
                     }
                 } else {
                     //array = passage de la liste exacte des fréquences impactées
                     foreach ($frequencies as $f){
-                        $newFreqIds[] = $f->getId();
+                        if($f->hasAntenna($antenna)) {
+                            $newFreqIds[] = $f->getId();
+                        }
                     }
                 }
                 if(count($newFreqIds) == 0) {
@@ -750,7 +754,7 @@ class EventRepository extends ExtendedRepository
                     //mise à jour du champ
                     $freqValue = "";
                     foreach ($newFreqIds as $f) {
-                        $freqValue = $f . '\r';
+                        $freqValue .= $f . "\r";
                     }
                     $freqValue = trim($freqValue);
                     if(!$freqidEventValue) {
@@ -759,6 +763,7 @@ class EventRepository extends ExtendedRepository
                         $freqidEventValue->setCustomField($event->getCategory()->getFrequenciesField());
                     }
                     $freqidEventValue->setValue($freqValue);
+                    $this->getEntityManager()->persist($freqidEventValue);
                     $this->getEntityManager()->persist($event);
                     try {
                         $this->getEntityManager()->flush();
@@ -768,7 +773,6 @@ class EventRepository extends ExtendedRepository
                 }
             } else {
                 if(!$state) {
-                    error_log('test1');
                     // pas de fréquence spécifiée -> on ajoute toutes les fréquences
                     $freqidEventValue = $event->getCustomFieldValue($event->getCategory()
                         ->getFrequenciesField());
@@ -805,7 +809,6 @@ class EventRepository extends ExtendedRepository
                         $messages['error'][] = $e->getMessage();
                     }
                 } else {
-                    error_log('test2');
                     //pas de fréquence spécifiée = toutes -> on termine tout
                     $this->closeAntennaEvent($event, $statusClose, $now, $messages);
                 }
