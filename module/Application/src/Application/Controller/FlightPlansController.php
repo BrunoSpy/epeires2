@@ -20,14 +20,14 @@ namespace Application\Controller;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\Criteria;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use DateTime;
+use DateInterval;
 use Zend\Form\Annotation\AnnotationBuilder;
 
 use Application\Entity\FlightPlan;
-
-
 
 /**
  *
@@ -35,13 +35,13 @@ use Application\Entity\FlightPlan;
  */
 class FlightPlansController extends AbstractEntityManagerAwareController
 {
-    private $em, $form;
+    protected $em, $form;
     public static $class = FlightPlan::class;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
-        $this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
+        $this->form = (new AnnotationBuilder())->createForm($this::$class);
     }
 
     public function getEntityManager() {
@@ -56,30 +56,79 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     {
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
-        $q = $this->params()->fromQuery();
-        if(array_key_exists('date',$q)) {
-            $d = explode(',',$q['date']);
-            $dateTime = new DateTime($d[1].'/'.$d[0].'/'.$d[2]);
-        }
-        else
-            $dateTime = new DateTime();
+        $start = (new DateTime())->setTime(0,0,0);
+        $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+
+        $crit = new Criteria();
+        $expr = Criteria::expr();
+
+        $crit->where(
+            $expr->andX(
+                $expr->eq('typealerte', 0),
+                $expr->lt('estimatedtimeofarrival', $end),
+                $expr->gt('estimatedtimeofarrival', $start)
+            )
+        );
 
         return (new ViewModel())
             ->setVariables(
             [
                 'messages'  => $this->msg()->get(),
-                'allFp' => $this->fpSGBD($this->em)->getByDate($dateTime),
+                'flightplans' => $this->sgbd()->getByCriteria($crit)
             ]);
     }
     
+    public function sarAction()
+    {
+        if (!$this->authFlightPlans('read')) return new JsonModel();
+
+        $start = (new DateTime())->setTime(0,0,0);
+        $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+
+        $crit = new Criteria();
+        $expr = Criteria::expr();
+
+        $crit->where(
+            $expr->andX(
+                $expr->gt('typealerte', 0),
+                $expr->lt('estimatedtimeofarrival', $end),
+                $expr->gt('estimatedtimeofarrival', $start)
+            )
+        );
+
+        return (new ViewModel())
+            ->setTemplate('application/flight-plans/index')
+            ->setVariables(
+            [
+                'messages'  => $this->msg()->get(),
+                'flightplans' => $this->sgbd()->getByCriteria($crit)
+            ]);
+    }   
+
     public function listAction() {
         $post = $this->getRequest()->getPost();
-        $dateTime = new DateTime($post['date']);
+        
+        $start = new DateTime($post['date']);
+        $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
+
+        $crit = new Criteria();
+        $expr = Criteria::expr();
+
+        if($post['sar']) $crit->where($expr->gt('typealerte', 0));
+        else $crit->where($expr->eq('typealerte', 0));
+
+        $crit->andWhere(
+            $expr->andX(
+                $expr->lt('estimatedtimeofarrival', $end),
+                $expr->gt('estimatedtimeofarrival', $start)
+            )
+        );
+
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
-                    'flightplans' => $this->fpSGBD($this->em)->getByDate($dateTime)
+                    'flightplans' => $this->sgbd()->getByCriteria($crit)
             ]);
     }
 
@@ -88,7 +137,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        $this->form->bind($this->fpSGBD()->get($id));
+        $this->form->bind($this->sgbd()->get($id));
 
         return 
             (new ViewModel())
@@ -103,9 +152,11 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('write')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
-        $result = ($this->fpSGBD($this->em)->save($post));
+
+        $result = ($this->sgbd()->save($post));
         $txt = ($result['type'] == 'success') ? $result['msg']->getAircraftid() : $result['msg'];
         $this->msg()->add('fp','edit', $result['type'], [$txt]);
+
         return new JsonModel();
     }
 
@@ -114,13 +165,60 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        $result = $this->fpSGBD($this->em)->del($id);
+
+        $result = $this->sgbd()->del($id);
         $txt = ($result['type'] == 'success') ? $result['msg']->getAircraftid() : $result['msg'];
         $this->msg()->add('fp','del', $result['type'], [$txt]);
+
         return new JsonModel();
     }
 
     private function authFlightPlans($action) {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('flightplans.'.$action)) ? false : true;
     }
+
+    public function triggerAction(){
+        /* TODO
+         *   DROIT d'écriture sur FP, test s'il existe des evenements associes
+         *   Pour l'instant utilisation de la categorie d'evenemenet generique => créer une catégorie SAR
+         *   gérer organisation
+         */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = $request->getPost();
+            $fp = $this->em->getRepository(FlightPlan::class)->find($post['fpid']);
+            // l'evenement sera confirmé dès sa création
+            $status = $this->em->getRepository(Status::class)->find('2');
+            // l'evenement sera d'impact mineur
+            $impact = $this->em->getRepository(Impact::class)->find('3');
+            // pour l'instant crna-x
+            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+            // catégorie en fonction du type d'alerte
+            $categories = $this->em->getRepository('Application\Entity\Category')->findByName($post['type']);
+            $cat = $categories[0];
+
+            $e = new Event();
+            $e->setPunctual(false);
+            $e->setStartdate((new \DateTime('NOW'))->setTimezone(new \DateTimeZone("UTC")));
+            $e->setStatus($status);
+            $e->setImpact($impact);
+            $e->setOrganisation($organisation);
+            $e->setCategory($cat);
+            $e->setAuthor($this->zfcUserAuthentication()->getIdentity());
+
+            // Champ qui contient l'aircraft ID à afficher dans la timeline sur l'évènement
+            $chpAirId = new CustomFieldValue();
+            $chpAirId->setCustomField($cat->getFieldName());
+            $chpAirId->setValue($fp->getAircraftid());
+            $chpAirId->setEvent($e);
+
+            $e->addCustomFieldValue($chpAirId);
+
+            $this->em->persist($chpAirId);
+            $this->em->persist($e);
+            $this->em->flush();
+        }
+        return new JsonModel();
+    }
+
 }

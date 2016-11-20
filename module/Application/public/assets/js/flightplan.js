@@ -1,6 +1,9 @@
 var flightplan = function(url){
     
     var $iDate = $('#i-date');
+    //TODO BOF
+    var isSar = window.location.href.search('sar');
+    if(isSar == -1) isSar = 0; else isSar = 1;
 
     refreshActionButtons();
 
@@ -19,7 +22,7 @@ var flightplan = function(url){
         })
         .change(function() {
             var date = moment($(this).val(), "DD/MM/YYYY").format("MM/DD/YYYY");
-            $("#list-fp").load(url+'flightplans/list', {date: date}, function() {
+            $("#list-fp").load(url+'flightplans/list', {date: date, sar: isSar}, function() {
                 refreshActionButtons();
             });
         })
@@ -53,7 +56,7 @@ var flightplan = function(url){
     });
     
     function loadFpForm(id = null) {
-        $("#f-edit-fp").load(url+'flightplans/form', {id: id}, function() {
+        $("#f-edit-fp").load(url+'flightplans/form', {id: id,}, function() {
             $(this).find('input[name=timeofarrival]').timepickerform({'id':'start', 'clearable':true});
             $(this).find('input[name=estimatedtimeofarrival]').timepickerform({'id':'end', 'clearable':true});
 

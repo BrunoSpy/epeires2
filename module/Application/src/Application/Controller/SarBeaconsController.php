@@ -53,9 +53,10 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function formAction() 
     {
-        // if (!$this->authSarBeacons('write')) return new JsonModel();
+        // TODO if (!$this->authSarBeacons('write')) return new JsonModel();
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
+
         $intPlan = $this->sgbd()->get($id);
         $intPlan->setLatitude($post['lat']);
         $intPlan->setLongitude($post['lon']);     
@@ -86,9 +87,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         }
         $datasIntPlan['fields'] = $fields;
 
-        $result = $this->sgbd()->save($datasIntPlan);
-        // $msg = ($result['type'] == 'success') ? [$result['msg']->getName(), $result['msg']->getStrState()] : [$result['msg']];
-        // $this->msg()->add('afis','switch', $result['type'], $msg);      
+        $result = $this->sgbd()->save($datasIntPlan);  
+
         return new JsonModel($result);
     }
 
@@ -98,7 +98,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
                 'intPlans' => $this->sgbd()
-                    ->getAll([
+                    ->getBy([
                         'where' => [],
                         'order' => [
                             'startTime' => 'DESC'
@@ -112,6 +112,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         $post = $this->getRequest()->getPost();
         $intPlan = $this->sbSGBD($this->getEntityManager())->get($post['id']);
+        
         return new JsonModel($intPlan->getArrayCopy());
     }
 

@@ -59,7 +59,7 @@ class AfisController extends AbstractEntityManagerAwareController
         return (new ViewModel())
             ->setVariables([
                 'messages'  => $this->msg()->get(),
-                'allAfis'   => $this->sgbd()->getAll(['decommissionned' => 0])
+                'allAfis'   => $this->sgbd()->getBy(['decommissionned' => 0])
             ]);
     }
 
@@ -68,6 +68,7 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
+        
         $afis = $this->sgbd()->get($id);
         $this->form->bind($afis);
 
@@ -82,14 +83,17 @@ class AfisController extends AbstractEntityManagerAwareController
     public function switchafisAction()
     {
         if (!$this->authAfis('write')) return new JsonModel();
+
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
+
         $afis = $this->sgbd()->get($id);
         $afis->setState((boolean) $post['state']);
 
         $result = $this->sgbd()->save($afis);
         $msg = ($result['type'] == 'success') ? [$result['msg']->getName(), $result['msg']->getStrState()] : [$result['msg']];
         $this->msg()->add('afis','switch', $result['type'], $msg);
+
         return new JsonModel();
     }
 
@@ -98,9 +102,11 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('write')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
+
         $result = $this->sgbd()->save($post);
         $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
         $this->msg()->add('afis','edit', $result['type'], $msg);
+
         return new JsonModel();
     }
 
@@ -109,9 +115,11 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
+
         $result = $this->sgbd()->del($id);
         $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
         $this->msg()->add('afis','del', $result['type'], $msg);
+
         return new JsonModel();
     }
 
@@ -119,7 +127,7 @@ class AfisController extends AbstractEntityManagerAwareController
     {
         if (!$this->authAfis('write')) return new JsonModel();
 
-        return $this->sgbd()->getAll($params);
+        return $this->sgbd()->getBy($params);
     }
 
     private function authAfis($action) {

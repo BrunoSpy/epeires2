@@ -1,15 +1,13 @@
 <?php
 
 namespace Application;
-use Application\Controller\Plugin\FlightPlansSGBD;
 use Application\Controller\Plugin\SGBDPlugin;
-use Application\Controller\Plugin\FlashMessage;
+use Application\Controller\Plugin\FlashMessagePlugin;
 
 return [
     'invokables' => [
         'sgbd'		=> SGBDPlugin::class,
-        'fpSGBD'  	=> FlightPlansSGBD::class,
-        'msg'  		=> FlashMessage::class,
+        'msg'  		=> FlashMessagePlugin::class,
 
     ],
 ];

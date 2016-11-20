@@ -5,7 +5,7 @@ use Zend\ServiceManager\ServiceLocatorInterface as Locator;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Stdlib\Parameters;
 
-class FlashMessage extends AbstractPlugin
+class FlashMessagePlugin extends AbstractPlugin
 {
     CONST MSG = [
         'afis' => [

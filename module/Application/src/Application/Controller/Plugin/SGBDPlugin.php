@@ -20,10 +20,7 @@ namespace Application\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Stdlib\Parameters;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-
-// use Application\Entity\Afis;
-// use Application\Form\AfisForm;
-
+use Doctrine\Common\Collections\Criteria;
 
 class SGBDPlugin extends AbstractPlugin
 {
@@ -38,7 +35,7 @@ class SGBDPlugin extends AbstractPlugin
         return $this;
     }
 
-    public function getAll(array $params = [])
+    public function getBy(array $params = [])
     {        
         $allObj = [];
 
@@ -64,6 +61,11 @@ class SGBDPlugin extends AbstractPlugin
         $obj = $this->repository->find($id);
         $obj = ($obj == null or !$obj->isValid()) ? new $this->entity : $obj;
         return $obj;
+    }
+
+    public function getByCriteria(Criteria $crit) 
+    {
+        return $this->repository->matching($crit);
     }
 
     public function save($p)

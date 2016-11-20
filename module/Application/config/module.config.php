@@ -223,26 +223,6 @@ return array(
                 'description' => ''
             )
         ),
-        'SAR Balises' => array(
-            'sarbeacons.read' => array(
-                'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet de recherche de terrains'
-            ),
-            'sarbeacons.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet d\'effectuer des plans d\'interrogations'
-            )
-        ),
-        'SAR PLN' => array(
-            'flightplans.read' => array(
-                'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
-            ),
-            'flightplans.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de gèrer des plans de vol'
-            )
-        ),
         'Afis' => array(
             'afis.read' => array(
                 'name' => 'Lecture',
@@ -253,7 +233,26 @@ return array(
                 'description' => 'Permet de modifier les afis'
             )
         ),
-
+        'Gestion PLN' => array(
+            'flightplans.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
+            ),
+            'flightplans.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet de gèrer des plans de vol'
+            )
+        ),
+        'SAR Balises' => array(
+            'sarbeacons.read' => array(
+                'name' => 'Lecture',
+                'description' => 'Donne accès à l\'onglet de recherche de terrains'
+            ),
+            'sarbeacons.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet d\'effectuer des plans d\'interrogations'
+            )
+        ),
     ),
     
     'zfc_rbac' => array(

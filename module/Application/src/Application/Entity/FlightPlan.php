@@ -22,7 +22,7 @@ use Zend\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="flightplan")
+ * @ORM\Table(name="flightplans")
  *
  * @author Loïc Perrin
  *        
@@ -83,6 +83,14 @@ class FlightPlan
      */
     protected $estimatedtimeofarrival;
 
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(true)
+     * @Annotation\Options({"label":"Type d'alerte :","value_options" : {"0":"RAS", "1":"INERFA", "2":"ALERTFA", "3":"DETRESSFA"}})
+     */
+    protected $typealerte;
+
     public function getArrayCopy()
     {
         return get_object_vars($this);
@@ -116,6 +124,10 @@ class FlightPlan
         return $this->estimatedtimeofarrival;
     }
 
+    public function getTypeAlerte($typealerte) {
+        return $this->typealerte;
+    }
+
     public function setId($id) {
         $this->id = $id;
     }
@@ -140,4 +152,7 @@ class FlightPlan
         $this->estimatedtimeofarrival = $estimatedtimeofarrival;
     }
 
+    public function setTypeAlerte($typealerte) {
+        $this->typealerte = $typealerte;
+    }
 }
