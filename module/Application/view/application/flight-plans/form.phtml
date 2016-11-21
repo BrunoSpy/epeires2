@@ -1,5 +1,25 @@
 <?php
 $form = $this->form;
+//TODO BOF
+$form->add([
+    'type' => \Zend\Form\Element\Checkbox::class,
+    'name' => 'c-absclot',
+    'options' => [
+        'label' => 'Absence de clôture en sortie de zone',
+        // 'use_hidden_element' => false,
+        // 'checked_value' => 'good',
+        // 'unchecked_value' => 'bad',
+    ],
+]);
+
+$form->add([
+    'type' => \Zend\Form\Element\Checkbox::class,
+    'name' => 'c-nonclot',
+    'options' => [
+        'label' => 'Non-clôture en sortie de zone',
+    ],
+]);
+
 $form->add(	
 	['name' => 'submit',
     	'attributes' => [
@@ -8,7 +28,8 @@ $form->add(
             'class' => 'btn btn-primary btn-small'
         ]
     ]);
-$form->setAttribute('action', $this->url('application', array('controller'=>'flightplan', 'action'=>'save')));
+
+$form->setAttribute('action', $this->url('application', array('controller'=>'flightplans', 'action'=>'save')));
 $form->setAttribute('method', 'post');
 $form->setAttribute('class', 'form-horizontal');
 $form->prepare();
@@ -32,7 +53,11 @@ $form->prepare();
                                                         'labelclass' => 'time-middle', 
                                                         'large' => true
                                                     ])?>
+
 <?=$this->controlGroup($form->get('typealerte'))?>
+<?=$this->controlGroup($form->get('c-absclot'))?>
+<?=$this->controlGroup($form->get('c-nonclot'))?>
+<?=$this->controlGroup($form->get('comment'))?>
 </div>
 
 <div class="modal-footer">

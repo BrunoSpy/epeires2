@@ -91,6 +91,14 @@ class FlightPlan
      */
     protected $typealerte;
 
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Options({"label":"Informations complémentaires"}) 
+     * @Annotation\Required({"required":"false"})
+     */
+    protected $comment;  
+
     public function getArrayCopy()
     {
         return get_object_vars($this);
@@ -128,6 +136,11 @@ class FlightPlan
         return $this->typealerte;
     }
 
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
     public function setId($id) {
         $this->id = $id;
     }
@@ -155,4 +168,10 @@ class FlightPlan
     public function setTypeAlerte($typealerte) {
         $this->typealerte = $typealerte;
     }
+
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+    
 }

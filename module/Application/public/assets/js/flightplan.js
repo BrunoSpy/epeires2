@@ -55,17 +55,71 @@ var flightplan = function(url){
         location.reload();
     });
     
-    function loadFpForm(id = null) {
-        $("#f-edit-fp").load(url+'flightplans/form', {id: id,}, function() {
-            $(this).find('input[name=timeofarrival]').timepickerform({'id':'start', 'clearable':true});
-            $(this).find('input[name=estimatedtimeofarrival]').timepickerform({'id':'end', 'clearable':true});
+    function loadFpForm(id = null) 
+    {
+        $("#f-edit-fp").load(url+'flightplans/form', {id: id,}, function() 
+        {
+            $.material.checkbox();
+            $(this).find('input[name=timeofarrival]')
+                .timepickerform({
+                    'id':'start', 
+                    'clearable':true, 
+                    'init':true}
+                );
 
-            $(this).find('input[type=submit]').click(function(e) {
+            $(this).find('input[name=estimatedtimeofarrival]')
+                .timepickerform({
+                    'id':'end', 
+                    'clearable':true, 
+                    'init':true
+                });
+
+            $(this).find('input[type=submit]').click(submitBtnHandler);
+
+            $fGrpComment = $(this).find('textarea[name=comment]').parents('.form-group')
+                .hide();
+
+            $fGrpChkbox = $(this).find('input[type=checkbox]').parents('.form-group')
+                .hide();
+
+            $.each($fGrpChkbox, function(i, fgrp) {
+                label = $(fgrp).find('label').html();
+                $(fgrp).find('input[type=checkbox]')
+                    .data({label: label})
+                    .click(chkBoxClickHandler);
+            });
+
+            $(this).find('select[name=typealerte]').change(alerteChangeHandler);
+
+            function alerteChangeHandler(e) {
+                if ($(this).val() > 0) { 
+                    $fGrpComment.show();
+                    $fGrpChkbox.show();
+                } else {
+                    $fGrpComment.hide();
+                    $fGrpChkbox.hide();
+                }
+            }
+
+            function chkBoxClickHandler(e) {
+                var $txtAComment = $fGrpComment.find('textarea[name=comment]')
+                    .val($(this).data('label'));
+
+                $('input[class=form-control]').not(this).prop('checked', false);
+
+                if ($(this).prop('checked') == false) {
+                    $fGrpComment.find('textarea[name=comment]')
+                        .val('');
+                }
+            }
+
+            function submitBtnHandler(e) {
                 e.preventDefault();
-                $.post(url+'flightplans/save',$("#FlightPlan").serialize(),function(data){
+                $.post(url+'flightplans/save', $("#FlightPlan").serialize(), function(data){
                    location.reload();
                 },'json');
-            });
+            }
+
         });
     };
 
