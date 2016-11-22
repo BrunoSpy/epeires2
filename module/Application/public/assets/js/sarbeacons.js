@@ -75,6 +75,8 @@ $(function() {
     /** Variables globales **/
     /* init de la map */
     var orbit = L.map('mapid').setView(DFLT_LAT_LNG, DFLT_ZOOM);
+    orbit.zoomControl.setPosition('topright');
+
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
         maxZoom: 18,
@@ -135,7 +137,6 @@ $(function() {
         $bMailPi = $('#btn-mail-pi'),
 
         $fEditPi = $('#f-edit-pi'),
-        $carousel = $("#req-pio"),
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators'),
 
@@ -198,9 +199,29 @@ $(function() {
         triggerIp(coord);
     });
 
-    L.easyButton('glyphicon-refresh', function() { 
-        centerMap();     
-    }).addTo(orbit);
+    var refreshControl = L.Control.extend(
+    {
+        options: {
+            position: 'topright' 
+        },
+     
+        onAdd: function () 
+        {
+            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+           
+            container.style.backgroundColor = 'white';
+            container.style.backgroundImage = "url("+URL_IMG+"bal-pio.png)";
+            container.style.width = '25px';
+            container.style.height = '25px';
+            container.style.backgroundSize = "25px 25px";
+
+            container.onclick = function(){
+                centerMap();  
+            }
+            return container;
+        }
+    });
+    orbit.addControl(new refreshControl());
 
     function centerMap(latLon, zoom) {
         orbit.setView(latLon || DFLT_LAT_LNG, zoom || DFLT_ZOOM);
@@ -396,38 +417,6 @@ $(function() {
         return iTer;
     }
 
-    function newIp(obj) {
-
-        var $li = $(
-            '<li class="list-group-item lspio"></li>'
-            );
-
-        // var $a = $('<a href = "#"><strong>' + ALERTES[obj.typeAl] + '</strong> le '+ obj.date + '</a>')
-        //     .click(function() {
-                
-        //     })
-        //     .prependTo($li);
-
-        // var $ol = $('<ol class="cache"></ol>').appendTo($li);
-        // $(obj.pio).each(function(index, val) {
-        //     $('<li> ' + val.nom + '</li>').appendTo($ol);
-        // });  
-
-        // var $bPrint = $('<button type="button" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-print"></span></button>');
-        // $bPrint.click(function() {
-
-        // }).prependTo($li);
-
-        // var $bMail = $('<button type="button" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-envelope"></span></button>');
-        // $bMail.click(function() {
-
-        // }).prependTo($li);
-
-        $('#pio-hist h4').after($li);
-
-        $('#pio li').removeClass('list-group-item-warning').addClass('list-group-item-success');
-    }
-
     function triggerIp(latLon) 
     {
         refreshIp();
@@ -452,7 +441,7 @@ $(function() {
             $carInner.find('div.item').remove();
             $tab2.find('h4').eq(0).html('');
             $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
-            $carousel.hasClass('cache') ? $carousel.removeClass('cache') : '';
+            $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
             $bEditPi.removeClass('btn-success').addClass('btn-info');
             $('#btn-sav-pi, #btn-mail-pi, #btn-print-pi')
                 .addClass('btn-warning disabled')
@@ -823,18 +812,6 @@ $(function() {
         });
     }
 
-    // function printListIp(listIp) {
-    //     $.each(listIp, function(i, ip){
-    //         $listIp.append(printIp(ip));
-    //     });
-    // }
-
-    // function printIp(ip) {
-    //     var $item = new IpList(ip);
-    //     return $item.getHtml();
-    // }
-
-
     /* chargement ajax des données de la map */
     function loadFields() {
         $.getJSON("data/testter.geojson")
@@ -864,7 +841,7 @@ $(function() {
                     }
                 });
                 lay.addTo(orbit);
-                addBtnToMap('ter', lay);
+                addToggleBtnToMap('ter', lay);
             })
             .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des fields") });
     }
@@ -882,7 +859,7 @@ $(function() {
                     }
                 });
                 lay.addTo(orbit);
-                addBtnToMap('bal', lay);
+                addToggleBtnToMap('bal', lay);
 
                 return lay;
 
@@ -890,26 +867,41 @@ $(function() {
             .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des beacons.") });
     }
 
-    function addBtnToMap(nom, layer) {
-        L.easyButton({
-            states: [{
-                stateName: nom + "-on",
-                icon: '<img src="' + URL_IMG + 'btn-' + nom + '-on.png" class="btn-icon">',
-                title: "Désactiver marqueurs fields.",
-                onClick: function(btn, map) {
-                    map.removeLayer(layer);
-                    btn.state(nom + "-off");
+    function addToggleBtnToMap(nom, layer) {
+
+        var customControl = L.Control.extend(
+        {
+            options: {
+                position: 'topright' 
+            },
+         
+            onAdd: function (map) 
+            {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+               
+                container.style.backgroundColor = 'white';
+                container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-on.png)";
+                container.style.width = '25px';
+                container.style.height = '25px';
+                container.style.backgroundSize = "25px 25px";
+                $(container).data({'state': 'on'});
+
+                container.onclick = function(){
+                    if ($(this).data('state') == 'off') {
+                        orbit.addLayer(layer);
+                        container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-on.png)"; 
+                        $(this).data({'state': 'on'});
+                    } else {
+                        orbit.removeLayer(layer);
+                        container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-off.png)"; 
+                        $(this).data({'state': 'off'});           
+                    }
                 }
-            }, {
-                stateName: nom + "-off",
-                icon: '<img src="' + URL_IMG + 'btn-' + nom + '-off.png" class="btn-icon">',
-                title: "Activer marqueurs fields.",
-                onClick: function(btn, map) {
-                    map.addLayer(layer);
-                    btn.state(nom + "-on");
-                }
-            }]
-        }).addTo(orbit);
+                return container;
+            }
+        });
+
+        orbit.addControl(new customControl(nom, layer));
     }
 
 });

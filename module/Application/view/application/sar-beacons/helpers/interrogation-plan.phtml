@@ -3,6 +3,8 @@
     <span class = "badge danger"><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?></span>
     <h1 class="list-group-item-heading"><?php echo $iP->getStartTime()->format('d-m-Y H:i:s') ?></h1>
     <div class = "list-ip-content cache">
+        <p class="list-group-item-text">Latitude: <?php echo $iP->getLatitude()?></p>
+        <p class="list-group-item-text">Longitude: <?php echo $iP->getLongitude()?></p>
         <p class="list-group-item-text">Type : <?php echo $iP::TYPE_IP[$iP->getType()]?></p>
         <p class="list-group-item-text">FIR Source : <?php echo $iP->getFirSource()?></p>
         <p class="list-group-item-text">FIR Destination : <?php echo $iP->getFirDest()?></p>
