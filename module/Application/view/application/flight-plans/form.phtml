@@ -44,14 +44,14 @@ $form->prepare();
 <?=$this->controlGroup($form->get('startterrain'))?>
 <?=$this->controlGroup($form->get('destinationterrain'))?>
 <?=$this->controlGroup($form->get('estimatedtimeofarrival'), [
-                                                        'class'=>'compact', 
+                                                        'class'=>'', 
                                                         'labelclass' => 'time-middle', 
-                                                        'large' => true
+                                                        'large' => false
                                                     ])?>
 <?=$this->controlGroup($form->get('timeofarrival'), [
-                                                        'class'=>'compact',
+                                                        'class'=>'',
                                                         'labelclass' => 'time-middle', 
-                                                        'large' => true
+                                                        'large' => false
                                                     ])?>
 
 <?=$this->controlGroup($form->get('typealerte'))?>

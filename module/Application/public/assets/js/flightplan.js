@@ -76,11 +76,13 @@ var flightplan = function(url){
 
             $(this).find('input[type=submit]').click(submitBtnHandler);
 
-            $fGrpComment = $(this).find('textarea[name=comment]').parents('.form-group')
-                .hide();
+            $fGrpComment = $(this).find('textarea[name=comment]').parents('.form-group');
 
-            $fGrpChkbox = $(this).find('input[type=checkbox]').parents('.form-group')
-                .hide();
+            $fGrpChkbox = $(this).find('input[type=checkbox]').parents('.form-group');
+
+            $sTypeAlert = $(this).find('select[name=typealerte]')
+                .change(alerteChangeHandler)
+                .trigger('change');
 
             $.each($fGrpChkbox, function(i, fgrp) {
                 label = $(fgrp).find('label').html();
@@ -88,8 +90,6 @@ var flightplan = function(url){
                     .data({label: label})
                     .click(chkBoxClickHandler);
             });
-
-            $(this).find('select[name=typealerte]').change(alerteChangeHandler);
 
             function alerteChangeHandler(e) {
                 if ($(this).val() > 0) { 

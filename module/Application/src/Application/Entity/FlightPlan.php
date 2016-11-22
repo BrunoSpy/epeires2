@@ -29,6 +29,13 @@ use Zend\Form\Annotation;
  */
 class FlightPlan
 {
+    CONST CLASS_ALERTS = [
+        "",
+        "info",
+        "warning",
+        "danger"
+    ];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -39,7 +46,7 @@ class FlightPlan
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Indicatif :"})
      */
     protected $aircraftid;
@@ -47,7 +54,7 @@ class FlightPlan
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required({"required":"true"})
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Terrain Arrivée :"})
      */
     protected $destinationterrain;
@@ -95,7 +102,7 @@ class FlightPlan
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Options({"label":"Informations complémentaires"}) 
-     * @Annotation\Required({"required":"false"})
+     * @Annotation\Required(false)
      */
     protected $comment;  
 
@@ -132,7 +139,7 @@ class FlightPlan
         return $this->estimatedtimeofarrival;
     }
 
-    public function getTypeAlerte($typealerte) {
+    public function getTypeAlerte() {
         return $this->typealerte;
     }
 
