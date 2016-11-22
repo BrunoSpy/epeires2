@@ -110,6 +110,7 @@ return array(
             'sector' => 'Application\View\Helper\Sector',
             'afViewHelper' => 'Application\View\Helper\AfisHelper',
             'fpViewHelper' => 'Application\View\Helper\FlightPlanHelper',
+            'sbViewHelper' => 'Application\View\Helper\SarBeaconsHelper',
         ),
         'factories' => array(
             'eventName' => 'Application\Factories\EventNameFactory',
@@ -133,6 +134,7 @@ return array(
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
             'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
             'fp/helper/fp' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
+            'sar-beacons/helper/ip' => __DIR__ . '/../view/application/sar-beacons/helpers/interrogation-plan.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',

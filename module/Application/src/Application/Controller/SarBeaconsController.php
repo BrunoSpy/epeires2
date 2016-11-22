@@ -17,29 +17,31 @@
  */
 namespace Application\Controller;
 
-use Core\Controller\AbstractEntityManagerAwareController;
-
-use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 
+use Doctrine\ORM\EntityManager;
+use DOMPDFModule\View\Model\PdfModel;
+
+use Core\Controller\AbstractEntityManagerAwareController;
+
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
 use Application\Form\SarBeaconsForm;
-
 /**
  *
  * @author Loïc Perrin
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    private $em, $form;
+    private $em, $form, $viewPDFRenderer;
     public static $class = InterrogationPlan::class;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, $viewPDFRenderer)
     {
         $this->em = $em;
+        // $this->viewPDFRenderer = $viewPDFRenderer;
         $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
@@ -57,10 +59,10 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
 
-        $intPlan = $this->sgbd()->get($id);
-        $intPlan->setLatitude($post['lat']);
-        $intPlan->setLongitude($post['lon']);     
-        $this->form->bind($intPlan);
+        $iP = $this->sgbd()->get($id);
+        $iP->setLatitude($post['lat']);
+        $iP->setLongitude($post['lon']);     
+        $this->form->bind($iP);
 
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
@@ -88,8 +90,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $datasIntPlan['fields'] = $fields;
 
         $result = $this->sgbd()->save($datasIntPlan);  
-
-        return new JsonModel($result);
+        return new JsonModel(['id' => $result['msg']->getId()]);
     }
 
     public function listAction() 
@@ -111,9 +112,25 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     public function getAction() 
     {
         $post = $this->getRequest()->getPost();
-        $intPlan = $this->sbSGBD($this->getEntityManager())->get($post['id']);
+        $iP = $this->sgbd()->get($post['id']);
         
-        return new JsonModel($intPlan->getArrayCopy());
+        return new JsonModel($iP->getArrayCopy());
+    }
+
+    public function printAction() 
+    {
+        $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
+
+        $pdf = new PdfModel();             
+        $pdf->setVariables([
+            'iP' => $iP
+        ]);
+        $pdf->setOption('paperSize', 'a4');                         
+
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');             
+        $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime()));                         
+
+        return $pdf;
     }
 
 }

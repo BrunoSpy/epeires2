@@ -131,6 +131,8 @@ $(function() {
         $fIp = $('#f-ip'),
         $bSavPi = $('#btn-sav-pi'),
         $bEditPi = $('#btn-edit-pi'),
+        $bPrintPi = $('#btn-print-pi'),
+        $bMailPi = $('#btn-mail-pi'),
 
         $fEditPi = $('#f-edit-pi'),
         $carousel = $("#req-pio"),
@@ -183,6 +185,7 @@ $(function() {
     $bRecT.click(findByField);
     $bEditPi.click(btnEditPiHandler);
     $bSavPi.click(saveIp);
+    $bPrintPi.click(printIp);
 
     $('.raz-cherche').click(resetSearches);
 
@@ -684,7 +687,8 @@ $(function() {
         $bEditPi
             .removeClass('btn-info')
             .addClass('btn-success');
-        $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
+        // $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
+        $bSavPi
             .removeClass('btn-warning disabled')
             .addClass('btn-info');
 
@@ -730,6 +734,24 @@ $(function() {
         }
     }
 
+    function printIp(e) {
+        e.preventDefault();  
+        location.href = '/sarbeacons/print/'+$(this).data('id');
+
+        // $.post("/sarbeacons/print", {id: 1}, function(data) 
+        // {
+        //     // loadListIp();
+        //     // idIp = data.id;
+        //     // if(data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
+        //     // noty({
+        //     //     text: data.message,
+        //     //     type: data.type,
+        //     //     timeout: 4000,
+        //     // });
+
+        // })
+    }
+
     function saveIp(e) {
         e.preventDefault();
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
@@ -746,6 +768,18 @@ $(function() {
         {
             loadListIp();
             idIp = data.id;
+  
+            $bPrintPi.data({'id': idIp});
+            $bMailPi.data({'id': idIp});
+
+            $bPrintPi
+                .removeClass('btn-warning disabled')
+                .addClass('btn-info');
+
+            $bMailPi
+                .removeClass('btn-warning disabled')
+                .addClass('btn-info');
+
             if(data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
             noty({
                 text: data.message,

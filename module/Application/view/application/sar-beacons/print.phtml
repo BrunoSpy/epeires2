@@ -1,0 +1,112 @@
+<?php
+    $formatterJour = \IntlDateFormatter::create('fr_FR',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLLL');
+    $formatterJourLong = \IntlDateFormatter::create("fr_FR",
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLLL yyyy');
+    $formatterHeure = \IntlDateFormatter::create("fr_FR",
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'HH:mm');
+?>
+
+<html>
+    <head>
+        <style>
+            body {
+                font-family: "DejaVu Sans";
+                font-size: 10px;
+            }
+            
+            .text-center {
+                text-align: center;
+            }
+
+            .push-left {
+                float: left;
+            }
+
+            #header {
+                width: 21cm;
+            }
+
+            #logo, #head-title {
+                display: inline;
+            }
+
+            table td {
+                text-align: left;
+            }
+            
+            .table {
+                width: 100%;
+            }
+
+            .table td:first-child {
+                width: 10%;
+            }
+            
+            #header table tr td:first-child {
+                width: 5%;
+            }
+            
+            #header table {
+                width: 90%;
+            }
+            
+            .badge, button, h1 {
+                display:none;
+            }
+            
+            body, div {
+                font-family: sans-serif;
+            }
+            h3 {
+                margin-top:25px;
+            }
+
+            #intplan-pdf {
+                padding:30 65 0 65px;
+            }
+            p, h4{
+                margin-left:15px;
+            }
+            .comment {
+                margin-left:40px;
+            }
+
+            #signature {
+                margin-top:45px;
+                text-align:right;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="header">
+            <table>
+                <tr>
+                    <td> <img src="<?php echo __DIR__ ?>/../../../../../public/img/logo-dsna.png"></img></td>
+                    <td style="text-align: right;">Généré le <?php echo $formatterJourLong->format(new \DateTime())?> à <?php echo $formatterHeure->format(new \DateTime())?>                  
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="title" class="text-center">
+            <h2><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?> démarré le <?php echo $formatterJour->format($iP->getStartTime()); ?> à <?php echo $formatterHeure->format($iP->getStartTime()); ?></h2>
+        </div>
+        <div id="intplan-pdf">
+        <?php  echo $this->sbViewHelper()->renderIp($iP); ?>
+        <p id = "signature">BTIV du CRNA-N</p>
+        </div>
+    </body>
+</html>
