@@ -24,6 +24,15 @@ body,
     height: 100%;
 }
 
+.custom-button {
+    background-color: white;
+    background-size: 25px 25px;
+    width: 25px;
+    height: 25px;
+}
+.custom-button-off {
+    opacity:0.55;
+}
 #tabs {
     margin:0px;
     padding:0px;

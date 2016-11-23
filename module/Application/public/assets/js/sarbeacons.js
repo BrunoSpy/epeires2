@@ -90,8 +90,8 @@ $(function() {
         terLay;
 
     var mapLayers = {
-        'bal': loadBeacons(),
-        'ter': loadFields()
+        'ter': L.geoJSON(),
+        'bal': L.geoJSON()
     }
 
     /* marqueurs SAR et terrain sélectionné */
@@ -153,13 +153,13 @@ $(function() {
 
     /* init des onglets */
     $tabs.tabs();
-    $tabs.find('.nav-pills>li').each(function(){
-        $(this).click(function(){
-            $(this).addClass('active')
-                .siblings('.active').removeClass('active');
+    $tabs.find('.nav-pills>li').each(function() {
+            $(this).click(function() {
+                $(this).addClass('active')
+                    .siblings('.active').removeClass('active');
+            })
         })
-    })
-    /** Evenements **/
+        /** Evenements **/
     $iLat.keyup(keyPressedLat);
     $iLon.keyup(keyPressedLon);
     $bRecC.click(findByCoord);
@@ -184,8 +184,8 @@ $(function() {
 
     $bRecB.click(findByBeacon);
     $bRecT.click(findByField);
-    $bEditPi.click(btnEditPiHandler);
-    $bSavPi.click(saveIp);
+    $bEditPi.click(btnEditIpHandler);
+    $bSavPi.click(btnSaveIpHandler);
     $bPrintPi.click(printIp);
 
     $('.raz-cherche').click(resetSearches);
@@ -199,29 +199,205 @@ $(function() {
         triggerIp(coord);
     });
 
-    var refreshControl = L.Control.extend(
-    {
-        options: {
-            position: 'topright' 
-        },
-     
-        onAdd: function () 
-        {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-           
-            container.style.backgroundColor = 'white';
-            container.style.backgroundImage = "url("+URL_IMG+"bal-pio.png)";
-            container.style.width = '25px';
-            container.style.height = '25px';
-            container.style.backgroundSize = "25px 25px";
+    L.Control.Button = L.Control.extend({
 
-            container.onclick = function(){
-                centerMap();  
+        options: {
+            position: 'topright'
+        },
+
+        initialize: function(options) {
+            this._button = {};
+            this.setButton(options);
+        },
+
+        onAdd: function(map) {
+            this._map = map;
+            this._container = L.DomUtil.create(
+                'div', 'leaflet-bar leaflet-control leaflet-control-custom custom-button'
+            );
+            this._container.style.backgroundImage = "url(" + this._button.iconUrl + ")";
+            this._container.onclick = this._button.onClick;
+
+            if (this._button.doToggle && this._button.toggleStatus == true)
+                L.DomUtil.addClass(this._container, 'custom-button-off');
+
+            L.DomEvent
+                .addListener(this._container, 'click', L.DomEvent.stop)
+                .addListener(this._container, 'click', this._button.onClick, this)
+                .addListener(this._container, 'click', this._clicked, this);
+            L.DomEvent.disableClickPropagation(this._container);
+
+            return this._container;
+        },
+
+        setButton: function(options) {
+            var button = {
+                'text': options.text, //string
+                'iconUrl': options.iconUrl, //string
+                'onClick': options.onClick, //callback function
+                'hideText': !!options.hideText, //forced bool
+                'maxWidth': options.maxWidth || 70, //number
+                'doToggle': options.doToggle, //bool
+                'toggleStatus': options.toggleStatus, //bool
+                'layer': options.layer,
+                'map': options.map
+            };
+
+            this._button = button;
+        },
+
+        toggle: function(e) {
+            if (typeof e === 'boolean') {
+                this._button.toggleStatus = e;
+            } else {
+                this._button.toggleStatus = !this._button.toggleStatus;
             }
-            return container;
+            this._update();
+        },
+
+        _update: function() {
+            if (!this._map) return;
+            this._container.innerHTML = '';
+            this._makeButton(this._button);
+        },
+
+        _makeButton: function(button) {
+            // var newButton = L.DomUtil.create(
+            //     'div', 
+            //     'leaflet-bar leaflet-control leaflet-control-custom custom-button', 
+            //     this._container
+            // );
+            // if (button.toggleStatus)
+            //     L.DomUtil.addClass(newButton, 'leaflet-buttons-control-toggleon');
+
+            // var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', newButton);
+            // image.setAttribute('src', button.iconUrl);
+
+            // L.DomEvent
+            //     .addListener(newButton, 'click', L.DomEvent.stop)
+            //     .addListener(newButton, 'click', button.onClick, this)
+            //     .addListener(newButton, 'click', this._clicked, this);
+            // L.DomEvent.disableClickPropagation(newButton);
+            // return newButton;
+        },
+
+        _clicked: function() {
+            if (this._button.doToggle) {
+                if (this._button.toggleStatus) {
+                    L.DomUtil.removeClass(this._container, 'custom-button-off');
+                    if (this._button.layer) {
+                        this._button.map.addLayer(this._button.layer);
+                    }
+                } else {
+                    L.DomUtil.addClass(this._container, 'custom-button-off');
+                    if (this._button.layer) {
+                        this._button.map.removeLayer(this._button.layer);
+                    }
+                }
+                this.toggle();
+            }
+            return;
         }
+
     });
-    orbit.addControl(new refreshControl());
+
+    function refreshBtnClickHandler() {
+        centerMap();
+    }
+
+    var myButtonOptions = {
+        'text': '', // string
+        'iconUrl': URL_IMG + "bal-pio.png", // string
+        'onClick': refreshBtnClickHandler, // callback function
+        'hideText': true, // bool
+        'maxWidth': 25, // number
+        'doToggle': false, // bool
+        'toggleStatus': false, // bool
+        'map': orbit
+    }
+
+    var refreshBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+
+    function showFieldsBtnClickHandler() {
+
+    }
+
+    var myButtonOptions = {
+        'text': '', // string
+        'iconUrl': URL_IMG + "btn-ter-on.png", // string
+        'onClick': showFieldsBtnClickHandler, // callback function
+        'hideText': true, // bool
+        'maxWidth': 25, // number
+        'doToggle': true, // bool
+        'toggleStatus': true, // bool
+        'layer': mapLayers['ter'],
+        'map': orbit
+    }
+
+    var showFieldsBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+
+    function showBeaconsBtnClickHandler() {
+
+    }
+
+    var myButtonOptions = {
+        'text': '', // string
+        'iconUrl': URL_IMG + "btn-bal-on.png", // string
+        'onClick': showBeaconsBtnClickHandler, // callback function
+        'hideText': true, // bool
+        'maxWidth': 25, // number
+        'doToggle': true, // bool
+        'toggleStatus': true, // bool
+        'layer': mapLayers['bal'],
+        'map': orbit
+    }
+
+    var showBeaconsBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+
+    $.getJSON("data/testter.geojson")
+        .done(function(data) {
+            var lay = L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var prop = feature.properties;
+                    var icon;
+                    var marker;
+
+                    switch (prop.type) {
+                        case "AD":
+                            icon = icTer;
+                            break;
+                        case "HP":
+                            icon = icHel;
+                            break;
+                    }
+
+                    marker = L.marker(latlng, { icon: icon })
+                        .bindPopup(prop.name);
+
+                    fields.push(feature);
+                    fieldNames.push(prop.code);
+
+                    return marker;
+                }
+            });
+            mapLayers['ter']._layers = lay._layers;
+        })
+        .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des terrains") });
+
+    $.getJSON("data/bal.GeoJson")
+        .done(function(data) {
+            var lay = L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    beacons.push(feature);
+                    beaconNames.push(feature.properties.code);
+                    var marker = L.marker(latlng, { icon: icBal });
+                    marker.bindPopup(feature.properties.code);
+                    return marker;
+                }
+            });
+            mapLayers['bal']._layers = lay._layers;
+        })
+        .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
 
     function centerMap(latLon, zoom) {
         orbit.setView(latLon || DFLT_LAT_LNG, zoom || DFLT_ZOOM);
@@ -238,7 +414,7 @@ $(function() {
     //     }
 
     function aHistHandler(e) {
-        if(!$listIp.children('a').length) loadListIp();
+        if (!$listIp.children('a').length) loadListIp();
     }
 
     function editBtnState($btn, etat) {
@@ -417,8 +593,7 @@ $(function() {
         return iTer;
     }
 
-    function triggerIp(latLon) 
-    {
+    function triggerIp(latLon) {
         refreshIp();
         /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
         mkSAR = updateMarker(mkSAR, latLon, icSAR);
@@ -452,24 +627,8 @@ $(function() {
         }
 
         function infoPI() {
-            var dateDebut = moment().format('DD/MM hh:mm:ss');
-
+            // var dateDebut = moment().format('DD/MM hh:mm:ss');
             $fIp.find('h4').html('<span class="glyphicon glyphicon-alert"></span> PI démarré à ' + moment().format('hh:mm:ss') + ' le ' + moment().format('DD/MM'));
-
-            $fIp.find('.label').html(Number(latLon[0]).toFixed(4) + ', ' + Number(latLon[1]).toFixed(4));
-
-            $bSavPi.click(saveIpHandler);
-
-            function saveIpHandler(e){
-                newIp({
-                    "typePi": $fEditPi.find('select').eq(0).val(),
-                    "typeAl": $fEditPi.find('select').eq(1).val(),
-                    "firInt": $fEditPi.find('input').eq(0).val(),
-                    "firSrc": $fEditPi.find('input').eq(1).val(),
-                    "date": moment().format('DD/MM hh:mm:ss'),
-                    "pio": pio
-                });
-            }
         }
 
         function processFieldsList() {
@@ -499,11 +658,11 @@ $(function() {
                 var coord = ter.geometry.coordinates;
                 var props = ter.properties;
 
-                var $ter = 
-                    $('<a class="list-group-item">'+
-                        '<span class="badge">d = ' + Math.trunc(ter.d) + ' km, cap = ' + Math.trunc(ter.cap) + '°</span>'+
+                var $ter =
+                    $('<a class="list-group-item">' +
+                        '<span class="badge">d = ' + Math.trunc(ter.d) + ' km, cap = ' + Math.trunc(ter.cap) + '°</span>' +
                         '<h5><strong>' + (i + 1) + ' - ' + props.code + '</strong> <br /><em>' + props.name + '</em> </h5>' +
-                      '</a>')
+                        '</a>')
                     .click({ 'latLon': [coord[1], coord[0]] }, clickFieldHandler);
 
                 var $fOptCom = $('<div class="form-group comment"></div>')
@@ -516,13 +675,13 @@ $(function() {
                         "idt": i,
                         "name": props.name,
                     })
-                    .blur(function() { 
+                    .blur(function() {
                         // var p = pio.filter(x => x.nom == props.name);
-                        var p =  pio[$(this).data().idt];
+                        var p = pio[$(this).data().idt];
 
                         p["comment"] = $(this).val();
 
-                     })
+                    })
                     .appendTo($fOptCom);
 
                 var $btnContact = $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
@@ -578,12 +737,12 @@ $(function() {
 
                     // pio = pio.filter(x => x.name != $(this).data().name);
 
-                    if($(this).hasClass('btn-danger')){
+                    if ($(this).hasClass('btn-danger')) {
                         $fOptCom.show();
-                        pio[$(this).data().idt] = { 
+                        pio[$(this).data().idt] = {
                             name: $(this).data().name,
-                            code: $(this).data().code, 
-                            intTime: moment().format('hh:mm:ss'), 
+                            code: $(this).data().code,
+                            intTime: moment().format('X'),
                             comment: $fOptCom.find('textarea').val(),
                             latitude: $(this).data().lat,
                             longitude: $(this).data().lon
@@ -672,50 +831,48 @@ $(function() {
         }
     }
 
-    function btnEditPiHandler(e) {
-        $bEditPi
-            .removeClass('btn-info')
-            .addClass('btn-success');
-        // $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
-        $bSavPi
-            .removeClass('btn-warning disabled')
-            .addClass('btn-info');
-
+    function btnEditIpHandler(e) {
         $('#title-mod-pi').html("Editer le Plan d'Interrogation");
 
         // if(idIp == null && !$fEditPi.find('form').length) {
-            $fEditPi.load('/sarbeacons/form', {'id' : idIp, 'lat' : mkSAR._latlng.lat, 'lon' : mkSAR._latlng.lng}, function() {
+        $fEditPi.load('/sarbeacons/form', { 'id': idIp, 'lat': mkSAR._latlng.lat, 'lon': mkSAR._latlng.lng }, function() {
 
-                refreshFieldList();
+            refreshFieldList();
 
-                $fEditPi.find('input[type="submit"]')
-                .click(function(e){
+            $fEditPi.find('input[type="submit"]')
+                .click(function(e) {
                     e.preventDefault();
                     $("#mdl-edit-pi").modal('hide');
+                    $bEditPi
+                        .removeClass('btn-info')
+                        .addClass('btn-success');
+                    $bSavPi
+                        .removeClass('btn-warning disabled')
+                        .addClass('btn-info');
                 })
-            });
+        });
         // } else refreshFieldList();
 
         function refreshFieldList() {
             var $ul = $fEditPi.find("ul");
             $ul.find('li').remove();
-            $.each(pio, function(index, val) {
-                if(!val) return true;
-                var $li = $('<li class="list-group-item"><strong> ' + val.intTime + '</strong> ' + val.name + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + val.comment + '</li>');
+            $.each(pio, function(index, field) {
+                if (!field) return true;
+                var $li = $('<li class="list-group-item"><strong> ' + moment.unix(field.intTime).format('DD/MM/YY hh:mm:ss') + '</strong> ' + field.name + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + field.comment + '</li>');
 
                 $li.find('button')
-                    .data({'name': val.name, 'idt': index})
-                    .click(function(){
-                        pio = pio.filter(x => x.name !=  $(this).data().name);
+                    .data({ 'name': field.name, 'idt': index })
+                    .click(function() {
+                        pio = pio.filter(x => x.name != $(this).data().name);
                         var $a = $carInner.find('a').eq($(this).data().idt);
-                            $a.find('.form-group').hide();
-                            $a.toggleClass('list-group-item-success')
-                                .find('button').eq(1)
-                                .toggleClass('btn-info')
-                                .toggleClass('btn-danger')
-                                .find('span')
-                                .toggleClass('glyphicon-check')
-                                .toggleClass('glyphicon-remove');
+                        $a.find('.form-group').hide();
+                        $a.toggleClass('list-group-item-success')
+                            .find('button').eq(1)
+                            .toggleClass('btn-info')
+                            .toggleClass('btn-danger')
+                            .find('span')
+                            .toggleClass('glyphicon-check')
+                            .toggleClass('glyphicon-remove');
                         $(this).parent().remove();
                     });
                 $ul.append($li);
@@ -724,24 +881,11 @@ $(function() {
     }
 
     function printIp(e) {
-        e.preventDefault();  
-        location.href = '/sarbeacons/print/'+$(this).data('id');
-
-        // $.post("/sarbeacons/print", {id: 1}, function(data) 
-        // {
-        //     // loadListIp();
-        //     // idIp = data.id;
-        //     // if(data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
-        //     // noty({
-        //     //     text: data.message,
-        //     //     type: data.type,
-        //     //     timeout: 4000,
-        //     // });
-
-        // })
+        e.preventDefault();
+        location.href = '/sarbeacons/print/' + $(this).data('id');
     }
 
-    function saveIp(e) {
+    function btnSaveIpHandler(e) {
         e.preventDefault();
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
         // pio = JSON.stringify({ 'pio': pio });
@@ -753,13 +897,13 @@ $(function() {
         //     url: '/sarbeacons/sauver',
         //     data: $('#InterrogationPlan').serialize()
         // }); 
-        $.post("/sarbeacons/save", {datas:$("#InterrogationPlan").serialize(),pio: pio}, function(data) 
-        {
+        $.post("/sarbeacons/save", { datas: $("#InterrogationPlan").serialize(), pio: pio }, function(data) {
             loadListIp();
             idIp = data.id;
-  
-            $bPrintPi.data({'id': idIp});
-            $bMailPi.data({'id': idIp});
+
+            $fEditPi.find('input[name=id]').val(idIp);
+            $bPrintPi.data({ 'id': idIp });
+            $bMailPi.data({ 'id': idIp });
 
             $bPrintPi
                 .removeClass('btn-warning disabled')
@@ -769,7 +913,7 @@ $(function() {
                 .removeClass('btn-warning disabled')
                 .addClass('btn-info');
 
-            if(data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
+            if (data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
             noty({
                 text: data.message,
                 type: data.type,
@@ -787,22 +931,22 @@ $(function() {
                     $(this).find('.list-ip-content').toggleClass('cache');
                 });
 
-                $(this).find('.btn-show').click(function(e){
+                $(this).find('.btn-show').click(function(e) {
                     e.stopPropagation();
-                    $.post('sarbeacons/get', {'id' : id}, function(data) {
+                    $.post('sarbeacons/get', { 'id': id }, function(data) {
                         triggerIp([
                             data.latitude,
                             data.longitude
                         ]);
                         $.each(data.fields, function(i, field) {
                             $.each($carInner.find('em'), function() {
-                                if($(this).html() == field.name) {
+                                if ($(this).html() == field.name) {
                                     var $a = $(this).parents('a')
                                     $a.addClass('list-group-item-success')
-                                    if(field.comment) {    
+                                    if (field.comment) {
                                         $a.find('.comment').show();
                                         $a.find('textarea').html(field.comment);
-                                    }    
+                                    }
                                 }
                             });
                         });
@@ -812,96 +956,58 @@ $(function() {
         });
     }
 
-    /* chargement ajax des données de la map */
-    function loadFields() {
-        $.getJSON("data/testter.geojson")
-            .done(function(data) {
-                var lay = L.geoJson(data, {
-                    pointToLayer: function(feature, latlng) {
-                        var prop = feature.properties;
-                        var icon;
-                        var marker;
+    // /* chargement ajax des données de la map */
+    // function loadFields(init = true) {
+    //     $.getJSON("data/testter.geojson")
+    //         .done(function(data) {
+    //             var lay = L.geoJson(data, {
+    //                 pointToLayer: function(feature, latlng) {
+    //                     var prop = feature.properties;
+    //                     var icon;
+    //                     var marker;
 
-                        switch (prop.type) {
-                            case "AD":
-                                icon = icTer;
-                                break;
-                            case "HP":
-                                icon = icHel;
-                                break;
-                        }
+    //                     switch (prop.type) {
+    //                         case "AD":
+    //                             icon = icTer;
+    //                             break;
+    //                         case "HP":
+    //                             icon = icHel;
+    //                             break;
+    //                     }
 
-                        marker = L.marker(latlng, { icon: icon })
-                            .bindPopup(prop.name);
+    //                     marker = L.marker(latlng, { icon: icon })
+    //                         .bindPopup(prop.name);
 
-                        fields.push(feature);
-                        fieldNames.push(prop.code);
+    //                     fields.push(feature);
+    //                     fieldNames.push(prop.code);
 
-                        return marker;
-                    }
-                });
-                lay.addTo(orbit);
-                addToggleBtnToMap('ter', lay);
-            })
-            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des fields") });
-    }
+    //                     return marker;
+    //                 }
+    //             });
+    //             return lay.features;
+    //             // addToggleBtnToMap('ter', lay, init);
+    //         })
+    //         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des fields") });
+    // }
 
-    function loadBeacons() {
-        $.getJSON("data/bal.GeoJson")
-            .done(function(data) {
-                var lay = L.geoJson(data, {
-                    pointToLayer: function(feature, latlng) {
-                        beacons.push(feature);
-                        beaconNames.push(feature.properties.code);
-                        var marker = L.marker(latlng, { icon: icBal });
-                        marker.bindPopup(feature.properties.code);
-                        return marker;
-                    }
-                });
-                lay.addTo(orbit);
-                addToggleBtnToMap('bal', lay);
+    // function loadBeacons(init = true) {
+    //     $.getJSON("data/bal.GeoJson")
+    //         .done(function(data) {
+    //             var lay = L.geoJson(data, {
+    //                 pointToLayer: function(feature, latlng) {
+    //                     beacons.push(feature);
+    //                     beaconNames.push(feature.properties.code);
+    //                     var marker = L.marker(latlng, { icon: icBal });
+    //                     marker.bindPopup(feature.properties.code);
+    //                     return marker;
+    //                 }
+    //             });
+    //             if (init) lay.addTo(orbit);
+    //             // addToggleBtnToMap('bal', lay, init);
+    //             return lay;
 
-                return lay;
-
-            })
-            .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des beacons.") });
-    }
-
-    function addToggleBtnToMap(nom, layer) {
-
-        var customControl = L.Control.extend(
-        {
-            options: {
-                position: 'topright' 
-            },
-         
-            onAdd: function (map) 
-            {
-                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-               
-                container.style.backgroundColor = 'white';
-                container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-on.png)";
-                container.style.width = '25px';
-                container.style.height = '25px';
-                container.style.backgroundSize = "25px 25px";
-                $(container).data({'state': 'on'});
-
-                container.onclick = function(){
-                    if ($(this).data('state') == 'off') {
-                        orbit.addLayer(layer);
-                        container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-on.png)"; 
-                        $(this).data({'state': 'on'});
-                    } else {
-                        orbit.removeLayer(layer);
-                        container.style.backgroundImage = "url("+URL_IMG+"btn-"+nom+"-off.png)"; 
-                        $(this).data({'state': 'off'});           
-                    }
-                }
-                return container;
-            }
-        });
-
-        orbit.addControl(new customControl(nom, layer));
-    }
+    //         })
+    //         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des beacons.") });
+    // }
 
 });

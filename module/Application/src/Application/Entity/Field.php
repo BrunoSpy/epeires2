@@ -102,7 +102,7 @@ class Field
         if(is_a($intTime, \DateTime::class)) {
             $this->intTime = $intTime;
         } else {
-            $this->intTime = new \DateTime();
+            $this->intTime = (new \DateTime())->setTimeStamp((int) $intTime);
         }
     }
 

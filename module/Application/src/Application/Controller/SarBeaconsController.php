@@ -88,7 +88,6 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             if($f->isValid()) $fields[] = $f;
         }
         $datasIntPlan['fields'] = $fields;
-
         $result = $this->sgbd()->save($datasIntPlan);  
         return new JsonModel(['id' => $result['msg']->getId()]);
     }
