@@ -24,13 +24,13 @@ use Doctrine\Common\Collections\Criteria;
 
 class SGBDPlugin extends AbstractPlugin
 {
-    protected $ctrller, $em, $entity, $repository; 
+    protected $em, $entity, $repository;
     //TODO  public function __invoke(SGBDAwareInterface $ctrller)
     public function __invoke()
     {   
-        $this->ctrller = $this->getController();
-        $this->em = $this->ctrller->getEntityManager();
-        $this->entity = $this->ctrller::$class;
+        $this->controller = $this->getController();
+        $this->em = $this->controller->getEntityManager();
+        $this->entity = get_class($this->controller)::getEntity();
         $this->repository = $this->em->getRepository($this->entity);
         return $this;
     }
@@ -56,7 +56,7 @@ class SGBDPlugin extends AbstractPlugin
         return $allObj;
     }
 
-    public function get(Int $id)
+    public function get($id)
     {
         $obj = $this->repository->find($id);
         $obj = ($obj == null or !$obj->isValid()) ? new $this->entity : $obj;
@@ -73,30 +73,34 @@ class SGBDPlugin extends AbstractPlugin
         if (is_a($p, Parameters::class) || is_array($p))
         { 
             $obj = $this->get(intval($p['id']));
-            $form = $this->ctrller->getForm()->setData($p);
-            if (!$form->isValid()) return ['type' => 'error', 'msg' => $this->showErrors($form)];
-            $obj = (new DoctrineHydrator($this->em))->hydrate($form->getData(), $obj);
+            $form = $this->controller->getForm()->setData($p);
+
+            if (!$form->isValid()) {
+                 $msg = ['type' => 'error', 'msg' => $this->showErrors($form)];
+            } else {
+                $obj = (new DoctrineHydrator($this->em))->hydrate($form->getData(), $obj);
+            }
         } 
         elseif (is_a($p, $this->entity)) 
         {
             $obj = $p;
         } 
-        else return ['type' => 'error', 'msg' => 'Paramètres invalides'];
+        else $msg = ['type' => 'error', 'msg' => 'Paramètres invalides'];
 
-        try 
-        {
-            $this->em->persist($obj);
-            $this->em->flush();
+        if (!isset($msg)) {
+            try {
+                $this->em->persist($obj);
+                $this->em->flush();
 
-            return ['type' => 'success', 'msg' => $obj];
-        } 
-        catch (\Exception $ex) 
-        {
-            return ['type' => 'error', 'msg' => $ex];
+                $msg = ['type' => 'success', 'msg' => $obj];
+            } catch (\Exception $ex) {
+                $msg = ['type' => 'error', 'msg' => $ex];
+            }
         }
+        return $msg;
     }
 
-    public function del(Int $id)
+    public function del($id)
     {
         $obj = $this->get($id);
         if (!is_a($obj, $this->entity)) return ['type' => 'error', 'msg' => 'Objet Invalide'];

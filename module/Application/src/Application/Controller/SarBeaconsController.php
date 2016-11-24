@@ -28,25 +28,23 @@ use Core\Controller\AbstractEntityManagerAwareController;
 
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
-use Application\Form\SarBeaconsForm;
 /**
  *
  * @author Loïc Perrin
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    private $em, $form, $viewPDFRenderer;
-    public static $class = InterrogationPlan::class;
+    private $em, $form;
 
-    public function __construct(EntityManager $em, $viewPDFRenderer)
+    public function __construct(EntityManager $em)
     {
+        parent::__construct($em);
         $this->em = $em;
-        // $this->viewPDFRenderer = $viewPDFRenderer;
         $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
-    public function getEntityManager() {
-        return $this->em;
+    public static function getEntity() {
+        return InterrogationPlan::class;
     }
 
     public function getForm() {
@@ -76,20 +74,24 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         $post = $this->getRequest()->getPost();
         $pdatas = $post['datas'];
-        $ppio = $post['pio'];
+        $ppio = (is_array($post['pio'])) ? $post['pio'] : [];
 
-        $datasIntPlan = []; 
+        $datasIntPlan = [];
         parse_str($pdatas, $datasIntPlan);
 
-        $fields = [];
-        foreach ($ppio as $i => $field) 
-        {
-            $f = new Field($field);
-            if($f->isValid()) $fields[] = $f;
+
+        if (is_array($post['pio']) && count($post['pio']) > 0) {
+            $fields = [];
+            foreach ($ppio as $i => $field) {
+                $f = new Field($field);
+                if ($f->isValid()) $fields[] = $f;
+            }
+            $datasIntPlan['fields'] = $fields;
         }
-        $datasIntPlan['fields'] = $fields;
-        $result = $this->sgbd()->save($datasIntPlan);  
-        return new JsonModel(['id' => $result['msg']->getId()]);
+
+        $result = $this->sgbd()->save($datasIntPlan);
+        $id = ($result['type'] == 'success') ? $result['msg']->getId() : 0;
+        return new JsonModel(['id' => $id, 'type' => $result['type'], 'msg' => $result['msg']]);
     }
 
     public function listAction() 

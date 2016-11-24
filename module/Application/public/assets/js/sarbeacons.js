@@ -898,24 +898,28 @@ $(function() {
         //     data: $('#InterrogationPlan').serialize()
         // }); 
         $.post("/sarbeacons/save", { datas: $("#InterrogationPlan").serialize(), pio: pio }, function(data) {
-            loadListIp();
             idIp = data.id;
+            if(idIp > 0) {
+                loadListIp();
+                $fEditPi.find('input[name=id]').val(idIp);
+                $bPrintPi.data({ 'id': idIp });
+                $bMailPi.data({ 'id': idIp });
 
-            $fEditPi.find('input[name=id]').val(idIp);
-            $bPrintPi.data({ 'id': idIp });
-            $bMailPi.data({ 'id': idIp });
+                $bPrintPi
+                    .removeClass('btn-warning disabled')
+                    .addClass('btn-info');
 
-            $bPrintPi
-                .removeClass('btn-warning disabled')
-                .addClass('btn-info');
+                $bMailPi
+                    .removeClass('btn-warning disabled')
+                    .addClass('btn-info');
 
-            $bMailPi
-                .removeClass('btn-warning disabled')
-                .addClass('btn-info');
+                data.msg = "Le plan d'interrogation a bien été enregistré.";
+            } else {
 
-            if (data.type == "success") data.message = "Le plan d'interrogation a bien été enregistré.";
+            }
+
             noty({
-                text: data.message,
+                text: data.msg,
                 type: data.type,
                 timeout: 4000,
             });
