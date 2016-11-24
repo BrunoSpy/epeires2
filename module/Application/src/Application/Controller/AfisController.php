@@ -34,18 +34,18 @@ use Application\Entity\Afis;
 class AfisController extends AbstractEntityManagerAwareController
 {
     private $em, $form;
-    public static $class = Afis::class;
 
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;
-        $this->form = (new AnnotationBuilder())->createForm(Afis::class);
+        parent::__construct($em);
+        $this->em = $this->getEntityManager();
+        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
         $organisations = $this->em->getRepository(Organisation::class);
         $this->form->get('organisation')->setValueOptions($organisations->getAllAsArray());
     }
 
-    public function getEntityManager() {
-        return $this->em;
+    public static function getEntity() {
+        return Afis::class;
     }
 
     public function getForm() {

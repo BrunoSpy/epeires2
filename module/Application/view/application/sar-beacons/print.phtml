@@ -18,7 +18,6 @@
         \IntlDateFormatter::GREGORIAN,
         'HH:mm');
 ?>
-
 <html>
     <head>
         <style>
@@ -27,7 +26,7 @@
                 font-family: "DejaVu Sans";
                 font-size: 12px;
             }
-            
+
             .text-center {
                 text-align: center;
             }
@@ -47,7 +46,7 @@
             table td {
                 text-align: left;
             }
-            
+
             .table {
                 width: 100%;
             }
@@ -55,29 +54,29 @@
             .table td:first-child {
                 width: 10%;
             }
-            
+
             #header table tr td:first-child {
                 width: 5%;
             }
-            
+
             #header table {
                 width: 90%;
             }
-            
+
             .badge, button, h1 {
                 display:none;
             }
-            
+
             body, div {
                 font-family: sans-serif;
             }
-            
+
             h3 {
                 margin-top:25px;
             }
 
             #intplan-pdf {
-                padding:30 65 0 65px;
+                padding:30px 65px 0px 65px;
             }
 
             p, h4{
@@ -100,8 +99,7 @@
         <div id="header">
             <table>
                 <tr>
-                    <td> <img src="<?php echo __DIR__ ?>/../../../../../public/img/logo-dsna.png"></img></td>
-                    <td style="text-align: right;">Généré le <?php echo $formatterJourLong->format(new \DateTime())?> à <?php echo $formatterHeure->format(new \DateTime())?>                  
+                    <td style="text-align: right;">Généré le <?php echo $formatterJourLong->format(new \DateTime())?> à <?php echo $formatterHeure->format(new \DateTime())?>
                     </td>
                 </tr>
             </table>

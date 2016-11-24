@@ -39,8 +39,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     public function __construct(EntityManager $em)
     {
         parent::__construct($em);
-        $this->em = $em;
-        $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
+        $this->em = $this->getEntityManager();
+        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
     }
 
     public static function getEntity() {
@@ -53,7 +53,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function formAction() 
     {
-        // TODO if (!$this->authSarBeacons('write')) return new JsonModel();
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
 
@@ -72,6 +73,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     // TODO BOF BOF
     public function saveAction()
     {
+        if (!$this->authSarBeacons('write')) return new JsonModel();
+
         $post = $this->getRequest()->getPost();
         $pdatas = $post['datas'];
         $ppio = (is_array($post['pio'])) ? $post['pio'] : [];
@@ -96,6 +99,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function listAction() 
     {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
@@ -105,13 +110,15 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                         'order' => [
                             'startTime' => 'DESC'
                         ],
-                        'limit' => 10
+                        'limit' => 5
                     ])
             ]);
     }
 
     public function getAction() 
     {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
         $post = $this->getRequest()->getPost();
         $iP = $this->sgbd()->get($post['id']);
         
@@ -120,6 +127,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function printAction() 
     {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
         $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
 
         $pdf = new PdfModel();             
@@ -129,9 +138,13 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $pdf->setOption('paperSize', 'a4');                         
 
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');             
-        $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime()));                         
+        $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime()));
 
         return $pdf;
+    }
+
+    private function authSarBeacons($action) {
+        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('sarbeacons.'.$action)) ? false : true;
     }
 
 }

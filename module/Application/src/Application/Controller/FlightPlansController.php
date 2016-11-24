@@ -36,16 +36,16 @@ use Application\Entity\FlightPlan;
 class FlightPlansController extends AbstractEntityManagerAwareController
 {
     protected $em, $form;
-    public static $class = FlightPlan::class;
 
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;
-        $this->form = (new AnnotationBuilder())->createForm($this::$class);
+        parent::__construct($em);
+        $this->em = $this->getEntityManager();
+        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
     }
 
-    public function getEntityManager() {
-        return $this->em;
+    public static function getEntity() {
+        return FlightPlan::class;
     }
 
     public function getForm() {
