@@ -438,6 +438,13 @@ var form = function(url, tabid){
 		}
 	};
 
+	//change end input constraint when input date change
+    $("#event").on('change', "#start input", function(e){
+        var startdate = $("#start input.date").val()
+        $('#end input.date')
+            .bootstrapMaterialDatePicker('setMinDate', startdate);
+
+    });
 
 
 	/************************/
