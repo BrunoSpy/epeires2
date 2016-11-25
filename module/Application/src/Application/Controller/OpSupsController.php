@@ -77,8 +77,6 @@ class OpSupsController extends AbstractActionController
 
         $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
-        $qb = $em->createQueryBuilder();
-
         $daystart = new \DateTime($day);
         $offset = $daystart->getTimezone()->getOffset($daystart);
         $daystart->setTimezone(new \DateTimeZone('UTC'));
@@ -90,29 +88,7 @@ class OpSupsController extends AbstractActionController
         $dayend->add(new \DateInterval("PT" . $offset . "S"));
         $dayend->setTime(23, 59, 59);
 
-        $qb->select('l')
-            ->from('Application\Entity\Log', 'l')
-            ->where($qb->expr()->eq('l.objectClass', '?1'))
-            ->andWhere($qb->expr()->lte('l.loggedAt', '?2'))
-            ->andWhere($qb->expr()->gte('l.loggedAt', '?3'))
-            ->orderBy('l.id', 'DESC')
-            ->setParameters(array(
-                1 => 'Application\Entity\OperationalSupervisor',
-                2 => $dayend->format("Y-m-d H:i:s"),
-                3 => $daystart->format("Y-m-d H:i:s")
-            ));
-
-        $opsups = array();
-
-        $query = $qb->getQuery();
-
-        foreach ($query->getResult() as $log) {
-            if(!$log->getData()["current"]) {
-                $opsup = $em->getRepository('Application\Entity\OperationalSupervisor')->find($log->getObjectId());
-                $entry = array('opsup' => $opsup, 'date' => $log->getLoggedAt());
-                $opsups[] = $entry;
-            }
-        }
+        $opsups = $em->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, true);
         
         $viewmodel->setVariables(array('opsups' => $opsups, 'day' => $daystart));
         

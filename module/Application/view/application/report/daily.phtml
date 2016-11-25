@@ -54,7 +54,23 @@
             .table td:first-child {
                 width: 10%;
             }
-            
+
+            .table_op {
+              width: 100%;
+              max-width: 100%;
+            }
+
+            .table_op > tbody > tr > td{
+                border-bottom: 1px solid #ddd;
+            }
+
+            .table_op > thead > tr > th {
+              vertical-align: bottom;
+              border-bottom: 2px solid #ddd;
+              font-weight: bold;
+            }
+
+
             #header table tr td:first-child {
                 width: 5%;
             }
@@ -107,7 +123,7 @@
             </table>
         </div>
         <div id="title" class="text-center">
-            <h1>Rapport du <?php echo $formatterJour->format(new \DateTime($this->day)); ?></h1>
+            <h1>Rapport du <?php echo $formatterJourLong->format(new \DateTime($this->day)); ?></h1>
         </div>
         <div id="report">
         <?php
@@ -127,6 +143,29 @@
                     }
             }
         ?>
+        </div>
+        <div id="opsups">
+          <h2>Prise de service des superviseurs opérationnels</h2>
+          <table class="table_op">
+            <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Prise de service</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($this->opsups as $entry) {
+                $opsup = $entry['opsup'];
+                $date = $entry['date'];
+                echo '<tr><td>';
+                echo $opsup->getName() . '</td>';
+                echo '<td>' . $formatterJour->format($date) . ' à ' . $formatterHeure->format($date).'</td></tr>';
+            }
+            ?>
+            </tbody>
+          </table>
+
         </div>
     </body>
 </html>
