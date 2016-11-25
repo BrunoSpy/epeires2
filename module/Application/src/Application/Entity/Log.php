@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="log")
- * @ORM\Entity(repositoryClass="Gedmo\Loggable\Entity\Repository\LogEntryRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\LogRepository")
  * @ORM\HasLifecycleCallbacks
  *
  * @author Bruno Spyckerelle

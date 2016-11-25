@@ -91,6 +91,17 @@ class ReportController extends AbstractEntityManagerAwareController
         $day = $this->params()->fromQuery('day', null);
         
         if ($day) {
+            $daystart = new \DateTime($day);
+            $offset = $daystart->getTimezone()->getOffset($daystart);
+            $daystart->setTimezone(new \DateTimeZone('UTC'));
+            $daystart->add(new \DateInterval("PT" . $offset . "S"));
+            $daystart->setTime(0, 0, 0);
+
+            $dayend = new \DateTime($day);
+            $dayend->setTimezone(new \DateTimeZone('UTC'));
+            $dayend->add(new \DateInterval("PT" . $offset . "S"));
+            $dayend->setTime(23, 59, 59);
+
             $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'))
                 ->andWhere(Criteria::expr()->eq('system', false))
                 ->orderBy(array(
@@ -125,7 +136,8 @@ class ReportController extends AbstractEntityManagerAwareController
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
                 'day' => $day,
-                'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log')
+                'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log'),
+                'opsups' => $this->getEntityManager()->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, false, 'ASC')
             ));
             $pdf->setOption('paperSize', 'a4');
             
@@ -178,7 +190,18 @@ class ReportController extends AbstractEntityManagerAwareController
         }
         
         $day = $day->format(DATE_RFC2822);
-     
+
+        $daystart = new \DateTime($day);
+        $offset = $daystart->getTimezone()->getOffset($daystart);
+        $daystart->setTimezone(new \DateTimeZone('UTC'));
+        $daystart->add(new \DateInterval("PT" . $offset . "S"));
+        $daystart->setTime(0, 0, 0);
+
+        $dayend = new \DateTime($day);
+        $dayend->setTimezone(new \DateTimeZone('UTC'));
+        $dayend->add(new \DateInterval("PT" . $offset . "S"));
+        $dayend->setTime(23, 59, 59);
+
         $criteria = Criteria::create()
         ->where(Criteria::expr()->isNull('parent'))
         ->andWhere(Criteria::expr()->eq('system', false))
@@ -224,8 +247,8 @@ class ReportController extends AbstractEntityManagerAwareController
                 ->setVariables(array(
                     'events' => $eventsByCats,
                     'day' => $day,
-                    'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log')
-                ));
+                    'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log'),
+                    'opsups' => $this->getEntityManager()->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, false, 'ASC')));
 
         $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
         $engine = $this->viewpdfrenderer->getEngine();
