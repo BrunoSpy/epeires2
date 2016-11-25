@@ -80,7 +80,7 @@ class Field
      */
     protected $intTime;
     /** 
-     * @ORM\ManyToOne(targetEntity="InterrogationPlan")
+     * @ORM\ManyToOne(targetEntity="InterrogationPlan", inversedBy="fields")
      * @ORM\JoinColumn(name="interplan_id", referencedColumnName="id")
      */
     protected $interrogationPlan;
