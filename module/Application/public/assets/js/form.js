@@ -633,112 +633,125 @@ var form = function(url, tabid){
 		);
 	});
 
+	var getPredefinedValues = function(eventid) {
+        $.getJSON(
+            url+'events/getpredefinedvalues?id='+eventid,
+            function(data){
+                $("#punctual").prop('checked', data.defaultvalues.punctual);
+                $("#punctual").trigger("change");
+                $("#scheduled").prop('checked', data.defaultvalues.programmed);
+                $("input[name=enddate]").data('duration', data.defaultvalues.duration);
+                $("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
+                if(data.defaultvalues['zonefilters']){
+                    $.each(data.defaultvalues.zonefilters, function(key, value){
+                        $("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
+                    });
+                }
+                customvalues = data.customvalues;
+                $.each(data.customvalues, function(key, value){
+                    var elt = $("#custom_fields [name='custom_fields["+key+"]']");
+                    if(elt.length == 0) {
+                        //select à choix multiples ?
+                        elt = $("#custom_fields [name='custom_fields["+key+"][]']");
+                    }
+                    if(elt.is("select")){
+                        if(Array.isArray(value)) {
+                            for(var i = 0; i < value.length; i++) {
+                                $("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
+                            }
+                        } else {
+                            if (value.length > 0) {
+                                $("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
+                            }
+                        }
+                    } else if(elt.is('textarea')){
+                        elt.html(value);
+                    } else if (elt.is(':checkbox')){
+                        elt.attr('checked', (value == 1));
+                    } else if(elt.is('input')){
+                        elt.prop('value', value);
+                    }
+                });
+                //open description accordion
+                $("#description-title a").trigger('click');
+                //prepare actions
+                $("#actions-title a").removeClass("disabled");
+                //recalculate submit button state
+                $("#event").trigger('change');
+                //update hours in case of duration
+                updateHours();
+            }).done(function(){
+            $.when(refreshField($("#description-tab [data-trigger-refresh-to]"))).then(function(){
+                //must do a second pass to reset values erased by trigger-refresh
+                $.each(customvalues, function(key, value){
+                    var elt = $("#custom_fields [name='custom_fields["+key+"]']");
+                    if(elt.length == 0) {
+                        //select à choix multiples ?
+                        elt = $("#custom_fields [name='custom_fields["+key+"][]']");
+                    }
+                    if(elt.is("select")){
+                        if(Array.isArray(value)) {
+                            for(var i = 0; i < value.length; i++) {
+                                $("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
+                            }
+                        } else {
+                            if (value.length > 0) {
+                                $("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
+                            }
+                        }
+                    } else if(elt.is('textarea')){
+                        elt.html(value);
+                    } else if (elt.is(':checkbox')){
+                        elt.attr('checked', (value == 1));
+                    } else if(elt.is('input')){
+                        elt.prop('value', value);
+                    }
+                });
+            });
+        });
+        //get actions
+        $("#actions-tab").load(url+'events/actions?id='+eventid, function(e){
+            $('#actions-tab [data-toggle="tooltip"]').tooltip();
+        });
+
+        //getfiles
+        $.getJSON(url+'events/getfiles?id='+eventid,
+            function(data){
+                $('#files-tab #file-table tbody').empty();
+                $("#files-tab input").remove();
+                $("#files-title span.badge").html('0');
+                $.each(data, function(i, item){
+                    formAddFile(item.id, item.datas, false);
+                });
+            });
+        //getalerts
+        $.getJSON(url+'events/getalarms?id='+eventid,
+            function(data){
+                $('#memos-tab #alarm-table').empty();
+                $("#memos-title span.badge").html('0');
+                $.each(data, function(i, item){
+                    formAddAlarm(item, true);
+                });
+            });
+        //save the fact that we used a model in order to copy actions
+        $('#description-tab').append("<input name=\"modelid\" type=\"hidden\" value=\""+eventid+"\" >");
+    };
+
 	//click on a predefined events
 	$("#event").on("click", "#predefined_events button", function(e){
 		e.preventDefault();
 		var me = $(this);
 		var customvalues;
-		$.getJSON(
-			url+'events/getpredefinedvalues?id='+me.data('id'),
-			function(data){
-				$("#punctual").prop('checked', data.defaultvalues.punctual);
-				$("#punctual").trigger("change");
-				$("#scheduled").prop('checked', data.defaultvalues.programmed);
-                $("input[name=enddate]").data('duration', data.defaultvalues.duration);
-				$("select[name=impact] option[value="+data.defaultvalues.impact+"]").prop('selected', true);
-				if(data.defaultvalues['zonefilters']){
-					$.each(data.defaultvalues.zonefilters, function(key, value){
-						$("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
-					});
-				}
-				customvalues = data.customvalues;
-				$.each(data.customvalues, function(key, value){
-					var elt = $("#custom_fields [name='custom_fields["+key+"]']");
-					if(elt.length == 0) {
-						//select à choix multiples ?
-						elt = $("#custom_fields [name='custom_fields["+key+"][]']");
-					}
-					if(elt.is("select")){
-						if(Array.isArray(value)) {
-							for(var i = 0; i < value.length; i++) {
-								$("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
-							}
-						} else {
-							if (value.length > 0) {
-								$("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
-							}
-						}
-					} else if(elt.is('textarea')){
-						elt.html(value);
-					} else if (elt.is(':checkbox')){
-						elt.attr('checked', (value == 1));
-					} else if(elt.is('input')){
-						elt.prop('value', value);
-					}
-				});
-				//open description accordion
-				$("#description-title a").trigger('click');
-				//prepare actions
-				$("#actions-title a").removeClass("disabled");
-				//recalculate submit button state
-				$("#event").trigger('change');
-                //update hours in case of duration
-                updateHours();
-			}).done(function(){
-			$.when(refreshField($("#description-tab [data-trigger-refresh-to]"))).then(function(){
-				//must do a second pass to reset values erased by trigger-refresh
-				$.each(customvalues, function(key, value){
-					var elt = $("#custom_fields [name='custom_fields["+key+"]']");
-					if(elt.length == 0) {
-						//select à choix multiples ?
-						elt = $("#custom_fields [name='custom_fields["+key+"][]']");
-					}
-					if(elt.is("select")){
-						if(Array.isArray(value)) {
-							for(var i = 0; i < value.length; i++) {
-								$("#custom_fields [name='custom_fields[" + key + "][]'] option[value=" + value[i] + "]").prop('selected', true);
-							}
-						} else {
-							if (value.length > 0) {
-								$("#custom_fields [name='custom_fields[" + key + "]'] option[value=" + value + "]").prop('selected', true);
-							}
-						}
-					} else if(elt.is('textarea')){
-						elt.html(value);
-					} else if (elt.is(':checkbox')){
-						elt.attr('checked', (value == 1));
-					} else if(elt.is('input')){
-						elt.prop('value', value);
-					}
-				});
-			});
-		});
-		//get actions
-		$("#actions-tab").load(url+'events/actions?id='+me.data('id'), function(e){
-			$('#actions-tab [data-toggle="tooltip"]').tooltip();
-		});
-
-		//getfiles
-		$.getJSON(url+'events/getfiles?id='+me.data('id'),
-			function(data){
-				$('#files-tab #file-table tbody').empty();
-				$("#files-tab input").remove();
-				$("#files-title span.badge").html('0');
-				$.each(data, function(i, item){
-					formAddFile(item.id, item.datas, false);
-				});
-			});
-		//getalerts
-		$.getJSON(url+'events/getalarms?id='+me.data('id'),
-			function(data){
-				$('#memos-tab #alarm-table').empty();
-				$("#memos-title span.badge").html('0');
-				$.each(data, function(i, item){
-					formAddAlarm(item, true);
-				});
-			});
-		//save the fact that we used a model in order to copy actions
-		$('#description-tab').append("<input name=\"modelid\" type=\"hidden\" value=\""+me.data('id')+"\" >");
+        if(me.attr('data-catid')) {
+            $('#subcategories option[value="'+me.data('catid')+'"]').prop('selected', true);
+            $.when(
+                changeSubCat(me.data('catid'))
+            ).then(
+                function(){getPredefinedValues(me.data('id'));}
+            )
+        } else {
+            getPredefinedValues(me.data('id'));
+        }
 	});
 
 	var rebootTabs = function () {
@@ -833,39 +846,43 @@ var form = function(url, tabid){
 		}
 	});
 
+	var changeSubCat = function(subcatid) {
+        rebootTabs();
+        $("input[name='category']").val(subcatid);
+        return $.when(
+            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid,
+                function(data) {
+                    $("#custom_fields").html(data);
+                    $("#event input, #event select").on("invalid", function(event){
+                        $("#description-title a").trigger('click');
+                    });
+                    //force recalcule des conditions en fonction des champs chargés
+                    $("#event").trigger('change');
+                    $.material.checkbox();
+                }
+            ),
+            $.post(
+                url + 'events/subform?part=predefined_events&id=' + subcatid,
+                function(data){
+                    $("#predefined_events").html(data);
+                    //don't open model panel if there is no model
+                    if($('#predefined_events div').length == 0) {
+                        $("#description-title a").trigger('click');
+                    }
+                }
+            )
+        ).then(function(){
+            if($("#predefined_events table").length === 0){
+                $("#description-title a").trigger('click');
+            }
+        });
+    };
+
 	//choosing a subcategory
 	$("#event").on("change", "#subcategories", function(){
 		var subcat_value = $("#subcategories option:selected").val();
 		if (subcat_value > 0) {
-			rebootTabs();
-			$("input[name='category']").val(subcat_value);
-            $.when(
-                $.post(url + 'events/subform?part=custom_fields&id=' + subcat_value,
-                    function(data) {
-                        $("#custom_fields").html(data);
-                        $("#event input, #event select").on("invalid", function(event){
-                            $("#description-title a").trigger('click');
-                        });
-                        //force recalcule des conditions en fonction des champs chargés
-                        $("#event").trigger('change');
-                        $.material.checkbox();
-                    }
-                ),
-                $.post(
-                    url + 'events/subform?part=predefined_events&id=' + $(this).val(),
-                    function(data){
-                        $("#predefined_events").html(data);
-                        //don't open model panel if there is no model
-                        if($('#predefined_events div').length == 0) {
-                            $("#description-title a").trigger('click');
-                        }
-                    }
-                )
-            ).then(function(){
-                if($("#predefined_events table").length === 0){
-                    $("#description-title a").trigger('click');
-                }
-            });
+			changeSubCat(subcat_value);
 		} else {
 			//réinit en fonction de la cat racine
 			$("#root_categories").trigger('change');
@@ -1134,6 +1151,9 @@ var form = function(url, tabid){
 
 
 	var refreshField = function(elmt) {
+	    if(elmt.length == 0){
+	        return;
+        }
 		if(elmt.is('select')) {
 			var value = elmt.find(':selected').val();
 		}
