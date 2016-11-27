@@ -9,40 +9,73 @@ switch ($this->part) {
         ;
         break;
     case 'predefined_events':
-        if (empty($this->values)) {
+        if (empty($this->values) && empty($this->subvalues)) {
             echo '<div class="col-sm-10">';
             echo '<p>Aucun modèle défini.</p>';
             echo '</div>';
         } else {
-            echo '<div class="col-md-6">';
-            echo '<table>';
-            echo '<tbody>';
-            $count = count($values);
-            $i = 1;
-            $separated = false;
-            foreach ($this->values as $key => $value) {
+            if(!empty($this->values)) {
+                echo '<div class="col-md-6">';
+                echo '<table>';
+                echo '<tbody>';
+                $count = count($this->values);
+                $i = 1;
+                $separated = false;
+                foreach ($this->values as $key => $value) {
                     echo '<tr>';
                     echo '<td class="hidden-xs">';
-                        echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
+                    echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
                     echo '</td>';
                     echo '<td class="tr-value"> '.$value.'</td>';
                     echo '<td><span class="pull-right"><button data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span></td>';
                     echo '</tr>';
-                    
-                if ($i >= $count / 2 && ! $separated) {
-                    echo '</tbody>';
-                    echo '</table>';
-                    echo '</div>';
-                    echo '<div class="col-md-6">';
-                    echo '<table>';
-                    echo '<tbody>';
-                    $separated = true;
+
+                    if ($i >= $count / 2 && ! $separated) {
+                        echo '</tbody>';
+                        echo '</table>';
+                        echo '</div>';
+                        echo '<div class="col-md-6">';
+                        echo '<table>';
+                        echo '<tbody>';
+                        $separated = true;
+                    }
+                    $i ++;
                 }
-                $i ++;
+                echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
             }
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
+            if(!empty($this->subvalues)) {
+                echo '<div class="col-md-6">';
+                echo '<table>';
+                echo '<tbody>';
+                $count = count($this->subvalues);
+                $i = 0;
+                $separated = false;
+                foreach ($this->subvalues as $key => $value) {
+                    echo '<tr>';
+                    echo '<td class="hidden-xs">';
+                    echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
+                    echo '</td>';
+                    echo '<td class="tr-value"> '.$value['name'].'</td>';
+                    echo '<td><span class="pull-right"><button data-catid="'.$value['catid'].'" data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span></td>';
+                    echo '</tr>';
+
+                    if ($i >= $count / 2 && ! $separated) {
+                        echo '</tbody>';
+                        echo '</table>';
+                        echo '</div>';
+                        echo '<div class="col-md-6">';
+                        echo '<table>';
+                        echo '<tbody>';
+                        $separated = true;
+                    }
+                    $i ++;
+                }
+                echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
+            }
         }
         break;
     case 'custom_fields':

@@ -17,6 +17,7 @@
  */
 namespace Application\Repository;
 
+use Application\Entity\Category;
 use Doctrine\Common\Collections\Criteria;
 use Gedmo\Sortable\Entity\Repository\SortableRepository;
 
@@ -29,10 +30,10 @@ class PredefinedEventRepository extends SortableRepository
 {
 
     /**
-     *
+     * @param $category
      * @return array
      */
-    public function getEventsWithCategoryAsArray($category)
+    public function getEventsWithCategoryAsArray(Category $category)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $category));
         $criteria->andWhere(Criteria::expr()->isNull('parent'));
@@ -44,6 +45,31 @@ class PredefinedEventRepository extends SortableRepository
         $res = array();
         foreach ($list as $element) {
             $res[$element->getId()] = $element->getName();
+        }
+        return $res;
+    }
+
+    /**
+     * Returns an array with mandatory predefined events from the children
+     * of the given category
+     * @param Category $category
+     * @return array
+     */
+    public function getEventsFromCategoryAsArray(Category $category) {
+        $res = array();
+        foreach ($category->getChildren() as $cat) {
+            $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
+            $criteria->andWhere(Criteria::expr()->isNull('parent'));
+            $criteria->andWhere(Criteria::expr()->eq('listable', true));
+            $criteria->andWhere(Criteria::expr()->eq('forceroot', true));
+            $criteria->orderBy(array(
+                'place' => 'ASC'
+            ));
+            $list = parent::matching($criteria);
+
+            foreach ($list as $element) {
+                $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId());
+            }
         }
         return $res;
     }

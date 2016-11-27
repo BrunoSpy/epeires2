@@ -59,6 +59,13 @@ class PredefinedEvent extends AbstractEvent
     protected $programmed = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Forcer affichage dans catégorie parente :"})
+     */
+    protected $forceroot = false;
+
+    /**
      * @ORM\Column(type="integer")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required(false)
@@ -110,6 +117,19 @@ class PredefinedEvent extends AbstractEvent
     public function setProgrammed($programmed)
     {
         $this->programmed = $programmed;
+    }
+
+    public function setForceroot($forceroot)
+    {
+        $this->forceroot = $forceroot;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isForceroot()
+    {
+        return $this->forceroot;
     }
 
     public function getPlace()

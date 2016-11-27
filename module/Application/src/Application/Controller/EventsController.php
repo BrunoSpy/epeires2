@@ -68,6 +68,9 @@ class EventsController extends TabController
         $this->zfcRbacOptions = $zfcrbacOptions;
     }
 
+    /**
+     * @return EntityManager
+     */
     public function getEntityManager()
     {
         return $this->entityManager;
@@ -1062,7 +1065,9 @@ class EventsController extends TabController
                     $viewmodel->setVariables(array(
                         'part' => $part,
                         'values' => $em->getRepository('Application\Entity\PredefinedEvent')
-                            ->getEventsWithCategoryAsArray($category)
+                            ->getEventsWithCategoryAsArray($category),
+                        'subvalues' => $em->getRepository('Application\Entity\PredefinedEvent')
+                            ->getEventsFromCategoryAsArray($category)
                     ));
                     break;
                 case 'custom_fields':
