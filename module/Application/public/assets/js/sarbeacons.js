@@ -13,10 +13,8 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  */
-$(function() {
+var sarbeacons = function(url) {
     "use strict";
-    /** constantes **/
-
     /* nombre de résultats à afficher pour un PI */
     const NB_RESULT_PIO_AFF = 5;
     const NB_RESULT_PIO = 30;
@@ -34,7 +32,7 @@ $(function() {
     /* niveau de zoom lors d'un PI */
     const PIO_ZOOM = 8;
     /* image du marqueur représentant le lieu de l'alerte */
-    const URL_IMG = 'assets/img/orbit/',
+    const URL_IMG = url + 'assets/img/orbit/',
         IMG_PIO = URL_IMG + '/marker-pio.png';
     /* icones */
     const IC_TER_SIZE = 20,
@@ -43,14 +41,13 @@ $(function() {
         IC_HEL_SIZE = 20,
         IC_SAR_SIZE = 20,
         IC_SAR_ANCH = IC_SAR_SIZE / 2;
-
     const
         icTer = L.icon({
-            iconUrl: URL_IMG + 'terrain.png',
+            iconUrl: URL_IMG + 'btn-ter.png',
             iconSize: [IC_TER_SIZE, IC_TER_SIZE]
         }),
         icBal = L.icon({
-            iconUrl: URL_IMG + 'bal.png',
+            iconUrl: URL_IMG + 'btn-bal.png',
             iconSize: [IC_BAL_SIZE, IC_BAL_SIZE]
         }),
         icPIO = L.icon({
@@ -59,20 +56,15 @@ $(function() {
         }),
 
         icHel = L.icon({
-            iconUrl: URL_IMG + 'hel.png',
+            iconUrl: URL_IMG + 'btn-hel.png',
             iconSize: [IC_HEL_SIZE, IC_HEL_SIZE]
         }),
         icSAR = L.icon({
             iconUrl: URL_IMG + 'marker-sar.png',
-            //shadowUrl: 'leaf-shadow.png',
-            iconSize: [IC_SAR_SIZE, IC_SAR_SIZE], // size of the icon
-            //shadowSize:   [50, 64], // size of the shadow
-            iconAnchor: [IC_SAR_ANCH, IC_SAR_ANCH], // point of the icon which will correspond to marker's location
-            //shadowAnchor: [4, 62],  // the same for the shadow
-            //popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            iconSize: [IC_SAR_SIZE, IC_SAR_SIZE],
+            iconAnchor: [IC_SAR_ANCH, IC_SAR_ANCH],
         });
 
-    /** Variables globales **/
     /* init de la map */
     var orbit = L.map('mapid').setView(DFLT_LAT_LNG, DFLT_ZOOM);
     orbit.zoomControl.setPosition('topright');
@@ -84,16 +76,13 @@ $(function() {
         accessToken: 'pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw'
     }).addTo(orbit);
 
-    /* calques contenant résultat des pi, beacons et fields */
-    var pioLay,
-        balLay,
-        terLay;
+    /* calques contenant résultat des pi*/
+    var pioLay;
 
     var mapLayers = {
         'ter': L.geoJSON(),
         'bal': L.geoJSON()
-    }
-
+    };
     /* marqueurs SAR et terrain sélectionné */
     var mkSAR,
         mkSelected;
@@ -112,9 +101,7 @@ $(function() {
         pio = [],
         idIp = null;
     /* DOM */
-    var $content = $('.content'),
-
-        $reqPio = $('#req-pio'),
+    var $reqPio = $('#req-pio'),
 
         $iLat = $('#inp-lat'),
         $iLon = $('#inp-lon'),
@@ -141,25 +128,28 @@ $(function() {
         $carIndic = $('.carousel-indicators'),
 
         $aHist = $('#a-hist'),
-        $listIp = $('#list-ip'),
-        $tplList = $listIp.find('.tpl');
+        $listIp = $('#list-ip');
+
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
     });
     /* raz des inputs */
     $('input').val('');
-    // $('.tpl').hide();
 
     /* init des onglets */
-    $tabs.tabs();
-    $tabs.find('.nav-pills>li').each(function() {
+    $tabs.tabs()
+        .find('.nav-pills>li').each(function() {
             $(this).click(function() {
-                $(this).addClass('active')
-                    .siblings('.active').removeClass('active');
-            })
+                $(this)
+                    .addClass('active')
+                    .siblings('.active')
+                    .removeClass('active');
+            });
         })
         /** Evenements **/
+    $('.raz-cherche').click(resetSearches);
+
     $iLat.keyup(keyPressedLat);
     $iLon.keyup(keyPressedLon);
     $bRecC.click(findByCoord);
@@ -188,8 +178,6 @@ $(function() {
     $bSavPi.click(btnSaveIpHandler);
     $bPrintPi.click(printIp);
 
-    $('.raz-cherche').click(resetSearches);
-
     $aHist.click(aHistHandler);
 
     /* declenchement pi sur un bouton droit sur la carte */
@@ -198,7 +186,7 @@ $(function() {
         centerMap(coord, PIO_ZOOM);
         triggerIp(coord);
     });
-
+    /* Class pour ajouter un bouton sur la carte */
     L.Control.Button = L.Control.extend({
 
         options: {
@@ -262,23 +250,7 @@ $(function() {
         },
 
         _makeButton: function(button) {
-            // var newButton = L.DomUtil.create(
-            //     'div', 
-            //     'leaflet-bar leaflet-control leaflet-control-custom custom-button', 
-            //     this._container
-            // );
-            // if (button.toggleStatus)
-            //     L.DomUtil.addClass(newButton, 'leaflet-buttons-control-toggleon');
 
-            // var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', newButton);
-            // image.setAttribute('src', button.iconUrl);
-
-            // L.DomEvent
-            //     .addListener(newButton, 'click', L.DomEvent.stop)
-            //     .addListener(newButton, 'click', button.onClick, this)
-            //     .addListener(newButton, 'click', this._clicked, this);
-            // L.DomEvent.disableClickPropagation(newButton);
-            // return newButton;
         },
 
         _clicked: function() {
@@ -305,54 +277,48 @@ $(function() {
         centerMap();
     }
 
-    var myButtonOptions = {
-        'text': '', // string
-        'iconUrl': URL_IMG + "bal-pio.png", // string
-        'onClick': refreshBtnClickHandler, // callback function
-        'hideText': true, // bool
-        'maxWidth': 25, // number
-        'doToggle': false, // bool
-        'toggleStatus': false, // bool
+    new L.Control.Button({
+        'text': '', 
+        'iconUrl': icPIO.options.iconUrl, 
+        'onClick': refreshBtnClickHandler,
+        'hideText': true, 
+        'maxWidth': 25, 
+        'doToggle': false,
+        'toggleStatus': false, 
         'map': orbit
-    }
-
-    var refreshBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+    }).addTo(orbit);
 
     function showFieldsBtnClickHandler() {
 
     }
 
-    var myButtonOptions = {
-        'text': '', // string
-        'iconUrl': URL_IMG + "btn-ter-on.png", // string
-        'onClick': showFieldsBtnClickHandler, // callback function
-        'hideText': true, // bool
-        'maxWidth': 25, // number
-        'doToggle': true, // bool
-        'toggleStatus': true, // bool
+    new L.Control.Button({
+        'text': '',
+        'iconUrl': icTer.options.iconUrl, 
+        'onClick': showFieldsBtnClickHandler, 
+        'hideText': true,
+        'maxWidth': 25,
+        'doToggle': true,
+        'toggleStatus': true,
         'layer': mapLayers['ter'],
         'map': orbit
-    }
-
-    var showFieldsBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+    }).addTo(orbit);
 
     function showBeaconsBtnClickHandler() {
 
     }
 
-    var myButtonOptions = {
-        'text': '', // string
-        'iconUrl': URL_IMG + "btn-bal-on.png", // string
-        'onClick': showBeaconsBtnClickHandler, // callback function
-        'hideText': true, // bool
-        'maxWidth': 25, // number
-        'doToggle': true, // bool
-        'toggleStatus': true, // bool
+    new L.Control.Button({
+        'text': '',
+        'iconUrl': icBal.options.iconUrl, 
+        'onClick': showBeaconsBtnClickHandler,
+        'hideText': true,
+        'maxWidth': 25,
+        'doToggle': true,
+        'toggleStatus': true,
         'layer': mapLayers['bal'],
         'map': orbit
-    }
-
-    var showBeaconsBtn = new L.Control.Button(myButtonOptions).addTo(orbit);
+    }).addTo(orbit);
 
     $.getJSON("data/testter.geojson")
         .done(function(data) {
@@ -402,16 +368,6 @@ $(function() {
     function centerMap(latLon, zoom) {
         orbit.setView(latLon || DFLT_LAT_LNG, zoom || DFLT_ZOOM);
     }
-    // function modPiHandler() {
-    //         $bEditPi
-    //             .removeClass('btn-info')
-    //             .addClass('btn-success');
-    //         $('#btn-sav-pi,#btn-mail-pi,#btn-print-pi')
-    //             .removeClass('btn-warning disabled')
-    //             .addClass('btn-info');
-
-    //         $fEditPi.modal('hide');
-    //     }
 
     function aHistHandler(e) {
         if (!$listIp.children('a').length) loadListIp();
@@ -441,7 +397,6 @@ $(function() {
     }
 
     /** fn recherche par coordonnées **/
-
     function keyPressedLat(key) {
         activateResetSearches($(this).next());
         keyPressedLatLon(key);
@@ -627,8 +582,10 @@ $(function() {
         }
 
         function infoPI() {
-            // var dateDebut = moment().format('DD/MM hh:mm:ss');
-            $fIp.find('h4').html('<span class="glyphicon glyphicon-alert"></span> PI démarré à ' + moment().format('hh:mm:ss') + ' le ' + moment().format('DD/MM'));
+            $fIp.find('h4')
+                .html('<span class="glyphicon glyphicon-alert"></span>'+
+                        ' PI démarré à ' + moment().format('hh:mm:ss') + 
+                        ' le ' + moment().format('DD/MM'));
         }
 
         function processFieldsList() {
@@ -669,22 +626,19 @@ $(function() {
                     .appendTo($ter)
                     .hide();
 
-                var $optCom =
-                    $('<textarea rows="1" class="form-control" placeholder="commentaire optionnel"></textarea>')
+                $('<textarea rows="1" class="form-control" placeholder="commentaire optionnel"></textarea>')
                     .data({
                         "idt": i,
                         "name": props.name,
                     })
                     .blur(function() {
-                        // var p = pio.filter(x => x.nom == props.name);
                         var p = pio[$(this).data().idt];
-
                         p["comment"] = $(this).val();
 
                     })
                     .appendTo($fOptCom);
 
-                var $btnContact = $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
+                $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
                     .data({
                         "idt": i,
                         "code": props.code,
@@ -697,7 +651,7 @@ $(function() {
 
                 var img = (props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
 
-                var $btnCentrer = $('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
+                $('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
                     .data({ 'latLon': [coord[1], coord[0]] })
                     .click(function(e) {
                         centerMap($(this).data().latLon, orbit.getZoom());
@@ -718,7 +672,7 @@ $(function() {
                     $(this).addClass('active');
                 }
 
-                function clickContactHandler(e) {
+                function clickContactHandler() {
                     var $fOptCom = $(this).parent().find('.form-group');
 
                     $carInner.find('a.active')
@@ -735,6 +689,9 @@ $(function() {
                         .toggleClass('list-group-item-success')
                         .addClass('active');
 
+                    $bSavPi
+                        .removeClass('btn-warning disabled')
+                        .addClass('btn-info');
                     // pio = pio.filter(x => x.name != $(this).data().name);
 
                     if ($(this).hasClass('btn-danger')) {
@@ -831,27 +788,32 @@ $(function() {
         }
     }
 
-    function btnEditIpHandler(e) {
-        $('#title-mod-pi').html("Editer le Plan d'Interrogation");
+    function btnEditIpHandler() {
+        if ($(this).hasClass('disabled')) return;
+        $('#title-edit-pi').html("Editer le Plan d'Interrogation");
+        if(idIp == null && !$fEditPi.find('form').length)
+        {
+            $fEditPi.load(url + 'sarbeacons/form',
+                {
+                    'id': idIp,
+                    'lat': mkSAR._latlng.lat,
+                    'lon': mkSAR._latlng.lng
+                },
+                function() {
+                    refreshFieldList();
 
-        // if(idIp == null && !$fEditPi.find('form').length) {
-        $fEditPi.load('/sarbeacons/form', { 'id': idIp, 'lat': mkSAR._latlng.lat, 'lon': mkSAR._latlng.lng }, function() {
-
-            refreshFieldList();
-
-            $fEditPi.find('input[type="submit"]')
-                .click(function(e) {
-                    e.preventDefault();
-                    $("#mdl-edit-pi").modal('hide');
-                    $bEditPi
-                        .removeClass('btn-info')
-                        .addClass('btn-success');
-                    $bSavPi
-                        .removeClass('btn-warning disabled')
-                        .addClass('btn-info');
-                })
-        });
-        // } else refreshFieldList();
+                    $fEditPi.find('input[type="submit"]')
+                        .click(function (e) {
+                            e.preventDefault();
+                            $("#mdl-edit-pi").modal('hide');
+                            $bEditPi
+                                .removeClass('btn-info')
+                                .addClass('btn-success');
+                        });
+                }
+            );
+        }
+        else refreshFieldList();
 
         function refreshFieldList() {
             var $ul = $fEditPi.find("ul");
@@ -880,42 +842,36 @@ $(function() {
         }
     }
 
-    function printIp(e) {
-        e.preventDefault();
-        location.href = '/sarbeacons/print/' + $(this).data('id');
+    function printIp() {
+        if ($(this).hasClass('disabled')) return;
+        if ($(this).data('id')) location.href = url + 'sarbeacons/print/' + $(this).data('id');
     }
 
-    function btnSaveIpHandler(e) {
-        e.preventDefault();
+    function btnSaveIpHandler() {
+        if ($(this).hasClass('disabled')) return;
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
-        // pio = JSON.stringify({ 'pio': pio });
 
-        // $.ajax({
-        //     contentType: 'application/json; charset=utf-8',
-        //     dataType: 'json',
-        //     type: 'POST',
-        //     url: '/sarbeacons/sauver',
-        //     data: $('#InterrogationPlan').serialize()
-        // }); 
-        $.post("/sarbeacons/save", { datas: $("#InterrogationPlan").serialize(), pio: pio }, function(data) {
+        $.post(url + 'sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), pio: pio }, function(data) {
             idIp = data.id;
-            if(idIp > 0) {
+            if (idIp > 0) {
                 loadListIp();
                 $fEditPi.find('input[name=id]').val(idIp);
-                $bPrintPi.data({ 'id': idIp });
-                $bMailPi.data({ 'id': idIp });
+
+                $bSavPi
+                    .removeClass('btn-info')
+                    .addClass('btn-success');
 
                 $bPrintPi
+                    .data({ 'id': idIp })
                     .removeClass('btn-warning disabled')
                     .addClass('btn-info');
 
                 $bMailPi
+                    .data({ 'id': idIp })
                     .removeClass('btn-warning disabled')
                     .addClass('btn-info');
 
                 data.msg = "Le plan d'interrogation a bien été enregistré.";
-            } else {
-
             }
 
             noty({
@@ -927,8 +883,8 @@ $(function() {
         })
     }
 
-    function loadListIp(e) {
-        $listIp.load('sarbeacons/list', function(data) {
+    function loadListIp() {
+        $listIp.load(url + 'sarbeacons/list', function() {
             $.each($listIp.find('a'), function() {
                 var id = $(this).data().id;
                 $(this).click(function(e) {
@@ -937,19 +893,47 @@ $(function() {
 
                 $(this).find('.btn-show').click(function(e) {
                     e.stopPropagation();
-                    $.post('sarbeacons/get', { 'id': id }, function(data) {
+                    $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
+                        idIp = id;
+
                         triggerIp([
                             data.latitude,
                             data.longitude
                         ]);
+
+                        $bEditPi
+                            .removeClass('btn-info')
+                            .addClass('btn-warning disabled');
+
+                        $bPrintPi
+                            .data({ 'id': idIp })
+                            .removeClass('btn-warning disabled')
+                            .addClass('btn-info');
+
+                        $bMailPi
+                            .data({ 'id': idIp })
+                            .removeClass('btn-warning disabled')
+                            .addClass('btn-info');
+
+                        // TODO un peu bourrin
                         $.each(data.fields, function(i, field) {
-                            $.each($carInner.find('em'), function() {
+                            $.each($carInner.find('em'), function(j, val) {
                                 if ($(this).html() == field.name) {
-                                    var $a = $(this).parents('a')
-                                    $a.addClass('list-group-item-success')
+                                    pio[j] = {
+                                        name: field.name,
+                                        code: field.code,
+                                        intTime: moment(field).format('X'),
+                                        comment: field.comment,
+                                        latitude: field.lat,
+                                        longitude: field.lon
+                                    };
+                                    var $a = $(this).parents('a');
+                                    $a.addClass('list-group-item-success');
                                     if (field.comment) {
                                         $a.find('.comment').show();
-                                        $a.find('textarea').html(field.comment);
+                                        $a.find('textarea')
+                                            .prop('readonly', true)
+                                            .html(field.comment);
                                     }
                                 }
                             });
@@ -959,59 +943,4 @@ $(function() {
             });
         });
     }
-
-    // /* chargement ajax des données de la map */
-    // function loadFields(init = true) {
-    //     $.getJSON("data/testter.geojson")
-    //         .done(function(data) {
-    //             var lay = L.geoJson(data, {
-    //                 pointToLayer: function(feature, latlng) {
-    //                     var prop = feature.properties;
-    //                     var icon;
-    //                     var marker;
-
-    //                     switch (prop.type) {
-    //                         case "AD":
-    //                             icon = icTer;
-    //                             break;
-    //                         case "HP":
-    //                             icon = icHel;
-    //                             break;
-    //                     }
-
-    //                     marker = L.marker(latlng, { icon: icon })
-    //                         .bindPopup(prop.name);
-
-    //                     fields.push(feature);
-    //                     fieldNames.push(prop.code);
-
-    //                     return marker;
-    //                 }
-    //             });
-    //             return lay.features;
-    //             // addToggleBtnToMap('ter', lay, init);
-    //         })
-    //         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des fields") });
-    // }
-
-    // function loadBeacons(init = true) {
-    //     $.getJSON("data/bal.GeoJson")
-    //         .done(function(data) {
-    //             var lay = L.geoJson(data, {
-    //                 pointToLayer: function(feature, latlng) {
-    //                     beacons.push(feature);
-    //                     beaconNames.push(feature.properties.code);
-    //                     var marker = L.marker(latlng, { icon: icBal });
-    //                     marker.bindPopup(feature.properties.code);
-    //                     return marker;
-    //                 }
-    //             });
-    //             if (init) lay.addTo(orbit);
-    //             // addToggleBtnToMap('bal', lay, init);
-    //             return lay;
-
-    //         })
-    //         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des beacons.") });
-    // }
-
-});
+};
