@@ -39,7 +39,7 @@ var sarbeacons = function(url) {
         IC_BAL_SIZE = 10,
         IC_PIO_SIZE = 20,
         IC_HEL_SIZE = 20,
-        IC_SAR_SIZE = 20,
+        IC_SAR_SIZE = 40,
         IC_SAR_ANCH = IC_SAR_SIZE / 2;
     const
         icTer = L.icon({
@@ -180,18 +180,51 @@ var sarbeacons = function(url) {
 
     $aHist.click(aHistHandler);
 
+    function MapControl() {
+        var _this = this;
+        this.latLon = DFLT_LAT_LNG;
+        this.zoom = DFLT_ZOOM;
+        this.setLatLon = function(latLon) {
+            _this.latLon = latLon;
+            return this;
+        };
+        this.setZoom = function(zoom) {
+            _this.zoom = zoom;
+            return this;
+        },
+        this.center = function(currentZoom = true) {
+            var zoom;
+            if(currentZoom) zoom = orbit.getZoom();
+            else zoom = _this.zoom;
+            orbit.setView(_this.latLon, zoom);
+            return this;
+        }
+    }
+    /* Pour gérer le bouton de centrage sur la FIR */
+    var mapControl = new MapControl();
+    /* Pour gérer le bouton de centrage sur le point d'alerte Sar */
+    var mapSarControl = new MapControl();
+    mapControl.center();
+
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
         var coord = [e.latlng.lat, e.latlng.lng];
-        centerMap(coord, PIO_ZOOM);
         triggerIp(coord);
     });
+
     /* Class pour ajouter un bouton sur la carte */
     L.Control.Button = L.Control.extend({
 
         options: {
             position: 'topright'
         },
+
+        // setCallBack: function(callback) {
+        //     L.DomEvent
+        //         .addListener(this._container, 'click', L.DomEvent.stop)
+        //     L.DomEvent
+        //         .addListener(this._container, 'click', callback, this);     
+        // },
 
         initialize: function(options) {
             this._button = {};
@@ -274,19 +307,29 @@ var sarbeacons = function(url) {
     });
 
     function refreshBtnClickHandler() {
-        centerMap();
+        mapControl.center();
     }
-
     new L.Control.Button({
-        'text': '', 
-        'iconUrl': icPIO.options.iconUrl, 
+        'text': '',
+        'iconUrl': icPIO.options.iconUrl,
         'onClick': refreshBtnClickHandler,
-        'hideText': true, 
-        'maxWidth': 25, 
+        'hideText': true,
+        'maxWidth': 25,
         'doToggle': false,
-        'toggleStatus': false, 
+        'toggleStatus': false,
         'map': orbit
     }).addTo(orbit);
+
+    var btnCenterSar = new L.Control.Button({
+        'text': '',
+        'iconUrl': icSAR.options.iconUrl,
+        'onClick': mapSarControl.center,
+        'hideText': true,
+        'maxWidth': 25,
+        'doToggle': false,
+        'toggleStatus': true,
+        'map': orbit
+    });
 
     function showFieldsBtnClickHandler() {
 
@@ -294,8 +337,8 @@ var sarbeacons = function(url) {
 
     new L.Control.Button({
         'text': '',
-        'iconUrl': icTer.options.iconUrl, 
-        'onClick': showFieldsBtnClickHandler, 
+        'iconUrl': icTer.options.iconUrl,
+        'onClick': showFieldsBtnClickHandler,
         'hideText': true,
         'maxWidth': 25,
         'doToggle': true,
@@ -307,10 +350,9 @@ var sarbeacons = function(url) {
     function showBeaconsBtnClickHandler() {
 
     }
-
     new L.Control.Button({
         'text': '',
-        'iconUrl': icBal.options.iconUrl, 
+        'iconUrl': icBal.options.iconUrl,
         'onClick': showBeaconsBtnClickHandler,
         'hideText': true,
         'maxWidth': 25,
@@ -319,6 +361,7 @@ var sarbeacons = function(url) {
         'layer': mapLayers['bal'],
         'map': orbit
     }).addTo(orbit);
+
 
     $.getJSON("data/testter.geojson")
         .done(function(data) {
@@ -552,6 +595,11 @@ var sarbeacons = function(url) {
         refreshIp();
         /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
         mkSAR = updateMarker(mkSAR, latLon, icSAR);
+        btnCenterSar.addTo(orbit);
+
+        mapSarControl
+            .setLatLon(latLon)
+            .center();
         /* AFFICHE EN-TETE */
         infoPI();
         /* [] CONTENANT LES MARQUEURS DES fields LES PLUS PROCHES */
@@ -583,9 +631,9 @@ var sarbeacons = function(url) {
 
         function infoPI() {
             $fIp.find('h4')
-                .html('<span class="glyphicon glyphicon-alert"></span>'+
-                        ' PI démarré à ' + moment().format('hh:mm:ss') + 
-                        ' le ' + moment().format('DD/MM'));
+                .html('<span class="glyphicon glyphicon-alert"></span>' +
+                    ' PI démarré à ' + moment().format('hh:mm:ss') +
+                    ' le ' + moment().format('DD/MM'));
         }
 
         function processFieldsList() {
@@ -791,10 +839,8 @@ var sarbeacons = function(url) {
     function btnEditIpHandler() {
         if ($(this).hasClass('disabled')) return;
         $('#title-edit-pi').html("Editer le Plan d'Interrogation");
-        if(idIp == null && !$fEditPi.find('form').length)
-        {
-            $fEditPi.load(url + 'sarbeacons/form',
-                {
+        if (idIp == null && !$fEditPi.find('form').length) {
+            $fEditPi.load(url + 'sarbeacons/form', {
                     'id': idIp,
                     'lat': mkSAR._latlng.lat,
                     'lon': mkSAR._latlng.lng
@@ -803,7 +849,7 @@ var sarbeacons = function(url) {
                     refreshFieldList();
 
                     $fEditPi.find('input[type="submit"]')
-                        .click(function (e) {
+                        .click(function(e) {
                             e.preventDefault();
                             $("#mdl-edit-pi").modal('hide');
                             $bEditPi
@@ -812,8 +858,7 @@ var sarbeacons = function(url) {
                         });
                 }
             );
-        }
-        else refreshFieldList();
+        } else refreshFieldList();
 
         function refreshFieldList() {
             var $ul = $fEditPi.find("ul");
