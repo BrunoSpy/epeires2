@@ -156,6 +156,11 @@ class InterrogationPlan
         return $object_vars;
     }
 
+    public function getPdfFileName() {
+        $date = $this->startTime->format('dmY');
+        return 'data/interrogation-plans/('.$this->id.')_PI_du_'.$date.'.pdf';
+    }
+
     public function isValid() {
         return true;
     }
@@ -254,6 +259,5 @@ class InterrogationPlan
     {
         $this->longitude = $longitude;
     }
-
 
 }

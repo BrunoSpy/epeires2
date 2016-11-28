@@ -28,18 +28,27 @@ use Core\Controller\AbstractEntityManagerAwareController;
 
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
+
+use Zend\Mail\Message;
+use Zend\Mail\Transport\Smtp;
+use Zend\Mail\Transport\SmtpOptions;
+use Zend\Mime\Mime;
+use Zend\Mime\Part as MimePart;
+use Zend\Mime\Message as MimeMessage;
 /**
  *
  * @author Loïc Perrin
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    private $em, $form;
+    private $em, $viewpdfrenderer, $config, $form;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, $viewpdfrenderer, $config)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
+        $this->viewpdfrenderer = $viewpdfrenderer;
+        $this->config = $config;
         $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
     }
 
@@ -82,7 +91,6 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $datasIntPlan = [];
         parse_str($pdatas, $datasIntPlan);
 
-
         if (is_array($post['pio']) && count($post['pio']) > 0) {
             $fields = [];
             foreach ($ppio as $i => $field) {
@@ -94,7 +102,34 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $result = $this->sgbd()->save($datasIntPlan);
         $id = ($result['type'] == 'success') ? $result['msg']->getId() : 0;
+        if($result['type'] == 'success') {
+            $this->saveToPdf($result['msg']);
+        }
         return new JsonModel(['id' => $id, 'type' => $result['type'], 'msg' => $result['msg']]);
+    }
+
+    private function saveToPdf($iP) 
+    {
+        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
+
+        $pdf = (new PdfModel())             
+            ->setOption('paperSize', 'a4');                         
+
+        $pdfView = (new ViewModel($pdf))
+            ->setTerminal(true)
+            ->setTemplate('application/sar-beacons/print')
+            ->setVariables([
+                'iP' => $iP
+            ]);
+
+        $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
+        $engine = $this->viewpdfrenderer->getEngine();
+        $engine->load_html($html);
+        $engine->render();
+
+        $dir = 'data/interrogation-plans';
+        if(! is_dir($dir)) mkdir($dir);
+        file_put_contents($iP->getPdfFileName(), $engine->output());
     }
 
     public function listAction() 
@@ -131,16 +166,61 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
 
-        $pdf = new PdfModel();             
-        $pdf->setVariables([
-            'iP' => $iP
-        ]);
-        $pdf->setOption('paperSize', 'a4');                         
-
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');             
-        $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime()));
+        $pdf = (new PdfModel())             
+            ->setOption('paperSize', 'a4')
+            ->setVariables([
+                'iP' => $iP
+            ]);
 
         return $pdf;
+    }
+
+    public function mailAction()
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
+        if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel();
+
+        $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
+
+        $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
+        $text->type = Mime::TYPE_TEXT;
+        $text->charset = 'utf-8';
+        
+        $fileContents = fopen($iP->getPdfFileName(), 'r');
+        $attachment = new MimePart($fileContents);
+        $attachment->type = 'application/pdf';
+
+        $args = explode('/', $iP->getPdfFileName());
+        $attachment->filename = end($args);
+
+        $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
+        $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
+        
+        $body = new MimeMessage();
+        $body
+            ->setParts([
+                $text,
+                $attachment
+            ]);
+
+        $message = (new Message())
+            ->setEncoding("UTF-8")
+            ->addFrom($this->config['emailfrom'])
+            ->addTo('loic.perrin@aviation-civile.gouv.fr')
+            ->setSubject('Plan d\'interrogation')
+            ->setBody($body);
+
+        // echo $message->toString();
+        // echo $message->isValid();
+        if($message->isValid()) 
+        {
+            $transportOptions = new SmtpOptions($this->config['smtp']);
+            $transport = (new Smtp())
+                ->setOptions($transportOptions)
+                ->send($message);
+        }
+        return new JsonModel();
     }
 
     private function authSarBeacons($action) {

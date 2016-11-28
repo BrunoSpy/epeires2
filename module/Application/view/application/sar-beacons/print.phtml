@@ -102,15 +102,14 @@
                     <td> <img src="<?php echo __DIR__ ?>/../../../../../public/img/logo-dsna.png" /></td>
                     <td style="text-align: right;">Généré le <?php echo $formatterJourLong->format(new \DateTime())?> à <?php echo $formatterHeure->format(new \DateTime())?>
                     </td>
-                </tr>
             </table>
         </div>
         <div id="title" class="text-center">
             <h2><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?> démarré le <?php echo $formatterJour->format($iP->getStartTime()); ?> à <?php echo $formatterHeure->format($iP->getStartTime()); ?></h2>
         </div>
         <div id="intplan-pdf">
-        <?php  echo $this->sbViewHelper()->renderIp($iP); ?>
-        <p id = "signature">BTIV du CRNA-N</p>
+            <?php  echo $this->sbViewHelper()->renderIp($iP); ?>
+            <p id = "signature">BTIV du CRNA-N</p>
         </div>
     </body>
 </html>

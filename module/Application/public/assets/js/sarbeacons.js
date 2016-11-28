@@ -118,10 +118,10 @@ var sarbeacons = function(url) {
         $tab3 = $('#tabs-3'),
 
         $fIp = $('#f-ip'),
-        $bSavPi = $('#btn-sav-pi'),
-        $bEditPi = $('#btn-edit-pi'),
-        $bPrintPi = $('#btn-print-pi'),
-        $bMailPi = $('#btn-mail-pi'),
+        $bSavIp = $('#btn-sav-pi'),
+        $bEditIp = $('#btn-edit-pi'),
+        $bPrintIP = $('#btn-print-pi'),
+        $bMailIp = $('#btn-mail-pi'),
 
         $fEditPi = $('#f-edit-pi'),
         $carInner = $('.carousel-inner'),
@@ -174,10 +174,10 @@ var sarbeacons = function(url) {
 
     $bRecB.click(findByBeacon);
     $bRecT.click(findByField);
-    $bEditPi.click(btnEditIpHandler);
-    $bSavPi.click(btnSaveIpHandler);
-    $bPrintPi.click(printIp);
-
+    $bEditIp.click(btnEditIpHandler);
+    $bSavIp.click(btnSaveIpHandler);
+    $bPrintIP.click(printIp);
+    $bMailIp.click(mailIp);
     $aHist.click(aHistHandler);
 
     function MapControl() {
@@ -620,7 +620,7 @@ var sarbeacons = function(url) {
             $tab2.find('h4').eq(0).html('');
             $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
             $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
-            $bEditPi.removeClass('btn-success').addClass('btn-info');
+            $bEditIp.removeClass('btn-success').addClass('btn-info');
             $('#btn-sav-pi, #btn-mail-pi, #btn-print-pi')
                 .addClass('btn-warning disabled')
                 .removeClass('btn-info');
@@ -737,7 +737,7 @@ var sarbeacons = function(url) {
                         .toggleClass('list-group-item-success')
                         .addClass('active');
 
-                    $bSavPi
+                    $bSavIp
                         .removeClass('btn-warning disabled')
                         .addClass('btn-info');
                     // pio = pio.filter(x => x.name != $(this).data().name);
@@ -852,7 +852,7 @@ var sarbeacons = function(url) {
                         .click(function(e) {
                             e.preventDefault();
                             $("#mdl-edit-pi").modal('hide');
-                            $bEditPi
+                            $bEditIp
                                 .removeClass('btn-info')
                                 .addClass('btn-success');
                         });
@@ -892,6 +892,11 @@ var sarbeacons = function(url) {
         if ($(this).data('id')) location.href = url + 'sarbeacons/print/' + $(this).data('id');
     }
 
+    function mailIp() {
+        if ($(this).hasClass('disabled')) return;
+        if ($(this).data('id')) location.href = url + 'sarbeacons/mail/' + $(this).data('id');
+    }
+
     function btnSaveIpHandler() {
         if ($(this).hasClass('disabled')) return;
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
@@ -902,16 +907,16 @@ var sarbeacons = function(url) {
                 loadListIp();
                 $fEditPi.find('input[name=id]').val(idIp);
 
-                $bSavPi
+                $bSavIp
                     .removeClass('btn-info')
                     .addClass('btn-success');
 
-                $bPrintPi
+                $bPrintIP
                     .data({ 'id': idIp })
                     .removeClass('btn-warning disabled')
                     .addClass('btn-info');
 
-                $bMailPi
+                $bMailIp
                     .data({ 'id': idIp })
                     .removeClass('btn-warning disabled')
                     .addClass('btn-info');
@@ -946,16 +951,16 @@ var sarbeacons = function(url) {
                             data.longitude
                         ]);
 
-                        $bEditPi
+                        $bEditIp
                             .removeClass('btn-info')
                             .addClass('btn-warning disabled');
 
-                        $bPrintPi
+                        $bPrintIP
                             .data({ 'id': idIp })
                             .removeClass('btn-warning disabled')
                             .addClass('btn-info');
 
-                        $bMailPi
+                        $bMailIp
                             .data({ 'id': idIp })
                             .removeClass('btn-warning disabled')
                             .addClass('btn-info');
