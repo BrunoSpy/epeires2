@@ -158,7 +158,11 @@ class InterrogationPlan
 
     public function getPdfFileName() {
         $date = $this->startTime->format('dmY');
-        return 'data/interrogation-plans/('.$this->id.')_PI_du_'.$date.'.pdf';
+        return '('.$this->id.')_PI_du_'.$date.'.pdf';
+    }
+
+    public function getPdfFilePath() {
+        return 'data/interrogation-plans/'.$this->getPdfFileName();
     }
 
     public function isValid() {

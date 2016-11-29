@@ -130,6 +130,7 @@ var sarbeacons = function(url) {
         $aHist = $('#a-hist'),
         $listIp = $('#list-ip');
 
+    var editHasBeenClicked = false;
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
@@ -180,7 +181,8 @@ var sarbeacons = function(url) {
     $bMailIp.click(mailIp);
     $aHist.click(aHistHandler);
 
-    function MapControl() {
+    function MapControl() 
+    {
         var _this = this;
         this.latLon = DFLT_LAT_LNG;
         this.zoom = DFLT_ZOOM;
@@ -200,6 +202,107 @@ var sarbeacons = function(url) {
             return this;
         }
     }
+
+    var ActionBtn = function($btn=$('<button></button>'), state=1, action='') 
+    {
+        this.$btn = $btn;
+        this.state = $btn.data('state') || state;
+        this.action = $btn.data('action') || action;
+
+        this.setState = function(state) {
+            this.state = state;
+            this.update();
+        }
+
+        this.getState = function() {
+            return this.state;
+        }
+
+        this.getAction = function() {
+            return this.action;
+        }
+
+        this.update = function() {
+            var _this = this;
+            this.$btn.removeClass(function() {
+                return _this.$btn.attr('class');
+            });
+            this.$btn.addClass('btn btn-action-ip');
+            switch(this.state) {
+                case 0:
+                    this.$btn
+                        .addClass('btn-danger');
+                break;
+                case 1:
+                    this.$btn
+                        .addClass('disabled')
+                        .addClass('btn-warning');
+                break;
+                case 2:
+                    this.$btn
+                        .addClass('btn-info');
+                break;
+                case 3:
+                    this.$btn
+                        .addClass('btn-success');
+                break;
+            } 
+        }
+    }
+
+    var ListBtn = function() 
+    {
+        var _this = this;
+        this.liste = [];
+        this.btnStates = [];
+        this.addBtn = function(aBtn = []) {
+            if (aBtn instanceof Array) {
+                // On conserve l'objet invoquant la méthode
+                var initStates = [];
+                $.each(aBtn, function() {
+                    // ici "this" vaut le bouton
+                    var $btn = $(this);
+                    var xbtn = new ActionBtn($btn);
+                    xbtn.update();
+                    initStates.push(xbtn.getState());
+                    _this.liste.push(xbtn);    
+                });
+                _this.addStates(initStates);
+            }
+        };
+
+        this.addStates = function(aState = []) {
+            this.btnStates.push(aState);
+        };
+
+        this.setStates = function(index = 0) {
+            $.each(this.liste, function(i, xbtn) {
+                xbtn.setState(_this.btnStates[index][i]);
+            });
+        }
+
+        this.setBtn = function(action, state) {
+            var xbtn = this.getBtn(action);
+            xbtn.setState(state);
+        };
+
+        this.getBtn = function(action) {
+            var xbtn;
+            $.each(this.liste, function() {
+                if(this.getAction() === action) {
+                    xbtn = this;
+                } 
+            });
+            return xbtn;
+        };
+    }
+
+    var listBtn = new ListBtn();
+    listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
+    // On enregistre des tableaux d'etat pour les boutons, l'etat d'index 0 étant l'état initiale
+    listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
+    listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
+    listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
     /* Pour gérer le bouton de centrage sur la FIR */
     var mapControl = new MapControl();
     /* Pour gérer le bouton de centrage sur le point d'alerte Sar */
@@ -218,13 +321,6 @@ var sarbeacons = function(url) {
         options: {
             position: 'topright'
         },
-
-        // setCallBack: function(callback) {
-        //     L.DomEvent
-        //         .addListener(this._container, 'click', L.DomEvent.stop)
-        //     L.DomEvent
-        //         .addListener(this._container, 'click', callback, this);     
-        // },
 
         initialize: function(options) {
             this._button = {};
@@ -614,16 +710,15 @@ var sarbeacons = function(url) {
         $tabs.find('.nav-pills>li').eq(1).trigger('click');
 
         function refreshIp() {
+            idIp = null;
             pio = [];
             $carIndic.find('li').remove();
             $carInner.find('div.item').remove();
             $tab2.find('h4').eq(0).html('');
             $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
             $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
-            $bEditIp.removeClass('btn-success').addClass('btn-info');
-            $('#btn-sav-pi, #btn-mail-pi, #btn-print-pi')
-                .addClass('btn-warning disabled')
-                .removeClass('btn-info');
+
+            listBtn.setStates();
 
             $fEditPi.find('input').val('');
             $fEditPi.find('li').remove();
@@ -737,11 +832,6 @@ var sarbeacons = function(url) {
                         .toggleClass('list-group-item-success')
                         .addClass('active');
 
-                    $bSavIp
-                        .removeClass('btn-warning disabled')
-                        .addClass('btn-info');
-                    // pio = pio.filter(x => x.name != $(this).data().name);
-
                     if ($(this).hasClass('btn-danger')) {
                         $fOptCom.show();
                         pio[$(this).data().idt] = {
@@ -756,7 +846,7 @@ var sarbeacons = function(url) {
                         $fOptCom.hide();
                         pio.splice($(this).data().idt, 1);
                     }
-
+                    activateSavBtn();
                 }
             }
         }
@@ -836,6 +926,16 @@ var sarbeacons = function(url) {
         }
     }
 
+    function activateSavBtn() {
+        if (editHasBeenClicked && pio.length > 0) {
+            listBtn.setBtn('edit', 3);
+            listBtn.setBtn('sav', 2);
+        } else {
+            listBtn.setBtn('edit', 2);
+            listBtn.setBtn('sav', 1);           
+        }
+    }
+
     function btnEditIpHandler() {
         if ($(this).hasClass('disabled')) return;
         $('#title-edit-pi').html("Editer le Plan d'Interrogation");
@@ -852,9 +952,8 @@ var sarbeacons = function(url) {
                         .click(function(e) {
                             e.preventDefault();
                             $("#mdl-edit-pi").modal('hide');
-                            $bEditIp
-                                .removeClass('btn-info')
-                                .addClass('btn-success');
+                            editHasBeenClicked = true;
+                            activateSavBtn();
                         });
                 }
             );
@@ -889,12 +988,20 @@ var sarbeacons = function(url) {
 
     function printIp() {
         if ($(this).hasClass('disabled')) return;
-        if ($(this).data('id')) location.href = url + 'sarbeacons/print/' + $(this).data('id');
+        if (idIp) location.href = url + 'sarbeacons/print/' + idIp;
     }
 
     function mailIp() {
         if ($(this).hasClass('disabled')) return;
-        if ($(this).data('id')) location.href = url + 'sarbeacons/mail/' + $(this).data('id');
+        if (idIp) {
+            $.post(url + 'sarbeacons/mail', {id: idIp} , function() {
+                noty({
+                    text: 'Courriels envoyés avec succès.',
+                    type: 'success',
+                    timeout: 4000,
+                });
+            });
+        }
     }
 
     function btnSaveIpHandler() {
@@ -906,21 +1013,7 @@ var sarbeacons = function(url) {
             if (idIp > 0) {
                 loadListIp();
                 $fEditPi.find('input[name=id]').val(idIp);
-
-                $bSavIp
-                    .removeClass('btn-info')
-                    .addClass('btn-success');
-
-                $bPrintIP
-                    .data({ 'id': idIp })
-                    .removeClass('btn-warning disabled')
-                    .addClass('btn-info');
-
-                $bMailIp
-                    .data({ 'id': idIp })
-                    .removeClass('btn-warning disabled')
-                    .addClass('btn-info');
-
+                listBtn.setStates(2);
                 data.msg = "Le plan d'interrogation a bien été enregistré.";
             }
 
@@ -944,30 +1037,16 @@ var sarbeacons = function(url) {
                 $(this).find('.btn-show').click(function(e) {
                     e.stopPropagation();
                     $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
-                        idIp = id;
-
                         triggerIp([
                             data.latitude,
                             data.longitude
                         ]);
-
-                        $bEditIp
-                            .removeClass('btn-info')
-                            .addClass('btn-warning disabled');
-
-                        $bPrintIP
-                            .data({ 'id': idIp })
-                            .removeClass('btn-warning disabled')
-                            .addClass('btn-info');
-
-                        $bMailIp
-                            .data({ 'id': idIp })
-                            .removeClass('btn-warning disabled')
-                            .addClass('btn-info');
-
+                        idIp = id;
+                        listBtn.setStates(3);
                         // TODO un peu bourrin
                         $.each(data.fields, function(i, field) {
                             $.each($carInner.find('em'), function(j, val) {
+                                $(this).parent().siblings('button').eq(1).hide();
                                 if ($(this).html() == field.name) {
                                     pio[j] = {
                                         name: field.name,
@@ -977,6 +1056,7 @@ var sarbeacons = function(url) {
                                         latitude: field.lat,
                                         longitude: field.lon
                                     };
+                                    var $btnContact = $(this).parents('button');
                                     var $a = $(this).parents('a');
                                     $a.addClass('list-group-item-success');
                                     if (field.comment) {

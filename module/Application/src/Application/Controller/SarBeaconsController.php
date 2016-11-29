@@ -129,7 +129,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $dir = 'data/interrogation-plans';
         if(! is_dir($dir)) mkdir($dir);
-        file_put_contents($iP->getPdfFileName(), $engine->output());
+        file_put_contents($iP->getPdfFilePath(), $engine->output());
     }
 
     public function listAction() 
@@ -168,6 +168,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $pdf = (new PdfModel())             
             ->setOption('paperSize', 'a4')
+            ->setOption('filename', $iP->getPdfFileName())
             ->setVariables([
                 'iP' => $iP
             ]);
@@ -181,18 +182,18 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel();
 
-        $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
+        $post = $this->getRequest()->getPost();
+        $iP = $this->sgbd()->get($post['id']);
 
         $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
         $text->type = Mime::TYPE_TEXT;
         $text->charset = 'utf-8';
         
-        $fileContents = fopen($iP->getPdfFileName(), 'r');
+        $fileContents = fopen($iP->getPdfFilePath(), 'r');
         $attachment = new MimePart($fileContents);
         $attachment->type = 'application/pdf';
 
-        $args = explode('/', $iP->getPdfFileName());
-        $attachment->filename = end($args);
+        $attachment->filename = $iP->getPdfFileName();
 
         $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
         $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
