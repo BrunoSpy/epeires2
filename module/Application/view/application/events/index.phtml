@@ -135,6 +135,11 @@ if($this->view == "30") {
         echo 'cats = null;';
     }
 }
+if($this->onlyroot) {
+    echo 'var onlyroot = 1';
+} else {
+    echo 'var onlyroot = 0';
+}
 ?>
 
 $('#timeline').timeline({

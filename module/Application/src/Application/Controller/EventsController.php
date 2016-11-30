@@ -93,7 +93,8 @@ class EventsController extends TabController
         $this->flashMessenger()->clearMessages();
         
         $this->viewmodel->setVariables(array(
-            'messages' => $return
+            'messages' => $return,
+            'onlyroot' => true
         ));
         
         return $this->viewmodel;

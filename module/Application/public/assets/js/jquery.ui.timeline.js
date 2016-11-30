@@ -166,6 +166,7 @@
                 'margin-left': this.options.leftOffset+'px'
             });
             this.element.append(eventsContainer);
+            this.element.prepend('<div id="timeline-background"></div>');
             this.largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             //first : draw categories
             $.when(
@@ -252,6 +253,7 @@
             $(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+                $("#timeline-background").css('top', $(window).scrollTop());
             });
 
             //gestion des évènements souris
@@ -696,7 +698,7 @@
                 this.forceUpdateView(true);
             } else if (viewName === "sixhours" && this.dayview) {
                 this.dayview = false;
-                this.element.removeClass('anotherday');
+                this.element.find("#timeline-background").removeClass('anotherday');
                 this.forceUpdateView(true);
             }
         },
@@ -717,9 +719,9 @@
                 }
                 var now = new Date();
                 if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
-                    this.element.addClass('anotherday');
+                    this.element.find("#timeline-background").addClass('anotherday');
                 } else {
-                    this.element.removeClass('anotherday');
+                    this.element.find("#timeline-background").removeClass('anotherday');
                 }
                 //on récupère les évènements
                 this._pauseUpdate();
