@@ -73,10 +73,10 @@ body,
 #btn-rech-bal,
 #btn-rech-coo,
 #btn-rech-ter,
-#btn-edit-pi,
-#btn-sav-pi,
-#btn-mail-pi,
-#btn-print-pi
+#btn-edit-ip,
+#btn-sav-ip,
+#btn-mail-ip,
+#btn-print-ip
 {
     margin: 0;
     padding: 10px;
@@ -175,6 +175,19 @@ body,
 
 .form-group textarea {
     background-color: white;
+}
+
+#f-edit-ip h2 {
+    margin-top:25px;
+}
+
+#f-edit-ip ul {
+  margin: 25px 45px 0 15px;
+  padding: 0;
+}
+
+#f-edit-ip textarea {
+  margin-bottom: 25px;
 }
 
 .ui-autocomplete {

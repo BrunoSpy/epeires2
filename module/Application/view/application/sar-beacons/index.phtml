@@ -57,13 +57,13 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
             <div id="f-ip" class="cache">
                 <h4></h4>
 
-                <button class="btn btn-action-ip" id="btn-edit-pi" data-toggle="modal" data-action="edit" data-state="2" href="#mdl-edit-pi"><span class="glyphicon glyphicon-edit"></span></button>
+                <button class="btn btn-action-ip" id="btn-edit-ip" data-toggle="modal" data-action="edit" data-state="2" href="#mdl-edit-ip"><span class="glyphicon glyphicon-edit"></span></button>
 
-                <button class="btn btn-action-ip" id="btn-sav-pi" data-action="sav" data-state="1"><span class="glyphicon glyphicon-floppy-save"></span></button>
+                <button class="btn btn-action-ip" id="btn-sav-ip" data-action="sav" data-state="1"><span class="glyphicon glyphicon-floppy-save"></span></button>
 
-                <button class="btn btn-action-ip" id="btn-mail-pi" data-action="mail" data-state="1"><span class="glyphicon glyphicon-envelope"></span></button>
+                <button class="btn btn-action-ip" id="btn-mail-ip" data-action="mail" data-state="1"><span class="glyphicon glyphicon-envelope"></span></button>
 
-                <button class="btn btn-action-ip" id="btn-print-pi" data-action="print" data-state="1"><span class="glyphicon glyphicon-print"></span></button>
+                <button class="btn btn-action-ip" id="btn-print-ip" data-action="print" data-state="1"><span class="glyphicon glyphicon-print"></span></button>
             </div>
 <!--                     <h4>Résultats des recherches de terrains</h4> -->
             <div id="req-pio" class="carousel slide cache" data-ride="carousel">
@@ -96,10 +96,10 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
     </div>
 </div>
 
-<?=$this->modalWindow(  "mdl-edit-pi", 
-                        "<h3 id='title-edit-pi'></h3>", 
+<?=$this->modalWindow(  "mdl-edit-ip", 
+                        "<h3 id='title-edit-ip'></h3>", 
                         "", 
-                        "<div id='f-edit-pi'></div>")
+                        "<div id='f-edit-ip'></div>")
                         ?>
 
 <?php $this->inlineScript()->captureStart();?>

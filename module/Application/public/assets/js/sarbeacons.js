@@ -19,144 +19,113 @@ var sarbeacons = function(url) {
     var Field = function(index, field, d, cap) {
         this.index = index;
         this.field = field;
+        this.coord = this.field.geometry.coordinates;
+        this.props = this.field.properties;
         this.d = d;
         this.cap = cap;
-        
-        this.getHtml = function() {
-            var coord = this.field.geometry.coordinates;
-            var props = this.field.properties;
+        this.comment = '';
+        this.intTime = null;
 
+        this.toArray = function() {
+            var array = {};
+            array.name = this.getCode();
+            array.code = this.getName();
+            array.latitude = this.coord[0];
+            array.longitude = this.coord[1];
+            array.comment = this.comment;
+            array.intTime = this.intTime;
+            return array;
+        },
+
+        this.getCoord = function() {
+            if(this.coord) return this.coord;
+        },
+
+        this.getCode = function() {
+            return this.props.code;
+        },
+
+        this.getName = function() {
+            return this.props.name;
+        },
+
+        this.setIntTime = function(time) {
+            this.intTime = time;
+        },
+
+        this.getIntTime = function() {
+            return this.intTime;
+        },
+
+        this.getPopup = function() {
+            return '<h3>'+this.getCode()+'</h3>'+
+                '<h4>'+this.getName()+'</h4>'+
+                '<h5>distance : '+this.d+' km</h5>'+
+                '<h5>cap : '+this.cap+'°</h5>';
+        },
+
+        this.getHtml = function() {
+            var img = (this.props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
             var $field =
                 $('<a class="list-group-item">' +
+                    '<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>' +
+                    '<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>' +
                     '<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>' +
-                    '<h5><strong>' + props.code + '</strong> <br /><em>' + props.name + '</em> </h5>' +
-                '</a>')
-                .click({ 'latLon': [coord[1], coord[0]] }, clickFieldHandler);
+                    '<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>' +
+                    '<div class="form-group comment cache"><textarea rows="1" placeholder="commentaire optionnel"></textarea></div>' +
+                '</a>');
 
-            var $fOptCom = $('<div class="form-group comment"></div>')
-                .appendTo($field)
-                .hide();
+            return $field;
+        },
 
-            $('<textarea rows="1" class="form-control" placeholder="commentaire optionnel"></textarea>')
-                .data({
-                    "idt": this.index,
-                    "name": props.name,
-                })
-                .blur(function() {
-                    var p = pio[$(this).data().idt];
-                    p["comment"] = $(this).val();
-                })
-                .appendTo($fOptCom);
-
-            $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
-                .data({
-                    "idt": this.index,
-                    "code": props.code,
-                    "name": props.name,
-                    "lat": coord[1],
-                    "lon": coord[0]
-                })
-                .click(clickContactHandler)
-                .prependTo($field);
-
-            var img = (props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
-
-            $('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
-                .data({ 'latLon': [coord[1], coord[0]] })
-                .click(function(e) {
-                    // centerMap($(this).data().latLon, orbit.getZoom());
-                })
-                .prependTo($field);
-
-            if (this.index == 0) {
-                $field.addClass('active');
-                // mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], null);
-            }
-            // markersPIO.push(createIpMarker(i, [coord[1], coord[0]]));
-            console.log($field);
-            return $field.html();
-
-            function clickFieldHandler(e) {
-                // detailBeacon(e);
-                $('.carousel-inner a.active').removeClass('active');
-                $(this).addClass('active');
-            }
-
-            function clickContactHandler() {
-                var $fOptCom = $(this).parent().find('.form-group');
-
-                $carInner.find('a.active')
-                    .removeClass('active');
-
-                $(this)
-                    .toggleClass('btn-info')
-                    .toggleClass('btn-danger');
-                $(this).find('span')
-                    .toggleClass('glyphicon-check')
-                    .toggleClass('glyphicon-remove');
-
-                $(this).parent('.list-group-item')
-                    .toggleClass('list-group-item-success')
-                    .addClass('active');
-
-                if ($(this).hasClass('btn-danger')) {
-                    $fOptCom.show();
-                    pio[$(this).data().idt] = {
-                        name: $(this).data().name,
-                        code: $(this).data().code,
-                        intTime: moment().format('X'),
-                        comment: $fOptCom.find('textarea').val(),
-                        latitude: $(this).data().lat,
-                        longitude: $(this).data().lon
-                    };
-                } else {
-                    $fOptCom.hide();
-                    pio.splice($(this).data().idt, 1);
-                }
-                activateSavBtn();
-            }
+        this.setComment = function(str) {
+            this.comment = str;
         }
     }
 
     var IntPlan = function(latLon) {
         var _this = this;
-        this.latLon = latLon || DFLT_LAT_LNG;
+        this.latLon = latLon;
         this.listFeature = [];
-        // var markersPIO = [];
+        this.ip = [];
 
-        this.getHtml = function() {
-            for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
-                var $dItem = $('<div class = "item"></div>');
-                var $liIndicator = $('<li data-target = "#req-pio" data-slide-to="' + j + '"></li>');
-                if (j == 0) {
-                    $dItem.addClass('active');
-                    $liIndicator.addClass('active');
-                }
-                for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
-                    var $ter = $(this.listFeature[i].getHtml(i));
-                    $dItem.append($ter);
-                }
-                // $carIndic.append($liIndicator);
-                // $carInner.append($dItem);
-                return $dItem.html();
-            }
+        this.addIp = function(index) {
+            var feature = this.get(index);
+            feature.setIntTime(moment().format('X'));
+            if (this.ip.indexOf(feature) == -1) this.ip.push(feature);
+        }
+
+        this.getIp = function() {
+            return this.ip;
+        }
+
+        this.getList = function() {
+            return this.listFeature;
+        }
+
+        this.get = function(index) {
+            return this.listFeature[index];
         }
         // features = tableau de features geojson (leaflet)
-        this.setCoordToPoint = function(features) {
+        this.setList = function(features) {
+            var dist = [];
             $.each(features, function(i, feature) {
                 var coord = this.geometry.coordinates;
                 var dRad = _this.distRad(_this.latLon[0], _this.latLon[1], coord[1], coord[0]);
-                var d = _this.radTokm(dRad);
-                var cap = _this.cap(dRad, _this.latLon[0], _this.latLon[1], coord[1], coord[0]) * 180 / Math.PI;
-                if (d && cap) _this.listFeature.push(new Field(i, this, d, cap));
+                dist.push([dRad, i]);
             });
-            _this.listFeature.sort(function(a, b) {
-                return a.d - b.d;
+            dist.sort(function(a, b) {
+                return a[0] - b[0];
             });
-        }
+            dist = dist.slice(0, NB_RESULT_PIO);
 
-        this.getCoordToPoint = function() {
-            return this.listFeature;
+            $.each(dist, function(i, dist) {
+                var feature = features[dist[1]];
+                var coord = feature.geometry.coordinates;
+                var d = _this.radTokm(dist[0]);
+                var cap = _this.cap(dist[0], _this.latLon[0], _this.latLon[1], coord[1], coord[0]) * 180 / Math.PI;
+                _this.listFeature.push(new Field(i, feature, d, cap));
+            });
         }
 
         this.distRad = function(lat1, lon1, lat2, lon2) {
@@ -189,27 +158,6 @@ var sarbeacons = function(url) {
             else
                 return 2 * Math.PI - Math.acos((Math.sin(lat2) - Math.sin(lat1) * Math.cos(drad)) / (Math.sin(drad) * Math.cos(lat1)));
         }
-    }
-
-    function MapControl() {
-        var _this = this;
-        this.latLon = DFLT_LAT_LNG;
-        this.zoom = DFLT_ZOOM;
-        this.setLatLon = function(latLon) {
-            _this.latLon = latLon;
-            return this;
-        };
-        this.setZoom = function(zoom) {
-                _this.zoom = zoom;
-                return this;
-            },
-            this.center = function(currentZoom = true) {
-                var zoom;
-                if (currentZoom) zoom = orbit.getZoom();
-                else zoom = _this.zoom;
-                orbit.setView(_this.latLon, zoom);
-                return this;
-            }
     }
 
     var ActionBtn = function($btn = $('<button></button>'), state = 1, action = '') {
@@ -407,7 +355,7 @@ var sarbeacons = function(url) {
     const PIO_ZOOM = 8;
     /* image du marqueur représentant le lieu de l'alerte */
     const URL_IMG = url + 'assets/img/orbit/',
-        IMG_PIO = URL_IMG + '/marker-pio.png';
+        IMG_PIO = URL_IMG + 'marker-pio.png';
     /* icones */
     const IC_TER_SIZE = 20,
         IC_BAL_SIZE = 10,
@@ -472,7 +420,8 @@ var sarbeacons = function(url) {
         fieldNames = [],
         beacons = [],
         beaconNames = [],
-        pio = [],
+        // pio = [],
+        intPlan = null,
         idIp = null,
         btnCenterSar;
     /* DOM */
@@ -493,12 +442,12 @@ var sarbeacons = function(url) {
         $tab3 = $('#tabs-3'),
 
         $fIp = $('#f-ip'),
-        $bSavIp = $('#btn-sav-pi'),
-        $bEditIp = $('#btn-edit-pi'),
-        $bPrintIP = $('#btn-print-pi'),
-        $bMailIp = $('#btn-mail-pi'),
+        $bSavIp = $('#btn-sav-ip'),
+        $bEditIp = $('#btn-edit-ip'),
+        $bPrintIp = $('#btn-print-ip'),
+        $bMailIp = $('#btn-mail-ip'),
 
-        $fEditPi = $('#f-edit-pi'),
+        $fEditIp = $('#f-edit-ip'),
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators'),
 
@@ -595,7 +544,7 @@ var sarbeacons = function(url) {
     $bRecT.click(findByField);
     $bEditIp.click(btnEditIpHandler);
     $bSavIp.click(btnSaveIpHandler);
-    $bPrintIP.click(printIp);
+    $bPrintIp.click(printIp);
     $bMailIp.click(mailIp);
     $aHist.click(aHistHandler);
     /* Boutons d'action */
@@ -606,10 +555,10 @@ var sarbeacons = function(url) {
     listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
     /* Pour gérer le bouton de centrage sur la FIR */
-    var mapControl = new MapControl();
+    // var mapControl = new MapControl();
     /* Pour gérer le bouton de centrage sur le point d'alerte Sar */
-    var mapSarControl = new MapControl();
-    mapControl.center();
+    // var mapSarControl = new MapControl();
+    // mapControl.center();
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
         var coord = [e.latlng.lat, e.latlng.lng];
@@ -618,9 +567,15 @@ var sarbeacons = function(url) {
 
     setMapButtons();
 
+    function centerMap(latLon=DFLT_LAT_LNG, zoom=DFLT_ZOOM) {
+        if (zoom == true) zoom = orbit.getZoom();
+        orbit.setView(latLon, zoom);
+    }
+
     function setMapButtons() {
+
         function refreshBtnClickHandler() {
-            mapControl.center();
+            centerMap();
         }
 
         function showFieldsBtnClickHandler() {
@@ -630,6 +585,13 @@ var sarbeacons = function(url) {
         function showBeaconsBtnClickHandler() {
 
         }
+
+        function centerBtnSarHandler() {
+            if(this instanceof L.Control.Button) {
+                centerMap(this._button.latLon, true);
+            }
+        }
+
         new L.Control.Button({
             'text': '',
             'iconUrl': icPIO.options.iconUrl,
@@ -644,7 +606,7 @@ var sarbeacons = function(url) {
         btnCenterSar = new L.Control.Button({
             'text': '',
             'iconUrl': icSAR.options.iconUrl,
-            'onClick': mapSarControl.center,
+            'onClick': centerBtnSarHandler,
             'hideText': true,
             'maxWidth': 25,
             'doToggle': false,
@@ -857,27 +819,53 @@ var sarbeacons = function(url) {
         return iTer;
     }
 
-
     function triggerIp(latLon) {
-        // var t = new IntPlan(latLon);
-        // t.setCoordToPoint(fields);
-        // console.log(t.getHtml());
-        // console.log(t.getCoordToPoint()[0]);
-
+        centerMap(latLon, true);
         refreshIp();
-        /* PLACER LE MARKER SUR LA POSITION DE L'ALERTE */
+        infoPI();
+
+        intPlan = new IntPlan(latLon);
+        intPlan.setList(fields);
+
         mkSAR = updateMarker(mkSAR, latLon, icSAR);
+        mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
+        btnCenterSar._button.latLon = latLon;
         btnCenterSar.addTo(orbit);
 
-        mapSarControl
-            .setLatLon(latLon)
-            .center();
-        /* AFFICHE EN-TETE */
-        infoPI();
-         // [] CONTENANT LES MARQUEURS DES fields LES PLUS PROCHES 
         var markersPIO = [];
-        var tabDist = calculEachFieldsDistance(latLon);
-        processFieldsList();
+        for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
+            var $dItem = $('<div class = "item"></div>');
+            var $liIndicator = $('<li data-target = "#req-pio" data-slide-to="' + j + '"></li>');
+            if (j == 0) {
+                $dItem.addClass('active');
+                $liIndicator.addClass('active');
+            }
+            for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
+                var ter = intPlan.get(i);
+                markersPIO.push(createIpMarker(i, ter.getCoord(), ter.getPopup()));
+                var $ter = ter.getHtml();
+                $ter.data({"index": i})
+                    .click(clickFieldHandler);
+                $ter.find('textarea')
+                    .data({"index": i})
+                    .blur(blurCommentHandler);
+                $ter.find('button').eq(0)
+                    .data({"index": i})
+                    .click(clickContactHandler);
+                $ter.find('button').eq(1)
+                    .data({"index": i})
+                    .click(clickIconFieldHandler);
+
+                if (i == 0) {
+                    var initCoord = intPlan.get(0).getCoord();
+                    $ter.addClass('active');
+                }
+                $dItem.append($ter);
+            }
+            $carIndic.append($liIndicator);
+            $carInner.append($dItem);
+        }
+        mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], null);
 
         if (pioLay) orbit.removeLayer(pioLay);
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
@@ -887,7 +875,6 @@ var sarbeacons = function(url) {
 
         function refreshIp() {
             idIp = null;
-            pio = [];
             $carIndic.find('li').remove();
             $carInner.find('div.item').remove();
             $tab2.find('h4').eq(0).html('');
@@ -896,8 +883,8 @@ var sarbeacons = function(url) {
 
             listBtn.setStates();
 
-            $fEditPi.find('input').val('');
-            $fEditPi.find('li').remove();
+            $fEditIp.find('input').val('');
+            $fEditIp.find('li').remove();
         }
 
         function infoPI() {
@@ -907,135 +894,56 @@ var sarbeacons = function(url) {
                     ' le ' + moment().format('DD/MM'));
         }
 
-        function processFieldsList() {
-
-            for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
-
-                var $dItem = $('<div class = "item"></div>');
-                var $liIndicator = $('<li data-target = "#req-pio" data-slide-to="' + j + '"></li>');
-
-                if (j == 0) {
-                    $dItem.addClass('active');
-                    $liIndicator.addClass('active');
-                }
-
-                for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
-
-                    var $ter = processField(i, tabDist[i]);;
-                    $dItem.append($ter);
-                }
-
-                $carIndic.append($liIndicator);
-                $carInner.append($dItem);
-            }
-
-            function processField(i, ter) {
-
-                var coord = ter.geometry.coordinates;
-                var props = ter.properties;
-
-                var $ter =
-                    $('<a class="list-group-item">' +
-                        '<span class="badge">d = ' + Math.trunc(ter.d) + ' km, cap = ' + Math.trunc(ter.cap) + '°</span>' +
-                        '<h5><strong>' + (i + 1) + ' - ' + props.code + '</strong> <br /><em>' + props.name + '</em> </h5>' +
-                        '</a>')
-                    .click({ 'latLon': [coord[1], coord[0]] }, clickFieldHandler);
-
-                var $fOptCom = $('<div class="form-group comment"></div>')
-                    .appendTo($ter)
-                    .hide();
-
-                $('<textarea rows="1" class="form-control" placeholder="commentaire optionnel"></textarea>')
-                    .data({
-                        "idt": i,
-                        "name": props.name,
-                    })
-                    .blur(function() {
-                        var p = pio[$(this).data().idt];
-                        p["comment"] = $(this).val();
-
-                    })
-                    .appendTo($fOptCom);
-
-                $('<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>')
-                    .data({
-                        "idt": i,
-                        "code": props.code,
-                        "name": props.name,
-                        "lat": coord[1],
-                        "lon": coord[0]
-                    })
-                    .click(clickContactHandler)
-                    .prependTo($ter);
-
-                var img = (props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
-
-                $('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
-                    .data({ 'latLon': [coord[1], coord[0]] })
-                    .click(function(e) {
-                        centerMap($(this).data().latLon, orbit.getZoom());
-                    })
-                    .prependTo($ter);
-
-                if (i == 0) {
-                    $ter.addClass('active');
-                    mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], null);
-                }
-                markersPIO.push(createIpMarker(i, [coord[1], coord[0]]));
-
-                return $ter;
-
-                function clickFieldHandler(e) {
-                    detailBeacon(e);
-                    $('.carousel-inner a.active').removeClass('active');
-                    $(this).addClass('active');
-                }
-
-                function clickContactHandler() {
-                    var $fOptCom = $(this).parent().find('.form-group');
-
-                    $carInner.find('a.active')
-                        .removeClass('active');
-
-                    $(this)
-                        .toggleClass('btn-info')
-                        .toggleClass('btn-danger');
-                    $(this).find('span')
-                        .toggleClass('glyphicon-check')
-                        .toggleClass('glyphicon-remove');
-
-                    $(this).parent('.list-group-item')
-                        .toggleClass('list-group-item-success')
-                        .addClass('active');
-
-                    if ($(this).hasClass('btn-danger')) {
-                        $fOptCom.show();
-                        pio[$(this).data().idt] = {
-                            name: $(this).data().name,
-                            code: $(this).data().code,
-                            intTime: moment().format('X'),
-                            comment: $fOptCom.find('textarea').val(),
-                            latitude: $(this).data().lat,
-                            longitude: $(this).data().lon
-                        };
-                    } else {
-                        $fOptCom.hide();
-                        pio.splice($(this).data().idt, 1);
-                    }
-                    activateSavBtn();
-                }
-            }
+        function clickIconFieldHandler() {
+            var coord = intPlan.get($(this).data().index).getCoord();
+            centerMap([coord[1], coord[0]], true);
         }
 
-        function createIpMarker(i, latlon) {
+        function clickFieldHandler(e) {
+            var coord = intPlan.get($(this).data().index).getCoord();
+            mkSelected = updateMarker(mkSelected, [coord[1], coord[0]]);
+            $('.carousel-inner a.active').removeClass('active');
+            $(this).addClass('active');
+        }
+
+        function blurCommentHandler() {
+            intPlan.get($(this).data().index).setComment($(this).val());
+        }
+
+        function clickContactHandler() {
+            var $fOptCom = $(this).parent().find('.form-group');
+
+            $carInner.find('a.active')
+                .removeClass('active');
+            $(this)
+                .toggleClass('btn-info')
+                .toggleClass('btn-danger');
+            $(this).find('span')
+                .toggleClass('glyphicon-check')
+                .toggleClass('glyphicon-remove');
+            $(this).parent('.list-group-item')
+                .toggleClass('list-group-item-success')
+                .addClass('active');
+
+            if ($(this).hasClass('btn-danger')) {
+                $fOptCom.show();
+                intPlan.addIp($(this).data().index);
+            } else {
+                $fOptCom.hide();
+            }
+            activateSavBtn();
+        }
+
+        function createIpMarker(i, latlon, popuphtml) {
             var icon = L.icon({
                 iconUrl: IMG_PIO,
                 iconSize: [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i]
             });
-            return L.marker(latlon, {
+            return L.marker([latlon[1], latlon[0]], {
                 icon: icon,
                 opacity: (NB_RESULT_PIO - i) / NB_RESULT_PIO
-            }).bindPopup(tabDist[i].properties.name);
+            })
+            .bindPopup(popuphtml);
         }
 
         function updateMarker(marker, latLon, icon) {
@@ -1045,65 +953,10 @@ var sarbeacons = function(url) {
             orbit.addLayer(marker);
             return marker;
         }
-
-        function distRad(lat1, lon1, lat2, lon2) {
-            // var dLat = (lat2 - lat1) * Math.PI / 180;  // deg2rad below
-            // var dLon = (lon2 - lon1) * Math.PI / 180;
-            // var a = 
-            //  0.5 - Math.cos(dLat)/2 + 
-            //  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            //  (1 - Math.cos(dLon))/2;
-
-            lat1 = (Math.PI / 180) * lat1;
-            lat2 = (Math.PI / 180) * lat2;
-            lon1 = (Math.PI / 180) * lon1;
-            lon2 = (Math.PI / 180) * lon2;
-            return Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2));
-        }
-
-        function radTokm(rad) {
-            return R_TERRE_KM * rad;
-        }
-
-        function cap(drad, lat1, lon1, lat2, lon2) {
-            lat1 = (Math.PI / 180) * lat1;
-            lat2 = (Math.PI / 180) * lat2;
-            lon1 = (Math.PI / 180) * lon1;
-            lon2 = (Math.PI / 180) * lon2;
-
-            if (Math.sin(lon2 - lon1) < 0)
-                return Math.acos((Math.sin(lat2) - Math.sin(lat1) * Math.cos(drad)) / (Math.sin(drad) * Math.cos(lat1)));
-            else
-                return 2 * Math.PI - Math.acos((Math.sin(lat2) - Math.sin(lat1) * Math.cos(drad)) / (Math.sin(drad) * Math.cos(lat1)));
-
-        }
-
-        function calculEachFieldsDistance(latLon) {
-            var tabDist = [];
-            $.each(fields, function(i, val) {
-                var tmp = val;
-                var coord = val.geometry.coordinates;
-                var dRad = distRad(latLon[0], latLon[1], coord[1], coord[0]);
-                tmp.d = radTokm(dRad);
-                tmp.cap = cap(dRad, latLon[0], latLon[1], coord[1], coord[0]) * 180 / Math.PI;
-                if (tmp.d && tmp.cap) tabDist.push(tmp);
-            });
-
-            tabDist.sort(function(a, b) {
-                return a.d - b.d;
-            });
-
-            return tabDist;
-        }
-
-        function detailBeacon(e) {
-            e.preventDefault();
-            mkSelected = updateMarker(mkSelected, e.data.latLon);
-        }
     }
 
     function activateSavBtn() {
-        if (editHasBeenClicked && pio.length > 0) {
+        if (editHasBeenClicked && intPlan.getIp().length > 0) {
             listBtn.setBtn('edit', 3);
             listBtn.setBtn('sav', 2);
         } else {
@@ -1114,49 +967,48 @@ var sarbeacons = function(url) {
 
     function btnEditIpHandler() {
         if ($(this).hasClass('disabled')) return;
-        $('#title-edit-pi').html("Editer le Plan d'Interrogation");
-        if (idIp == null && !$fEditPi.find('form').length) {
-            $fEditPi.load(url + 'sarbeacons/form', {
+        $('#title-edit-ip').html("Editer le Plan d'Interrogation");
+        if (idIp == null && !$fEditIp.find('form').length) {
+            $fEditIp.load(url + 'sarbeacons/form', {
                     'id': idIp,
                     'lat': mkSAR._latlng.lat,
                     'lon': mkSAR._latlng.lng
-                },
-                function() {
-                    refreshFieldList();
-
-                    $fEditPi.find('input[type="submit"]')
-                        .click(function(e) {
-                            e.preventDefault();
-                            $("#mdl-edit-pi").modal('hide');
-                            editHasBeenClicked = true;
-                            activateSavBtn();
-                        });
-                }
-            );
+                }, loadedFormHandler);
         } else refreshFieldList();
 
-        function refreshFieldList() {
-            var $ul = $fEditPi.find("ul");
-            $ul.find('li').remove();
-            $.each(pio, function(index, field) {
-                if (!field) return true;
-                var $li = $('<li class="list-group-item"><strong> ' + moment.unix(field.intTime).format('DD/MM/YY hh:mm:ss') + '</strong> ' + field.name + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + field.comment + '</li>');
+        function loadedFormHandler() {
+            refreshFieldList();
+            $fEditIp.find('input[type="submit"]')
+                .click(function(e) {
+                    e.preventDefault();
+                    $("#mdl-edit-ip").modal('hide');
+                    editHasBeenClicked = true;
+                    activateSavBtn();
+                });
+        }
 
-                $li.find('button')
-                    .data({ 'name': field.name, 'idt': index })
-                    .click(function() {
-                        pio = pio.filter(x => x.name != $(this).data().name);
-                        var $a = $carInner.find('a').eq($(this).data().idt);
-                        $a.find('.form-group').hide();
-                        $a.toggleClass('list-group-item-success')
-                            .find('button').eq(1)
-                            .toggleClass('btn-info')
-                            .toggleClass('btn-danger')
-                            .find('span')
-                            .toggleClass('glyphicon-check')
-                            .toggleClass('glyphicon-remove');
-                        $(this).parent().remove();
-                    });
+        function refreshFieldList() {
+            var $ul = $fEditIp.find("ul");
+            $ul.find('li').remove();
+            $.each(intPlan.getIp(), function(index, field) {
+                // if (!field) return true;
+                var $li = $('<li class="list-group-item"><strong> ' + moment.unix(field.getIntTime()).format('HH:mm:ss') + '</strong> <em>' + field.getCode() + '</em> ' + field.getName() + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + field.comment + '</li>');
+
+                // $li.find('button')
+                //     .data({ 'name': field.name, 'idt': index })
+                //     .click(function() {
+                //         pio = pio.filter(x => x.name != $(this).data().name);
+                //         var $a = $carInner.find('a').eq($(this).data().idt);
+                //         $a.find('.form-group').hide();
+                //         $a.toggleClass('list-group-item-success')
+                //             .find('button').eq(1)
+                //             .toggleClass('btn-info')
+                //             .toggleClass('btn-danger')
+                //             .find('span')
+                //             .toggleClass('glyphicon-check')
+                //             .toggleClass('glyphicon-remove');
+                //         $(this).parent().remove();
+                //     });
                 $ul.append($li);
             });
         }
@@ -1183,16 +1035,19 @@ var sarbeacons = function(url) {
     function btnSaveIpHandler() {
         if ($(this).hasClass('disabled')) return;
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
-
-        $.post(url + 'sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), pio: pio }, function(data) {
+        var iP = [];
+        $.each(intPlan.getIp(), function() {
+            iP.push(this.toArray())
+        });
+        $.post(url + 'sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), iP: iP }, function(data) {
+            console.log('a');
             idIp = data.id;
             if (idIp > 0) {
                 loadListIp();
-                $fEditPi.find('input[name=id]').val(idIp);
+                $fEditIp.find('input[name=id]').val(idIp);
                 listBtn.setStates(2);
                 data.msg = "Le plan d'interrogation a bien été enregistré.";
             }
-
             noty({
                 text: data.msg,
                 type: data.type,

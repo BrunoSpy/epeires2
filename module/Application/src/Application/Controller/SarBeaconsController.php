@@ -86,12 +86,11 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $post = $this->getRequest()->getPost();
         $pdatas = $post['datas'];
-        $ppio = (is_array($post['pio'])) ? $post['pio'] : [];
-
+        $ppio = (is_array($post['iP'])) ? $post['iP'] : [];
         $datasIntPlan = [];
         parse_str($pdatas, $datasIntPlan);
 
-        if (is_array($post['pio']) && count($post['pio']) > 0) {
+        if (is_array($post['iP']) && count($post['iP']) > 0) {
             $fields = [];
             foreach ($ppio as $i => $field) {
                 $f = new Field($field);
