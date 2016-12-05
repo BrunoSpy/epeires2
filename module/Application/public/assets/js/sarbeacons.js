@@ -13,7 +13,8 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  */
-var sarbeacons = function(url) {
+ 
+ var sarbeacons = function(url) {
     "use strict";
 
     var Field = function(index, field, d, cap) {
@@ -28,8 +29,8 @@ var sarbeacons = function(url) {
 
         this.toArray = function() {
             var array = {};
-            array.name = this.getCode();
-            array.code = this.getName();
+            array.name = this.getName();
+            array.code = this.getCode();
             array.latitude = this.coord[0];
             array.longitude = this.coord[1];
             array.comment = this.comment;
@@ -64,6 +65,17 @@ var sarbeacons = function(url) {
                 '<h5>cap : '+this.cap+'°</h5>';
         },
 
+        this.getResume = function() {
+            var $li = $('<li class="list-group-item">' +
+                '<strong>' + moment.unix(this.getIntTime()).format('HH:mm:ss') + '</strong> ' +
+                '[<em>' + this.getCode() + '</em>] ' + 
+                this.getName() + 
+                '<span class="btn-del-field glyphicon glyphicon-remove-circle"></span><br />' + 
+                '<div class = "comment">' + this.comment + '</div>' + 
+            '</li>');
+            return $li;
+        }
+
         this.getHtml = function() {
             var img = (this.props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
             var $field =
@@ -79,6 +91,7 @@ var sarbeacons = function(url) {
         },
 
         this.setComment = function(str) {
+            console.log(str);
             this.comment = str;
         }
     }
@@ -93,6 +106,16 @@ var sarbeacons = function(url) {
             var feature = this.get(index);
             feature.setIntTime(moment().format('X'));
             if (this.ip.indexOf(feature) == -1) this.ip.push(feature);
+        }
+
+        this.delIp = function(index) {
+            // var feature = this.get(index);
+            console.log(this.ip);
+            this.ip = this.ip.filter(function(field) {
+                return (field.index !== index);
+            });
+            // if (this.ip.indexOf(feature) != -1) this.ip.slice(index, )
+            console.log(this.ip);
         }
 
         this.getIp = function() {
@@ -831,7 +854,7 @@ var sarbeacons = function(url) {
         mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
         btnCenterSar._button.latLon = latLon;
         btnCenterSar.addTo(orbit);
-
+        
         var markersPIO = [];
         for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
             var $dItem = $('<div class = "item"></div>');
@@ -907,6 +930,7 @@ var sarbeacons = function(url) {
         }
 
         function blurCommentHandler() {
+            console.log($(this).html());
             intPlan.get($(this).data().index).setComment($(this).val());
         }
 
@@ -991,25 +1015,27 @@ var sarbeacons = function(url) {
             var $ul = $fEditIp.find("ul");
             $ul.find('li').remove();
             $.each(intPlan.getIp(), function(index, field) {
-                // if (!field) return true;
-                var $li = $('<li class="list-group-item"><strong> ' + moment.unix(field.getIntTime()).format('HH:mm:ss') + '</strong> <em>' + field.getCode() + '</em> ' + field.getName() + '<button class="btn-xs btn-danger type = "button"><span class="glyphicon glyphicon-remove"></span></button><br />' + field.comment + '</li>');
+                var $li = field.getResume();
+                $li.appendTo($ul)
+                    .find('.btn-del-field')
+                    .data({'index': field.index })
+                    .click(removeFieldHandler);
 
-                // $li.find('button')
-                //     .data({ 'name': field.name, 'idt': index })
-                //     .click(function() {
-                //         pio = pio.filter(x => x.name != $(this).data().name);
-                //         var $a = $carInner.find('a').eq($(this).data().idt);
-                //         $a.find('.form-group').hide();
-                //         $a.toggleClass('list-group-item-success')
-                //             .find('button').eq(1)
-                //             .toggleClass('btn-info')
-                //             .toggleClass('btn-danger')
-                //             .find('span')
-                //             .toggleClass('glyphicon-check')
-                //             .toggleClass('glyphicon-remove');
-                //         $(this).parent().remove();
-                //     });
-                $ul.append($li);
+                function removeFieldHandler () {
+                    intPlan.delIp($(this).data('index'));
+                    var $a = $carInner.find('a').eq($(this).data('index'));
+                    $a.find('.form-group').hide();
+                    $a.toggleClass('list-group-item-success')
+                        .find('button').eq(0)
+                        .toggleClass('btn-info')
+                        .toggleClass('btn-danger')
+                            .find('span')
+                            .toggleClass('glyphicon-check')
+                            .toggleClass('glyphicon-remove');
+                    $(this).parent().remove();
+                    activateSavBtn();
+                }
+
             });
         }
     }
@@ -1040,7 +1066,6 @@ var sarbeacons = function(url) {
             iP.push(this.toArray())
         });
         $.post(url + 'sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), iP: iP }, function(data) {
-            console.log('a');
             idIp = data.id;
             if (idIp > 0) {
                 loadListIp();
@@ -1062,7 +1087,8 @@ var sarbeacons = function(url) {
             $.each($listIp.find('a'), function() {
                 var id = $(this).data().id;
                 $(this).click(function(e) {
-                    $(this).find('.list-ip-content').toggleClass('cache');
+                    $(this).find('.list-ip-content')
+                        .toggleClass('cache');
                 });
 
                 $(this).find('.btn-show').click(function(e) {
@@ -1077,16 +1103,11 @@ var sarbeacons = function(url) {
                         // TODO un peu bourrin
                         $.each(data.fields, function(i, field) {
                             $.each($carInner.find('em'), function(j, val) {
-                                $(this).parent().siblings('button').eq(1).hide();
+                                $(this).parent().siblings('button').eq(0).hide();
+                                // console.log($(this).html());
+                                // console.log(field);
                                 if ($(this).html() == field.name) {
-                                    pio[j] = {
-                                        name: field.name,
-                                        code: field.code,
-                                        intTime: moment(field).format('X'),
-                                        comment: field.comment,
-                                        latitude: field.lat,
-                                        longitude: field.lon
-                                    };
+                                    intPlan.addIp(j);
                                     var $btnContact = $(this).parents('button');
                                     var $a = $(this).parents('a');
                                     $a.addClass('list-group-item-success');

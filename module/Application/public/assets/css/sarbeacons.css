@@ -83,7 +83,7 @@ body,
     display: inline-block;
 }
 
-.raz-cherche {
+.raz-cherche, .btn-del-field {
     position: absolute;
     right: 5px;
     top: 0;
@@ -173,8 +173,13 @@ body,
 
 }
 
-.form-group textarea {
+.comment textarea {
     background-color: white;
+    color:black;
+}
+
+.comment {
+    white-space: pre-wrap;
 }
 
 #f-edit-ip h2 {
