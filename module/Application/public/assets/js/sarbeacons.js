@@ -91,7 +91,6 @@
         },
 
         this.setComment = function(str) {
-            console.log(str);
             this.comment = str;
         }
     }
@@ -110,12 +109,12 @@
 
         this.delIp = function(index) {
             // var feature = this.get(index);
-            console.log(this.ip);
+            // console.log(this.ip);
             this.ip = this.ip.filter(function(field) {
                 return (field.index !== index);
             });
             // if (this.ip.indexOf(feature) != -1) this.ip.slice(index, )
-            console.log(this.ip);
+            // console.log(this.ip);
         }
 
         this.getIp = function() {
@@ -781,7 +780,8 @@
     function findByBeacon() {
         if (!$(this).hasClass('btn-warning')) {
             var latlon = $iBal.data('latLon');
-            centerMap(latlon);
+            // console.log(latlon);
+            // centerMap(latlon);
             triggerIp(latlon);
         }
     }
@@ -825,8 +825,9 @@
 
     function findByField() {
         if (!$(this).hasClass('btn-warning')) {
+
             var latlon = $iTer.data('latLon');
-            centerMap(latlon);
+            // centerMap(latlon);
             triggerIp(latlon);
         }
     }
@@ -842,7 +843,8 @@
         return iTer;
     }
 
-    function triggerIp(latLon) {
+    function triggerIp(latLon, setIdIp = null) {
+        idIp = setIdIp;
         centerMap(latLon, true);
         refreshIp();
         infoPI();
@@ -854,7 +856,7 @@
         mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
         btnCenterSar._button.latLon = latLon;
         btnCenterSar.addTo(orbit);
-        
+
         var markersPIO = [];
         for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
             var $dItem = $('<div class = "item"></div>');
@@ -897,7 +899,6 @@
         $tabs.find('.nav-pills>li').eq(1).trigger('click');
 
         function refreshIp() {
-            idIp = null;
             $carIndic.find('li').remove();
             $carInner.find('div.item').remove();
             $tab2.find('h4').eq(0).html('');
@@ -930,7 +931,7 @@
         }
 
         function blurCommentHandler() {
-            console.log($(this).html());
+            // console.log($(this).html());
             intPlan.get($(this).data().index).setComment($(this).val());
         }
 
@@ -989,10 +990,11 @@
         }
     }
 
-    function btnEditIpHandler() {
-        if ($(this).hasClass('disabled')) return;
+    function btnEditIpHandler(e) {
+        e.preventDefault();
+        if ($(this).hasClass('disabled')) return false;
         $('#title-edit-ip').html("Editer le Plan d'Interrogation");
-        if (idIp == null && !$fEditIp.find('form').length) {
+        if ($fEditIp.find('form').length == 0) {
             $fEditIp.load(url + 'sarbeacons/form', {
                     'id': idIp,
                     'lat': mkSAR._latlng.lat,
@@ -1041,12 +1043,12 @@
     }
 
     function printIp() {
-        if ($(this).hasClass('disabled')) return;
+        if ($(this).hasClass('disabled')) return false;
         if (idIp) location.href = url + 'sarbeacons/print/' + idIp;
     }
 
     function mailIp() {
-        if ($(this).hasClass('disabled')) return;
+        if ($(this).hasClass('disabled')) return false;
         if (idIp) {
             $.post(url + 'sarbeacons/mail', { id: idIp }, function() {
                 noty({
@@ -1059,7 +1061,7 @@
     }
 
     function btnSaveIpHandler() {
-        if ($(this).hasClass('disabled')) return;
+        if ($(this).hasClass('disabled')) return false;;
         $('input[name="latitude"], input[name="longitude"]').prop('disabled', false);
         var iP = [];
         $.each(intPlan.getIp(), function() {
@@ -1094,11 +1096,12 @@
                 $(this).find('.btn-show').click(function(e) {
                     e.stopPropagation();
                     $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
+                        $fEditIp.find('form').remove();
                         triggerIp([
                             data.latitude,
                             data.longitude
-                        ]);
-                        idIp = id;
+                        ],id);
+ 
                         listBtn.setStates(3);
                         // TODO un peu bourrin
                         $.each(data.fields, function(i, field) {
