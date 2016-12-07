@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\BtivRepository")
  * @ORM\Table(name="interplan")
  *
  * @author Loïc Perrin

@@ -1073,7 +1073,6 @@
                 loadListIp();
                 $fEditIp.find('input[name=id]').val(idIp);
                 listBtn.setStates(2);
-                data.msg = "Le plan d'interrogation a bien été enregistré.";
             }
             noty({
                 text: data.msg,

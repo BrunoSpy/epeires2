@@ -26,30 +26,23 @@ use Zend\View\Model\JsonModel;
 use DateTime;
 use DateInterval;
 use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Stdlib\Parameters;
 
 use Application\Entity\FlightPlan;
-
 /**
  *
  * @author Loïc Perrin
  */
 class FlightPlansController extends AbstractEntityManagerAwareController
 {
-    protected $em, $form;
+    protected $em, $repo, $form;
 
     public function __construct(EntityManager $em)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
-        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
-    }
-
-    public static function getEntity() {
-        return FlightPlan::class;
-    }
-
-    public function getForm() {
-        return $this->form;   
+        $this->repo = $this->em->getRepository(FlightPlan::class);
+        $this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
     }
 
     public function indexAction()
@@ -71,10 +64,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         );
 
         return (new ViewModel())
-            ->setVariables(
-            [
-                'messages'  => $this->msg()->get(),
-                'flightplans' => $this->sgbd()->getByCriteria($crit)
+            ->setVariables([
+                'flightplans' => $this->repo->getByCriteria($crit)
             ]);
     }
     
@@ -100,8 +91,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ->setTemplate('application/flight-plans/index')
             ->setVariables(
             [
-                'messages'  => $this->msg()->get(),
-                'flightplans' => $this->sgbd()->getByCriteria($crit)
+                'flightplans' => $this->repo->getByCriteria($crit)
             ]);
     }   
 
@@ -128,7 +118,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
-                    'flightplans' => $this->sgbd()->getByCriteria($crit)
+                    'flightplans' => $this->repo->getByCriteria($crit)
             ]);
     }
 
@@ -137,7 +127,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        $this->form->bind($this->sgbd()->get($id));
+        $fp = ($id) ? $this->repo->find($id) : new FlightPlan();
+        $this->form->bind($fp);
 
         return 
             (new ViewModel())
@@ -152,12 +143,16 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('write')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
+        $fp = $this->validateFlightPlan($post);
 
-        $result = ($this->sgbd()->save($post));
-        $txt = ($result['type'] == 'success') ? $result['msg']->getAircraftid() : $result['msg'];
-        $this->msg()->add('fp','edit', $result['type'], [$txt]);
-
-        return new JsonModel();
+        if(is_a($fp, FlightPlan::class)) {
+            return new JsonModel($this->repo->save($fp));
+        } else {
+            return new JsonModel([
+                'type' => 'error', 
+                'msg' => $this->form->getMessages()
+            ]);
+        }
     }
 
     public function deleteAction()
@@ -166,10 +161,15 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
         $id = intval($this->getRequest()->getPost()['id']);
 
-        $result = $this->sgbd()->del($id);
-        $txt = ($result['type'] == 'success') ? $result['msg']->getAircraftid() : $result['msg'];
-        $this->msg()->add('fp','del', $result['type'], [$txt]);
-
+        $fp = $this->repo->find($id);
+        if(is_a($fp, FlightPlan::class)) {
+            return new JsonModel($this->repo->del($fp));
+        } else {
+            return new JsonModel([
+                'type' => 'error', 
+                'msg' => 'PLN non existant'
+            ]);
+        }
         return new JsonModel();
     }
 
@@ -221,4 +221,19 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         return new JsonModel();
     }
 
+    private function validateFlightPlan($params) 
+    {
+        if (!is_a($params, Parameters::class) && !is_array($params)) return false;
+
+        $id = intval($params['id']);
+        $fp = ($id) ? $this->repo->find($id) : new FlightPlan();
+        $this->form->setData($params);
+
+        if (!$this->form->isValid()) $ret = false;
+        else 
+        { 
+            $ret = $this->repo->hydrate($this->form->getData(), $fp);
+        }
+        return $ret;
+    }
 }

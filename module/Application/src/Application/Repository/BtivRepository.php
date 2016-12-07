@@ -55,7 +55,7 @@ class BtivRepository extends EntityRepository
 
     public function getByCriteria(Criteria $crit) 
     {
-        return $this->repository->matching($crit);
+        return $this->matching($crit);
     }
 
     public function hydrate($datas, $obj) {

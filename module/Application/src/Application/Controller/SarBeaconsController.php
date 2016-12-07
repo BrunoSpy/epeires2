@@ -41,23 +41,17 @@ use Zend\Mime\Message as MimeMessage;
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    private $em, $viewpdfrenderer, $config, $form;
+    private $em, $repo, $viewpdfrenderer, $config, $form;
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
+        $this->repo = $this->em->getRepository(InterrogationPlan::class);
+
         $this->viewpdfrenderer = $viewpdfrenderer;
         $this->config = $config;
-        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
-    }
-
-    public static function getEntity() {
-        return InterrogationPlan::class;
-    }
-
-    public function getForm() {
-        return $this->form;   
+        $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
     public function formAction() 
@@ -67,7 +61,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
 
-        $iP = $this->sgbd()->get($id);
+        $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
+
         $iP->setLatitude($post['lat']);
         $iP->setLongitude($post['lon']);     
         $this->form->bind($iP);
@@ -79,6 +74,23 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ]);
     }
 
+    public function listAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'intPlans' => $this->repo
+                    ->getBy([
+                        'where' => [],
+                        'order' => [
+                            'startTime' => 'DESC'
+                        ],
+                        'limit' => 5
+                    ])
+            ]);
+    }
     // TODO BOF BOF
     public function saveAction()
     {
@@ -99,12 +111,25 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $datasIntPlan['fields'] = $fields;
         }
 
-        $result = $this->sgbd()->save($datasIntPlan);
-        $id = ($result['type'] == 'success') ? $result['msg']->getId() : 0;
-        if($result['type'] == 'success') {
-            $this->saveToPdf($result['msg']);
+        $id = intval($datasIntPlan['id']);
+        $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
+        $this->form->setData($datasIntPlan);
+
+        if (!$this->form->isValid()) $iP = false;
+        else 
+        { 
+            $iP = $this->repo->hydrate($this->form->getData(), $iP);
         }
-        return new JsonModel(['id' => $id, 'type' => $result['type'], 'msg' => $result['msg']]);
+        if (is_a($iP, InterrogationPlan::class)) {
+            $this->repo->save($iP);    
+            $this->saveToPdf($iP);       
+        }
+
+        return new JsonModel([
+            'id' => $iP->getId(),
+            'type' => 'success',
+            'msg' => 'Le plan d\'interrogation a bien été enregistré.'
+        ]);
     }
 
     private function saveToPdf($iP) 
@@ -131,30 +156,12 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         file_put_contents($iP->getPdfFilePath(), $engine->output());
     }
 
-    public function listAction() 
-    {
-        if (!$this->authSarBeacons('read')) return new JsonModel();
-
-        return (new ViewModel())
-            ->setTerminal($this->getRequest()->isXmlHttpRequest())
-            ->setVariables([
-                'intPlans' => $this->sgbd()
-                    ->getBy([
-                        'where' => [],
-                        'order' => [
-                            'startTime' => 'DESC'
-                        ],
-                        'limit' => 5
-                    ])
-            ]);
-    }
-
     public function getAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
-        $iP = $this->sgbd()->get($post['id']);
+        $iP = $this->repo->find($post['id']);
         
         return new JsonModel($iP->getArrayCopy());
     }
@@ -163,7 +170,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $iP = $this->sgbd()->get($this->params()->fromRoute('id'));
+        $iP = $this->repo->find($this->params()->fromRoute('id'));
 
         $pdf = (new PdfModel())             
             ->setOption('paperSize', 'a4')
@@ -182,7 +189,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
-        $iP = $this->sgbd()->get($post['id']);
+        $iP = $this->repo->find($post['id']);
 
         $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
         $text->type = Mime::TYPE_TEXT;
