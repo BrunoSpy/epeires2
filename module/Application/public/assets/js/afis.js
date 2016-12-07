@@ -17,49 +17,108 @@
 /**
  * @author Loïc Perrin
  */
-var afis = function(url){
+var afis = function(url) {
+
+    // console.log($(".table tbody").first());
+    $tAdmbodies = $(".t-adm tbody");
+    $tUsrbody = $(".t-usr tbody");
+
+    refresh();
+
+    function refresh() {
+        $('.btn-switch-af .a-edit-af .a-del-af').remove();
+        if ($tUsrbody.length > 0)
+            $tUsrbody
+                .load(url + 'afis/get', { decomissionned: 0, admin: 0 }, setUsrBtn);
+
+        if ($tAdmbodies.length > 0) {
+            $tAdmbodies.first()
+                .load(url + 'afis/get', { decomissionned: 0, admin: 1 }, setAdmBtn);
+
+            $tAdmbodies.eq(1)
+                .load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
+        }
+
+        function setUsrBtn() {
+            $('.btn-switch-af').change(function() {
+                var boolState = 0;
+                if ($(this).is(':checked')) {
+                    boolState = 1;
+                }
+
+                $.post(
+                    url + 'afis/switchafis', { id: $(this).data('id'), state: boolState },
+                    function(data) {
+                        noty({
+                            text: data.msg,
+                            type: data.type,
+                            timeout: 4000,
+                        });
+                    },
+                    'json'
+                );
+            });
+        }
+
+        function setAdmBtn() {
+            $('.a-edit-af').unbind('click').click(function() {
+                $("#title-edit-af").html("Modifier un AFIS");
+                loadAfisForm($(this).data('id'));
+            });
+
+            $('.a-del-af').unbind('click').click(function() {
+                var id = $(this).data('id');
+                $('#s-del-af-name').html($(this).data('name'));
+                $('#a-del-af-ok').unbind('click').click(function() {
+                    $("#mdl-del-af").modal('hide');
+                    $.post(
+                        url + 'afis/delete', 
+                        { id: id }, 
+                        function(data) {
+                            refresh();
+                            noty({
+                                text: data.msg,
+                                type: data.type,
+                                timeout: 4000,
+                            });
+                        }, 
+                        'json'
+                    );
+                });
+            });
+        }
+
+    }
+
     $("#btn-add-af").click(function() {
         $("#title-edit-af").html("Nouvel AFIS");
         loadAfisForm();
     });
 
-    $('.a-edit-af').click(function() {
-        $("#title-edit-af").html("Modifier un AFIS");
-        loadAfisForm($(this).data('id'));
-    });
 
     function loadAfisForm(id = null) {
-        $("#f-edit-af").load(url+'afis/form', {id: id}, function(){
+        $("#f-edit-af").load(url + 'afis/form', { id: id }, function() {
             $.material.checkbox();
             $(this).find('input[type="submit"]')
-                .click(function(e){
-                    e.preventDefault();
-                    $("#mdl-edit-af").modal('hide');
-                    $.post(url+'afis/save', $('#Afis').serialize(), function() {
-                        location.reload();
-                    }, 'json');
-                })
+                .click(submitHandler)
         });
     };
 
-    $('.a-del-af').click(function() {
-        var id = $(this).data('id');
-        $('#s-del-af-name').html($(this).data('name'));
-        $('#a-del-af-ok').click(function(){
-            $.post(url+'afis/delete', {id: id}, function(){
-                location.reload();
-            }, 'json');      
-        });
-    });
-
-    $('.btn-switch-af').change(function() {
-        var boolState = 0;
-        if ($(this).is(':checked')) {
-            boolState = 1;
-        } 
-        
-        $.post(url+'afis/switchafis',{id: $(this).data('id'),state: boolState}, function(){
-            location.reload();
-        },'json');
-    });
+    function submitHandler(e) {
+        e.preventDefault();
+        $("#mdl-edit-af").modal('hide');
+        $.post(
+            url + 'afis/save',
+            $('#Afis').serialize(),
+            function(data) {
+                refresh();
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            },
+            'json'
+        );
+    }
 };

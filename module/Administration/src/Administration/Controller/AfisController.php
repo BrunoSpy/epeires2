@@ -35,18 +35,4 @@ class AfisController extends FormController
         $this->entityManager = $entityManager;
     }
 
-    public function indexAction()
-    {
-        $this->layout()->title = "Afis";
-
-        $allAfis = $this->forward()->dispatch('Application\Controller\Afis', [
-                'action'     => 'getAll',
-        ]);
-
-        $this->layout('layout/adminlayout'); 
-        return [
-            'messages'  => $this->msg()->get(),
-            'allAfis'   => $allAfis,
-        ];
-    }
 }

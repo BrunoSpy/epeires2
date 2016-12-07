@@ -13,7 +13,7 @@
                     <h4 class="panel-title" id="afis">1. AFIS en service</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-striped sortable">
+                    <table class="table t-adm table-striped sortable">
                         <thead>
                             <tr>
                                 <th>id</th>
@@ -25,9 +25,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($allAfis as $afis) : ?>
-                            <?php echo (!$afis->isDecommissionned()) ? $this->afViewHelper()->renderAdminRow($afis) : null?>
-                            <?php endforeach; ?>
+
                         </tbody>
                     </table>
                 </div>
@@ -37,7 +35,7 @@
                     <h4 class="panel-title" id="oldafis">2. Anciens AFIS</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-striped sortable">
+                    <table class="table t-adm table-striped sortable">
                         <thead>
                             <tr>
                                 <th>id</th>
@@ -50,9 +48,7 @@
                         </thead>
                         
                         <tbody>
-                        	<?php foreach ($allAfis as $afis) : ?>
-                                <?php echo ($afis->isDecommissionned()) ? $this->afViewHelper()->renderAdminRow($afis) : null?>
-                        	<?php endforeach; ?>
+
                         </tbody>
                     </table>
                 </div>

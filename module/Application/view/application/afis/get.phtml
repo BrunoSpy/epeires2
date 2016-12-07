@@ -1,0 +1,13 @@
+<?php 
+if ($admin)
+{
+	foreach ($afises as $afis) {
+		echo $this->afViewHelper()->renderAdminRow($afis);
+	}
+} 
+else 
+{
+	foreach ($afises as $afis) {
+		echo $this->afViewHelper()->renderRow($afis);
+	}	
+}

@@ -23,33 +23,32 @@ use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Stdlib\Parameters;
 
 use Application\Entity\Organisation;
 use Application\Entity\Afis;
-
 /**
  *
  * @author Loïc Perrin
  */
 class AfisController extends AbstractEntityManagerAwareController
 {
-    private $em, $form;
+    private $em, $repo, $form;
 
     public function __construct(EntityManager $em)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
-        $this->form = (new AnnotationBuilder())->createForm($this::getEntity());
-        $organisations = $this->em->getRepository(Organisation::class);
-        $this->form->get('organisation')->setValueOptions($organisations->getAllAsArray());
-    }
+        $this->repo = $this->em->getRepository(Afis::class);
 
-    public static function getEntity() {
-        return Afis::class;
-    }
-
-    public function getForm() {
-        return $this->form;   
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
+        $this->form
+            ->get('organisation')
+            ->setValueOptions(
+                $this->em
+                    ->getRepository(Organisation::class)
+                    ->getAllAsArray()
+                );
     }
 
     public function indexAction()
@@ -58,9 +57,24 @@ class AfisController extends AbstractEntityManagerAwareController
 
         return (new ViewModel())
             ->setVariables([
-                'messages'  => $this->msg()->get(),
-                'allAfis'   => $this->sgbd()->getBy(['decommissionned' => 0])
+                'allAfis'   => $this->repo->findBy(['decommissionned' => 0])
             ]);
+    }
+
+    public function getAction() 
+    {
+        if (!$this->authAfis('read')) return new JsonModel();
+
+        $post = $this->getRequest()->getPost();
+        $decom = (boolean) intval($post['decomissionned']);
+        $admin = (boolean) intval($post['admin']);
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'admin'    => $admin,
+                'afises'   => $this->repo->findBy(['decommissionned' => $decom])
+            ]);     
     }
 
     public function formAction()
@@ -68,16 +82,14 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('write')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
-        
-        $afis = $this->sgbd()->get($id);
+        $afis = ($id) ? $this->repo->find($id) : new Afis();
         $this->form->bind($afis);
 
-        return 
-            (new ViewModel())
-                ->setTerminal($this->getRequest()->isXmlHttpRequest())
-                ->setVariables([
-                    'form' => $this->form
-                ]);
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'form' => $this->form
+            ]);
     }
 
     public function switchafisAction()
@@ -87,14 +99,17 @@ class AfisController extends AbstractEntityManagerAwareController
         $post = $this->getRequest()->getPost();
         $id = intval($post['id']);
 
-        $afis = $this->sgbd()->get($id);
-        $afis->setState((boolean) $post['state']);
+        $afis = $this->repo->find($id);
 
-        $result = $this->sgbd()->save($afis);
-        $msg = ($result['type'] == 'success') ? [$result['msg']->getName(), $result['msg']->getStrState()] : [$result['msg']];
-        $this->msg()->add('afis','switch', $result['type'], $msg);
-
-        return new JsonModel();
+        if(is_a($afis, Afis::class)) {
+            $afis->setState((boolean) $post['state']);
+            return new JsonModel($this->repo->save($afis));
+        } else {
+            return new JsonModel([
+                'type' => 'error', 
+                'msg' => 'Afis non existant'
+            ]);
+        }
     }
 
     public function saveAction()
@@ -102,12 +117,16 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('write')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
+        $afis = $this->validateAfis($post);
 
-        $result = $this->sgbd()->save($post);
-        $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
-        $this->msg()->add('afis','edit', $result['type'], $msg);
-
-        return new JsonModel();
+        if(is_a($afis, Afis::class)) {
+            return new JsonModel($this->repo->save($afis));
+        } else {
+            return new JsonModel([
+                'type' => 'error', 
+                'msg' => $this->form->getMessages()
+            ]);
+        }
     }
 
     public function deleteAction()
@@ -116,21 +135,36 @@ class AfisController extends AbstractEntityManagerAwareController
 
         $id = intval($this->getRequest()->getPost()['id']);
 
-        $result = $this->sgbd()->del($id);
-        $msg = [ ($result['type'] == 'success') ? $result['msg']->getName() : $result['msg'] ];
-        $this->msg()->add('afis','del', $result['type'], $msg);
+        $afis = $this->repo->find($id);
 
-        return new JsonModel();
+        if(is_a($afis, Afis::class)) {
+            return new JsonModel($this->repo->del($afis));
+        } else {
+            return new JsonModel([
+                'type' => 'error', 
+                'msg' => 'Afis non existant'
+            ]);
+        }
     }
 
-    public function getAllAction($params = []) 
+    private function authAfis($action) 
     {
-        if (!$this->authAfis('write')) return new JsonModel();
-
-        return $this->sgbd()->getBy($params);
+        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 
-    private function authAfis($action) {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
+    private function validateAfis($params) 
+    {
+        if (!is_a($params, Parameters::class) && !is_array($params)) return false;
+
+        $id = intval($params['id']);
+        $afis = ($id) ? $this->repo->find($id) : new Afis();
+        $this->form->setData($params);
+
+        if (!$this->form->isValid()) $ret = false;
+        else 
+        { 
+            $ret = $this->repo->hydrate($this->form->getData(), $afis);
+        }
+        return $ret;
     }
 }
