@@ -50,6 +50,10 @@ class NMB2BService
             $options = array();
             $options['trace'] = 1;
             $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
+            if(array_key_exists("timeout", $this->nmb2b)) {
+                $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
+                ini_set('default_socket_timeout', $socket_timeout);
+            }
             $options['exceptions'] = true;
             $options['cache_wsdl'] = WSDL_CACHE_NONE;
             $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];

@@ -92,6 +92,8 @@ class MilController extends AbstractEntityManagerAwareController
             $totalDL += $dl;
             echo "Séquences récupérées en ".$dl." secondes\n";
         } catch(\RuntimeException $e) {
+            $dl = microtime(true) - $startSeq;
+            echo "Erreur au bout de ". $dl . " secondes.\n";
             echo "Erreur fatale pendant le téléchargement"."\n";
             echo "Les données téléchargées sont incomplètes"."\n";
             echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
@@ -124,6 +126,8 @@ class MilController extends AbstractEntityManagerAwareController
                     $totalDL += $dl;
                     echo "Téléchargement terminé en ".$dl." secondes"."\n";
                 } catch(\RuntimeException $e) {
+                    $dl = microtime(true) - $startSeq;
+                    echo "Erreur au bout de ". $dl . " secondes.\n";
                     echo "Erreur fatale pendant le téléchargement"."\n";
                     echo "Les données téléchargées sont incomplètes"."\n";
                     echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
@@ -143,6 +147,6 @@ class MilController extends AbstractEntityManagerAwareController
         }
         echo "Fin de l'import de l'AUP en ".(microtime(true)-$startImport).' secondes'."\n";
         echo 'Téléchargement : '.$totalDL.' secondes'."\n";
-        echo 'Traitement : '.$totalTR.' secondes';
+        echo 'Traitement : '.$totalTR.' secondes'."\n";
     }
 }
