@@ -238,6 +238,10 @@
                 self._updateView(true);
             });
 
+            $(window).scroll(function(){
+                $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+            });
+
             //gestion des évènements souris
             this.element.on({
                 mouseenter: function () {
