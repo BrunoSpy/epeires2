@@ -649,7 +649,7 @@ $(document).ready(function(){
     var updateFC = function() {
         clearTimeout(timerFC);
         var urlFC = url + 'events/geteventsFC';
-        if (typeof(cats) == "undefined") {
+        if (typeof(cats) == "undefined" || cats == null) {
             urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '') ;
         } else {
             urlFC += '?'+cats + (lastupdateFC != 0 ? '&lastupdate=' + lastupdateFC.toUTCString() : '');
