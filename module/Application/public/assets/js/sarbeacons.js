@@ -108,13 +108,9 @@
         }
 
         this.delIp = function(index) {
-            // var feature = this.get(index);
-            // console.log(this.ip);
             this.ip = this.ip.filter(function(field) {
                 return (field.index !== index);
             });
-            // if (this.ip.indexOf(feature) != -1) this.ip.slice(index, )
-            // console.log(this.ip);
         }
 
         this.getIp = function() {
@@ -523,6 +519,15 @@
         })
         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
     /*  Le carousel reste statique */
+
+
+    $('.btn-action-ip').tooltip({
+        show: {
+            effect: "fadeIn",
+            delay: 2500
+        }
+    });
+
     $reqPio.carousel({
         interval: false
     });
@@ -576,11 +581,7 @@
     listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
     listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
-    /* Pour gérer le bouton de centrage sur la FIR */
-    // var mapControl = new MapControl();
-    /* Pour gérer le bouton de centrage sur le point d'alerte Sar */
-    // var mapSarControl = new MapControl();
-    // mapControl.center();
+
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
         var coord = [e.latlng.lat, e.latlng.lng];
@@ -955,6 +956,7 @@
                 intPlan.addIp($(this).data().index);
             } else {
                 $fOptCom.hide();
+                intPlan.delIp($(this).data().index);
             }
             activateSavBtn();
         }

@@ -20,14 +20,14 @@ $form->add([
     ],
 ]);
 
-$form->add(	
-	['name' => 'submit',
-    	'attributes' => [
-            'type' => 'submit',
-            'value' => 'Enregistrer',
-            'class' => 'btn btn-primary btn-small'
-        ]
-    ]);
+// $form->add(	
+// 	['name' => 'submit',
+//     	'attributes' => [
+//             'type' => 'submit',
+//             'value' => 'Enregistrer',
+//             'class' => 'btn btn-primary btn-small'
+//         ]
+//     ]);
 
 $form->setAttribute('action', $this->url('application', array('controller'=>'flightplans', 'action'=>'save')));
 $form->setAttribute('method', 'post');
@@ -61,7 +61,7 @@ $form->prepare();
 </div>
 
 <div class="modal-footer">
-<?=$this->formSubmit($form->get('submit'))?>
+<?php //echo $this->formSubmit($form->get('submit'))?>
 </div>    
 
 <?=$this->form()->closeTag() ?>

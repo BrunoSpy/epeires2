@@ -79,6 +79,7 @@ body,
 #btn-print-ip
 {
     margin: 0;
+    margin-bottom: 20px;
     padding: 10px;
     display: inline-block;
 }
@@ -147,19 +148,6 @@ body,
     top: 0;
     left: 0;
     right: 0;
-    margin: 0;
-    padding: 0;
-    font-size: 10px;
-}
-
-#f-ip {
-    border: 0;
-    margin-bottom: 30px;
-}
-
-#list-ip a {
-    margin:10px;
-    padding:10px;
     border: 1px solid lightgrey;   
 }
 
@@ -187,6 +175,8 @@ body,
 .comment textarea {
     background-color: white;
     color:black;
+    width: 99%;
+    height: 60px;
 }
 
 .comment {
