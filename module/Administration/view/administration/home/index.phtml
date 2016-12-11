@@ -53,23 +53,92 @@ $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, str
     					<strong>Attention !</strong> La base de données n'est pas à jour !
     				</div>
                     <?php endif; ?>
-                    <p>
-    					Base de données : <em><?php echo $this->db;?></em>
-    				</p>
-    				<p>
-    					Table des migrations : <em><?php echo $this->table; ?></em>
-    				</p>
-    				<p>
-    					Version courante : <em><?php echo $this->version; ?></em>
-    				</p>
-    				<p>
-    					Dernière version : <em><?php echo $this->latestversion; ?></em>
-    				</p>
-    				<p>
-    					Migrations non exécutées : <em><?php echo $this->migrations; ?></em>
-    				</p>
+            <table class="table table-striped table-bordered">
+              <tr>
+                <td>Base de données</td>
+                <td><em><?php echo $this->db;?></em></td>
+              </tr>
+              <tr>
+                <td>Table des migrations</td>
+                <td><em><?php echo $this->table; ?></em></td>
+              </tr>
+              <tr>
+                <td>Version courante</td>
+                <td><em><?php echo $this->version; ?></em></td>
+              </tr>
+              <tr>
+                <td>Dernière version </td>
+                <td><em><?php echo $this->latestversion; ?></em></td>
+              </tr>
+              <tr>
+                <td>Migrations non exécutées</td>
+                <td><em><?php echo $this->migrations; ?></em></td>
+              </tr>
+            </table>
     			</div>
     		</div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">Extensions PHP</h4>
+        </div>
+        <div class="panel-body">
+            <?php
+            $ok = true;
+            foreach ($this->extensions as $key => $value) {
+              $ok *= $value;
+            }
+            if(!$ok) {
+              echo '<div class="alert alert-danger">'
+                    .'<strong>Attention !</strong> Une ou plusieures extensions PHP ne sont pas activées !'
+                    .'</div>';
+            }
+            ?>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <td>Extension GD</td>
+              <td><?php if($this->extensions['gd']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
+            <tr>
+              <td>Extension Iconv</td>
+              <td><?php if($this->extensions['iconv']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
+            <tr>
+              <td>Extension Intl</td>
+              <td><?php if($this->extensions['intl']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
+            <tr>
+              <td>Extension Soap</td>
+              <td><?php if($this->extensions['soap']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
+            <tr>
+              <td>Extension OpenSSL</td>
+              <td><?php if($this->extensions['openssl']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
 		</div>
 	</div>
 </div>

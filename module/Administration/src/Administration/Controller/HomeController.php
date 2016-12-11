@@ -43,13 +43,21 @@ class HomeController extends AbstractActionController
         $executedUnavailableMigrations = array_diff($executedMigrations, $availableMigrations);
         $numExecutedUnavailableMigrations = count($executedUnavailableMigrations);
         $newMigrations = count($availableMigrations) - count($executedMigrations);
-        
+
+        $extensions = array();
+        $extensions['gd'] = extension_loaded('gd');
+        $extensions['iconv'] = extension_loaded('iconv');
+        $extensions['intl'] = extension_loaded('intl');
+        $extensions['soap'] = extension_loaded('soap');
+        $extensions['openssl'] = extension_loaded('openssl');
+
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
             'version' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getCurrentVersion()),
             'latestversion' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getLatestVersion()),
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
-            'migrations' => $newMigrations
+            'migrations' => $newMigrations,
+            'extensions' => $extensions
         );
     }
 }
