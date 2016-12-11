@@ -41,5 +41,7 @@ local.properties
 /temp/
 
 *.local.php
+config/development.config.php
+config/autoload/local.php
 
 tests/_output/*
