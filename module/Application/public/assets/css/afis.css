@@ -1,0 +1,9 @@
+.togglebutton label .toggle::after {
+    background-color: #c9302c;
+    box-shadow: 0 1px 3px 1px rgba(50, 50, 50, 0.4);
+  /*background-color: #d43f3a;*/
+}
+
+.togglebutton label .toggle, .togglebutton label input[type="checkbox][disabled"] + .toggle {
+  background-color: #ebccd1;
+}

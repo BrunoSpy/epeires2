@@ -17,9 +17,10 @@
 /**
  * @author Loïc Perrin
  */
+
 var afis = function(url) {
 
-    // console.log($(".table tbody").first());
+
     $tAdmbodies = $(".t-adm tbody");
     $tUsrbody = $(".t-usr tbody");
 
@@ -58,6 +59,12 @@ var afis = function(url) {
                     'json'
                 );
             });
+
+
+            $.material.togglebutton();
+            
+            // console.log($('.togglebutton label input[type="checkbox"]:checked').css('background-color', '#000'));
+            // console.log($('.toggle'));
         }
 
         function setAdmBtn() {
