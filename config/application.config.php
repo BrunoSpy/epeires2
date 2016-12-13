@@ -35,6 +35,18 @@ $modules = array(
     'Application',
     'Administration',
     'IPO',
+    'ZF\Apigility',
+    'ZF\Apigility\Provider',
+    'ZF\ApiProblem',
+    'ZF\MvcAuth',
+    'ZF\OAuth2',
+    'ZF\Hal',
+    'ZF\ContentNegotiation',
+    'ZF\ContentValidation',
+    'ZF\Rest',
+    'ZF\Rpc',
+    'ZF\Versioning',
+    'ZF\DevelopmentMode'
 );
 
 if ($env == 'development') {
