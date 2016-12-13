@@ -380,8 +380,14 @@
         IC_PIO_SIZE = 20,
         IC_HEL_SIZE = 20,
         IC_SAR_SIZE = 40,
+        IC_SEL_SIZE = 40,
         IC_SAR_ANCH = IC_SAR_SIZE / 2;
     const
+        icSel = L.icon({
+            iconUrl: URL_IMG + 'marker-sel.png',
+            iconSize: [2 * NB_RESULT_PIO, 2 * NB_RESULT_PIO]
+        }),
+
         icTer = L.icon({
             iconUrl: URL_IMG + 'btn-ter.png',
             iconSize: [IC_TER_SIZE, IC_TER_SIZE]
@@ -891,11 +897,10 @@
             $carIndic.append($liIndicator);
             $carInner.append($dItem);
         }
-        mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], null);
-
+       
         if (pioLay) orbit.removeLayer(pioLay);
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
-
+        mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], icSel, intPlan.get(0).getPopup());
         $tabs.tabs("option", "active", 1);
         $tabs.find('.nav-pills>li').eq(1).trigger('click');
 
@@ -926,7 +931,12 @@
 
         function clickFieldHandler(e) {
             var coord = intPlan.get($(this).data().index).getCoord();
-            mkSelected = updateMarker(mkSelected, [coord[1], coord[0]]);
+            var i = $(this).data('index');
+            var ter = intPlan.get(i);
+
+            icSel.options.iconSize = [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i];
+            mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], icSel, ter.getPopup());
+
             $('.carousel-inner a.active').removeClass('active');
             $(this).addClass('active');
         }
@@ -973,9 +983,10 @@
             .bindPopup(popuphtml);
         }
 
-        function updateMarker(marker, latLon, icon) {
+        function updateMarker(marker, latLon, icon, popuphtml ="") {
             if (!(marker === undefined)) orbit.removeLayer(marker);
             marker = L.marker(latLon);
+            marker.bindPopup(popuphtml);
             if (icon) marker.setIcon(icon);
             orbit.addLayer(marker);
             return marker;
