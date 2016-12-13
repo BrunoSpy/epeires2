@@ -178,11 +178,11 @@ var antenna = function(url, frequencyTestMenu){
                 dataArray.sort(function(a, b){
                     return a[1]['place'] > b[1]['place'] ? 1 : a[1]['place'] < b[1]['place'] ? -1 : 0;
                 });
-                list.append('<li class="title">Fréquences du groupe</li>');
-                for(var i = 0; i < dataArray.length; i++){
-                    list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
-                }
                 if(dataArray.length > 0) {
+                    list.append('<li class="title">Fréquences du groupe</li>');
+                    for(var i = 0; i < dataArray.length; i++){
+                        list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
+                    }
                     list.append('<li class="title">Autres fréquences</li>');
                 }
             }
