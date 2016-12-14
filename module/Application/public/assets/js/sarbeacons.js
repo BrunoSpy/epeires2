@@ -95,9 +95,10 @@
         }
     }
 
-    var IntPlan = function(latLon) {
+    var IntPlan = function(latLon, starttime) {
         var _this = this;
         this.latLon = latLon;
+        this.starttime = starttime;
         this.listFeature = [];
         this.ip = [];
 
@@ -144,6 +145,11 @@
                 var cap = _this.cap(dist[0], _this.latLon[0], _this.latLon[1], coord[1], coord[0]) * 180 / Math.PI;
                 _this.listFeature.push(new Field(i, feature, d, cap));
             });
+        }
+
+        this.getInfo = function() {
+            return ('<span class="glyphicon glyphicon-alert"></span>' +
+                    ' Début : <em>' + moment(this.starttime).format('LLLL') + '</em>');
         }
 
         this.distRad = function(lat1, lon1, lat2, lon2) {
@@ -524,16 +530,10 @@
             mapLayers['bal']._layers = lay._layers;
         })
         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
+
+    $('.btn-action-ip').tooltip();
+
     /*  Le carousel reste statique */
-
-
-    $('.btn-action-ip').tooltip({
-        show: {
-            effect: "fadeIn",
-            delay: 2500
-        }
-    });
-
     $reqPio.carousel({
         interval: false
     });
@@ -850,19 +850,15 @@
         return iTer;
     }
 
-    function triggerIp(latLon, setIdIp = null) {
+    function triggerIp(latLon, starttime = moment(), setIdIp = null) {
         idIp = setIdIp;
         centerMap(latLon, true);
         refreshIp();
-        infoPI();
 
-        intPlan = new IntPlan(latLon);
+        intPlan = new IntPlan(latLon, starttime);
         intPlan.setList(fields);
 
-        mkSAR = updateMarker(mkSAR, latLon, icSAR);
-        mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
-        btnCenterSar._button.latLon = latLon;
-        btnCenterSar.addTo(orbit);
+        $fIp.find('h4').html(intPlan.getInfo());
 
         var markersPIO = [];
         for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
@@ -897,12 +893,24 @@
             $carIndic.append($liIndicator);
             $carInner.append($dItem);
         }
-       
+        
+        $carIndic.mousewheel(function(e) {
+            e.preventDefault();
+            if(e.deltaY > 0) $('.carousel-control.right').trigger('click');
+            else $('.carousel-control.left').trigger('click');
+        })
+
+
         if (pioLay) orbit.removeLayer(pioLay);
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
         mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], icSel, intPlan.get(0).getPopup());
         $tabs.tabs("option", "active", 1);
         $tabs.find('.nav-pills>li').eq(1).trigger('click');
+
+        mkSAR = updateMarker(mkSAR, latLon, icSAR);
+        mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
+        btnCenterSar._button.latLon = latLon;
+        btnCenterSar.addTo(orbit);
 
         function refreshIp() {
             $carIndic.find('li').remove();
@@ -915,13 +923,6 @@
 
             $fEditIp.find('input').val('');
             $fEditIp.find('li').remove();
-        }
-
-        function infoPI() {
-            $fIp.find('h4')
-                .html('<span class="glyphicon glyphicon-alert"></span>' +
-                    ' PI démarré à ' + moment().format('hh:mm:ss') +
-                    ' le ' + moment().format('DD/MM'));
         }
 
         function clickIconFieldHandler() {
@@ -942,7 +943,6 @@
         }
 
         function blurCommentHandler() {
-            // console.log($(this).html());
             intPlan.get($(this).data().index).setComment($(this).val());
         }
 
@@ -1036,7 +1036,7 @@
                     .data({'index': field.index })
                     .click(removeFieldHandler);
 
-                function removeFieldHandler () {
+                function removeFieldHandler() {
                     intPlan.delIp($(this).data('index'));
                     var $a = $carInner.find('a').eq($(this).data('index'));
                     $a.find('.form-group').hide();
@@ -1050,25 +1050,46 @@
                     $(this).parent().remove();
                     activateSavBtn();
                 }
-
             });
         }
     }
 
     function printIp() {
         if ($(this).hasClass('disabled')) return false;
-        if (idIp) location.href = url + 'sarbeacons/print/' + idIp;
+        if (idIp) { 
+            $.get(url + 'sarbeacons/validpdf/' + idIp, function(data) {
+                if(data[0] !== 'error') {
+                    location.href = url + 'sarbeacons/print/' + idIp;
+                } else {
+                    noty({
+                        text: data[1],
+                        type: data[0],
+                        timeout: 4000,
+                    });               
+                };
+            })
+        }
     }
 
     function mailIp() {
         if ($(this).hasClass('disabled')) return false;
         if (idIp) {
-            $.post(url + 'sarbeacons/mail', { id: idIp }, function() {
-                noty({
-                    text: 'Courriels envoyés avec succès.',
-                    type: 'success',
-                    timeout: 4000,
-                });
+            $.get(url + 'sarbeacons/validpdf/' + idIp, function(data) {
+                if(data[0] !== 'error') {
+                    $.post(url + 'sarbeacons/mail', { id: idIp }, function(data) {
+                        noty({
+                            text: data[1],
+                            type: data[0],
+                            timeout: 4000,
+                        });
+                    });
+                } else {
+                    noty({
+                        text: data[1],
+                        type: data[0],
+                        timeout: 4000,
+                    });               
+                };
             });
         }
     }
@@ -1109,10 +1130,11 @@
                     e.stopPropagation();
                     $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
                         $fEditIp.find('form').remove();
+                        console.log(data);
                         triggerIp([
                             data.latitude,
                             data.longitude
-                        ],id);
+                        ], data.startTime.date, id);
  
                         listBtn.setStates(3);
                         // TODO un peu bourrin

@@ -5,15 +5,16 @@ body,
 .col-sm-9,
 #mapid {
     height: 100%;
+    background-color: #FFF;
 }
 
-#mapid a{
-    right:50px;
+#mapid a {
+    right: 50px;
 }
 
-#mapid, .fill {
+#mapid,
+.fill {
     min-height: 100%;
-    background-color: #FFF;  
 }
 
 #mapid {
@@ -30,18 +31,21 @@ body,
     width: 25px;
     height: 25px;
 }
+
 .custom-button-off {
-    opacity:0.55;
+    opacity: 0.55;
 }
+
 #tabs {
-    margin:0px;
-    padding:0px;
+    margin: 0px;
+    padding: 0px;
     border: 0;
+    background-color: #FFF;
 }
 
 #tabs .nav-pills {
-    margin-top:10px;
-    margin-left:0px;
+    margin-top: 10px;
+    margin-left: 0px;
 }
 
 #tabs h4 {
@@ -57,11 +61,6 @@ body,
     padding: 0px;
 }
 
-#tabs-2 li {
-    margin-top: 10px;
-    margin-bottom: 15px;
-}
-
 .cache {
     display: none;
 }
@@ -73,18 +72,15 @@ body,
 #btn-rech-bal,
 #btn-rech-coo,
 #btn-rech-ter,
-#btn-edit-ip,
-#btn-sav-ip,
-#btn-mail-ip,
-#btn-print-ip
-{
+.btn-action-ip {
     margin: 0;
     margin-bottom: 20px;
     padding: 10px;
     display: inline-block;
 }
 
-.raz-cherche, .btn-del-field {
+.raz-cherche,
+.btn-del-field {
     position: absolute;
     right: 5px;
     top: 0;
@@ -141,6 +137,12 @@ body,
     border: 1px solid lightgrey;
 }
 
+.carousel-inner > .item {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 1px;
+}
+
 .glyphicon-chevron-left,
 .carousel-control .right {
     position: static;
@@ -148,18 +150,21 @@ body,
     top: 0;
     left: 0;
     right: 0;
-    border: 1px solid lightgrey;   
+    /*border: 1px solid lightgrey;   */
 }
 
 #list-ip h3 {
-
-    margin:0px;
+    margin: 7px 0 5px;
 }
 
 #list-ip h4 {
-     font-size:16px;
-     margin-top: 5px;
-     margin-bottom:5px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#list-ip a {
+    padding: 7px;
 }
 
 #pio-mod-form ul {
@@ -168,13 +173,12 @@ body,
 }
 
 #pio-mod-form li {
-    margin-top:5px;
-
+    margin-top: 5px;
 }
 
 .comment textarea {
     background-color: white;
-    color:black;
+    color: black;
     width: 99%;
     height: 60px;
 }
@@ -184,16 +188,16 @@ body,
 }
 
 #f-edit-ip h2 {
-    margin-top:25px;
+    margin-top: 25px;
 }
 
 #f-edit-ip ul {
-  margin: 25px 45px 0 15px;
-  padding: 0;
+    margin: 25px 45px 0 15px;
+    padding: 0;
 }
 
 #f-edit-ip textarea {
-  margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .ui-autocomplete {
@@ -206,18 +210,21 @@ body,
     background-color: #ffffff;
     border: 1px solid #ccc;
     -webkit-border-radius: 5px;
-       -moz-border-radius: 5px;
-            border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-       -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
+
 .ui-autocomplete > li {
     padding: 3px 20px;
 }
+
 .ui-autocomplete > li.ui-state-focus {
     background-color: #DDD;
 }
+
 .ui-helper-hidden-accessible {
     display: none;
 }
