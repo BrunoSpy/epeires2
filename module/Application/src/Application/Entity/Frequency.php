@@ -56,7 +56,7 @@ class Frequency extends TemporaryResource
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="backupfrequencies")
      * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(true)
+     * @Annotation\Required(false)
      * @Annotation\Options({"label":"Antenne secours :", "empty_option":"Choisir l'antenne secours"})
      */
     protected $backupantenna;

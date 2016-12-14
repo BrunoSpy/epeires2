@@ -499,9 +499,11 @@ class FrequenciesController extends TabController
             $frequencies[$frequency->getId()]['otherfreqname'] = '';
             $frequencies[$frequency->getId()]['planned'] = false;
             $frequencies[$frequency->getId()]['main'] = $frequency->getMainantenna()->getId();
-            $frequencies[$frequency->getId()]['backup'] = $frequency->getBackupAntenna()->getId();
+            if($frequency->getBackupAntenna()) {
+                $frequencies[$frequency->getId()]['backup'] = $frequency->getBackupAntenna()->getId();
+                $frequencies[$frequency->getId()]['backupstatus'] = 1;
+            }
             $frequencies[$frequency->getId()]['mainstatus'] = 1;
-            $frequencies[$frequency->getId()]['backupstatus'] = 1;
             if ($frequency->getMainantennaclimax()) {
                 $frequencies[$frequency->getId()]['mainclimax'] = $frequency->getMainantennaclimax()->getId();
                 $frequencies[$frequency->getId()]['mainclimaxstatus'] = 1;
@@ -518,11 +520,15 @@ class FrequenciesController extends TabController
             } else {
                 $frequencies[$frequency->getId()]['status'] += 1;
             }
-            if (count($antennas[$frequency->getBackupAntenna()->getId()]['frequencies']) == 0 || in_array($frequency->getId(), $antennas[$frequency->getBackupAntenna()->getId()]['frequencies'])) {
-                $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupAntenna()->getId()]['status'];
-                $frequencies[$frequency->getId()]['backupstatus'] *= $antennas[$frequency->getBackupAntenna()->getId()]['status'];
-            } else {
-                $frequencies[$frequency->getId()]['status'] += 1;
+            if($frequency->getBackupAntenna()) {
+                if (count($antennas[$frequency->getBackupAntenna()->getId()]['frequencies']) == 0 || in_array($frequency->getId(),
+                        $antennas[$frequency->getBackupAntenna()->getId()]['frequencies'])
+                ) {
+                    $frequencies[$frequency->getId()]['status'] += $antennas[$frequency->getBackupAntenna()->getId()]['status'];
+                    $frequencies[$frequency->getId()]['backupstatus'] *= $antennas[$frequency->getBackupAntenna()->getId()]['status'];
+                } else {
+                    $frequencies[$frequency->getId()]['status'] += 1;
+                }
             }
             if ($frequency->getMainantennaclimax()) {
                 if (count($antennas[$frequency->getMainAntennaclimax()->getId()]['frequencies']) == 0 || in_array($frequency->getId(), $antennas[$frequency->getMainAntennaclimax()->getId()]['frequencies'])) {
@@ -707,7 +713,7 @@ class FrequenciesController extends TabController
                 $preferredFreq = array();
                 foreach ($group->getSectors() as $sector) {
                     $defaultfreq = $sector->getFrequency();
-                    if($defaultfreq->getId() != $frequencyid) {
+                    if($defaultfreq && $defaultfreq->getId() != $frequencyid) {
                         $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
                     }
                 }

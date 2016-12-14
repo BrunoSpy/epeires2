@@ -184,6 +184,12 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	padding-right: 0px;
 }
 
+.sector > .antennas:nth-child(3):last-child > .mainantenna-color:only-child {
+	width: 100%;
+	border-bottom-right-radius: 6px;
+	text-align: center;
+}
+
 .background-status-test {
 	box-shadow: 10px 5px 10px rgba(255, 255, 0, 1);
 }

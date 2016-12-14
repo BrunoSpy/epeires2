@@ -109,7 +109,7 @@
 										echo '<td>'.($frequency->getOrganisation() ? $frequency->getOrganisation()->getName() : "").'</td>';
 										echo '<td>'.$frequency->getMainantenna()->getName().'</td>';
 										echo '<td>'.($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getName() : "").'</td>';
-										echo '<td>'.$frequency->getBackupantenna()->getName().'</td>';
+										echo '<td>'.($frequency->getBackupantenna() ? $frequency->getBackupantenna()->getName() : "").'</td>';
 										echo '<td>'.($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getName() : "").'</td>';
 										echo "<td>";
 											echo "<a
