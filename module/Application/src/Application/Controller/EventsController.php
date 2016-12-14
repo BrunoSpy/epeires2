@@ -161,7 +161,7 @@ class EventsController extends TabController
             $this->getResponse()->setStatusCode(200);
             return new JsonModel();
         } else {
-            $this->getResponse()->setStatusCode(401);
+            $this->getResponse()->setStatusCode(403);
             return new JsonModel();
         }
     }

@@ -877,7 +877,7 @@ $(document).ready(function(){
             function (data, textStatus, jqHXR) {
                 lastCode = 200;
             }).fail(function(jqHXR){
-            if (jqHXR.status === 401 && lastCode === 200) {
+            if (jqHXR.status === 403 && lastCode === 200) {
                 location.reload();
             }
         });
