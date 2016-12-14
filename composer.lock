@@ -4,46 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b98bb29f01d5da1cdcd18b25aaf05e8c",
-    "content-hash": "01e6a033e7af2637c7a2728eeab5684c",
+    "hash": "a580546169c7e528157cfc8c5698459b",
+    "content-hash": "7a80ba9956f14f14a89c03775c68b268",
     "packages": [
-        {
-            "name": "api-skeletons/zf-doctrine-module-zend-hydrator",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/API-Skeletons/zf-doctrine-module-zend-hydrator.git",
-                "reference": "9041810ef43f37e3526941cef471970cbd65cf92"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/API-Skeletons/zf-doctrine-module-zend-hydrator/zipball/9041810ef43f37e3526941cef471970cbd65cf92",
-                "reference": "9041810ef43f37e3526941cef471970cbd65cf92",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/doctrine-module": "^1.0",
-                "zendframework/zend-hydrator": "~1.0 || ^2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "DoctrineModule\\Stdlib\\Hydrator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom H Anderson",
-                    "email": "tom.h.anderson@gmail.com"
-                }
-            ],
-            "description": "Corrects DoctrineModule classes to use zend-hydrator",
-            "time": "2016-06-12 20:55:02"
-        },
         {
             "name": "behat/transliterator",
             "version": "v1.1.0",
@@ -1572,67 +1535,6 @@
             "time": "2014-02-01 15:22:28"
         },
         {
-            "name": "phpro/zf-doctrine-hydration-module",
-            "version": "v3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpro/zf-doctrine-hydration-module.git",
-                "reference": "d476c98b8d1e41696b87e1da0429abcfa63586db"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpro/zf-doctrine-hydration-module/zipball/d476c98b8d1e41696b87e1da0429abcfa63586db",
-                "reference": "d476c98b8d1e41696b87e1da0429abcfa63586db",
-                "shasum": ""
-            },
-            "require": {
-                "api-skeletons/zf-doctrine-module-zend-hydrator": "^1.0",
-                "doctrine/common": "^2.6.1",
-                "doctrine/doctrine-module": "^1.2",
-                "doctrine/instantiator": "^1.0.5",
-                "php": "^5.6 || ^7.0",
-                "zendframework/zend-hydrator": "^1.1 || ^2.2.1",
-                "zendframework/zend-modulemanager": "^2.7.2",
-                "zendframework/zend-servicemanager": "^2.7.6 || ^3.1"
-            },
-            "require-dev": {
-                "doctrine/doctrine-mongo-odm-module": "^0.11",
-                "doctrine/doctrine-orm-module": "^1.1",
-                "doctrine/mongodb-odm": "^1.1",
-                "fabpot/php-cs-fixer": "^1.11.6",
-                "phpro/grumphp": "^0.9.1",
-                "phpunit/phpunit": "^4.8"
-            },
-            "type": "library",
-            "extra": {
-                "zf": {
-                    "module": "Phpro\\DoctrineHydrationModule"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Phpro\\DoctrineHydrationModule\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Toon Verwerft",
-                    "email": "toon.verwerft@phpro.be"
-                }
-            ],
-            "description": "Doctrine hydrators for ZF2 and ZF3",
-            "keywords": [
-                "doctrine",
-                "hydrator",
-                "zf2"
-            ],
-            "time": "2016-10-05 06:33:09"
-        },
-        {
             "name": "psr/http-message",
             "version": "1.0.1",
             "source": {
@@ -1839,16 +1741,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "09d0fd33560e3573185a2ea17614e37ba38716c5"
+                "reference": "d12aa9ca20f4db83ec58410978dab6afcb9d6aaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/09d0fd33560e3573185a2ea17614e37ba38716c5",
-                "reference": "09d0fd33560e3573185a2ea17614e37ba38716c5",
+                "url": "https://api.github.com/repos/symfony/console/zipball/d12aa9ca20f4db83ec58410978dab6afcb9d6aaa",
+                "reference": "d12aa9ca20f4db83ec58410978dab6afcb9d6aaa",
                 "shasum": ""
             },
             "require": {
@@ -1898,11 +1800,11 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-16 22:18:16"
+            "time": "2016-12-11 14:34:22"
         },
         {
             "name": "symfony/debug",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
@@ -2018,7 +1920,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
@@ -2067,16 +1969,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "f2300ba8fbb002c028710b92e1906e7457410693"
+                "reference": "a7095af4b97a0955f85c8989106c249fa649011f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/f2300ba8fbb002c028710b92e1906e7457410693",
-                "reference": "f2300ba8fbb002c028710b92e1906e7457410693",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/a7095af4b97a0955f85c8989106c249fa649011f",
+                "reference": "a7095af4b97a0955f85c8989106c249fa649011f",
                 "shasum": ""
             },
             "require": {
@@ -2118,7 +2020,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-18 21:17:59"
+            "time": "2016-12-10 10:07:06"
         },
         {
             "name": "zendframework/zend-authentication",
@@ -4751,81 +4653,6 @@
             "time": "2016-07-28 13:47:39"
         },
         {
-            "name": "zfcampus/zf-apigility-doctrine",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zfcampus/zf-apigility-doctrine.git",
-                "reference": "ef5f2c3398a1090eb69a7defc476b66063ec8f38"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zfcampus/zf-apigility-doctrine/zipball/ef5f2c3398a1090eb69a7defc476b66063ec8f38",
-                "reference": "ef5f2c3398a1090eb69a7defc476b66063ec8f38",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.6 || ^7.0",
-                "phpro/zf-doctrine-hydration-module": "^2.0.1 || ^3.0",
-                "zfcampus/zf-apigility": "^1.3"
-            },
-            "require-dev": {
-                "doctrine/doctrine-module": "^1.2",
-                "doctrine/doctrine-mongo-odm-module": "^0.11",
-                "doctrine/doctrine-orm-module": "^1.1",
-                "doctrine/mongodb-odm": "^1.0",
-                "phpunit/phpunit": "^4.8",
-                "squizlabs/php_codesniffer": "^2.7",
-                "zendframework/zend-form": "^2.9.2",
-                "zendframework/zend-i18n": "^2.7.3",
-                "zendframework/zend-log": "^2.9.1",
-                "zendframework/zend-mvc": "^2.7.10 || ^3.0.2",
-                "zendframework/zend-serializer": "^2.8",
-                "zendframework/zend-stdlib": "^2.7.7 || ^3.0.1",
-                "zendframework/zend-test": "^2.6.1 || ^3.0.1",
-                "zfcampus/zf-apigility-admin": "^1.5.7",
-                "zfcampus/zf-hal": "^1.4.2"
-            },
-            "suggest": {
-                "api-skeletons/zf-doctrine-hydrator": "Hydrator strategies for Doctrine in Apipgility",
-                "api-skeletons/zf-oauth2-doctrine": "OAuth2 Doctrine Adapter for Apigility",
-                "doctrine/doctrine-mongo-odm-module": "For Mongo ODM mapping",
-                "doctrine/doctrine-orm-module": "For ORM mapping"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev",
-                    "dev-develop": "2.2-dev"
-                },
-                "zf": {
-                    "module": [
-                        "ZF\\Apigility\\Doctrine\\Admin",
-                        "ZF\\Apigility\\Doctrine\\Server"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ZF\\Apigility\\Doctrine\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Apigility Doctrine module",
-            "homepage": "http://apigility.org/",
-            "keywords": [
-                "api",
-                "apigility",
-                "doctrine",
-                "framework",
-                "zf"
-            ],
-            "time": "2016-10-17 14:35:27"
-        },
-        {
             "name": "zfcampus/zf-apigility-documentation",
             "version": "1.2.3",
             "source": {
@@ -6571,16 +6398,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.3",
+            "version": "5.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "de164acc2f2bb0b79beb892a36260264b2a03233"
+                "reference": "af91da3f2671006ff5d0628023de3b7ac4d1ef09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/de164acc2f2bb0b79beb892a36260264b2a03233",
-                "reference": "de164acc2f2bb0b79beb892a36260264b2a03233",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/af91da3f2671006ff5d0628023de3b7ac4d1ef09",
+                "reference": "af91da3f2671006ff5d0628023de3b7ac4d1ef09",
                 "shasum": ""
             },
             "require": {
@@ -6601,7 +6428,7 @@
                 "sebastian/diff": "~1.2",
                 "sebastian/environment": "^1.3.4 || ^2.0",
                 "sebastian/exporter": "~2.0",
-                "sebastian/global-state": "~1.0",
+                "sebastian/global-state": "^1.0 || ^2.0",
                 "sebastian/object-enumerator": "~2.0",
                 "sebastian/resource-operations": "~1.0",
                 "sebastian/version": "~1.0|~2.0",
@@ -6649,7 +6476,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-12-09 02:48:53"
+            "time": "2016-12-13 16:19:44"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -7280,7 +7107,7 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
@@ -7337,16 +7164,16 @@
         },
         {
             "name": "symfony/config",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "4a68f8953180bf77ea65f585020f4db0b18600b4"
+                "reference": "b4ec9f099599cfc5b7f4d07bb2e910781a2be5e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/4a68f8953180bf77ea65f585020f4db0b18600b4",
-                "reference": "4a68f8953180bf77ea65f585020f4db0b18600b4",
+                "url": "https://api.github.com/repos/symfony/config/zipball/b4ec9f099599cfc5b7f4d07bb2e910781a2be5e4",
+                "reference": "b4ec9f099599cfc5b7f4d07bb2e910781a2be5e4",
                 "shasum": ""
             },
             "require": {
@@ -7389,11 +7216,11 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-29 11:12:32"
+            "time": "2016-12-09 07:45:17"
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -7446,16 +7273,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "c6b6111f5aae7c58698cdc10220785627ac44a2c"
+                "reference": "1638c7534a8a2fa0bf9e979f9aacb6d7e8e9e24e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/c6b6111f5aae7c58698cdc10220785627ac44a2c",
-                "reference": "c6b6111f5aae7c58698cdc10220785627ac44a2c",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/1638c7534a8a2fa0bf9e979f9aacb6d7e8e9e24e",
+                "reference": "1638c7534a8a2fa0bf9e979f9aacb6d7e8e9e24e",
                 "shasum": ""
             },
             "require": {
@@ -7498,11 +7325,11 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-25 12:32:42"
+            "time": "2016-12-10 14:24:53"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -7562,7 +7389,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -7611,16 +7438,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "4263e35a1e342a0f195c9349c0dee38148f8a14f"
+                "reference": "a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/4263e35a1e342a0f195c9349c0dee38148f8a14f",
-                "reference": "4263e35a1e342a0f195c9349c0dee38148f8a14f",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b",
+                "reference": "a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b",
                 "shasum": ""
             },
             "require": {
@@ -7656,11 +7483,11 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-03 08:11:03"
+            "time": "2016-12-13 09:39:43"
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
