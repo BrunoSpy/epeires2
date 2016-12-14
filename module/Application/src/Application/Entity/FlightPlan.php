@@ -55,6 +55,14 @@ class FlightPlan
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required(true)
+     * @Annotation\Options({"label":"Type Avion :"})
+     */
+    protected $typeavion;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(true)
      * @Annotation\Options({"label":"Terrain Arrivée :"})
      */
     protected $destinationterrain;
@@ -71,7 +79,7 @@ class FlightPlan
      * @ORM\Column(type="datetime", nullable=true)
      * @Annotation\Type("Zend\Form\Element\DateTime")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Heure d'arrivée :", "format" : "d-m-Y H:i"})
+     * @Annotation\Options({"label":"Heure réelle d'arrivée :", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
      */
     /*@Gedmo\Versioned
@@ -123,6 +131,10 @@ class FlightPlan
         return $this->aircraftid;
     }
 
+    public function getTypeAvion() {
+        return $this->typeavion;
+    }
+
     public function getStartterrain() {
         return $this->startterrain;
     }
@@ -154,6 +166,10 @@ class FlightPlan
 
     public function setAircraftid($aircraftid) {
         $this->aircraftid = $aircraftid;
+    }
+
+    public function setTypeAvion($typeavion) {
+        $this->typeavion = $typeavion;
     }
 
     public function setStartterrain($startterrain) {

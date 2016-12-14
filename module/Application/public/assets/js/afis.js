@@ -17,9 +17,9 @@
 /**
  * @author Loïc Perrin
  */
+
 var afis = function(url) {
 
-    // console.log($(".table tbody").first());
     $tAdmbodies = $(".t-adm tbody");
     $tUsrbody = $(".t-usr tbody");
 
@@ -58,6 +58,22 @@ var afis = function(url) {
                     'json'
                 );
             });
+
+            // $.get( url + 'afis/getNOTAMs', function( data, textStatus, jqxhr ) {
+            //     // console.log( data ); // Data returned
+            //     // console.log( textStatus ); // Success
+            //     // console.log( jqxhr.status ); // 200
+            //     // console.log( "Load was performed." );
+            //     console.log($('tr'));
+            //     $.each(data, function(notam) {
+            //         console.log(this);
+            //     });
+            // });
+
+            $.material.togglebutton();
+
+            // console.log($('.togglebutton label input[type="checkbox"]:checked').css('background-color', '#000'));
+            // console.log($('.toggle'));
         }
 
         function setAdmBtn() {
@@ -87,7 +103,6 @@ var afis = function(url) {
                 });
             });
         }
-
     }
 
     $("#btn-add-af").click(function() {

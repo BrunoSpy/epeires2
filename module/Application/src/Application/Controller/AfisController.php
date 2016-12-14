@@ -61,6 +61,26 @@ class AfisController extends AbstractEntityManagerAwareController
             ]);
     }
 
+    private function getNOTAMs() 
+    {
+        //  Initiate curl
+        $ch = curl_init();
+        // Disable SSL verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // Will return the response, if false it print the response
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // Set the url
+        curl_setopt($ch, CURLOPT_URL,'http://api.vateud.net/notams/LFFF.json');
+        // Execute
+        $result = curl_exec($ch);
+        // Closing
+        curl_close($ch);
+        // Will dump a beauty json :3
+        // var_dump(json_decode($result, true));
+        // curl_close($ch);
+        return json_decode($result, true);
+    }
+
     public function getAction() 
     {
         if (!$this->authAfis('read')) return new JsonModel();
@@ -73,6 +93,7 @@ class AfisController extends AbstractEntityManagerAwareController
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
                 'admin'    => $admin,
+                // 'notams'   => $this->getNOTAMs(), 
                 'afises'   => $this->repo->findBy(['decommissionned' => $decom])
             ]);     
     }
@@ -167,4 +188,6 @@ class AfisController extends AbstractEntityManagerAwareController
         }
         return $ret;
     }
+
+
 }

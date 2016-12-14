@@ -42,6 +42,13 @@ ul.sector-list {
 	padding-right: 0px;
 }
 
+li.title {
+	font-family: RobotoDraft;
+	font-weight: 600;
+	color: #AAA;
+	padding: 2px 0px;
+}
+
 #popover-frequencies .arrow {
 	display: block;
 }

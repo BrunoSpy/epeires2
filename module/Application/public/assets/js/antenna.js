@@ -168,16 +168,33 @@ var antenna = function(url, frequencyTestMenu){
     $(document).on('click', '#changefreq', function(event){
         event.preventDefault();
         var me = $(this);
-        $.post(url+'frequencies/getfrequencies?id='+me.data('freqid'), function(data){
+        $.post(url+'frequencies/getfrequencies?id='+me.data('freqid')+'&groupid='+me.data('groupid'), function(data){
+            var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
+            if(data['preferred']) {
+                var dataArray = [];
+                $.each(data.preferred, function(key, value){
+                    dataArray.push([key, data.preferred[key]]);
+                });
+                dataArray.sort(function(a, b){
+                    return a[1]['place'] > b[1]['place'] ? 1 : a[1]['place'] < b[1]['place'] ? -1 : 0;
+                });
+                if(dataArray.length > 0) {
+                    list.append('<li class="title">Fréquences du groupe</li>');
+                    for(var i = 0; i < dataArray.length; i++){
+                        list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
+                    }
+                    list.append('<li class="title">Autres fréquences</li>');
+                }
+            }
             //convert json into array to sort it
             var dataArray = [];
-            $.each(data, function(key, value){
-                dataArray.push([key, data[key]]);
+            $.each(data.others, function(key, value){
+                dataArray.push([key, data.others[key]]);
             });
             dataArray.sort(function(a, b){
                 return a[1]['place'] > b[1]['place'] ? 1 : a[1]['place'] < b[1]['place'] ? -1 : 0;
             });
-            var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
+
             for(var i = 0; i < dataArray.length; i++){
                 list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
             }
@@ -230,10 +247,11 @@ var antenna = function(url, frequencyTestMenu){
             var sector = $(this).closest('.sector');
             var list = $("<ul></ul>");
             var freqid = $(this).data('freq');
+            var groupid = $(this).data('groupid');
             if(currentfrequencies[freqid].status){
-                list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+freqid+"\" data-state=\"false\">Fréquence indisponible</a></li>");
+                list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-groupid=\""+groupid+"\" data-freqid=\""+freqid+"\" data-state=\"false\">Fréquence indisponible</a></li>");
             } else {
-                list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-freqid=\""+freqid+"\" data-state=\"true\">Fréquence disponible</a></li>");
+                list.append("<li><a href=\"#\" class=\"switch-freq-state\" data-groupid=\""+groupid+"\" data-freqid=\""+freqid+"\" data-state=\"true\">Fréquence disponible</a></li>");
             }
 
             var mainantennacolor = sector.find('.antennas .mainantenna-color');
@@ -255,7 +273,7 @@ var antenna = function(url, frequencyTestMenu){
                     "\" data-tofreq=\""+sector.data('freq')+"\">Retour à la fréquence nominale</a></li>");
             }
             var submenu = $("<li class=\"submenu\"></li>");
-            submenu.append("<a id=\"changefreq\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
+            submenu.append("<a id=\"changefreq\" data-groupid=\""+groupid+"\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
             list.append(submenu);
             list.append("<li><a class=\"brouillage\" data-toggle=\"modal\" data-freqname=\""+$(this).html()+"\" data-freqid=\""+sector.data('freq')+"\" href=\"#fne-brouillage\">Brouillage</a></li>");
             list.append("<li class=\"divider\"></li>");

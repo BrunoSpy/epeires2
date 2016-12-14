@@ -26,7 +26,7 @@ foreach ($this->frequencyColors as $status => $color) {
                 $inner .= "<ul class=\"sector-list\">";
                 foreach ($group->getSectors() as $sector) {
                     if ($sector->getFrequency() && ! $sector->getFrequency()->isDecommissionned()) {
-                        $inner .= "<li>" . $this->sector($sector->getFrequency(), $sector->getName()) . "</li>";
+                        $inner .= "<li>" . $this->sector($sector->getFrequency(), $sector->getName(), $group->getId()) . "</li>";
                     }
                 }
                 $inner .= "</ul>";

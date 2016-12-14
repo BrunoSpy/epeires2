@@ -5,6 +5,7 @@
     class=<?php echo $fp::CLASS_ALERTS[$fp->getTypeAlerte()]; ?> 
 >
     <td><?php echo $fp->getAircraftid(); ?></td>
+    <td><?php echo $fp->getTypeAvion(); ?></td>
     <td><?php echo $fp->getStartterrain(); ?></td>
     <td><?php echo $fp->getDestinationterrain(); ?></td>
     <td><?php echo ($fp->getEstimatedtimeofarrival()) ? $fp->getEstimatedtimeofarrival()->format('d/m/y H:i') : null; ?></td>
