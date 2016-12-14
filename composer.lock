@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a580546169c7e528157cfc8c5698459b",
-    "content-hash": "7a80ba9956f14f14a89c03775c68b268",
+    "hash": "8958807c9f80cf4351cf1e887a7d3d8d",
+    "content-hash": "50558170219fff815cb5b41f43e7cca0",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -5001,6 +5001,70 @@
             "time": "2016-08-18 20:33:08"
         },
         {
+            "name": "zfcampus/zf-development-mode",
+            "version": "2.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zfcampus/zf-development-mode.git",
+                "reference": "f2637017df25c1b763bf893e09009fca76b3cc30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zfcampus/zf-development-mode/zipball/f2637017df25c1b763bf893e09009fca76b3cc30",
+                "reference": "f2637017df25c1b763bf893e09009fca76b3cc30",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "zendframework/zend-console": "^2.2.2",
+                "zendframework/zend-mvc": "^2.2.2"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "^2.3.1"
+            },
+            "suggest": {
+                "zendframework/zend-developer-tools": "dev-master",
+                "zendframework/zend-tool": "dev-master"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev",
+                    "dev-develop": "2.2-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "./Module.php",
+                    "./DevelopmentModeController.php",
+                    "./DevelopmentModeControllerFactory.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Allen",
+                    "email": "rob@19ft.com",
+                    "homepage": "http://19ft.com"
+                },
+                {
+                    "name": "Ralph Schindler",
+                    "email": "ralph.s@zend.com",
+                    "homepage": "http://framework.zend.com"
+                }
+            ],
+            "description": "ZF2 development mode module",
+            "homepage": "http://github.com/zfcampus/zf-development-mode",
+            "keywords": [
+                "framework",
+                "zf2"
+            ],
+            "time": "2015-12-21 20:05:09"
+        },
+        {
             "name": "zfcampus/zf-hal",
             "version": "1.4.2",
             "source": {
@@ -7821,70 +7885,6 @@
                 "zf2"
             ],
             "time": "2016-08-17 19:29:47"
-        },
-        {
-            "name": "zfcampus/zf-development-mode",
-            "version": "2.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zfcampus/zf-development-mode.git",
-                "reference": "f2637017df25c1b763bf893e09009fca76b3cc30"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zfcampus/zf-development-mode/zipball/f2637017df25c1b763bf893e09009fca76b3cc30",
-                "reference": "f2637017df25c1b763bf893e09009fca76b3cc30",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5",
-                "zendframework/zend-console": "^2.2.2",
-                "zendframework/zend-mvc": "^2.2.2"
-            },
-            "require-dev": {
-                "squizlabs/php_codesniffer": "^2.3.1"
-            },
-            "suggest": {
-                "zendframework/zend-developer-tools": "dev-master",
-                "zendframework/zend-tool": "dev-master"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev",
-                    "dev-develop": "2.2-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "./Module.php",
-                    "./DevelopmentModeController.php",
-                    "./DevelopmentModeControllerFactory.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Rob Allen",
-                    "email": "rob@19ft.com",
-                    "homepage": "http://19ft.com"
-                },
-                {
-                    "name": "Ralph Schindler",
-                    "email": "ralph.s@zend.com",
-                    "homepage": "http://framework.zend.com"
-                }
-            ],
-            "description": "ZF2 development mode module",
-            "homepage": "http://github.com/zfcampus/zf-development-mode",
-            "keywords": [
-                "framework",
-                "zf2"
-            ],
-            "time": "2015-12-21 20:05:09"
         }
     ],
     "aliases": [],
