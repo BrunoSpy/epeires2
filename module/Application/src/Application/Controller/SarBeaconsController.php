@@ -54,6 +54,12 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
+
+    public function indexAction()
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+    }
+
     public function formAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -166,7 +172,18 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         return new JsonModel($iP->getArrayCopy());
     }
 
-    public function printAction() 
+    public function validpdfAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
+        $iP = $this->repo->find($this->params()->fromRoute('id'));
+        if (!file_exists($iP->getPdfFilePath())) 
+            return new JsonModel(['error', 'Problème lors du chargement du fichier pdf. Impossible de continuer.']); 
+        else return new JsonModel();
+
+    }
+
+    public function printAction()
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
@@ -182,11 +199,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         return $pdf;
     }
 
-    public function mailAction()
-    {
-        if (!$this->authSarBeacons('read')) return new JsonModel();
-
-        if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel();
+    public function mailAction() {
+        if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel(['error', 'Problème de configuration des adresses email.']);
 
         $post = $this->getRequest()->getPost();
         $iP = $this->repo->find($post['id']);
@@ -218,8 +232,6 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setSubject('Plan d\'interrogation')
             ->setBody($body);
 
-        // echo $message->toString();
-        // echo $message->isValid();
         if($message->isValid()) 
         {
             $transportOptions = new SmtpOptions($this->config['smtp']);
@@ -227,7 +239,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                 ->setOptions($transportOptions)
                 ->send($message);
         }
-        return new JsonModel();
+        return new JsonModel(['success', 'Courriel(s) envoyé(s) avec succès.']);
     }
 
     private function authSarBeacons($action) {
