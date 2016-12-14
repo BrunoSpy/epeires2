@@ -8,7 +8,7 @@ return [
     // Development time modules
     'modules' => [
         'ZF\Apigility\Admin',
-        'ZF\Configuration',
+        //'ZF\Configuration',
     ],
     // development time configuration globbing
     'module_listener_options' => [
