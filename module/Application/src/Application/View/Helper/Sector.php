@@ -40,9 +40,11 @@ class Sector extends AbstractHelper
         $html .= "<div data-antennaid=\"" . $frequency->getMainantenna()->getId() . "\" class=\"mainantenna-color antenna-color antenna-" . $frequency->getMainAntenna()->getId() . "\">";
         $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getMainantenna()->getId() . "\">" . $frequency->getMainAntenna()->getShortname() . "</a></li>";
         $html .= "</div>";
-        $html .= "<div data-antennaid=\"" . $frequency->getBackupantenna()->getId() . "\" class=\"backupantenna-color antenna-color antenna-" . $frequency->getBackupAntenna()->getId() . "\">";
-        $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getBackupantenna()->getId() . "\">" . $frequency->getBackupAntenna()->getShortname() . "</a></li>";
-        $html .= "</div>";
+        if($frequency->getBackupantenna()) {
+            $html .= "<div data-antennaid=\"" . $frequency->getBackupantenna()->getId() . "\" class=\"backupantenna-color antenna-color antenna-" . $frequency->getBackupAntenna()->getId() . "\">";
+            $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getBackupantenna()->getId() . "\">" . $frequency->getBackupAntenna()->getShortname() . "</a></li>";
+            $html .= "</div>";
+        }
         $html .= "</ul>";
         
         if ($frequency->getMainantennaclimax() || $frequency->getBackupantennaclimax()) {

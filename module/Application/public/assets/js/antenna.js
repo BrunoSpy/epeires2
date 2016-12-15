@@ -170,6 +170,21 @@ var antenna = function(url, frequencyTestMenu){
         var me = $(this);
         $.post(url+'frequencies/getfrequencies?id='+me.data('freqid')+'&groupid='+me.data('groupid'), function(data){
             var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
+            if(data['backup']) {
+                var dataArray = [];
+                $.each(data.backup, function(key, value){
+                    dataArray.push([key, data.backup[key]]);
+                });
+                dataArray.sort(function(a, b){
+                    return a[1]['place'] > b[1]['place'] ? 1 : a[1]['place'] < b[1]['place'] ? -1 : 0;
+                });
+                if(dataArray.length > 0) {
+                    list.append('<li class="title">Fréquences préconisées</li>');
+                    for(var i = 0; i < dataArray.length; i++){
+                        list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
+                    }
+                }
+            }
             if(data['preferred']) {
                 var dataArray = [];
                 $.each(data.preferred, function(key, value){
@@ -183,8 +198,12 @@ var antenna = function(url, frequencyTestMenu){
                     for(var i = 0; i < dataArray.length; i++){
                         list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+me.data('freqid')+"\" data-tofreq=\""+dataArray[i][0]+"\">"+dataArray[i][1]['data']+"</a></li>");
                     }
-                    list.append('<li class="title">Autres fréquences</li>');
                 }
+            }
+
+
+            if((data['backup'] && Object.keys(data.backup).length > 0 ) || (data['preferred'] && Object.keys(data.preferred).length > 0)) {
+                list.append('<li class="title">Autres fréquences</li>');
             }
             //convert json into array to sort it
             var dataArray = [];
