@@ -707,52 +707,76 @@ class FrequenciesController extends TabController
         $groupid = $this->params()->fromQuery('groupid', null);
         $frequencies = array();
         $preferredFrequencies = array();
-        if($groupid) {
-            $group = $this->entityManager->getRepository('Application\Entity\SectorGroup')->find($groupid);
-            if($group) {
-                $preferredFreq = array();
-                foreach ($group->getSectors() as $sector) {
-                    $defaultfreq = $sector->getFrequency();
-                    if($defaultfreq && $defaultfreq->getId() != $frequencyid) {
-                        $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
+        $backupFrequencies = array();
+        
+        if($frequencyid) {
+            $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($frequencyid);
+            if($frequency) {
+                if(count($frequency->getBackupfrequencies()) > 0) {
+                    $backupfreq = array();
+                    foreach ($frequency->getBackupfrequencies() as $f) {
+                        $backupfreq[$f->getId()] = ($f->getDefaultSector() ? $f->getDefaultSector()->getName() : $f->getOtherName()) . " " . $f->getValue();
+                    }
+                    asort($backupfreq);
+                    $place = 0;
+                    foreach ($backupfreq as $key => $value) {
+                        $backupFrequencies[$key] = array(
+                            'place' => $place,
+                            'data' => $value
+                        );
+                        $place++;
+                    }
+                    $frequencies['backup'] = $backupFrequencies;
+                } else {
+                    if ($groupid) {
+                        $group = $this->entityManager->getRepository('Application\Entity\SectorGroup')->find($groupid);
+                        if ($group) {
+                            $preferredFreq = array();
+                            foreach ($group->getSectors() as $sector) {
+                                $defaultfreq = $sector->getFrequency();
+                                if ($defaultfreq && $defaultfreq->getId() != $frequencyid) {
+                                    $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
+                                }
+                            }
+                            asort($preferredFreq);
+                            $place = 0;
+                            foreach ($preferredFreq as $key => $value) {
+                                $preferredFrequencies[$key] = array(
+                                    'place' => $place,
+                                    'data' => $value
+                                );
+                                $place++;
+                            }
+                        }
+                        $frequencies['preferred'] = $preferredFrequencies;
                     }
                 }
-                asort($preferredFreq);
+                $otherfreqs = array();
+                $qb = $this->entityManager->createQueryBuilder();
+                $qb->select(array(
+                    'f'
+                ))
+                    ->from('Application\Entity\Frequency', 'f')
+                    ->leftJoin('f.defaultsector', 'd')
+                    ->andWhere($qb->expr()
+                        ->eq('f.organisation', '?1'))
+                    ->addOrderBy('d.zone', 'DESC')
+                    ->addOrderBy('d.name', 'ASC')
+                    ->setParameter('1', $frequency->getOrganisation()
+                        ->getId());
                 $place = 0;
-                foreach ($preferredFreq as $key => $value) {
-                    $preferredFrequencies[$key] = array('place' => $place,
-                        'data' => $value);
-                    $place++;
+                foreach ($qb->getQuery()->getResult() as $freq) {
+                    if(!array_key_exists($freq->getId(), $preferredFrequencies) && $freq->getId() != $frequencyid) {
+                        $otherfreqs[$freq->getId()] = array(
+                            'place' => $place,
+                            'data' => ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue())
+                        );
+                        $place ++;
+                    }
                 }
+                $frequencies['others'] = $otherfreqs;
+                
             }
-            $frequencies['preferred'] = $preferredFrequencies;
-        }
-        $otherfreqs = array();
-        if ($frequencyid) {
-            $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($frequencyid);
-            $qb = $this->entityManager->createQueryBuilder();
-            $qb->select(array(
-                'f'
-            ))
-                ->from('Application\Entity\Frequency', 'f')
-                ->leftJoin('f.defaultsector', 'd')
-                ->andWhere($qb->expr()
-                ->eq('f.organisation', '?1'))
-                ->addOrderBy('d.zone', 'DESC')
-                ->addOrderBy('d.name', 'ASC')
-                ->setParameter('1', $frequency->getOrganisation()
-                ->getId());
-            $place = 0;
-            foreach ($qb->getQuery()->getResult() as $freq) {
-                if(!array_key_exists($freq->getId(), $preferredFrequencies) && $freq->getId() != $frequencyid) {
-                    $otherfreqs[$freq->getId()] = array(
-                        'place' => $place,
-                        'data' => ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue())
-                    );
-                    $place ++;
-                }
-            }
-            $frequencies['others'] = $otherfreqs;
         }
         return new JsonModel($frequencies);
     }

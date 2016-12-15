@@ -95,6 +95,7 @@
 								<th>Antenne principale climax</th>
 								<th>Antenne secours</th>
 								<th>Antenne secours climax</th>
+                                <th>Fréquences secours préconisées</th>
 								<th><a href="#frequency-container" id="add-frequency" data-toggle="modal" class="btn btn-xs btn-primary">Ajouter</a></th>
 							</tr>
 						</thead>
@@ -111,6 +112,11 @@
 										echo '<td>'.($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getName() : "").'</td>';
 										echo '<td>'.($frequency->getBackupantenna() ? $frequency->getBackupantenna()->getName() : "").'</td>';
 										echo '<td>'.($frequency->getBackupantennaclimax() ? $frequency->getBackupantennaclimax()->getName() : "").'</td>';
+										echo '<td>';
+										foreach ($frequency->getBackupfrequencies() as $f){
+										    echo $f->getValue().' (' . ($f->getDefaultsector() ? $f->getDefaultsector()->getName(): $f->getOthername()).')<br>';
+                                        }
+										echo '</td>';
 										echo "<td>";
 											echo "<a
 													title=\"Modifier\"
