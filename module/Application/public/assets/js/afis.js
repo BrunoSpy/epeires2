@@ -20,6 +20,56 @@
 
 var afis = function(url) {
 
+    var ListNotam = function() {
+        this.list = [];
+
+        this.add = function(raw) {
+            this.list.push(new Notam(raw));
+        }
+
+        this.get = function(i) {
+            return this.list[i];
+        }
+
+        this.findByAero = function(aero) {
+            var notams = [];
+            $.each(this.list, function(i, notam) {
+                if(notam.getAero() === aero && notam.isOpenHours()) {
+                    notams.push(notam);
+                }
+            });
+            return notams;
+        }
+    }
+
+    var Notam = function(raw) {
+        this.raw = raw;
+        this.lignes = this.raw.split('\n');
+
+        this.getA = function() {
+            return this.lignes[3];
+        }
+
+        this.getE = function() {
+            return this.lignes[5];
+        }
+
+        this.getAero = function() {
+            var A = this.getA();
+            return A.substr(3, 4);
+        }
+
+        this.isOpenHours = function() {
+            return (this.getE().indexOf('HORAIRE') == -1) ? false : true;  
+        }
+
+        this.getRaw = function() {
+            return this.raw;
+        }
+    }
+
+    notams = new ListNotam();
+
     $tAdmbodies = $(".t-adm tbody");
     $tUsrbody = $(".t-usr tbody");
 
@@ -59,21 +109,32 @@ var afis = function(url) {
                 );
             });
 
-            // $.get( url + 'afis/getNOTAMs', function( data, textStatus, jqxhr ) {
-            //     // console.log( data ); // Data returned
-            //     // console.log( textStatus ); // Success
-            //     // console.log( jqxhr.status ); // 200
-            //     // console.log( "Load was performed." );
-            //     console.log($('tr'));
-            //     $.each(data, function(notam) {
-            //         console.log(this);
-            //     });
-            // });
+            $.get(url + 'afis/getNOTAMs', function(data) {
+                var $n = $(data).find('font.NOTAMBulletin');
+                $.each($n, function(i) {
+                    notams.add($(this).text());
+                });
+
+                var $trs = $tUsrbody.find('tr');
+                $.each($trs, function() {
+                    var $aero = $(this).find('td').eq(0);
+                    var foundNotams = notams.findByAero($aero.html());
+                    var tooltip = "";
+                    $.each(foundNotams, function() { 
+                        tooltip += this.getRaw();
+                    });
+                    $(this).attr('title', tooltip);
+                    $(this).tooltip({
+                        position: { 
+                            my: "bottom", 
+                            at: "bottom",
+                            collision: "flipfit"
+                        },
+                    });
+                });
+            });
 
             $.material.togglebutton();
-
-            // console.log($('.togglebutton label input[type="checkbox"]:checked').css('background-color', '#000'));
-            // console.log($('.toggle'));
         }
 
         function setAdmBtn() {

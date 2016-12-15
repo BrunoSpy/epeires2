@@ -385,7 +385,7 @@
         IC_BAL_SIZE = 10,
         IC_PIO_SIZE = 20,
         IC_HEL_SIZE = 20,
-        IC_SAR_SIZE = 40,
+        IC_SAR_SIZE = 30,
         IC_SEL_SIZE = 40,
         IC_SAR_ANCH = IC_SAR_SIZE / 2;
     const
@@ -398,6 +398,7 @@
             iconUrl: URL_IMG + 'btn-ter.png',
             iconSize: [IC_TER_SIZE, IC_TER_SIZE]
         }),
+
         icBal = L.icon({
             iconUrl: URL_IMG + 'btn-bal.png',
             iconSize: [IC_BAL_SIZE, IC_BAL_SIZE]

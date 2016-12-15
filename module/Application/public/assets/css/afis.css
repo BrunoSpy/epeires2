@@ -7,3 +7,13 @@
 .togglebutton label .toggle, .togglebutton label input[type="checkbox][disabled"] + .toggle {
   background-color: #ebccd1;
 }
+
+.tooltip {
+
+}
+.tooltip-inner {
+	text-align: left;
+	max-width:500px;
+	padding:20px;
+	white-space: pre-wrap;
+}
