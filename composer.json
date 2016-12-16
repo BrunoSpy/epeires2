@@ -50,13 +50,18 @@
         "murganikolay/doctrine-migrations-module": "dev-master",
         "netiul/dompdf-module": "dev-master",
         "Kipperlenny/opentbs-bundle": "dev-master",
-        "rlanvin/php-rrule": "^1.3"
+        "rlanvin/php-rrule": "^1.3",
+        "zfcampus/zf-apigility": "~1.0",
+        "zfcampus/zf-apigility-documentation": "^1.2",
+        "zfcampus/zf-apigility-documentation-swagger": "^1.2",
+        "zfcampus/zf-development-mode": "~2.0"
     },
     "require-dev":{
         "zendframework/zend-test": "^2.5",
         "phpunit/phpunit": "^5.6",
         "hounddog/doctrine-data-fixture-module": "dev-master",
         "satooshi/php-coveralls": "dev-master",
-        "codeception/codeception": "^2.2"
+        "codeception/codeception": "^2.2",
+        "zfcampus/zf-apigility-admin": "~1.0"
     }
 }

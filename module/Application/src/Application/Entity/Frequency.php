@@ -17,6 +17,8 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
@@ -56,7 +58,7 @@ class Frequency extends TemporaryResource
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="backupfrequencies")
      * @Annotation\Type("Zend\Form\Element\Select")
-     * @Annotation\Required(true)
+     * @Annotation\Required(false)
      * @Annotation\Options({"label":"Antenne secours :", "empty_option":"Choisir l'antenne secours"})
      */
     protected $backupantenna;
@@ -101,6 +103,20 @@ class Frequency extends TemporaryResource
      */
     protected $othername;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Frequency")
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({"multiple":true})
+     * @Annotation\Options({"label":"Fréquences préconisées", "empty_option":"Choisir les fréquences préconisées"})
+     */
+    protected $backupfrequencies;
+    
+    public function __construct()
+    {
+        $this->backupfrequencies = new ArrayCollection();
+    }
+    
     public function getId()
     {
         return $this->id;
@@ -222,6 +238,27 @@ class Frequency extends TemporaryResource
         }
     }
 
+    public function getBackupfrequencies()
+    {
+        return $this->backupfrequencies;
+    }
+    
+    public function setBackupfrequencies(Collection $frequencies) {
+        $this->backupfrequencies = $frequencies;
+    }
+    
+    public function addBackupfrequencies(Collection $frequencies) {
+        foreach ($frequencies as $f) {
+            $this->backupfrequencies->add($f);
+        }
+    }
+    
+    public function removeBackupfrequencies(Collection $frequencies) {
+        foreach ($frequencies as $f) {
+            $this->backupfrequencies->removeElement($f);
+        }
+    }
+    
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
@@ -231,6 +268,11 @@ class Frequency extends TemporaryResource
         $object_vars['backupantennaclimax'] = ($this->backupantennaclimax ? $this->backupantennaclimax->getId() : null);
         $object_vars['defaultsector'] = ($this->defaultsector ? $this->defaultsector->getId() : null);
         $object_vars['organisation'] = ($this->organisation ? $this->organisation->getId() : null);
+        $backupf = array();
+        foreach ($this->backupfrequencies as $b) {
+            $backupf[] = $b->getId();
+        }
+        $object_vars['backupfrequencies'] = $backupf;
         return $object_vars;
     }
 }

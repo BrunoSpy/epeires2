@@ -1,5 +1,7 @@
 var flightplan = function(url){
-    
+    "use strict";
+    $('tr').draggable().click(modFpHandler);
+
     var $iDate = $('#i-date');
     //TODO BOF
     var isSar = window.location.href.search('sar');
@@ -55,6 +57,11 @@ var flightplan = function(url){
         location.reload();
     });
     
+    function modFpHandler(e) {     
+        $("#title-edit-fp").html('Modification du Plan de Vol - <em>'+$(this).data('aircraft-id')+'</em>');
+        loadFpForm($(this).data('id'));
+    }
+
     function loadFpForm(id = null) 
     {
         $("#f-edit-fp").load(url+'flightplans/form', {id: id,}, function() 
@@ -74,22 +81,51 @@ var flightplan = function(url){
                     'init':true
                 });
 
-            $(this).find('input[type=submit]').click(submitBtnHandler);
+            // $(this).find('input[type=submit]')
+            //     .val('')
+            //     .append($('<span class="glyphicon glyphicon-plane"></span>'))
+            //     .click(submitBtnHandler);
 
-            $fGrpComment = $(this).find('textarea[name=comment]').parents('.form-group');
+            var $fGrpComment = $(this).find('textarea[name=comment]').parents('.form-group');
 
-            $fGrpChkbox = $(this).find('input[type=checkbox]').parents('.form-group');
+            var $fGrpChkbox = $(this).find('input[type=checkbox]').parents('.form-group');
 
-            $sTypeAlert = $(this).find('select[name=typealerte]')
+            var $sTypeAlert = $(this).find('select[name=typealerte]')
                 .change(alerteChangeHandler)
                 .trigger('change');
 
             $.each($fGrpChkbox, function(i, fgrp) {
-                label = $(fgrp).find('label').html();
+                var label = $(fgrp).find('label').html();
                 $(fgrp).find('input[type=checkbox]')
                     .data({label: label})
                     .click(chkBoxClickHandler);
             });
+
+            var $btnSave = $('<button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-save"></span></button>');
+            $btnSave.click(submitBtnHandler);
+
+            var $mdlFooter = $(this).find('.modal-footer');
+            $mdlFooter.append($btnSave);
+
+            var aircraftid = $('input[name=aircraftid]').val();
+            
+            if(id) {
+                var $btnDel = $('<button class="btn btn-warning"><span class="glyphicon glyphicon-trash"></span></button>');
+                $btnDel.click(function(e) {
+                    e.preventDefault();
+                    $("#mdl-edit-fp").modal('hide');
+                    // var id = $(this).data('id');
+                    $('#s-del-fp-airid').html(aircraftid);
+                    $('#a-del-fp-ok').click(function(){
+                        $.post(url+'flightplans/delete', {id: id}, function(){
+                            location.reload();
+                        }, 'json');      
+                    });
+                    $("#mdl-del-fp").modal('show');
+                   
+                });
+                $btnDel.appendTo($mdlFooter);
+            }
 
             function alerteChangeHandler(e) {
                 if ($(this).val() > 0) { 

@@ -1,12 +1,17 @@
-<tr class=<?php echo $fp::CLASS_ALERTS[$fp->getTypeAlerte()]; ?> >
-
+<tr data-id=<?php echo $fp->getId(); ?>
+    data-aircraft-id=<?php echo $fp->getAircraftid(); ?>
+    data-toggle="modal"
+    href="#mdl-edit-fp"
+    class=<?php echo $fp::CLASS_ALERTS[$fp->getTypeAlerte()]; ?> 
+>
     <td><?php echo $fp->getAircraftid(); ?></td>
+    <td><?php echo $fp->getTypeAvion(); ?></td>
     <td><?php echo $fp->getStartterrain(); ?></td>
     <td><?php echo $fp->getDestinationterrain(); ?></td>
     <td><?php echo ($fp->getEstimatedtimeofarrival()) ? $fp->getEstimatedtimeofarrival()->format('d/m/y H:i') : null; ?></td>
     <td><?php echo ($fp->getTimeofarrival()) ? $fp->getTimeofarrival()->format('d/m/y H:i') : null; ?></td>
 
-    <td>
+<!--     <td class="adm">
         <a title="Modifier" 
            href="#mdl-edit-fp" 
            class="a-edit-fp" 
@@ -23,5 +28,5 @@
             data-toggle="modal">
             <span class="glyphicon glyphicon-trash"></span>
         </a>
-    </td>
+    </td> -->
 </tr>

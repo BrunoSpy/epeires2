@@ -28,21 +28,23 @@ use Application\Entity\Frequency;
 class Sector extends AbstractHelper
 {
 
-    public function __invoke(Frequency $frequency, $name)
+    public function __invoke(Frequency $frequency, $name, $groupid = null)
     {
         $html = "<ul class=\"sector dropdown-menu\" data-freq=\"" . $frequency->getId() . "\">";
         $html .= "<div class=\"sector-color frequency-" . $frequency->getId() . "\">";
         $html .= "<li class=\"sector-name\">" . $name . "</li>";
-        $html .= "<li class=\"sector-freq\"><a href=\"#\" class=\"actions-freq\" data-freq=\"" . $frequency->getId() . "\">" . $frequency->getValue() . "</a></li>";
+        $html .= "<li class=\"sector-freq\"><a href=\"#\" class=\"actions-freq\" data-freq=\"" . $frequency->getId() . "\" ". ($groupid != null ? 'data-groupid="' . $groupid . '"' : '') .">" . $frequency->getValue() . "</a></li>";
         $html .= "</div>";
         $html .= "<li class=\"divider\"></li>";
         $html .= "<ul class=\"antennas\">";
         $html .= "<div data-antennaid=\"" . $frequency->getMainantenna()->getId() . "\" class=\"mainantenna-color antenna-color antenna-" . $frequency->getMainAntenna()->getId() . "\">";
         $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getMainantenna()->getId() . "\">" . $frequency->getMainAntenna()->getShortname() . "</a></li>";
         $html .= "</div>";
-        $html .= "<div data-antennaid=\"" . $frequency->getBackupantenna()->getId() . "\" class=\"backupantenna-color antenna-color antenna-" . $frequency->getBackupAntenna()->getId() . "\">";
-        $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getBackupantenna()->getId() . "\">" . $frequency->getBackupAntenna()->getShortname() . "</a></li>";
-        $html .= "</div>";
+        if($frequency->getBackupantenna()) {
+            $html .= "<div data-antennaid=\"" . $frequency->getBackupantenna()->getId() . "\" class=\"backupantenna-color antenna-color antenna-" . $frequency->getBackupAntenna()->getId() . "\">";
+            $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getBackupantenna()->getId() . "\">" . $frequency->getBackupAntenna()->getShortname() . "</a></li>";
+            $html .= "</div>";
+        }
         $html .= "</ul>";
         
         if ($frequency->getMainantennaclimax() || $frequency->getBackupantennaclimax()) {

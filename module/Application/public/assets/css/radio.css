@@ -42,6 +42,13 @@ ul.sector-list {
 	padding-right: 0px;
 }
 
+li.title {
+	font-family: RobotoDraft;
+	font-weight: 600;
+	color: #AAA;
+	padding: 2px 0px;
+}
+
 #popover-frequencies .arrow {
 	display: block;
 }
@@ -175,6 +182,12 @@ ul>.antennas:last-child>.backupantenna-color {
 
 ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	padding-right: 0px;
+}
+
+.sector > .antennas:nth-child(3):last-child > .mainantenna-color:only-child {
+	width: 100%;
+	border-bottom-right-radius: 6px;
+	text-align: center;
 }
 
 .background-status-test {

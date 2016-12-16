@@ -21,6 +21,6 @@ return array(
         'fail' => 'red',
         'warning' => 'orange',
         'ok' => 'green',
-        'planned' => 'blue'
-    )
+        'planned' => 'blue',
+    ),
 );

@@ -12,8 +12,25 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
     return false;
 }
 
+/**
+ * Display all errors when APP_ENV is development.
+ */
+if (getenv('APP_ENV') == 'development') {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+}
+
 // Setup autoloading
 require 'init_autoloader.php';
 
+if (!defined('APPLICATION_PATH')) {
+    define('APPLICATION_PATH', realpath(__DIR__ . '/../'));
+}
+$appConfig = include APPLICATION_PATH . '/config/application.config.php';
+
+if (file_exists(APPLICATION_PATH . '/config/development.config.php')) {
+    $appConfig = Zend\Stdlib\ArrayUtils::merge($appConfig, include APPLICATION_PATH . '/config/development.config.php');
+}
+
 // Run the application!
-Zend\Mvc\Application::init(require 'config/application.config.php')->run();
+Zend\Mvc\Application::init($appConfig)->run();

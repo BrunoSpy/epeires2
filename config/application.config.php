@@ -19,29 +19,43 @@
 // set APP_ENV = 'development' in httpd.conf or virtualhost conf to set up a dev environment
 $env = getenv('APP_ENV') ?  : 'production';
 
-// Production modules
 $modules = array(
-    'DoctrineModule',
-    'DoctrineORMModule',
-    'DoctrineMigrationsModule',
-    'ZfcBase',
-    'ZfcRbac',
-    'ZfcUser',
-    'ZfcUserDoctrineORM',
-    'AssetManager',
-    'DOMPDFModule',
-    'OpentbsBundle',
-    'Core',
-    'Application',
-    'Administration',
-    'IPO',
-);
+        'DoctrineModule',
+        'DoctrineORMModule',
+        'DoctrineMigrationsModule',
+        'ZfcBase',
+        'ZfcRbac',
+        'ZfcUser',
+        'ZfcUserDoctrineORM',
+        'AssetManager',
+        'DOMPDFModule',
+        'OpentbsBundle',
+        'Core',
+        'Application',
+        'Administration',
+        'IPO',
+        'ZF\\Apigility',
+        'ZF\\Apigility\\Provider',
+        'ZF\\ApiProblem',
+        'ZF\\MvcAuth',
+        'ZF\\OAuth2',
+        'ZF\\Hal',
+        'ZF\\ContentNegotiation',
+        'ZF\\ContentValidation',
+        'ZF\\Rest',
+        'ZF\\Rpc',
+        'ZF\\Versioning',
+        'ZF\\DevelopmentMode',
+        'ZF\\Apigility\\Documentation',
+        'ZF\\Apigility\\Documentation\Swagger',
+        'ZF\\Configuration',
+        'API'
+    );
 
 if ($env == 'development') {
 
 //    $modules [] = 'ZendDeveloperTools';
     $modules[] = 'DoctrineDataFixtureModule';
-
 }
 
 return array(
@@ -63,5 +77,4 @@ return array(
         'module_map_cache_key' => 'module_map',
         'cache_dir' => 'data/cache/'
     )
-)
-;
+);
