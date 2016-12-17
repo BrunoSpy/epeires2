@@ -40,20 +40,19 @@ class Afis extends TemporaryResource
     protected $id;
     
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=4, unique=true, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required(True)
-     * @Annotation\Options({"label":"Nom :"})
+     * @Annotation\Options({"label":"Code OACI :"})
      */
-    protected $name;
+    protected $code;
 
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required(True)
-     * @Annotation\Options({"label":"Nom abrégé :"})
+     * @Annotation\Options({"label":"Nom Long :"})
      */
-    protected $shortname;
+    protected $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation")
@@ -63,7 +62,21 @@ class Afis extends TemporaryResource
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
     protected $organisation;
-    
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\TextArea")
+     * @Annotation\Options({"label":"Horaires ouvertures :"})
+     */
+    protected $openedhours;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\TextArea")
+     * @Annotation\Options({"label":"Contacts :"})
+     */
+    protected $contacts;
+
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Hidden")
@@ -85,14 +98,14 @@ class Afis extends TemporaryResource
         $this->name = $name;
     }
 
-    public function getShortname()
+    public function getCode()
     {
-        return $this->shortname;
+        return $this->code;
     }
 
-    public function setShortname($name)
+    public function setCode($code)
     {
-        $this->shortname = $name;
+        $this->code = $code;
     }
     
     public function setOrganisation(Organisation $organisation)
@@ -104,7 +117,27 @@ class Afis extends TemporaryResource
     {
         return $this->organisation;
     }
-    
+
+    public function getOpenedhours()
+    {
+        return $this->openedhours;
+    }
+
+    public function setOpenedhours($openedhours)
+    {
+        $this->openedhours = $openedhours;
+    }
+
+    public function getContacts()
+    {
+        return $this->contacts;
+    }
+
+    public function setContacts($contacts)
+    {
+        $this->contacts = $contacts;
+    }
+
     public function getState()
     {
         return $this->state;
@@ -133,7 +166,7 @@ class Afis extends TemporaryResource
         $r = false;
         if (    is_int($this->id) and
                 is_string($this->name) and
-                is_string($this->shortname) and
+                is_string($this->code) and strlen($this->code) == 4 and 
                 is_a($this->organisation, Organisation::class) and
                 is_bool($this->state)) $r = true;
         return $r;

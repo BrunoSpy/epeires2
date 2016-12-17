@@ -126,6 +126,67 @@ class AfisController extends AbstractEntityManagerAwareController
         echo $resp;
     }
 
+    public function getNOTAMByCodeAction() 
+    {
+        $code = $this->params()->fromQuery('code');
+        // $code = "LFOP";
+        $fields = [
+            'AERO_CM_GPS' => '2',
+            'AERO_CM_INFO_COMP' => '1',
+            'AERO_CM_REGLE' => '1',
+            'AERO_Date_DATE' => urlencode((new \DateTime())->format('Y/m/d')),
+            'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
+            'AERO_Duree' => '24',
+            'AERO_Langue' => 'FR',
+            'AERO_Tab_Aero[0]' => $code,
+            'AERO_Tab_Aero[1]' => '',
+            'AERO_Tab_Aero[2]' => '',
+            'AERO_Tab_Aero[3]' => '',
+            'AERO_Tab_Aero[4]' => '',
+            'AERO_Tab_Aero[5]' => '',
+            'AERO_Tab_Aero[6]' => '',
+            'AERO_Tab_Aero[7]' => '',
+            'AERO_Tab_Aero[8]' => '',
+            'AERO_Tab_Aero[9]' => '',
+            'ModeAffichage' => 'COMPLET',
+            'bImpression' => '',
+            'bResultat' => 'true'
+        ];
+
+        $fields_string = '';
+        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR',
+            CURLOPT_POST => $fields,
+            CURLOPT_POSTFIELDS => $fields_string,
+            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+        ]);
+
+        $output = curl_exec($curl);
+
+        curl_close($curl);
+
+        $content = preg_replace('/.*<body[^>]*>/msi','',$output);
+        $content = preg_replace('/<\/body>.*/msi','',$content);
+        $content = preg_replace('/<?\/body[^>]*>/msi','',$content);
+        $content = preg_replace('/<img[^>]+\>/i', '', $content);
+        // $content = preg_replace('/[\r|\n]+/msi','',$content);
+        $content = preg_replace('/<--[\S\s]*?-->/msi','',$content);
+        $content = preg_replace('/<noscript[^>]*>[\S\s]*?'.
+                              '<\/noscript>/msi',
+                              '',$content);
+        $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
+                              '',$content);
+        $content = preg_replace('/<script.*\/>/msi','',$content);
+
+        echo $content;
+    }
+
     public function getAction() 
     {
         if (!$this->authAfis('read')) return new JsonModel();

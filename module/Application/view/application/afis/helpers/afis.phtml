@@ -18,8 +18,20 @@
                         ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
                    ?>
             />
-<!--             <span class="toggle"></span> -->
         </label>
         </div>
+    </td>
+    <td>
+        <?php $openedHours = $afis->getOpenedhours(); 
+        if ($openedHours) { ?>
+            <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
+        <?php } ?>
+    </td>
+
+    <td>
+        <?php $contacts = $afis->getContacts();
+        if ($contacts) { ?>
+            <span class="glyphicon glyphicon-phone" title="<?php echo $contacts; ?>"></span>
+        <?php } ?>
     </td>
 </tr>

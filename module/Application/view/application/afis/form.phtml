@@ -22,11 +22,13 @@ $form->prepare();
 
     echo $this->formHidden($form->get('id'));
     echo $this->formHidden($form->get('state'));
+    echo $this->controlGroup($form->get('code'));
     echo $this->controlGroup($form->get('name'));
-    echo $this->controlGroup($form->get('shortname'));
+
     echo $this->controlGroup($form->get('organisation'));
     echo $this->controlGroup($form->get('decommissionned'));
-
+    echo $this->controlGroup($form->get('openedhours'));
+    echo $this->controlGroup($form->get('contacts'));
     ?>
 
 </div>

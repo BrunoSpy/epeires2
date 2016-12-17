@@ -40,23 +40,43 @@ var afis = function(url) {
             });
             return notams;
         }
+
+        this.findOpenHours = function() {
+            var notams = [];
+            $.each(this.list, function(i, notam) {
+                if(notam.isOpenHours()) {
+                    notams.push(notam);
+                }
+            });
+            return notams;
+        }
     }
 
     var Notam = function(raw) {
         this.raw = raw;
+        // console.log(raw);
         this.lignes = this.raw.split('\n');
-
+        // console.log(this.lignes);
         this.getA = function() {
             return this.lignes[3];
         }
 
         this.getE = function() {
-            return this.lignes[5];
+            var str = "";
+            for (i=5;i<this.lignes.length;i++) {
+                str+= this.lignes[i] + '\n';
+            }
+            return str;
         }
 
-        this.getAero = function() {
+        this.getCode = function() {
             var A = this.getA();
             return A.substr(3, 4);
+        }
+
+        this.getName = function() {
+            var A = this.getA();
+            return A.substr(9); 
         }
 
         this.isOpenHours = function() {
@@ -68,10 +88,12 @@ var afis = function(url) {
         }
     }
 
-    notams = new ListNotam();
 
-    $tAdmbodies = $(".t-adm tbody");
-    $tUsrbody = $(".t-usr tbody");
+    var $tAdmbodies = $(".t-adm tbody"),
+        $tUsrbody = $(".t-usr tbody"),
+        $fEditAf = $("#f-edit-af")
+        ;
+    // $("#list-afis");
 
     refresh();
 
@@ -109,31 +131,32 @@ var afis = function(url) {
                 );
             });
 
-            $.get(url + 'afis/getNOTAMs', function(data) {
-                var $n = $(data).find('font.NOTAMBulletin');
-                $.each($n, function(i) {
-                    notams.add($(this).text());
-                });
+            // $.get(url + 'afis/getNOTAMs', function(data) {
+            //     var $n = $(data).find('font.NOTAMBulletin');
+            //     $.each($n, function(i) {
+            //         notams.add($(this).text());
+            //     });
 
-                var $trs = $tUsrbody.find('tr');
-                $.each($trs, function() {
-                    var $aero = $(this).find('td').eq(0);
-                    var foundNotams = notams.findByAero($aero.html());
-                    var tooltip = "";
-                    $.each(foundNotams, function() { 
-                        tooltip += this.getRaw();
-                    });
-                    $(this).attr('title', tooltip);
-                    $(this).tooltip({
-                        position: { 
-                            my: "bottom", 
-                            at: "bottom",
-                            collision: "flipfit"
-                        },
-                    });
-                });
-            });
-
+            //     var $trs = $tUsrbody.find('tr');
+            //     $.each($trs, function() {
+            //         var $aero = $(this).find('td').eq(0);
+            //         var foundNotams = notams.findByAero($aero.html());
+            //         var tooltip = "";
+            //         $.each(foundNotams, function() { 
+            //             tooltip += this.getRaw();
+            //         });
+            //         $(this).attr('title', tooltip);
+            //         $(this).tooltip({
+            //             position: { 
+            //                 my: "bottom", 
+            //                 at: "bottom",
+            //                 collision: "flipfit"
+            //             },
+            //         });
+            //     });
+            // });
+            // 
+            $tUsrbody.find('span.glyphicon').tooltip();
             $.material.togglebutton();
         }
 
@@ -141,6 +164,8 @@ var afis = function(url) {
             $('.a-edit-af').unbind('click').click(function() {
                 $("#title-edit-af").html("Modifier un AFIS");
                 loadAfisForm($(this).data('id'));
+                // console.log($fEditAf.find('input[name=code]').attr('disabled', 'disabled'));
+                // .addClass('disabled');
             });
 
             $('.a-del-af').unbind('click').click(function() {
@@ -163,6 +188,7 @@ var afis = function(url) {
                     );
                 });
             });
+            $tAdmbodies.find('span.glyphicon').tooltip();
         }
     }
 
@@ -173,9 +199,43 @@ var afis = function(url) {
 
 
     function loadAfisForm(id = null) {
-        $("#f-edit-af").load(url + 'afis/form', { id: id }, function() {
+        $fEditAf.load(url + 'afis/form', { id: id }, function() {
+            if(id) $fEditAf.find('input[name=code]').attr('disabled', 'disabled');
+            
             $.material.checkbox();
-            $(this).find('input[type="submit"]')
+            $fEditAf.find('input[name=code]').keyup(function(e){
+                if ($(this).val().length == 4 && keyIsALetter(e.which)) {
+                    var code = $(this).val();
+                    noty({
+                        text: 'Recherche des informations associées au code donné.',
+                        type: 'info',
+                        timeout: 4000,
+                    });
+                    $.get(url + 'afis/getNOTAMByCode', {code: code}, function(data) {
+                        var $n = $(data).find('font.NOTAMBulletin');
+                        if ($n.length > 0) {
+                            // console.log($n);
+                            notams = new ListNotam();
+                            $.each($n, function(i) {
+                                notams.add($(this).text());
+                            });
+                            console.log(notams);
+                            console.log(notams.get(0).getCode());
+                            $fEditAf.find('input[name=name]').val(notams.get(0).getName());
+                            $.each(notams.findOpenHours(), function() {
+                                $fEditAf.find('textarea[name=openedhours]').val(this.getE());
+                            });
+                        } else {
+                            noty({
+                                text: 'Pas de NOTAMs pour ce code OACI.',
+                                type: 'error',
+                                timeout: 4000,
+                            });  
+                        }
+                    });
+                }
+            });
+            $fEditAf.find('input[type="submit"]')
                 .click(submitHandler)
         });
     };
@@ -187,6 +247,7 @@ var afis = function(url) {
             url + 'afis/save',
             $('#Afis').serialize(),
             function(data) {
+                console.log(data);
                 refresh();
                 noty({
                     text: data.msg,
@@ -196,5 +257,9 @@ var afis = function(url) {
             },
             'json'
         );
+    }
+
+    function keyIsALetter(key) {
+        if(key >= 65 && key <= 90) return true;
     }
 };

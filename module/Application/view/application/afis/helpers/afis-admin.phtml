@@ -1,12 +1,27 @@
 <?php ($afis->isDecommissionned()) ? $classicon = 'remove': $classicon = 'ok'; ?>
 <tr>
-    <td id = '<?=$afis->getId()?>'><?=$afis->getId()?></td>
-    <td><?=$afis->getName()?></td>
-    <td><?=$afis->getShortname()?></td>
-    <td><?=$afis->getOrganisation()->getName()?></td>
+    <td id = '<?php echo $afis->getId(); ?>'><?php echo $afis->getId(); ?></td>
+    <td><?php echo $afis->getCode(); ?></td>
+    <td><?php echo $afis->getName(); ?></td>
+    <td><?php echo $afis->getOrganisation()->getName(); ?></td>
     <td>
-        <span class="glyphicon glyphicon-<?=$classicon?>"></span>
+        <span class="glyphicon glyphicon-<?php echo $classicon; ?>"></span>
     </td>
+
+    <td>
+        <?php $openedHours = $afis->getOpenedhours(); 
+        if ($openedHours) { ?>
+            <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
+        <?php } ?>
+    </td>
+
+    <td>
+        <?php $contacts = $afis->getContacts();
+        if ($contacts) { ?>
+            <span class="glyphicon glyphicon-phone" title="<?php echo $contacts; ?>"></span>
+        <?php } ?>
+    </td>
+
     <td>
         <a  title="Modifier"
             href="#mdl-edit-af"
@@ -19,7 +34,7 @@
             href="#mdl-del-af"
             class="a-del-af"
             data-id="<?=$afis->getId()?>"
-            data-name="<?=$afis->getName()?>"
+            data-name="<?=$afis->getCode()?>"
             data-toggle="modal">
             <span class="glyphicon glyphicon-trash"></span>
         </a>

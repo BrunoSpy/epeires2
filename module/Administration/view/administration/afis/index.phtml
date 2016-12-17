@@ -1,3 +1,4 @@
+<?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js')?>
 
@@ -17,10 +18,12 @@
                         <thead>
                             <tr>
                                 <th>id</th>
+                                <th data-sort="string">OACI</th>
                                 <th data-sort="string">Nom</th>
-                                <th data-sort="string">Nom court</th>
                                 <th>Organisation</th>
                                 <th>En service</th>
+                                <th></th>
+                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -39,10 +42,12 @@
                         <thead>
                             <tr>
                                 <th>id</th>
+                                <th data-sort="string">OACI</th>
                                 <th data-sort="string">Nom</th>
-                                <th data-sort="string">Nom court</th>
                                 <th>Organisation</th>
                                 <th>En service</th>
+                                <th></th>
+                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>
