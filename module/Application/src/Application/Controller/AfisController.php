@@ -61,72 +61,72 @@ class AfisController extends AbstractEntityManagerAwareController
             ]);
     }
 
-    public function getNOTAMsAction() 
-    {
-        //  Initiate curl
-        // $ch = curl_init();
-        // // Disable SSL verification
-        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        // // Will return the response, if false it print the response
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // // Set the url
-        // curl_setopt($ch, CURLOPT_URL,'http://api.vateud.net/notams/LFFF.json');
-        // // Execute
-        // $result = curl_exec($ch);
-        // // Closing
-        // curl_close($ch);
-        // // Will dump a beauty json :3
-        // // var_dump(json_decode($result, true));
-        // // curl_close($ch);
-        // return json_decode($result, true);
-        $fields = [
-            'FIR_CM_GPS' => '2',
-            'FIR_CM_INFO_COMP' => '1',
-            'FIR_CM_REGLE' => '1',
-            'FIR_CM_ROUTE' => '2',
-            'FIR_Date_DATE' => urlencode((new \DateTime())->format('Y/m/d')),
-            'FIR_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
-            'FIR_Duree' => '24',
-            'FIR_Langue' => 'FR',
-            'FIR_NivMax' => '999',
-            'FIR_NivMin' => '0',
-            'FIR_Tab_Fir[0]' => 'LFFF',
-            'FIR_Tab_Fir[1]' => '',
-            'FIR_Tab_Fir[2]' => '',
-            'FIR_Tab_Fir[3]' => '',
-            'FIR_Tab_Fir[4]' => '',
-            'FIR_Tab_Fir[5]' => '',
-            'FIR_Tab_Fir[6]' => '',
-            'FIR_Tab_Fir[7]' => '',
-            'FIR_Tab_Fir[8]' => '',
-            'FIR_Tab_Fir[9]' => '',
-            'ModeAffichage' => 'COMPLET',
-            'bImpression' => '',
-            'bResultat' => 'true'
-        ];
+    // public function getNOTAMsAction() 
+    // {
+    //     //  Initiate curl
+    //     // $ch = curl_init();
+    //     // // Disable SSL verification
+    //     // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     // // Will return the response, if false it print the response
+    //     // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     // // Set the url
+    //     // curl_setopt($ch, CURLOPT_URL,'http://api.vateud.net/notams/LFFF.json');
+    //     // // Execute
+    //     // $result = curl_exec($ch);
+    //     // // Closing
+    //     // curl_close($ch);
+    //     // // Will dump a beauty json :3
+    //     // // var_dump(json_decode($result, true));
+    //     // // curl_close($ch);
+    //     // return json_decode($result, true);
+    //     $fields = [
+    //         'FIR_CM_GPS' => '2',
+    //         'FIR_CM_INFO_COMP' => '1',
+    //         'FIR_CM_REGLE' => '1',
+    //         'FIR_CM_ROUTE' => '2',
+    //         'FIR_Date_DATE' => urlencode((new \DateTime())->format('Y/m/d')),
+    //         'FIR_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
+    //         'FIR_Duree' => '24',
+    //         'FIR_Langue' => 'FR',
+    //         'FIR_NivMax' => '999',
+    //         'FIR_NivMin' => '0',
+    //         'FIR_Tab_Fir[0]' => 'LFFF',
+    //         'FIR_Tab_Fir[1]' => '',
+    //         'FIR_Tab_Fir[2]' => '',
+    //         'FIR_Tab_Fir[3]' => '',
+    //         'FIR_Tab_Fir[4]' => '',
+    //         'FIR_Tab_Fir[5]' => '',
+    //         'FIR_Tab_Fir[6]' => '',
+    //         'FIR_Tab_Fir[7]' => '',
+    //         'FIR_Tab_Fir[8]' => '',
+    //         'FIR_Tab_Fir[9]' => '',
+    //         'ModeAffichage' => 'COMPLET',
+    //         'bImpression' => '',
+    //         'bResultat' => 'true'
+    //     ];
 
-        // // //url-ify the data for the POST
-        $fields_string = '';
-        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-        rtrim($fields_string, '&');
+    //     // // //url-ify the data for the POST
+    //     $fields_string = '';
+    //     foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    //     rtrim($fields_string, '&');
 
-        $curl = curl_init();
+    //     $curl = curl_init();
 
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_FIR.php?FIR_Langue=FR',
-            CURLOPT_POST => $fields,
-            CURLOPT_POSTFIELDS => $fields_string,
-            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-        ]);
+    //     curl_setopt_array($curl, [
+    //         CURLOPT_RETURNTRANSFER => 1,
+    //         CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_FIR.php?FIR_Langue=FR',
+    //         CURLOPT_POST => $fields,
+    //         CURLOPT_POSTFIELDS => $fields_string,
+    //         CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+    //     ]);
 
-        $resp = curl_exec($curl);
-        curl_close($curl);
+    //     $resp = curl_exec($curl);
+    //     curl_close($curl);
 
-        echo $resp;
-    }
+    //     echo $resp;
+    // }
 
-    public function getNOTAMByCodeAction() 
+    public function getnotamsAction() 
     {
         $code = $this->params()->fromQuery('code');
         // $code = "LFOP";
@@ -184,7 +184,11 @@ class AfisController extends AbstractEntityManagerAwareController
                               '',$content);
         $content = preg_replace('/<script.*\/>/msi','',$content);
 
-        echo $content;
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'notams'   => $content 
+            ]);
     }
 
     public function getAction() 
@@ -251,7 +255,7 @@ class AfisController extends AbstractEntityManagerAwareController
         } else {
             return new JsonModel([
                 'type' => 'error', 
-                'msg' => $this->form->getMessages()
+                'msg' => $this->showErrors()
             ]);
         }
     }
@@ -295,5 +299,11 @@ class AfisController extends AbstractEntityManagerAwareController
         return $ret;
     }
 
-
+   private function showErrors() {
+        $str = '';
+        foreach ($this->form->getMessages() as $field => $messages)
+        foreach ($messages as $typeErr => $message)
+        $str.= " | ".$field.' : ['.$typeErr.'] '.$message;
+        return $str;
+    }
 }

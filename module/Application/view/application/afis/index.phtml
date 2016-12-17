@@ -10,6 +10,7 @@
             <table class="table t-usr table-striped table-hover sortable">
                 <thead>
                     <tr>
+                        <th data-sort="string">Code OACI</th>
                         <th data-sort="string">Nom</th>
                         <th>État</th>
                         <th></th>
@@ -23,6 +24,19 @@
         </div>
     </div>
 </div>
+
+<?=$this->modalWindow(  "mdl-show-not", 
+                        "<h3 id='title-show-not'></h3>", 
+                        "", 
+                        '<div id="show-not">
+                            <div>
+                                <a data-toggle="collapse" data-parent="#show-not" href="">
+                                </a>
+                                <div class="collapse">
+                                  
+                                </div>
+                            </div>
+                        </div>')?>
 
 <?php $this->inlineScript()->captureStart();?>
 

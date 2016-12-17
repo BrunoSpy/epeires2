@@ -8,14 +8,17 @@
   background-color: #ebccd1;
 }
 
-.tooltip {
+#show-not div, .tooltip-inner, textarea[name=openedhours] {
+	white-space: pre-wrap;
+}
+
+#show-not {
 
 }
 .tooltip-inner {
 	text-align: left;
 	max-width:500px;
 	padding:10px;
-	white-space: pre-wrap;
 }
 
 textarea[name=openedhours] {

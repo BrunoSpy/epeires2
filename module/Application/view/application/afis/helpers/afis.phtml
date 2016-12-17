@@ -1,18 +1,12 @@
-<?php
-// foreach ($notams as $notam) {
-//   print_r(strpos ( $notam['raw'] , 'LF'));
-// }
-?>
-
-
 <tr>
-    <td><?=$afis->getName()?></td>
+    <td><?php echo $afis->getCode(); ?></td>
+    <td><?php echo $afis->getName(); ?></td>
     <td>
         <div class="togglebutton">
         <label>
             <input 
-                   data-id="<?=$afis->getId()?>"
-                   class="btn-switch-af" type="checkbox" <?=($afis->getState() ? 'checked="checked"' : '')?>
+                   data-id="<?php echo $afis->getId(); ?>"
+                   class="btn-switch-af" type="checkbox" <?php echo ($afis->getState() ? 'checked="checked"' : ''); ?>
                    
                    <?php
                         ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
@@ -34,4 +28,15 @@
             <span class="glyphicon glyphicon-phone" title="<?php echo $contacts; ?>"></span>
         <?php } ?>
     </td>
+
+    <td>
+      <a title="Tous les notams"
+         href="#mdl-show-not"
+         class="a-show-not"
+         data-code="<?php echo $afis->getCode(); ?>"
+         data-toggle="modal">
+        <span class="glyphicon glyphicon-list" ></span>
+      </a>
+    </td>
+
 </tr>
