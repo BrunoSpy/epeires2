@@ -123,7 +123,7 @@ var afis = function(url) {
 
         if ($tAdmbodies.length > 0) {
             $tAdmbodies.first()
-                .load(url + 'afis/get', { decomissionned: 0, admin: 1 }, setAdmBtn);
+                .load(url + 'afis/get', { decomissionned: 0, admin: 1 });
 
             $tAdmbodies.eq(1)
                 .load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
@@ -149,63 +149,8 @@ var afis = function(url) {
                 );
             });
 
-            $('.a-show-not').click(function() {
-                var tpl = $('#show-not').find('div').first().hide();
-                var code = $(this).data('code');
-                $("#title-show-not").html("Tous les NOTAMs pour " + code);
-                $.get(url + 'afis/getnotams', {code: code}, function(data) {
-                    var $n = $(data).find('font.NOTAMBulletin');
-                    if ($n.length > 0) {
-                        notams = new ListNotam();
-                        $.each($n, function(i) {
-                            notams.add($(this).text());
-                        });
-                        $.each(notams.getAll(), function(i, not) {
-                            var div = tpl.clone()
-                            div.find('a')
-                                .attr('href', '#not' + i)
-                                .html(not.getId());
-                            div.find('.collapse')
-                                .attr('id', 'not' + i)
-                                .html(not.getRaw());
-                            div.show()
-                                .appendTo($('#show-not'));    
-                        });
-                    } else {
-                        noty({
-                            text: 'Pas d\'informations disponibles pour ce code OACI.',
-                            type: 'error',
-                            timeout: 4000,
-                        });  
-                    }
-                });
-            });
+            setNotamBtn();
 
-            // $.get(url + 'afis/getNOTAMs', function(data) {
-            //     var $n = $(data).find('font.NOTAMBulletin');
-            //     $.each($n, function(i) {
-            //         notams.add($(this).text());
-            //     });
-
-            //     var $trs = $tUsrbody.find('tr');
-            //     $.each($trs, function() {
-            //         var $aero = $(this).find('td').eq(0);
-            //         var foundNotams = notams.findByAero($aero.html());
-            //         var tooltip = "";
-            //         $.each(foundNotams, function() { 
-            //             tooltip += this.getRaw();
-            //         });
-            //         $(this).attr('title', tooltip);
-            //         $(this).tooltip({
-            //             position: { 
-            //                 my: "bottom", 
-            //                 at: "bottom",
-            //                 collision: "flipfit"
-            //             },
-            //         });
-            //     });
-            // });
-            // 
             $tUsrbody.find('span.glyphicon').tooltip();
             $.material.togglebutton();
         }
@@ -237,6 +182,43 @@ var afis = function(url) {
                 });
             });
             $tAdmbodies.find('span.glyphicon').tooltip();
+
+            setNotamBtn();
+        }
+
+        function setNotamBtn() { 
+            $('.a-show-not').click(function() {
+                var tpl = $('#show-not').find('div').first().hide();
+                $('#show-not').find('div').slice(1).remove();
+                var code = $(this).data('code');
+                $("#title-show-not").html("Tous les NOTAMs pour " + code);
+                $.get(url + 'afis/getnotams', {code: code}, function(data) {
+                    var $n = $(data).find('font.NOTAMBulletin');
+                    if ($n.length > 0) {
+                        notams = new ListNotam();
+                        $.each($n, function(i) {
+                            notams.add($(this).text());
+                        });
+                        $.each(notams.getAll(), function(i, not) {
+                            var div = tpl.clone();
+                            div.find('a')
+                                .attr('href', '#not' + i)
+                                .html(not.getId());
+                            div.find('.collapse')
+                                .attr('id', 'not' + i)
+                                .html(not.getRaw());
+                            div.show()
+                                .appendTo($('#show-not'));    
+                        });
+                    } else {
+                        noty({
+                            text: 'Pas d\'informations disponibles pour ce code OACI.',
+                            type: 'error',
+                            timeout: 4000,
+                        });  
+                    }
+                });
+            });
         }
     }
 
@@ -314,7 +296,6 @@ var afis = function(url) {
     }
 
     function keyIsALetter(key) {
-        console.log(key);
         if(key >= 65 && key <= 90) return true;
     }
 };

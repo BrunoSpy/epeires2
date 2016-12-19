@@ -1,26 +1,40 @@
 .togglebutton label .toggle::after {
     background-color: #c9302c;
-    box-shadow: 0 1px 3px 1px rgba(50, 50, 50git , 0.4);
-  /*background-color: #d43f3a;*/
+    box-shadow: 0 1px 3px 1px rgba(50, 50, 50git, 0.4);
+    /*background-color: #d43f3a;*/
 }
 
-.togglebutton label .toggle, .togglebutton label input[type="checkbox][disabled"] + .toggle {
-  background-color: #ebccd1;
+.togglebutton label .toggle,
+.togglebutton label input[type="checkbox][disabled"] + .toggle {
+    background-color: #ebccd1;
 }
 
-#show-not div, .tooltip-inner, textarea[name=openedhours] {
-	white-space: pre-wrap;
+#show-not div,
+.tooltip-inner,
+textarea[name=openedhours] {
+    white-space: pre-wrap;
 }
 
-#show-not {
-
+#show-not div {
+	margin-bottom: -30px;
 }
+
+#show-not a {
+	margin-left: -70px;
+}
+
+#show-not p {
+	margin-top: -40px;
+	margin-bottom: -20px;
+    margin-left: 40px;
+}
+
 .tooltip-inner {
-	text-align: left;
-	max-width:500px;
-	padding:10px;
+    text-align: left;
+    max-width: 500px;
+    padding: 10px;
 }
 
 textarea[name=openedhours] {
-	height:140px;
+    height: 140px;
 }

@@ -18,10 +18,20 @@
     <td>
         <?php $contacts = $afis->getContacts();
         if ($contacts) { ?>
-            <span class="glyphicon glyphicon-phone" title="<?php echo $contacts; ?>"></span>
+            <span class="glyphicon glyphicon-phone-alt" title="<?php echo $contacts; ?>"></span>
         <?php } ?>
     </td>
 
+    <td>
+      <a title="Tous les notams"
+         href="#mdl-show-not"
+         class="a-show-not"
+         data-code="<?php echo $afis->getCode(); ?>"
+         data-toggle="modal">
+        <span class="glyphicon glyphicon-list" ></span>
+      </a>
+    </td>
+    
     <td>
         <a  title="Modifier"
             href="#mdl-edit-af"

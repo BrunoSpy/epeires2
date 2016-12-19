@@ -15,6 +15,7 @@
                         <th>État</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id = "list-afis">
@@ -28,17 +29,18 @@
 <?=$this->modalWindow(  "mdl-show-not", 
                         "<h3 id='title-show-not'></h3>", 
                         "", 
-                        '<div id="show-not">
-                            <div>
-                                <a data-toggle="collapse" data-parent="#show-not" href="">
-                                </a>
-                                <div class="collapse">
-                                  
-                                </div>
-                            </div>
-                        </div>')?>
+                        '<div class="list-group" id="show-not">
+                          <div>
+                            <a data-toggle="collapse" data-parent="#show-not" href="">
+                            </a>
+                            <p class="collapse">
+                              
+                            </p>
+                          </div>
+                        </div>'); 
+                        ?>
 
-<?php $this->inlineScript()->captureStart();?>
+<?php $this->inlineScript()->captureStart(); ?>
 
 $("#home").removeClass("dropdown-toggle")
 		  .attr('data-toggle', '')
