@@ -619,7 +619,6 @@ class FrequenciesController extends TabController
 
     private function getAntennas($full = true)
     {
-
         $antennas = array();
         
         foreach ($this->entityManager->getRepository('Application\Entity\Antenna')->findBy(array(
@@ -637,7 +636,6 @@ class FrequenciesController extends TabController
                 $antennas[$antenna->getId()] = true;
             }
         }
-        
         foreach ($this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory') as $result) {
             $statefield = $result->getCategory()
                 ->getStateField()
@@ -654,22 +652,36 @@ class FrequenciesController extends TabController
             foreach ($result->getCustomFieldsValues() as $customvalue) {
                 if ($customvalue->getCustomField()->getId() == $statefield) {
                     $available = ! $customvalue->getValue();
-                } else 
-                    if ($customvalue->getCustomField()->getId() == $antennafield) {
-                        $antennaid = $customvalue->getValue();
-                    } else 
-                        if ($customvalue->getCustomField()->getId() == $frequenciesfield) {
-                            $frequencies = explode("\r", $customvalue->getValue());
-                        }
+                } else if ($customvalue->getCustomField()->getId() == $antennafield) {
+                    $antennaid = $customvalue->getValue();
+                } else  if ($customvalue->getCustomField()->getId() == $frequenciesfield) {
+                    $frequencies = explode("\r", $customvalue->getValue());
+                }
             }
             if ($full) {
                 $antennas[$antennaid]['status'] *= $available;
                 $antennas[$antennaid]['frequencies'] = $frequencies;
+                //si toutes les fréquences sont en pannes, on le signale pour pouvoir distinguer avec une panne partielle
+                if(!$antennas[$antennaid]['status']) {
+                    if(count($frequencies) == 0) {
+                        $antennas[$antennaid]['full_fault'] = true;
+                    } else {
+                        $antenna  = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
+                        $freqs = $antenna->getAllFrequencies();
+                        $fullfault = true;
+                        foreach ($freqs as $f) {
+                            if(!in_array($f->getId(), $frequencies)) {
+                                $fullfault = false;
+                                break;
+                            }
+                        }
+                        $antennas[$antennaid]['full_fault'] = $fullfault;
+                    }
+                }
             } else {
                 $antennas[$antennaid] *= $available;
             }
         }
-        
         if ($full) {
             foreach ($this->entityManager->getRepository('Application\Entity\Event')->getPlannedEvents('Application\Entity\AntennaCategory') as $result) {
                 $statefield = $result->getCategory()
@@ -694,10 +706,27 @@ class FrequenciesController extends TabController
                     }
                 }
                 $antennas[$antennaid]['planned'] = $planned;
-                $antennas[$antennaid]['frequencies'] = $frequencies;
+                if($antennas[$antennaid]['status']) {
+                    $antennas[$antennaid]['frequencies'] = $frequencies;
+                    if($planned) {
+                        if(count($frequencies) == 0) {
+                            $antennas[$antennaid]['full_fault'] = true;
+                        } else {
+                            $antenna  = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
+                            $freqs = $antenna->getAllFrequencies();
+                            $fullfault = true;
+                            foreach ($freqs as $f) {
+                                if(!in_array($f->getId(), $frequencies)) {
+                                    $fullfault = false;
+                                    break;
+                                }
+                            }
+                            $antennas[$antennaid]['full_fault'] = $fullfault;
+                        }
+                    }
+                }
             }
         }
-        
         return $antennas;
     }
 

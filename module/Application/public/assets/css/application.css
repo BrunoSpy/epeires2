@@ -366,13 +366,16 @@ body {
 }
 
 /* Toggle buttons rouge */
-#radio .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after,
-#radars .togglebutton label input[type="checkbox"]:not(:checked) + .toggle::after {
-	background-color: #ff6f00;
+.togglebutton.togglebutton-red label input[type="checkbox"]:not(:checked) + .toggle::after {
+	background-color: #ff4900;
 }
 
-#radio .togglebutton label .toggle,
-#radars .togglebutton label .toggle {
+.togglebutton.togglebutton-orange label input[type="checkbox"]:not(:checked) + .toggle::after {
+	background-color: #FFBF00;
+}
+
+.togglebutton.togglebutton-red label .toggle.togglebutton label .toggle,
+.togglebutton.togglebutton-orange label .toggle.togglebutton label .toggle {
 	background-color: #bdbdbd;
 }
 
