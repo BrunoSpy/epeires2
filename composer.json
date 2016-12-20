@@ -62,6 +62,7 @@
         "hounddog/doctrine-data-fixture-module": "dev-master",
         "satooshi/php-coveralls": "dev-master",
         "codeception/codeception": "^2.2",
-        "zfcampus/zf-apigility-admin": "~1.0"
+        "zfcampus/zf-apigility-admin": "~1.0",
+        "zendframework/zend-developer-tools": "^1.1"
     }
 }

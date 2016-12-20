@@ -73,6 +73,36 @@ return array(
              */
             'collectors' => array(),
         ),
+        'events' => [
+            /**
+             * Set to true to enable event-level logging for collectors that will support it. This enables a wildcard
+             * listener onto the shared event manager that will allow profiling of user-defined events as well as the
+             * built-in ZF events.
+             *
+             * Expects: bool
+             * Default: false
+             */
+            'enabled' => true,
+        
+            /**
+             * Contains a list with all event-level collectors that should run. Zend Developer Tools ships with 'time'
+             * and 'memory'. If you wish to disable a default collector, simply set the value to null or false.
+             *
+             * Example: 'collectors' => array('memory' => null)
+             * Expects: array
+             */
+            'collectors' => [],
+        
+            /**
+             * Contains event identifiers used with the event listener. Zend Developer Tools defaults to listen to all
+             * events. If you wish to disable the default all-inclusive identifier, simply set the value to null or
+             * false.
+             *
+             * Example: 'identifiers' => array('all' => null, 'dispatchable' => 'Zend\Stdlib\DispatchableInterface')
+             * Expects: array
+             */
+            'identifiers' => [],
+        ],
          /**
           * General Toolbar settings
           */
@@ -91,7 +121,7 @@ return array(
              * Expects: bool
              * Default: false
              */
-            'auto_hide' => false,
+            'auto_hide' => true,
 
             /**
              * The Toolbar position.
@@ -133,4 +163,8 @@ return array(
             'entries' => array(),
         ),
     ),
+    'view_manager' => array(
+        'display_exceptions' => true,
+        'display_not_found_reason' => true,
+    )
 );
