@@ -32,7 +32,7 @@ use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
-
+use Application\Entity\AfisCategory;
 /**
  *
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
@@ -156,8 +156,10 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('brouillage');
                 } elseif ($category instanceof MilCategory) {
                     $form->get('type')->setValue('mil');
+                } elseif ($category instanceof AfisCategory) {
+                    $form->get('type')->setValue('afis');
                 }
-                
+
                 $form->get('type')->setAttribute('disabled', true);
                 
                 // select parent
@@ -213,6 +215,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createBrouillageCategory();
                 } elseif ($post['type'] == 'mil') {
                     $category = $this->categoryFactory->createMilCategory();
+                } elseif ($post['type'] == 'afis') {
+                    $category = $this->categoryFactory->createAfisCategory();
                 } else {
                     $category = new Category();
                     $fieldname = new CustomField();

@@ -2,8 +2,10 @@
 <h2><?php echo $this->message ?></h2>
 
 <?php if (isset($this->display_exceptions) && $this->display_exceptions): ?>
-
-<?php if(isset($this->exception) && $this->exception instanceof Exception): ?>
+<?php 
+// var_dump($this->exception); 
+?>
+<?php if(isset($this->exception)): ?>
 <hr/>
 <h2><?php echo $this->translate('Additional information') ?>:</h2>
 <h3><?php echo get_class($this->exception); ?></h3>

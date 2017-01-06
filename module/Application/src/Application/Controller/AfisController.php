@@ -16,16 +16,23 @@
  *
  */
 namespace Application\Controller;
-
-use Core\Controller\AbstractEntityManagerAwareController;
-
-use Doctrine\ORM\EntityManager;
+use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Stdlib\Parameters;
+
+use Doctrine\ORM\EntityManager;
+
+use Core\Controller\AbstractEntityManagerAwareController;
+
+use Application\Services\CustomFieldService;
+use Application\Form\CustomFieldset;
+
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
 
 use Application\Entity\Organisation;
+use Application\Entity\AfisCategory;
 use Application\Entity\Afis;
 /**
  *
@@ -33,11 +40,12 @@ use Application\Entity\Afis;
  */
 class AfisController extends AbstractEntityManagerAwareController
 {
-    private $em, $repo, $form;
+    private $customfieldservice, $em, $repo, $form;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, CustomFieldService $customfieldService)
     {
         parent::__construct($em);
+        $this->customfieldservice = $customfieldService;
         $this->em = $this->getEntityManager();
         $this->repo = $this->em->getRepository(Afis::class);
 
@@ -49,6 +57,19 @@ class AfisController extends AbstractEntityManagerAwareController
                     ->getRepository(Organisation::class)
                     ->getAllAsArray()
                 );
+
+        $categories = $this->em->getRepository(AfisCategory::class)->findBy([
+            'defaultafiscategory' => true
+        ]);
+
+        if ($categories) {
+            $cat = $categories[0];
+            $this->form->add(new CustomFieldset($this->em, $this->customfieldservice, $cat->getId()));
+            // $this->form->get('custom_fields')->remove($cat->getAfisfield()->getId());
+            // $this->form->get('custom_fields')->remove($cat->getStatefield()->getId());
+        }
+
+
     }
 
     public function indexAction()
@@ -223,25 +244,25 @@ class AfisController extends AbstractEntityManagerAwareController
             ]);
     }
 
-    public function switchafisAction()
-    {
-        if (!$this->authAfis('write')) return new JsonModel();
+    // public function switchafisAction()
+    // {
+    //     if (!$this->authAfis('write')) return new JsonModel();
 
-        $post = $this->getRequest()->getPost();
-        $id = intval($post['id']);
+    //     $post = $this->getRequest()->getPost();
+    //     $id = intval($post['id']);
 
-        $afis = $this->repo->find($id);
+    //     $afis = $this->repo->find($id);
 
-        if(is_a($afis, Afis::class)) {
-            $afis->setState((boolean) $post['state']);
-            return new JsonModel($this->repo->save($afis));
-        } else {
-            return new JsonModel([
-                'type' => 'error', 
-                'msg' => 'Afis non existant'
-            ]);
-        }
-    }
+    //     if(is_a($afis, Afis::class)) {
+    //         $afis->setState((boolean) $post['state']);
+    //         return new JsonModel($this->repo->save($afis));
+    //     } else {
+    //         return new JsonModel([
+    //             'type' => 'error', 
+    //             'msg' => 'Afis non existant'
+    //         ]);
+    //     }
+    // }
 
     public function saveAction()
     {
@@ -299,11 +320,143 @@ class AfisController extends AbstractEntityManagerAwareController
         return $ret;
     }
 
-   private function showErrors() {
+    private function showErrors() {
         $str = '';
         foreach ($this->form->getMessages() as $field => $messages)
         foreach ($messages as $typeErr => $message)
         $str.= " | ".$field.' : ['.$typeErr.'] '.$message;
         return $str;
+    }
+
+    public function switchafisAction()
+    {
+        // $messages = array();
+        // if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+
+        $post = $this->getRequest()->getPost();
+        $state = (boolean) $post['state'];
+        $id = intval($post['id']);
+        
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+
+        $id = 28;
+        $state = 1;
+        if ($id) 
+        {
+            $events = $this->em
+                ->getRepository('Application\Entity\Event')
+                ->getCurrentEvents('Application\Entity\AfisCategory');
+            
+            $afisevents = array();
+            foreach ($events as $event) {
+                $afisfield = $event->getCategory()->getAfisfield();
+                foreach ($event->getCustomFieldsValues() as $value) {
+                    if ($value->getCustomField()->getId() == $afisfield->getId()) {
+                        if ($value->getValue() == $id) {
+                            $afisevents[] = $event;
+                        }
+                    }
+                }
+            }
+            
+            if ($state == 'true') {
+                // passage d'un radar à l'état OPE -> recherche de l'evt à fermer
+                if (count($afisevents) == 1) {
+                    $event = $afisevents[0];
+                    $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+                    $event->setStatus($endstatus);
+                    $event->setEnddate($now);
+                    $this->em->persist($event);
+                    try {
+                        $this->em->flush();
+                        $messages['success'][] = "Evènement radar correctement terminé.";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                } else {
+                    $messages['error'][] = "Impossible de déterminer l'évènement à terminer.";
+                }
+            } else {
+                // passage d'un radar à l'état HS -> on vérifie qu'il n'y a pas d'evt en cours
+                if (count($afisevents) > 0) {
+                    $messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
+                } else {
+                    $event = new Event();
+                    $status = $this->em->getRepository('Application\Entity\Status')->find('2');
+                    $impact = $this->em->getRepository('Application\Entity\Impact')->find('3');
+                    $event->setStatus($status);
+                    $event->setStartdate($now);
+                    $event->setImpact($impact);
+                    $event->setPunctual(false);
+                    $afis = $this->em->getRepository('Application\Entity\Afis')->find($id);
+                    $event->setOrganisation($afis->getOrganisation());
+                    $event->setAuthor($this->zfcUserAuthentication()
+                        ->getIdentity());
+                    
+                    $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
+                        'defaultafiscategory' => true
+                    ));
+
+                    if ($categories) {
+                        $cat = $categories[0];
+                        $afisfieldvalue = new CustomFieldValue();
+                        $afisfieldvalue->setCustomField($cat->getAfisfield());
+                        $afisfieldvalue->setValue($id);
+                        $afisfieldvalue->setEvent($event);
+                        $event->addCustomFieldValue($afisfieldvalue);
+                        $statusvalue = new CustomFieldValue();
+                        $statusvalue->setCustomField($cat->getStatefield());
+                        $statusvalue->setValue(true);
+                        $statusvalue->setEvent($event);
+                        $event->addCustomFieldValue($statusvalue);
+                        $event->setCategory($categories[0]);
+                        $this->em->persist($afisfieldvalue);
+                        $this->em->persist($statusvalue);
+                        //on ajoute les valeurs des champs persos
+                        if (isset($post['custom_fields'])) {
+                            foreach ($post['custom_fields'] as $key => $value) {
+                                // génération des customvalues si un customfield dont le nom est $key est trouvé
+                                $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                                    'id' => $key
+                                ));
+                                if ($customfield) {
+                                    if (is_array($value)) {
+                                        $temp = "";
+                                        foreach ($value as $v) {
+                                            $temp .= (string) $v . "\r";
+                                        }
+                                        $value = trim($temp);
+                                    }
+                                    $customvalue = new CustomFieldValue();
+                                    $customvalue->setEvent($event);
+                                    $customvalue->setCustomField($customfield);
+                                    $event->addCustomFieldValue($customvalue);
+                                    
+                                    $customvalue->setValue($value);
+                                    $this->em->persist($customvalue);
+                                }
+                            }
+                        }
+                        //et on sauve le tout
+                        $this->em->persist($event);
+                        try {
+                            $this->em->flush();
+                            $messages['success'][] = "Nouvel évènement radar créé.";
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    } else {
+                        $messages['error'][] = "Impossible de créer un nouvel évènement.";
+                    }
+                }
+            }
+        } else {
+            $messages['error'][] = "Requête incorrecte, impossible de trouver le radar correspondant.";
+        }
+        // } else {
+        //     $messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
+        // }
+        return new JsonModel($messages);
     }
 }

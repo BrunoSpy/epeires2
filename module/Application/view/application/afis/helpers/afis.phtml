@@ -6,7 +6,7 @@
         <label>
             <input 
                    data-id="<?php echo $afis->getId(); ?>"
-                   class="btn-switch-af" type="checkbox" <?php echo ($afis->getState() ? 'checked="checked"' : ''); ?>
+                   class="btn-switch-af" type="checkbox" <?php //echo ($afis->getState() ? 'checked="checked"' : ''); ?>
                    
                    <?php
                         ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';

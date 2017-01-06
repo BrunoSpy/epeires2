@@ -77,12 +77,6 @@ class Afis extends TemporaryResource
      */
     protected $contacts;
 
-    /**
-     * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
-     */
-    protected $state = self::DEFAULT_STATE;
-
     public function getId()
     {
         return $this->id;
@@ -138,22 +132,22 @@ class Afis extends TemporaryResource
         $this->contacts = $contacts;
     }
 
-    public function getState()
-    {
-        return $this->state;
-    }
+    // public function getState()
+    // {
+    //     return $this->state;
+    // }
 
-    public function getStrState()
-    {
-        return ($this->getState() == true) ? 'actif' : 'inactif';
-    }
+    // public function getStrState()
+    // {
+    //     return ($this->getState() == true) ? 'actif' : 'inactif';
+    // }
 
-    public function setState($state)
-    {
-        $s = self::DEFAULT_STATE;
-        if(is_bool($state)) $s = $state;
-        $this->state = $s;
-    }
+    // public function setState($state)
+    // {
+    //     $s = self::DEFAULT_STATE;
+    //     if(is_bool($state)) $s = $state;
+    //     $this->state = $s;
+    // }
     
     public function getArrayCopy()
     {
@@ -162,14 +156,15 @@ class Afis extends TemporaryResource
         return $object_vars;
     }
     
-    public function isValid(){
-        $r = false;
-        if (    is_int($this->id) and
-                is_string($this->name) and
-                is_string($this->code) and strlen($this->code) == 4 and 
-                is_a($this->organisation, Organisation::class) and
-                is_bool($this->state)) $r = true;
-        return $r;
-    }
+    // public function isValid(){
+    //     $r = false;
+    //     if (    is_int($this->id) and
+    //             is_string($this->name) and
+    //             is_string($this->code) and strlen($this->code) == 4 and 
+    //             is_a($this->organisation, Organisation::class)
+    //             // is_bool($this->state)
+    //     ) $r = true;
+    //     return $r;
+    // }
 
 }

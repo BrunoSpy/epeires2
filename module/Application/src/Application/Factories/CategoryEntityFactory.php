@@ -23,6 +23,7 @@ use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
+use Application\Entity\AfisCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -423,5 +424,44 @@ class CategoryEntityFactory
         $brouillagecat->setDefaultBrouillageCategory((count($cats) == 0));
         
         return $brouillagecat;
+    }
+
+    public function createAfisCategory()
+    {
+        $em = $this->getEntityManager();
+        $afiscat = new AfisCategory();
+        $afisfield = new CustomField();
+        $afisfield->setCategory($afiscat);
+        $afisfield->setName('Afis');
+        $afisfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+            'type' => 'afis'
+        )));
+        $afisfield->setPlace(1);
+        $afisfield->setDefaultValue("");
+        $afisfield->setTooltip("");
+        $statusfield = new CustomField();
+        $statusfield->setCategory($afiscat);
+        $statusfield->setName('Indisponible');
+        $statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+            'type' => 'boolean'
+        )));
+        $statusfield->setPlace(2);
+        $statusfield->setDefaultValue("");
+        $statusfield->setTooltip("");
+        $afiscat->setFieldname($afisfield);
+        $afiscat->setAfisfield($afisfield);
+        $afiscat->setStatefield($statusfield);
+        
+        // si aucune cat par défaut --> nouvelle catégorie par défaut
+        $cats = $em->getRepository('Application\Entity\AfisCategory')->findBy(array(
+            'defaultafiscategory' => true
+        ));
+        $afiscat->setDefaultAfisCategory((count($cats) == 0));
+        
+        $em->persist($afisfield);
+        $em->persist($statusfield);
+        return $afiscat;
     }
 }
