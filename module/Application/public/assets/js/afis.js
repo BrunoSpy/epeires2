@@ -119,17 +119,17 @@ var afis = function(url) {
         $('.btn-switch-af .a-edit-af .a-del-af').remove();
         if ($tUsrbody.length > 0)
             $tUsrbody
-                .load(url + 'afis/get', { decomissionned: 0, admin: 0 }, setUsrBtn);
+                .load(url + 'afis/get', { decomissionned: 0, admin: 0 }, afUsrLoaded);
 
         if ($tAdmbodies.length > 0) {
             $tAdmbodies.first()
                 .load(url + 'afis/get', { decomissionned: 0, admin: 1 });
 
             $tAdmbodies.eq(1)
-                .load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
+                .load(url + 'afis/get', { decomissionned: 1, admin: 1 }, afAdmLoaded);
         }
 
-        function setUsrBtn() {
+        function afUsrLoaded() {
             $('.btn-switch-af').change(function() {
                 var boolState = 0;
                 if ($(this).is(':checked')) {
@@ -155,7 +155,7 @@ var afis = function(url) {
             $.material.togglebutton();
         }
 
-        function setAdmBtn() {
+        function afAdmLoaded() {
             $('.a-edit-af').unbind('click').click(function() {
                 $("#title-edit-af").html("Modifier un AFIS");
                 loadAfisForm($(this).data('id'));
