@@ -52,4 +52,54 @@ return array(
         ),
         'description' => 'Get frequencies',
     ),
+    'API\\V1\\Rest\\Event\\Controller' => array(
+        'description' => 'Get events',
+        'collection' => array(
+            'GET' => array(
+                'response' => '{
+   "_links": {
+       "self": {
+           "href": "/api/event"
+       },
+       "first": {
+           "href": "/api/event?page={page}"
+       },
+       "prev": {
+           "href": "/api/event?page={page}"
+       },
+       "next": {
+           "href": "/api/event?page={page}"
+       },
+       "last": {
+           "href": "/api/event?page={page}"
+       }
+   }
+   "_embedded": {
+       "event": [
+           {
+               "_links": {
+                   "self": {
+                       "href": "/api/event[/:event_id]"
+                   }
+               }
+
+           }
+       ]
+   }
+}',
+            ),
+        ),
+        'entity' => array(
+            'GET' => array(
+                'response' => '{
+   "_links": {
+       "self": {
+           "href": "/api/event[/:event_id]"
+       }
+   }
+
+}',
+            ),
+        ),
+    ),
 );
