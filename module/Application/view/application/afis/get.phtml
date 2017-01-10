@@ -7,8 +7,12 @@ if ($admin)
 } 
 else 
 {
-	foreach ($afises as $afis) {
-		echo $this->afViewHelper()->renderRow($afis);		
-		// echo $this->afViewHelper()->renderRow($afis, $notams);
-	}	
+	if (count($afises) > 0) {
+		foreach ($afises as $afis) {
+			echo $this->afViewHelper()->renderRow($afis);		
+			// echo $this->afViewHelper()->renderRow($afis, $notams);
+		}
+	} else {
+		echo '<tr><td colspan = "6">Il n\'y a aucun terrain à afficher</td></tr>';
+	}
 }
