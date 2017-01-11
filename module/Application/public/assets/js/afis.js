@@ -144,6 +144,9 @@ var afis = function(url) {
                             type: data.type,
                             timeout: 4000,
                         });
+                        if(data.type == 'error') {
+                            setTimeout("location.reload()", 2000);
+                        }
                     },
                     'json'
                 );

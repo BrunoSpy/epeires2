@@ -442,7 +442,7 @@ class CategoryEntityFactory
         $afisfield->setTooltip("");
         $statusfield = new CustomField();
         $statusfield->setCategory($afiscat);
-        $statusfield->setName('Indisponible');
+        $statusfield->setName('Ouvert');
         $statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
             'type' => 'boolean'

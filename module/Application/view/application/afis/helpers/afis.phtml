@@ -1,12 +1,12 @@
 <tr>
-    <td><?php echo $afis->getCode(); ?></td>
-    <td><?php echo $afis->getName(); ?></td>
+    <td><?php echo $afis['self']->getCode(); ?></td>
+    <td><?php echo $afis['self']->getName(); ?></td>
     <td>
         <div class="togglebutton">
         <label>
             <input 
-                   data-id="<?php echo $afis->getId(); ?>"
-                   class="btn-switch-af" type="checkbox" <?php //echo ($afis->getState() ? 'checked="checked"' : ''); ?>
+                   data-id="<?php echo $afis['self']->getId(); ?>"
+                   class="btn-switch-af" type="checkbox" <?php echo ((isset($afis['state']) && $afis['state']) ? 'checked="checked"' : ''); ?>
                    
                    <?php
                         ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
@@ -16,14 +16,14 @@
         </div>
     </td>
     <td>
-        <?php $openedHours = $afis->getOpenedhours(); 
+        <?php $openedHours = $afis['self']->getOpenedhours(); 
         if ($openedHours) { ?>
             <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
         <?php } ?>
     </td>
 
     <td>
-        <?php $contacts = $afis->getContacts();
+        <?php $contacts = $afis['self']->getContacts();
         if ($contacts) { ?>
             <span class="glyphicon glyphicon-phone-alt" title="<?php echo $contacts; ?>"></span>
         <?php } ?>
@@ -33,7 +33,7 @@
       <a title="Tous les notams"
          href="#mdl-show-not"
          class="a-show-not"
-         data-code="<?php echo $afis->getCode(); ?>"
+         data-code="<?php echo $afis['self']->getCode(); ?>"
          data-toggle="modal">
         <span class="glyphicon glyphicon-list" ></span>
       </a>
