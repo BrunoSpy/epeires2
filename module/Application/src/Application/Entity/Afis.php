@@ -65,14 +65,14 @@ class Afis extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\TextArea")
+     * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Options({"label":"Horaires ouvertures :"})
      */
     protected $openedhours;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\TextArea")
+     * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Options({"label":"Contacts :"})
      */
     protected $contacts;
