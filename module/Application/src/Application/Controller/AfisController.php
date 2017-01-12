@@ -69,18 +69,12 @@ class AfisController extends AbstractEntityManagerAwareController
             $this->form->get('custom_fields')->remove($cat->getStatefield()->getId());
         }
 
-
     }
 
-    public function indexAction()
-    {
-        if (!$this->authAfis('read')) return new JsonModel();
-    }
-
-    private function getAfis()
+    private function getAfis($decom = 0)
     {
         $allAfis = [];
-        foreach ($this->repo->findBy(['decommissionned' => 0]) as $afis) 
+        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis) 
         {
             $allAfis[$afis->getId()]['self'] = $afis;
         }
@@ -94,8 +88,7 @@ class AfisController extends AbstractEntityManagerAwareController
             $afisfield = $result->getCategory()
                 ->getAfisfield()
                 ->getId();
-            // $afisid = 0;
-            // $available = true;
+
             foreach ($result->getCustomFieldsValues() as $customvalue) 
             {
                 if ($customvalue->getCustomField()->getId() == $statefield) 
@@ -107,6 +100,11 @@ class AfisController extends AbstractEntityManagerAwareController
             if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
         }
         return $allAfis;
+    }
+
+    public function indexAction()
+    {
+        if (!$this->authAfis('read')) return new JsonModel();
     }
 
     public function getnotamsAction() 
@@ -185,15 +183,14 @@ class AfisController extends AbstractEntityManagerAwareController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'admin'    => $admin,
-                // 'notams'   => $this->getNOTAMs(), 
-                'afises'   => $this->getAfis()
+                'admin'    => $admin, 
+                'afises'   => $this->getAfis($decom)
             ]);     
     }
 
     public function formAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
         $afis = ($id) ? $this->repo->find($id) : new Afis();
@@ -206,29 +203,9 @@ class AfisController extends AbstractEntityManagerAwareController
             ]);
     }
 
-    // public function switchafisAction()
-    // {
-    //     if (!$this->authAfis('write')) return new JsonModel();
-
-    //     $post = $this->getRequest()->getPost();
-    //     $id = intval($post['id']);
-
-    //     $afis = $this->repo->find($id);
-
-    //     if(is_a($afis, Afis::class)) {
-    //         $afis->setState((boolean) $post['state']);
-    //         return new JsonModel($this->repo->save($afis));
-    //     } else {
-    //         return new JsonModel([
-    //             'type' => 'error', 
-    //             'msg' => 'Afis non existant'
-    //         ]);
-    //     }
-    // }
-
     public function saveAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
         $afis = $this->validateAfis($post);
@@ -245,7 +222,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function deleteAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
 
@@ -282,7 +259,8 @@ class AfisController extends AbstractEntityManagerAwareController
         return $ret;
     }
 
-    private function showErrors() {
+    private function showErrors() 
+    {
         $str = '';
         foreach ($this->form->getMessages() as $field => $messages)
         foreach ($messages as $typeErr => $message)
@@ -292,8 +270,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function switchafisAction()
     {
-        // $messages = array();
-        // if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
         $state = (boolean) $post['state'];
@@ -301,8 +278,7 @@ class AfisController extends AbstractEntityManagerAwareController
         
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
-        // $id=17;
-        // $state=true;
+
         if ($id == 0) {
             return new JsonModel([
                 'type' => 'error', 
@@ -323,7 +299,6 @@ class AfisController extends AbstractEntityManagerAwareController
             $afisField = $afisEvent->getCategory()->getAfisfield();
             foreach ($afisEvent->getCustomFieldsValues() as $value) 
             {
-                // print_r($value->getValue());
                 if ($value->getCustomField()->getId() == $afisField->getId()) 
                 {
                     if ($value->getValue() == $id) $afisEvents[] = $afisEvent;
@@ -334,7 +309,8 @@ class AfisController extends AbstractEntityManagerAwareController
         if ($state == false) 
         {
             // passage d'un afis à l'état fermé : évènement à cloturer
-            if (count($afisEvents) == 1) {
+            if (count($afisEvents) == 1) 
+            {
                 $event = $afisEvents[0];
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
@@ -440,7 +416,7 @@ class AfisController extends AbstractEntityManagerAwareController
                         $this->em->flush();
                         $messages = [
                             'type' => 'success', 
-                            'msg' => "Evènement d'ouverture d'Afis correctement crée."
+                            'msg' => "Etat de l'Afis correctement modifié."
                         ];
                     } 
                     catch (\Exception $e) 
@@ -455,18 +431,11 @@ class AfisController extends AbstractEntityManagerAwareController
                 {
                     $messages = [
                         'type' => 'error', 
-                        'msg' => "Impossible de créer l'évènement."
+                        'msg' => "Impossible d'effectuer la modification."
                     ];
                 }
             }
         }
-        // else 
-        // {
-        //     $messages['error'][] = "Requête incorrecte, impossible de trouver le radar correspondant.";
-        // }
-        // } else {
-        //     $messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
-        // }
         return new JsonModel($messages);
     }
 }

@@ -215,7 +215,7 @@ var afis = function(url) {
                         });
                     } else {
                         noty({
-                            text: 'Pas d\'informations disponibles pour ce code OACI.',
+                            text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAMs.',
                             type: 'error',
                             timeout: 4000,
                         });  
@@ -266,7 +266,7 @@ var afis = function(url) {
                             });
                         } else {
                             noty({
-                                text: 'Pas d\'informations disponibles pour ce code OACI.',
+                            text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAMs.',
                                 type: 'error',
                                 timeout: 4000,
                             });  
@@ -274,8 +274,7 @@ var afis = function(url) {
                     });
                 }
             });
-            $fEditAf.find('input[type="submit"]')
-                .click(submitHandler)
+            $fEditAf.on('submit', submitHandler);
         });
     };
 

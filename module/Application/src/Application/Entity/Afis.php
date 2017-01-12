@@ -30,7 +30,6 @@ use Application\Entity\Organisation;
  */
 class Afis extends TemporaryResource
 {
-    const DEFAULT_STATE = 0;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -50,6 +49,7 @@ class Afis extends TemporaryResource
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(True)
      * @Annotation\Options({"label":"Nom Long :"})
      */
     protected $name;
@@ -132,23 +132,6 @@ class Afis extends TemporaryResource
         $this->contacts = $contacts;
     }
 
-    // public function getState()
-    // {
-    //     return $this->state;
-    // }
-
-    // public function getStrState()
-    // {
-    //     return ($this->getState() == true) ? 'actif' : 'inactif';
-    // }
-
-    // public function setState($state)
-    // {
-    //     $s = self::DEFAULT_STATE;
-    //     if(is_bool($state)) $s = $state;
-    //     $this->state = $s;
-    // }
-    
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
@@ -156,15 +139,4 @@ class Afis extends TemporaryResource
         return $object_vars;
     }
     
-    // public function isValid(){
-    //     $r = false;
-    //     if (    is_int($this->id) and
-    //             is_string($this->name) and
-    //             is_string($this->code) and strlen($this->code) == 4 and 
-    //             is_a($this->organisation, Organisation::class)
-    //             // is_bool($this->state)
-    //     ) $r = true;
-    //     return $r;
-    // }
-
 }

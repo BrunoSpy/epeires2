@@ -1,22 +1,22 @@
-<?php ($afis->isDecommissionned()) ? $classicon = 'remove': $classicon = 'ok'; ?>
+<?php ($afis['self']->isDecommissionned()) ? $classicon = 'remove': $classicon = 'ok'; ?>
 <tr>
-    <td id = '<?php echo $afis->getId(); ?>'><?php echo $afis->getId(); ?></td>
-    <td><?php echo $afis->getCode(); ?></td>
-    <td><?php echo $afis->getName(); ?></td>
-    <td><?php echo $afis->getOrganisation()->getName(); ?></td>
+    <td id = '<?php echo $afis['self']->getId(); ?>'><?php echo $afis['self']->getId(); ?></td>
+    <td><?php echo $afis['self']->getCode(); ?></td>
+    <td><?php echo $afis['self']->getName(); ?></td>
+    <td><?php echo $afis['self']->getOrganisation()->getName(); ?></td>
     <td>
         <span class="glyphicon glyphicon-<?php echo $classicon; ?>"></span>
     </td>
 
     <td>
-        <?php $openedHours = $afis->getOpenedhours(); 
+        <?php $openedHours = $afis['self']->getOpenedhours(); 
         if ($openedHours) { ?>
             <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
         <?php } ?>
     </td>
 
     <td>
-        <?php $contacts = $afis->getContacts();
+        <?php $contacts = $afis['self']->getContacts();
         if ($contacts) { ?>
             <span class="glyphicon glyphicon-phone-alt" title="<?php echo $contacts; ?>"></span>
         <?php } ?>
@@ -26,7 +26,7 @@
       <a title="Tous les notams"
          href="#mdl-show-not"
          class="a-show-not"
-         data-code="<?php echo $afis->getCode(); ?>"
+         data-code="<?php echo $afis['self']->getCode(); ?>"
          data-toggle="modal">
         <span class="glyphicon glyphicon-list" ></span>
       </a>
@@ -36,15 +36,15 @@
         <a  title="Modifier"
             href="#mdl-edit-af"
             class="a-edit-af"
-            data-id="<?=$afis->getId()?>"
+            data-id="<?=$afis['self']->getId()?>"
             data-toggle="modal">
             <span class="glyphicon glyphicon-pencil"></span>
         </a> 
         <a  title="Supprimer"
             href="#mdl-del-af"
             class="a-del-af"
-            data-id="<?=$afis->getId()?>"
-            data-name="<?=$afis->getCode()?>"
+            data-id="<?=$afis['self']->getId()?>"
+            data-name="<?=$afis['self']->getCode()?>"
             data-toggle="modal">
             <span class="glyphicon glyphicon-trash"></span>
         </a>

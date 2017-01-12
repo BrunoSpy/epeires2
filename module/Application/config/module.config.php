@@ -230,10 +230,6 @@ return array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Afis'
             ),
-            'afis.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de modifier les afis'
-            )
         ),
         'Gestion PLN' => array(
             'flightplans.read' => array(
