@@ -166,7 +166,17 @@ class Category
      * @Annotation\Options({"label":"Exclure IPO"})
      */
     protected $exclude = false;
-
+    
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $archived = false;
+    
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    protected $archiveDate = null;
+    
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -304,7 +314,27 @@ class Category
     {
         $this->fieldname = $fieldname;
     }
+    
+    public function isArchived()
+    {
+        return $this->archived;
+    }
 
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+    }
+    
+    public function getArchiveDate()
+    {
+        return $this->archiveDate;
+    }
+    
+    public function setArchiveDate($archiveDate)
+    {
+        $this->archiveDate = $archiveDate;
+    }
+    
     public function getTabs()
     {
         return $this->tabs;

@@ -357,7 +357,13 @@ class Event extends AbstractEvent
         if ($this->isPunctual() || (! $this->isPunctual() && $this->getEnddate() === null)) {
             $now = new \DateTime('now');
             $now->setTimezone(new \DateTimeZone('UTC'));
-            $this->setEnddate($now);
+            if($this->startdate >= $now) {
+                $enddate = clone $this->startdate;
+                $enddate->add(new \DateInterval('PT1H'));
+                $this->setEnddate($enddate);
+            } else {
+                $this->setEnddate($now);
+            }
         }
         foreach ($this->getChildren() as $child) {
             // annuler tous les évènement sauf les actions

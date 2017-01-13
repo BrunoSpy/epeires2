@@ -86,6 +86,10 @@ class TabsController extends FormController
             
             $datas = $this->getForm($id);
             $form = $datas['form'];
+    
+            if(!isset($post['isDefault'])) {
+                $post['isDefault'] = 1;
+            }
             
             $form->setData($post);
             $form->setPreferFormInputFilter(true);

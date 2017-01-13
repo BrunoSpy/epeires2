@@ -174,9 +174,37 @@
             this.element.append(eventsContainer);
             this.element.prepend('<div id="timeline-background"></div>');
             this.largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
+            var urlDay = '';
+            var urlEvent = this.options.eventUrl;
+            if(this.options.view == "day") {
+                this.dayview = true;
+                if (this.options.day === undefined) {
+                    this.currentDay = new Date(); //now
+                } else {
+                    var temp = this.options.day.split('/');
+                    var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+                    if (this._isValidDate(date)) {
+                        this.currentDay = date;
+                    } else {
+                        this.currentDay = new Date();
+                    }
+                }
+                urlDay = '?day=' + this.currentDay.toUTCString();
+                if(urlEvent.indexOf('?') > 0){
+                    urlEvent += '&day=' + self.currentDay.toUTCString();
+                } else {
+                    urlEvent += '?day=' + self.currentDay.toUTCString();
+                }
+            }
             //first : draw categories
+            var urlCategories = self.options.categoriesUrl;
+            if(urlCategories.indexOf('?') > 0) {
+                urlCategories += '&day=' + self.currentDay.toUTCString();
+            } else {
+                urlCategories += '?day=' + self.currentDay.toUTCString();
+            }
             $.when(
-                $.getJSON(self.options.categoriesUrl, function (data) {
+                $.getJSON(urlCategories, function (data) {
                     var pos = 0;
                     $.each(data, function (key, value) {
                         self.categories.push(value);
@@ -722,6 +750,7 @@
             this._trigger("hide", event, {eventId: event.id});
         },
         view: function (viewName, day) {
+            var self = this;
             if (viewName === "day" && !this.dayview) {
                 this.dayview = true;
                 if (day === undefined) {
@@ -734,11 +763,15 @@
                         this.currentDay = new Date();
                     }
                 }
-                this.forceUpdateView(true);
+                $.when(self._refreshCategories()).then(function(){
+                    self.forceUpdateView(true);
+                });
             } else if (viewName === "sixhours" && this.dayview) {
                 this.dayview = false;
                 this.element.find("#timeline-background").removeClass('anotherday');
-                this.forceUpdateView(true);
+                $.when(self._refreshCategories()).then(function(){
+                    self.forceUpdateView(true);
+                });
             }
         },
         /**
@@ -769,18 +802,21 @@
                 } else {
                     url += '?day=' + self.currentDay.toUTCString();
                 }
-                $.when($.getJSON(url,
-                    function (data, textStatus, jqHXR) {
-                        if (jqHXR.status !== 304) {
-                            self.pauseUpdateView();
-                            self.addEvents(data);
-                        }
-                    }))
-                    .then(function () {
-                        self.forceUpdateView();
+                $.when(self._refreshCategories())
+                .then(function(){//we need updated categories before getting events
+                    $.when($.getJSON(url,
+                        function (data, textStatus, jqHXR) {
+                            if (jqHXR.status !== 304) {
+                                self.pauseUpdateView();
+                                self.addEvents(data);
+                            }
+                        }))
+                    .then(function(){
+                        self.forceUpdateView(true);
                         self._restoreUpdate();
                         self.element.find('.loading').hide();
-                    });
+                    })
+                });
             }
             //else : do nothing
         },
@@ -856,11 +892,14 @@
          * @returns {undefined}
          */
         sortCategories: function (comparator) {
-            if (typeof comparator === "undefined") {
+            if (typeof comparator === "undefined" && this.lastCategoriesComparator === undefined) {
                 this.categories.sort(function (a, b) {
                     return (a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
                 });
+            } else if(typeof comparator === "undefined" && this.lastCategoriesComparator !== undefined) {
+                this.categories.sort(this.lastCategoriesComparator);
             } else {
+                this.lastCategoriesComparator = comparator;
                 this.categories.sort(comparator);
             }
             //update cat positions
@@ -912,6 +951,7 @@
          * @returns {undefined}
          */
         _updateView: function (full) {
+            var self = this;
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
@@ -937,42 +977,42 @@
             }
             if (full !== false) {
                 // draw base
-                this._drawBase();
+                self._drawBase();
                 // draw timeBar
-                this._drawTimeBar();
+                self._drawTimeBar();
             }
             //update events
             //reapply filter and determine wich events are to be displayed
-            this.filter();
-            for (var i = 0; i < this.events.length; i++) {
-                var evt = this.events[i];
-                evt.display = evt.display && this._isEventInTimeline(evt);
+            self.filter();
+            for (var i = 0; i < self.events.length; i++) {
+                var evt = self.events[i];
+                evt.display = evt.display && self._isEventInTimeline(evt);
                 //ne pas afficher les évènements dont on n'a pas la catégorie
-                evt.display = evt.display && (this.options.showOnlyRootCategories ?
-                    evt.category_root_id in this.catPositions :
-                    evt.category_id in this.catPositions);
+                evt.display = evt.display && (self.options.showOnlyRootCategories ?
+                        evt.category_root_id in self.catPositions :
+                        evt.category_id in self.catPositions);
             }
-            this.eventsDisplayed = this.events.filter(function (event) {
+            self.eventsDisplayed = self.events.filter(function (event) {
                 return event.display;
             });
-            this.eventsDisplayedPosition.length = 0;
-            for (var i = 0; i < this.eventsDisplayed.length; i++) {
-                var id = this.eventsDisplayed[i].id;
-                this.eventsDisplayedPosition[id] = i;
+            self.eventsDisplayedPosition.length = 0;
+            for (var i = 0; i < self.eventsDisplayed.length; i++) {
+                var id = self.eventsDisplayed[i].id;
+                self.eventsDisplayedPosition[id] = i;
             }
             //for each event, update attributes
-            for (var i = 0; i < this.events.length; i++) {
-                this._drawEvent(this.events[i]);
+            for (var i = 0; i < self.events.length; i++) {
+                self._drawEvent(self.events[i]);
             }
             //then update y position
-            var maxY = this._updateYPosition(true) + this.options.eventHeight;
+            var maxY = self._updateYPosition(true) + self.options.eventHeight;
 
             //draw categories
-            if (this.options.showCategories) {
-                var y = this._drawCategories();
+            if (self.options.showCategories) {
+                var y = self._drawCategories();
                 maxY = (maxY > y ? maxY : y );
             } else {
-                this._hideCategories();
+                self._hideCategories();
             }
             //then update height of timeline
             //var height = $(window).height() - this.options.topOffset;
@@ -1486,6 +1526,31 @@
         _hideCategories: function () {
             $('#category').hide();
         },
+        _refreshCategories: function() {
+            this.categories = [];
+            this.catPositions = [];
+            var self = this;
+            var url = this.options.categoriesUrl;
+            if(this.dayview) {
+                if(url.indexOf('?') > 0) {
+                    url += '&day=' + this.currentDay.toUTCString();
+                } else {
+                    url += '?day=' + this.currentDay.toUTCString();
+                }
+            }
+            if ($('#category').length !== 0) {
+                $('#category').empty();
+            }
+            return $.getJSON(url, function (data) {
+                var pos = 0;
+                $.each(data, function (key, value) {
+                    self.categories.push(value);
+                    self.catPositions[value.id] = pos;
+                    pos++;
+                });
+                self.sortCategories();
+            });
+        },
         /**
          * Compute minimum height of a category
          * Usefull to compute size to reserve for an empty category
@@ -1611,6 +1676,7 @@
             return $.getJSON(url,
                 function (data, textStatus, jqHXR) {
                     if (jqHXR.status !== 304) {
+                        self.update = false;
                         self.addEvents(data);
                         self.forceUpdateView();
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));

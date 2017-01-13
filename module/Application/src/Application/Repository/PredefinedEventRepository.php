@@ -58,17 +58,19 @@ class PredefinedEventRepository extends SortableRepository
     public function getEventsFromCategoryAsArray(Category $category) {
         $res = array();
         foreach ($category->getChildren() as $cat) {
-            $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
-            $criteria->andWhere(Criteria::expr()->isNull('parent'));
-            $criteria->andWhere(Criteria::expr()->eq('listable', true));
-            $criteria->andWhere(Criteria::expr()->eq('forceroot', true));
-            $criteria->orderBy(array(
-                'place' => 'ASC'
-            ));
-            $list = parent::matching($criteria);
-
-            foreach ($list as $element) {
-                $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId());
+            if(!$cat->isArchived()) {
+                $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
+                $criteria->andWhere(Criteria::expr()->isNull('parent'));
+                $criteria->andWhere(Criteria::expr()->eq('listable', true));
+                $criteria->andWhere(Criteria::expr()->eq('forceroot', true));
+                $criteria->orderBy(array(
+                    'place' => 'ASC'
+                ));
+                $list = parent::matching($criteria);
+    
+                foreach ($list as $element) {
+                    $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId());
+                }
             }
         }
         return $res;
@@ -76,7 +78,7 @@ class PredefinedEventRepository extends SortableRepository
 
     public function getChildsAsArray($parentid)
     {
-        $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $id));
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $parentid));
         $criteria->andWhere(Criteria::expr()->eq('listable', true));
         $criteria->orderBy('order');
         $list = parent::matching($criteria);

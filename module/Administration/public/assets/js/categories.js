@@ -14,32 +14,50 @@ var categories = function(url){
         }
 
     };
-	
+
         $(".up-category").on('click', function(event){
             event.preventDefault();
             $.post(url+'/categories/upcategory?id='+$(this).data('id'), function(){
                 location.reload();
             });
         });
-        
+
         $(".down-category").on('click', function(event){
             event.preventDefault();
             $.post(url+'/categories/downcategory?id='+$(this).data('id'), function(){
                 location.reload();
             });
         });
-        
+
+	$(".archive").on('click', function(e) {
+		var me = $(this);
+		$('#archive-cat').attr('href', url+'/categories/archive?id='+me.data('id')+'&archive=true');
+	});
+
+    $(".unarchive").on('click', function(e) {
+        var me = $(this);
+        $('#unarchive-cat').attr('href', url+'/categories/archive?id='+me.data('id')+'&archive=false');
+    });
+
+	$("#archive-cat, #unarchive-cat").on('click', function(e) {
+	    e.preventDefault();
+	    var me = $(this);
+	    $.post(me.attr('href'), function(){
+            location.reload();
+        });
+    });
+
 	/* ************************************ */
 	/* *** Fenêtre de liste des modèles *** */
 	/* ************************************ */
-	
+
 
 	$(".models-list").on('click', function(){
 		$("#models-title").html("Modèles de "+$(this).data('name'));
 		$("#models-table").load($(this).data('href'));
 	});
 	/* ************************************ */
-	
+
 	$(".mod").on('click', function(){
 		$("#form-title").html("Modification de "+$(this).data('name'));
 		$("#form").load(url+'/categories/form'+'?id='+$(this).data('id'),
@@ -55,7 +73,7 @@ var categories = function(url){
 			function(){
 				$("#form").find(".pick-a-color").pickAColor();
 				$.material.checkbox();
-			});	
+			});
 	});
 
 	$(".mod_fields").on('click', function(){
@@ -101,7 +119,7 @@ var categories = function(url){
 
 
 	$("#fieldscontainer").on('click', '.delete-field', function(){
-		var me = $(this);	
+		var me = $(this);
 		$('#field_name').html(me.data('name'));
 		$('#delete-field-href').attr('href', me.data('href'));
 		closesttr = me.closest('tr');
@@ -116,7 +134,7 @@ var categories = function(url){
 				closesttr = null;
 				reload = true;
 				updateCarets($("#fieldscontainer"));
-			} 
+			}
 			displayMessages(data);
 		}, "json").fail(function(){
 			var messages = '({error: ["Impossible de supprimer le champ."]})';
@@ -158,7 +176,7 @@ var categories = function(url){
 			updateCarets($('#fieldscontainer'));
 		});
 	});
-	
+
 //	ajaxify form field submit
 	$('#fieldscontainer').on('submit', function(event){
 		event.preventDefault();
@@ -181,11 +199,11 @@ var categories = function(url){
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
 				tr.find('td:eq(9)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
 						'<a href="#confirm-delete-field" '+
-						'data-href="'+url+'/fields/delete?id='+data.id+ 
-							' class="delete-field" '+ 
-							'data-id="'+data.id+'" '+ 
-							'data-name="'+data.name+'" '+ 
-							'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> </a>');					
+						'data-href="'+url+'/fields/delete?id='+data.id+
+							' class="delete-field" '+
+							'data-id="'+data.id+'" '+
+							'data-name="'+data.name+'" '+
+							'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> </a>');
 				updateCarets($("#fieldscontainer"), false);
 			} else {
 				var tr = me.closest('tr');
@@ -202,10 +220,10 @@ var categories = function(url){
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a></td>');
 				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
 						'<a href="#confirm-delete-field" '+
-						'data-href="'+url+'/fields/delete?id='+data.id+ 
-							' class="delete-field" '+ 
-							'data-id="'+data.id+'" '+ 
-							'data-name="'+data.name+'" '+ 
+						'data-href="'+url+'/fields/delete?id='+data.id+
+							' class="delete-field" '+
+							'data-id="'+data.id+'" '+
+							'data-name="'+data.name+'" '+
 							'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> </a></td>');
 
 				newhtml.insertBefore(tr);
@@ -217,25 +235,25 @@ var categories = function(url){
                 $("#fieldscontainer").css('left','');
 		$('#new-field').removeClass('disabled');
 	});
-        
+
         $("#freq-select").on('change', function(){
             $.post(url+'/categories/changedefaultfrequency?id='+$(this).val(), function(data){
                     displayMessages(data);
                 });
         });
-        
+
         $("#radar-select").on('change', function(){
             $.post(url+'/categories/changedefaultradar?id='+$(this).val(), function(data){
                     displayMessages(data);
                 });
         });
-        
+
         $("#antenna-select").on('change', function(){
             $.post(url+'/categories/changedefaultantenna?id='+$(this).val(), function(data){
                     displayMessages(data);
                 });
-        });  
-	
+        });
+
         $("#brouillage-select").on('change', function(){
             $.post(url+'/categories/changedefaultbrouillage?id='+$(this).val(), function(data){
                     displayMessages(data);

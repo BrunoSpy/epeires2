@@ -1909,9 +1909,32 @@ class EventsController extends TabController
      */
     public function getcategoriesAction()
     {
+        
+        $now = new \DateTime('now');
+        $now->setTimezone(new \DateTimeZone('UTC'));
+        $now->setTime(0,0,0);
+        $day = $this->params()->fromQuery('day', null);
+        if($day) {
+            $day = new \DateTime($day);
+        } else {
+            $day = $now;
+        }
         $objectManager = $this->getEntityManager();
         $qb = $objectManager->createQueryBuilder();
-        $qb->select('c')->from('Application\Entity\Category', 'c');
+        $qb->select('c')
+            ->from('Application\Entity\Category', 'c')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('c.archived', 0),
+                    $qb->expr()->andX(
+                        $qb->expr()->eq('c.archived',true),
+                        $qb->expr()->gt('c.archiveDate', '?1')
+                    )
+                )
+            )
+        ->setParameter(1, $day->format('Y-m-d H:i:s'));
+        
+        error_log($day->format('Y-m-d H:i:s'));
         
         $rootonly = $this->params()->fromQuery('rootonly', true);
         $cats = $this->params()->fromQuery('cats', null);

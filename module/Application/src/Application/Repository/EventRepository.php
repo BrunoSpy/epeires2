@@ -138,8 +138,19 @@ class EventRepository extends ExtendedRepository
                                     ->orX($qb->expr()
                                         ->isNull('e.enddate'), $qb->expr()
                                         ->gte('e.enddate', '?1')))));
+                    //catégories non archivés ce jour
+                    $qb->andWhere(
+                        $qb->expr()->orX(
+                            $qb->expr()->eq('c.archived', 0),
+                            $qb->expr()->andX(
+                                $qb->expr()->eq('c.archived', true),
+                                $qb->expr()->gt('c.archiveDate', '?3')
+                            )
+                        )
+                    );
                     $parameters[1] = $daystart;
                     $parameters[2] = $dayend;
+                    $parameters[3] = $daystart;
                     $qb->setParameters($parameters);
                 } else {
                     $daystart = new \DateTime($day);
@@ -168,8 +179,19 @@ class EventRepository extends ExtendedRepository
                                 ->eq('e.punctual', 'true'), $qb->expr()
                                 ->gte('e.startdate', '?1'), $qb->expr()
                                 ->lte('e.startdate', '?2'))));
+                    //toutes les catégories non archivées
+                    $qb->andWhere(
+                        $qb->expr()->orX(
+                            $qb->expr()->eq('c.archived', 0),
+                            $qb->expr()->andX(
+                                $qb->expr()->eq('c.archived', true),
+                                $qb->expr()->gt('c.archiveDate', '?3')
+                            )
+                        )
+                    );
                     $parameters[1] = $daystart;
                     $parameters[2] = $dayend;
+                    $parameters[3] = $dayend;
                     $qb->setParameters($parameters);
                 }
             } else {
@@ -196,8 +218,20 @@ class EventRepository extends ExtendedRepository
                         ->andX($qb->expr()
                         ->gte('e.startdate', '?1'), $qb->expr()
                         ->lte('e.startdate', '?2'))));
+                //catégories non archivées
+                $qb->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('c.archived', 0),
+                        $qb->expr()->andX(
+                            $qb->expr()->eq('c.archived', true),
+                            $qb->expr()->gt('c.archiveDate', '?3')
+                        )
+                    )
+                );
                 $parameters[1] = $start->format("Y-m-d H:i:s");
                 $parameters[2] = $end->format("Y-m-d H:i:s");
+                $now->setTime(0,0,0);
+                $parameters[3] = $now->format("Y-m-d H:i:s");
                 $qb->setParameters($parameters);
             }
         }
@@ -571,6 +605,41 @@ class EventRepository extends ExtendedRepository
         return $qbEvents;
     }
 
+    public function getCurrentEventsCategory($catName) {
+        $qb = $this->getQueryEvents();
+        $qb->andWhere($qb->expr()->eq('cat.name', '?3'))
+        ->setParameter(3, $catName);
+        return $qb->getQuery()->getResult();
+    }
+    
+    public function getFutureEventsCategory($catname) {
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+        $qbEvents = $this->getEntityManager()->createQueryBuilder();
+        $qbEvents->select(array(
+            'e',
+            'cat'
+        ))
+            ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'cat')
+            ->andWhere($qbEvents->expr()
+                ->in('e.status', '?1'))
+            ->andWhere($qbEvents->expr()
+                ->gte('e.startdate','?2'))
+            ->andWhere($qbEvents->expr()
+                ->eq('cat.name', '?3'))
+            ->setParameters(array(
+                1 => array(
+                    1,
+                    2,
+                    3
+                ),
+                2 => $now->format('Y-m-d H:i:s'),
+                3 => $catname
+            ));
+        return $qbEvents->getQuery()->getResult();
+    }
+    
     /**
      * Tous les éléments prévus concernant la catégorie <code>$category</code>
      * - Date de début dans les 12h

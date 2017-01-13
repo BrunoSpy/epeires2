@@ -28,19 +28,24 @@ class CategoryRepository extends ExtendedRepository
 {
 
     /**
-     *
+     * @param null $id Exclude specific id from results
+     * @param null $timeline If true, returns only categories to be displayed on main timeline
+     * @param true $system If false, exclude system categories
+     * @param null $archived If true, include archived categories
      * @return array
      */
-    public function getRootsAsArray($id = null, $system = true)
+
+    public function getRootsAsArray($id = null, $system = true, $archived = false)
     {
         $res = array();
-        foreach ($this->getRoots($id, $system) as $element) {
+        foreach ($this->getRoots($id, $system, $archived) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;
     }
 
-    public function getRoots($id = null, $system = true)
+    
+    public function getRoots($id = null, $system = true, $archived = false)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
         
@@ -50,6 +55,11 @@ class CategoryRepository extends ExtendedRepository
         if($system == false) {
             $criteria->andWhere(Criteria::expr()->eq('system', false));
         }
+        if($archived) {
+            $criteria->andWhere(Criteria::expr()->eq('archived', true));
+        } else {
+            $criteria->andWhere(Criteria::expr()->eq('archived', 0));
+        }
         $criteria->orderBy(array(
             'place' => Criteria::ASC
         ));
@@ -57,12 +67,23 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
-    public function getChilds($parentId = null)
+    
+    /**
+     * @param null $parentId If null, returns root categories
+     * @param null $archived If true, include archived categories
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChilds($parentId = null, $archived = null)
     {
         if ($parentId) {
             $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', parent::find($parentId)));
         } else {
             $criteria = Criteria::create()->where(Criteria::expr()->neq('parent', null));
+        }
+        if($archived != null && $archived == true) {
+            $criteria->andWhere(Criteria::expr()->eq('archived', true));
+        } else {
+            $criteria->andWhere(Criteria::expr()->eq('archived', false));
         }
         $criteria->orderBy(array(
             'place' => Criteria::ASC

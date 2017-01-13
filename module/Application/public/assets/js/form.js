@@ -498,6 +498,7 @@ var form = function(url, tabid){
 				$("#create-link").trigger("click");
 				//update timeline
 				if(data['events']){
+					$("#timeline").timeline('pauseUpdateView');
 					$('#timeline').timeline('addEvents', data.events);
 					$('#timeline').timeline('forceUpdateView');
 					$('#calendarview').fullCalendar('refetchEvents');
