@@ -30,9 +30,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					</tr>
 				</thead>
 				<tbody>
-                                <?php 
-                                foreach ($this->categories as $category){
-                                    if(!$category->isSystem()){
+                <?php
+                foreach ($this->categories as $category){
+                    if(!$category->isSystem() && !$category->isArchived()){
 					echo "<tr>";
 					echo "<td>".$category->getId()."</td>";		
 					echo "<td>".$category->getName()."</td>";
@@ -67,62 +67,92 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					}
 					echo "</td>";
 					echo "<td>";
-                                                echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$category->getId()."\"><span class=\"up-caret middle\"></span></a> ";
-                                                echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$category->getId()."\"><span class=\"caret middle\"></span></a> ";
-						echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                        echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$category->getId()."\"><span class=\"up-caret middle\"></span></a> ";
+                        echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$category->getId()."\"><span class=\"caret middle\"></span></a> ";
+                        echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"" . $category->getId() . "\" data-name=\"" . $category->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                        if(count($category->getChildren()) > 0) {
+                            echo '<a href="#" disabled="disabled" style="cursor:not-allowed;" title="Impossible d\'archiver une catégorie non vide">
+                                  <span class="glyphicon glyphicon-folder-open"></span>
+                                </a> ';
+                        } else {
+                            echo '<a title="Archiver" 
+								         href="#modal-archive" 
+								         class="archive" 
+								         data-id="' . $category->getId() . '" 
+								         data-name="' . $category->getName() . '" 
+								         data-toggle="modal"><span class="glyphicon glyphicon-folder-open"></span></a> ';
+                        }
 						echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$category->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$category->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 					echo "</td>";
 					echo "</tr>";
 					
-						foreach ($this->subcategories[$category->getId()] as $subcategory){
-							echo "<tr>";
-							echo "<td>".$subcategory->getId()."</td>";
-							echo "<td>  <span class=\"glyphicon glyphicon-chevron-right\"></span> ".$subcategory->getName()."</td>";
-							echo "<td>".$subcategory->getShortName()."</td>";
-							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
-							echo '<td>'.($subcategory->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-							echo '<td>'.($subcategory->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-							echo '<td>'.($subcategory->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-                            echo '<td>' . ($subcategory->isExclude()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
-                            echo '<td>';
-							if(count($subcategory->getTabs()) > 0) {
-								foreach ($subcategory->getTabs() as $tab) {
-									echo $tab->getName().'<br/>';
-								}
-							} else {
-								echo 'Aucun';
-							}
-							echo '</td>';
-							echo "<td>".$this->models[$subcategory->getId()].
-									" <a href=\"#models-container\"
-								 		class=\"models-list\" 
-								 		data-id=\"".$subcategory->getId()."\"
-										data-name=\"".$subcategory->getName()."\"
-								 		data-toggle=\"modal\"
-								 		data-href=\"".$this->url('administration', array('controller'=>'models', 'action'=>'list'), array('query'=>array('id'=>$subcategory->getId())))."\"><span class=\"glyphicon glyphicon-list\"></span></a>".
-						 		"</td>";
-							echo "<td>".$this->fields[$subcategory->getId()]." <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-list\"></span></a></td>";
-							echo "<td>".($subcategory->getFieldName()?$subcategory->getFieldName()->getName():"Non spécifié")."</td>";
-							echo "<td>";
-							foreach ($subcategory->getReadroles() as $role){
-								echo $role->getName()."<br/>";
-							}
-							echo "</td>";
-							echo "<td>";
-                                                                echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"".$subcategory->getId()."\"><span class=\"up-caret middle\"></span></a> ";
-                                                                echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"".$subcategory->getId()."\"><span class=\"caret middle\"></span></a> ";
-								echo "<a title=\"Modifier\" href=\"#form-container\" class=\"mod\" data-id=\"".$subcategory->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
-								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
-							echo "</td>";
-							echo "</tr>";
-						}			
+						foreach ($this->subcategories[$category->getId()] as $subcategory) {
+                            if (!$subcategory->isArchived()) {
+                                echo "<tr>";
+                                echo "<td>" . $subcategory->getId() . "</td>";
+                                echo "<td>  <span class=\"glyphicon glyphicon-chevron-right\"></span> " . $subcategory->getName() . "</td>";
+                                echo "<td>" . $subcategory->getShortName() . "</td>";
+                                echo "<td><span class=\"label\" style=\"background-color:" . $subcategory->getColor() . "\">" . $subcategory->getColor() . "</span></td>";
+                                echo '<td>' . ($subcategory->isCompactMode() ? "<span class=\"glyphicon glyphicon-ok\"></span>" : "<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                                echo '<td>' . ($subcategory->isTimeline() ? "<span class=\"glyphicon glyphicon-ok\"></span>" : "<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                                echo '<td>' . ($subcategory->isTimelineConfirmed() ? "<span class=\"glyphicon glyphicon-ok\"></span>" : "<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                                echo '<td>' . ($subcategory->isExclude() ? "<span class=\"glyphicon glyphicon-ok\"></span>" : "<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
+                                echo '<td>';
+                                if (count($subcategory->getTabs()) > 0) {
+                                    foreach ($subcategory->getTabs() as $tab) {
+                                        echo $tab->getName() . '<br/>';
                                     }
+                                } else {
+                                    echo 'Aucun';
                                 }
+                                echo '</td>';
+                                echo "<td>" . $this->models[$subcategory->getId()] .
+                                    " <a href=\"#models-container\"
+								 		class=\"models-list\" 
+								 		data-id=\"" . $subcategory->getId() . "\"
+										data-name=\"" . $subcategory->getName() . "\"
+								 		data-toggle=\"modal\"
+								 		data-href=\"" . $this->url('administration',
+                                        array('controller' => 'models', 'action' => 'list'),
+                                        array('query' => array('id' => $subcategory->getId()))) . "\"><span class=\"glyphicon glyphicon-list\"></span></a>" .
+                                    "</td>";
+                                echo "<td>" . $this->fields[$subcategory->getId()] . " <a class=\"mod_fields\" href=\"#fieldscontainer\" data-id=\"" . $subcategory->getId() . "\" data-name=\"" . $subcategory->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-list\"></span></a></td>";
+                                echo "<td>" . ($subcategory->getFieldName() ? $subcategory->getFieldName()->getName() : "Non spécifié") . "</td>";
+                                echo "<td>";
+                                foreach ($subcategory->getReadroles() as $role) {
+                                    echo $role->getName() . "<br/>";
+                                }
+                                echo "</td>";
+                                echo "<td>";
+                                echo "<a title=\"Monter\" href=\"#\" class=\"up-category\" data-id=\"" . $subcategory->getId() . "\"><span class=\"up-caret middle\"></span></a> ";
+                                echo "<a title=\"Descendre\" href=\"#\" class=\"down-category\" data-id=\"" . $subcategory->getId() . "\"><span class=\"caret middle\"></span></a> ";
+                                echo "<a title=\"Modifier\" 
+								         href=\"#form-container\" 
+								         class=\"mod\" data-id=\"" . $subcategory->getId() . "\" 
+								         data-name=\"" . $subcategory->getName() . "\" 
+								         data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>&nbsp;";
+                                echo '<a title="Archiver" 
+								         href="#modal-archive" 
+								         class="archive" 
+								         data-id="' . $subcategory->getId() . '" 
+								         data-name="' . $subcategory->getName() . '" 
+								         data-toggle="modal"><span class="glyphicon glyphicon-folder-open"></span></a>&nbsp;';
+                                echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"" . $this->url('administration',
+                                        array(
+                                            'controller' => 'categories',
+                                            'action' => 'delete'
+                                        )) . "?id=" . $subcategory->getId() . "\" class=\"delete\" data-id=\"" . $category->getId() . "\" data-name=\"" . $subcategory->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                                echo "</td>";
+                                echo "</tr>";
+                            }
+                        }
+                    }
+                }
 				?>
 				</tbody>
 			</table>
 		</div>
-		</div>
+    </div>
 		
 		<div class="panel panel-default">
     		<div class="panel-heading">
@@ -144,7 +174,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
     				<tbody>
                     <?php 
                     foreach ($this->categories as $category){
-                        if($category->isSystem()){
+                        if($category->isSystem() && !$category->isArchived()){
     					echo "<tr>";
     					echo "<td>".$category->getId()."</td>";		
     					echo "<td>".$category->getName()."</td>";
@@ -170,8 +200,64 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
     			</table>
             </div>
                         
-    		</div>
+        </div>
 		
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Catégories archivées</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nom</th>
+                            <th>Nom court</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    foreach ($this->categories as $category) {
+                        if($category->isArchived()) {
+                            echo "<tr>";
+                            echo "<td>" . $category->getId() . "</td>";
+                            echo "<td>" . $category->getName() . "</td>";
+                            echo "<td>" . $category->getShortname() . "</td>";
+                            echo '<td><a title="Archiver" 
+								         href="#modal-unarchive" 
+								         class="unarchive" 
+								         data-id="' . $category->getId() . '" 
+								         data-name="' . $category->getName() . '" 
+								         data-toggle="modal"
+								         title="Réutiliser"><span class="glyphicon glyphicon-refresh"></span></a></td>';
+                            echo "</tr>";
+                        }
+                    }
+                    foreach ($this->subcategories as $subcats) {
+                        foreach ($subcats as $category) {
+                            if($category->isArchived()) {
+                                echo "<tr>";
+                                echo "<td>" . $category->getId() . "</td>";
+                                echo "<td>" . $category->getName() . "</td>";
+                                echo "<td>" . $category->getShortname() . "</td>";
+                                echo '<td><a title="Archiver" 
+								         href="#modal-unarchive" 
+								         class="unarchive" 
+								         data-id="' . $category->getId() . '" 
+								         data-name="' . $category->getName() . '" 
+								         data-toggle="modal"
+								         title="Réutiliser"><span class="glyphicon glyphicon-refresh"></span></a></td>';
+                                echo "</tr>";
+                            }
+                        }
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
 	</div>
 	</div>
 </div>
@@ -216,6 +302,31 @@ echo $this->modalwindow(
     '<a class="btn btn-danger" id="delete-field-href">Confirmer</a>
 	 <button id="cancel-delete-field" class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>'
     );
+
+echo $this->modalwindow(
+        "modal-archive",
+        '<h4>Confirmer l\'archivage ?</h4>',
+        "",
+        null,
+        '<p>Voulez-vous vraiment archiver cette catégorie ?</p>
+        <p><ul><li>Tous les évènements associés seront conservés et accessibles dans l\'historique.</li>
+        <li>Les modèles associés seront archivés.</li>
+        <li>Il ne sera plus possible de créer des évènements et des modèles pour cette catégorie.</li></ul></p>
+        <p>Afin d\'éviter les effets de bord, veillez à relancer l\'application sur les postes  opérateurs.</p>',
+        '<a class="btn btn-danger" id="archive-cat">Confirmer</a>
+        <button class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>'
+);
+
+echo $this->modalwindow(
+    "modal-unarchive",
+    '<h4>Confirmer la restauration ?</h4>',
+    "",
+    null,
+    '<p>Voulez-vous vraiment restaurer cette catégorie ?</p>
+     <p>Afin d\'éviter les effets de bord, veiller à relancer l\'application sur les postes opérateurs.</p>',
+    '<a class="btn btn-danger" id="unarchive-cat">Confirmer</a>
+        <button class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>'
+);
 
 ?>
 

@@ -134,6 +134,21 @@ if($this->view == "30") {
     } else {
         echo 'cats = null;';
     }
+} else if($this->view == "24") {
+    echo '$("#viewday").prop("checked", true).parent().addClass("active");';
+    echo '$("#viewsix").prop("checked", false).parent().removeClass("active");';
+    echo '$("#calendar").show();';
+    echo '$("#export").show();';
+    if($this->day !== null) {
+        echo '$("#calendar input[type=text].date").val('.$this->day.');';
+    } else {
+        echo 'var now = new Date();
+        var day = now.getUTCDate();
+        var month = now.getUTCMonth() + 1;
+        var year = now.getUTCFullYear();
+        var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
+        $("#calendar input[type=text].date").val(nowString);';
+    }
 }
 if($this->onlyroot) {
     echo 'var onlyroot = 1';
@@ -149,17 +164,14 @@ $('#timeline').timeline({
     topOffset: 100,
     leftOffset: 120,
     rightOffset: 85,
+    <?php if($this->view == "24") {
+        echo 'view: "day",';
+    }
+    if($this->day !== null) {
+        echo 'day: '.$this->day.',';
+    } ?>
     initComplete: function(){
         $("#timeline .loading").hide();
-        <?php
-        if($this->view == "24") {
-            echo '$("#viewday").trigger("click");';
-            if($this->day !== null) {
-                echo '$("#calendar input[type=text].date").val('.$this->day.');';
-                echo '$("#calendar input[type=text].date").trigger("change");';
-            }
-        }
-        ?>
     }
 });
 

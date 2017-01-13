@@ -398,6 +398,44 @@ class CategoriesController extends FormController
         return new JsonModel($messages);
     }
 
+    public function archiveAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $archive = $this->params()->fromQuery('archive', null);
+        if($id != null && $archive != null) {
+            $cat = $this->getEntityManager()->getRepository('Application\Entity\Category')->find($id);
+            if($cat) {
+                if(strcmp($archive, 'true') == 0) {
+                    $now = new \DateTime('NOW');
+                    $now->setTimezone(new \DateTimeZone('UTC'));
+                    $cat->setArchiveDate($now);
+                    $cat->setArchived(true);
+                    $status = $this->getEntityManager()->getRepository('Application\Entity\Status')->find(3);
+                    $cancelstatus = $this->getEntityManager()->getRepository('Application\Entity\Status')->find(3);
+                    foreach ($this->getEntityManager()->getRepository('Application\Entity\Event')->getCurrentEventsCategory($cat->getName()) as $e) {
+                        $e->close($status, $now);
+                        $this->getEntityManager()->persist($e);
+                    }
+                    foreach ($this->getEntityManager()->getRepository('Application\Entity\Event')->getFutureEventsCategory($cat->getName()) as $e) {
+                        $e->cancelEvent($cancelstatus);
+                        $this->getEntityManager()->persist($e);
+                    }
+                } else {
+                    $cat->setArchived(false);
+                }
+                $this->getEntityManager()->persist($cat);
+                try {
+                    $this->getEntityManager()->flush();
+                    $this->flashMessenger()->addSuccessMessage("Catégorie correctement modifiée");
+                } catch(\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
+            } else {
+                $this->flashMessenger()->addErrorMessage('Impossible de trouver la catégorie');
+            }
+        }
+        return new JsonModel();
+    }
+    
     public function defaultindexAction()
     {
         $this->layout()->title = "Personnalisation > Catégories par défaut";

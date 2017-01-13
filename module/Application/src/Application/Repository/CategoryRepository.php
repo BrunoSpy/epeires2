@@ -28,10 +28,13 @@ class CategoryRepository extends ExtendedRepository
 {
 
     /**
-     *
+     * @param null $id Exclude specific id from results
+     * @param null $timeline If true, returns only categories to be displayed on main timeline
+     * @param true $system If false, exclude system categories
+     * @param null $archived If true, include archived categories
      * @return array
      */
-    public function getRootsAsArray($id = null, $timeline = null, $system = true)
+    public function getRootsAsArray($id = null, $timeline = null, $system = true, $archived = false)
     {
         $res = array();
         foreach ($this->getRoots($id, $timeline, $system) as $element) {
@@ -40,7 +43,8 @@ class CategoryRepository extends ExtendedRepository
         return $res;
     }
 
-    public function getRoots($id = null, $timeline = null, $system = true)
+    
+    public function getRoots($id = null, $timeline = null, $system = true, $archived = false)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
         if ($timeline) {
@@ -52,14 +56,25 @@ class CategoryRepository extends ExtendedRepository
         if($system == false) {
             $criteria->andWhere(Criteria::expr()->eq('system', false));
         }
+        if($archived) {
+            $criteria->andWhere(Criteria::expr()->eq('archived', true));
+        } else {
+            $criteria->andWhere(Criteria::expr()->eq('archived', 0));
+        }
         $criteria->orderBy(array(
             'place' => Criteria::ASC
         ));
         $list = parent::matching($criteria);
         return $list;
     }
-
-    public function getChilds($onlytimeline, $parentId = null)
+    
+    /**
+     * @param $onlytimeline Only categories to be displayed on main timeline
+     * @param null $parentId If null, returns root categories
+     * @param null $archived If true, include archived categories
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChilds($onlytimeline, $parentId = null, $archived = null)
     {
         if ($parentId) {
             $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', parent::find($parentId)));
@@ -68,6 +83,11 @@ class CategoryRepository extends ExtendedRepository
         }
         if ($onlytimeline) {
             $criteria->andWhere(Criteria::expr()->eq('timeline', true));
+        }
+        if($archived != null && $archived == true) {
+            $criteria->andWhere(Criteria::expr()->eq('archived', true));
+        } else {
+            $criteria->andWhere(Criteria::expr()->eq('archived', false));
         }
         $criteria->orderBy(array(
             'place' => Criteria::ASC
