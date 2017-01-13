@@ -81,7 +81,8 @@ var antenna = function(url, frequencyTestMenu){
                     '<div class="col-sm-9">'+select[0].outerHTML+'</div>'+
                     '</div></form>')
                 $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
-                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>").append(form);
+                    "<p>L'heure actuelle sera utilisée comme heure de début.</p><p>Pour sélectionner plusieurs fréquences, utilisez la touche CTRL."+
+                    " Si aucune fréquence n'est sélectionnée, toute l'antenne sera considérée en panne.").append(form);
             });
 
         } else {
