@@ -48,7 +48,7 @@ var models = function(url, urlapp){
 	/* **************************** */
 	/*         List of models       */
 	/* **************************** */
-	$("#models-container").on('hidden', function(){
+	$("#models-container").on('hidden.bs.modal', function(){
 		//TODO do it only when usefull
 		location.reload();
 	});
@@ -162,6 +162,7 @@ var models = function(url, urlapp){
 			if(!$("#models-container").is(':visible')){
 				location.reload();
 			}
+			displayMessages(data.messages);
 		}, 'json');
 	});
 	

@@ -436,11 +436,13 @@ class ModelsController extends FormController
                 }
                 try {
                     $objectManager->flush();
+                    $messages['success'][] = "Modèle " . $pevent->getName() . "enregistré.";
                 } catch (\Exception $e) {
                     error_log($e->getMessage());
+                    $messages['error'][] = $e->getMessage();
                 }
                 $this->flashMessenger()->addSuccessMessage("Modèle " . $pevent->getName() . " enregistré.");
-                $this->processFormMessages($form->getMessages());
+                $this->processFormMessages($form->getMessages(), $messages);
             } else {
                 // traitement des erreurs de validation
                 $pevent = null;
