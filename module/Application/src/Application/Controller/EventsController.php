@@ -743,6 +743,7 @@ class EventsController extends TabController
                                     $child->setParent($e);
                                     $child->setOrganisation($e->getOrganisation());
                                     $child->createFromPredefinedEvent($action);
+                                    $child->setPlace($action->getPlace());
                                     $child->setStatus($objectManager->getRepository('Application\Entity\Status')
                                         ->findOneBy(array(
                                             'defaut' => true,

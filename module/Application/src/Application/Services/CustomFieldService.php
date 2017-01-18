@@ -55,7 +55,7 @@ class CustomFieldService
                 break;
             case 'sector':
                 if ($customfield->isMultiple()) {
-                    $sectors = explode("\r", $$fieldvalue);
+                    $sectors = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($sectors as $s) {
                         $sector = $this->em->getRepository('Application\Entity\Sector')->find($s);
@@ -75,7 +75,7 @@ class CustomFieldService
                 break;
             case 'antenna':
                 if ($customfield->isMultiple()) {
-                    $antennas = explode("\r", $$fieldvalue);
+                    $antennas = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($antennas as $a) {
                         $antenna = $this->em->getRepository('Application\Entity\Antenna')->find($a);

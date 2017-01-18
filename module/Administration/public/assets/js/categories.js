@@ -55,7 +55,13 @@ var categories = function(url){
 	$(".models-list").on('click', function(){
 		$("#models-title").html("Modèles de "+$(this).data('name'));
 		$("#models-table").load($(this).data('href'));
+		$("#models-table").data('origin',$(this).data('href'));
 	});
+
+	$('#model-container').on('hidden.bs.modal', function(){
+		$("#models-table").load($("#models-table").data('origin'));
+	});
+
 	/* ************************************ */
 
 	$(".mod").on('click', function(){
