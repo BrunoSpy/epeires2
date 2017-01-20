@@ -30,6 +30,8 @@ class Sector extends AbstractHelper
 
     public function __invoke(Frequency $frequency, $name, $groupid = null)
     {
+        $noBackup = !$frequency->getBackupantenna() && !$frequency->getBackupantennaclimax();
+
         $html = "<ul class=\"sector dropdown-menu\" data-freq=\"" . $frequency->getId() . "\">";
         $html .= "<div class=\"sector-color frequency-" . $frequency->getId() . "\">";
         $html .= "<li class=\"sector-name\">" . $name . "</li>";
@@ -37,7 +39,11 @@ class Sector extends AbstractHelper
         $html .= "</div>";
         $html .= "<li class=\"divider\"></li>";
         $html .= "<ul class=\"antennas\">";
-        $html .= "<div data-antennaid=\"" . $frequency->getMainantenna()->getId() . "\" class=\"mainantenna-color antenna-color antenna-" . $frequency->getMainAntenna()->getId() . "\">";
+        $html .= "<div data-antennaid=\""
+            . $frequency->getMainantenna()->getId()
+            . "\" class=\"mainantenna-color antenna-color "
+            . ($noBackup ? "mainantenna-wide " : "")
+            . "antenna-" . $frequency->getMainAntenna()->getId() . "\">";
         $html .= "<li><a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getMainantenna()->getId() . "\">" . $frequency->getMainAntenna()->getShortname() . "</a></li>";
         $html .= "</div>";
         if($frequency->getBackupantenna()) {
@@ -49,7 +55,10 @@ class Sector extends AbstractHelper
         
         if ($frequency->getMainantennaclimax() || $frequency->getBackupantennaclimax()) {
             $html .= "<ul class=\"antennas\">";
-            $html .= "<div data-antennaid=\"" . ($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "") . "\" class=\"mainantenna-color antenna-color antenna-climax-color antenna-" . ($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "") . "\">";
+            $html .= "<div data-antennaid=\"" . ($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "")
+                . "\" class=\"mainantenna-color antenna-color antenna-climax-color "
+                . ($noBackup ? "mainantenna-wide " : "")
+                . "antenna-" . ($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getId() : "") . "\">";
             $html .= "<li>" . ($frequency->getMainantennaclimax() ? "<a href=\"#\" class=\"actions-antenna\" data-id=\"" . $frequency->getMainantennaclimax()->getId() . "\">" . $frequency->getMainantennaclimax()->getShortname() . "</a>" : "") . "</li>";
             $html .= "</div>";
             if ($frequency->getBackupantennaclimax()) {

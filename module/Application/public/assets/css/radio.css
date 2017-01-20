@@ -34,6 +34,7 @@ ul.sector {
 	min-width: 110px;
 	padding-bottom: 0px;
 	margin-bottom: 10px;
+	border-radius: 6px;
 }
 
 ul.sector-list {
@@ -184,10 +185,13 @@ ul>.antennas>.antenna-color.mainantenna-color:only-child {
 	padding-right: 0px;
 }
 
-.sector > .antennas:nth-child(3):last-child > .mainantenna-color:only-child {
+.mainantenna-wide {
 	width: 100%;
-	border-bottom-right-radius: 6px;
 	text-align: center;
+}
+
+ul>.antennas:last-child>.mainantenna-wide {
+	border-radius: 0px 0px 6px 6px;
 }
 
 .background-status-test {
