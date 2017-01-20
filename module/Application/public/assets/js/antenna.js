@@ -111,26 +111,11 @@ var antenna = function(url, frequencyTestMenu){
                 var state = switchbtn.is(':checked');
                 switchbtn.prop('checked', !state);
             } else {
-                //mise à jour des fréquences
-                var antenna = $('.antenna-color.antenna-'+$('#cancel-antenna').data('antenna'));
-                if(switchbtn.prop('checked')){
-                    antenna.removeClass('background-status-fail')
-                        .addClass('background-status-ok');
-                    //changement de couv : antenne main opérationnelle
-                    antenna.filter('.mainantenna-color').addClass('background-selected')
-                        .siblings('.backupantenna-color').removeClass('background-selected');
-                    //suppression de la fiche reflexe si besoin
-                    $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td a").hide();
-                } else {
-                    antenna.removeClass('background-status-ok')
-                        .addClass('background-status-fail');
-                    //changement de couv : antenne main en panne
-                    antenna.filter('.mainantenna-color').removeClass('background-selected')
-                        .siblings('.backupantenna-color').addClass('background-selected');
-                    $("#antennas #antenna-"+$('#cancel-antenna').data('antenna')+" td a").show();
-                }
+                currentantennas = data.antennas;
                 currentfrequencies = data.frequencies;
+                updateantennas();
                 updatefrequencies();
+                updateantennas();
                 updateActions();
             }
         }, 'json');
@@ -141,9 +126,12 @@ var antenna = function(url, frequencyTestMenu){
         $('a.actions-antenna').popover('hide');
         $.post(url+'frequencies/switchantenna?antennaid='+me.data('antennaid')+'&state='+me.data('state')+'&freq='+me.data('freqid'), function(data){
             displayMessages(data.messages);
-            //force page refresh
-            clearTimeout(timer);
-            doFullUpdate();
+            currentantennas = data.antennas;
+            currentfrequencies = data.frequencies;
+            updateantennas();
+            updatefrequencies();
+            updateantennas();
+            updateActions();
         }, 'json');
     });
 

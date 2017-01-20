@@ -326,6 +326,7 @@ class FrequenciesController extends TabController
         }
         $json['messages'] = $messages;
         $json['frequencies'] = $this->getFrequencies();
+        $json['antennas'] = $this->getAntennas();
         return new JsonModel($json);
     }
 
