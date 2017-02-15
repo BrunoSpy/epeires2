@@ -315,10 +315,10 @@ class ModelsController extends FormController
                 if ($input instanceof \Zend\InputFilter\InputFilter) {
                     foreach ($input->getInputs() as $i) {
                         $i->setRequired(false);
+                        $i->setAllowEmpty(true); //FIX bug form non valide si un champ ne contient que des espaces...
                     }
                 }
             }
-            
             if ($form->isValid()) {
                 // category, may be disable
                 if ($post['category']) {
@@ -455,11 +455,12 @@ class ModelsController extends FormController
                 }
                 try {
                     $objectManager->flush();
+                    $messages['success'][] = "Modèle " . $pevent->getName() . " enregistré.";
                 } catch (\Exception $e) {
-                    error_log($e->getMessage());
+                    $messages['error'][] = $e->getMessage();
                 }
                 $this->flashMessenger()->addSuccessMessage("Modèle " . $pevent->getName() . " enregistré.");
-                $this->processFormMessages($form->getMessages());
+                $this->processFormMessages($form->getMessages(), $messages);
             } else {
                 // traitement des erreurs de validation
                 $pevent = null;
