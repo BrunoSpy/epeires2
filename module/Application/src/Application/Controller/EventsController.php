@@ -1507,6 +1507,8 @@ class EventsController extends TabController
         
         $fileid = $this->params()->fromQuery('id', null);
         $eventid = $this->params()->fromQuery('eventid', null);
+        $exclude = $this->params()->fromQuery('exclude', false);
+        $exclude = $exclude == "true";
         $messages = array();
         
         if ($fileid) {
@@ -1514,7 +1516,20 @@ class EventsController extends TabController
             if ($eventid && $file) {
                 $event = $objectManager->getRepository('Application\Entity\Event')->find($eventid);
                 if ($event) {
-                    $file->removeEvent($event);
+                    if($event->getRecurrence() && !$exclude) {
+                        //suppression du fichier à tous les évènements de la récurrence
+                        //sauf ceux antérieurs à la date actuelle
+                        $recurrentEvents = $event->getRecurrence()->getEvents();
+                        $now = new \DateTime('now');
+                        $now->setTimezone(new \DateTimeZone('UTC'));
+                        foreach ($recurrentEvents as $e) {
+                            if (!$e->isPast($now)) {
+                                $file->removeEvent($e);
+                            }
+                        }
+                    } else { //suppression du fichier uniquement pour l'évènement indiqué
+                        $file->removeEvent($event);
+                    }
                     $objectManager->persist($file);
                 } else {
                     $messages['error'][] = "Impossible d'enlever le fichier de l'évènement.";

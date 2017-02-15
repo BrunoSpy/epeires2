@@ -871,7 +871,7 @@ var form = function(url, tabid){
 	});
 
 	$("#event").on('click', '.delete-file', function(){
-		$("button#delete-file-href").attr('href', $(this).data("href"));
+		$("button#delete-file-href").attr('href', $(this).data("href")+ '&exclude='+$("input[name=exclude]").val());
 		$("#file_name").html($(this).data('name'));
 		$("#delete-file-href").data('id', $(this).data('id'));
 	});
