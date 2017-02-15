@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Zend\Validator\NotEmpty;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
@@ -296,10 +297,10 @@ class ModelsController extends FormController
                 if ($input instanceof \Zend\InputFilter\InputFilter) {
                     foreach ($input->getInputs() as $i) {
                         $i->setRequired(false);
+                        $i->setAllowEmpty(true); //FIX bug form non valide si un champ ne contient que des espaces...
                     }
                 }
             }
-            
             if ($form->isValid()) {
                 // category, may be disable
                 if ($post['category']) {
@@ -436,9 +437,8 @@ class ModelsController extends FormController
                 }
                 try {
                     $objectManager->flush();
-                    $messages['success'][] = "Modèle " . $pevent->getName() . "enregistré.";
+                    $messages['success'][] = "Modèle " . $pevent->getName() . " enregistré.";
                 } catch (\Exception $e) {
-                    error_log($e->getMessage());
                     $messages['error'][] = $e->getMessage();
                 }
                 $this->flashMessenger()->addSuccessMessage("Modèle " . $pevent->getName() . " enregistré.");
@@ -593,8 +593,9 @@ class ModelsController extends FormController
                 ));
                 if (count($customfields) > 0) {
                     if (! ($catid || $action)) { // customfieldset already added
-                        $form->add(new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
-                            ->getId(), !$action));
+                        $cfSet = new CustomFieldset($this->getServiceLocator(), $pevent->getCategory()
+                            ->getId(), !$action);
+                        $form->add($cfSet);
                     }
                     foreach ($customfields as $customfield) {
                         $customfieldvalue = $objectManager->getRepository('Application\Entity\CustomFieldValue')->findOneBy(array(
