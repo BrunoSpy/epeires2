@@ -23,6 +23,7 @@ use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
+use Application\Entity\AfisCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -423,5 +424,124 @@ class CategoryEntityFactory
         $brouillagecat->setDefaultBrouillageCategory((count($cats) == 0));
         
         return $brouillagecat;
+    }
+
+    public function createAfisCategory()
+    {
+        $em = $this->getEntityManager();
+        $afiscat = new AfisCategory();
+        $afisfield = new CustomField();
+        $afisfield->setCategory($afiscat);
+        $afisfield->setName('Afis');
+        $afisfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+            'type' => 'afis'
+        )));
+        $afisfield->setPlace(1);
+        $afisfield->setDefaultValue("");
+        $afisfield->setTooltip("");
+        $statusfield = new CustomField();
+        $statusfield->setCategory($afiscat);
+        $statusfield->setName('Ouvert');
+        $statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+            'type' => 'boolean'
+        )));
+        $statusfield->setPlace(2);
+        $statusfield->setDefaultValue("");
+        $statusfield->setTooltip("");
+        $afiscat->setFieldname($afisfield);
+        $afiscat->setAfisfield($afisfield);
+        $afiscat->setStatefield($statusfield);
+        
+        // si aucune cat par défaut --> nouvelle catégorie par défaut
+        $cats = $em->getRepository('Application\Entity\AfisCategory')->findBy(array(
+            'defaultafiscategory' => true
+        ));
+        $afiscat->setDefaultAfisCategory((count($cats) == 0));
+        
+        $em->persist($afisfield);
+        $em->persist($statusfield);
+        return $afiscat;
+    }
+
+    public function createFlightPlanCategory()
+    {
+        $em = $this->getEntityManager();
+        $fpcat = new FlightPlanCategory();
+        $aircraftidfield = new CustomField();
+        $aircraftidfield->setPlace(1);
+        $aircraftidfield->setDefaultValue("");
+        $aircraftidfield->setTooltip("");
+        $aircraftidfield->setCategory($fpcat);
+        $aircraftidfield->setName('Aircraft-Id');
+        $aircraftidfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+    
+        $typeavionfield = new CustomField();
+        $typeavionfield->setPlace(2);
+        $typeavionfield->setDefaultValue("");
+        $typeavionfield->setTooltip("");
+        $typeavionfield->setCategory($fpcat);
+        $typeavionfield->setName('Type avion');
+        $typeavionfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+    
+        $destinationfield = new CustomField();
+        $destinationfield->setPlace(4);
+        $destinationfield->setDefaultValue("");
+        $destinationfield->setTooltip("");
+        $destinationfield->setCategory($fpcat);
+        $destinationfield->setName('Terrain de destination');
+        $destinationfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+    
+        $startfield = new CustomField();
+        $startfield->setPlace(3);
+        $startfield->setDefaultValue("");
+        $startfield->setTooltip("");
+        $startfield->setCategory($fpcat);
+        $startfield->setName('Terrain de départ');
+        $startfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+    
+        $estimatedtimeofarrivalfield = new CustomField();
+        $estimatedtimeofarrivalfield->setPlace(5);
+        $estimatedtimeofarrivalfield->setDefaultValue("");
+        $estimatedtimeofarrivalfield->setTooltip("");
+        $estimatedtimeofarrivalfield->setCategory($fpcat);
+        $estimatedtimeofarrivalfield->setName('ETA');
+        $estimatedtimeofarrivalfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+    
+        $fpcat->setFieldname($aircraftidfield);
+        $fpcat->setAircraftidfield($aircraftidfield);
+        $fpcat->setTypeavionfield($typeavionfield);
+        $fpcat->setDestinationfield($destinationfield);
+        $fpcat->setStartfield($startfield);
+        $fpcat->setEstimatedtimeofarrivalfield($estimatedtimeofarrivalfield);
+    
+        // si aucune cat par défaut --> nouvelle catégorie par défaut
+        $cats = $em->getRepository('Application\Entity\FlightPlanCategory')->findBy(array(
+            'defaultflightplancategory' => true
+        ));
+        $fpcat->setDefaultFlightPlanCategory((count($cats) == 0));
+    
+        $em->persist($aircraftidfield);
+        $em->persist($typeavionfield);
+        $em->persist($destinationfield);
+        $em->persist($startfield);
+        $em->persist($estimatedtimeofarrivalfield);
+        return $fpcat;
     }
 }

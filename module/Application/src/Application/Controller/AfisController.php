@@ -25,7 +25,15 @@ use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Stdlib\Parameters;
 
+
+use Application\Services\CustomFieldService;
+use Application\Form\CustomFieldset;
+
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
+
 use Application\Entity\Organisation;
+use Application\Entity\AfisCategory;
 use Application\Entity\Afis;
 /**
  *
@@ -33,12 +41,13 @@ use Application\Entity\Afis;
  */
 class AfisController extends AbstractEntityManagerAwareController
 {
-    private $em, $repo, $form;
+    private $em, $cf, $repo, $form;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, CustomFieldService $cf)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
+        $this->cf = $cf;
         $this->repo = $this->em->getRepository(Afis::class);
 
         $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
@@ -49,16 +58,55 @@ class AfisController extends AbstractEntityManagerAwareController
                     ->getRepository(Organisation::class)
                     ->getAllAsArray()
                 );
+
+        $categories = $this->em->getRepository(AfisCategory::class)->findBy([
+            'defaultafiscategory' => true
+        ]);
+
+        if ($categories) {
+            $cat = $categories[0];
+            // $this->form->add(new CustomFieldset($this->em, $this->cf, $cat->getId()));
+            // $this->form->get('custom_fields')->remove($cat->getAfisfield()->getId());
+            // $this->form->get('custom_fields')->remove($cat->getStatefield()->getId());
+        }
+
+    }
+
+    private function getAfis($decom = 0)
+    {
+        $allAfis = [];
+        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis) 
+        {
+            $allAfis[$afis->getId()]['self'] = $afis;
+        }
+        
+        $results = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
+        foreach ($results as $result) 
+        {
+            $statefield = $result->getCategory()
+                ->getStatefield()
+                ->getId();
+            $afisfield = $result->getCategory()
+                ->getAfisfield()
+                ->getId();
+
+            foreach ($result->getCustomFieldsValues() as $customvalue) 
+            {
+                if ($customvalue->getCustomField()->getId() == $statefield) 
+                {
+                    $available = $customvalue->getValue();
+                } 
+                else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
+            }
+            if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
+        }
+        return $allAfis;
     }
 
     public function indexAction()
     {
         if (!$this->authAfis('read')) return new JsonModel();
 
-        return (new ViewModel())
-            ->setVariables([
-                'allAfis'   => $this->repo->findBy(['decommissionned' => 0])
-            ]);
     }
 
     // public function getNOTAMsAction() 
@@ -202,15 +250,14 @@ class AfisController extends AbstractEntityManagerAwareController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'admin'    => $admin,
-                // 'notams'   => $this->getNOTAMs(), 
-                'afises'   => $this->repo->findBy(['decommissionned' => $decom])
+                'admin'    => $admin, 
+                'afises'   => $this->getAfis($decom)
             ]);     
     }
 
     public function formAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
         $afis = ($id) ? $this->repo->find($id) : new Afis();
@@ -225,27 +272,143 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function switchafisAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        // $messages = array();
+        // if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
 
         $post = $this->getRequest()->getPost();
+        $state = (boolean) $post['state'];
         $id = intval($post['id']);
+        
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
 
-        $afis = $this->repo->find($id);
+        $msgType = "error";
+        if ($id) 
+        {
+            $events = $this->em
+                ->getRepository('Application\Entity\Event')
+                ->getCurrentEvents('Application\Entity\AfisCategory');
+            
+            $afisevents = array();
+            foreach ($events as $event) {
+                $afisfield = $event->getCategory()->getAfisfield();
+                foreach ($event->getCustomFieldsValues() as $value) {
+                    if ($value->getCustomField()->getId() == $afisfield->getId()) {
+                        if ($value->getValue() == $id) {
+                            $afisevents[] = $event;
+                        }
+                    }
+                }
+            }
+            
+            if ($state == 0) {
 
-        if(is_a($afis, Afis::class)) {
-            $afis->setState((boolean) $post['state']);
-            return new JsonModel($this->repo->save($afis));
+                if (count($afisevents) == 1) {
+                    $event = $afisevents[0];
+                    $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+                    $event->setStatus($endstatus);
+                    $event->setEnddate($now);
+                    $this->em->persist($event);
+                    try {
+                        $this->em->flush();
+                        $msgType = 'success';
+                        $msg = "Evènement afis correctement terminé.";
+                    } catch (\Exception $e) {
+                        $msg = $e->getMessage();
+                    }
+                } else {
+                    $msg = "Impossible de déterminer l'évènement à terminer.";
+                }
+            } else {
+
+                if (count($afisevents) > 0) {
+                    $msg = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
+                } else {
+                    $event = new Event();
+                    $status = $this->em->getRepository('Application\Entity\Status')->find('2');
+                    $impact = $this->em->getRepository('Application\Entity\Impact')->find('3');
+                    $event->setStatus($status);
+                    $event->setStartdate($now);
+                    $event->setImpact($impact);
+                    $event->setPunctual(false);
+                    $afis = $this->em->getRepository('Application\Entity\Afis')->find($id);
+                    $event->setOrganisation($afis->getOrganisation());
+                    $event->setAuthor($this->zfcUserAuthentication()
+                        ->getIdentity());
+                    
+                    $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
+                        'defaultafiscategory' => true
+                    ));
+
+                    if ($categories) {
+                        $cat = $categories[0];
+                        $afisfieldvalue = new CustomFieldValue();
+                        $afisfieldvalue->setCustomField($cat->getAfisfield());
+                        $afisfieldvalue->setValue($id);
+                        $afisfieldvalue->setEvent($event);
+                        $event->addCustomFieldValue($afisfieldvalue);
+                        $statusvalue = new CustomFieldValue();
+                        $statusvalue->setCustomField($cat->getStatefield());
+                        $statusvalue->setValue(true);
+                        $statusvalue->setEvent($event);
+                        $event->addCustomFieldValue($statusvalue);
+                        $event->setCategory($categories[0]);
+                        $this->em->persist($afisfieldvalue);
+                        $this->em->persist($statusvalue);
+                        //on ajoute les valeurs des champs persos
+                        if (isset($post['custom_fields'])) {
+                            foreach ($post['custom_fields'] as $key => $value) {
+                                // génération des customvalues si un customfield dont le nom est $key est trouvé
+                                $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                                    'id' => $key
+                                ));
+                                if ($customfield) {
+                                    if (is_array($value)) {
+                                        $temp = "";
+                                        foreach ($value as $v) {
+                                            $temp .= (string) $v . "\r";
+                                        }
+                                        $value = trim($temp);
+                                    }
+                                    $customvalue = new CustomFieldValue();
+                                    $customvalue->setEvent($event);
+                                    $customvalue->setCustomField($customfield);
+                                    $event->addCustomFieldValue($customvalue);
+                                    
+                                    $customvalue->setValue($value);
+                                    $this->em->persist($customvalue);
+                                }
+                            }
+                        }
+                        //et on sauve le tout
+                        $this->em->persist($event);
+                        try {
+                            $this->em->flush();
+                            $msgType = 'success';
+                            $msg = "Nouvel évènement afis créé.";
+                        } catch (\Exception $e) {
+                            $msg = $e->getMessage();
+                        }
+                    } else {
+                        $msg = "Impossible de créer un nouvel évènement.";
+                    }
+                }
+            }
         } else {
-            return new JsonModel([
-                'type' => 'error', 
-                'msg' => 'Afis non existant'
-            ]);
+            $msg = "Requête incorrecte, impossible de trouver le radar correspondant.";
         }
+        // } else {
+        //     $messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
+        // }
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);
     }
 
     public function saveAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $post = $this->getRequest()->getPost();
         $afis = $this->validateAfis($post);
@@ -262,7 +425,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function deleteAction()
     {
-        if (!$this->authAfis('write')) return new JsonModel();
+        if (!$this->authAfis('read')) return new JsonModel();
 
         $id = intval($this->getRequest()->getPost()['id']);
 

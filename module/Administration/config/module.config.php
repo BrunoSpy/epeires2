@@ -142,10 +142,6 @@ return array(
                 'name' => 'Onglets',
                 'description' => ''
             ),
-            'admin.afis' => array(
-                'name' => 'Afis',
-                'description' => ''
-            )
         )
     ),
     'zfc_rbac' => array(

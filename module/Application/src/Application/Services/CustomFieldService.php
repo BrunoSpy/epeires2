@@ -162,6 +162,26 @@ class CustomFieldService
                     }
                 }
                 break;
+            case 'afis':
+                if ($customfield->isMultiple()) {
+                    $afis = explode("\r", $fieldvalue);
+                    $name = "";
+                    foreach ($afis as $a) {
+                        $af = $this->em->getRepository('Application\Entity\Afis')->find($a);
+                        if ($af) {
+                            if (strlen($name) > 0) {
+                                $name .= "+ ";
+                            }
+                            $name .= $af->getName() . " ";
+                        }
+                    }
+                } else {
+                    $af = $this->em->getRepository('Application\Entity\Afis')->find($fieldvalue);
+                    if ($af) {
+                        $name = $af->getName();
+                    }
+                }
+                break;  
             case 'boolean':
                 $name = ($fieldvalue ? "Oui" : "Non");
                 break;
@@ -169,7 +189,7 @@ class CustomFieldService
                 ;
                 break;
         }
-        
+      
         return $name;
     }
 
@@ -193,6 +213,7 @@ class CustomFieldService
             case 'select':
             case 'stack':
             case 'radar':
+            case 'afis':
                 if ($customfield->isMultiple()) {
                     $attributes['multiple'] = 'multiple';
                 }
@@ -230,6 +251,7 @@ class CustomFieldService
             case 'select':
             case 'stack':
             case 'radar':
+            case 'afis':
                 $type = 'Zend\Form\Element\Select';
                 break;
             case 'boolean':
@@ -258,6 +280,7 @@ class CustomFieldService
                 case 'radar':
                 case 'select':
                 case 'stack':
+                case 'afis':
                     $multiple = true;
                     break;
                 default:
@@ -329,6 +352,11 @@ class CustomFieldService
                 }
                 $value_options = $results;
                 break;
+            case 'afis':
+                $value_options = $om->getRepository('Application\Entity\Afis')->getAllAsArray(array(
+                    'decommissionned' => false
+                ));
+                break;
             case 'boolean':
                 break;
             default:
@@ -380,6 +408,13 @@ class CustomFieldService
                     $empty_option = "Toutes les attentes.";
                 } else {
                     $empty_option = "Choisissez l'attente.";
+                }
+                break;
+            case 'afis':
+                if ($customfield->isMultiple()) {
+                    $empty_option = "Tous les Afis.";
+                } else {
+                    $empty_option = "Choisissez le terrain Afis.";
                 }
                 break;
             case 'boolean':

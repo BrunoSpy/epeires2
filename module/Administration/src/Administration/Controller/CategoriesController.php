@@ -32,6 +32,7 @@ use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
+use Application\Entity\AfisCategory;
 
 /**
  *
@@ -156,8 +157,9 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('brouillage');
                 } elseif ($category instanceof MilCategory) {
                     $form->get('type')->setValue('mil');
-                }
-                
+                } elseif ($category instanceof AfisCategory) {
+                    $form->get('type')->setValue('afis');
+                }               
                 $form->get('type')->setAttribute('disabled', true);
                 
                 // select parent
@@ -211,6 +213,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createFrequencyCategory();
                 } elseif ($post['type'] == 'brouillage') {
                     $category = $this->categoryFactory->createBrouillageCategory();
+                } elseif ($post['type'] == 'afis') {
+                    $category = $this->categoryFactory->createAfisCategory();
                 } elseif ($post['type'] == 'mil') {
                     $category = $this->categoryFactory->createMilCategory();
                 } else {

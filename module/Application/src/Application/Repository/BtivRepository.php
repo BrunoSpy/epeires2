@@ -23,7 +23,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-class BtivRepository extends EntityRepository
+class BtivRepository extends ExtendedRepository
 {
     public function getBy(array $params = [])
     {        
