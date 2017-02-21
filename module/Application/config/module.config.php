@@ -129,8 +129,6 @@ return array(
         'exception_template' => 'error/index',
         'template_map' => array(
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-            'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index.phtml',
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
             'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
             'fp/helper/fp' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
