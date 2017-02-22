@@ -1,5 +1,29 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/application.js')?>
+<?php 
+$this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeline.js');
+$this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
+?>
+
+
+<?php //if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
+    <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="loading"></div>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
+                </div>
+                <div id="event">
+                </div>
+            </div>
+        </div>
+    </div>
+<?php //endif; ?>
+
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
@@ -72,7 +96,15 @@ $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-<!-- $("#create-link").remove();           -->
+$("#create-link")
+    .hide()
+    .clone(true)
+    <!-- .prop('id', '') -->
+    .show()
+    .prependTo('.content')
+    .data('id', 5)
+    .addClass('category');
+
 
 $("#changeview").remove();
 
@@ -91,6 +123,9 @@ $(".sortable").bind('aftertablesort', function(event, data){
 
 //sort the table by name
 $("table th:first").trigger('click');
+
+//init form
+form('<?php echo $this->url('application');?>', 'timeline');
 
 flightplan('<?php echo $this->url('application'); ?>');
 
