@@ -44,10 +44,10 @@ class FlightPlanCategory extends Category
      */
     protected $aircraftidfield;
 
-    /**
-     * @ORM\OneToOne(targetEntity="CustomField")
-     */
-    protected $typeavionfield;
+    // /**
+     // * @ORM\OneToOne(targetEntity="CustomField")
+     // */
+    // protected $typeavionfield;
 
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
@@ -84,15 +84,15 @@ class FlightPlanCategory extends Category
         $this->aircraftidfield = $aircraftid;
     }
 
-    public function getTypeavionfield()
-    {
-        return $this->typeavionfield;
-    }
+    // public function getTypeavionfield()
+    // {
+    //     return $this->typeavionfield;
+    // }
 
-    public function setTypeavionfield($typeavion)
-    {
-        $this->typeavionfield = $typeavion;
-    }
+    // public function setTypeavionfield($typeavion)
+    // {
+    //     $this->typeavionfield = $typeavion;
+    // }
 
     public function getDestinationfield()
     {

@@ -28,21 +28,71 @@ use DateInterval;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Stdlib\Parameters;
 
-use Application\Entity\FlightPlan;
+use Application\Services\CustomFieldService;
+use Application\Form\CustomFieldset;
+
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
 /**
  *
  * @author Loïc Perrin
  */
 class FlightPlansController extends AbstractEntityManagerAwareController
 {
-    protected $em, $repo, $form;
+    protected $em, $cf, $repo, $form;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, CustomFieldService $cf)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
-        $this->repo = $this->em->getRepository(FlightPlan::class);
-        $this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
+        $this->cf = $cf;
+        //$this->repo = $this->em->getRepository(FlightPlan::class);
+        //$this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
+    }
+
+    private function getCatId() {
+        $cat = $this->em->getRepository('Application\Entity\FlightPlanCategory')->findAll();
+        if (is_array($cat) and isset($cat[0])) return $cat[0]->getId();
+    }
+
+    private function getFp($start, $end)
+    {
+
+        // $crit = new Criteria();
+        // $expr = Criteria::expr();
+
+        // $crit->where(
+        //     $expr->andX(
+        //         $expr->lt('created_on', $end),
+        //         $expr->gt('created_on', $start)
+        //     )
+        // );
+
+        $allFpEvents = $this->em->getRepository('Application\Entity\Event')->getFlightPlanEvents($start, $end);
+        $fpEvents = [];
+
+        foreach ($allFpEvents as $fpEvent) 
+        {
+            $cat = $fpEvent->getCategory();
+            $ev = [];
+            foreach ($fpEvent->getCustomFieldsValues() as $value) 
+            {
+                $ev[$value->getCustomField()->getName()] = $value->getValue();
+                // echo $value->getCustomField()->getName();
+                // echo $value->getValue();
+            }
+            $fpEvents[] = $ev;
+            // $afisField = $afisEvent->getCategory()->getAfisfield();
+            // foreach ($afisEvent->getCustomFieldsValues() as $value) 
+            // {
+            //     if ($value->getCustomField()->getId() == $afisField->getId()) 
+            //     {
+            //         if ($value->getValue() == $id) $afisEvents[] = $afisEvent;
+            //     }
+            // }
+        }
+        return $fpEvents;
+
     }
 
     public function indexAction()
@@ -52,20 +102,10 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $start = (new DateTime())->setTime(0,0,0);
         $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
 
-        $crit = new Criteria();
-        $expr = Criteria::expr();
-
-        $crit->where(
-            $expr->andX(
-                $expr->eq('typealerte', 0),
-                $expr->lt('estimatedtimeofarrival', $end),
-                $expr->gt('estimatedtimeofarrival', $start)
-            )
-        );
-
         return (new ViewModel())
             ->setVariables([
-                'flightplans' => $this->repo->getByCriteria($crit)
+                'fields' => $this->getFpFields(),
+                'flightplans' => $this->getFp($start, $end)
             ]);
     }
     
@@ -91,34 +131,38 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ->setTemplate('application/flight-plans/index')
             ->setVariables(
             [
-                'flightplans' => $this->repo->getByCriteria($crit)
+                'flightplans' => $this->getFp($start, $end)
             ]);
     }   
 
-    public function listAction() {
+    private function getFpFields() {
+        $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(['category' => $this->getCatId()]);
+        $fields = [];
+        foreach ($cf as $c) {
+           $fields[] = $c->getName();
+        }
+        return $fields;
+    }
+
+    public function listAction() 
+    {
         $post = $this->getRequest()->getPost();
         
         $start = new DateTime($post['date']);
         $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
 
-        $crit = new Criteria();
-        $expr = Criteria::expr();
+        // $crit = new Criteria();
+        // $expr = Criteria::expr();
 
-        if($post['sar']) $crit->where($expr->gt('typealerte', 0));
-        else $crit->where($expr->eq('typealerte', 0));
-
-        $crit->andWhere(
-            $expr->andX(
-                $expr->lt('estimatedtimeofarrival', $end),
-                $expr->gt('estimatedtimeofarrival', $start)
-            )
-        );
+        // if($post['sar']) $crit->where($expr->gt('typealerte', 0));
+        // else $crit->where($expr->eq('typealerte', 0));
 
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
-                    'flightplans' => $this->repo->getByCriteria($crit)
+                    'fields' => $this->getFpFields(),
+                    'flightplans' => $this->getFp($start, $end)
             ]);
     }
 

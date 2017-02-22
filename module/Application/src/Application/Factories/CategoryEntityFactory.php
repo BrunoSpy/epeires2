@@ -24,6 +24,7 @@ use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
+use Application\Entity\FlightPlanCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -480,16 +481,16 @@ class CategoryEntityFactory
                 'type' => 'string'
             )));
     
-        $typeavionfield = new CustomField();
-        $typeavionfield->setPlace(2);
-        $typeavionfield->setDefaultValue("");
-        $typeavionfield->setTooltip("");
-        $typeavionfield->setCategory($fpcat);
-        $typeavionfield->setName('Type avion');
-        $typeavionfield->setType($em->getRepository('Application\Entity\CustomFieldType')
-            ->findOneBy(array(
-                'type' => 'string'
-            )));
+        // $typeavionfield = new CustomField();
+        // $typeavionfield->setPlace(2);
+        // $typeavionfield->setDefaultValue("");
+        // $typeavionfield->setTooltip("");
+        // $typeavionfield->setCategory($fpcat);
+        // $typeavionfield->setName('Type avion');
+        // $typeavionfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+        //     ->findOneBy(array(
+        //         'type' => 'string'
+        //     )));
     
         $destinationfield = new CustomField();
         $destinationfield->setPlace(4);
@@ -526,7 +527,7 @@ class CategoryEntityFactory
     
         $fpcat->setFieldname($aircraftidfield);
         $fpcat->setAircraftidfield($aircraftidfield);
-        $fpcat->setTypeavionfield($typeavionfield);
+        // $fpcat->setTypeavionfield($typeavionfield);
         $fpcat->setDestinationfield($destinationfield);
         $fpcat->setStartfield($startfield);
         $fpcat->setEstimatedtimeofarrivalfield($estimatedtimeofarrivalfield);
@@ -538,7 +539,7 @@ class CategoryEntityFactory
         $fpcat->setDefaultFlightPlanCategory((count($cats) == 0));
     
         $em->persist($aircraftidfield);
-        $em->persist($typeavionfield);
+        // $em->persist($typeavionfield);
         $em->persist($destinationfield);
         $em->persist($startfield);
         $em->persist($estimatedtimeofarrivalfield);

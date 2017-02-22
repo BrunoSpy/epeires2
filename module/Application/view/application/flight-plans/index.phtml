@@ -1,14 +1,15 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js')?>
-
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/application.js')?>
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <!--            
                 <h3 class="panel-title">
                     <button class="btn btn-primary btn-sm" href="#mdl-edit-fp" data-toggle="modal" id="btn-add-fp">
                         <span class="glyphicon glyphicon-plane"></span>
                     </button>
-                </h3>
+                </h3> -->
                 <div>
                     TOA : 
                     <a href="#" id="a-date-back">
@@ -24,23 +25,23 @@
                         <span class="glyphicon glyphicon-refresh"></span>
                     </a>
                 </div>
-	        </div>
+            </div>
             <div class="panel-body">
                 <table class="table table-striped table-hover sortable">
                     <thead>
                         <tr>
-                            <th data-sort="string">Indicatif</th>
-                            <th data-sort="string">Type Avion</th>
-                            <th data-sort="string">Départ</th>
-                            <th data-sort="string">Arrivée</th>
-                            <th>ETA</th>
-                            <th>TOA</th>
-                            <!-- <th></th> -->
+                        <?php foreach ($fields as $field) : ?>
+                        <?php echo '<th>'.$field.'</th>' ?>
+                        <?php endforeach; ?>
                         </tr>    
                     </thead>
                     <tbody id = "list-fp">
                         <?php foreach ($flightplans as $fp) : ?>
-                        <?php echo $this->fpViewHelper()->renderRow($fp)?>
+                        <tr>
+                            <?php foreach ($fields as $field) : ?>
+                            <td><?php echo $fp[$field]?></td>
+                            <?php endforeach; ?>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -68,10 +69,10 @@
 <?php $this->inlineScript()->captureStart(); ?>
 
 $("#home").removeClass("dropdown-toggle")
-		  .attr('data-toggle', '')
-		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+          .attr('data-toggle', '')
+          .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-$("#create-link").remove();		  
+<!-- $("#create-link").remove();           -->
 
 $("#changeview").remove();
 

@@ -33,6 +33,7 @@ use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
+use Application\Entity\FlightPlanCategory;
 
 /**
  *
@@ -159,7 +160,9 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('mil');
                 } elseif ($category instanceof AfisCategory) {
                     $form->get('type')->setValue('afis');
-                }               
+                } elseif ($category instanceof FlightPlanCategory) {
+                    $form->get('type')->setValue('flightplan');
+                }                
                 $form->get('type')->setAttribute('disabled', true);
                 
                 // select parent
@@ -215,6 +218,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createBrouillageCategory();
                 } elseif ($post['type'] == 'afis') {
                     $category = $this->categoryFactory->createAfisCategory();
+                } elseif ($post['type'] == 'flightplan') {
+                    $category = $this->categoryFactory->createFlightPlanCategory();
                 } elseif ($post['type'] == 'mil') {
                     $category = $this->categoryFactory->createMilCategory();
                 } else {

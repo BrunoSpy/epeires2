@@ -433,6 +433,39 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
+    public function getFlightPlanEvents($start, $end)
+    {
+                $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+        $qbEvents = $this->getEntityManager()->createQueryBuilder();
+        $qbEvents->select(array(
+            'e',
+            'cat'
+        ))
+            ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'cat')
+            ->andWhere('cat INSTANCE OF Application\Entity\FlightPlanCategory')
+            ->andWhere(
+                $qbEvents->expr()->andX(
+                    $qbEvents->expr()->gte('e.startdate', '?1'), 
+                    $qbEvents->expr()->lte('e.startdate', '?2')
+                )
+            )
+            // ->andWhere($qbEvents->expr()->in('e.status', '?3'))
+            ->setParameters(array(
+            1 => $start,
+            2 => $end
+            // 3 => array(
+            //     1,
+            //     2,
+            //     3
+            // )
+        ));
+        
+        $query = $qbEvents->getQuery();
+        
+        return $query->getResult();
+    }
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 
