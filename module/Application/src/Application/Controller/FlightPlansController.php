@@ -75,6 +75,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         {
             $cat = $fpEvent->getCategory();
             $ev = [];
+            $ev['id'] = $fpEvent->getId();
             foreach ($fpEvent->getCustomFieldsValues() as $value) 
             {
                 $ev[$value->getCustomField()->getName()] = $value->getValue();
@@ -92,7 +93,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             // }
         }
         return $fpEvents;
-
     }
 
     public function indexAction()

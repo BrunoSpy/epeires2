@@ -435,7 +435,7 @@ class EventRepository extends ExtendedRepository
 
     public function getFlightPlanEvents($start, $end)
     {
-                $now = new \DateTime('NOW');
+        $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
         $qbEvents = $this->getEntityManager()->createQueryBuilder();
         $qbEvents->select(array(

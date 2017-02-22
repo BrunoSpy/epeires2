@@ -1,6 +1,6 @@
 var flightplan = function(url){
     "use strict";
-    $('tr').draggable().click(modFpHandler);
+    //$('tr').draggable().click(modFpHandler);
 
     var $iDate = $('#i-date');
     //TODO BOF
@@ -57,9 +57,10 @@ var flightplan = function(url){
         location.reload();
     });
     
-    function modFpHandler(e) {     
-        $("#title-edit-fp").html('Modification du Plan de Vol - <em>'+$(this).data('aircraft-id')+'</em>');
-        loadFpForm($(this).data('id'));
+    function modFpHandler(e) {    
+        // $("#title-edit-fp").html('Modification du Plan de Vol - <em>'+$(this).data('aircraft-id')+'</em>');
+        // loadFpForm($(this).data('id'));
+
     }
 
     function loadFpForm(id = null) 

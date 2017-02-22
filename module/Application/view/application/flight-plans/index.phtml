@@ -8,7 +8,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
 ?>
 
 
-<?php //if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
+<?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
     <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -22,18 +22,12 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
             </div>
         </div>
     </div>
-<?php //endif; ?>
+<?php endif; ?>
 
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <!--            
-                <h3 class="panel-title">
-                    <button class="btn btn-primary btn-sm" href="#mdl-edit-fp" data-toggle="modal" id="btn-add-fp">
-                        <span class="glyphicon glyphicon-plane"></span>
-                    </button>
-                </h3> -->
                 <div>
                     TOA : 
                     <a href="#" id="a-date-back">
@@ -57,14 +51,18 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                         <?php foreach ($fields as $field) : ?>
                         <?php echo '<th>'.$field.'</th>' ?>
                         <?php endforeach; ?>
+                        <th></th>
                         </tr>    
                     </thead>
                     <tbody id = "list-fp">
                         <?php foreach ($flightplans as $fp) : ?>
                         <tr>
                             <?php foreach ($fields as $field) : ?>
-                            <td><?php echo $fp[$field]?></td>
+                            <td><?php echo (isset($fp[$field])) ? $fp[$field] : '';?></td>
                             <?php endforeach; ?>
+                         <td id="search-results">
+                            <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+                        </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -99,7 +97,6 @@ $("#home").removeClass("dropdown-toggle")
 $("#create-link")
     .hide()
     .clone(true)
-    <!-- .prop('id', '') -->
     .show()
     .prependTo('.content')
     .data('id', 5)
