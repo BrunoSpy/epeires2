@@ -34,6 +34,7 @@ use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
+use Application\Entity\AlertCategory;
 
 /**
  *
@@ -160,6 +161,8 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('mil');
                 } elseif ($category instanceof AfisCategory) {
                     $form->get('type')->setValue('afis');
+                } elseif ($category instanceof AlertCategory) {
+                    $form->get('type')->setValue('alert');
                 } elseif ($category instanceof FlightPlanCategory) {
                     $form->get('type')->setValue('flightplan');
                 }                
@@ -218,6 +221,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createBrouillageCategory();
                 } elseif ($post['type'] == 'afis') {
                     $category = $this->categoryFactory->createAfisCategory();
+                } elseif ($post['type'] == 'alert') {
+                    $category = $this->categoryFactory->createAlertCategory();
                 } elseif ($post['type'] == 'flightplan') {
                     $category = $this->categoryFactory->createFlightPlanCategory();
                 } elseif ($post['type'] == 'mil') {

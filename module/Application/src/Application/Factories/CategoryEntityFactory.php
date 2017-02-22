@@ -25,6 +25,7 @@ use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
+use Application\Entity\AlertCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -544,5 +545,44 @@ class CategoryEntityFactory
         $em->persist($startfield);
         $em->persist($estimatedtimeofarrivalfield);
         return $fpcat;
+    }
+
+    public function createAlertCategory()
+    {
+        $em = $this->getEntityManager();
+        $alertcat = new AlertCategory();
+        $typefield = new CustomField();
+        $typefield->setPlace(1);
+        $typefield->setDefaultValue("INCERFA\nALERTFA\nDETRESSFA");
+        $typefield->setTooltip("");
+        $typefield->setCategory($alertcat);
+        $typefield->setName('Type d\'alerte');
+        $typefield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'select'
+            )));
+    
+        $flightplanfield = new CustomField();
+        $flightplanfield->setCategory($alertcat);
+        $flightplanfield->setName('Plan de Vol');
+        $flightplanfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+            'type' => 'flightplan'
+        )));
+        $flightplanfield->setPlace(1);
+        $flightplanfield->setDefaultValue("");
+        $flightplanfield->setTooltip("");
+
+        // si aucune cat par défaut --> nouvelle catégorie par défaut
+        $cats = $em->getRepository('Application\Entity\AlertCategory')->findBy(array(
+            'defaultalertcategory' => true
+        ));
+        $alertcat->setDefaultAlertCategory((count($cats) == 0));
+        $alertcat->setTypeField($typefield);
+        $alertcat->setFlightPlanField($flightplanfield);
+        
+        $em->persist($typefield);
+        $em->persist($flightplanfield);
+        return $alertcat;
     }
 }
