@@ -27,32 +27,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AlertCategory extends Category
 {
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $defaultalertcategory = false;
-
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
      */
     protected $typefield;
-
-    /**
-     * PLN impacté
-     * @ORM\OneToOne(targetEntity="CustomField")
-     */
-    protected $flightplanfield;
-
-    public function isDefaultAlertCategory()
-    {
-        return $this->defaultalertcategory;
-    }
-
-    public function setDefaultAlertCategory($default)
-    {
-        $this->defaultalertcategory = $default;
-    }
 
     public function getTypeField()
     {
@@ -62,15 +40,5 @@ class AlertCategory extends Category
     public function setTypefield($typefield)
     {
         $this->typefield = $typefield;
-    }
-
-    public function getFlightPlanField()
-    {
-        return $this->flightplanfield;
-    }
-
-    public function setFlightPlanField($field)
-    {
-        $this->flightplanfield = $field;
     }
 }

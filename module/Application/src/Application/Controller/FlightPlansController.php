@@ -52,10 +52,10 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
     private function getCatId() {
         $cat = $this->em->getRepository('Application\Entity\FlightPlanCategory')->findAll();
-        if (is_array($cat) and isset($cat[0])) return $cat[0]->getId();
+        if (is_array($cat)) return end($cat)->getId();
     }
 
-    private function getFp($start, $end)
+    private function getFp($start, $end, $sar = false)
     {
 
         // $crit = new Criteria();
@@ -73,16 +73,23 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
         foreach ($allFpEvents as $fpEvent) 
         {
+            $push = false;
             $cat = $fpEvent->getCategory();
             $ev = [];
             $ev['id'] = $fpEvent->getId();
             foreach ($fpEvent->getCustomFieldsValues() as $value) 
             {
-                $ev[$value->getCustomField()->getName()] = $value->getValue();
-                // echo $value->getCustomField()->getName();
-                // echo $value->getValue();
+                $namefield = $value->getCustomField()->getName();
+                $valuefield = $value->getValue();
+
+                $ev[$namefield] = $valuefield;
+                if($namefield == 'Alerte') 
+                {
+                    if($sar == true && $valuefield > 0) $push = true;
+                    if($sar == false && !$valuefield) $push = true;   
+                }
             }
-            $fpEvents[] = $ev;
+            if($push == true) $fpEvents[] = $ev;
             // $afisField = $afisEvent->getCategory()->getAfisfield();
             // foreach ($afisEvent->getCustomFieldsValues() as $value) 
             // {
@@ -104,6 +111,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
         return (new ViewModel())
             ->setVariables([
+                'cat' => $this->getCatId(),
                 'fields' => $this->getFpFields(),
                 'flightplans' => $this->getFp($start, $end)
             ]);
@@ -116,22 +124,12 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $start = (new DateTime())->setTime(0,0,0);
         $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
 
-        $crit = new Criteria();
-        $expr = Criteria::expr();
-
-        $crit->where(
-            $expr->andX(
-                $expr->gt('typealerte', 0),
-                $expr->lt('estimatedtimeofarrival', $end),
-                $expr->gt('estimatedtimeofarrival', $start)
-            )
-        );
-
         return (new ViewModel())
             ->setTemplate('application/flight-plans/index')
-            ->setVariables(
-            [
-                'flightplans' => $this->getFp($start, $end)
+            ->setVariables([
+                'cat' => $this->getCatId(),
+                'fields' => $this->getFpFields(),
+                'flightplans' => $this->getFp($start, $end, true)
             ]);
     }   
 

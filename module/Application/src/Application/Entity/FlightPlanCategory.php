@@ -64,6 +64,11 @@ class FlightPlanCategory extends Category
      */
     protected $estimatedtimeofarrivalfield;
 
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $alertfield;
+
     public function isDefaultFlightPlanCategory()
     {
         return $this->defaultflightplancategory;
@@ -123,4 +128,14 @@ class FlightPlanCategory extends Category
     {
         $this->estimatedtimeofarrivalfield = $estimatedtimeofarrival;
     }  
+
+    public function getAlertfield()
+    {
+        return $this->alertfield;
+    }
+
+    public function setAlertfield($alert)
+    {
+        $this->alertfield = $alert;
+    }
 }

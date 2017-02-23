@@ -525,12 +525,24 @@ class CategoryEntityFactory
             ->findOneBy(array(
                 'type' => 'string'
             )));
-    
+
+        $alertfield = new CustomField();
+        $alertfield->setPlace(6);
+        $alertfield->setDefaultValue("");
+        $alertfield->setTooltip("");
+        $alertfield->setCategory($fpcat);
+        $alertfield->setName('Alerte');
+        $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'alert'
+            )));
+
         $fpcat->setFieldname($aircraftidfield);
         $fpcat->setAircraftidfield($aircraftidfield);
         // $fpcat->setTypeavionfield($typeavionfield);
         $fpcat->setDestinationfield($destinationfield);
         $fpcat->setStartfield($startfield);
+        $fpcat->setAlertfield($alertfield);
         $fpcat->setEstimatedtimeofarrivalfield($estimatedtimeofarrivalfield);
     
         // si aucune cat par défaut --> nouvelle catégorie par défaut
@@ -543,6 +555,7 @@ class CategoryEntityFactory
         // $em->persist($typeavionfield);
         $em->persist($destinationfield);
         $em->persist($startfield);
+        $em->persist($alertfield);
         $em->persist($estimatedtimeofarrivalfield);
         return $fpcat;
     }
@@ -561,28 +574,14 @@ class CategoryEntityFactory
             ->findOneBy(array(
                 'type' => 'select'
             )));
-    
-        $flightplanfield = new CustomField();
-        $flightplanfield->setCategory($alertcat);
-        $flightplanfield->setName('Plan de Vol');
-        $flightplanfield->setType($em->getRepository('Application\Entity\CustomFieldType')
-            ->findOneBy(array(
-            'type' => 'flightplan'
-        )));
-        $flightplanfield->setPlace(1);
-        $flightplanfield->setDefaultValue("");
-        $flightplanfield->setTooltip("");
-
         // si aucune cat par défaut --> nouvelle catégorie par défaut
-        $cats = $em->getRepository('Application\Entity\AlertCategory')->findBy(array(
-            'defaultalertcategory' => true
-        ));
-        $alertcat->setDefaultAlertCategory((count($cats) == 0));
+        // $cats = $em->getRepository('Application\Entity\AlertCategory')->findBy(array(
+        //     'defaultalertcategory' => true
+        // ));
+        // $alertcat->setDefaultAlertCategory((count($cats) == 0));
         $alertcat->setTypeField($typefield);
-        $alertcat->setFlightPlanField($flightplanfield);
         
         $em->persist($typefield);
-        $em->persist($flightplanfield);
         return $alertcat;
     }
 }

@@ -58,7 +58,29 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                         <?php foreach ($flightplans as $fp) : ?>
                         <tr>
                             <?php foreach ($fields as $field) : ?>
-                            <td><?php echo (isset($fp[$field])) ? $fp[$field] : '';?></td>
+
+                            <td>
+                            <?php 
+                            if ($field == 'Alerte') 
+                            {
+                                if ($fp[$field] == "")
+                                {
+                                    echo '<button class="btn btn-xs">I</button><button class="btn btn-xs">A</button><button class="btn btn-xs">D</button>';
+
+                                }
+                                else
+                                {
+                                    //TODO allez chercher l'evnmet
+                                    echo $fp[$field];                                
+                                }
+                            } 
+                            else 
+                            {
+                                echo (isset($fp[$field])) ? $fp[$field] : '';
+                            }
+                            ?>
+                            </td>
+
                             <?php endforeach; ?>
                          <td id="search-results">
                             <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -99,7 +121,7 @@ $("#create-link")
     .clone(true)
     .show()
     .prependTo('.content')
-    .data('id', 5)
+    .data('id', <?php echo $cat; ?>)
     .addClass('category');
 
 

@@ -252,7 +252,6 @@ class CustomFieldService
             case 'stack':
             case 'radar':
             case 'afis':
-            case 'flightplan':
                 $type = 'Zend\Form\Element\Select';
                 break;
             case 'boolean':
@@ -282,7 +281,6 @@ class CustomFieldService
                 case 'select':
                 case 'stack':
                 case 'afis':
-                case 'flightplan':
                     $multiple = true;
                     break;
                 default:
@@ -359,25 +357,6 @@ class CustomFieldService
                     'decommissionned' => false
                 ));
                 break;
-            case 'flightplan':
-                $start = (new \DateTime())->setTime(0,0,0);
-                $end = (new \DateTime())->setTime(0,0,0)->add(new \DateInterval('P1D'));
-
-                $todayFpEvents = $this->em->getRepository('Application\Entity\Event')->getFlightPlanEvents($start, $end);
-                $value_options = [];
-
-                foreach ($todayFpEvents as $fpEvent) 
-                {
-                    foreach ($fpEvent->getCustomFieldsValues() as $value) 
-                    {
-                        if($value->getCustomField()->getName() == 'Aircraft-Id') {
-                            $value_options[$fpEvent->getId()] = $value->getValue();
-                        }
-                    }
-                }
-
-                //$value_options = $om->getRepository('Application\Entity\Event')->getFlightPlanEvents($start, $end);
-                break;
             case 'boolean':
                 break;
             default:
@@ -436,13 +415,6 @@ class CustomFieldService
                     $empty_option = "Tous les Afis.";
                 } else {
                     $empty_option = "Choisissez le terrain Afis.";
-                }
-                break;
-            case 'flightplan':
-                if ($customfield->isMultiple()) {
-                    $empty_option = "Tous les Plans de vol.";
-                } else {
-                    $empty_option = "Choisissez le plan de vol.";
                 }
                 break;
             case 'boolean':
