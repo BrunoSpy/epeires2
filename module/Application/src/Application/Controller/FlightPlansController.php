@@ -31,6 +31,7 @@ use Zend\Stdlib\Parameters;
 use Application\Services\CustomFieldService;
 use Application\Form\CustomFieldset;
 
+use Application\Entity\Organisation;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 /**
@@ -51,8 +52,12 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     }
 
     private function getCatId() {
+        return $this->getCat()->getId();
+    }
+
+    private function getCat() {
         $cat = $this->em->getRepository('Application\Entity\FlightPlanCategory')->findAll();
-        if (is_array($cat)) return end($cat)->getId();
+        if (is_array($cat)) return end($cat);
     }
 
     private function getFp($start, $end, $sar = false)
@@ -79,14 +84,22 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             $ev['id'] = $fpEvent->getId();
             foreach ($fpEvent->getCustomFieldsValues() as $value) 
             {
+
                 $namefield = $value->getCustomField()->getName();
                 $valuefield = $value->getValue();
-
+                // echo $valuefield;
+                // echo $namefield;
                 $ev[$namefield] = $valuefield;
                 if($namefield == 'Alerte') 
                 {
-                    if($sar == true && $valuefield > 0) $push = true;
-                    if($sar == false && !$valuefield) $push = true;   
+                    if($sar == true && $valuefield > 0) {
+                        $push = true;
+                        $altEv = $this->em->getRepository('Application\Entity\Event')->findOneBy(['id' => $valuefield]);
+                        foreach ($altEv->getCustomFieldsValues() as $altvalue) {
+                            $ev[$namefield] = $altvalue->getValue();
+                        } 
+                    }
+                    if($sar == false && !$valuefield) $push = true;  
                 }
             }
             if($push == true) $fpEvents[] = $ev;
@@ -129,7 +142,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ->setVariables([
                 'cat' => $this->getCatId(),
                 'fields' => $this->getFpFields(),
-                'flightplans' => $this->getFp($start, $end, true)
+                'flightplans' => $this->getFp($start, $end, true),
+                'sar' => true
             ]);
     }   
 
@@ -261,6 +275,101 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             $this->em->flush();
         }
         return new JsonModel();
+    }
+
+    public function triggerAlertAction() {
+        //if (!$this->authFlightPlans('write')) return new JsonModel();
+
+        $msgType = 'error';
+
+        $req = $this->getRequest()->getPost();
+        $id = (int) $req['id'];
+        $type = $req['type'];
+        // $id = 6;
+        // $type = "INCERFA";
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+        // echo $id;
+        // echo $type;
+
+        $fp = $this->em->getRepository(Event::class)->find($id);
+            // pour l'instant crna-x
+        $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+        // crétation de l'evenement d'alerte
+        $event = new Event();
+        $status = $this->em->getRepository('Application\Entity\Status')->find('2');
+        $impact = $this->em->getRepository('Application\Entity\Impact')->find('3');
+        $event->setStatus($status);
+        $event->setStartdate($now);
+        $event->setImpact($impact);
+        $event->setPunctual(false);
+        $event->setOrganisation($organisation);
+        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+        
+        $categories = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
+
+        if ($categories) 
+        {
+            $catalert = $categories[0];
+            $typefieldvalue = new CustomFieldValue();
+            $typefieldvalue->setCustomField($catalert->getTypeField());
+            $typefieldvalue->setValue($type);
+            $typefieldvalue->setEvent($event);
+            $event->addCustomFieldValue($typefieldvalue);
+            $event->setCategory($categories[0]);
+            $this->em->persist($typefieldvalue);
+            //on ajoute les valeurs des champs persos
+            if (isset($post['custom_fields'])) {
+                foreach ($post['custom_fields'] as $key => $value) {
+                    // génération des customvalues si un customfield dont le nom est $key est trouvé
+                    $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                        'id' => $key
+                    ));
+                    if ($customfield) {
+                        if (is_array($value)) {
+                            $temp = "";
+                            foreach ($value as $v) {
+                                $temp .= (string) $v . "\r";
+                            }
+                            $value = trim($temp);
+                        }
+                        $customvalue = new CustomFieldValue();
+                        $customvalue->setEvent($event);
+                        $customvalue->setCustomField($customfield);
+                        $event->addCustomFieldValue($customvalue);
+                        
+                        $customvalue->setValue($value);
+                        $this->em->persist($customvalue);
+                    }
+                }
+            }
+            //et on sauve le tout
+            $this->em->persist($event);
+            try {
+                $this->em->flush();
+                foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
+                {
+                    if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
+                    {
+                        echo $event->getId();
+                        $customfieldvalue->setValue($event->getId());
+                        $this->em->persist($customfieldvalue);
+                        // $this->em->flush();
+                    }
+                }
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Alerte créée.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        } else {
+            $msg = "Impossible de créer l'alerte, pas de catégorie alerte créée.";
+        }
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);
     }
 
     private function validateFlightPlan($params) 

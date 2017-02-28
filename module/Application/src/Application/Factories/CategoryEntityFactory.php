@@ -532,9 +532,10 @@ class CategoryEntityFactory
         $alertfield->setTooltip("");
         $alertfield->setCategory($fpcat);
         $alertfield->setName('Alerte');
+        $alertfield->setMultiple(false);
         $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
-                'type' => 'alert'
+                'type' => 'string'
             )));
 
         $fpcat->setFieldname($aircraftidfield);

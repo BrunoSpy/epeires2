@@ -1,7 +1,7 @@
 var flightplan = function(url){
     "use strict";
     //$('tr').draggable().click(modFpHandler);
-
+    var idEvent = 0;
     var $iDate = $('#i-date');
     //TODO BOF
     var isSar = window.location.href.search('sar');
@@ -12,6 +12,19 @@ var flightplan = function(url){
     $("#btn-add-fp").click(function() {
         $("#title-edit-fp").html("Suivi du Vol");
         loadFpForm();
+    });
+
+    $(".a-trig-alt").click(function() {
+        $('#s-trig-alt').html($(this).data('type'));
+        $('#s-trig-airid').html($(this).data('air-id'));
+        idEvent = $(this).data('id');
+    });
+
+    $('#a-trig-alt-ok').click(function() {
+        $.post(url+'flightplans/triggerAlert', {id: idEvent, type: $('#s-trig-alt').html()}, function(){
+            
+        }, 'json');      
+        $('#mdl-trig-alt').modal('hide');
     });
 
     $iDate

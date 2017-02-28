@@ -3,10 +3,10 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeli
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
-$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan.css');
 ?>
-
 
 <?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
     <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
@@ -49,7 +49,10 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                     <thead>
                         <tr>
                         <?php foreach ($fields as $field) : ?>
-                        <?php echo '<th>'.$field.'</th>' ?>
+                        <?php 
+                            // if ($field == 'Alerte' && isset($sar)) continue;
+                            echo '<th>'.$field.'</th>';
+                        ?>
                         <?php endforeach; ?>
                         <th></th>
                         </tr>    
@@ -58,21 +61,23 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                         <?php foreach ($flightplans as $fp) : ?>
                         <tr>
                             <?php foreach ($fields as $field) : ?>
-
                             <td>
                             <?php 
+                            if ($field == 'Aircraft-Id') $airId = $fp[$field];
                             if ($field == 'Alerte') 
                             {
-                                if ($fp[$field] == "")
+                                $actInc = '';
+                                $actAle = '';
+                                $actDet = '';
+                                switch ($fp[$field]) 
                                 {
-                                    echo '<button class="btn btn-xs">I</button><button class="btn btn-xs">A</button><button class="btn btn-xs">D</button>';
-
+                                    case 'INCERFA':     $actInc = 'active-alt'; break;
+                                    case 'ALERTFA':     $actAle = 'active-alt'; break;
+                                    case 'DETRESSFA':   $actDet = 'active-alt'; break;    
+                                    default: break;
                                 }
-                                else
-                                {
-                                    //TODO allez chercher l'evnmet
-                                    echo $fp[$field];                                
-                                }
+                                echo 
+                                '<a class="a-trig-alt '.$actInc.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-air-id="'.$airId.'" data-type="INCERFA" data-toggle="modal"><button class="btn btn-xs btn-info">I</button></a><a class="a-trig-alt '.$actAle.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="ALERTFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-warning">A</button></a><a class="a-trig-alt '.$actDet.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="DETRESSFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-danger">D</button>';
                             } 
                             else 
                             {
@@ -80,11 +85,11 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                             }
                             ?>
                             </td>
-
                             <?php endforeach; ?>
-                         <td id="search-results">
-                            <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-                        </td>
+
+                            <td id="search-results">
+                                <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -108,6 +113,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
                         null, 
                         "<p>Voulez-vous vraiment supprimer le vol <em><span id ='s-del-fp-airid'></span></em> ?</p>",
                         "<a class='btn btn-danger' id='a-del-fp-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
+<?=$this->modalwindow(  "mdl-trig-fp",
+                        "<h3>Déclencher une alerte ?</h3>",
+                        "", 
+                        null, 
+                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p>",
+                        "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
 <?php $this->inlineScript()->captureStart(); ?>
