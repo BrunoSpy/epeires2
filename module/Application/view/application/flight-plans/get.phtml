@@ -1,10 +1,10 @@
 <thead>
 	<tr>
 	<?php foreach ($fields as $field) : ?>
-		<th><?php echo $field; ?></th>
+		<th <?php echo ($field == 'Aircraft-Id') ? 'data-sort="string"' : ''; ?>><?php echo $field; ?></th>
 	<?php endforeach; ?>
 
-		<th></th>
+		<th>Modifier</th>
 	</tr>
 </thead>
 
@@ -38,7 +38,7 @@
 	    </td>
 	    <?php endforeach; ?>
 
-	    <td id="search-results">
+	    <td id="list-fp">
 	        <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
 	    </td>
 	</tr>

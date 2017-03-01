@@ -3,12 +3,12 @@ var flightplan = function(url){
     //$('tr').draggable().click(modFpHandler);
     var idEvent = 0;
     var $iDate = $('#i-date');
+    var $tableFp = $('.panel-body table');
     //TODO BOF
     var isSar = window.location.href.search('sar');
     if(isSar == -1) isSar = 0; else isSar = 1;
 
-    $('.panel-body table').load(url + 'flightplans/get', {sar : isSar});
-
+    $tableFp.load(url + 'flightplans/get', {sar : isSar});
 
     refreshActionButtons();
 
@@ -40,7 +40,7 @@ var flightplan = function(url){
         })
         .change(function() {
             var date = moment($(this).val(), "DD/MM/YYYY").format("MM/DD/YYYY");
-            $("#list-fp").load(url+'flightplans/list', {date: date, sar: isSar}, function() {
+            $tableFp.load(url+'flightplans/get', {date: date, sar: isSar}, function() {
                 refreshActionButtons();
             });
         })
