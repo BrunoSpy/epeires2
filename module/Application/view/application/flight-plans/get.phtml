@@ -1,0 +1,46 @@
+<thead>
+	<tr>
+	<?php foreach ($fields as $field) : ?>
+		<th><?php echo $field; ?></th>
+	<?php endforeach; ?>
+
+		<th></th>
+	</tr>
+</thead>
+
+<tbody id = "list-fp">
+<?php foreach ($flightplans as $fp) : ?>
+	<tr>
+	    <?php foreach ($fields as $field) : ?>
+	    <td>
+	    <?php 
+	    if ($field == 'Aircraft-Id') $airId = $fp[$field];
+	    if ($field == 'Alerte') 
+	    {
+	        $actInc = '';
+	        $actAle = '';
+	        $actDet = '';
+	        switch ($fp[$field]) 
+	        {
+	            case 'INCERFA':     $actInc = 'active-alt'; break;
+	            case 'ALERTFA':     $actAle = 'active-alt'; break;
+	            case 'DETRESSFA':   $actDet = 'active-alt'; break;    
+	            default: break;
+	        }
+	        echo 
+	        '<a class="a-trig-alt '.$actInc.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-air-id="'.$airId.'" data-type="INCERFA" data-toggle="modal"><button class="btn btn-xs btn-info">I</button></a><a class="a-trig-alt '.$actAle.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="ALERTFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-warning">A</button></a><a class="a-trig-alt '.$actDet.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="DETRESSFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-danger">D</button>';
+	    } 
+	    else 
+	    {
+	        echo (isset($fp[$field])) ? $fp[$field] : '';
+	    }
+	    ?>
+	    </td>
+	    <?php endforeach; ?>
+
+	    <td id="search-results">
+	        <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+	    </td>
+	</tr>
+<?php endforeach; ?>
+</tbody>

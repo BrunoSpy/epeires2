@@ -7,6 +7,9 @@ var flightplan = function(url){
     var isSar = window.location.href.search('sar');
     if(isSar == -1) isSar = 0; else isSar = 1;
 
+    $('.panel-body table').load(url + 'flightplans/get', {sar : isSar});
+
+
     refreshActionButtons();
 
     $("#btn-add-fp").click(function() {

@@ -47,8 +47,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         parent::__construct($em);
         $this->em = $this->getEntityManager();
         $this->cf = $cf;
-        //$this->repo = $this->em->getRepository(FlightPlan::class);
-        //$this->form = (new AnnotationBuilder())->createForm(FlightPlan::class);
     }
 
     private function getCatId() {
@@ -62,20 +60,9 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
     private function getFp($start, $end, $sar = false)
     {
-
-        // $crit = new Criteria();
-        // $expr = Criteria::expr();
-
-        // $crit->where(
-        //     $expr->andX(
-        //         $expr->lt('created_on', $end),
-        //         $expr->gt('created_on', $start)
-        //     )
-        // );
-
         $allFpEvents = $this->em->getRepository('Application\Entity\Event')->getFlightPlanEvents($start, $end);
         $fpEvents = [];
-
+        var_dump($sar);
         foreach ($allFpEvents as $fpEvent) 
         {
             $push = false;
@@ -87,8 +74,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
                 $namefield = $value->getCustomField()->getName();
                 $valuefield = $value->getValue();
-                // echo $valuefield;
-                // echo $namefield;
+
                 $ev[$namefield] = $valuefield;
                 if($namefield == 'Alerte') 
                 {
@@ -103,14 +89,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 }
             }
             if($push == true) $fpEvents[] = $ev;
-            // $afisField = $afisEvent->getCategory()->getAfisfield();
-            // foreach ($afisEvent->getCustomFieldsValues() as $value) 
-            // {
-            //     if ($value->getCustomField()->getId() == $afisField->getId()) 
-            //     {
-            //         if ($value->getValue() == $id) $afisEvents[] = $afisEvent;
-            //     }
-            // }
         }
         return $fpEvents;
     }
@@ -119,14 +97,10 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     {
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
-        $start = (new DateTime())->setTime(0,0,0);
-        $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
-
         return (new ViewModel())
             ->setVariables([
                 'cat' => $this->getCatId(),
-                'fields' => $this->getFpFields(),
-                'flightplans' => $this->getFp($start, $end)
+                // 'flightplans' => $this->getFp($start, $end)
             ]);
     }
     
@@ -134,20 +108,16 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     {
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
-        $start = (new DateTime())->setTime(0,0,0);
-        $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
-
         return (new ViewModel())
             ->setTemplate('application/flight-plans/index')
             ->setVariables([
                 'cat' => $this->getCatId(),
-                'fields' => $this->getFpFields(),
-                'flightplans' => $this->getFp($start, $end, true),
+                // 'flightplans' => $this->getFp($start, $end, true),
                 'sar' => true
             ]);
     }   
 
-    private function getFpFields() {
+    private function getFields() {
         $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(['category' => $this->getCatId()]);
         $fields = [];
         foreach ($cf as $c) {
@@ -156,27 +126,28 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         return $fields;
     }
 
-    public function listAction() 
+    public function getAction() 
     {
         $post = $this->getRequest()->getPost();
         
-        $start = new DateTime($post['date']);
-        $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
+        if (isset($post['date'])) {
+            $start = new DateTime($post['date']); 
+            $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
+        } else {
+            $start = (new DateTime())->setTime(0,0,0);
+            $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+        }
 
-        // $crit = new Criteria();
-        // $expr = Criteria::expr();
-
-        // if($post['sar']) $crit->where($expr->gt('typealerte', 0));
-        // else $crit->where($expr->eq('typealerte', 0));
+        $flightplans = (isset($post['sar']) && $post['sar'] == '1') ? $this->getFp($start, $end, true) : $this->getFp($start, $end);
 
         return 
             (new ViewModel())
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
-                    'fields' => $this->getFpFields(),
-                    'flightplans' => $this->getFp($start, $end)
-            ]);
-    }
+                    'fields' => $this->getFields(),
+                    'flightplans' => $flightplans
+                ]);
+    }   
 
     public function formAction()
     {
