@@ -535,7 +535,7 @@ class CategoryEntityFactory
         $alertfield->setMultiple(false);
         $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
-                'type' => 'string'
+                'type' => 'alert'
             )));
 
         $fpcat->setFieldname($aircraftidfield);

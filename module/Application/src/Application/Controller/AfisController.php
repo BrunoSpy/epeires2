@@ -257,7 +257,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function formAction()
     {
-        if (!$this->authAfis('read')) return new JsonModel();
+
 
         $id = intval($this->getRequest()->getPost()['id']);
         $afis = ($id) ? $this->repo->find($id) : new Afis();
@@ -272,8 +272,8 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function switchafisAction()
     {
-        // $messages = array();
-        // if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if (!$this->authAfis('read')) return new JsonModel();
+        $msgType = "error";
 
         $post = $this->getRequest()->getPost();
         $state = (boolean) $post['state'];
@@ -282,7 +282,6 @@ class AfisController extends AbstractEntityManagerAwareController
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
 
-        $msgType = "error";
         if ($id) 
         {
             $events = $this->em
