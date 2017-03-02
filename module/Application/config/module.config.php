@@ -232,10 +232,6 @@ return array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
             ),
-            'flightplans.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de gèrer des plans de vol'
-            )
         ),
         'SAR Balises' => array(
             'sarbeacons.read' => array(

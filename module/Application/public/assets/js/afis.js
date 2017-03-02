@@ -113,6 +113,7 @@ var afis = function(url) {
         ;
     // $("#list-afis");
 
+    $fEditAf.on('submit', submitHandler);
     refresh();
 
     function refresh() {
@@ -271,7 +272,6 @@ var afis = function(url) {
                     });
                 }
             });
-            $fEditAf.on('submit', submitHandler);
         });
     };
 
