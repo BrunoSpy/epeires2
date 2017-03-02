@@ -1,3 +1,8 @@
+<?php 
+if (count($flightplans) == 0) echo "Pas de plan de vol pour cette journée.";
+else {
+?> 
+
 <thead>
 	<tr>
 	<?php foreach ($fields as $field) : ?>
@@ -14,24 +19,29 @@
 	<tr>
 	    <?php foreach ($fields as $field) : ?>
 	    <td>
-	    <?php 
+	    <?php
 	    if ($field == 'Aircraft-Id') $airId = $fp[$field];
 	    if ($field == 'Alerte') 
 	    {
-	        $actInc = '';
-	        $actAle = '';
-	        $actDet = '';
-	        switch ($fp[$field]) 
-	        {
-	            case 'INCERFA':     $actInc = 'active-alt'; break;
-	            case 'ALERTFA':     $actAle = 'active-alt'; break;
-	            case 'DETRESSFA':   $actDet = 'active-alt'; break;    
-	            default: break;
-	        }
-	        echo 
-	        '<a class="a-trig-alt '.$actInc.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-air-id="'.$airId.'" data-type="INCERFA" data-toggle="modal"><button class="btn btn-xs btn-info">I</button></a><a class="a-trig-alt '.$actAle.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="ALERTFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-warning">A</button></a><a class="a-trig-alt '.$actDet.'" href="#mdl-trig-fp" data-id="'.$fp['id'].'" data-type="DETRESSFA" data-air-id="'.$airId.'" data-toggle="modal"><button class="btn btn-xs btn-danger">D</button>';
+	    	$tAlertes = ['INCERFA', 'ALERTFA', 'DETRESSFA'];
+	    	$bAlertes = ['info', 'warning', 'danger'];
+
+	    	foreach ($tAlertes as $index => $alt) 
+	    	{
+	    		$act = '';
+				$title = (isset($fp['Cause'])) ? $fp['Cause'] : '';
+	    		if(isset($fp['Type']) && $alt == $fp['Type']) {
+	    			
+	    			$act = 'active-alt';
+	    		} 	
+		    	?>
+		        <a title="<?php echo $title; ?>"" class="a-trig-alt <?php echo $act; ?>" href="#mdl-trig-fp" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-toggle="modal">
+		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
+		        </a>
+	        <?php
+	    	}
 	    } 
-	    else 
+	    else
 	    {
 	        echo (isset($fp[$field])) ? $fp[$field] : '';
 	    }
@@ -43,7 +53,11 @@
 	    </td>
 
 	    <td>
-	    	<?php echo (isset($fp['end_date'])) ? $fp['end_date']->format('H:i') : ''; ?>
+	    	<?php if (isset($fp['end_date'])) : ?>
+	    	<?php echo $fp['end_date']->format('H:i'); ?>
+	    	<?php else: ?>
+	    	<a class="a-trig-end" data-id="<?php echo $fp['id']; ?>" href="#">clore</a>
+	    	<?php endif; ?>
 	    </td>
 	    <td id="list-fp">
 	        <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -51,3 +65,6 @@
 	</tr>
 <?php endforeach; ?>
 </tbody>
+<?php 
+} 
+?>

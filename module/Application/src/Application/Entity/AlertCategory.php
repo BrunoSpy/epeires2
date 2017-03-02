@@ -30,6 +30,11 @@ class AlertCategory extends Category
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
      */
+    protected $causefield;
+
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
     protected $typefield;
 
     public function getTypeField()
@@ -40,5 +45,15 @@ class AlertCategory extends Category
     public function setTypefield($typefield)
     {
         $this->typefield = $typefield;
+    }
+
+    public function getCauseField()
+    {
+        return $this->causefield;
+    }
+    
+    public function setCauseField($causefield)
+    {
+        $this->causefield = $causefield;
     }
 }

@@ -24,9 +24,13 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
     </div>
 <?php endif; ?>
 
+
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
+            <?php if($cat == 0): ?>
+            <p class="text-warning">Aucun catégorie Plan de vol n'existe, impossible de continuer.</p>
+            <?php endif; ?>
             <div class="panel-heading">
                 <div>
                     <a href="#" id="a-date-back">
@@ -72,7 +76,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         "<h3>Déclencher une alerte ?</h3>",
                         "", 
                         null, 
-                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p>",
+                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p><textarea id = 't-causealt'></textarea>" ,
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
@@ -82,14 +86,17 @@ $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-$("#create-link")
-    .hide()
-    .clone(true)
-    .show()
-    .prependTo('.content')
-    .data('id', <?php echo $cat; ?>)
-    .addClass('category');
-
+if (<?php echo $cat; ?> == 0) {
+    $("#create-link").hide();
+} else {
+    $("#create-link")
+        .hide()
+        .clone(true)
+        .show()
+        .prependTo('.content')
+        .data('id', <?php echo $cat; ?>)
+        .addClass('category');
+}
 
 $("#changeview").remove();
 

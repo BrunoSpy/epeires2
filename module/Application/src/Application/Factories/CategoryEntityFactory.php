@@ -567,22 +567,31 @@ class CategoryEntityFactory
         $alertcat = new AlertCategory();
         $typefield = new CustomField();
         $typefield->setPlace(1);
-        $typefield->setDefaultValue("INCERFA\nALERTFA\nDETRESSFA");
+        $typefield->setDefaultValue("");
         $typefield->setTooltip("");
         $typefield->setCategory($alertcat);
-        $typefield->setName('Type d\'alerte');
+        $typefield->setName('Type');
         $typefield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
-                'type' => 'select'
+                'type' => 'string'
             )));
-        // si aucune cat par défaut --> nouvelle catégorie par défaut
-        // $cats = $em->getRepository('Application\Entity\AlertCategory')->findBy(array(
-        //     'defaultalertcategory' => true
-        // ));
-        // $alertcat->setDefaultAlertCategory((count($cats) == 0));
+
+        $causefield = new CustomField();
+        $causefield->setPlace(2);
+        $causefield->setDefaultValue("");
+        $causefield->setTooltip("");
+        $causefield->setCategory($alertcat);
+        $causefield->setName('Cause');
+        $causefield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'text'
+            )));
+
         $alertcat->setTypeField($typefield);
-        
+        $alertcat->setCauseField($causefield);
+
         $em->persist($typefield);
+        $em->persist($causefield);
         return $alertcat;
     }
 }

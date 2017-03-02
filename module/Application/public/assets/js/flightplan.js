@@ -14,7 +14,7 @@ var flightplan = function(url) {
         $('#mdl-trig-fp').modal('hide');
         $.post(
             url+'flightplans/triggerAlert', 
-            {id: idEvent, type: $('#s-trig-alt').html()}, 
+            {id: idEvent, type: $('#s-trig-alt').html(), cause: $('#t-causealt').val()}, 
             function (data) {
                 refresh();
                 noty({
@@ -29,15 +29,40 @@ var flightplan = function(url) {
 
     function refresh() 
     {
-        $('.a-trig-alt').remove();
+        $('.a-trig-alt .a-trig-end').remove();
+
         $tableFp.load(url+'flightplans/get', {date: globdate, sar: isSar}, function() 
         {
-            $(".a-trig-alt").click(function() {
+            var $btnAlts = $(".a-trig-alt");
+            // $.each($btnAlts, function() {
+            //     if ($(this).hasClass('active-alt')) {
+            //         $(this).tooltip();
+            //         return false;
+            //     }
+            // });
+
+            $btnAlts.click(function() {
                 $('#s-trig-alt').html($(this).data('type'));
                 $('#s-trig-airid').html($(this).data('air-id'));
+                $('#t-causealt').val($(this).data('original-title'));
                 idEvent = $(this).data('id');
+            }).tooltip();
+
+            $('.a-trig-end').click(function() {
+                $.post(
+                    url+'flightplans/end', 
+                    {id: $(this).data('id')}, 
+                    function (data) {
+                        refresh();
+                        noty({
+                            text: data.msg,
+                            type: data.type,
+                            timeout: 4000,
+                        });
+                    }
+                );    
             });
-        });     
+        });    
     }
 
     $iDate
