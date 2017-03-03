@@ -90,6 +90,10 @@
     							href="<?php echo $this->url('administration', array('controller'=>'radars', 'action'=>'index'))?>"
     							data-title="Centres > Radars">Radars</a>
     						</li>
+                            <li>
+                                <a 
+                                href="<?php echo $this->url('administration', array('controller'=> 'afis', 'action' => 'index'))?>" data-title="Centres > Afis">Afis</a>
+                            </li>
     					</ul>
     				</li>
                     <?php endif; ?>
@@ -168,13 +172,6 @@
     						<?php endif;?>
     					</ul>
     				</li>
-                    <?php endif;?>
-
-                    <?php if($this->isGranted('admin.afis')) : ?>
-                    <li>
-                        <a 
-                        href="<?php echo $this->url('administration', array('controller'=> 'afis', 'action' => 'index'))?>"">Afis</a>
-                    </li>
                     <?php endif;?>
 				</ul>
 			</div>

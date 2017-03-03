@@ -109,7 +109,6 @@ return array(
             'block' => 'Application\View\Helper\Block',
             'sector' => 'Application\View\Helper\Sector',
             'afViewHelper' => 'Application\View\Helper\AfisHelper',
-            'fpViewHelper' => 'Application\View\Helper\FlightPlanHelper',
             'sbViewHelper' => 'Application\View\Helper\SarBeaconsHelper',
         ),
         'factories' => array(
@@ -129,11 +128,8 @@ return array(
         'exception_template' => 'error/index',
         'template_map' => array(
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-            'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index.phtml',
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
             'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
-            'fp/helper/fp' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
             'sar-beacons/helper/ip' => __DIR__ . '/../view/application/sar-beacons/helpers/interrogation-plan.phtml',
         ),
         'template_path_stack' => array(
@@ -230,20 +226,12 @@ return array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Afis'
             ),
-            'afis.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de modifier les afis'
-            )
         ),
         'Gestion PLN' => array(
             'flightplans.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
             ),
-            'flightplans.write' => array(
-                'name' => 'Ecriture',
-                'description' => 'Permet de gèrer des plans de vol'
-            )
         ),
         'SAR Balises' => array(
             'sarbeacons.read' => array(

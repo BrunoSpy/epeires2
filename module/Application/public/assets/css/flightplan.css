@@ -1,0 +1,15 @@
+.a-trig-alt:hover {
+	text-decoration: none;
+}
+
+.a-trig-alt button {
+    padding:0;
+    margin:0;
+    margin-left:2px;
+    border:1px;
+    opacity:0.25;
+}
+
+.active-alt button{
+    opacity:1;
+}
