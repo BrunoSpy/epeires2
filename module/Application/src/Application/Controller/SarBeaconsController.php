@@ -28,6 +28,9 @@ use Core\Controller\AbstractEntityManagerAwareController;
 
 use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
+use Application\Entity\Organisation;
+use Application\Entity\Event;
+use Application\Entity\CustomFieldValue;
 
 use Zend\Mail\Message;
 use Zend\Mail\Transport\Smtp;
@@ -41,17 +44,17 @@ use Zend\Mime\Message as MimeMessage;
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    private $em, $repo, $viewpdfrenderer, $config, $form;
+    private $em, $viewpdfrenderer, $config;
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
-        $this->repo = $this->em->getRepository(InterrogationPlan::class);
+        // $this->repo = $this->em->getRepository(InterrogationPlan::class);
 
         $this->viewpdfrenderer = $viewpdfrenderer;
         $this->config = $config;
-        $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
+        // $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
 
@@ -60,25 +63,112 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!$this->authSarBeacons('read')) return new JsonModel();
     }
 
-    public function formAction() 
-    {
+    public function startAction() {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
+        $msgType = 'error';
+
         $post = $this->getRequest()->getPost();
-        $id = intval($post['id']);
 
-        $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
 
-        $iP->setLatitude($post['lat']);
-        $iP->setLongitude($post['lon']);     
-        $this->form->bind($iP);
+        $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+        // crétation de l'evenement d'alerte
+        $event = new Event();
+        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+        $event->setStartdate($now);
+        $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+        $event->setPunctual(false);
+        $event->setOrganisation($organisation);
+        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
 
-        return (new ViewModel())
-            ->setTerminal($this->getRequest()->isXmlHttpRequest())
-            ->setVariables([
-                'form' => $this->form
-            ]);
+        $categories = $this->em->getRepository('Application\Entity\InterrogationPlanCategory')->findAll();
+
+        if ($categories) 
+        {
+            $intplancat = $categories[0];
+            $event->setCategory($intplancat);
+
+            $typefieldvalue = new CustomFieldValue();
+            $typefieldvalue->setCustomField($intplancat->getTypeField());
+            $typefieldvalue->setValue('PIO');
+            $typefieldvalue->setEvent($event);
+            $event->addCustomFieldValue($typefieldvalue);
+            $this->em->persist($typefieldvalue);
+
+            $latfieldvalue = new CustomFieldValue();
+            $latfieldvalue->setCustomField($intplancat->getLatField());
+            $latfieldvalue->setValue($post['lon']);
+            $latfieldvalue->setEvent($event);
+            $event->addCustomFieldValue($latfieldvalue);
+            $this->em->persist($latfieldvalue);
+
+            $longfieldvalue = new CustomFieldValue();
+            $longfieldvalue->setCustomField($intplancat->getLongField());
+            $longfieldvalue->setValue($post['lon']);
+            $longfieldvalue->setEvent($event);
+            $event->addCustomFieldValue($longfieldvalue);
+            $this->em->persist($longfieldvalue);
+
+            if (isset($post['custom_fields'])) {
+                foreach ($post['custom_fields'] as $key => $value) {
+                    // génération des customvalues si un customfield dont le nom est $key est trouvé
+                    $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                        'id' => $key
+                    ));
+                    if ($customfield) {
+                        if (is_array($value)) {
+                            $temp = "";
+                            foreach ($value as $v) {
+                                $temp .= (string) $v . "\r";
+                            }
+                            $value = trim($temp);
+                        }
+                        $customvalue = new CustomFieldValue();
+                        $customvalue->setEvent($event);
+                        $customvalue->setCustomField($customfield);
+                        $event->addCustomFieldValue($customvalue);
+                        
+                        $customvalue->setValue($value);
+                        $this->em->persist($customvalue);
+                    }
+                }
+            }
+            //et on sauve le tout
+            $this->em->persist($event);
+            try {
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Plan d'interrogation démarré.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        }
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);
     }
+    // public function formAction() 
+    // {
+    //     if (!$this->authSarBeacons('read')) return new JsonModel();
+
+    //     $post = $this->getRequest()->getPost();
+    //     $id = intval($post['id']);
+
+    //     $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
+
+    //     $iP->setLatitude($post['lat']);
+    //     $iP->setLongitude($post['lon']);     
+    //     $this->form->bind($iP);
+
+    //     return (new ViewModel())
+    //         ->setTerminal($this->getRequest()->isXmlHttpRequest())
+    //         ->setVariables([
+    //             'form' => $this->form
+    //         ]);
+    // }
 
     public function listAction() 
     {

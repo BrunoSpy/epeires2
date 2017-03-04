@@ -41,7 +41,8 @@ use Doctrine\Common\Collections\Collection;
  * "mil" = "MilCategory",
  * "afis" = "AfisCategory",
  * "flightplan" = "FlightPlanCategory",
- * "alert" = "AlertCategory"})
+ * "alert" = "AlertCategory",
+ * "intplan" = "InterrogationPlanCategory"})
  *
  * Catégorie d'évènements.
  * Peut avoir une catégorie parente.
@@ -193,6 +194,7 @@ class Category
         $type['mil'] = "Zone militaire";
         $type['afis'] = "AFIS";
         $type['flightplan'] = "Plan de vol";
+        $type['intplan'] = "Plan d'interrogation";
         $type['alert'] = "Alerte";
         return $type;
     }

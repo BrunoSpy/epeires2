@@ -582,12 +582,12 @@
     $bMailIp.click(mailIp);
     $aHist.click(aHistHandler);
     /* Boutons d'action */
-    var listBtn = new ListBtn();
-    listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
-    // On enregistre des tableaux d'etat pour les boutons, l'etat d'index 0 étant l'état initiale
-    listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
-    listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
-    listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
+    // var listBtn = new ListBtn();
+    // listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
+    // // On enregistre des tableaux d'etat pour les boutons, l'etat d'index 0 étant l'état initiale
+    // listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
+    // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
+    // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
@@ -856,6 +856,14 @@
         centerMap(latLon, true);
         refreshIp();
 
+        $.post(url + 'sarbeacons/start', {lat: latLon[1], lon: latLon[0]}, function(data) {
+            noty({
+                text: data['msg'],
+                type: data['type'],
+                timeout: 4000,
+            });    
+        })
+
         intPlan = new IntPlan(latLon, starttime);
         intPlan.setList(fields);
 
@@ -920,7 +928,7 @@
             $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
             $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
 
-            listBtn.setStates();
+            // listBtn.setStates();
 
             $fEditIp.find('input').val('');
             $fEditIp.find('li').remove();

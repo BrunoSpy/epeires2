@@ -34,6 +34,7 @@ use Application\Entity\BrouillageCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
+use Application\Entity\InterrogationPlanCategory;
 use Application\Entity\AlertCategory;
 
 /**
@@ -163,6 +164,8 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('afis');
                 } elseif ($category instanceof AlertCategory) {
                     $form->get('type')->setValue('alert');
+                } elseif ($category instanceof InterrogationPlanCategory) {
+                    $form->get('type')->setValue('intplan');
                 } elseif ($category instanceof FlightPlanCategory) {
                     $form->get('type')->setValue('flightplan');
                 }                
@@ -225,6 +228,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createAlertCategory();
                 } elseif ($post['type'] == 'flightplan') {
                     $category = $this->categoryFactory->createFlightPlanCategory();
+                } elseif ($post['type'] == 'intplan') {
+                    $category = $this->categoryFactory->createInterrogationPlanCategory();
                 } elseif ($post['type'] == 'mil') {
                     $category = $this->categoryFactory->createMilCategory();
                 } else {

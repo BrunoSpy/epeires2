@@ -28,12 +28,6 @@ use Zend\Form\Annotation;
  */
 class FlightPlanCategory extends Category
 {
-    CONST CLASS_ALERTS = [
-        "",
-        "info",
-        "warning",
-        "danger"
-    ];
     /**
      * @ORM\Column(type="boolean")
      */

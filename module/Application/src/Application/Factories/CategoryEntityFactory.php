@@ -26,6 +26,7 @@ use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
 use Application\Entity\AlertCategory;
+use Application\Entity\InterrogationPlanCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -593,5 +594,66 @@ class CategoryEntityFactory
         $em->persist($typefield);
         $em->persist($causefield);
         return $alertcat;
+    }
+
+    public function createInterrogationPlanCategory()
+    {
+        $em = $this->getEntityManager();
+        $intplancat = new InterrogationPlanCategory();
+        $typefield = new CustomField();
+        $typefield->setPlace(1);
+        $typefield->setDefaultValue("PIO\nPIA");
+        $typefield->setTooltip("");
+        $typefield->setCategory($intplancat);
+        $typefield->setName('Type');
+        $typefield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'select'
+            )));
+
+        $latfield = new CustomField();
+        $latfield->setPlace(2);
+        $latfield->setDefaultValue("");
+        $latfield->setTooltip("");
+        $latfield->setCategory($intplancat);
+        $latfield->setName('Latitude');
+        $latfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $longfield = new CustomField();
+        $longfield->setPlace(3);
+        $longfield->setDefaultValue("");
+        $longfield->setTooltip("");
+        $longfield->setCategory($intplancat);
+        $longfield->setName('Longitude');
+        $longfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $alertfield = new CustomField();
+        $alertfield->setPlace(4);
+        $alertfield->setDefaultValue("");
+        $alertfield->setTooltip("");
+        $alertfield->setCategory($intplancat);
+        $alertfield->setName('Alerte');
+        $alertfield->setMultiple(false);
+        $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'alert'
+            )));
+
+        $intplancat->setTypeField($typefield);
+        $intplancat->setLatField($latfield);
+        $intplancat->setLongField($longfield);
+        $intplancat->setAlertField($alertfield);
+
+        $em->persist($typefield);
+        $em->persist($latfield);
+        $em->persist($longfield);
+        $em->persist($alertfield);
+        return $intplancat;
     }
 }
