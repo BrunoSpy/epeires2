@@ -17,40 +17,43 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
         </ul>
 
         <div id="tabs-1">
-            <h4>Recherche par coordonnées</h4>
+            <h4>Coordonnées de l'alerte</h4>
             <div class="row">
                 <div class="col-sm-5 form-group has-error">
                     <input id="inp-lat" type="search" class="form-control" placeholder="Lat" />
-                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                     <span class="raz-coord cache glyphicon glyphicon-remove-circle"></span>
                 </div>
                 <div class="col-sm-5 form-group has-error">
                     <input id="inp-lon" type="text" class="form-control" placeholder="Lon" />
-                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
-                </div>
-                <div class="col-sm-2">
-                    <button id="btn-rech-coo" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
+                     <span class="raz-coord cache glyphicon glyphicon-remove-circle"></span>
                 </div>
             </div>
-            <h4>Recherche par Balise</h4>
+            <div class="row">
+                <button id="btn-rech-coo" type="button" class="btn btn-warning disabled" href="#mdl-start-ip" data-toggle="modal">Démarrer le plan d'interrogation</span></button>
+            </div>
+            <h4>Balises</h4>
             <div class="row">
                 <div class="col-sm-10 form-group has-error">
                     <input id="inp-bal" type="text" class="form-control"  placeholder="ex : 'OKIPA'" />
-                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                     <span class="raz-bal cache glyphicon glyphicon-remove-circle"></span>
                 </div>
-                <div class="col-sm-2">
+  <!--               <div class="col-sm-2">
                     <button id="btn-rech-bal" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
-                </div>
+                </div> -->
             </div>
-            <h4>Recherche par Terrain</h4>
+            <h4>Terrains</h4>
             <div class="row">
                 <div class="col-sm-10 form-group has-error">
                     <input id="inp-ter" type="text" class="form-control" placeholder="ex : 'LFH464'" />
-                     <span class="raz-cherche cache glyphicon glyphicon-remove-circle"></span>
+                     <span class="raz-ter cache glyphicon glyphicon-remove-circle"></span>
                 </div>
-                <div class="col-sm-2">
+<!--                 <div class="col-sm-2">
                     <button id="btn-rech-ter" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
-                </div>
+                </div> -->
             </div>
+<!--             <div class="row">
+                <button id="btn-trig-alt" type="button" class="btn btn-primary disabled">Démarrer le plan d'interrogation</button>
+            </div> -->
         </div>
         <div id="tabs-2">
             <h4>Résultats</h4>
@@ -100,6 +103,15 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
                         "<h3 id='title-edit-ip'></h3>", 
                         "", 
                         "<div id='f-edit-ip'></div>")
+                        ?>
+
+<?=$this->modalWindow(  "mdl-start-ip", 
+                        "<h3 id='title-start-ip'>Démarrer un plan d'interrogation</h3>", 
+                        "",
+                        null,
+                        "<div id='f-start-ip'></div>",
+                        "<a class='btn btn-danger' id='a-start-ip-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") 
                         ?>
 
 <?php $this->inlineScript()->captureStart();?>

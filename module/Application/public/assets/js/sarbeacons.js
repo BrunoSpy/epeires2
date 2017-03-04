@@ -374,9 +374,9 @@
         MAX_LAT = 90;
     /* centrage par defaut */
     const DFLT_LAT_LNG = [48.8534100, 2.3488000],
-        DFLT_ZOOM = 7;
+        DFLT_ZOOM = 8;
     /* niveau de zoom lors d'un PI */
-    const PIO_ZOOM = 8;
+    const PIO_ZOOM = 9;
     /* image du marqueur représentant le lieu de l'alerte */
     const URL_IMG = url + 'assets/img/orbit/',
         IMG_PIO = URL_IMG + 'marker-pio.png';
@@ -551,7 +551,8 @@
             });
         })
         /** Evenements **/
-    $('.raz-cherche').click(resetSearches);
+    $('.raz-coord').click(resetCoord);
+    $('.raz-bal, .raz-ter').click(resetBal);
 
     $iLat.keyup(keyPressedLat);
     $iLon.keyup(keyPressedLon);
@@ -588,11 +589,15 @@
     // listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
+    $('#a-start-ip-ok').click(function() {
+        triggerIp([$iLat.val(), $iLon.val()]);
+        $("#mdl-start-ip").modal('hide');
+    });
 
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
-        var coord = [e.latlng.lat, e.latlng.lng];
-        triggerIp(coord);
+        refreshCoord([e.latlng.lat, e.latlng.lng]);
+        setCoord([e.latlng.lat, e.latlng.lng]);
     });
 
     setMapButtons();
@@ -600,6 +605,15 @@
     function centerMap(latLon=DFLT_LAT_LNG, zoom=DFLT_ZOOM) {
         if (zoom == true) zoom = orbit.getZoom();
         orbit.setView(latLon, zoom);
+    }
+
+    function updateMarker(marker, latLon, icon, popuphtml ="") {
+        if (!(marker === undefined)) orbit.removeLayer(marker);
+        marker = L.marker(latLon);
+        marker.bindPopup(popuphtml);
+        if (icon) marker.setIcon(icon);
+        orbit.addLayer(marker);
+        return marker;
     }
 
     function setMapButtons() {
@@ -670,6 +684,21 @@
 
     }
 
+    function refreshCoord(coord) 
+    {
+        centerMap(coord, true);
+        mkSAR = updateMarker(mkSAR, coord, icSAR);
+        mkSAR.bindPopup('<h4>Latitude : ' + coord[0] + '</h5><h4>Longitude : '+coord[1]+'</h4>');
+        btnCenterSar._button.latLon = coord;
+        btnCenterSar.addTo(orbit);
+    }
+
+    function setCoord(coord) 
+    {
+        $iLat.val(coord[0].toFixed(4)).trigger('keyup');
+        $iLon.val(coord[1].toFixed(4)).trigger('keyup');
+    }
+
     function aHistHandler(e) {
         if (!$listIp.children('a').length) loadListIp();
     }
@@ -689,12 +718,25 @@
         ($raz.prev().val() == '') ? $raz.addClass('cache'): $raz.removeClass('cache');
     }
 
-    function resetSearches() {
+    function resetCoord() {
         $(this).addClass('cache')
             .prev().val('')
             .parent().addClass('has-error');
 
-        editBtnState($(this).closest('.row').find('button'), 0);
+            // console.log($(this).closest('.row'));
+        editBtnState($bRecC, 0);
+    }
+
+    function resetBal() {
+        $(this).addClass('cache')
+            .prev().val('')
+            .parent().addClass('has-error');
+
+        $iLat.val('').trigger('keyup');
+        $iLon.val('').trigger('keyup');
+        editBtnState($bRecC, 0);
+        orbit.removeLayer(mkSAR);
+        // orbit.removeLayer(btnCenterSar);
     }
 
     /** fn recherche par coordonnées **/
@@ -712,6 +754,7 @@
         var lat = validateLat(),
             lon = validateLon();
         if (lat && lon) {
+            refreshCoord([lat,lon]);
             editBtnState($bRecC, 1);
             (key.keyCode == '13') ? $bRecC.trigger('click'): '';
         } else
@@ -746,7 +789,7 @@
 
     function findByCoord(e) {
         if (!$(this).hasClass('btn-warning')) {
-            triggerIp([$iLat.val(), $iLon.val()]);
+            // triggerIp([$iLat.val(), $iLon.val()]);
         }
     };
 
@@ -773,15 +816,17 @@
             editBtnState($bRecB, 0);
         } else {
             $(this).parent().removeClass('has-error');
-            editBtnState($bRecB, 1);
+            // editBtnState($bRecB, 1);
 
             var coord = beacons[iBal].geometry.coordinates;
-            $(this).data('latLon', [coord[1], coord[0]]);
+            refreshCoord([coord[1], coord[0]]);
+            setCoord([coord[1], coord[0]]);
+            // $(this).data('latLon', [coord[1], coord[0]]);
 
-            if (e.keyCode == '13') {
-                $(this).autocomplete('close');
-                $bRecB.trigger('click');
-            }
+            // if (e.keyCode == '13') {
+            //     $(this).autocomplete('close');
+            //     $bRecB.trigger('click');
+            // }
         }
     };
 
@@ -822,12 +867,14 @@
             editBtnState($bRecT, 1);
 
             var coord = fields[iTer].geometry.coordinates;
-            $(this).data('latLon', [coord[1], coord[0]]);
+            refreshCoord([coord[1], coord[0]]);
+            setCoord([coord[1], coord[0]]);
+            //$(this).data('latLon', [coord[1], coord[0]]);
 
-            if (e.keyCode == '13') {
-                $(this).autocomplete('close');
-                $bRecT.trigger('click');
-            }
+            // if (e.keyCode == '13') {
+            //     $(this).autocomplete('close');
+            //     $bRecT.trigger('click');
+            // }
         }
     };
 
@@ -916,10 +963,10 @@
         $tabs.tabs("option", "active", 1);
         $tabs.find('.nav-pills>li').eq(1).trigger('click');
 
-        mkSAR = updateMarker(mkSAR, latLon, icSAR);
-        mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
-        btnCenterSar._button.latLon = latLon;
-        btnCenterSar.addTo(orbit);
+        // mkSAR = updateMarker(mkSAR, latLon, icSAR);
+        // mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
+        // btnCenterSar._button.latLon = latLon;
+        // btnCenterSar.addTo(orbit);
 
         function refreshIp() {
             $carIndic.find('li').remove();
@@ -992,14 +1039,6 @@
             .bindPopup(popuphtml);
         }
 
-        function updateMarker(marker, latLon, icon, popuphtml ="") {
-            if (!(marker === undefined)) orbit.removeLayer(marker);
-            marker = L.marker(latLon);
-            marker.bindPopup(popuphtml);
-            if (icon) marker.setIcon(icon);
-            orbit.addLayer(marker);
-            return marker;
-        }
     }
 
     function activateSavBtn() {

@@ -74,12 +74,19 @@ body,
 #btn-rech-ter,
 .btn-action-ip {
     margin: 0;
+    margin-left:25px;
     margin-bottom: 20px;
     padding: 10px;
     display: inline-block;
 }
 
-.raz-cherche,
+#btn-trig-alt {
+    margin-left:25px;
+}
+
+.raz-coord,
+.raz-bal,
+.raz-ter,
 .btn-del-field {
     position: absolute;
     right: 5px;
