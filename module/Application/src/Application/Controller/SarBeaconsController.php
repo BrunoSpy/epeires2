@@ -32,6 +32,8 @@ use Application\Entity\Organisation;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 
+use Zend\Form\Element;
+use Zend\Form\Form;
 use Zend\Mail\Message;
 use Zend\Mail\Transport\Smtp;
 use Zend\Mail\Transport\SmtpOptions;
@@ -50,11 +52,9 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
-        // $this->repo = $this->em->getRepository(InterrogationPlan::class);
 
         $this->viewpdfrenderer = $viewpdfrenderer;
         $this->config = $config;
-        // $this->form = (new AnnotationBuilder())->createForm(InterrogationPlan::class);
     }
 
 
@@ -63,13 +63,14 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!$this->authSarBeacons('read')) return new JsonModel();
     }
 
-    public function startAction() {
+    public function startAction() 
+    {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
         $msgType = 'error';
 
         $post = $this->getRequest()->getPost();
-
+        echo $post['id'];
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
 
@@ -78,7 +79,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $event = new Event();
         $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
         $event->setStartdate($now);
-        $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+        $event->setImpact($this->em->getRepository('Application\Entity\Impacts')->find('3'));
         $event->setPunctual(false);
         $event->setOrganisation($organisation);
         $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
@@ -92,14 +93,14 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
             $typefieldvalue = new CustomFieldValue();
             $typefieldvalue->setCustomField($intplancat->getTypeField());
-            $typefieldvalue->setValue('PIO');
+            $typefieldvalue->setValue($post['type']);
             $typefieldvalue->setEvent($event);
             $event->addCustomFieldValue($typefieldvalue);
             $this->em->persist($typefieldvalue);
 
             $latfieldvalue = new CustomFieldValue();
             $latfieldvalue->setCustomField($intplancat->getLatField());
-            $latfieldvalue->setValue($post['lon']);
+            $latfieldvalue->setValue($post['lat']);
             $latfieldvalue->setEvent($event);
             $event->addCustomFieldValue($latfieldvalue);
             $this->em->persist($latfieldvalue);
@@ -111,7 +112,49 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $event->addCustomFieldValue($longfieldvalue);
             $this->em->persist($longfieldvalue);
 
-            if (isset($post['custom_fields'])) {
+            $alertcats = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
+
+            if ($alertcats) 
+            {
+                $alertcat = $alertcats[0];
+                $alertevent = new Event();
+                $alertevent->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+                $alertevent->setStartdate($now);
+                $alertevent->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+                $alertevent->setPunctual(false);
+                $alertevent->setOrganisation($organisation);
+                $alertevent->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                $alertevent->setCategory($alertcat);
+
+                $typealertfieldvalue = new CustomFieldValue();
+                $typealertfieldvalue->setCustomField($alertcat->getTypeField());
+                $typealertfieldvalue->setValue($post['typealerte']);
+                $typealertfieldvalue->setEvent($alertevent);
+                $alertevent->addCustomFieldValue($typealertfieldvalue);
+                $this->em->persist($typealertfieldvalue);
+
+                $causefieldvalue = new CustomFieldValue();
+                $causefieldvalue->setCustomField($alertcat->getCauseField());
+                $causefieldvalue->setValue($post['cause']);
+                $causefieldvalue->setEvent($alertevent);
+                $alertevent->addCustomFieldValue($causefieldvalue);
+                $this->em->persist($causefieldvalue);
+                try 
+                {
+                    $this->em->flush();
+                    $alertfieldvalue = new CustomFieldValue();
+                    $alertfieldvalue->setCustomField($intplancat->getAlertField());
+                    $alertfieldvalue->setValue($alertevent->getId());
+                    $alertfieldvalue->setEvent($event);
+                    $event->addCustomFieldValue($alertfieldvalue);
+                    $this->em->persist($alertfieldvalue);
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
+                }
+            }
+
+            if (isset($post['custom_fields'])) 
+            {
                 foreach ($post['custom_fields'] as $key => $value) {
                     // génération des customvalues si un customfield dont le nom est $key est trouvé
                     $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
@@ -150,41 +193,120 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             'msg' => $msg
         ]);
     }
-    // public function formAction() 
-    // {
-    //     if (!$this->authSarBeacons('read')) return new JsonModel();
 
-    //     $post = $this->getRequest()->getPost();
-    //     $id = intval($post['id']);
+    public function formAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
 
-    //     $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+        if ($id > 0) {
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            if ($ip) 
+            {
+                $formval = [];
+                foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
+                {
+                    $formval[$customfieldvalue->getCustomField()->getName()] = $customfieldvalue->getValue();
+                } 
+                if ($formval['Alerte']) {
+                    $alt = $this->em->getRepository(Event::class)->find($formval['Alerte']);
+                    if ($alt) 
+                    {
+                        $formval['Alerte'] = [];
+                        foreach ($alt->getCustomFieldsValues() as $customfieldvalue) 
+                        {
+                            $formval['Alerte'][$customfieldvalue->getCustomField()->getName()] = $customfieldvalue->getValue();
+                        }   
+                    }
+                }  
+            }
+        }
+        $form = new Form('sarbeacons');
 
-    //     $iP->setLatitude($post['lat']);
-    //     $iP->setLongitude($post['lon']);     
-    //     $this->form->bind($iP);
+        $idfield = new Element\Hidden('id');
+        (isset($id)) ? $idfield->setValue($id):null;
+        $form->add($idfield);
 
-    //     return (new ViewModel())
-    //         ->setTerminal($this->getRequest()->isXmlHttpRequest())
-    //         ->setVariables([
-    //             'form' => $this->form
-    //         ]);
-    // }
+        $lat = new Element\Text('lat');
+        $lat->setLabel('Latitude');
+        (isset($formval['Latitude'])) ? $lat->setValue($formval['Latitude']):null;
+        $form->add($lat);
+
+        $lon = new Element\Text('lon');
+        $lon->setLabel('Longitude');
+        (isset($formval['Longitude'])) ? $lon->setValue($formval['Longitude']):null;
+        $form->add($lon);
+
+        $type = new Element\Select('type');
+        $type->setLabel('Type');
+        $type->setValueOptions([
+            'PIO' => 'PIO',
+            'PIA' => 'PIA'
+        ]);
+        (isset($formval['Type'])) ? $type->setValue($formval['Type']):null;
+        $form->add($type);
+
+        $typealerte = new Element\Select('typealerte');
+        $typealerte->setLabel('Type d\'alerte');
+        $typealerte->setValueOptions([
+            'INCERFA' => 'INCERFA',
+            'ALERTFA' => 'ALERTFA',
+            'DETRESSFA' => 'DETRESSFA', 
+        ]);
+        (isset($formval['Alerte']['Type'])) ? $typealerte->setValue($formval['Alerte']['Type']):null;
+        $form->add($typealerte);
+
+        $cause = new Element\Textarea('cause');
+        $cause->setLabel('Raison');
+        (isset($formval['Alerte']['Cause'])) ? $cause->setValue($formval['Alerte']['Cause']):null;
+        $form->add($cause);
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'form' => $form
+            ]);
+    }
 
     public function listAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
+        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents();
+
+        $intPlans = [];
+
+        foreach ($allIntPlans as $ipEvent) {
+            $ev = [
+                'id' => $ipEvent->getId(),
+                'start_date' => $ipEvent->getStartDate(),
+            ];
+
+            foreach ($ipEvent->getCustomFieldsValues() as $value) 
+            {
+                $namefield = $value->getCustomField()->getName();
+                $valuefield = $value->getValue();
+                $ev[$namefield] = $valuefield;
+                if($namefield == 'Alerte') 
+                {
+                    if($valuefield > 0) {
+                        $ev[$namefield] = [];
+                        $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
+                        foreach ($altEv->getCustomFieldsValues() as $altvalue) {
+                            $ev[$namefield][$altvalue->getCustomField()->getName()] = $altvalue->getValue();
+                        } 
+                    }  
+                }
+            }
+            $intPlans[] = $ev;
+        }
+
+
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'intPlans' => $this->repo
-                    ->getBy([
-                        'where' => [],
-                        'order' => [
-                            'startTime' => 'DESC'
-                        ],
-                        'limit' => 5
-                    ])
+                'intPlans' => array_reverse($intPlans)
             ]);
     }
     // TODO BOF BOF

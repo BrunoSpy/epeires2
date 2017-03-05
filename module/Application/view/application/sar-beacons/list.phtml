@@ -1,5 +1,42 @@
 <?php
+	$class_alert = [
+		'INCERFA' => 'info',
+		'ALERTFA' => 'warning',
+		'DETRESSFA' => 'danger'
+	];
+?>
 
-foreach ($intPlans as $iP) 
-    echo $this->sbViewHelper()->renderIp($iP);
+<?php $i = 0; ?>
+<?php foreach ($intPlans as $ip) : ?>
+
+<a data-id="<?php echo $ip['id']; ?>" class="list-group-item list-group-item-<?php echo $class_alert[$ip['Alerte']['Type']]; ?>">
+    <h1 class="list-group-item-heading"><?php echo $ip['start_date']->format('d-m-Y H:i:s') ?></h1>
+    <div class = "list-ip-content <?php echo ($i>0)?cache:''; ?>">
+        <p class="list-group-item-text">Latitude: <?php echo $ip['Latitude']?></p>
+        <p class="list-group-item-text">Longitude: <?php echo $ip['Longitude']?></p>
+        <p class="list-group-item-text">Type : <?php echo $ip['Type']?></p>
+		<p class="list-group-item-text">Alerte : <?php echo $ip['Alerte']['Type'] ?></p>
+        <!-- <h3 class="list-group-item-heading">Alerte</h3> -->
+        <p class="list-group-item-text comment">Cause : <?php echo $ip['Alerte']['Cause'] ?></p>
+
+        <button href="#mdl-start-ip" data-toggle="modal" class = "btn btn-sm btn-primary btn-edit-ip">
+        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+        Modifier
+        </button>
+
+        <button class = "btn btn-sm btn-primary btn-print-ip">
+        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+        Imprimer
+        </button>
+
+        <button class = "btn btn-sm btn-primary btn-print-ip">
+        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+        Courriel
+        </button>
+
+    </div>
+</a>
+<?php $i++; ?>
+<?php endforeach; ?>
+    // echo $this->sbViewHelper()->renderIp($iP);
 

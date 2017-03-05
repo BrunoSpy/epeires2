@@ -474,7 +474,7 @@
 
         $fIp = $('#f-ip'),
         $bSavIp = $('#btn-sav-ip'),
-        $bEditIp = $('#btn-edit-ip'),
+        $bEditIp = $('.btn-edit-ip'),
         $bPrintIp = $('#btn-print-ip'),
         $bMailIp = $('#btn-mail-ip'),
 
@@ -589,6 +589,7 @@
     // listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
+
     $('#a-start-ip-ok').click(function() {
         triggerIp([$iLat.val(), $iLon.val()]);
         $("#mdl-start-ip").modal('hide');
@@ -788,7 +789,12 @@
     }
 
     function findByCoord(e) {
-        if (!$(this).hasClass('btn-warning')) {
+        if (!$(this).hasClass('btn-warning')) 
+        {
+            $('#f-start-ip').load(url + 'sarbeacons/form', function (data) {
+                $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
+                $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
+            });
             // triggerIp([$iLat.val(), $iLon.val()]);
         }
     };
@@ -903,7 +909,7 @@
         centerMap(latLon, true);
         refreshIp();
 
-        $.post(url + 'sarbeacons/start', {lat: latLon[1], lon: latLon[0]}, function(data) {
+        $.post(url + 'sarbeacons/start', {type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: latLon[1], lon: latLon[0]}, function(data) {
             noty({
                 text: data['msg'],
                 type: data['type'],
@@ -1052,6 +1058,7 @@
     }
 
     function btnEditIpHandler(e) {
+        console.log($(this));
         e.preventDefault();
         if ($(this).hasClass('disabled')) return false;
         $('#title-edit-ip').html("Editer le Plan d'Interrogation");
@@ -1166,7 +1173,16 @@
     }
 
     function loadListIp() {
-        $listIp.load(url + 'sarbeacons/list', function() {
+        $listIp.load(url + 'sarbeacons/list', function() 
+        {
+            $('.btn-edit-ip').click(function() {
+                var id = $(this).parents('a').data('id');
+                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) {
+                    // $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
+                    // $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
+                });
+            });
+
             $.each($listIp.find('a'), function() {
                 var id = $(this).data().id;
                 $(this).click(function(e) {

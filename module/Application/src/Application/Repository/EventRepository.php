@@ -466,6 +466,16 @@ class EventRepository extends ExtendedRepository
         
         return $query->getResult();
     }
+
+    public function getIntPlanEvents()
+    {
+        $qbEvents = $this->getQueryEvents();
+        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\InterrogationPlanCategory');
+        
+        $query = $qbEvents->getQuery();
+        
+        return $query->getResult();
+    }
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 
