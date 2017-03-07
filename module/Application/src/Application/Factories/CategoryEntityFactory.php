@@ -483,30 +483,8 @@ class CategoryEntityFactory
                 'type' => 'string'
             )));
     
-        // $typeavionfield = new CustomField();
-        // $typeavionfield->setPlace(2);
-        // $typeavionfield->setDefaultValue("");
-        // $typeavionfield->setTooltip("");
-        // $typeavionfield->setCategory($fpcat);
-        // $typeavionfield->setName('Type avion');
-        // $typeavionfield->setType($em->getRepository('Application\Entity\CustomFieldType')
-        //     ->findOneBy(array(
-        //         'type' => 'string'
-        //     )));
-    
-        $destinationfield = new CustomField();
-        $destinationfield->setPlace(4);
-        $destinationfield->setDefaultValue("");
-        $destinationfield->setTooltip("");
-        $destinationfield->setCategory($fpcat);
-        $destinationfield->setName('Terrain de destination');
-        $destinationfield->setType($em->getRepository('Application\Entity\CustomFieldType')
-            ->findOneBy(array(
-                'type' => 'string'
-            )));
-    
         $startfield = new CustomField();
-        $startfield->setPlace(3);
+        $startfield->setPlace(2);
         $startfield->setDefaultValue("");
         $startfield->setTooltip("");
         $startfield->setCategory($fpcat);
@@ -515,7 +493,18 @@ class CategoryEntityFactory
             ->findOneBy(array(
                 'type' => 'string'
             )));
-    
+
+        $destinationfield = new CustomField();
+        $destinationfield->setPlace(3);
+        $destinationfield->setDefaultValue("");
+        $destinationfield->setTooltip("");
+        $destinationfield->setCategory($fpcat);
+        $destinationfield->setName('Terrain de destination');
+        $destinationfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
         $estimatedtimeofarrivalfield = new CustomField();
         $estimatedtimeofarrivalfield->setPlace(5);
         $estimatedtimeofarrivalfield->setDefaultValue("");
@@ -528,12 +517,11 @@ class CategoryEntityFactory
             )));
 
         $alertfield = new CustomField();
-        $alertfield->setPlace(6);
+        $alertfield->setPlace(5);
         $alertfield->setDefaultValue("");
         $alertfield->setTooltip("");
         $alertfield->setCategory($fpcat);
         $alertfield->setName('Alerte');
-        $alertfield->setMultiple(false);
         $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
                 'type' => 'alert'
@@ -541,7 +529,6 @@ class CategoryEntityFactory
 
         $fpcat->setFieldname($aircraftidfield);
         $fpcat->setAircraftidfield($aircraftidfield);
-        // $fpcat->setTypeavionfield($typeavionfield);
         $fpcat->setDestinationfield($destinationfield);
         $fpcat->setStartfield($startfield);
         $fpcat->setAlertfield($alertfield);
@@ -554,11 +541,10 @@ class CategoryEntityFactory
         $fpcat->setDefaultFlightPlanCategory((count($cats) == 0));
     
         $em->persist($aircraftidfield);
-        // $em->persist($typeavionfield);
-        $em->persist($destinationfield);
         $em->persist($startfield);
-        $em->persist($alertfield);
+        $em->persist($destinationfield);
         $em->persist($estimatedtimeofarrivalfield);
+        $em->persist($alertfield);
         return $fpcat;
     }
 
@@ -588,6 +574,7 @@ class CategoryEntityFactory
                 'type' => 'text'
             )));
 
+        $alertcat->setFieldname($typefield);
         $alertcat->setTypeField($typefield);
         $alertcat->setCauseField($causefield);
 
@@ -639,12 +626,12 @@ class CategoryEntityFactory
         $alertfield->setTooltip("");
         $alertfield->setCategory($intplancat);
         $alertfield->setName('Alerte');
-        $alertfield->setMultiple(false);
         $alertfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
                 'type' => 'alert'
             )));
 
+        $intplancat->setFieldname($typefield);
         $intplancat->setTypeField($typefield);
         $intplancat->setLatField($latfield);
         $intplancat->setLongField($longfield);

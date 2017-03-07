@@ -181,7 +181,22 @@ class CustomFieldService
                         $name = $af->getName();
                     }
                 }
-                break;  
+                break;
+
+            // case 'alert':
+            //     $alt = $this->em->getRepository('Application\Entity\Event')->find($fieldvalue);
+            //     if ($alt) 
+            //     {
+            //         $cat = $alt->getCategory();
+            //         foreach($alt->getCustomFieldValues() as $value) 
+            //         {
+            //             if ($value->getCustomField()->getId() == $cat->getTypeField()) 
+            //             {
+            //                 $name = $value->getValue();
+            //             }
+            //         }
+            //     } 
+            //     break;
             case 'boolean':
                 $name = ($fieldvalue ? "Oui" : "Non");
                 break;
@@ -238,7 +253,8 @@ class CustomFieldService
     public function getZendType(\Application\Entity\CustomFieldType $customfieldtype)
     {
         $type = null;
-        switch ($customfieldtype->getType()) {
+        switch ($customfieldtype->getType()) 
+        {
             case 'string':
                 $type = 'Zend\Form\Element\Text';
                 break;

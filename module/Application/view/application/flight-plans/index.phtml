@@ -80,6 +80,14 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
+<?=$this->modalwindow(  "mdl-end-fp",
+                        "<h3>Clore <span id = 's-end-airid'></span></h3>",
+                        "", 
+                        null, 
+                        "<input type='datetime' name='end-date'></input>",
+                        "<a class='btn btn-danger' id='a-end-fp-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
 <?php $this->inlineScript()->captureStart(); ?>
 
 $("#home").removeClass("dropdown-toggle")

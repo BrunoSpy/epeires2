@@ -49,73 +49,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $this->em = $this->getEntityManager();
         $this->cf = $cf;
     }
-
-    private function getCatId() {
-        $cat = $this->getCat();
-        return (is_a($cat, FlightPlanCategory::class)) ? $cat->getId() : 0;
-    }
-
-    private function getCat() {
-        $cat = $this->em->getRepository(FlightPlanCategory::class)->findAll();
-        return (is_array($cat)) ? end($cat) : null;
-    }
-
-    private function getFp($start, $end, $sar = false)
-    {
-        $allFpEvents = $this->em->getRepository(Event::class)->getFlightPlanEvents($start, $end);
-        $fpEvents = [];
-
-        foreach ($allFpEvents as $fpEvent) 
-        {
-            $push = false;
-            $cat = $fpEvent->getCategory();
-            $ev = [
-                'id' => $fpEvent->getId(),
-                'start_date' => $fpEvent->getStartDate(),
-                'end_date' => $fpEvent->getEndDate()
-            ];
-            foreach ($fpEvent->getCustomFieldsValues() as $value) 
-            {
-                $namefield = $value->getCustomField()->getName();
-                $valuefield = $value->getValue();
-                $ev[$namefield] = $valuefield;
-
-                if($namefield == 'Alerte') 
-                {
-                    if($sar == true && $valuefield > 0) {
-                        $push = true;
-                        $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        foreach ($altEv->getCustomFieldsValues() as $altvalue) {
-                            $ev[$altvalue->getCustomField()->getName()] = $altvalue->getValue();
-                        } 
-                    }
-                    if($sar == false && !$valuefield) $push = true;  
-                }
-            }
-            if($push == true) $fpEvents[] = $ev;
-        }
-        return $fpEvents;
-    }
-
-    private function getAlertIdFromFp($fp) 
-    {
-        if (is_a($fp, Event::class)) 
-        {
-            // $alertev = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-            // On va chercher l'id de l'event d'alerte
-            foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
-            {
-                // echo $this->getCat()->getAlertfield()->getId();
-                // echo $customfieldvalue->getCustomField()->getId();
-                if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
-                {
-                    $alertid = $customfieldvalue->getValue();        
-                }
-            }            
-        }
-        return $alertid;
-    }
-
+    
     public function indexAction()
     {
         if (!$this->authFlightPlans('read')) return new JsonModel();
@@ -134,7 +68,82 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ->setVariables([
                 'cat' => $this->getCatId(),
             ]);
-    }   
+    }  
+
+    private function getCatId() {
+        $cat = $this->getCat();
+        return (is_a($cat, FlightPlanCategory::class)) ? $cat->getId() : 0;
+    }
+
+    private function getCat() {
+        $cat = $this->em->getRepository(FlightPlanCategory::class)->findAll();
+        return (is_array($cat)) ? end($cat) : null;
+    }
+
+    private function getFp($start, $end, $sar = false)
+    {
+        $allFpEvents = $this->em->getRepository(Event::class)->getFlightPlanEvents($start, $end);
+        $fpEvents = [];
+        foreach ($allFpEvents as $fpEvent) 
+        {
+            $push = true;
+            $cat = $fpEvent->getCategory();
+            $ev = [
+                'id' => $fpEvent->getId(),
+                'start_date' => $fpEvent->getStartDate(),
+                'end_date' => $fpEvent->getEndDate()
+            ];
+            foreach ($fpEvent->getCustomFieldsValues() as $value) 
+            {
+                $customfield = $value->getCustomField(); 
+                $namefield = (isset($customfield)) ? $customfield->getName() : null; 
+                $valuefield = $value->getValue();
+                (isset($namefield)) ? $ev[$namefield] = $valuefield : null;
+
+                if($customfield->getId() == $cat->getAlertfield()->getId()) 
+                {
+                    if($sar == true && $valuefield > 0) {
+                        $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
+                        $ev['alert'] = [
+                            'id' => $altEv->getId(),
+                            'start_date' => $altEv->getStartDate(),
+                            'end_date' => $altEv->getEndDate()
+                        ];
+                        foreach ($altEv->getCustomFieldsValues() as $altvalue) 
+                        {
+                            $altcustomfield = $altvalue->getCustomField();
+                            $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
+                            (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
+                        } 
+                    }
+                    elseif($sar == true && !$valuefield) $push = false; 
+                    elseif($sar == false && $valuefield > 0) $push = false;
+                }
+            }
+            if($push == true) $fpEvents[] = $ev;
+        }
+        return $fpEvents;
+    }
+
+    private function getAlertIdFromFp($fp) 
+    {
+        $alertid = null;
+        if (is_a($fp, Event::class)) 
+        {
+            // $alertev = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
+            // On va chercher l'id de l'event d'alerte
+            foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
+            {
+                // echo $this->getCat()->getAlertfield()->getId();
+                // echo $customfieldvalue->getCustomField()->getId();
+                if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
+                {
+                    $alertid = $customfieldvalue->getValue();        
+                }
+            }            
+        }
+        return $alertid;
+    } 
 
     private function getFields() {
         $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(['category' => $this->getCatId()]);
@@ -169,30 +178,26 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 ]);
     }   
 
-    public function endAction() {
+    public function endAction() 
+    {
         if (!$this->authFlightPlans('read')) return new JsonModel();
         $post = $this->getRequest()->getPost();
         $msgType = 'error';
         $id = (int) $post['id'];
+        $end_date = $post['end_date'];
         if($id > 0) 
         {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
+            if (isset($end_date)) $end_date = new \DateTime($end_date);
+            else $end_date = $now;
+
             $event = $this->em->getRepository(Event::class)->find($id);
             $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
             $event->setStatus($endstatus);
-            $event->setEnddate($now);
+            $event->setEnddate($end_date);
             $this->em->persist($event);
-
-            // cloture de l'alerte si elle existe
-            $alertev = $this->em->getRepository(Event::class)->find($this->getAlertIdFromFp($event));
-            if ($alertev) 
-            {
-                $alertev->setStatus($endstatus);
-                $alertev->setEnddate($now);
-                $this->em->persist($event);
-            }
             try 
             {
                 $this->em->flush();
@@ -209,6 +214,38 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         ]);
     }
 
+    public function endAlertAction() 
+    {
+        if (!$this->authFlightPlans('read')) return new JsonModel();
+        $post = $this->getRequest()->getPost();
+        $msgType = 'error';
+        $id = (int) $post['id'];
+        if($id > 0) 
+        {
+            $now = new \DateTime('NOW');
+            $now->setTimezone(new \DateTimeZone("UTC"));
+
+            $event = $this->em->getRepository(Event::class)->find($id);
+            $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+            $event->setStatus($endstatus);
+            $event->setEnddate($now);
+            $this->em->persist($event);
+            
+            try 
+            {
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Clôture de l'alerte.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        } else $msg = "Impossible de trouver le vol.";
+
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);        
+    }
     private function authFlightPlans($action) {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('flightplans.'.$action)) ? false : true;
     }
@@ -228,19 +265,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             $fp = $this->em->getRepository(Event::class)->find($id);
             if($fp) 
             {
-                // $alertev = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-                // On va chercher l'id de l'event d'alerte
-                foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
-                {
-                    // echo $this->getCat()->getAlertfield()->getId();
-                    // echo $customfieldvalue->getCustomField()->getId();
-                    if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
-                    {
-                        $alertid = $customfieldvalue->getValue();        
-                    }
-                }            
-
-                $alertev = $this->em->getRepository(Event::class)->find($alertid);
+                $alertid = $this->getAlertIdFromFp($fp);
+                $alertev = ($alertid) ? $this->em->getRepository(Event::class)->find($alertid) : null;
                 //modification
                 if ($alertev) 
                 {

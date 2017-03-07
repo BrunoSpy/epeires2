@@ -2,11 +2,16 @@
 	text-decoration: none;
 }
 
-.a-trig-alt button {
+.a-trig-alt button, 
+.a-end-alt button, 
+.a-end-fp button{
     padding:0;
     margin:0;
     margin-left:2px;
     border:1px;
+}
+
+.a-trig-alt button {
     opacity:0.25;
 }
 

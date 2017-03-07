@@ -1,4 +1,5 @@
-var flightplan = function(url) {
+var flightplan = function(url) 
+{
     "use strict";
     //TODO voir pour editer en cliquant sur la ligne
     //$('tr').draggable().click(modFpHandler);
@@ -9,6 +10,23 @@ var flightplan = function(url) {
     //TODO BOF
     var isSar = window.location.href.search('sar');
     if(isSar == -1) isSar = 0; else isSar = 1;
+
+    $('#a-end-fp-ok').click(function()
+    {
+        $('#mdl-end-fp').modal('hide');
+        $.post(
+            url+'flightplans/end', 
+            {id: idEvent, end_date: $('input[name=end-date]').val()}, 
+            function (data) {
+                refresh();
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            }
+        )
+    });
 
     $('#a-trig-alt-ok').click(function() {
         $('#mdl-trig-fp').modal('hide');
@@ -29,7 +47,7 @@ var flightplan = function(url) {
 
     function refresh() 
     {
-        $('.a-trig-alt .a-trig-end').remove();
+        $('.a-trig-alt .a-end-fp .a-end-alt').remove();
 
         $tableFp.load(url+'flightplans/get', {date: globdate, sar: isSar}, function() 
         {
@@ -48,9 +66,21 @@ var flightplan = function(url) {
                 idEvent = $(this).data('id');
             }).tooltip();
 
-            $('.a-trig-end').click(function() {
+            $('.a-end-fp').click(function() 
+            {
+                idEvent = $(this).data('id');
+                $('#s-end-airid').html($(this).data('air-id'));
+                $('input[name=end-date]')
+                    .timepickerform({
+                        'id':'start', 
+                        'clearable':true, 
+                        'init':true
+                    });    
+            });
+
+            $('.a-end-alt').click(function() {
                 $.post(
-                    url+'flightplans/end', 
+                    url+'flightplans/endAlert', 
                     {id: $(this).data('id')}, 
                     function (data) {
                         refresh();

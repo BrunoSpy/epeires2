@@ -8,8 +8,8 @@ else {
 	<?php foreach ($fields as $field) : ?>
 		<th <?php echo ($field == 'Aircraft-Id') ? 'data-sort="string"' : ''; ?>><?php echo $field; ?></th>
 	<?php endforeach; ?>
-		<th>Début</th>
-		<th>Fin</th>
+		<th>Départ</th>
+		<th>Arrivée</th>
 		<th></th>
 	</tr>
 </thead>
@@ -23,7 +23,7 @@ else {
 	    if ($field == 'Aircraft-Id') $airId = $fp[$field];
 	    if ($field == 'Alerte') 
 	    {
-	    	$tAlertes = ['INCERFA', 'ALERTFA', 'DETRESSFA'];
+	    	$tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
 	    	$bAlertes = ['info', 'warning', 'danger'];
 
 	    	foreach ($tAlertes as $index => $alt) 
@@ -39,6 +39,17 @@ else {
 		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
 		        </a>
 	        <?php
+	    	}
+	    	if (isset($fp['Type'])) { 
+	    		if (!isset($fp['alert']['end_date'])) { 
+	    		?>
+	    		<a class="a-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
+	    		<?php 
+	    		} else {
+	    		?>
+	    		<a class="a-end-alt"><button class="btn btn-xs btn-primary" disabled>CLOS</button></a>
+	    		<?php
+	    		} 	    		
 	    	}
 	    } 
 	    else
@@ -56,7 +67,7 @@ else {
 	    	<?php if (isset($fp['end_date'])) : ?>
 	    	<?php echo $fp['end_date']->format('H:i'); ?>
 	    	<?php else: ?>
-	    	<a class="a-trig-end" data-id="<?php echo $fp['id']; ?>" href="#">clore</a>
+	    	<a class="a-end-fp" href="#mdl-end-fp" data-air-id="<?php echo $airId; ?>" data-toggle="modal" data-id="<?php echo $fp['id']; ?>" href="#"><button class="btn btn-xs btn-primary">CLORE PLN</button></a>
 	    	<?php endif; ?>
 	    </td>
 	    <td id="list-fp">
