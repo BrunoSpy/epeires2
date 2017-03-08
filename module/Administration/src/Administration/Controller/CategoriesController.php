@@ -35,6 +35,7 @@ use Application\Entity\MilCategory;
 use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
 use Application\Entity\InterrogationPlanCategory;
+use Application\Entity\FieldCategory;
 use Application\Entity\AlertCategory;
 
 /**
@@ -166,6 +167,8 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('alert');
                 } elseif ($category instanceof InterrogationPlanCategory) {
                     $form->get('type')->setValue('intplan');
+                } elseif ($category instanceof FieldCategory) {
+                    $form->get('type')->setValue('field');
                 } elseif ($category instanceof FlightPlanCategory) {
                     $form->get('type')->setValue('flightplan');
                 }                
@@ -222,6 +225,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createFrequencyCategory();
                 } elseif ($post['type'] == 'brouillage') {
                     $category = $this->categoryFactory->createBrouillageCategory();
+                } elseif ($post['type'] == 'mil') {
+                    $category = $this->categoryFactory->createMilCategory();
                 } elseif ($post['type'] == 'afis') {
                     $category = $this->categoryFactory->createAfisCategory();
                 } elseif ($post['type'] == 'alert') {
@@ -230,8 +235,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createFlightPlanCategory();
                 } elseif ($post['type'] == 'intplan') {
                     $category = $this->categoryFactory->createInterrogationPlanCategory();
-                } elseif ($post['type'] == 'mil') {
-                    $category = $this->categoryFactory->createMilCategory();
+                } elseif ($post['type'] == 'field') {
+                    $category = $this->categoryFactory->createFieldCategory();
                 } else {
                     $category = new Category();
                     $fieldname = new CustomField();

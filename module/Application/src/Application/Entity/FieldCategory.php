@@ -15,170 +15,92 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-// namespace Application\Entity;
+namespace Application\Entity;
 
-// use Doctrine\ORM\Mapping as ORM;
-// use Zend\Form\Annotation;
+use Doctrine\ORM\Mapping as ORM;
 
-// /**
-//  * @ORM\Entity(repositoryClass="Application\Repository\BtivRepository")
-//  * @ORM\Table(name="field")
-//  *
-//  * @author Loïc Perrin
-//  *        
-//  */
-// class Field
-// {
+/**
+ * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
+ * 
+ * @author Loïc Perrin
+ *        
+ */
+class FieldCategory extends Category
+{
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $namefield;
 
-//     /**
-//      * @ORM\Id
-//      * @ORM\GeneratedValue(strategy="AUTO")
-//      * @ORM\Column(type="integer")
-//      */
-//     protected $id;
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $codefield;
 
-//     /**
-//      * @ORM\Column(type="string")
-//      * @Annotation\Type("Zend\Form\Element\Text")
-//      * @Annotation\Required({"required":"true"})
-//      */
-//     protected $name;
-
-//     /**
-//      * @ORM\Column(type="string")
-//      * @Annotation\Type("Zend\Form\Element\Text")
-//      * @Annotation\Required({"required":"true"})
-//      */
-//     protected $code;
-
-//     /**
-//      * @ORM\Column(type="float")
-//      * @Annotation\Type("Zend\Form\Element\Text")
-//      * @Annotation\Required({"required":"true"})
-//      */
-//     protected $latitude;
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $latfield;
  
-//      /**
-//      * @ORM\Column(type="float")
-//      * @Annotation\Type("Zend\Form\Element\Text")
-//      * @Annotation\Required({"required":"true"})
-//      */
-//     protected $longitude;
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $longfield;
 
-//     /**
-//      * @ORM\Column(type="string")
-//      * @Annotation\Type("Zend\Form\Element\Textarea")
-//      * @Annotation\Required({"required":"false"})
-//      */
-//     protected $comment;  
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    // protected $intplanfield;
 
-//     /**
-//      * @ORM\Column(type="datetime", nullable=true)
-//      * @Annotation\Type("Zend\Form\Element\DateTime")
-//      * @Annotation\Required({"required":"true"})
-//      * @Annotation\Attributes({"class":"datetime"})
-//      */
-//     protected $intTime;
-//     /** 
-//      * @ORM\ManyToOne(targetEntity="InterrogationPlan", inversedBy="fields")
-//      * @ORM\JoinColumn(name="interplan_id", referencedColumnName="id")
-//      */
-//     protected $interrogationPlan;
 
-//     public function __construct($p) {
-//         if(is_array($p)) {
-//             foreach($p as $prop => $value) {
-//                 $this->{"set".ucfirst($prop)}($value);
-//             }
-//         }
-//     }
+    public function getNameField()
+    {
+        return $this->namefield;
+    }
 
-//     public function isValid() {
-//         if($this->name && $this->code && $this->latitude && $this->longitude && $this->intTime) return true;
-//     }
+    public function setNameField($namefield)
+    {
+        $this->namefield = $namefield;
+    }
 
-//     public function setIntTime($intTime)
-//     {
-//         if(is_a($intTime, \DateTime::class)) {
-//             $this->intTime = $intTime;
-//         } else {
-//             $this->intTime = (new \DateTime())->setTimeStamp((int) $intTime);
-//         }
-//     }
+    public function getCodeField()
+    {
+        return $this->codefield;
+    }
 
-//     public function getIntTime()
-//     {
-//         return $this->intTime;
-//     }
+    public function setCodeField($codefield)
+    {
+        $this->codefield = $codefield;
+    }
 
-//     public function setInterrogationPlan(InterrogationPlan $interrogationPlan = null)
-//     {
-//         $this->interrogationPlan = $interrogationPlan;
-//     }
+    public function getLatField()
+    {
+        return $this->latfield;
+    }
 
-//     public function getInterrogationPlan()
-//     {
-//         return $this->interrogationPlan;
-//     }
+    public function setLatField($latfield)
+    {
+        $this->latfield = $latfield;
+    }
 
-//     public function toArray()
-//     {
-//         return get_object_vars($this);
-//     }
-    
-//     public function getId()
-//     {
-//         return $this->id;
-//     }
+    public function getLongField()
+    {
+        return $this->longfield;
+    }
 
-//     public function getName()
-//     {
-//         return $this->name;
-//     }
+    public function setLongField($longfield)
+    {
+        $this->longfield = $longfield;
+    }
 
-//     public function setName($name)
-//     {
-//         $this->name = $name;
-//     }
+    // public function getIntPlanField()
+    // {
+    //     return $this->intplanfield;
+    // }
 
-//     public function getCode()
-//     {
-//         return $this->code;
-//     }
+    // public function setIntPlanField($intplanfield)
+    // {
+    //     $this->intplanfield = $intplanfield;
+    // }
 
-//     public function setCode($code)
-//     {
-//         $this->code = $code;
-//     }
-
-//     public function getLatitude()
-//     {
-//         return $this->latitude;
-//     }
-
-//     public function setLatitude($latitude)
-//     {
-//         $this->latitude = (float) $latitude;
-//     }
-
-//     public function getLongitude()
-//     {
-//         return $this->longitude;
-//     }
-
-//     public function setLongitude($longitude)
-//     {
-//         $this->longitude = (float) $longitude;
-//     }
-
-//     public function getComment()
-//     {
-//         return $this->comment;
-//     }
-
-//     public function setComment($comment)
-//     {
-//         $this->comment = $comment;
-//     }
-
-// }
+}

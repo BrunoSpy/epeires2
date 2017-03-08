@@ -30,6 +30,7 @@ use Application\Entity\InterrogationPlan;
 use Application\Entity\Field;
 use Application\Entity\Organisation;
 use Application\Entity\Event;
+use Application\Entity\EventUpdate;
 use Application\Entity\CustomFieldValue;
 
 use Zend\Form\Element;
@@ -70,128 +71,292 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $msgType = 'error';
 
         $post = $this->getRequest()->getPost();
-        echo $post['id'];
-        $now = new \DateTime('NOW');
-        $now->setTimezone(new \DateTimeZone("UTC"));
-
-        $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
-        // crétation de l'evenement d'alerte
-        $event = new Event();
-        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
-        $event->setStartdate($now);
-        $event->setImpact($this->em->getRepository('Application\Entity\Impacts')->find('3'));
-        $event->setPunctual(false);
-        $event->setOrganisation($organisation);
-        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-
-        $categories = $this->em->getRepository('Application\Entity\InterrogationPlanCategory')->findAll();
-
-        if ($categories) 
+        print_r($post);
+        $id = (int) $post['id'];
+        // modification
+        if ($id > 0) 
         {
-            $intplancat = $categories[0];
-            $event->setCategory($intplancat);
+            $idEvent = $id;
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            $cat = $ip->getCategory();
+            // $typefield = $ip->getCustomField($cat->getTypeField());
+            // $type
 
-            $typefieldvalue = new CustomFieldValue();
-            $typefieldvalue->setCustomField($intplancat->getTypeField());
-            $typefieldvalue->setValue($post['type']);
-            $typefieldvalue->setEvent($event);
-            $event->addCustomFieldValue($typefieldvalue);
-            $this->em->persist($typefieldvalue);
+            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) {
+                switch ($customfieldvalue->getId()) {
+                    case $cat->getTypeField()->getId() :
+                        $customfieldvalue->setValue($post['type']);
+                    break;
+                    case $cat->getLatField()->getId() :
+                        $customfieldvalue->setValue($post['lat']);
+                    break;
+                    case $cat->getLongField()->getId() :
+                        $customfieldvalue->setValue($post['lon']);
+                    break;
+                    default:
+                        $this->em->persist($customfieldvalue);
+                    break;
+                }
+            }
+            try {
+                $this->em->flush();
+                // $idEvent = $event->getId();
+                $msgType = 'success';
+                $msg = "Plan d'interrogation modifié.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        // création
+        } 
+        else 
+        {
+            $now = new \DateTime('NOW');
+            $now->setTimezone(new \DateTimeZone("UTC"));
 
-            $latfieldvalue = new CustomFieldValue();
-            $latfieldvalue->setCustomField($intplancat->getLatField());
-            $latfieldvalue->setValue($post['lat']);
-            $latfieldvalue->setEvent($event);
-            $event->addCustomFieldValue($latfieldvalue);
-            $this->em->persist($latfieldvalue);
+            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+            // crétation de l'evenement d'alerte
+            $event = new Event();
+            $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+            $event->setStartdate($now);
+            $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+            $event->setPunctual(false);
+            $event->setOrganisation($organisation);
+            $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
 
-            $longfieldvalue = new CustomFieldValue();
-            $longfieldvalue->setCustomField($intplancat->getLongField());
-            $longfieldvalue->setValue($post['lon']);
-            $longfieldvalue->setEvent($event);
-            $event->addCustomFieldValue($longfieldvalue);
-            $this->em->persist($longfieldvalue);
+            $categories = $this->em->getRepository('Application\Entity\InterrogationPlanCategory')->findAll();
 
-            $alertcats = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
-
-            if ($alertcats) 
+            if ($categories) 
             {
-                $alertcat = $alertcats[0];
-                $alertevent = new Event();
-                $alertevent->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
-                $alertevent->setStartdate($now);
-                $alertevent->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
-                $alertevent->setPunctual(false);
-                $alertevent->setOrganisation($organisation);
-                $alertevent->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                $alertevent->setCategory($alertcat);
+                $intplancat = $categories[0];
+                $event->setCategory($intplancat);
 
-                $typealertfieldvalue = new CustomFieldValue();
-                $typealertfieldvalue->setCustomField($alertcat->getTypeField());
-                $typealertfieldvalue->setValue($post['typealerte']);
-                $typealertfieldvalue->setEvent($alertevent);
-                $alertevent->addCustomFieldValue($typealertfieldvalue);
-                $this->em->persist($typealertfieldvalue);
+                $typefieldvalue = new CustomFieldValue();
+                $typefieldvalue->setCustomField($intplancat->getTypeField());
+                $typefieldvalue->setValue($post['type']);
+                $typefieldvalue->setEvent($event);
+                $event->addCustomFieldValue($typefieldvalue);
+                $this->em->persist($typefieldvalue);
 
-                $causefieldvalue = new CustomFieldValue();
-                $causefieldvalue->setCustomField($alertcat->getCauseField());
-                $causefieldvalue->setValue($post['cause']);
-                $causefieldvalue->setEvent($alertevent);
-                $alertevent->addCustomFieldValue($causefieldvalue);
-                $this->em->persist($causefieldvalue);
-                try 
+                $latfieldvalue = new CustomFieldValue();
+                $latfieldvalue->setCustomField($intplancat->getLatField());
+                $latfieldvalue->setValue($post['lat']);
+                $latfieldvalue->setEvent($event);
+                $event->addCustomFieldValue($latfieldvalue);
+                $this->em->persist($latfieldvalue);
+
+                $longfieldvalue = new CustomFieldValue();
+                $longfieldvalue->setCustomField($intplancat->getLongField());
+                $longfieldvalue->setValue($post['lon']);
+                $longfieldvalue->setEvent($event);
+                $event->addCustomFieldValue($longfieldvalue);
+                $this->em->persist($longfieldvalue);
+
+                $alertcats = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
+
+                if ($alertcats) 
                 {
+                    $alertcat = $alertcats[0];
+                    $alertevent = new Event();
+                    $alertevent->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+                    $alertevent->setStartdate($now);
+                    $alertevent->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+                    $alertevent->setPunctual(false);
+                    $alertevent->setOrganisation($organisation);
+                    $alertevent->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                    $alertevent->setCategory($alertcat);
+
+                    $typealertfieldvalue = new CustomFieldValue();
+                    $typealertfieldvalue->setCustomField($alertcat->getTypeField());
+                    $typealertfieldvalue->setValue($post['typealerte']);
+                    $typealertfieldvalue->setEvent($alertevent);
+                    $alertevent->addCustomFieldValue($typealertfieldvalue);
+                    $this->em->persist($typealertfieldvalue);
+
+                    $causefieldvalue = new CustomFieldValue();
+                    $causefieldvalue->setCustomField($alertcat->getCauseField());
+                    $causefieldvalue->setValue($post['cause']);
+                    $causefieldvalue->setEvent($alertevent);
+                    $alertevent->addCustomFieldValue($causefieldvalue);
+                    $this->em->persist($causefieldvalue);
+                    try 
+                    {
+                        $this->em->flush();
+                        $alertfieldvalue = new CustomFieldValue();
+                        $alertfieldvalue->setCustomField($intplancat->getAlertField());
+                        $alertfieldvalue->setValue($alertevent->getId());
+                        $alertfieldvalue->setEvent($event);
+                        $event->addCustomFieldValue($alertfieldvalue);
+                        $this->em->persist($alertfieldvalue);
+                    } catch (\Exception $e) {
+                        $msg = $e->getMessage();
+                    }
+                }
+
+                if (isset($post['custom_fields'])) 
+                {
+                    foreach ($post['custom_fields'] as $key => $value) {
+                        // génération des customvalues si un customfield dont le nom est $key est trouvé
+                        $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                            'id' => $key
+                        ));
+                        if ($customfield) {
+                            if (is_array($value)) {
+                                $temp = "";
+                                foreach ($value as $v) {
+                                    $temp .= (string) $v . "\r";
+                                }
+                                $value = trim($temp);
+                            }
+                            $customvalue = new CustomFieldValue();
+                            $customvalue->setEvent($event);
+                            $customvalue->setCustomField($customfield);
+                            $event->addCustomFieldValue($customvalue);
+                            
+                            $customvalue->setValue($value);
+                            $this->em->persist($customvalue);
+                        }
+                    }
+                }
+                //et on sauve le tout
+                $this->em->persist($event);
+                try {
                     $this->em->flush();
-                    $alertfieldvalue = new CustomFieldValue();
-                    $alertfieldvalue->setCustomField($intplancat->getAlertField());
-                    $alertfieldvalue->setValue($alertevent->getId());
-                    $alertfieldvalue->setEvent($event);
-                    $event->addCustomFieldValue($alertfieldvalue);
-                    $this->em->persist($alertfieldvalue);
+                    $idEvent = $event->getId();
+                    $msgType = 'success';
+                    $msg = "Plan d'interrogation démarré.";
                 } catch (\Exception $e) {
                     $msg = $e->getMessage();
                 }
             }
+        }
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg,
+            'id' => $idEvent
+        ]);
+    }
 
-            if (isset($post['custom_fields'])) 
+    public function addfieldAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+        $msgType = 'error';
+
+        $post = $this->getRequest()->getPost();
+        // print_r($post);
+        $id = (int) $post['id'];
+        if ($id > 0) 
+        {
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            $idfield = 0;
+            $now = new \DateTime('NOW');
+            $now->setTimezone(new \DateTimeZone("UTC"));
+
+            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+            // crétation de l'evenement d'alerte
+            $event = new Event();
+            $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+            $event->setStartdate($now);
+            $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+            $event->setPunctual(false);
+            $event->setOrganisation($organisation);
+            $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+            $event->setParent($ip);
+
+            $categories = $this->em->getRepository('Application\Entity\FieldCategory')->findAll();
+
+            if ($categories) 
             {
-                foreach ($post['custom_fields'] as $key => $value) {
-                    // génération des customvalues si un customfield dont le nom est $key est trouvé
-                    $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
-                        'id' => $key
-                    ));
-                    if ($customfield) {
-                        if (is_array($value)) {
-                            $temp = "";
-                            foreach ($value as $v) {
-                                $temp .= (string) $v . "\r";
-                            }
-                            $value = trim($temp);
-                        }
-                        $customvalue = new CustomFieldValue();
-                        $customvalue->setEvent($event);
-                        $customvalue->setCustomField($customfield);
-                        $event->addCustomFieldValue($customvalue);
-                        
-                        $customvalue->setValue($value);
-                        $this->em->persist($customvalue);
-                    }
+                $fieldcat = $categories[0];
+                $event->setCategory($fieldcat);
+
+                $namefieldvalue = new CustomFieldValue();
+                $namefieldvalue->setCustomField($fieldcat->getNameField());
+                $namefieldvalue->setValue($post['name']);
+                $namefieldvalue->setEvent($event);
+                $event->addCustomFieldValue($namefieldvalue);
+                $this->em->persist($namefieldvalue);
+
+                $codefieldvalue = new CustomFieldValue();
+                $codefieldvalue->setCustomField($fieldcat->getCodeField());
+                $codefieldvalue->setValue($post['code']);
+                $codefieldvalue->setEvent($event);
+                $event->addCustomFieldValue($codefieldvalue);
+                $this->em->persist($codefieldvalue);
+
+                $latfieldvalue = new CustomFieldValue();
+                $latfieldvalue->setCustomField($fieldcat->getLatField());
+                $latfieldvalue->setValue($post['lat']);
+                $latfieldvalue->setEvent($event);
+                $event->addCustomFieldValue($latfieldvalue);
+                $this->em->persist($latfieldvalue);
+
+                $longfieldvalue = new CustomFieldValue();
+                $longfieldvalue->setCustomField($fieldcat->getLongField());
+                $longfieldvalue->setValue($post['lon']);
+                $longfieldvalue->setEvent($event);
+                $event->addCustomFieldValue($longfieldvalue);
+                $this->em->persist($longfieldvalue);
+
+                $ip->addChild($event);
+                $this->em->persist($ip);
+                $this->em->persist($event);
+                try {
+                    $this->em->flush();
+                    $idfield = $event->getId();
+                    $msgType = 'success';
+                    $msg = "Terrain ajouté au plan d\'interrogation.";
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
                 }
-            }
-            //et on sauve le tout
-            $this->em->persist($event);
-            try {
-                $this->em->flush();
-                $msgType = 'success';
-                $msg = "Plan d'interrogation démarré.";
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
             }
         }
         return new JsonModel([
             'type' => $msgType, 
-            'msg' => $msg
+            'msg' => $msg,
+            'id' => $idfield
         ]);
+    }
+
+    public function addNoteAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+        $msgType = 'error';
+
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+        if ($id > 0) 
+        {
+            $field = $this->em->getRepository(Event::class)->find($id);
+            if ($field && strlen(trim($post['text'])) > 0) 
+            {
+                $eventupdate = new EventUpdate();
+                $eventupdate->setText($post['text']);
+                $eventupdate->setEvent($field);
+                $field->setLastModifiedOn();
+                $this->em->persist($eventupdate);
+                $this->em->persist($field);
+                try 
+                {
+                    $this->em->flush();
+                    $msgType = 'success';
+                    $msg = "Note correctement ajoutée.";
+                    // $messages['events'] = array(
+                    //     $event->getId() => $this->getEventJson($event)
+                    // );
+                } catch (\Exception $ex) {
+                    $msg = $ex->getMessage();
+                }
+            } else {
+                $msg = "Impossible d'ajouter la note (évènement non trouvé).";
+            }
+        } else {
+            $msg = "Impossible d'ajouter la note.";
+        }
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg,
+        ]);
+
     }
 
     public function formAction() 
@@ -298,6 +463,32 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                         } 
                     }  
                 }
+            }
+
+            // $a = $ipEvent->getChildren()[0];
+            // $allfields = $this->em->getRepository(Event::class)->findBy(['parent_id' => $ev['id']]);
+            // echo count($allfields);
+            foreach ($ipEvent->getChildren() as $fieldEvent)
+            {
+                $field = [
+                    'start_date' => $fieldEvent->getStartDate(),
+                    'updates' => []
+                ];
+
+                foreach ($fieldEvent->getUpdates() as $update) {
+                    $field['updates'][] = [
+                        'text' => $update->getText(),
+                        'created_on' => $update->getCreatedOn()
+                    ];
+                }
+
+                foreach ($fieldEvent->getCustomFieldsValues() as $value) 
+                {
+                    $namefield = $value->getCustomField()->getName();
+                    $valuefield = $value->getValue();
+                    $field[$namefield] = $valuefield;
+                }
+                $ev['fields'][] = $field;
             }
             $intPlans[] = $ev;
         }

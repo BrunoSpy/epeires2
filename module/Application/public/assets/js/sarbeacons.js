@@ -17,7 +17,8 @@
  var sarbeacons = function(url) {
     "use strict";
 
-    var Field = function(index, field, d, cap) {
+    var Field = function(index, field, d, cap) 
+    {
         this.index = index;
         this.field = field;
         this.coord = this.field.geometry.coordinates;
@@ -26,6 +27,7 @@
         this.cap = cap;
         this.comment = '';
         this.intTime = null;
+        // this.idEvent = null;
 
         this.toArray = function() {
             var array = {};
@@ -42,6 +44,14 @@
             if(this.coord) return this.coord;
         },
 
+        this.getLat = function() {
+            if(this.coord) return this.coord[0];
+        }
+
+        this.getLon = function() {
+            if(this.coord) return this.coord[1];
+        }
+
         this.getCode = function() {
             return this.props.code;
         },
@@ -49,6 +59,14 @@
         this.getName = function() {
             return this.props.name;
         },
+
+        // this.setIdEvent = function(id) {
+        //     this.idEvent = id;
+        // },
+
+        // this.getIdEvent = function() {
+        //     return this.idEvent;
+        // },
 
         this.setIntTime = function(time) {
             this.intTime = time;
@@ -591,7 +609,19 @@
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
     $('#a-start-ip-ok').click(function() {
-        triggerIp([$iLat.val(), $iLon.val()]);
+        var lat = $(this).data('lat');
+        var lon = $(this).data('lon');
+        if (lat && lon) {
+            triggerIp([lat, lon]);
+            $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
+                idIp = data['id'];
+                noty({
+                    text: data['msg'],
+                    type: data['type'],
+                    timeout: 4000,
+                });    
+            });
+        }
         $("#mdl-start-ip").modal('hide');
     });
 
@@ -794,6 +824,9 @@
             $('#f-start-ip').load(url + 'sarbeacons/form', function (data) {
                 $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
                 $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
+                $('#a-start-ip-ok')
+                    .data('lat', mkSAR._latlng.lat)
+                    .data('lon', mkSAR._latlng.lng);
             });
             // triggerIp([$iLat.val(), $iLon.val()]);
         }
@@ -809,7 +842,8 @@
         $(this).trigger("keyup");
     }
     /** fn recherche par beacons **/
-    function keyPressedBeacon(e) {
+    function keyPressedBeacon(e) 
+    {
         activateResetSearches($(this).next());
         var nomBal = $(this).val();
         if (!nomBal) {
@@ -905,17 +939,9 @@
     }
 
     function triggerIp(latLon, starttime = moment(), setIdIp = null) {
-        idIp = setIdIp;
+        // idIp = setIdIp
         centerMap(latLon, true);
         refreshIp();
-
-        $.post(url + 'sarbeacons/start', {type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: latLon[1], lon: latLon[0]}, function(data) {
-            noty({
-                text: data['msg'],
-                type: data['type'],
-                timeout: 4000,
-            });    
-        })
 
         intPlan = new IntPlan(latLon, starttime);
         intPlan.setList(fields);
@@ -962,7 +988,6 @@
             else $('.carousel-control.left').trigger('click');
         })
 
-
         if (pioLay) orbit.removeLayer(pioLay);
         pioLay = L.layerGroup(markersPIO).addTo(orbit);
         mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], icSel, intPlan.get(0).getPopup());
@@ -1006,6 +1031,13 @@
 
         function blurCommentHandler() {
             intPlan.get($(this).data().index).setComment($(this).val());
+            $.post(url + 'sarbeacons/addnote', {id: $(this).data('id'), text: $(this).val()}, function(data) {
+                noty({
+                    text: data['msg'],
+                    type: data['type'],
+                    timeout: 4000,
+                });    
+            });
         }
 
         function clickContactHandler() {
@@ -1026,11 +1058,20 @@
             if ($(this).hasClass('btn-danger')) {
                 $fOptCom.show();
                 intPlan.addIp($(this).data().index);
+                var field = intPlan.get($(this).data().index);
+                $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
+                    $fOptCom.find('textarea').data('id', data['id']);
+                    noty({
+                        text: data['msg'],
+                        type: data['type'],
+                        timeout: 4000,
+                    });    
+                })
             } else {
                 $fOptCom.hide();
                 intPlan.delIp($(this).data().index);
             }
-            activateSavBtn();
+            // activateSavBtn();
         }
 
         function createIpMarker(i, latlon, popuphtml) {
@@ -1177,9 +1218,15 @@
         {
             $('.btn-edit-ip').click(function() {
                 var id = $(this).parents('a').data('id');
-                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) {
-                    // $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
-                    // $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
+                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
+                {
+                    $('#title-start-ip').html('Modifier un plan d\'interrogation');
+                    idIp = id;
+                    $('#a-start-ip-ok')
+                        .data('lat', $('input[name="lat"]').val())
+                        .data('lon', $('input[name="lon"]').val());
+                    $('input[name="lat"]').prop('disabled', true);
+                    $('input[name="lon"]').prop('disabled', true);
                 });
             });
 

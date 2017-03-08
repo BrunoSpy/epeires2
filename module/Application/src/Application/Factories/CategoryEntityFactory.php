@@ -27,6 +27,7 @@ use Application\Entity\AfisCategory;
 use Application\Entity\FlightPlanCategory;
 use Application\Entity\AlertCategory;
 use Application\Entity\InterrogationPlanCategory;
+use Application\Entity\FieldCategory;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -642,5 +643,67 @@ class CategoryEntityFactory
         $em->persist($longfield);
         $em->persist($alertfield);
         return $intplancat;
+    }
+
+    public function createFieldCategory()
+    {
+        $em = $this->getEntityManager();
+        $fieldcat = new FieldCategory();
+
+        $namefield = new CustomField();
+        $namefield->setPlace(1);
+        $namefield->setDefaultValue("");
+        $namefield->setTooltip("");
+        $namefield->setCategory($fieldcat);
+        $namefield->setName('Nom');
+        $namefield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $codefield = new CustomField();
+        $codefield->setPlace(2);
+        $codefield->setDefaultValue("");
+        $codefield->setTooltip("");
+        $codefield->setCategory($fieldcat);
+        $codefield->setName('Code OACI');
+        $codefield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $latfield = new CustomField();
+        $latfield->setPlace(3);
+        $latfield->setDefaultValue("");
+        $latfield->setTooltip("");
+        $latfield->setCategory($fieldcat);
+        $latfield->setName('Latitude');
+        $latfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $longfield = new CustomField();
+        $longfield->setPlace(4);
+        $longfield->setDefaultValue("");
+        $longfield->setTooltip("");
+        $longfield->setCategory($fieldcat);
+        $longfield->setName('Longitude');
+        $longfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+            ->findOneBy(array(
+                'type' => 'string'
+            )));
+
+        $fieldcat->setFieldname($codefield);
+        $fieldcat->setNameField($namefield);
+        $fieldcat->setCodeField($codefield);
+        $fieldcat->setLatField($latfield);
+        $fieldcat->setLongField($longfield);
+
+        $em->persist($namefield);
+        $em->persist($codefield);
+        $em->persist($latfield);
+        $em->persist($longfield);
+        return $fieldcat;
     }
 }

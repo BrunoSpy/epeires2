@@ -42,7 +42,8 @@ use Doctrine\Common\Collections\Collection;
  * "afis" = "AfisCategory",
  * "flightplan" = "FlightPlanCategory",
  * "alert" = "AlertCategory",
- * "intplan" = "InterrogationPlanCategory"})
+ * "intplan" = "InterrogationPlanCategory",
+ * "field" = "FieldCategory"})
  *
  * Catégorie d'évènements.
  * Peut avoir une catégorie parente.
@@ -195,6 +196,7 @@ class Category
         $type['afis'] = "AFIS";
         $type['flightplan'] = "Plan de vol";
         $type['intplan'] = "Plan d'interrogation";
+        $type['field'] = "Terrain";
         $type['alert'] = "Alerte";
         return $type;
     }
