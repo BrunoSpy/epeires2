@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "72074da3a004bdc76d8a2ccfd4ee0c0a",
+    "content-hash": "3a992fc356d2790194d151f142f7fe07",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1167,7 +1167,7 @@
             "support": {
                 "source": "https://github.com/Kipperlenny/OpenTBSBundle/tree/master"
             },
-            "time": "2015-03-08T23:57:01+00:00"
+            "time": "2015-03-08 23:57:01"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -1388,7 +1388,7 @@
             "support": {
                 "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/master"
             },
-            "time": "2016-08-02T12:33:14+00:00"
+            "time": "2016-08-02 12:33:14"
         },
         {
             "name": "netiul/dompdf-module",
@@ -1447,7 +1447,7 @@
                 "pdf",
                 "zf2"
             ],
-            "time": "2016-04-30T08:29:02+00:00"
+            "time": "2016-04-30 08:29:02"
         },
         {
             "name": "ocramius/proxy-manager",
@@ -4582,7 +4582,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2016-07-30T13:59:10+00:00"
+            "time": "2016-07-30 13:59:10"
         },
         {
             "name": "zfcampus/zf-api-problem",
@@ -6034,7 +6034,7 @@
             "support": {
                 "source": "https://github.com/BrunoSpy/DoctrineDataFixtureModule/tree/master"
             },
-            "time": "2016-08-02T12:28:56+00:00"
+            "time": "2016-08-02 12:28:56"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6738,27 +6738,27 @@
                 "github",
                 "test"
             ],
-            "time": "2017-02-25T12:14:18+00:00"
+            "time": "2017-02-25 12:14:18"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/code-unit-reverse-lookup.git",
-                "reference": "c36f5e7cfce482fde5bf8d10d41a53591e0198fe"
+                "reference": "4419fcdb5eabb9caa61a27c7a1db532a6b55dd18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/c36f5e7cfce482fde5bf8d10d41a53591e0198fe",
-                "reference": "c36f5e7cfce482fde5bf8d10d41a53591e0198fe",
+                "url": "https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/4419fcdb5eabb9caa61a27c7a1db532a6b55dd18",
+                "reference": "4419fcdb5eabb9caa61a27c7a1db532a6b55dd18",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~5"
+                "phpunit/phpunit": "^5.7 || ^6.0"
             },
             "type": "library",
             "extra": {
@@ -6783,7 +6783,7 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
-            "time": "2016-02-13T06:45:14+00:00"
+            "time": "2017-03-04T06:30:41+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -8107,7 +8107,8 @@
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-soap": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "ext-mcrypt": "*"
     },
     "platform-dev": []
 }
