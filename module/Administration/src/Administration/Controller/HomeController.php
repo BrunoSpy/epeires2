@@ -50,6 +50,7 @@ class HomeController extends AbstractActionController
         $extensions['intl'] = extension_loaded('intl');
         $extensions['soap'] = extension_loaded('soap');
         $extensions['openssl'] = extension_loaded('openssl');
+        $extensions['mcrypt'] = extension_loaded('mcrypt');
 
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),

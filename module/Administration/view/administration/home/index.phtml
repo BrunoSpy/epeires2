@@ -135,6 +135,14 @@ $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, str
                       echo '<span class="label label-danger">Absente</span>';
                   } ?></td>
             </tr>
+              <tr>
+                  <td>Extension Mcrypt</td>
+                  <td><?php if($this->extensions['mcrypt']) {
+                          echo '<span class="label label-success">Activée</span>';
+                      } else {
+                          echo '<span class="label label-danger">Absente</span>';
+                      } ?></td>
+              </tr>
           </table>
         </div>
       </div>
