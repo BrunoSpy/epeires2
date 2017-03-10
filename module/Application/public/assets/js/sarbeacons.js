@@ -489,6 +489,7 @@
         $tab1 = $('#tabs-1'),
         $tab2 = $('#tabs-2'),
         $tab3 = $('#tabs-3'),
+        $tab4 = $('#tabs-4'),
 
         $fIp = $('#f-ip'),
         $bSavIp = $('#btn-sav-ip'),
@@ -609,15 +610,13 @@
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
     $('#a-now').click(function() {
-        console.log('a');
         $listIp.load(url + 'sarbeacons/list', function() 
         {
             $('.btn-edit-ip').click(function() {
-                var id = $(this).parents('a').data('id');
+                var id = $(this).parents('li').data('id');
                 $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
                 {
                     $('#title-start-ip').html('Modifier un plan d\'interrogation');
-                    idIp = id;
                     $('#a-start-ip-ok')
                         .data('lat', $('input[name="lat"]').val())
                         .data('lon', $('input[name="lon"]').val());
@@ -627,9 +626,50 @@
             });
 
             $('.btn-show-ip').click(function() {
-                var id = $(this).parents('a').data('id');
+                var id = $(this).parents('li').data('id');
                 idIp = id;
                 triggerIp();
+            });
+
+            $('.btn-print-ip').click(function() {
+                var id = $(this).parents('li').data('id');
+                // if ($(this).hasClass('disabled')) return false;
+                $.get(url + 'sarbeacons/validpdf/' + id, function(data) {
+                    // if(data[0] !== 'error') {
+                        location.href = url + 'sarbeacons/print/' + id;
+                    // } else {
+                        noty({
+                            text: data[1],
+                            type: data[0],
+                            timeout: 4000,
+                        });               
+                });
+            });
+
+            $('.btn-mail-ip').click(function() {
+                var id = $(this).parents('li').data('id');
+                // if ($(this).hasClass('disabled')) return false;
+                $.get(url + 'sarbeacons/validpdf/' + id, function(data) {
+                    // if(data[0] !== 'error') {
+                    $.post(url + 'sarbeacons/mail', {id: id}, function(data) {
+                    // } else {
+                        noty({
+                            text: data[1],
+                            type: data[0],
+                            timeout: 4000,
+                        });               
+                    });
+                });
+            });
+
+            $('.btn-end-ip').click(function() {
+                idIp = $(this).parents('li').data('id');
+                $('input[name=end-date]')
+                    .timepickerform({
+                        'id':'start', 
+                        'clearable':true, 
+                        'init':true
+                    });    
             });
         });
     });
@@ -642,6 +682,7 @@
             if ($(this).data('trig')) triggerIp([lat, lon]);
             $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
                 idIp = data['id'];
+                $("#mdl-start-ip").modal('hide');
                 noty({
                     text: data['msg'],
                     type: data['type'],
@@ -649,9 +690,30 @@
                 });    
             });
         }
-        $("#mdl-start-ip").modal('hide');
     });
 
+
+    $('#a-end-ip-ok').click(function(data) {
+        $.post(
+            url+'sarbeacons/end', 
+            {id: idIp, end_date: $('input[name=end-date]').val()}, 
+            function (data) {
+                $('#mdl-end-ip').modal('hide');
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            }
+        )
+    });
+
+    $('#a-arch').click(function(data) {
+        $('#archives').load(url + 'sarbeacons/archives', function(data) 
+        {
+
+        });
+    });
     /* declenchement pi sur un bouton droit sur la carte */
     orbit.on('contextmenu', function(e) {
         refreshCoord([e.latlng.lat, e.latlng.lng]);
@@ -1042,7 +1104,7 @@
                             });
                         }
                     });                  
-                    
+
                     if (i == 0) {
                         var initCoord = intPlan.get(0).getCoord();
                         $ter.addClass('active');

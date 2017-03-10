@@ -14,6 +14,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
             <li class="active"><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li>
             <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li>
             <li><a href="#tabs-3" id="a-now"><span class="glyphicon glyphicon-list"></span></a></li>
+            <li><a href="#tabs-4" id="a-arch"><span class="glyphicon glyphicon-list"></span></a></li>
         </ul>
 
         <div id="tabs-1">
@@ -92,9 +93,16 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
         </div>
         <div id="tabs-3">
             <!-- <h4>Historique</h4> -->
-            <div id="list-ip" class="list-group">
+            <ul id="list-ip" class="list-group">
 
-            </div>
+            </ul>
+        </div>
+
+        <div id="tabs-4">
+            <!-- <h4>Historique</h4> -->
+            <ul id="archives">
+
+            </ul>
         </div>
     </div>
 </div>
@@ -113,6 +121,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
                         "<a class='btn btn-danger' id='a-start-ip-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") 
                         ?>
+
+<?=$this->modalwindow(  "mdl-end-ip",
+                        "<h3>Clore le plan d'interrogation</span></h3>",
+                        "", 
+                        null, 
+                        "<input type='datetime' name='end-date'></input>",
+                        "<a class='btn btn-danger' id='a-end-ip-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
 

@@ -7,10 +7,10 @@ use Application\Entity\InterrogationPlan;
 class SarBeaconsHelper extends AbstractHelper
 {
     
-    public function renderIp(InterrogationPlan $iP)
+    public function renderIp($ipArray)
     {
         return $this->getView()->render('sar-beacons/helper/ip', [
-            'iP' => $iP,
+            'ip' => $ipArray,
         ]);
     }
     

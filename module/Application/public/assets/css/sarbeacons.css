@@ -159,6 +159,10 @@ body,
     right: 0;
     /*border: 1px solid lightgrey;   */
 }
+#list-ip {
+    margin:0;
+    padding:0;
+}
 
 #list-ip h3 {
     margin: 7px 0 5px;
@@ -170,7 +174,7 @@ body,
     margin-bottom: 5px;
 }
 
-#list-ip a {
+#list-ip li {
     padding: 7px;
 }
 

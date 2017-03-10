@@ -63,7 +63,7 @@
                 width: 90%;
             }
 
-            .badge, button, h1 {
+            .badge, button, h1, .btn-edit-ip, .btn-show-ip, .btn-print-ip, .btn-mail-ip {
                 display:none;
             }
 
@@ -106,10 +106,10 @@
             </table>
         </div>
         <div id="title" class="text-center">
-            <h2><?php echo $iP::TYPE_ALERT[$iP->getTypeAlerte()]?> démarré le <?php echo $formatterJour->format($iP->getStartTime()); ?> à <?php echo $formatterHeure->format($iP->getStartTime()); ?></h2>
+            <h2><?php echo $ipArray['Type'];?> démarré le <?php echo $formatterJour->format($ipArray['start_date']); ?> à <?php echo $formatterHeure->format($ipArray['start_date']); ?></h2>
         </div>
         <div id="intplan-pdf">
-            <?php  echo $this->sbViewHelper()->renderIp($iP); ?>
+            <?php  echo $this->sbViewHelper()->renderIp($ipArray); ?>
             <p id = "signature">BTIV du CRNA-N</p>
         </div>
     </body>

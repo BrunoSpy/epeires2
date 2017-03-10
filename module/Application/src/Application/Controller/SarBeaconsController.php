@@ -64,6 +64,74 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!$this->authSarBeacons('read')) return new JsonModel();
     }
 
+    public function getArrayCopy($ip) 
+    {
+        $ev = [
+            'id' => $ip->getId(),
+            'pdffilepath' => 'data/interrogation-plans/'.$ip->getId(),
+            'pdffilename' => $ip->getId(),
+            'start_date' => $ip->getStartDate(),
+        ];
+
+        foreach ($ip->getCustomFieldsValues() as $value) 
+        {
+            $namefield = $value->getCustomField()->getName();
+            $valuefield = $value->getValue();
+            $ev[$namefield] = $valuefield;
+            if($namefield == 'Alerte') 
+            {
+                if($valuefield > 0) {
+                    $ev[$namefield] = [];
+                    $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
+                    foreach ($altEv->getCustomFieldsValues() as $altvalue) {
+                        $ev[$namefield][$altvalue->getCustomField()->getName()] = $altvalue->getValue();
+                    } 
+                }  
+            }
+        }
+
+        foreach ($ip->getChildren() as $fieldEvent)
+        {
+            $field = [
+                'start_date' => $fieldEvent->getStartDate(),
+                'updates' => []
+            ];
+
+            foreach ($fieldEvent->getUpdates() as $update) {
+                $field['updates'][] = [
+                    'text' => $update->getText(),
+                    'created_on' => $update->getCreatedOn()
+                ];
+            }
+
+            foreach ($fieldEvent->getCustomFieldsValues() as $value) 
+            {
+                $namefield = $value->getCustomField()->getName();
+                $valuefield = $value->getValue();
+                $field[$namefield] = $valuefield;
+            }
+            $ev['fields'][] = $field;
+        }
+        return $ev;
+    }
+
+    private function getAlertIdFromIp($ip) 
+    {
+        $alertid = null;
+        if (is_a($ip, Event::class)) 
+        {
+            $cat = $ip->getCategory();
+            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
+            {
+                if ($customfieldvalue->getCustomField()->getId() == $cat->getAlertfield()->getId())
+                {
+                    $alertid = $customfieldvalue->getValue();        
+                }
+            }            
+        }
+        return $alertid;
+    } 
+
     public function getipAction()
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -312,6 +380,54 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         ]);
     }
 
+    public function endAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+        $msgType = 'error';
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];    
+        $end_date = $post['end_date'];
+
+        if ($id > 0) 
+        {
+            $now = new \DateTime('NOW');
+            $now->setTimezone(new \DateTimeZone("UTC"));
+
+            if (isset($end_date)) $end_date = new \DateTime($end_date);
+            else $end_date = $now;
+
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+            $ip->setStatus($endstatus);
+            $ip->setEnddate($end_date);
+            $this->em->persist($ip);
+
+            foreach ($ip->getChildren() as $field) {
+                $field->setStatus($endstatus);
+                $field->setEnddate($end_date);
+                $this->em->persist($field);
+            }
+
+            $alt = $this->em->getRepository(Event::class)->find($this->getAlertIdFromIp($ip));
+            $alt->setStatus($endstatus);
+            $alt->setEnddate($end_date);            
+            $this->em->persist($alt);
+
+            try 
+            {
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Clôture du plan d'interrogation.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        } else $msg = "Impossible de trouver le plan d'interrogation.";
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);
+    }
+
     public function delfieldAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -556,110 +672,36 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents();
-
+        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents([1, 2]);
         $intPlans = [];
-
-        foreach ($allIntPlans as $ipEvent) {
-            $ev = [
-                'id' => $ipEvent->getId(),
-                'start_date' => $ipEvent->getStartDate(),
-            ];
-
-            foreach ($ipEvent->getCustomFieldsValues() as $value) 
-            {
-                $namefield = $value->getCustomField()->getName();
-                $valuefield = $value->getValue();
-                $ev[$namefield] = $valuefield;
-                if($namefield == 'Alerte') 
-                {
-                    if($valuefield > 0) {
-                        $ev[$namefield] = [];
-                        $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        foreach ($altEv->getCustomFieldsValues() as $altvalue) {
-                            $ev[$namefield][$altvalue->getCustomField()->getName()] = $altvalue->getValue();
-                        } 
-                    }  
-                }
-            }
-
-            // $a = $ipEvent->getChildren()[0];
-            // $allfields = $this->em->getRepository(Event::class)->findBy(['parent_id' => $ev['id']]);
-            // echo count($allfields);
-            foreach ($ipEvent->getChildren() as $fieldEvent)
-            {
-                $field = [
-                    'start_date' => $fieldEvent->getStartDate(),
-                    'updates' => []
-                ];
-
-                foreach ($fieldEvent->getUpdates() as $update) {
-                    $field['updates'][] = [
-                        'text' => $update->getText(),
-                        'created_on' => $update->getCreatedOn()
-                    ];
-                }
-
-                foreach ($fieldEvent->getCustomFieldsValues() as $value) 
-                {
-                    $namefield = $value->getCustomField()->getName();
-                    $valuefield = $value->getValue();
-                    $field[$namefield] = $valuefield;
-                }
-                $ev['fields'][] = $field;
-            }
-            $intPlans[] = $ev;
+        foreach ($allIntPlans as $ip) {
+            $intPlans[] = $this->getArrayCopy($ip);
         }
-
-
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
                 'intPlans' => array_reverse($intPlans)
             ]);
     }
-    // TODO BOF BOF
-    public function saveAction()
+
+    public function archivesAction() 
     {
-        if (!$this->authSarBeacons('write')) return new JsonModel();
+        if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $post = $this->getRequest()->getPost();
-        $pdatas = $post['datas'];
-        $ppio = (is_array($post['iP'])) ? $post['iP'] : [];
-        $datasIntPlan = [];
-        parse_str($pdatas, $datasIntPlan);
-
-        if (is_array($post['iP']) && count($post['iP']) > 0) {
-            $fields = [];
-            foreach ($ppio as $i => $field) {
-                $f = new Field($field);
-                if ($f->isValid()) $fields[] = $f;
-            }
-            $datasIntPlan['fields'] = $fields;
+        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents(3);
+        $intPlans = [];
+        foreach ($allIntPlans as $ip) {
+            $intPlans[] = $this->getArrayCopy($ip);
         }
-
-        $id = intval($datasIntPlan['id']);
-        $iP = ($id) ? $this->repo->find($id) : new InterrogationPlan();
-        $this->form->setData($datasIntPlan);
-
-        if (!$this->form->isValid()) $iP = false;
-        else 
-        { 
-            $iP = $this->repo->hydrate($this->form->getData(), $iP);
-        }
-        if (is_a($iP, InterrogationPlan::class)) {
-            $this->repo->save($iP);    
-            $this->saveToPdf($iP);       
-        }
-
-        return new JsonModel([
-            'id' => $iP->getId(),
-            'type' => 'success',
-            'msg' => 'Le plan d\'interrogation a bien été enregistré.'
-        ]);
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setTemplate('application/sar-beacons/list')
+            ->setVariables([
+                'intPlans' => array_reverse($intPlans)
+            ]);
     }
 
-    private function saveToPdf($iP) 
+    private function saveToPdf($ipArray) 
     {
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
 
@@ -670,7 +712,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setTerminal(true)
             ->setTemplate('application/sar-beacons/print')
             ->setVariables([
-                'iP' => $iP
+                'ipArray' => $ipArray
             ]);
 
         $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
@@ -680,25 +722,17 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $dir = 'data/interrogation-plans';
         if(! is_dir($dir)) mkdir($dir);
-        file_put_contents($iP->getPdfFilePath(), $engine->output());
-    }
-
-    public function getAction() 
-    {
-        if (!$this->authSarBeacons('read')) return new JsonModel();
-
-        $post = $this->getRequest()->getPost();
-        $iP = $this->repo->find($post['id']);
-        
-        return new JsonModel($iP->getArrayCopy());
+        file_put_contents($ipArray['pdffilepath'], $engine->output());
     }
 
     public function validpdfAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $iP = $this->repo->find($this->params()->fromRoute('id'));
-        if (!file_exists($iP->getPdfFilePath())) 
+        $ip = $this->em->getRepository(Event::class)->find($this->params()->fromRoute('id'));
+        $ipArray = $this->getArrayCopy($ip);
+        $this->saveToPdf($ipArray);
+        if (!file_exists($ipArray['pdffilepath'])) 
             return new JsonModel(['error', 'Problème lors du chargement du fichier pdf. Impossible de continuer.']); 
         else return new JsonModel();
 
@@ -708,13 +742,14 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $iP = $this->repo->find($this->params()->fromRoute('id'));
+        $ip = $this->em->getRepository(Event::class)->find($this->params()->fromRoute('id'));
+        $ipArray = $this->getArrayCopy($ip);
 
         $pdf = (new PdfModel())             
             ->setOption('paperSize', 'a4')
-            ->setOption('filename', $iP->getPdfFileName())
+            ->setOption('filename', $ipArray['pdffilepath'])
             ->setVariables([
-                'iP' => $iP
+                'ipArray' => $ipArray
             ]);
 
         return $pdf;
@@ -724,41 +759,46 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel(['error', 'Problème de configuration des adresses email.']);
 
         $post = $this->getRequest()->getPost();
-        $iP = $this->repo->find($post['id']);
+        $id = (int) $post['id'];
 
-        $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
-        $text->type = Mime::TYPE_TEXT;
-        $text->charset = 'utf-8';
-        
-        $fileContents = fopen($iP->getPdfFilePath(), 'r');
-        $attachment = new MimePart($fileContents);
-        $attachment->type = 'application/pdf';
+        if ($id > 0) {
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            $ipArray = $this->getArrayCopy($ip);
 
-        $attachment->filename = $iP->getPdfFileName();
+            $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
+            $text->type = Mime::TYPE_TEXT;
+            $text->charset = 'utf-8';
+            
+            $fileContents = fopen($ipArray['pdffilepath'], 'r');
+            $attachment = new MimePart($fileContents);
+            $attachment->type = 'application/pdf';
 
-        $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
-        $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
-        
-        $body = new MimeMessage();
-        $body
-            ->setParts([
-                $text,
-                $attachment
-            ]);
+            $attachment->filename = $ipArray['pdffilename'];
 
-        $message = (new Message())
-            ->setEncoding("UTF-8")
-            ->addFrom($this->config['emailfrom'])
-            ->addTo('loic.perrin@aviation-civile.gouv.fr')
-            ->setSubject('Plan d\'interrogation')
-            ->setBody($body);
+            $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
+            $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
+            
+            $body = new MimeMessage();
+            $body
+                ->setParts([
+                    $text,
+                    $attachment
+                ]);
 
-        if($message->isValid()) 
-        {
-            $transportOptions = new SmtpOptions($this->config['smtp']);
-            $transport = (new Smtp())
-                ->setOptions($transportOptions)
-                ->send($message);
+            $message = (new Message())
+                ->setEncoding("UTF-8")
+                ->addFrom($this->config['emailfrom'])
+                ->addTo('loic.perrin@aviation-civile.gouv.fr')
+                ->setSubject('Plan d\'interrogation')
+                ->setBody($body);
+
+            if($message->isValid()) 
+            {
+                $transportOptions = new SmtpOptions($this->config['smtp']);
+                $transport = (new Smtp())
+                    ->setOptions($transportOptions)
+                    ->send($message);
+            }
         }
         return new JsonModel(['success', 'Courriel(s) envoyé(s) avec succès.']);
     }
