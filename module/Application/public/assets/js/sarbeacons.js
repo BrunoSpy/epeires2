@@ -608,11 +608,38 @@
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
+    $('#a-now').click(function() {
+        console.log('a');
+        $listIp.load(url + 'sarbeacons/list', function() 
+        {
+            $('.btn-edit-ip').click(function() {
+                var id = $(this).parents('a').data('id');
+                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
+                {
+                    $('#title-start-ip').html('Modifier un plan d\'interrogation');
+                    idIp = id;
+                    $('#a-start-ip-ok')
+                        .data('lat', $('input[name="lat"]').val())
+                        .data('lon', $('input[name="lon"]').val());
+                    $('input[name="lat"]').prop('disabled', true);
+                    $('input[name="lon"]').prop('disabled', true);
+                });
+            });
+
+            $('.btn-show-ip').click(function() {
+                var id = $(this).parents('a').data('id');
+                idIp = id;
+                triggerIp();
+            });
+        });
+    });
+
     $('#a-start-ip-ok').click(function() {
         var lat = $(this).data('lat');
         var lon = $(this).data('lon');
-        if (lat && lon) {
-            triggerIp([lat, lon]);
+        if (lat && lon) 
+        {
+            if ($(this).data('trig')) triggerIp([lat, lon]);
             $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
                 idIp = data['id'];
                 noty({
@@ -825,6 +852,7 @@
                 $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
                 $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
                 $('#a-start-ip-ok')
+                    .data('trig', true)
                     .data('lat', mkSAR._latlng.lat)
                     .data('lon', mkSAR._latlng.lng);
             });
@@ -938,66 +966,108 @@
         return iTer;
     }
 
-    function triggerIp(latLon, starttime = moment(), setIdIp = null) {
-        // idIp = setIdIp
-        centerMap(latLon, true);
-        refreshIp();
-
-        intPlan = new IntPlan(latLon, starttime);
-        intPlan.setList(fields);
-
-        $fIp.find('h4').html(intPlan.getInfo());
-
-        var markersPIO = [];
-        for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
-            var $dItem = $('<div class = "item"></div>');
-            var $liIndicator = $('<li data-target = "#req-pio" data-slide-to="' + j + '"></li>');
-            if (j == 0) {
-                $dItem.addClass('active');
-                $liIndicator.addClass('active');
-            }
-            for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
-                var ter = intPlan.get(i);
-                markersPIO.push(createIpMarker(i, ter.getCoord(), ter.getPopup()));
-                var $ter = ter.getHtml();
-                $ter.data({"index": i})
-                    .click(clickFieldHandler);
-                $ter.find('textarea')
-                    .data({"index": i})
-                    .blur(blurCommentHandler);
-                $ter.find('button').eq(0)
-                    .data({"index": i})
-                    .click(clickContactHandler);
-                $ter.find('button').eq(1)
-                    .data({"index": i})
-                    .click(clickIconFieldHandler);
-
-                if (i == 0) {
-                    var initCoord = intPlan.get(0).getCoord();
-                    $ter.addClass('active');
-                }
-                $dItem.append($ter);
-            }
-            $carIndic.append($liIndicator);
-            $carInner.append($dItem);
+    function triggerIp(latLon, starttime = moment(), setIdIp = null) 
+    {
+        if (idIp) 
+        {
+            $.post(url + 'sarbeacons/getip', {id : idIp}, function (data) {
+                latLon = [data['lat'], data['lon']];
+                trigDisplay();
+                trigList(data['fields']);
+            });
+        } 
+        else 
+        {
+            trigDisplay();
+            trigList();
         }
-        
-        $carIndic.mousewheel(function(e) {
-            e.preventDefault();
-            if(e.deltaY > 0) $('.carousel-control.right').trigger('click');
-            else $('.carousel-control.left').trigger('click');
-        })
 
-        if (pioLay) orbit.removeLayer(pioLay);
-        pioLay = L.layerGroup(markersPIO).addTo(orbit);
-        mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], icSel, intPlan.get(0).getPopup());
-        $tabs.tabs("option", "active", 1);
-        $tabs.find('.nav-pills>li').eq(1).trigger('click');
+        function trigDisplay () 
+        {
+            centerMap(latLon, true);
+            $tabs.tabs("option", "active", 1);
+            $tabs.find('.nav-pills>li').eq(1).trigger('click');
+        }
 
-        // mkSAR = updateMarker(mkSAR, latLon, icSAR);
-        // mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
-        // btnCenterSar._button.latLon = latLon;
-        // btnCenterSar.addTo(orbit);
+        function trigList(interrogatedfields = null) 
+        {
+            refreshIp();
+
+            intPlan = new IntPlan(latLon, starttime);
+            intPlan.setList(fields);
+
+            $fIp.find('h4').html(intPlan.getInfo());
+
+            var markersPIO = [];
+            for (var j = 0; j < Math.floor(NB_RESULT_PIO / NB_RESULT_PIO_AFF); j++) {
+                var $dItem = $('<div class = "item"></div>');
+                var $liIndicator = $('<li data-target = "#req-pio" data-slide-to="' + j + '"></li>');
+                if (j == 0) {
+                    $dItem.addClass('active');
+                    $liIndicator.addClass('active');
+                }
+                for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
+                    var ter = intPlan.get(i);
+                    markersPIO.push(createIpMarker(i, ter.getCoord(), ter.getPopup()));
+                    var $ter = ter.getHtml();
+                    $ter.data({"index": i})
+                        .click(clickFieldHandler);
+                    $ter.find('textarea')
+                        .data({"index": i})
+                        .blur(blurCommentHandler);
+                    $ter.find('button').eq(0)
+                        .data({"index": i})
+                        .click(clickContactHandler);
+                    $ter.find('button').eq(1)
+                        .data({"index": i})
+                        .click(clickIconFieldHandler);
+
+                    var code = $ter.find('h5 strong').html();
+                    $.each(interrogatedfields, function(key, val) {
+                        if (val["code"] == code) {
+                            // intPlan.addIp(i);
+                            console.log($ter.find('button').eq(0));
+                            $ter.addClass('list-group-item-success')
+                                .find('button').eq(0)
+                                .toggleClass('btn-info')
+                                .toggleClass('btn-danger')
+                                .find('span')
+                                    .toggleClass('glyphicon-check')
+                                    .toggleClass('glyphicon-remove');
+
+                            $.each(val['updates'], function(key, val) {
+                                $ter.find('.comment').show();
+                                $ter.find('textarea')
+                                    .html(val['text']);
+                            });
+                        }
+                    });                  
+                    
+                    if (i == 0) {
+                        var initCoord = intPlan.get(0).getCoord();
+                        $ter.addClass('active');
+                    }
+                    $dItem.append($ter);
+                }
+                $carIndic.append($liIndicator);
+                $carInner.append($dItem);
+            }
+            
+            $carIndic.mousewheel(function(e) {
+                e.preventDefault();
+                if(e.deltaY > 0) $('.carousel-control.right').trigger('click');
+                else $('.carousel-control.left').trigger('click');
+            })
+
+            if (pioLay) orbit.removeLayer(pioLay);
+            pioLay = L.layerGroup(markersPIO).addTo(orbit);
+            mkSelected = updateMarker(mkSelected, [initCoord[1], initCoord[0]], icSel, intPlan.get(0).getPopup());
+
+            mkSAR = updateMarker(mkSAR, latLon, icSAR);
+            mkSAR.bindPopup('<h4>Latitude : '+latLon[0]+'</h5><h4>Longitude : '+latLon[1]+'</h5>');
+            btnCenterSar._button.latLon = latLon;
+            btnCenterSar.addTo(orbit);
+        }
 
         function refreshIp() {
             $carIndic.find('li').remove();
@@ -1069,9 +1139,16 @@
                 })
             } else {
                 $fOptCom.hide();
-                intPlan.delIp($(this).data().index);
+                var field = intPlan.get($(this).data().index);
+                $.post(url + 'sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
+                    intPlan.delIp($(this).data().index);
+                    noty({
+                        text: data['msg'],
+                        type: data['type'],
+                        timeout: 4000,
+                    });    
+                })                
             }
-            // activateSavBtn();
         }
 
         function createIpMarker(i, latlon, popuphtml) {
@@ -1214,63 +1291,49 @@
     }
 
     function loadListIp() {
-        $listIp.load(url + 'sarbeacons/list', function() 
-        {
-            $('.btn-edit-ip').click(function() {
-                var id = $(this).parents('a').data('id');
-                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
-                {
-                    $('#title-start-ip').html('Modifier un plan d\'interrogation');
-                    idIp = id;
-                    $('#a-start-ip-ok')
-                        .data('lat', $('input[name="lat"]').val())
-                        .data('lon', $('input[name="lon"]').val());
-                    $('input[name="lat"]').prop('disabled', true);
-                    $('input[name="lon"]').prop('disabled', true);
-                });
-            });
+        
 
-            $.each($listIp.find('a'), function() {
-                var id = $(this).data().id;
-                $(this).click(function(e) {
-                    $(this).find('.list-ip-content')
-                        .toggleClass('cache');
-                });
+        //     $.each($listIp.find('a'), function() {
+        //         var id = $(this).data().id;
+        //         $(this).click(function(e) {
+        //             $(this).find('.list-ip-content')
+        //                 // .toggleClass('cache');
+        //         });
 
-                $(this).find('.btn-show').click(function(e) {
-                    e.stopPropagation();
-                    $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
-                        $fEditIp.find('form').remove();
-                        console.log(data);
-                        triggerIp([
-                            data.latitude,
-                            data.longitude
-                        ], data.startTime.date, id);
+        //         $(this).find('.btn-show').click(function(e) {
+        //             e.stopPropagation();
+        //             $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
+        //                 $fEditIp.find('form').remove();
+        //                 console.log(data);
+        //                 triggerIp([
+        //                     data.latitude,
+        //                     data.longitude
+        //                 ], data.startTime.date, id);
  
-                        listBtn.setStates(3);
-                        // TODO un peu bourrin
-                        $.each(data.fields, function(i, field) {
-                            $.each($carInner.find('em'), function(j, val) {
-                                $(this).parent().siblings('button').eq(0).hide();
-                                // console.log($(this).html());
-                                // console.log(field);
-                                if ($(this).html() == field.name) {
-                                    intPlan.addIp(j);
-                                    var $btnContact = $(this).parents('button');
-                                    var $a = $(this).parents('a');
-                                    $a.addClass('list-group-item-success');
-                                    if (field.comment) {
-                                        $a.find('.comment').show();
-                                        $a.find('textarea')
-                                            .prop('readonly', true)
-                                            .html(field.comment);
-                                    }
-                                }
-                            });
-                        });
-                    })
-                });
-            });
-        });
+        //                 listBtn.setStates(3);
+        //                 // TODO un peu bourrin
+        //                 $.each(data.fields, function(i, field) {
+        //                     $.each($carInner.find('em'), function(j, val) {
+        //                         $(this).parent().siblings('button').eq(0).hide();
+        //                         // console.log($(this).html());
+        //                         // console.log(field);
+        //                         if ($(this).html() == field.name) {
+        //                             intPlan.addIp(j);
+        //                             var $btnContact = $(this).parents('button');
+        //                             var $a = $(this).parents('a');
+        //                             $a.addClass('list-group-item-success');
+        //                             if (field.comment) {
+        //                                 $a.find('.comment').show();
+        //                                 $a.find('textarea')
+        //                                     .prop('readonly', true)
+        //                                     .html(field.comment);
+        //                             }
+        //                         }
+        //                     });
+        //                 });
+        //             })
+        //         });
+        //     });
+        // });
     }
 };

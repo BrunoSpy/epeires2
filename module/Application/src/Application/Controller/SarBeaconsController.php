@@ -64,6 +64,63 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!$this->authSarBeacons('read')) return new JsonModel();
     }
 
+    public function getipAction()
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+
+        $lat = null;
+        $lon = null;
+
+        if ($id > 0) 
+        {
+            $ip = $this->em->getRepository(Event::class)->find($id);  
+            $cat = $ip->getCategory();  
+
+            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
+            {
+                switch ($customfieldvalue->getCustomField()->getId()) 
+                {
+                    case $cat->getLatField()->getId() :
+                        $lat = $customfieldvalue->getValue();
+                        break;
+                    case $cat->getLongField()->getId() :
+                        $lon = $customfieldvalue->getValue();
+                        break;
+                }
+            }
+            $fields = [];
+            foreach ($ip->getChildren() as $fieldEvent)
+            {
+                $field = [
+                    'start_date' => $fieldEvent->getStartDate(),
+                    'updates' => []
+                ];
+
+                foreach ($fieldEvent->getUpdates() as $update) {
+                    $field['updates'][] = [
+                        'text' => $update->getText(),
+                        'created_on' => $update->getCreatedOn()
+                    ];
+                }
+                $codefield = $fieldEvent->getCategory()->getCodeField()->getId();
+                foreach ($fieldEvent->getCustomFieldsValues() as $value) 
+                {
+                    if ($value->getCustomField()->getId() == $codefield) $field['code'] = $value->getValue();
+                }
+                $fields[] = $field;
+            }
+
+        }
+        return new JsonModel([
+            'lat' => $lat,
+            'lon' => $lon,
+            'fields' => $fields
+        ]);        
+    }
+
     public function startAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -71,7 +128,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $msgType = 'error';
 
         $post = $this->getRequest()->getPost();
-        print_r($post);
+        // print_r($post);
         $id = (int) $post['id'];
         // modification
         if ($id > 0) 
@@ -82,23 +139,42 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             // $typefield = $ip->getCustomField($cat->getTypeField());
             // $type
 
-            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) {
-                switch ($customfieldvalue->getId()) {
+            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
+            {
+                switch ($customfieldvalue->getCustomField()->getId()) 
+                {
                     case $cat->getTypeField()->getId() :
                         $customfieldvalue->setValue($post['type']);
-                    break;
+                        break;
                     case $cat->getLatField()->getId() :
                         $customfieldvalue->setValue($post['lat']);
-                    break;
+                        break;
                     case $cat->getLongField()->getId() :
                         $customfieldvalue->setValue($post['lon']);
-                    break;
-                    default:
-                        $this->em->persist($customfieldvalue);
-                    break;
+                        break;
+                    case $cat->getAlertField()->getId() :
+                        $alt = $this->em->getRepository(Event::class)->find($customfieldvalue->getValue());
+                        $altcat = $alt->getCategory();
+                        foreach ($alt->getCustomFieldsValues() as $altcustomfieldvalue) 
+                        {
+                            switch ($altcustomfieldvalue->getCustomField()->getId()) 
+                            {
+                                case $altcat->getTypeField()->getId() :
+                                    $altcustomfieldvalue->setValue($post['typealerte']);
+                                    break;
+                                case $altcat->getCauseField()->getId() :
+                                    $altcustomfieldvalue->setValue($post['cause']);
+                                    break;
+                            }
+                            $this->em->persist($altcustomfieldvalue);
+                        }
+                        break;
                 }
+                $this->em->persist($customfieldvalue);
             }
-            try {
+
+            try 
+            {
                 $this->em->flush();
                 // $idEvent = $event->getId();
                 $msgType = 'success';
@@ -236,6 +312,48 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         ]);
     }
 
+    public function delfieldAction() 
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+        $msgType = 'error';
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+        if ($id > 0) 
+        {
+            $ip = $this->em->getRepository(Event::class)->find($id);
+            foreach ($ip->getChildren() as $field) 
+            {
+                $cat = $field->getCategory();
+
+                foreach ($field->getCustomFieldsValues() as $value) 
+                {
+                    if ($value->getCustomField()->getId() == $cat->getCodeField()->getId() && $value->getValue() == $post['code']) 
+                    {
+                        $found = true;
+                        foreach ($field->getChildren() as $child) {
+                            $this->em->remove($child);
+                        }
+                        $this->em->remove($field);
+                        try 
+                        {
+                            $this->em->flush();
+                            $msgType = 'success';
+                            $msg = "Terrain supprimé du plan d'interrogation.";
+                        } catch (\Exception $e) {
+                            $msg = $e->getMessage();
+                        }
+                    }
+                }
+                if (!isset($found)) $msg = "Ce terrain n'est pas dans le plan d'interrogation.";
+
+            }
+        } else $msg = "Impossible de trouver le plan d'interrogation.";
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]);
+    }
+
     public function addfieldAction() 
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -304,7 +422,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                     $this->em->flush();
                     $idfield = $event->getId();
                     $msgType = 'success';
-                    $msg = "Terrain ajouté au plan d\'interrogation.";
+                    $msg = "Terrain ajouté au plan d'interrogation.";
                 } catch (\Exception $e) {
                     $msg = $e->getMessage();
                 }

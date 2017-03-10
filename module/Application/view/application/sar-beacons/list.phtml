@@ -13,7 +13,7 @@
 ?>
 <a data-id="<?php echo $ip['id']; ?>" class="list-group-item list-group-item-<?php echo (array_key_exists($typealert, $class_alert)) ? $class_alert[$typealert] : 'primary'; ?>">
     <h1 class="list-group-item-heading"><?php echo $ip['start_date']->format('d-m-Y H:i:s') ?></h1>
-    <div class = "list-ip-content <?php echo ($i>0)?'cache':''; ?>">
+    <div class = "list-ip-content <?php //echo ($i>0)?'cache':''; ?>">
         <p class="list-group-item-text">Latitude: <?php echo $ip['Latitude']?></p>
         <p class="list-group-item-text">Longitude: <?php echo $ip['Longitude']?></p>
         <p class="list-group-item-text">Type : <?php echo $ip['Type']?></p>
@@ -36,7 +36,12 @@
         
         <button href="#mdl-start-ip" data-toggle="modal" class = "btn btn-sm btn-primary btn-edit-ip">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
-        Modifier
+        Informations
+        </button>
+
+        <button class = "btn btn-sm btn-primary btn-show-ip">
+        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+        Plans interrogés
         </button>
 
         <button class = "btn btn-sm btn-primary btn-print-ip">
@@ -53,5 +58,5 @@
 </a>
 <?php $i++; ?>
 <?php endforeach; ?>
-    // echo $this->sbViewHelper()->renderIp($iP);
+    <!-- // echo $this->sbViewHelper()->renderIp($iP); -->
 

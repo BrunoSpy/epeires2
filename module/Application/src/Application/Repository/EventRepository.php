@@ -467,11 +467,14 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
-    public function getIntPlanEvents()
+    public function getIntPlanEvents($status = [1, 2, 3])
     {
         $qbEvents = $this->getQueryEvents();
-        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\InterrogationPlanCategory');
-        
+        $qbEvents
+            ->andWhere('cat INSTANCE OF Application\Entity\InterrogationPlanCategory')
+            ->andWhere($qbEvents->expr()->in('e.status', '?4'))
+            ->setParameter(4, $status);
+
         $query = $qbEvents->getQuery();
         
         return $query->getResult();
