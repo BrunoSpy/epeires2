@@ -433,6 +433,13 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
+    /**
+     * Tous les évènements de type plan de vol entre deux dates paramétrables.
+     *
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return array
+     */
     public function getFlightPlanEvents($start, $end)
     {
         $now = new \DateTime('NOW');
@@ -451,34 +458,56 @@ class EventRepository extends ExtendedRepository
                     $qbEvents->expr()->lte('e.startdate', '?2')
                 )
             )
-            // ->andWhere($qbEvents->expr()->in('e.status', '?3'))
-            ->setParameters(array(
-            1 => $start,
-            2 => $end
-            // 3 => array(
-            //     1,
-            //     2,
-            //     3
-            // )
-        ));
+            ->andWhere($qbEvents->expr()->in('e.status', '?3'))
+            ->setParameters([
+                1 => $start,
+                2 => $end,
+                3 => [1, 2, 3]
+            ]);
         
-        $query = $qbEvents->getQuery();
-        
-        return $query->getResult();
+        return $qbEvents->getQuery()->getResult();
     }
 
-    public function getIntPlanEvents($status = [1, 2, 3])
+    /**
+     * Tous les évènements courants de type plan d'interrogation.
+     *
+     * @param
+     * @return array
+     */
+    public function getCurrentIntPlanEvents()
     {
         $qbEvents = $this->getQueryEvents();
         $qbEvents
             ->andWhere('cat INSTANCE OF Application\Entity\InterrogationPlanCategory')
             ->andWhere($qbEvents->expr()->in('e.status', '?4'))
-            ->setParameter(4, $status);
-
-        $query = $qbEvents->getQuery();
+            ->setParameter(4, [1, 2]);
         
-        return $query->getResult();
+        return $qbEvents->getQuery()->getResult();
     }
+
+    /**
+     * Tous les évènements terminés de type plan d'interrogation.
+     *
+     * @param
+     * @return array
+     */
+    public function getEndedIntPlanEvents()
+    {
+        $qbEvents = $this->getEntityManager()->createQueryBuilder();
+        $qbEvents->select(array(
+            'e',
+            'cat'
+        ))
+            ->from('Application\Entity\Event', 'e')
+            ->innerJoin('e.category', 'cat')
+            ->andWhere('cat INSTANCE OF Application\Entity\InterrogationPlanCategory')
+            ->andWhere($qbEvents->expr()
+                ->in('e.status', '?1'))
+            ->setParameter(1, 3);
+        
+        return $qbEvents->getQuery()->getResult();
+    }
+
     /**
      * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
      * 

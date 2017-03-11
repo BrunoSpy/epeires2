@@ -675,6 +675,7 @@
     });
 
     $('#a-start-ip-ok').click(function() {
+        console.log($(this));
         var lat = $(this).data('lat');
         var lon = $(this).data('lon');
         if (lat && lon) 
@@ -1085,25 +1086,27 @@
                         .click(clickIconFieldHandler);
 
                     var code = $ter.find('h5 strong').html();
-                    $.each(interrogatedfields, function(key, val) {
-                        if (val["code"] == code) {
-                            // intPlan.addIp(i);
-                            console.log($ter.find('button').eq(0));
-                            $ter.addClass('list-group-item-success')
-                                .find('button').eq(0)
-                                .toggleClass('btn-info')
-                                .toggleClass('btn-danger')
-                                .find('span')
-                                    .toggleClass('glyphicon-check')
-                                    .toggleClass('glyphicon-remove');
+                    if (interrogatedfields) {
+                            $.each(interrogatedfields, function(key, val) {
+                            if (val["code"] == code) {
+                                // intPlan.addIp(i);
+                                console.log($ter.find('button').eq(0));
+                                $ter.addClass('list-group-item-success')
+                                    .find('button').eq(0)
+                                    .toggleClass('btn-info')
+                                    .toggleClass('btn-danger')
+                                    .find('span')
+                                        .toggleClass('glyphicon-check')
+                                        .toggleClass('glyphicon-remove');
 
-                            $.each(val['updates'], function(key, val) {
-                                $ter.find('.comment').show();
-                                $ter.find('textarea')
-                                    .html(val['text']);
-                            });
-                        }
-                    });                  
+                                $.each(val['updates'], function(key, val) {
+                                    $ter.find('.comment').show();
+                                    $ter.find('textarea')
+                                        .html(val['text']);
+                                });
+                            }
+                        });                  
+                    }
 
                     if (i == 0) {
                         var initCoord = intPlan.get(0).getCoord();

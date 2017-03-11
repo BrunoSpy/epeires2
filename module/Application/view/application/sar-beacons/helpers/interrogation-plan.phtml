@@ -16,7 +16,10 @@
         <p class="list-group-item-text">Alerte : <?php echo (isset($typealert)) ? $typealert : NIL; ?></p>
         <!-- <h3 class="list-group-item-heading">Alerte</h3> -->
         <p class="list-group-item-text comment">Cause : <?php echo (isset($ip['Alerte']['Cause'])) ? $ip['Alerte']['Cause'] : null; ?></p>
-
+        <a href="#mdl-start-ip" data-toggle="modal" class = "btn-edit-ip">
+        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+        Informations
+        </a><br />
 
         <?php if (isset($ip['fields'])) : ?> 
             <h3 class="list-group-item-heading">Terrains interrogés</h3>
@@ -30,10 +33,6 @@
             <?php endforeach; ?>
         <?php endif; ?>
         
-        <a href="#mdl-start-ip" data-toggle="modal" class = "btn-edit-ip">
-        <!-- <span class="glyphicon glyphicon-pencil"></span> -->
-        Informations
-        </a><br />
         <a href="#" class = "btn-show-ip">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
         Plans interrogés

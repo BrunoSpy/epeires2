@@ -672,7 +672,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents([1, 2]);
+        $allIntPlans = $this->em->getRepository(Event::class)->getCurrentIntPlanEvents();
         $intPlans = [];
         foreach ($allIntPlans as $ip) {
             $intPlans[] = $this->getArrayCopy($ip);
@@ -688,7 +688,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
 
-        $allIntPlans = $this->em->getRepository(Event::class)->getIntPlanEvents(3);
+        $allIntPlans = $this->em->getRepository(Event::class)->getEndedIntPlanEvents();
         $intPlans = [];
         foreach ($allIntPlans as $ip) {
             $intPlans[] = $this->getArrayCopy($ip);
