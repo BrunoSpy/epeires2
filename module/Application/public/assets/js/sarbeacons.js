@@ -27,6 +27,7 @@
         this.cap = cap;
         this.comment = '';
         this.intTime = null;
+        this.updates = [];
         // this.idEvent = null;
 
         this.toArray = function() {
@@ -60,13 +61,13 @@
             return this.props.name;
         },
 
-        // this.setIdEvent = function(id) {
-        //     this.idEvent = id;
-        // },
-
-        // this.getIdEvent = function() {
-        //     return this.idEvent;
-        // },
+        this.addUpdate = function(date, text) {
+            var update = {
+                date: date,
+                text: text
+            }
+            this.updates.push(update);
+        },
 
         this.setIntTime = function(time) {
             this.intTime = time;
@@ -88,7 +89,7 @@
                 '<strong>' + moment.unix(this.getIntTime()).format('HH:mm:ss') + '</strong> ' +
                 '[<em>' + this.getCode() + '</em>] ' + 
                 this.getName() + 
-                '<span class="btn-del-field glyphicon glyphicon-remove-circle"></span><br />' + 
+                '<span class="btn-del-field glyphicon glyphicon-remove-circle"></span><br />' +
                 '<div class = "comment">' + this.comment + '</div>' + 
             '</li>');
             return $li;
@@ -96,13 +97,17 @@
 
         this.getHtml = function() {
             var img = (this.props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
+            var updates = '';
+            $.each(this.updates, function(i, update) {
+                updates += update.text;
+            });
             var $field =
                 $('<a class="list-group-item">' +
                     '<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>' +
                     '<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>' +
                     '<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>' +
                     '<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>' +
-                    '<div class="form-group comment cache"><textarea rows="1" placeholder="commentaire optionnel"></textarea></div>' +
+                    '<div class="form-group comment cache">' + updates + '<textarea rows="1" placeholder="commentaire optionnel"></textarea></div>' +
                 '</a>');
 
             return $field;
@@ -551,8 +556,6 @@
         })
         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
 
-    $('.btn-action-ip').tooltip();
-
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
@@ -612,8 +615,18 @@
     $('#a-now').click(function() {
         $listIp.load(url + 'sarbeacons/list', function() 
         {
+            $('.btn-cache-ip').click(function() {
+                $(this).parents('li').find('.list-ip-content')
+                    .toggleClass('cache');
+                $(this).toggleClass('btn-info');
+                if ($(this).hasClass('btn-info')) $(this).html('-')
+                else $(this).html('+');
+            });
+
             $('.btn-edit-ip').click(function() {
+                $('#a-start-ip-ok').data('trig', false);
                 var id = $(this).parents('li').data('id');
+                idIp = id;
                 $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
                 {
                     $('#title-start-ip').html('Modifier un plan d\'interrogation');
@@ -671,19 +684,27 @@
                         'init':true
                     });    
             });
+
+            $(this).children().each(function() {
+                if ($(this).data('id') == idIp) {
+                    //console.log($(this).find('.btn-cache-ip'));
+                    $(this).find('.btn-cache-ip').trigger('click');
+                }
+            });
         });
     });
 
     $('#a-start-ip-ok').click(function() {
-        console.log($(this));
         var lat = $(this).data('lat');
         var lon = $(this).data('lon');
         if (lat && lon) 
         {
-            if ($(this).data('trig')) triggerIp([lat, lon]);
+            var trig = $(this).data('trig');
+            if (trig  == true) triggerIp([lat, lon]); 
             $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
                 idIp = data['id'];
                 $("#mdl-start-ip").modal('hide');
+                if (trig != true) $('#a-now').trigger('click');
                 noty({
                     text: data['msg'],
                     type: data['type'],
@@ -699,6 +720,8 @@
             url+'sarbeacons/end', 
             {id: idIp, end_date: $('input[name=end-date]').val()}, 
             function (data) {
+                $('#a-now').trigger('click');
+                idIp = null;
                 $('#mdl-end-ip').modal('hide');
                 noty({
                     text: data.msg,
@@ -712,13 +735,25 @@
     $('#a-arch').click(function(data) {
         $('#archives').load(url + 'sarbeacons/archives', function(data) 
         {
-
+            $('.btn-end-ip, .btn-show-ip, .btn-edit-ip').hide();
+            $('.btn-cache-ip').click(function() {
+                $(this).parents('li').find('.list-ip-content')
+                    .toggleClass('cache');
+                $(this).toggleClass('btn-info');
+                if ($(this).hasClass('btn-info')) $(this).html('-')
+                else $(this).html('+');
+            });
         });
     });
-    /* declenchement pi sur un bouton droit sur la carte */
+    /* declenchement pi sur un bouton droit sur la carte seulement si mode recherche (onglet 1)*/
     orbit.on('contextmenu', function(e) {
-        refreshCoord([e.latlng.lat, e.latlng.lng]);
-        setCoord([e.latlng.lat, e.latlng.lng]);
+        if ($tabs.find('.ui-state-active').is($tabs.find('.nav-pills>li').eq(0))) 
+        {
+            if (pioLay) orbit.removeLayer(pioLay);
+            if (mkSelected) orbit.removeLayer(mkSelected);
+            refreshCoord([e.latlng.lat, e.latlng.lng]);
+            setCoord([e.latlng.lat, e.latlng.lng]);
+        }
     });
 
     setMapButtons();
@@ -909,18 +944,15 @@
     }
 
     function findByCoord(e) {
-        if (!$(this).hasClass('btn-warning')) 
-        {
-            $('#f-start-ip').load(url + 'sarbeacons/form', function (data) {
-                $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
-                $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
-                $('#a-start-ip-ok')
-                    .data('trig', true)
-                    .data('lat', mkSAR._latlng.lat)
-                    .data('lon', mkSAR._latlng.lng);
-            });
-            // triggerIp([$iLat.val(), $iLon.val()]);
-        }
+        if ($(this).hasClass('disabled')) return false;
+        $('#f-start-ip').load(url + 'sarbeacons/form', function (data) {
+            $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
+            $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
+            $('#a-start-ip-ok')
+                .data('trig', true)
+                .data('lat', mkSAR._latlng.lat)
+                .data('lon', mkSAR._latlng.lng);
+        });
     };
 
     function source(request, response, data) {
@@ -1090,7 +1122,7 @@
                             $.each(interrogatedfields, function(key, val) {
                             if (val["code"] == code) {
                                 // intPlan.addIp(i);
-                                console.log($ter.find('button').eq(0));
+                                // console.log($ter.find('button').eq(0));
                                 $ter.addClass('list-group-item-success')
                                     .find('button').eq(0)
                                     .toggleClass('btn-info')
@@ -1165,7 +1197,7 @@
         }
 
         function blurCommentHandler() {
-            intPlan.get($(this).data().index).setComment($(this).val());
+            intPlan.get($(this).data().index).addUpdate(moment(), $(this).val());
             $.post(url + 'sarbeacons/addnote', {id: $(this).data('id'), text: $(this).val()}, function(data) {
                 noty({
                     text: data['msg'],

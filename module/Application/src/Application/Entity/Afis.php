@@ -22,7 +22,7 @@ use Zend\Form\Annotation;
 use Application\Entity\TemporaryResource;
 use Application\Entity\Organisation;
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\BtivRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="afis")
  *
  * @author Loïc Perrin

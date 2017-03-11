@@ -160,8 +160,14 @@ body,
     /*border: 1px solid lightgrey;   */
 }
 #list-ip {
-    margin:0;
+    margin-top:5px;
+    margin-left:0px;
+    /*margin:0;*/
     padding:0;
+}
+
+#list-ip .btn-cache-ip {
+    margin-right:5px;
 }
 
 #list-ip h3 {
