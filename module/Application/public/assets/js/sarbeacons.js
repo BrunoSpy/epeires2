@@ -17,9 +17,10 @@
  var sarbeacons = function(url) {
     "use strict";
 
-    var Field = function(index, field, d, cap) 
+    var Field = function(index, intPlan, field, d, cap) 
     {
         this.index = index;
+        this.intPlan = intPlan;
         this.field = field;
         this.coord = this.field.geometry.coordinates;
         this.props = this.field.properties;
@@ -28,7 +29,13 @@
         this.comment = '';
         this.intTime = null;
         this.updates = [];
-        // this.idEvent = null;
+        this.idevent = 0;
+
+        this.isInterrogated = function () {
+            var $ret = false;
+            if (this.intPlan.getIp().indexOf(this) != -1) $ret = true;
+            return $ret;
+        }   
 
         this.toArray = function() {
             var array = {};
@@ -77,6 +84,10 @@
             return this.intTime;
         },
 
+        this.setIdEvent = function(idevent) {
+            this.idevent = idevent;
+        },
+
         this.getPopup = function() {
             return '<h3>'+this.getCode()+'</h3>'+
                 '<h4>'+this.getName()+'</h4>'+
@@ -96,19 +107,56 @@
         }
 
         this.getHtml = function() {
+            var $field = $('<a class="list-group-item"></a>');
+            var $bcontact = $('<button class = "btn-xs"><span class="glyphicon"></span></button>');
+            var $text = $('<div class="form-group comment cache"><textarea rows="1" placeholder="note"></textarea></div>');
             var img = (this.props.type == 'AD') ? 'glyphicon-plane' : 'glyphicon-header';
-            var updates = '';
-            $.each(this.updates, function(i, update) {
-                updates += update.text;
-            });
-            var $field =
-                $('<a class="list-group-item">' +
-                    '<button class = "btn-xs btn-info"><span class="glyphicon glyphicon-check"></span></button>' +
-                    '<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>' +
-                    '<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>' +
-                    '<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>' +
-                    '<div class="form-group comment cache">' + updates + '<textarea rows="1" placeholder="commentaire optionnel"></textarea></div>' +
-                '</a>');
+
+            if (this.isInterrogated()) {
+                $field.addClass('list-group-item-success');
+                $bcontact
+                    .addClass('btn-danger')
+                    .find('span')
+                        .addClass('glyphicon-remove');
+                ;
+                var updates = '';
+                $.each(this.updates, function(i, update) {
+                    updates += '<p>' + update.date + ' : ' + update.text + '</p>';
+                });
+                $text.removeClass('cache');
+
+            } else {
+                $bcontact
+                    .addClass('btn-info')
+                    .find('span')
+                        .addClass('glyphicon-check');
+                ;
+            }
+
+            $field
+                .append($bcontact)
+                .append('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
+                .append('<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>')
+                .append('<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>')
+                .append(updates)
+                .append($text)
+                .append('<button class = "btn-xs btn-primary cache">Ajouter la note</button>')
+            ;
+
+            $field.data({"index": this.index})
+                .click(clickFieldHandler);
+            $field.find('textarea')
+                .data({"index": this.index})
+                .keyup(keyCommentHandler);
+            $field.find('button').eq(0)
+                .data({"index": this.index})
+                .click(clickContactHandler);
+            $field.find('button').eq(1)
+                .data({"index": this.index})
+                .click(clickIconFieldHandler);
+            $field.find('button').eq(2)
+                .data({"index": this.index, "idevent": this.idevent})
+                .click(clickAddNoteHandler);
 
             return $field;
         },
@@ -166,7 +214,7 @@
                 var coord = feature.geometry.coordinates;
                 var d = _this.radTokm(dist[0]);
                 var cap = _this.cap(dist[0], _this.latLon[0], _this.latLon[1], coord[1], coord[0]) * 180 / Math.PI;
-                _this.listFeature.push(new Field(i, feature, d, cap));
+                _this.listFeature.push(new Field(i, _this, feature, d, cap));
             });
         }
 
@@ -1104,41 +1152,21 @@
                 for (var i = j * NB_RESULT_PIO_AFF; i <= ((j + 1) * NB_RESULT_PIO_AFF) - 1; i++) {
                     var ter = intPlan.get(i);
                     markersPIO.push(createIpMarker(i, ter.getCoord(), ter.getPopup()));
-                    var $ter = ter.getHtml();
-                    $ter.data({"index": i})
-                        .click(clickFieldHandler);
-                    $ter.find('textarea')
-                        .data({"index": i})
-                        .blur(blurCommentHandler);
-                    $ter.find('button').eq(0)
-                        .data({"index": i})
-                        .click(clickContactHandler);
-                    $ter.find('button').eq(1)
-                        .data({"index": i})
-                        .click(clickIconFieldHandler);
 
-                    var code = $ter.find('h5 strong').html();
-                    if (interrogatedfields) {
-                            $.each(interrogatedfields, function(key, val) {
-                            if (val["code"] == code) {
-                                // intPlan.addIp(i);
-                                // console.log($ter.find('button').eq(0));
-                                $ter.addClass('list-group-item-success')
-                                    .find('button').eq(0)
-                                    .toggleClass('btn-info')
-                                    .toggleClass('btn-danger')
-                                    .find('span')
-                                        .toggleClass('glyphicon-check')
-                                        .toggleClass('glyphicon-remove');
-
+                    if (interrogatedfields) 
+                    {
+                        $.each(interrogatedfields, function(key, val) {
+                            if (val["code"] == ter.getCode()) {
+                                intPlan.addIp(i);
+                                ter.setIdEvent(val['idevent']);
                                 $.each(val['updates'], function(key, val) {
-                                    $ter.find('.comment').show();
-                                    $ter.find('textarea')
-                                        .html(val['text']);
+                                    ter.addUpdate(val.created_on.date, val.text);
                                 });
                             }
                         });                  
                     }
+
+                    var $ter = ter.getHtml();
 
                     if (i == 0) {
                         var initCoord = intPlan.get(0).getCoord();
@@ -1177,75 +1205,6 @@
 
             $fEditIp.find('input').val('');
             $fEditIp.find('li').remove();
-        }
-
-        function clickIconFieldHandler() {
-            var coord = intPlan.get($(this).data().index).getCoord();
-            centerMap([coord[1], coord[0]], true);
-        }
-
-        function clickFieldHandler(e) {
-            var coord = intPlan.get($(this).data().index).getCoord();
-            var i = $(this).data('index');
-            var ter = intPlan.get(i);
-
-            icSel.options.iconSize = [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i];
-            mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], icSel, ter.getPopup());
-
-            $('.carousel-inner a.active').removeClass('active');
-            $(this).addClass('active');
-        }
-
-        function blurCommentHandler() {
-            intPlan.get($(this).data().index).addUpdate(moment(), $(this).val());
-            $.post(url + 'sarbeacons/addnote', {id: $(this).data('id'), text: $(this).val()}, function(data) {
-                noty({
-                    text: data['msg'],
-                    type: data['type'],
-                    timeout: 4000,
-                });    
-            });
-        }
-
-        function clickContactHandler() {
-            var $fOptCom = $(this).parent().find('.form-group');
-
-            $carInner.find('a.active')
-                .removeClass('active');
-            $(this)
-                .toggleClass('btn-info')
-                .toggleClass('btn-danger');
-            $(this).find('span')
-                .toggleClass('glyphicon-check')
-                .toggleClass('glyphicon-remove');
-            $(this).parent('.list-group-item')
-                .toggleClass('list-group-item-success')
-                .addClass('active');
-
-            if ($(this).hasClass('btn-danger')) {
-                $fOptCom.show();
-                intPlan.addIp($(this).data().index);
-                var field = intPlan.get($(this).data().index);
-                $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
-                    $fOptCom.find('textarea').data('id', data['id']);
-                    noty({
-                        text: data['msg'],
-                        type: data['type'],
-                        timeout: 4000,
-                    });    
-                })
-            } else {
-                $fOptCom.hide();
-                var field = intPlan.get($(this).data().index);
-                $.post(url + 'sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
-                    intPlan.delIp($(this).data().index);
-                    noty({
-                        text: data['msg'],
-                        type: data['type'],
-                        timeout: 4000,
-                    });    
-                })                
-            }
         }
 
         function createIpMarker(i, latlon, popuphtml) {
@@ -1432,5 +1391,93 @@
         //         });
         //     });
         // });
+    }
+
+    function clickIconFieldHandler() {
+        var coord = intPlan.get($(this).data().index).getCoord();
+        centerMap([coord[1], coord[0]], true);
+    }
+
+    function clickFieldHandler(e) {
+        var coord = intPlan.get($(this).data().index).getCoord();
+        var i = $(this).data('index');
+        var ter = intPlan.get(i);
+
+        icSel.options.iconSize = [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i];
+        mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], icSel, ter.getPopup());
+
+        $('.carousel-inner a.active').removeClass('active');
+        $(this).addClass('active');
+    }
+
+    function keyCommentHandler(e) {
+        var $btnAddNote = ($(this).parent().next());
+        if ($(this).val() && $btnAddNote.hasClass('cache')) $btnAddNote.removeClass('cache');
+        if (!$(this).val() && !$btnAddNote.hasClass('cache')) $btnAddNote.addClass('cache');
+    }
+
+    function clickAddNoteHandler() {
+        var $ter = $(this).parent();
+        var index = $(this).data().index;
+        var note = $(this).prev().find('textarea').val();
+
+        $.post(url + 'sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
+            intPlan.get(index).addUpdate(moment(), note);
+            $ter.parent().find('a').eq(index).after(intPlan.get(index).getHtml());
+            $ter.remove();
+
+            noty({
+                text: data['msg'],
+                type: data['type'],
+                timeout: 4000,
+            });    
+        });
+    }
+
+    function clickContactHandler() {
+        // var $fOptCom = $(this).parent().find('.form-group');
+        var index = $(this).data().index;
+        var field = intPlan.get(index);
+        var $ter = $(this).parent();
+        // $carInner.find('a.active')
+        //     .removeClass('active');
+        // $(this)
+        //     .toggleClass('btn-info')
+        //     .toggleClass('btn-danger');
+        // $(this).find('span')
+        //     .toggleClass('glyphicon-check')
+        //     .toggleClass('glyphicon-remove');
+        // $(this).parent('.list-group-item')
+        //     .toggleClass('list-group-item-success')
+        //     .addClass('active');
+
+        if (!$(this).hasClass('btn-danger')) {
+            // $fOptCom.show();
+            
+            $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
+                // $fOptCom.find('textarea').data('id', data['id']);
+                field.setIdEvent(data['id']);
+                intPlan.addIp(index);
+                $ter.parent().find('a').eq(index).after(field.getHtml());
+                $ter.remove();
+                noty({
+                    text: data['msg'],
+                    type: data['type'],
+                    timeout: 4000,
+                });    
+            })
+        } else {
+            // $fOptCom.hide();
+            $.post(url + 'sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
+                intPlan.delIp(index);
+                $ter.parent().find('a').eq(index).after(field.getHtml());
+                $ter.remove();
+                noty({
+                    text: data['msg'],
+                    type: data['type'],
+                    timeout: 4000,
+                });    
+            })                
+        }
     }
 };

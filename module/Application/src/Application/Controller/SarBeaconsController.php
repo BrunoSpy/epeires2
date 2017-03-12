@@ -163,6 +163,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             foreach ($ip->getChildren() as $fieldEvent)
             {
                 $field = [
+                    'idevent' => $fieldEvent->getId(),
                     'start_date' => $fieldEvent->getStartDate(),
                     'updates' => []
                 ];
@@ -557,6 +558,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $msgType = 'error';
 
         $post = $this->getRequest()->getPost();
+        // print_r($post);
         $id = (int) $post['id'];
         if ($id > 0) 
         {
