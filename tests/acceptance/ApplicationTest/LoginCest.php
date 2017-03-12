@@ -23,6 +23,7 @@ class LoginCest
         $I->seeElement("#navbar-first-collapse");
         $I->click('Non connecté');
         $I->click('#openloginwindow');
+        $I->waitForElementVisible('#loginwindow');
         $I->submitForm('#loginwindow form', array(
             'identity' => 'admin',
             'credential' => 'adminadmin'

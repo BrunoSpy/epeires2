@@ -15,8 +15,9 @@ coverage:
     enabled: true
     whitelist:
       include:
-        - module/*
+        - module/*.php
       exclude:
         - module/Application/config/module.config.php
         - module/Application/language/*
         - module/Application/Module.php
+        - module/Application/public/*
