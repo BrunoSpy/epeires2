@@ -67,3 +67,9 @@ test:7.0:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.1:
+  image: php:7.1-apache
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
