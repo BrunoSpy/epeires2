@@ -1030,16 +1030,16 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.4.26",
+            "version": "v2.4.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "983dd85d6860f87fb7dffd0d9f7ad1462e20a09d"
+                "reference": "fe152e1239f2f46287d369e43cc9fa817cc3cd36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/983dd85d6860f87fb7dffd0d9f7ad1462e20a09d",
-                "reference": "983dd85d6860f87fb7dffd0d9f7ad1462e20a09d",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/fe152e1239f2f46287d369e43cc9fa817cc3cd36",
+                "reference": "fe152e1239f2f46287d369e43cc9fa817cc3cd36",
                 "shasum": ""
             },
             "require": {
@@ -1051,9 +1051,8 @@
                 "doctrine/common": ">=2.5.0",
                 "doctrine/mongodb-odm": ">=1.0.2",
                 "doctrine/orm": ">=2.5.0",
-                "phpunit/phpunit": "~4.4",
-                "phpunit/phpunit-mock-objects": "~2.3",
-                "symfony/yaml": "~2.6"
+                "phpunit/phpunit": "*",
+                "symfony/yaml": "~2.6|~3.0"
             },
             "suggest": {
                 "doctrine/mongodb-odm": "to use the extensions with the MongoDB ODM",
@@ -1105,7 +1104,7 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2016-12-21T13:46:54+00:00"
+            "time": "2017-03-22T09:48:22+00:00"
         },
         {
             "name": "kipperlenny/opentbs-bundle",
@@ -1167,7 +1166,7 @@
             "support": {
                 "source": "https://github.com/Kipperlenny/OpenTBSBundle/tree/master"
             },
-            "time": "2015-03-08 23:57:01"
+            "time": "2015-03-08T23:57:01+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -1388,7 +1387,7 @@
             "support": {
                 "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/master"
             },
-            "time": "2016-08-02 12:33:14"
+            "time": "2016-08-02T12:33:14+00:00"
         },
         {
             "name": "netiul/dompdf-module",
@@ -1447,7 +1446,7 @@
                 "pdf",
                 "zf2"
             ],
-            "time": "2016-04-30 08:29:02"
+            "time": "2016-04-30T08:29:02+00:00"
         },
         {
             "name": "ocramius/proxy-manager",
@@ -4114,27 +4113,27 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.8.2",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "99b528e01276054458da9553b587cfb959dfa436"
+                "reference": "b71641582297eab52753b72cd4eb45a5ded4485c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/99b528e01276054458da9553b587cfb959dfa436",
-                "reference": "99b528e01276054458da9553b587cfb959dfa436",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/b71641582297eab52753b72cd4eb45a5ded4485c",
+                "reference": "b71641582297eab52753b72cd4eb45a5ded4485c",
                 "shasum": ""
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^2.7.6 || ^3.1"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "^4.0",
+                "phpunit/phpunit": "^6.0.8 || ^5.7.15",
                 "zendframework/zend-cache": "^2.6.1",
+                "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-config": "^2.6",
                 "zendframework/zend-db": "^2.7",
                 "zendframework/zend-filter": "^2.6",
@@ -4146,20 +4145,20 @@
                 "zendframework/zend-uri": "^2.5"
             },
             "suggest": {
-                "zendframework/zend-db": "Zend\\Db component",
+                "zendframework/zend-db": "Zend\\Db component, required by the (No)RecordExists validator",
                 "zendframework/zend-filter": "Zend\\Filter component, required by the Digits validator",
-                "zendframework/zend-i18n": "Zend\\I18n component to allow translation of validation error messages as well as to use the various Date validators",
+                "zendframework/zend-i18n": "Zend\\I18n component to allow translation of validation error messages",
                 "zendframework/zend-i18n-resources": "Translations of validator messages",
-                "zendframework/zend-math": "Zend\\Math component",
+                "zendframework/zend-math": "Zend\\Math component, required by the Csrf validator",
                 "zendframework/zend-servicemanager": "Zend\\ServiceManager component to allow using the ValidatorPluginManager and validator chains",
-                "zendframework/zend-session": "Zend\\Session component",
+                "zendframework/zend-session": "Zend\\Session component, required by the Csrf validator",
                 "zendframework/zend-uri": "Zend\\Uri component, required by the Uri and Sitemap\\Loc validators"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev",
-                    "dev-develop": "2.9-dev"
+                    "dev-master": "2.9-dev",
+                    "dev-develop": "2.10-dev"
                 },
                 "zf": {
                     "component": "Zend\\Validator",
@@ -4181,7 +4180,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2017-01-29T17:24:24+00:00"
+            "time": "2017-03-17T10:15:50+00:00"
         },
         {
             "name": "zendframework/zend-version",
@@ -4235,29 +4234,29 @@
         },
         {
             "name": "zendframework/zend-view",
-            "version": "2.8.1",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-view.git",
-                "reference": "71b4ebd0c4c9a2d0e0438f9d3a435e08dd769ff8"
+                "reference": "3b6342c381c4437a03fc81d0064c0bb8924914d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-view/zipball/71b4ebd0c4c9a2d0e0438f9d3a435e08dd769ff8",
-                "reference": "71b4ebd0c4c9a2d0e0438f9d3a435e08dd769ff8",
+                "url": "https://api.github.com/repos/zendframework/zend-view/zipball/3b6342c381c4437a03fc81d0064c0bb8924914d3",
+                "reference": "3b6342c381c4437a03fc81d0064c0bb8924914d3",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
+                "php": "^5.6 || ^7.0",
                 "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
                 "zendframework/zend-loader": "^2.5",
                 "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "^4.5",
+                "phpunit/phpunit": "^5.7.15 || ^6.0.8",
                 "zendframework/zend-authentication": "^2.5",
                 "zendframework/zend-cache": "^2.6.1",
+                "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-config": "^2.6",
                 "zendframework/zend-console": "^2.6",
                 "zendframework/zend-escaper": "^2.5",
@@ -4299,8 +4298,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev",
-                    "dev-develop": "2.9-dev"
+                    "dev-master": "2.9-dev",
+                    "dev-develop": "3.0-dev"
                 }
             },
             "autoload": {
@@ -4318,7 +4317,7 @@
                 "view",
                 "zf2"
             ],
-            "time": "2016-06-30T22:28:07+00:00"
+            "time": "2017-03-21T15:05:56+00:00"
         },
         {
             "name": "zf-commons/zfc-base",
@@ -4582,7 +4581,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2016-07-30 13:59:10"
+            "time": "2016-07-30T13:59:10+00:00"
         },
         {
             "name": "zfcampus/zf-api-problem",
@@ -5607,16 +5606,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "2.2.9",
+            "version": "2.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "0204f1362040d3e408404af2545e5fa27e8964e2"
+                "reference": "c32a3f92834db08ceedb4666ea2265c3aa43396e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/0204f1362040d3e408404af2545e5fa27e8964e2",
-                "reference": "0204f1362040d3e408404af2545e5fa27e8964e2",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/c32a3f92834db08ceedb4666ea2265c3aa43396e",
+                "reference": "c32a3f92834db08ceedb4666ea2265c3aa43396e",
                 "shasum": ""
             },
             "require": {
@@ -5631,6 +5630,7 @@
                 "phpunit/phpunit": ">4.8.20 <6.0",
                 "sebastian/comparator": "~1.1",
                 "sebastian/diff": "^1.4",
+                "stecman/symfony-console-completion": "^0.7.0",
                 "symfony/browser-kit": ">=2.7 <4.0",
                 "symfony/console": ">=2.7 <4.0",
                 "symfony/css-selector": ">=2.7 <4.0",
@@ -5695,7 +5695,7 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2017-02-04T02:04:21+00:00"
+            "time": "2017-03-25T03:19:52+00:00"
         },
         {
             "name": "doctrine/data-fixtures",
@@ -5756,34 +5756,37 @@
         },
         {
             "name": "facebook/webdriver",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facebook/php-webdriver.git",
-                "reference": "77300c4ab2025d4316635f592ec849ca7323bd8c"
+                "reference": "3ea034c056189e11c0ce7985332a9f4b5b2b5db2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/77300c4ab2025d4316635f592ec849ca7323bd8c",
-                "reference": "77300c4ab2025d4316635f592ec849ca7323bd8c",
+                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/3ea034c056189e11c0ce7985332a9f4b5b2b5db2",
+                "reference": "3ea034c056189e11c0ce7985332a9f4b5b2b5db2",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
+                "ext-zip": "*",
                 "php": "^5.5 || ~7.0",
                 "symfony/process": "^2.8 || ^3.1"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^1.11",
+                "friendsofphp/php-cs-fixer": "^2.0",
                 "php-mock/php-mock-phpunit": "^1.1",
                 "phpunit/phpunit": "4.6.* || ~5.0",
                 "satooshi/php-coveralls": "^1.0",
                 "squizlabs/php_codesniffer": "^2.6"
             },
-            "suggest": {
-                "phpdocumentor/phpdocumentor": "2.*"
-            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-community": "1.5-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Facebook\\WebDriver\\": "lib/"
@@ -5793,7 +5796,7 @@
             "license": [
                 "Apache-2.0"
             ],
-            "description": "A PHP client for WebDriver",
+            "description": "A PHP client for Selenium WebDriver",
             "homepage": "https://github.com/facebook/php-webdriver",
             "keywords": [
                 "facebook",
@@ -5801,7 +5804,7 @@
                 "selenium",
                 "webdriver"
             ],
-            "time": "2017-01-13T15:48:08+00:00"
+            "time": "2017-03-22T10:56:03+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -5918,16 +5921,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855"
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/0d6c7ca039329247e4f0f8f8f6506810e8248855",
-                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
                 "shasum": ""
             },
             "require": {
@@ -5979,7 +5982,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-02-27T10:51:17+00:00"
+            "time": "2017-03-20T17:10:46+00:00"
         },
         {
             "name": "hounddog/doctrine-data-fixture-module",
@@ -6034,7 +6037,7 @@
             "support": {
                 "source": "https://github.com/BrunoSpy/DoctrineDataFixtureModule/tree/master"
             },
-            "time": "2016-08-02 12:28:56"
+            "time": "2016-08-02T12:28:56+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6538,16 +6541,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.15",
+            "version": "5.7.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "b99112aecc01f62acf3d81a3f59646700a1849e5"
+                "reference": "68752b665d3875f9a38a357e3ecb35c79f8673bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b99112aecc01f62acf3d81a3f59646700a1849e5",
-                "reference": "b99112aecc01f62acf3d81a3f59646700a1849e5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/68752b665d3875f9a38a357e3ecb35c79f8673bf",
+                "reference": "68752b665d3875f9a38a357e3ecb35c79f8673bf",
                 "shasum": ""
             },
             "require": {
@@ -6616,7 +6619,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-03-02T15:22:43+00:00"
+            "time": "2017-03-19T16:52:12+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -7244,6 +7247,51 @@
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
             "time": "2015-06-21T13:59:46+00:00"
+        },
+        {
+            "name": "stecman/symfony-console-completion",
+            "version": "0.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stecman/symfony-console-completion.git",
+                "reference": "5461d43e53092b3d3b9dbd9d999f2054730f4bbb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stecman/symfony-console-completion/zipball/5461d43e53092b3d3b9dbd9d999f2054730f4bbb",
+                "reference": "5461d43e53092b3d3b9dbd9d999f2054730f4bbb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/console": "~2.3 || ~3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stecman\\Component\\Symfony\\Console\\BashCompletion\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Holdaway",
+                    "email": "stephen@stecman.co.nz"
+                }
+            ],
+            "description": "Automatic BASH completion for Symfony Console Component based applications.",
+            "time": "2016-02-24T05:08:54+00:00"
         },
         {
             "name": "symfony/browser-kit",
