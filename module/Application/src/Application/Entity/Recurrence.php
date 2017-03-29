@@ -174,10 +174,10 @@ class Recurrence
                 //DTSTART and UNTIL must have the same type
                 $time = $this->getStartdate()->format('\THis\Z');
                 $newpattern = substr_replace($this->getRecurrencePattern(), $time, $untilpos + 6 + 8, 0);
-                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
+                $rule = 'DTSTART;TZID=GMT:' . $this->getStartdate()->format('Ymd\THis') . '
                  RRULE:' . $newpattern;
             } else {
-                $rule = 'DTSTART;TZID=Etc/GMT:' . $this->getStartdate()->format('Ymd\THis') . '
+                $rule = 'DTSTART;TZID=GMT:' . $this->getStartdate()->format('Ymd\THis') . '
                  RRULE:' . $this->getRecurrencePattern();
             }
             $this->rrule = new RRule($rule);
@@ -203,6 +203,7 @@ class Recurrence
      */
     public function getHumanReadable()
     {
+        error_log($this->getRRule()->rfcString());
         return $this->getRRule()->humanReadable(array('locale' => 'fr'));
     }
 
