@@ -203,7 +203,6 @@ class Recurrence
      */
     public function getHumanReadable()
     {
-        error_log($this->getRRule()->rfcString());
         return $this->getRRule()->humanReadable(array('locale' => 'fr'));
     }
 
