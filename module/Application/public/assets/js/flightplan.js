@@ -1,6 +1,36 @@
 var flightplan = function(url) 
 {
     "use strict";
+    $("#create-link").click(function() {
+        removeAlertField();
+        setClickSubmit();
+    });
+
+    function setClickSubmit() {
+        var $sub = $('input[name="submit"]');
+        if($sub.length > 0) {
+            $sub.click(function(){
+                setTimeout(refresh, 1000);
+            });
+        }   
+        else {
+            setTimeout(setClickSubmit, 200);
+        }
+    }
+
+    function removeAlertField() 
+    {
+        var $alertfield = $("#custom_fields>div.form-group>label")
+            .filter(function(){
+                return ($(this).html() == "Alerte :");
+            });
+        if($alertfield.length > 0) {
+            $alertfield.parent().remove();
+        }
+        else {
+            setTimeout(removeAlertField, 200);
+        }
+    }
     //TODO voir pour editer en cliquant sur la ligne
     //$('tr').draggable().click(modFpHandler);
     var idEvent = 0;
@@ -42,11 +72,14 @@ var flightplan = function(url)
                 });
             }
         );      
-    });
-    refresh(); 
+    }); 
 
+    refresh(); 
+    
     function refresh() 
     {
+         // setTimeout(refresh(), 15000);
+
         $('.a-trig-alt .a-end-fp .a-end-alt').remove();
 
         $tableFp.load(url+'flightplans/get', {date: globdate, sar: isSar}, function() 
