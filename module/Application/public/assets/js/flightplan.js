@@ -38,8 +38,8 @@ var flightplan = function(url)
     var $iDate = $('#i-date');
     var $tableFp = $('.panel-body table');
     //TODO BOF
-    var isSar = window.location.href.search('sar');
-    if(isSar == -1) isSar = 0; else isSar = 1;
+    // var isSar = window.location.href.search('sar');
+    // if(isSar == -1) isSar = 0; else isSar = 1;
 
     $('#a-end-fp-ok').click(function()
     {
@@ -82,48 +82,49 @@ var flightplan = function(url)
 
         $('.a-trig-alt .a-end-fp .a-end-alt').remove();
 
-        $tableFp.load(url+'flightplans/get', {date: globdate, sar: isSar}, function() 
-        {
-            var $btnAlts = $(".a-trig-alt");
-            // $.each($btnAlts, function() {
-            //     if ($(this).hasClass('active-alt')) {
-            //         $(this).tooltip();
-            //         return false;
-            //     }
-            // });
+        $('.sar').load(url+'flightplans/get', {date: globdate, sar:1}, function() {
+            $('.nosar').load(url+'flightplans/get', {date: globdate, sar:0}, function() {
+                var $btnAlts = $(".a-trig-alt");
+                // $.each($btnAlts, function() {
+                //     if ($(this).hasClass('active-alt')) {
+                //         $(this).tooltip();
+                //         return false;
+                //     }
+                // });
 
-            $btnAlts.click(function() {
-                $('#s-trig-alt').html($(this).data('type'));
-                $('#s-trig-airid').html($(this).data('air-id'));
-                $('#t-causealt').val($(this).data('original-title'));
-                idEvent = $(this).data('id');
-            }).tooltip();
+                $btnAlts.click(function() {
+                    $('#s-trig-alt').html($(this).data('type'));
+                    $('#s-trig-airid').html($(this).data('air-id'));
+                    $('#t-causealt').val($(this).data('original-title'));
+                    idEvent = $(this).data('id');
+                }).tooltip();
 
-            $('.a-end-fp').click(function() 
-            {
-                idEvent = $(this).data('id');
-                $('#s-end-airid').html($(this).data('air-id'));
-                $('input[name=end-date]')
-                    .timepickerform({
-                        'id':'start', 
-                        'clearable':true, 
-                        'init':true
-                    });    
-            });
+                $('.a-end-fp').click(function() 
+                {
+                    idEvent = $(this).data('id');
+                    $('#s-end-airid').html($(this).data('air-id'));
+                    $('input[name=end-date]')
+                        .timepickerform({
+                            'id':'start', 
+                            'clearable':true, 
+                            'init':true
+                        });    
+                });
 
-            $('.a-end-alt').click(function() {
-                $.post(
-                    url+'flightplans/endAlert', 
-                    {id: $(this).data('id')}, 
-                    function (data) {
-                        refresh();
-                        noty({
-                            text: data.msg,
-                            type: data.type,
-                            timeout: 4000,
-                        });
-                    }
-                );    
+                $('.a-end-alt').click(function() {
+                    $.post(
+                        url+'flightplans/endAlert', 
+                        {id: $(this).data('id')}, 
+                        function (data) {
+                            refresh();
+                            noty({
+                                text: data.msg,
+                                type: data.type,
+                                timeout: 4000,
+                            });
+                        }
+                    );    
+                });
             });
         });    
     }

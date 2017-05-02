@@ -86,7 +86,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $fpEvents = [];
         foreach ($allFpEvents as $fpEvent) 
         {
-            $push = true;
             $cat = $fpEvent->getCategory();
             $ev = [
                 'id' => $fpEvent->getId(),
@@ -99,10 +98,11 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 $namefield = (isset($customfield)) ? $customfield->getName() : null; 
                 $valuefield = $value->getValue();
                 (isset($namefield)) ? $ev[$namefield] = $valuefield : null;
-
+                // echo $customfield->getId();
+                // echo $cat->getAlertfield>getId();
                 if($customfield->getId() == $cat->getAlertfield()->getId()) 
                 {
-                    if($sar == true && $valuefield > 0) {
+                    if($valuefield > 0) {
                         $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
                         $ev['alert'] = [
                             'id' => $altEv->getId(),
@@ -116,11 +116,14 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                             (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
                         } 
                     }
-                    elseif($sar == true && !$valuefield) $push = false; 
-                    elseif($sar == false && $valuefield > 0) $push = false;
                 }
             }
-            if($push == true) $fpEvents[] = $ev;
+            if($sar == true && isset($ev['alert'])) $fpEvents[] = $ev;
+            if($sar == false && !isset($ev['alert'])) $fpEvents[] = $ev;            
+            // elseif($sar == true && !$valuefield) $push = false; 
+            // elseif($sar == false && $valuefield > 0) $push = false;
+            // if($push == true) 
+            // $fpEvents[] = $ev;
         }
         return $fpEvents;
     }
@@ -301,11 +304,11 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                     } else {
                         $msg = "Impossible de trouver le champ correspondant au type d'alerte.";
                     } 
-
                 } 
                 // création
                 else 
                 {
+
                     $now = new \DateTime('NOW');
                     $now->setTimezone(new \DateTimeZone("UTC"));
 
@@ -368,15 +371,27 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                         $this->em->persist($event);
                         try {
                             $this->em->flush();
-                            foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
-                            {
-                                if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
-                                {
-                                    $customfieldvalue->setValue($event->getId());
-                                    $this->em->persist($customfieldvalue);
-                                }
-                            }
+
+                            $alertvalue = new CustomFieldValue();
+                            $alertvalue->setEvent($fp);
+                            $alertvalue->setCustomField($this->getCat()->getAlertfield());
+                            $alertvalue->setValue($event->getId());
+                            $fp->addCustomFieldValue($alertvalue);
+                            $this->em->persist($alertvalue);
+                            $this->em->persist($fp);
                             $this->em->flush();
+                            // foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
+                            // {
+                            //     // echo $customfieldvalue->getId();
+
+                            //     echo $customfieldvalue->getCustomField()->getId();
+                            //     if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
+                            //     {
+                                    
+                            //         $this->em->persist($customfieldvalue);
+                            //     }
+                            // }
+                            // $this->em->flush();
                             $msgType = 'success';
                             $msg = "Alerte créée.";
                         } catch (\Exception $e) {

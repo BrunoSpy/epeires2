@@ -25,7 +25,6 @@ else {
 	    {
 	    	$tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
 	    	$bAlertes = ['info', 'warning', 'danger'];
-
 	    	foreach ($tAlertes as $index => $alt) 
 	    	{
 	    		$act = '';
@@ -33,7 +32,7 @@ else {
 	    		if(isset($fp['Type']) && $alt == $fp['Type']) {
 	    			
 	    			$act = 'active-alt';
-	    		} 	
+	    		}
 		    	?>
 		        <a title="<?php echo $title; ?>"" class="a-trig-alt <?php echo $act; ?>" href="#mdl-trig-fp" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-toggle="modal">
 		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
