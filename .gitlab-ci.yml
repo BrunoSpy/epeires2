@@ -4,8 +4,8 @@ cache:
 
 before_script:
 #use proxy cache
-- export http_proxy=http://proxy:3142
-- export https_proxy=https://proxy:3142
+- export http_proxy=http://apt-cacher:3142
+- export https_proxy=https://apt-cacher:3142
 #install git and unzip for composer, libmcrypt for php-mcrypt
 - apt-get update && apt-get install -qqy git unzip libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng12-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
 #ajout xvfb for selenium
