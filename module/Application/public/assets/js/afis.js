@@ -192,7 +192,7 @@ var afis = function(url) {
                 var tpl = $('#show-not').find('div').first().hide();
                 $('#show-not').find('div').slice(1).remove();
                 var code = $(this).data('code');
-                $("#title-show-not").html("Tous les NOTAMs pour " + code);
+                $("#title-show-not").html("Tous les NOTAM pour " + code);
                 $.get(url + 'afis/getnotams', {code: code}, function(data) {
                     var $n = $(data).find('font.NOTAMBulletin');
                     if ($n.length > 0) {
@@ -213,7 +213,7 @@ var afis = function(url) {
                         });
                     } else {
                         noty({
-                            text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAMs.',
+                            text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAM.',
                             type: 'error',
                             timeout: 4000,
                         });  
@@ -264,7 +264,7 @@ var afis = function(url) {
                             });
                         } else {
                             noty({
-                                text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAMs.',
+                                text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAM.',
                                 type: 'error',
                                 timeout: 4000,
                             });  
