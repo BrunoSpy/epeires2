@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
@@ -331,9 +332,6 @@ class AfisController extends AbstractEntityManagerAwareController
         } else {
             $msg = "Requête incorrecte, impossible de trouver l'AFIS correspondant.";
         }
-        // } else {
-        //     $messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
-        // }
         return new JsonModel([
             'type' => $msgType, 
             'msg' => $msg
@@ -344,17 +342,36 @@ class AfisController extends AbstractEntityManagerAwareController
     {
         if (!$this->authAfis('read')) return new JsonModel();
 
+        // $post = [
+        //     'organisation' => 1,
+        //     'name' => "LAFL",
+        //     'id' => '',
+        //     'code' => 'LFFF',
+        //     'openedhours' => '15-22',
+        //     'contacts' => 'Sylvestre : 06060606',
+        //     'decommissionned' => 0
+        // ];
         $post = $this->getRequest()->getPost();
         $afis = $this->validateAfis($post);
 
-        if(is_a($afis, Afis::class)) {
-            return new JsonModel($this->repo->save($afis));
-        } else {
-            return new JsonModel([
-                'type' => 'error', 
-                'msg' => $this->showErrors()
-            ]);
-        }
+        $msgType = 'error';
+        if(is_a($afis, Afis::class)) 
+        {     
+            $this->em->persist($afis);    
+            try 
+            {
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Terrain AFIS ajouté avec succès.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        } else $msg = "Impossible de trouver l'AFIS à modifier ou d'en créer un nouveau.";
+
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]); 
     }
 
     public function deleteAction()
@@ -365,14 +382,24 @@ class AfisController extends AbstractEntityManagerAwareController
 
         $afis = $this->repo->find($id);
 
-        if(is_a($afis, Afis::class)) {
-            return new JsonModel($this->repo->del($afis));
-        } else {
-            return new JsonModel([
-                'type' => 'error', 
-                'msg' => 'Afis non existant'
-            ]);
-        }
+        $msgType = 'error';
+        if(is_a($afis, Afis::class)) 
+        {     
+            $this->em->remove($afis);    
+            try 
+            {
+                $this->em->flush();
+                $msgType = 'success';
+                $msg = "Terrain AFIS supprimé avec succès.";
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+        } else $msg = "Impossible de trouver l'AFIS à supprimer.";
+
+        return new JsonModel([
+            'type' => $msgType, 
+            'msg' => $msg
+        ]); 
     }
 
     private function authAfis($action) 
@@ -391,7 +418,8 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->form->isValid()) $ret = false;
         else 
         { 
-            $ret = $this->repo->hydrate($this->form->getData(), $afis);
+            $hydrator = new DoctrineHydrator($this->em);
+            $ret = $hydrator->hydrate($this->form->getData(), $afis);
         }
         return $ret;
     }
