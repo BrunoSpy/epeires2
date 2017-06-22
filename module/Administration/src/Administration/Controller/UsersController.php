@@ -90,7 +90,6 @@ class UsersController extends FormController
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             $user = $datas['user'];
-            
             if ($form->isValid()) {
                 if (isset($post['password'])) {
                     $bcrypt = new Bcrypt();
@@ -235,6 +234,7 @@ class UsersController extends FormController
                     ->getAllAsArray($user->getOrganisation()));
                 
                 $form->remove('password');
+                $form->getInputFilter()->remove('password');
                 $form->bind($user);
                 $form->setData($user->getArrayCopy());
             }
