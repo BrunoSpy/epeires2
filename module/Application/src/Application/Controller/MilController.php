@@ -82,6 +82,7 @@ class MilController extends AbstractEntityManagerAwareController
         $startImport = microtime(true);
         $totalDL = 0;
         $totalTR = 0;
+        $totalEvents = 0;
         echo "Lancement du téléchargement de l'AUP pour " . $organisation->getName()."\n";
 
         try {
@@ -136,17 +137,21 @@ class MilController extends AbstractEntityManagerAwareController
                     return;
                 }
                 $startEpeires = microtime(true);
+                
                 echo "Création des évènements ".$designator.' séquence '.$i." dans Epeires..."."\n";
+                $evts = 0;
                 foreach ($milcats as $cat) {
-                    $this->getEntityManager()->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+                    $evts += $this->getEntityManager()->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
                 }
                 $tr = microtime(true) - $startEpeires;
                 $totalTR += $tr;
-                echo "Evènements créés en ".$tr.' secondes'."\n";
+                echo $evts . " évènements créés en ".$tr.' secondes'."\n";
+                $totalEvents += $evts;
             }
         }
         echo "Fin de l'import de l'AUP en ".(microtime(true)-$startImport).' secondes'."\n";
         echo 'Téléchargement : '.$totalDL.' secondes'."\n";
         echo 'Traitement : '.$totalTR.' secondes'."\n";
+        echo "Nombre d'évènements créés : ".$totalEvents."\n";
     }
 }

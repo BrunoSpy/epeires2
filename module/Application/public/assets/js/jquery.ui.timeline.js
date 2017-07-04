@@ -109,6 +109,10 @@
          */
         lastupdate: 0,
         /**
+         * Cache the width of hours elt
+         */
+        outerWidthHour: 0,
+        /**
          *
          */
         lastUpdateTimebar: undefined,
@@ -250,12 +254,12 @@
                 self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
             });
 
-            $(window).scroll(function(){
+            /*$(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
                 $("#timeline-background").css('top', $(window).scrollTop());
             });
-
+            */
             $(window).scroll(function(){
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
             });
@@ -1542,14 +1546,15 @@
          */
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
-            //remove tooltips before
-            elmt.find('span.badge.recurrence').tooltip('destroy');
-            elmt.tooltip('destroy');
-            elmt.fadeOut(function () {
-
-                //remove from DOM
-                $(this).remove();
-            });
+            if(elmt.size() > 0) {
+                //remove tooltips before
+                elmt.find('span.badge.recurrence').tooltip('destroy');
+                elmt.tooltip('destroy');
+                elmt.fadeOut(function () {
+                    //remove from DOM
+                    $(this).remove();
+                });
+            }
         },
         /**
          * Get new and modified events every 10 seconds
@@ -1730,8 +1735,8 @@
             var txtOffset = 17*3
                 + 2 //padding
                 + 1;
-            var debWidth = this._outerWidth(elmt_deb) + 2; //2 pixels pour décoller du rectangle
-            var endWidth = this._outerWidth(elmt_fin) + 2; //idem
+            var debWidth = this._outerWidthHour(elmt_deb) + 2; //2 pixels pour décoller du rectangle
+            var endWidth = this._outerWidthHour(elmt_fin) + 2; //idem
 
             if(event.punctual) {
 
@@ -1954,6 +1959,7 @@
             } else if (event.outside === 2 && event.hourEndForced == false) { //right
                 event.xleft += debWidth;
             }
+
         },
         /**
          * Remove label and update size
@@ -2353,13 +2359,24 @@
                 return false;
             }
         },
-        _computeTextSize: function (str, font, fontWeight, fontSize) {
+        _computeTextSizeDOM: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);
             fakeEl.text(str).css({'font' : font,
                                 'font-weight' : fontWeight,
                                 'font-size' : fontSize});
             var size = fakeEl.width();
             fakeEl.remove();
+            return size;
+        },
+        _computeTextSize: function (str, font, fontWeight, fontSize) {
+            if (!jQuery._cacheCanvas) {
+                var canvas = document.createElement('canvas');
+                var docFragment = document.createDocumentFragment();
+                docFragment.appendChild(canvas);
+                jQuery._cacheCanvas = canvas;
+            }
+            jQuery._cacheCanvas.getContext("2d").font = fontWeight + " " + fontSize + " " + font;
+            var size = jQuery._cacheCanvas.getContext("2d").measureText(str).width;
             return size;
         },
         /**
@@ -2370,6 +2387,12 @@
          */
         _getCSSWidth: function (element) {
             return element.clone().appendTo('body').wrap('<div style="display: none"></div>').css('width');
+        },
+        _outerWidthHour: function(object) {
+          if(this.outerWidthHour == 0) {
+              this.outerWidthHour = this._outerWidth(object);
+          }
+          return this.outerWidthHour;
         },
         _outerWidth: function(object){
             var fakediv = $('<div>').hide().appendTo(document.body);

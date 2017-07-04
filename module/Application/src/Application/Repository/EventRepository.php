@@ -1236,6 +1236,7 @@ class EventRepository extends ExtendedRepository
      */
     public function addZoneMilEvents(EAUPRSAs $eauprsas, \Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, &$messages = null)
     {
+        $addedEvents = 0;
         foreach ($eauprsas->getAirspacesWithDesignator($cat->getFilter()) as $airspace) {
             $designator = (string) EAUPRSAs::getAirspaceDesignator($airspace);
             if (preg_match($cat->getZonesRegex(), $designator)) {
@@ -1248,9 +1249,11 @@ class EventRepository extends ExtendedRepository
                 // on en crée un nouveau
                 if (count($previousEvents) == 0) {
                     $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
+                    $addedEvents++;
                 }
             }
         }
+        return $addedEvents;
     }
 
     private function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, &$messages)
