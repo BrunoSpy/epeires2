@@ -56,7 +56,7 @@ class Version20151022111357 extends AbstractMigration
                 'name' => "Couleur",
                 'place' => 3,
                 'defaultvalue' => "",
-                'multiple' => false,
+                'multiple' => 0,
                 'tooltip' => ""
             ));
             $fieldid = $this->connection->lastInsertId();

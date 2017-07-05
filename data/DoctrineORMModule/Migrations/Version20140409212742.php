@@ -33,10 +33,10 @@ class Version20140409212742 extends AbstractMigration
         $stmt = $this->connection->executeQuery("SELECT id FROM customfieldtypes WHERE type = ?", array('text'));
         $textid = $stmt->fetch()['id'];
         
-        $this->connection->insert('customfields', array('type_id' => $stringid, 'name' => 'Nom', 'place' => 1));
+        $this->connection->insert('customfields', array('type_id' => $stringid, 'name' => 'Nom', 'place' => 1, 'defaultvalue' => ''));
         $nameid = $this->connection->lastInsertId();
 
-        $this->connection->insert('customfields', array('type_id' => $textid, 'name' => 'Commentaire', 'place' => 2));
+        $this->connection->insert('customfields', array('type_id' => $textid, 'name' => 'Commentaire', 'place' => 2, 'defaultvalue' => ''));
         $commentid = $this->connection->lastInsertId();
         
         $stmt = $this->connection->executeQuery("SELECT MAX(`place`) as place FROM `categories` WHERE `parent_id` is null");

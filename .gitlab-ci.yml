@@ -35,9 +35,6 @@ before_script:
 - composer install --no-interaction --prefer-dist
 #configure database
 - cp config/autoload/doctrine.gitlab-ci.php config/autoload/doctrine.local.php
-#configure Mysql
-- echo sql-mode="NO_ENGINE_SUBSTITUTION" >> /etc/mysql/my.ini
-- service mysqld restart
 #populate database
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
