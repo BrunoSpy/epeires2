@@ -20,10 +20,6 @@
 	height: 100%;
 }
 
-#timeline-base {
-	position: fixed;
-}
-
 .Base {
 	position:absolute;
 	z-index: 2;

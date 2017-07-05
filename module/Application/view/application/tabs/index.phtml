@@ -150,6 +150,19 @@ if($this->cats) {
 } else {
     echo 'cats = null;';
 }
+
+if($this->view == "24") {
+    //echo '$("#viewday").trigger("click");';
+    if($this->day !== null) {
+        echo '$("#calendar input[type=text].date").val('.$this->day.');';
+        echo '$("#calendar").show();';
+        echo '$("#export").show();';
+        echo '$("#viewsix").prop("checked", false).parent().removeClass("active");';
+        echo '$("#viewday").prop("checked", true).parent().addClass("active");';
+        //echo '$("#calendar input[type=text].date").trigger("change");';
+    }
+}
+
 if($this->onlyroot) {
     echo 'var onlyroot = 1';
 } else {
@@ -170,17 +183,10 @@ $('#timeline').timeline({
     leftOffset: 120,
     rightOffset: 85,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
+    view: '<?php echo ($this->view == "24" ? 'day' : ''); ?>',
+    day: <?php echo ($this->day !== null ? $this->day : ''); ?>,
     initComplete: function(){
         $("#timeline .loading").hide();
-        <?php
-        if($this->view == "24") {
-            echo '$("#viewday").trigger("click");';
-            if($this->day !== null) {
-                echo '$("#calendar input[type=text].date").val('.$this->day.');';
-                echo '$("#calendar input[type=text].date").trigger("change");';
-            }
-        }
-        ?>
     }
 });
 //init form

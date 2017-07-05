@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.0.2",
+        version: "1.1.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -155,7 +155,9 @@
             showCategories: true,
             showOnlyRootCategories: true,
             category: "",
-            compact: false
+            compact: false,
+            view: "",
+            day: "",
         },
         //Main function
         //Initialize the timeline
@@ -214,8 +216,39 @@
                         return 0;
                     }
                 });
+
+                var urlday = '';
+                if(self.options.view == "day") {
+                    self.dayview = true;
+                    if (self.options.day === undefined) {
+                        self.currentDay = new Date(); //now
+                    } else {
+                        var temp = self.options.day.split('/');
+                        var tempday = new Date(temp[2], temp[1] - 1, temp[0], "5");
+                        if (self._isValidDate(tempday)) {
+                            self.currentDay = tempday;
+                        } else {
+                            var now = new Date();
+                            self.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                        }
+                    }
+                    var now = new Date();
+                    if(Math.floor((now.getTime() - self.currentDay.getTime())/(1000*60*60*24)) !== 0){
+                        self.element.find("#timeline-background").addClass('anotherday');
+                    } else {
+                        self.element.find("#timeline-background").removeClass('anotherday');
+                    }
+
+                    var url = self.options.eventUrl;
+
+                    if(url.indexOf('?') > 0){
+                        urlday = '&day=' + self.currentDay.toUTCString();
+                    } else {
+                        urlday = '?day=' + self.currentDay.toUTCString();
+                    }
+                }
                 //get events and display them
-                $.when($.getJSON(self.options.eventUrl,
+                $.when($.getJSON(self.options.eventUrl + urlday,
                     function (data, textStatus, jqHXR) {
                         if (jqHXR.status !== 304) {
                             var pos = 0;
@@ -254,16 +287,16 @@
                 self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
             });
 
-            /*$(window).scroll(function(){
+            $(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
-                $("#timeline-background").css('top', $(window).scrollTop());
+                //$("#timeline-background").css('top', $(window).scrollTop());
             });
-            */
+/*
             $(window).scroll(function(){
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
             });
-
+*/
             //gestion des évènements souris
             this.element.on({
                 mouseenter: function () {
