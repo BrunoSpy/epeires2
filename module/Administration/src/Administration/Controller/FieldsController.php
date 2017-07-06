@@ -34,10 +34,12 @@ class FieldsController extends FormController
 {
 
     private $entityManager;
+    private $customfieldservice;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, $customfield)
     {
         $this->entityManager = $entityManager;
+        $this->customfieldservice = $customfield;
     }
 
     public function getEntityManager()
@@ -115,7 +117,6 @@ class FieldsController extends FormController
         $returnRoute = $this->params()->fromQuery('return', null);
         
         $objectManager = $this->getEntityManager();
-        $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -137,7 +138,7 @@ class FieldsController extends FormController
                     $customfield->setType($objectManager->getRepository('Application\Entity\CustomFieldType')
                         ->find($post['type']));
                 }
-                if (! $customfieldservice->isMultipleAllowed($customfield)) {
+                if (! $this->customfieldservice->isMultipleAllowed($customfield)) {
                     $customfield->setMultiple(false);
                 }
                 $objectManager->persist($customfield);
@@ -185,8 +186,7 @@ class FieldsController extends FormController
         $getform = $this->getForm($id, $categoryid);
         $form = $getform['form'];
         $customfield = $getform['customfield'];
-        $customfieldservice = $this->getServiceLocator()->get('CustomFieldService');
-        if (! $customfieldservice->isMultipleAllowed($customfield)) {
+        if (! $this->customfieldservice->isMultipleAllowed($customfield)) {
             $form->get('multiple')->setAttribute('disabled', 'disabled');
         }
         $viewmodel->setVariables(array(
