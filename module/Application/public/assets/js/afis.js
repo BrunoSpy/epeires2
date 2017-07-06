@@ -116,7 +116,9 @@ var afis = function(url) {
     $fEditAf.on('submit', submitHandler);
     refresh();
 
-    function refresh() {
+    function refresh() 
+    {
+
         $('.btn-switch-af .a-edit-af .a-del-af').remove();
         if ($tUsrbody.length > 0)
             $tUsrbody
@@ -194,7 +196,13 @@ var afis = function(url) {
                 var code = $(this).data('code');
                 $("#title-show-not").html("Tous les NOTAM pour " + code);
                 $.get(url + 'afis/getnotams', {code: code}, function(data) {
-                    var $n = $(data).find('font.NOTAMBulletin');
+                    noty({
+                        text: data.msg,
+                        type: data.msgType,
+                        timeout: 4000,
+                    });
+
+                    var $n = $(data.notams).find('font.NOTAMBulletin');
                     if ($n.length > 0) {
                         notams = new ListNotam();
                         $.each($n, function(i) {
@@ -211,9 +219,10 @@ var afis = function(url) {
                             div.show()
                                 .appendTo($('#show-not'));    
                         });
-                    } else {
+                    } 
+                    else {
                         noty({
-                            text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAM.',
+                            text: 'Pas de NOTAM disponibles',
                             type: 'error',
                             timeout: 4000,
                         });  
@@ -221,6 +230,14 @@ var afis = function(url) {
                 });
             });
         }
+
+        $.get(url + 'afis/testNotam', function(data) {
+            if (data.accesNotam == 1) {
+                $('.btn-notam')
+                    .removeClass('disabled btn-warning').prop('disabled', false)
+                    .addClass('btn-primary');    
+            }
+        });
     }
 
     $("#btn-add-af").click(function() {
