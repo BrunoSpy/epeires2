@@ -164,7 +164,7 @@ $('#timeline').timeline({
     leftOffset: 120,
     rightOffset: 85,
     view: '<?php echo ($this->view == "24" ? 'day' : ''); ?>',
-    day: <?php echo ($this->day !== null ? $this->day : ''); ?>,
+    day: '<?php echo ($this->day !== null ? str_replace('"','',$this->day) : ""); ?>',
     initComplete: function(){
         $("#timeline .loading").hide();
     }
