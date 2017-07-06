@@ -26,14 +26,13 @@ use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Stdlib\Parameters;
 
-
 use Application\Services\CustomFieldService;
 use Application\Form\CustomFieldset;
 
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
-
 use Application\Entity\Organisation;
+
 use Application\Entity\AfisCategory;
 use Application\Entity\Afis;
 /**
@@ -59,6 +58,8 @@ class AfisController extends AbstractEntityManagerAwareController
                     ->getRepository(Organisation::class)
                     ->getAllAsArray()
                 );
+
+
 
         $categories = $this->em->getRepository(AfisCategory::class)->findBy([
             'defaultafiscategory' => true
@@ -109,9 +110,31 @@ class AfisController extends AbstractEntityManagerAwareController
         if (!$this->authAfis('read')) return new JsonModel();
 
     }
+    public function testNotamAction() 
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR',
+            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+        ]);
+
+        $output = curl_exec($curl);
+
+        $res = ($output === false) ? 0 : 1;
+
+        curl_close($curl);
+
+        return new JsonModel([
+            'accesNotam' => $res, 
+        ]);
+
+    }
 
     public function getnotamsAction() 
     {
+
         $code = $this->params()->fromQuery('code');
         // $code = "LFOP";
         $fields = [
@@ -141,6 +164,7 @@ class AfisController extends AbstractEntityManagerAwareController
         foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
         rtrim($fields_string, '&');
 
+        $msgType = "error";
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -153,26 +177,38 @@ class AfisController extends AbstractEntityManagerAwareController
 
         $output = curl_exec($curl);
 
+        if ($output !== false) {
+            $content = preg_replace('/.*<body[^>]*>/msi','',$output);
+            $content = preg_replace('/<\/body>.*/msi','',$content);
+            $content = preg_replace('/<?\/body[^>]*>/msi','',$content);
+            $content = preg_replace('/<img[^>]+\>/i', '', $content);
+            // $content = preg_replace('/[\r|\n]+/msi','',$content);
+            $content = preg_replace('/<--[\S\s]*?-->/msi','',$content);
+            $content = preg_replace('/<noscript[^>]*>[\S\s]*?'.
+                                  '<\/noscript>/msi',
+                                  '',$content);
+            $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
+                                  '',$content);
+            $content = preg_replace('/<script.*\/>/msi','',$content);
+
+            $msgType = "success";
+            $msg = "NOTAM téléchargés.";
+        } else {
+            $msg = "Pas d'accès aux NOTAM.";
+            $content = "";
+        }
         curl_close($curl);
+        // return (new ViewModel())
+        //     ->setTerminal($this->getRequest()->isXmlHttpRequest())
+        //     ->setVariables([
 
-        $content = preg_replace('/.*<body[^>]*>/msi','',$output);
-        $content = preg_replace('/<\/body>.*/msi','',$content);
-        $content = preg_replace('/<?\/body[^>]*>/msi','',$content);
-        $content = preg_replace('/<img[^>]+\>/i', '', $content);
-        // $content = preg_replace('/[\r|\n]+/msi','',$content);
-        $content = preg_replace('/<--[\S\s]*?-->/msi','',$content);
-        $content = preg_replace('/<noscript[^>]*>[\S\s]*?'.
-                              '<\/noscript>/msi',
-                              '',$content);
-        $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
-                              '',$content);
-        $content = preg_replace('/<script.*\/>/msi','',$content);
+        //     ]);
 
-        return (new ViewModel())
-            ->setTerminal($this->getRequest()->isXmlHttpRequest())
-            ->setVariables([
-                'notams'   => $content 
-            ]);
+        return new JsonModel([
+            'msg'      => $msg,
+            'msgType'  => $msgType,
+            'notams'   => $content 
+        ]);
     }
 
     public function getAction() 
