@@ -20,6 +20,7 @@ namespace Application\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  *
@@ -50,5 +51,26 @@ class ExtendedRepository extends EntityRepository
             $res[$element->getId()] = $element->getName();
         }
         return $res;
+    }
+    
+    public function getItems($offset = 0, $limit = 10) {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('f')
+            ->from($this->getEntityName(), 'f')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+        $query = $qb->getQuery();
+        return new Paginator($query);
+    }
+    
+    public function count()
+    {
+        $query = $this->getEntityManager()->createQueryBuilder();
+        $query->select(array('u.id'))
+            ->from($this->getEntityName(), 'u');
+        
+        $result = $query->getQuery()->getResult();
+        
+        return count($result);
     }
 }

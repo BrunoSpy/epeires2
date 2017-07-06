@@ -1,19 +1,21 @@
 <?php
-namespace API\V1\Rest\Frequency;
+namespace API\V1\Rest\Event;
 
 use Application\Paginator\Adapter;
+use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
 
-class FrequencyResource extends AbstractResourceListener
+class EventResource extends AbstractResourceListener
 {
-    
     protected $em;
+    protected $eventService;
     
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, EventService $eventService)
     {
         $this->em = $entityManager;
+        $this->eventService = $eventService;
     }
     
     /**
@@ -26,7 +28,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The POST method has not been defined');
     }
-
+    
     /**
      * Delete a resource
      *
@@ -37,7 +39,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The DELETE method has not been defined for individual resources');
     }
-
+    
     /**
      * Delete a collection, or members of a collection
      *
@@ -48,7 +50,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The DELETE method has not been defined for collections');
     }
-
+    
     /**
      * Fetch a resource
      *
@@ -57,9 +59,24 @@ class FrequencyResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return $this->em->getRepository('Application\Entity\Frequency')->find($id);
+        $event = $this->em->getRepository('Application\Entity\Event')->find($id);
+        $result = array();
+        
+        $result['name'] = $this->eventService->getName($event);
+        $files = array();
+        foreach ($event->getFiles() as $file) {
+            $f = array();
+            $f['name'] = $file->getName();
+            $f['filename'] = $file->getFileName();
+            $f['mimetype'] = $file->getMimeType();
+            $f['path'] = $file->getPath();
+            $f['size'] = $file->getSize();
+            $files[] = $f;
+        }
+        $result['files'] = $files;
+        return $result;
     }
-
+    
     /**
      * Fetch all or a subset of resources
      *
@@ -68,9 +85,9 @@ class FrequencyResource extends AbstractResourceListener
      */
     public function fetchAll($params = [])
     {
-        return new FrequencyCollection(new Adapter($this->em->getRepository('Application\Entity\Frequency')));
+        return new EventCollection(new Adapter($this->em->getRepository('Application\Entity\Event')));
     }
-
+    
     /**
      * Patch (partial in-place update) a resource
      *
@@ -82,7 +99,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The PATCH method has not been defined for individual resources');
     }
-
+    
     /**
      * Patch (partial in-place update) a collection or members of a collection
      *
@@ -93,7 +110,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The PATCH method has not been defined for collections');
     }
-
+    
     /**
      * Replace a collection or members of a collection
      *
@@ -104,7 +121,7 @@ class FrequencyResource extends AbstractResourceListener
     {
         return new ApiProblem(405, 'The PUT method has not been defined for collections');
     }
-
+    
     /**
      * Update a resource
      *
