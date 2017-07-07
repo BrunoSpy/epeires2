@@ -433,6 +433,16 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
+    public function getAfisEvents()
+    {
+        $qbEvents = $this->getQueryEvents();
+        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\AfisCategory');
+        
+        $query = $qbEvents->getQuery();
+        
+        return $query->getResult();
+    }
+
     /**
      * Tous les évènements de type plan de vol entre deux dates paramétrables.
      *

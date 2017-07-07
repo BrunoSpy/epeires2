@@ -41,6 +41,8 @@ use Application\Entity\Afis;
  */
 class AfisController extends AbstractEntityManagerAwareController
 {
+    const ACCES_REQUIRED = "Droits d'accès insuffisants";
+
     private $em, $cf, $repo, $form;
 
     public function __construct(EntityManager $em, CustomFieldService $cf)
@@ -105,11 +107,6 @@ class AfisController extends AbstractEntityManagerAwareController
         return $allAfis;
     }
 
-    public function indexAction()
-    {
-        if (!$this->authAfis('read')) return new JsonModel();
-
-    }
     public function testNotamAction() 
     {
         $curl = curl_init();
@@ -136,7 +133,6 @@ class AfisController extends AbstractEntityManagerAwareController
     {
 
         $code = $this->params()->fromQuery('code');
-        // $code = "LFOP";
         $fields = [
             'AERO_CM_GPS' => '2',
             'AERO_CM_INFO_COMP' => '1',
@@ -213,7 +209,10 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function getAction() 
     {
-        if (!$this->authAfis('read')) return new JsonModel();
+        if (!$this->authAfis('read')) {
+            echo self::ACCES_REQUIRED;
+            return new JsonModel();
+        }
 
         $post = $this->getRequest()->getPost();
         $decom = (boolean) intval($post['decomissionned']);

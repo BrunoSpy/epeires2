@@ -20,7 +20,8 @@
 
 var afis = function(url) {
 
-    var ListNotam = function() {
+    var ListNotam = function() 
+    {
         this.list = [];
 
         this.add = function(raw) {
@@ -56,7 +57,8 @@ var afis = function(url) {
         }
     }
 
-    var Notam = function(raw) {
+    var Notam = function(raw) 
+    {
         this.raw = raw;
         this.lignes = this.raw.split('\n');
 
@@ -111,49 +113,43 @@ var afis = function(url) {
         $tUsrbody = $(".t-usr tbody"),
         $fEditAf = $("#f-edit-af")
         ;
-    // $("#list-afis");
 
     $fEditAf.on('submit', submitHandler);
+    
     refresh();
 
     function refresh() 
     {
-
         $('.btn-switch-af .a-edit-af .a-del-af').remove();
         if ($tUsrbody.length > 0)
-            $tUsrbody
-                .load(url + 'afis/get', { decomissionned: 0, admin: 0 }, setUsrBtn);
+            $tUsrbody.load(url + 'afis/get', { decomissionned: 0, admin: 0 }, setUsrBtn);
 
         if ($tAdmbodies.length > 0) {
-            $tAdmbodies.first()
-                .load(url + 'afis/get', { decomissionned: 0, admin: 1 });
-
-            $tAdmbodies.eq(1)
-                .load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
+            $tAdmbodies.eq(0).load(url + 'afis/get', { decomissionned: 0, admin: 1 }, setAdmBtn);
+            $tAdmbodies.eq(1).load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
         }
 
         function setUsrBtn() {
-            $('.btn-switch-af').change(function() {
+            $('.btn-switch-af').change(function() 
+            {
                 var boolState = 0;
                 if ($(this).is(':checked')) {
                     boolState = 1;
                 }
 
-                $.post(
-                    url + 'afis/switchafis', { id: $(this).data('id'), state: boolState },
-                    function(data) {
-                        noty({
-                            text: data.msg,
-                            type: data.type,
-                            timeout: 4000,
-                        });
-                    },
-                    'json'
-                );
+                $.post(url + 'afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
+                
+                function switched(data) {
+                    noty({
+                        text: data.msg,
+                        type: data.type,
+                        timeout: 4000,
+                    });
+                    headerbar(url);
+                }
             });
 
             setNotamBtn();
-
             $tUsrbody.find('span.glyphicon').tooltip();
             $.material.togglebutton();
         }
@@ -190,54 +186,70 @@ var afis = function(url) {
         }
 
         function setNotamBtn() { 
-            $('.a-show-not').click(function() {
-                var tpl = $('#show-not').find('div').first().hide();
-                $('#show-not').find('div').slice(1).remove();
-                var code = $(this).data('code');
-                $("#title-show-not").html("Tous les NOTAM pour " + code);
-                $.get(url + 'afis/getnotams', {code: code}, function(data) {
-                    noty({
-                        text: data.msg,
-                        type: data.msgType,
-                        timeout: 4000,
-                    });
-
-                    var $n = $(data.notams).find('font.NOTAMBulletin');
-                    if ($n.length > 0) {
-                        notams = new ListNotam();
-                        $.each($n, function(i) {
-                            notams.add($(this).text());
-                        });
-                        $.each(notams.getAll(), function(i, not) {
-                            var div = tpl.clone();
-                            div.find('a')
-                                .attr('href', '#not' + i)
-                                .html(not.getId());
-                            div.find('.collapse')
-                                .attr('id', 'not' + i)
-                                .html(not.getRaw());
-                            div.show()
-                                .appendTo($('#show-not'));    
-                        });
-                    } 
-                    else {
-                        noty({
-                            text: 'Pas de NOTAM disponibles',
-                            type: 'error',
-                            timeout: 4000,
-                        });  
-                    }
-                });
-            });
+            $.get(url + 'afis/testNotam', updateNotamBtn);
+            $('.a-show-not').click(clickBtnNotamHandler);
         }
 
-        $.get(url + 'afis/testNotam', function(data) {
+        
+        function updateNotamBtn(data) {
             if (data.accesNotam == 1) {
                 $('.btn-notam')
-                    .removeClass('disabled btn-warning').prop('disabled', false)
-                    .addClass('btn-primary');    
+                    .removeClass('disabled btn-warning')
+                    .prop('disabled', false)
+                    .addClass('btn-primary');
+            }    
+        }
+
+        function clickBtnNotamHandler(data) 
+        {
+            var tpl = $('#show-not').find('div').first().hide();
+            $('#show-not').find('div').slice(1).remove();
+            var code = $(this).data('code');
+            $("#title-show-not").html("Tous les NOTAM pour " + code);
+            $.get(url + 'afis/testNotam', accesNotam);
+
+            function accesNotam(data) {
+                if(data.accesNotam == 1) {
+                    $.get(url + 'afis/getnotams', {code: code}, getNotam);
+                }
             }
-        });
+
+            function getNotam(data) 
+            {
+                // noty({
+                //     text: data.msg,
+                //     type: data.msgType,
+                //     timeout: 4000,
+                // });
+
+                var $n = $(data.notams).find('font.NOTAMBulletin');
+                if ($n.length > 0) {
+                    notams = new ListNotam();
+                    $.each($n, function(i) {
+                        notams.add($(this).text());
+                    });
+                    $.each(notams.getAll(), function(i, not) {
+                        var div = tpl.clone();
+                        div.find('a')
+                            .attr('href', '#not' + i)
+                            .html(not.getId());
+                        div.find('.collapse')
+                            .attr('id', 'not' + i)
+                            .html(not.getRaw());
+                        div.show()
+                            .appendTo($('#show-not'));    
+                    });
+                } 
+                else {
+                    noty({
+                        text: 'Pas de NOTAM.',
+                        type: 'error',
+                        timeout: 4000,
+                    });  
+                }      
+            }
+        }
+            
     }
 
     $("#btn-add-af").click(function() {
@@ -246,51 +258,58 @@ var afis = function(url) {
     });
 
 
-    function loadAfisForm(id = null) {
+    function loadAfisForm(id = null) 
+    {
         $fEditAf.load(url + 'afis/form', { id: id }, function() {
             if(id) $fEditAf.find('input[name=code]').prop('disabled', true);
-
             $.material.checkbox();
-            $fEditAf.find('input[name=code]').keyup(function(e){
-                if ($(this).val().length == 4 && keyIsALetter(e.which)) {
-                    var code = $(this).val();
-                    noty({
-                        text: 'Recherche des informations (horaires et contacts) associées au code donné.',
-                        type: 'info',
-                        timeout: 4000,
-                    });
-                    $.get(url + 'afis/getnotams', {code: code}, function(data) {
-                        var $n = $(data).find('font.NOTAMBulletin');
-                        if ($n.length > 0) {
-                            $fEditAf.find('input[name=name]').val('');
-                            $fEditAf.find('textarea[name=openedhours]').val('');
-                            $fEditAf.find('textarea[name=contacts]').val('');
-
-                            notams = new ListNotam();
-                            $.each($n, function(i) {
-                                notams.add($(this).text());
-                            });
-                            $fEditAf.find('input[name=name]').val(notams.get(0).getName());
-                            $.each(notams.findOpenHours(), function() {
-                                $fEditAf.find('textarea[name=openedhours]').val(this.getE());
-                            });
-                            $.each(notams.getAll(), function(i, notam) {
-                                var contacts = notam.getContacts();
-                                if(contacts)
-                                    $fEditAf.find('textarea[name=contacts]').val(contacts);
-                            });
-                        } else {
-                            noty({
-                                text: 'Pas d\'informations disponibles pour ce code OACI. <br />Il faut une connexion internet pour récupérer les informations des NOTAM.',
-                                type: 'error',
-                                timeout: 4000,
-                            });  
-                        }
-                    });
-                }
-            });
+            $fEditAf.find('input[name=code]').keyup(keyPressedCodeHandler);
         });
-    };
+
+        function keyPressedCodeHandler(e) 
+        {
+            if ($(this).val().length == 4 && keyIsALetter(e.which)) {
+                var code = $(this).val();
+                console.log(code);
+                noty({
+                    text: 'Recherche des informations (horaires et contacts) associées au code donné.',
+                    type: 'info',
+                    timeout: 4000,
+                });
+
+                $.get(url + 'afis/testNotam', accesNotam);
+
+                function accesNotam(data) {
+                    if(data.accesNotam == 1) {
+                        $.get(url + 'afis/getnotams', {code: code}, getNotam);
+                    }
+                }
+
+                function getNotam(data) {
+                    var $n = $(data.notams).find('font.NOTAMBulletin');
+                    if ($n.length > 0) {
+                        $fEditAf.find('input[name=name]').val('');
+                        $fEditAf.find('textarea[name=openedhours]').val('');
+                        $fEditAf.find('textarea[name=contacts]').val('');
+
+                        notams = new ListNotam();
+                        $.each($n, function(i) {
+                            notams.add($(this).text());
+                        });
+                        $fEditAf.find('input[name=name]').val(notams.get(0).getName());
+                        $.each(notams.findOpenHours(), function() {
+                            $fEditAf.find('textarea[name=openedhours]').val(this.getE());
+                        });
+                        $.each(notams.getAll(), function(i, notam) {
+                            var contacts = notam.getContacts();
+                            if(contacts)
+                                $fEditAf.find('textarea[name=contacts]').val(contacts);
+                        });
+                    }
+                } 
+            }
+        }        
+    }
 
     function submitHandler(e) {
         e.preventDefault();
