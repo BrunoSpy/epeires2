@@ -2,7 +2,7 @@
     "name": "dsna/epeires2",
     "description": "Cahier de marche électronique Exploitation",
     "license": "AGPL-3.0",
-    "homepage": "http://vulcain.do.aviation/projects/pvcds",
+    "homepage": "http://asap.dsna.fr/projects/pvcds",
     "repositories": [
 		{
 			"type": "vcs",
