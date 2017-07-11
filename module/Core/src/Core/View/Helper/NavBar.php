@@ -90,7 +90,7 @@ class NavBar extends AbstractHelper
         }
 
         if ($this->view->isGranted('afis.read')) {
-            $html .= '<li><a id="afis" href="'
+            $html .= '<li><a id="tab-afis" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'afis',
