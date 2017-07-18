@@ -1,5 +1,5 @@
 <?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css'); ?>
-<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js'); ?>
+<?php //$this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js'); ?>
 
@@ -49,23 +49,9 @@ $("#home").removeClass("dropdown-toggle")
 
 $("#create-link").remove();		  
 
-$("#changeview").remove();
-
 $("#zoomform").remove();
 
 $('#search').remove();
-
-$(".sortable").stupidtable();
-
-$(".sortable").bind('aftertablesort', function(event, data){
-	var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
-
-//sort the table by name
-$("table th:first").trigger('click');
 
 afis('<?php echo $this->url('application'); ?>');
 
