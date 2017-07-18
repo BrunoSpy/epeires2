@@ -46,3 +46,8 @@ textarea[name=openedhours] {
 .btn-notam{
     margin:0;
 }
+
+#search-afis {
+    display: block;
+    width:100px;
+}

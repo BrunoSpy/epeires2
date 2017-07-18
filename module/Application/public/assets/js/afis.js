@@ -116,6 +116,23 @@ var afis = function(url) {
 
     $fEditAf.on('submit', submitHandler);
     
+    $('#search-afis').find('input')
+        .keyup(searchKeyUpHandler)
+        .click(searchClickHandler);
+
+    function searchClickHandler() {
+        if($(this).val() == "") $(this).val('LF');
+    }
+
+    function searchKeyUpHandler() {
+        $entree = $(this).val().toLowerCase();
+
+        $tUsrbody.find('tr').each(function() {
+            $codeAf = $(this).find('td').first().html().toLowerCase();
+            ($codeAf.indexOf($entree)!=-1) ? $(this).show() : $(this).hide();
+        });
+    }
+
     refresh();
 
     function refresh() 
