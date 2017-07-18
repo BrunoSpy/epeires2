@@ -59,16 +59,16 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             ]);
     }
     
-    public function sarAction()
-    {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
+    // public function sarAction()
+    // {
+    //     if (!$this->authFlightPlans('read')) return new JsonModel();
 
-        return (new ViewModel())
-            ->setTemplate('application/flight-plans/index')
-            ->setVariables([
-                'cat' => $this->getCatId(),
-            ]);
-    }  
+    //     return (new ViewModel())
+    //         ->setTemplate('application/flight-plans/index')
+    //         ->setVariables([
+    //             'cat' => $this->getCatId(),
+    //         ]);
+    // }  
 
     private function getCatId() {
         $cat = $this->getCat();

@@ -450,10 +450,14 @@ class EventRepository extends ExtendedRepository
      * @param DateTime $end
      * @return array
      */
-    public function getFlightPlanEvents($start, $end)
+    public function getFlightPlanEvents($start=null, $end=null)
     {
-        $now = new \DateTime('NOW');
-        $now->setTimezone(new \DateTimeZone("UTC"));
+
+        if ($start == null && $end == null) {
+            $start = (new \DateTime())->setTime(0,0,0);
+            $end = (new \DateTime())->setTime(0,0,0)->add(new \DateInterval('P1D'));
+        }
+
         $qbEvents = $this->getEntityManager()->createQueryBuilder();
         $qbEvents->select(array(
             'e',

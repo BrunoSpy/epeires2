@@ -100,7 +100,7 @@ class NavBar extends AbstractHelper
         }
 
         if ($this->view->isGranted('flightplans.read')) {
-            $html .= '<li><a id="flightplans" href="'
+            $html .= '<li><a id="tab-flightplans" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'flightplans',
@@ -110,7 +110,7 @@ class NavBar extends AbstractHelper
         }
 
         if ($this->view->isGranted('sarbeacons.read')) {
-            $html .= '<li><a id="sarbeacons" href="'
+            $html .= '<li><a id="tab-sarbeacons" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'sarbeacons',
