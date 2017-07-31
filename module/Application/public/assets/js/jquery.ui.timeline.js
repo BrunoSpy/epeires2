@@ -1888,6 +1888,9 @@
                         'border-top-width': haut / 2 + 1 + 'px',
                         'border-bottom-width': haut / 2 + 1 + 'px'});
                     elmt_compl.show();
+                    //positionnement de l'élément pour être au bon endroit en cas d'utilisation de la poignée d'heure de fin
+                    console.log(endWidth);
+                    elmt_fin.css({'left': 'auto','right': -(4 + endWidth) + 'px'});
                     totalWidth += haut;
                 }
                 //dans tous les cas
