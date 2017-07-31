@@ -68,4 +68,62 @@ class MaintenanceController extends AbstractEntityManagerAwareController
             error_log($ex->getMessage());
         }
     }
+    
+    /**
+     * Supprime des logs les références aux éléments supprimés.
+     * Particulièrement utile après un nettoyage de la base de données
+     */
+    public function cleanLogsAction()
+    {
+        $request = $this->getRequest();
+        
+        if(! $request instanceof ConsoleRequest) {
+            throw new \RuntimeException('Action only available from console.');
+        }
+        
+        $objectmanager = $this->getEntityManager();
+        
+        //get the number of rows to delete
+        $dql = $objectmanager->createQueryBuilder();
+        $dql->select('count(log.id)')
+            ->from('Application\Entity\Log', 'log')
+            ->where($dql->expr()->eq('log.action', '?1'))
+            ->setParameter(1, "remove");
+        try {
+            $removeRowsCount = $dql->getQuery()
+                ->getSingleScalarResult();
+        } catch(\Exception $ex) {
+            error_log($ex->getMessage());
+        }
+        
+        $q = $objectmanager->createQuery('select l from Application\Entity\Log l where l.action = ?1');
+        $q->setParameter(1, "remove");
+        $iterable = $q->iterate();
+        $i = 0;
+        $batchSize = 50;
+        print("Nettoyage des logs en cours... Cette opération peut prendre plusieurs minutes selon la taille de la base de données.\n");
+        while(($row = $iterable->next()) !== false) {
+            $object = $row[0];
+            $q2 = $objectmanager->createQuery('select l from Application\Entity\Log l where l.objectId = ?1 and l.objectClass = ?2');
+            $q2->setParameters(array(1 => $object->getObjectId(), 2 => $object->getObjectClass()));
+            $iterable2 = $q2->iterate();
+            while(($row2 = $iterable2->next()) !== false) {
+                $objectmanager->remove($row2[0]);
+            }
+            $objectmanager->remove($row[0]);
+            if(($i % $batchSize) === 0) {
+                printf( "%.1f %% effectué... \n",(($i / $removeRowsCount)*100) );
+                $objectmanager->flush();
+                $objectmanager->clear();
+            }
+            $i++;
+        }
+        
+        try {
+            $objectmanager->flush();
+            return "Nettoyage des logs effectué.";
+        } catch (\Exception $ex) {
+            error_log($ex->getMessage());
+        }
+    }
 }

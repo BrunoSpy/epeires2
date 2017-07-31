@@ -35,6 +35,15 @@ return array(
                             'action' => 'deleteEvents'
                         )
                     )
+                ),
+                'clean-logs' => array(
+                    'options' => array(
+                        'route' => 'clean-logs',
+                        'defaults' => array(
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'cleanLogs'
+                        )
+                    )
                 )
             )
         )
