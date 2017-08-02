@@ -184,7 +184,7 @@ $('#timeline').timeline({
     rightOffset: 85,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
     view: '<?php echo ($this->view == "24" ? 'day' : ''); ?>',
-    day: <?php echo ($this->day !== null ? str_replace('"','',$this->day) : ''); ?>,
+    day: '<?php echo ($this->day !== null ? str_replace('"','',$this->day) : ''); ?>',
     initComplete: function(){
         $("#timeline .loading").hide();
     }
