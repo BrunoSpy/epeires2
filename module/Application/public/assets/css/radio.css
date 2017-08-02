@@ -43,6 +43,10 @@ ul.sector-list {
 	padding-right: 0px;
 }
 
+ul.sector-list .tooltip {
+	font-size: 18px;
+}
+
 li.title {
 	font-family: RobotoDraft;
 	font-weight: 600;

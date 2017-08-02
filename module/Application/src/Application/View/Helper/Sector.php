@@ -32,7 +32,7 @@ class Sector extends AbstractHelper
     {
         $noBackup = !$frequency->getBackupantenna() && !$frequency->getBackupantennaclimax();
 
-        $html = "<ul class=\"sector dropdown-menu\" data-freq=\"" . $frequency->getId() . "\">";
+        $html = "<ul data-placement=\"top\" data-toggle=\"tooltip\" title=\"" . $frequency->getComment() . "\" class=\"sector dropdown-menu\" data-freq=\"" . $frequency->getId() . "\">";
         $html .= "<div class=\"sector-color frequency-" . $frequency->getId() . "\">";
         $html .= "<li class=\"sector-name\">" . $name . "</li>";
         $html .= "<li class=\"sector-freq\"><a href=\"#\" class=\"actions-freq\" data-freq=\"" . $frequency->getId() . "\" ". ($groupid != null ? 'data-groupid="' . $groupid . '"' : '') .">" . $frequency->getValue() . "</a></li>";

@@ -90,6 +90,7 @@
 								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
+                                <th>Commentaire</th>
 								<th data-sort="string">Organisation</th>
 								<th>Antenne principale</th>
 								<th>Antenne principale climax</th>
@@ -107,6 +108,7 @@
 										echo '<td>'.$frequency->getId().'</td>';
 										echo '<td>'.$frequency->getValue().'</td>';
 										echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): $frequency->getOthername()).'</td>';
+										echo '<td>'.($frequency->getComment() ? $frequency->getComment() : "").'</td>';
 										echo '<td>'.($frequency->getOrganisation() ? $frequency->getOrganisation()->getName() : "").'</td>';
 										echo '<td>'.$frequency->getMainantenna()->getName().'</td>';
 										echo '<td>'.($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getName() : "").'</td>';
@@ -202,6 +204,7 @@
 								<th data-sort="int" data-autosort="true">Id</th>
 								<th data-sort="string">Valeur</th>
 								<th data-sort="string">Secteur par défaut</th>
+                                <th>Commentaire</th>
 								<th data-sort="string">Organisation</th>
 								<th>Antenne principale</th>
 								<th>Antenne principale climax</th>
@@ -218,6 +221,7 @@
 										echo '<td>'.$frequency->getId().'</td>';
 										echo '<td>'.$frequency->getValue().'</td>';
 										echo '<td>'.($frequency->getDefaultsector() ? $frequency->getDefaultsector()->getName(): $frequency->getOthername()).'</td>';
+										echo '<td>'.($frequency->getComment() ? $frequency->getComment() : "").'</td>';
 										echo '<td>'.($frequency->getOrganisation() ? $frequency->getOrganisation()->getName() : "").'</td>';
 										echo '<td>'.$frequency->getMainantenna()->getName().'</td>';
 										echo '<td>'.($frequency->getMainantennaclimax() ? $frequency->getMainantennaclimax()->getName() : "").'</td>';

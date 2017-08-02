@@ -112,6 +112,14 @@ class Frequency extends TemporaryResource
      */
     protected $backupfrequencies;
     
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Commentaire :"})
+     */
+    protected $comment;
+    
     public function __construct()
     {
         $this->backupfrequencies = new ArrayCollection();
@@ -161,6 +169,14 @@ class Frequency extends TemporaryResource
         $this->othername = $othername;
     }
 
+    public function getComment() {
+        return $this->comment !== null ? $this->comment : "";
+    }
+    
+    public function setComment($comment) {
+        $this->comment = $comment;
+    }
+    
     public function getDefaultsector()
     {
         return $this->defaultsector;

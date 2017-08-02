@@ -206,7 +206,7 @@ $(document).ready(function(){
    }).parent().addClass('active') //on ajoute la classe active
    .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
    
-   $("a[data-toggle=tooltip], th[data-toggle=tooltip], td[data-toggle=tooltip]").tooltip();
+   $("a[data-toggle=tooltip], th[data-toggle=tooltip], td[data-toggle=tooltip], ul[data-toggle=tooltip]").tooltip();
    
    $("a[data-toggle=popover]").popover();
    
