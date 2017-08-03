@@ -138,15 +138,16 @@ if($this->view == "30") {
 }
 
 if($this->view == "24") {
-    //echo '$("#viewday").trigger("click");';
     if($this->day !== null) {
         echo '$("#calendar input[type=text].date").val('.$this->day.');';
-        echo '$("#calendar").show();';
-        echo '$("#export").show();';
-        echo '$("#viewsix").prop("checked", false).parent().removeClass("active");';
-        echo '$("#viewday").prop("checked", true).parent().addClass("active");';
-        //echo '$("#calendar input[type=text].date").trigger("change");';
+    } else {
+        $today = new DateTime();
+        echo '$("#calendar input[type=text].date").val("'.$today->format('d/m/Y').'");';
     }
+    echo '$("#calendar").show();';
+    echo '$("#export").show();';
+    echo '$("#viewsix").prop("checked", false).parent().removeClass("active");';
+    echo '$("#viewday").prop("checked", true).parent().addClass("active");';
 }
 
 if($this->onlyroot) {
