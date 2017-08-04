@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.0",
+        version: "1.1.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -157,7 +157,7 @@
             category: "",
             compact: false,
             view: "",
-            day: "",
+            day: ""
         },
         //Main function
         //Initialize the timeline
@@ -228,12 +228,10 @@
                         if (self._isValidDate(tempday)) {
                             self.currentDay = tempday;
                         } else {
-                            var now = new Date();
-                            self.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                            self.currentDay = new Date();
                         }
                     }
-                    var now = new Date();
-                    if(Math.floor((now.getTime() - self.currentDay.getTime())/(1000*60*60*24)) !== 0){
+                    if(!self._isToday(self.currentDay)){
                         self.element.find("#timeline-background").addClass('anotherday');
                     } else {
                         self.element.find("#timeline-background").removeClass('anotherday');
@@ -755,11 +753,9 @@
                 if (this._isValidDate(tempday)) {
                     this.currentDay = tempday;
                 } else {
-                    var now = new Date();
-                    this.currentDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                    this.currentDay = new Date();
                 }
-                var now = new Date();
-                if(Math.floor((now.getTime() - this.currentDay.getTime())/(1000*60*60*24)) !== 0){
+                if(! this._isToday(this.currentDay)){
                     this.element.find("#timeline-background").addClass('anotherday');
                 } else {
                     this.element.find("#timeline-background").removeClass('anotherday');
@@ -919,10 +915,17 @@
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
-                this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
-                this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
-                this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
-                    this.timelineDuration, 0, 0));
+                if(this._isToday(this.currentDay)) {
+                    //if today -> center the timeline around actual hour
+                    var now = new Date();
+                    this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 11, 0, 0);
+                    this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 11 + this.timelineDuration, 0, 0);
+                } else {
+                    this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
+                    this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
+                    this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
+                        this.timelineDuration, 0, 0));
+                }
             } else {
                 this.timelineDuration = 6;
                 var now = new Date();
@@ -1394,13 +1397,10 @@
         },
         _updateTimebar: function () {
             var now = new Date();
+            var nowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
             var diff = (now - this.timelineBegin) / (1000 * 60 * 60); //différence en heure
-            //si vue six heures et diff > 2 heures : décaler d'une heure
-            if (this.dayview === false && diff > 2) {
-                //force la récupération de tous les évènements une fois par heure
-                this._updateEvents(true);
-                //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
-            } else if (this.dayview === true) {
+            //si vue journée et affichage du jour en cours et changement de jour : afficher jour suivant
+            if (this.dayview === true) {
                 var nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
                 var currentDayUTC = Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate());
                 if(this.lastUpdateTimebar !== undefined) {
@@ -1423,8 +1423,14 @@
                     this.lastUpdateTimebar = now;
                     return;
                 }
+            //si vue six heures et diff > 2 heures : décaler d'une heure
+            //ou si jour affiché = aujourd'hui et diff > 2h -> décaler d'une heure
+            } else if((this.dayview === false && diff > 2) ||
+                (this.dayview === true && this._isToday(this.currentDay) && diff > 2)) {
+                //force la récupération de tous les évènements une fois par heure
+                this._updateEvents(true);
             } else {
-                //dans tous les cas : mise à jour des évènements en fonction du statut
+                //dans tous les autres cas : mise à jour des évènements en fonction du statut
                 for (var i = 0; i < this.eventsDisplayed.length; i++) {
                     var event = this.eventsDisplayed[i];
                     var elmt = this.element.find('#event'+event.id);
@@ -1434,10 +1440,6 @@
             var x = this._computeX(now);
             var timeBar = $('#TimeBar');
             if (x > 0) {
-                /*var left = parseInt($("#timeline").css('left'));
-                if (isNaN(left)) {
-                    left = 0;
-                }*/
                 timeBar.css('left', x /*+ left*/ + '%');
                 timeBar.show();
             } else {
@@ -1706,8 +1708,7 @@
             var yDeb, yEnd, hDeb, hEnd;
             // ajout de l'heure de début
             var hDeb = this._formatNumberLength(startdate.getUTCHours(), 2) + ":" + this._formatNumberLength(startdate.getMinutes(), 2);
-            var d_actuelle = new Date();
-            if (startdate.getDate() !== d_actuelle.getDate()) {
+            if (!this._isToday(startdate)) {
                 hDeb = '<span style="display: inline-block; vertical-align: middle;">' + this._formatNumberLength(startdate.getUTCDate(), 2) + "/" +
                     this._formatNumberLength(startdate.getUTCMonth() + 1, 2) + "<br/>" + hDeb + '</span>';
                 yDeb = -5;
@@ -1720,7 +1721,7 @@
             // ajout de l'heure de fin
             if (enddate !== -1) {
                 var hEnd = this._formatNumberLength(enddate.getUTCHours(), 2) + ":" + this._formatNumberLength(enddate.getMinutes(), 2);
-                if (enddate.getDate() !== d_actuelle.getDate()) {
+                if (!this._isToday(enddate)) {
                     hEnd = '<span style="display: inline-block; vertical-align: middle;">'
                         + this._formatNumberLength(enddate.getUTCDate(), 2) + "/"
                         + this._formatNumberLength(enddate.getUTCMonth() + 1, 2)
@@ -2393,6 +2394,23 @@
             } else {
                 return false;
             }
+        },
+        _getUTCNow: function() {
+            var now = new Date();
+            var utcNow = new Date(Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds()));
+            return utcNow;
+        },
+        _isToday: function(date) {
+            var now = this._getUTCNow();
+            return (date.getUTCFullYear() == now.getUTCFullYear() &&
+                    date.getUTCMonth() == now.getUTCMonth() &&
+                    date.getUTCDate() == now.getUTCDate());
         },
         _computeTextSizeDOM: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);
