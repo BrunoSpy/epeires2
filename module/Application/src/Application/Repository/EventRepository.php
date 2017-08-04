@@ -86,6 +86,7 @@ class EventRepository extends ExtendedRepository
                 $qb->andWhere($qb->expr()->in('e.status', $status));
             }
         } else {
+            //TODO changer cette partie
             // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()

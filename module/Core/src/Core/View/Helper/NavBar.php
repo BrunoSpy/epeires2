@@ -125,7 +125,7 @@ class NavBar extends AbstractHelper
         ));
         ;
         foreach ($tabs as $tab) {
-            if ($this->view->hasRole($tab->getReadRoleNames())) {
+            if (!$tab->isDefault() && $this->view->hasRole($tab->getReadRoleNames())) {
                 $html .= '<li><a class="customtab" id="tab-' . $tab->getId() . '" href="' . $urlHelper('application', array(
                     'controller' => 'tabs',
                     'action' => 'index'

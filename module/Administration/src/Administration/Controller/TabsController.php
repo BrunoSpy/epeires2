@@ -179,4 +179,25 @@ class TabsController extends FormController
         }
         return new JsonModel();
     }
+    
+    public function setDefaultAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        if($id) {
+            $objectManager = $this->getEntityManager();
+            $tabs = $objectManager->getRepository('Application\Entity\Tab')->findAll();
+            foreach ($tabs as $tab) {
+                if ($tab->getId() == $id) {
+                    $tab->setDefault(true);
+                } else {
+                    $tab->setDefault(false);
+                }
+            }
+            try{
+                $objectManager->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+    }
 }

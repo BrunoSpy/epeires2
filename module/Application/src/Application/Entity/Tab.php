@@ -88,7 +88,15 @@ class Tab
      * @Annotation\Options({"label":"Catégories racines seulement :"})
      */
     protected $onlyroot = false;
-
+    
+    /**
+     * Default tab. Only one default tab allowed.
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Onglet principal"})
+     */
+    protected $isDefault = false;
+    
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -130,6 +138,14 @@ class Tab
         return $this->onlyroot;
     }
 
+    public function isDefault() {
+        return $this->isDefault;
+    }
+    
+    public function setDefault($default) {
+        $this->isDefault = $default;
+    }
+    
     public function getCategories()
     {
         return $this->categories;

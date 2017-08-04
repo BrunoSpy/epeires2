@@ -79,24 +79,38 @@ class EventsController extends TabController
     public function indexAction()
     {
         parent::indexAction();
-
+    
         $return = array();
-        
+    
         if ($this->flashMessenger()->hasErrorMessages()) {
             $return['error'] = $this->flashMessenger()->getErrorMessages();
         }
-        
+    
         if ($this->flashMessenger()->hasSuccessMessages()) {
             $return['success'] = $this->flashMessenger()->getSuccessMessages();
         }
-        
+    
         $this->flashMessenger()->clearMessages();
-        
+      
+        $tab = $this->entityManager->getRepository('Application\Entity\Tab')->findOneBy(array("isDefault" => true));
+        if ($tab) {
+            $categories = $tab->getCategories();
+            $cats = array();
+            foreach ($categories as $cat) {
+                $cats[] = $cat->getId();
+            }
+            $this->viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
+            $this->viewmodel->setVariable('cats', $cats);
+            $this->viewmodel->setVariable('tabid', $tab->getId());
+            $this->viewmodel->setVariable('default', true);
+        } else {
+            $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
+        }
+    
         $this->viewmodel->setVariables(array(
-            'messages' => $return,
-            'onlyroot' => true
+            'messages' => $return
         ));
-        
+    
         return $this->viewmodel;
     }
     
@@ -1890,7 +1904,7 @@ class EventsController extends TabController
     }
     
     /**
-     * Liste des catégories racines visibles timeline
+     * Liste des catégories visibles d'un onglet
      * Au format JSON
      */
     public function getcategoriesAction()
@@ -1900,7 +1914,6 @@ class EventsController extends TabController
         $qb->select('c')->from('Application\Entity\Category', 'c');
         
         $rootonly = $this->params()->fromQuery('rootonly', true);
-        $timeline = $this->params()->fromQuery('timeline', true);
         $cats = $this->params()->fromQuery('cats', null);
         if ($cats) {
             $categories = $objectManager->getRepository('Application\Entity\Category')->findBy(array(
@@ -1920,10 +1933,7 @@ class EventsController extends TabController
             $qb->andWhere($qb->expr()
                 ->isNull('c.parent'));
         }
-        if ($timeline == true) {
-            $qb->andWhere($qb->expr()
-                ->eq('c.timeline', true));
-        }
+        
         $qb->orderBy("c.place", 'ASC');
         $categories = $qb->getQuery()->getResult();
         $readablecat = $this->filterReadableCategories($categories);

@@ -127,12 +127,12 @@ if($this->isGranted('events.recurrent')) {
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
-
-$("#home").removeClass("dropdown-toggle")
-		  .attr('data-toggle', '')
-		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
-
-<?php
+<?php if($this->default == false) {
+    echo "$(\"#home\").removeClass(\"dropdown-toggle\")"
+    . ".attr('data-toggle', '')"
+    . ".html('<span class=\"glyphicon glyphicon-home\"></span> Évènements');";
+    
+}
 if($this->view == "30") {
     echo 'forceMonth = true;';
 }
@@ -179,8 +179,7 @@ $('#timeline').timeline({
     categoriesUrl: '<?php echo $this->url('application', 
     										array('controller' => 'events', 'action' => 'getcategories'), 
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),
-    																		'cats' => $this->cats,
-    																		'timeline' => false))) ?>',
+    																		'cats' => $this->cats))) ?>',
     topOffset: 100,
     leftOffset: 120,
     rightOffset: 85,

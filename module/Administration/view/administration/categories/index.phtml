@@ -1,4 +1,4 @@
-<?php 
+<?php
 $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 ?>
 <p></p>
@@ -16,12 +16,11 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 						<th>id</th>
 						<th>Nom</th>
 						<th>Nom court</th>
+                        <th>Onglets</th>
 						<th>Couleur</th>
 						<th>Compact</th>
-						<th data-container="body" data-toggle="tooltip" title="Afficher les évènements sur la page d'accueil.">Timeline<sup>?</sup></th>
 						<th data-container="body" data-toggle="tooltip" title="Afficher uniquement les évènements dont le statut est Confirmé, Terminé ou Annulé. Valable uniquement pour la page d'accueil.">Confirmés uniquement<sup>?</sup></th>
                         <th data-container="body" data-toggle="tooltip" title="Exclure la catégorie du rapport IPO.">Exclure IPO<sup>?</sup></th>
-                        <th>Onglets</th>
 						<th>Modèles</th>
 						<th>Champs</th>
 						<th>Champ titre</th>
@@ -30,30 +29,29 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 					</tr>
 				</thead>
 				<tbody>
-                                <?php 
+                                <?php
                                 foreach ($this->categories as $category){
                                     if(!$category->isSystem()){
 					echo "<tr>";
-					echo "<td>".$category->getId()."</td>";		
+					echo "<td>".$category->getId()."</td>";
 					echo "<td>".$category->getName()."</td>";
 					echo "<td>".$category->getShortName()."</td>";
-					echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
+                    echo '<td>';
+                    if(count($category->getTabs()) > 0) {
+                        foreach ($category->getTabs() as $tab) {
+                            echo $tab->getName().'<br/>';
+                        }
+                    } else {
+                        echo 'Aucun';
+                    }
+                    echo '</td>';
+                    echo "<td><span class=\"label\" style=\"background-color:".$category->getColor()."\">".$category->getColor()."</span></td>";
 					echo '<td>'.($category->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-					echo '<td>'.($category->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>'.($category->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 					echo '<td>' . ($category->isExclude()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
-                    echo '<td>';
-                    	if(count($category->getTabs()) > 0) {
-                    		foreach ($category->getTabs() as $tab) {
-                    			echo $tab->getName().'<br/>';
-                    		}
-                    	} else {
-                    		echo 'Aucun';
-                    	}	
-					echo '</td>';
-					echo "<td>".$this->models[$category->getId()].
+                    echo "<td>".$this->models[$category->getId()].
 									" <a href=\"#models-container\"
-								 		class=\"models-list\" 
+								 		class=\"models-list\"
 								 		data-id=\"".$category->getId()."\"
 										data-name=\"".$category->getName()."\"
 								 		data-toggle=\"modal\"
@@ -79,23 +77,22 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 							echo "<td>".$subcategory->getId()."</td>";
 							echo "<td>  <span class=\"glyphicon glyphicon-chevron-right\"></span> ".$subcategory->getName()."</td>";
 							echo "<td>".$subcategory->getShortName()."</td>";
-							echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
+                            echo '<td>';
+                            if(count($subcategory->getTabs()) > 0) {
+                                foreach ($subcategory->getTabs() as $tab) {
+                                    echo $tab->getName().'<br/>';
+                                }
+                            } else {
+                                echo 'Aucun';
+                            }
+                            echo '</td>';
+                            echo "<td><span class=\"label\" style=\"background-color:".$subcategory->getColor()."\">".$subcategory->getColor()."</span></td>";
 							echo '<td>'.($subcategory->isCompactMode()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-							echo '<td>'.($subcategory->isTimeline()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
 							echo '<td>'.($subcategory->isTimelineConfirmed()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
                             echo '<td>' . ($subcategory->isExclude()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>") . '</td>';
-                            echo '<td>';
-							if(count($subcategory->getTabs()) > 0) {
-								foreach ($subcategory->getTabs() as $tab) {
-									echo $tab->getName().'<br/>';
-								}
-							} else {
-								echo 'Aucun';
-							}
-							echo '</td>';
-							echo "<td>".$this->models[$subcategory->getId()].
+                            echo "<td>".$this->models[$subcategory->getId()].
 									" <a href=\"#models-container\"
-								 		class=\"models-list\" 
+								 		class=\"models-list\"
 								 		data-id=\"".$subcategory->getId()."\"
 										data-name=\"".$subcategory->getName()."\"
 								 		data-toggle=\"modal\"
@@ -115,7 +112,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 								echo "<a title=\"Supprimer\" href=\"#confirm-delete\" data-href=\"".$this->url('administration', array('controller' => 'categories', 'action' => 'delete'))."?id=".$subcategory->getId()."\" class=\"delete\" data-id=\"".$category->getId()."\" data-name=\"".$subcategory->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
 							echo "</td>";
 							echo "</tr>";
-						}			
+						}
                                     }
                                 }
 				?>
@@ -142,11 +139,11 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
     					</tr>
     				</thead>
     				<tbody>
-                    <?php 
+                    <?php
                     foreach ($this->categories as $category){
                         if($category->isSystem()){
     					echo "<tr>";
-    					echo "<td>".$category->getId()."</td>";		
+    					echo "<td>".$category->getId()."</td>";
     					echo "<td>".$category->getName()."</td>";
     					echo "<td>".$category->getShortName()."</td>";
     
@@ -169,7 +166,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
     				</tbody>
     			</table>
             </div>
-                        
+            
     		</div>
 		
 	</div>
@@ -179,14 +176,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/categories.js');
 <!-- -------------------- -->
 <!-- Les fenêtres modales -->
 <!-- -------------------- -->
-<?php 
+<?php
 echo $this->modalwindow("form-container", "<h4 id=\"form-title\"></h4>", "", "<div id=\"form\"></div>");
 
 echo $this->modalwindow(
-	"fieldscontainer", 
+	"fieldscontainer",
 	"<h4 id=\"fields-title\"></h4>",
-	'', 
-	'<form action="' 
+	'',
+	'<form action="'
 		. $this->url('administration', array('controller' => 'fields', 'action'=>'save'))
 		.'" method="POST" name="CustomField" id="CustomField">'
 		.'<div id="fields-table">'
