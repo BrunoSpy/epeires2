@@ -54,6 +54,7 @@ class ControlGroup extends AbstractHelper
         } elseif ($element instanceof \Zend\Form\Element\Checkbox) {
             $element->setUseHiddenElement(true);
             $controlForm = '<div class="checkbox"><label>'.$view->formCheckbox($element).'</label></div>';
+            $controlForm .= '<p class="help-block">'.$element->getAttribute('title').'</p>';
         } elseif ($element instanceof \Zend\Form\Element\Text) {
             $controlForm = $view->formText($element);
         } elseif ($element instanceof \Zend\Form\Element\Textarea) {
