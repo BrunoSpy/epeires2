@@ -757,30 +757,31 @@ class FrequenciesController extends TabController
                         $place++;
                     }
                     $frequencies['backup'] = $backupFrequencies;
-                } else {
-                    if ($groupid) {
-                        $group = $this->entityManager->getRepository('Application\Entity\SectorGroup')->find($groupid);
-                        if ($group) {
-                            $preferredFreq = array();
-                            foreach ($group->getSectors() as $sector) {
-                                $defaultfreq = $sector->getFrequency();
-                                if ($defaultfreq && $defaultfreq->getId() != $frequencyid) {
-                                    $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
-                                }
-                            }
-                            asort($preferredFreq);
-                            $place = 0;
-                            foreach ($preferredFreq as $key => $value) {
-                                $preferredFrequencies[$key] = array(
-                                    'place' => $place,
-                                    'data' => $value
-                                );
-                                $place++;
+                }
+                if ($groupid) {
+                    $group = $this->entityManager->getRepository('Application\Entity\SectorGroup')->find($groupid);
+                    if ($group) {
+                        $preferredFreq = array();
+                        foreach ($group->getSectors() as $sector) {
+                            $defaultfreq = $sector->getFrequency();
+                            if (!array_key_exists($defaultfreq->getId(), $backupFrequencies) &&
+                                $defaultfreq && $defaultfreq->getId() != $frequencyid) {
+                                $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
                             }
                         }
-                        $frequencies['preferred'] = $preferredFrequencies;
+                        asort($preferredFreq);
+                        $place = 0;
+                        foreach ($preferredFreq as $key => $value) {
+                            $preferredFrequencies[$key] = array(
+                                'place' => $place,
+                                'data' => $value
+                            );
+                            $place++;
+                        }
                     }
+                    $frequencies['preferred'] = $preferredFrequencies;
                 }
+                
                 $otherfreqs = array();
                 $qb = $this->entityManager->createQueryBuilder();
                 $qb->select(array(
@@ -796,7 +797,9 @@ class FrequenciesController extends TabController
                         ->getId());
                 $place = 0;
                 foreach ($qb->getQuery()->getResult() as $freq) {
-                    if(!array_key_exists($freq->getId(), $preferredFrequencies) && $freq->getId() != $frequencyid) {
+                    if(!array_key_exists($freq->getId(), $preferredFrequencies) &&
+                        !array_key_exists($freq->getId(), $backupFrequencies) &&
+                        $freq->getId() != $frequencyid) {
                         $otherfreqs[$freq->getId()] = array(
                             'place' => $place,
                             'data' => ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue())

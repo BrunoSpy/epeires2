@@ -209,7 +209,7 @@ return array(
                 'description' => ''
             )
         ),
-        'Fréquences' => array(
+        'Radio' => array(
             'frequencies.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Radio.'
