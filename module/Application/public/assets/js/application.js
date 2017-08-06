@@ -519,7 +519,8 @@ $(document).ready(function(){
     $("#calendarview").fullCalendar({
         events: url+'events/geteventsFC'
             +(typeof(cats) == "undefined" ? '' : '?'+cats)
-            +(typeof(cats) == "undefined" ? '?' : '&') + 'rootcolor='+(typeof(onlyroot) == "undefined" ? '1' : onlyroot),
+            +(typeof(cats) == "undefined" ? '?' : '&') + 'rootcolor='+(typeof(onlyroot) == "undefined" ? '1' : onlyroot)
+            +'&default='+(typeof(defaultTimeline) == "undefined" ? '0' : defaultTimeline),
         timezone: "UTC",
         timeFormat: 'HH:mm',
         forceEventDuration: true,
@@ -674,6 +675,7 @@ $(document).ready(function(){
             urlFC += '?start='+start;
         }
         urlFC += '&rootcolor='+onlyroot;
+        urlFC += '&default='+(typeof(defaultTimeline) == "undefined" ? '0' : defaultTimeline);
         var end = view.end.format("YYYY-MM-DD");
         urlFC += '&end='+end;
         return $.getJSON(urlFC,

@@ -1663,6 +1663,8 @@ class EventsController extends TabController
         $day = $this->params()->fromQuery('day', null);
         
         $cats = $this->params()->fromQuery('cats', null);
+
+        $default = $this->params()->fromQuery('default', null);
         
         $json = array();
         
@@ -1674,7 +1676,9 @@ class EventsController extends TabController
             null,
             $lastmodified, 
             true, 
-            $cats
+            $cats,
+            null,
+            $default
         ) as $event) {
             $json[$event->getId()] = $this->getEventJson($event);
         }

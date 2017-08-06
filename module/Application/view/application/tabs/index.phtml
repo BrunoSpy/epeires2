@@ -165,17 +165,24 @@ if($this->view == "24") {
     echo '$("#viewday").prop("checked", true).parent().addClass("active");';
 }
 
+//used in application.js to determine fullcalendar view
 if($this->onlyroot) {
-    echo 'var onlyroot = 1';
+    echo 'var onlyroot = 1;';
 } else {
-    echo 'var onlyroot = 0';
+    echo 'var onlyroot = 0;';
+}
+if($this->default) {
+  echo 'var defaultTimeline = 1;';
+} else {
+  echo 'var defaultTimeline = 0;';
 }
 ?>
 
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', 'action' => 'getevents'),
-    												array('query' => array('cats' => $this->cats)))?>',
+    												array('query' => array('cats' => $this->cats,
+                                'default' => ($this->default ? true : false))))?>',
     categoriesUrl: '<?php echo $this->url('application', 
     										array('controller' => 'events', 'action' => 'getcategories'), 
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),

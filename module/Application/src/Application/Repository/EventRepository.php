@@ -53,6 +53,7 @@ class EventRepository extends ExtendedRepository
      * @param boolean $orderbycat
      * @param array $cats
      * @param array $status If $cats != null, restrict events status
+     * @param boolean $default If default tab, take into account cat.timelineconfirmed parameter
      * @return array
      */
     public function getEvents($userauth,
@@ -61,7 +62,8 @@ class EventRepository extends ExtendedRepository
                               $lastmodified = null,
                               $orderbycat = false,
                               $cats = null,
-                              $status = null)
+                              $status = null,
+                              $default = null)
     {
         $parameters = array();
         
@@ -85,18 +87,8 @@ class EventRepository extends ExtendedRepository
             if($status) {
                 $qb->andWhere($qb->expr()->in('e.status', $status));
             }
-        } else {
-            //TODO changer cette partie
-            // pas de catégorie => page d'accueil, enlever tous les évènements dont la catégorie n'est pas affichée sur la timeline
-            $qb->andWhere($qb->expr()
-                ->orX($qb->expr()
-                    ->andX($qb->expr()
-                        ->isNull('c.parent'), $qb->expr()
-                        ->eq('c.timeline', true)), $qb->expr()
-                    ->andX($qb->expr()
-                        ->isNotNull('c.parent'), $qb->expr()
-                        ->eq('c.timeline', true), $qb->expr()
-                        ->eq('p.timeline', true))));
+        }
+        if ($default) {
             // restriction éventuelle aux événements confirmés si timelineconfirmed
             $qb->andWhere($qb->expr()
                 ->orX($qb->expr()

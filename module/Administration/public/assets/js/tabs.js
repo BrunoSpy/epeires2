@@ -10,7 +10,13 @@ var tab = function(url){
 	$(".mod-tab").on('click', function(){
 		$("#tab-title").html('Modification de <em>'+$(this).data('name')+'</em>');
 		$("#tab-form").load(url+'/tabs/form?id='+$(this).data('id'), function(){
-		    $.material.checkbox();
+		    if($('input[name="isDefault"]').is(":checked")){
+                $('input[name="isDefault"]').prop('disabled', true)
+                    .parent().tooltip({
+                        title: "Supprimer l'onglet principal est interdit."
+                    });
+			}
+			$.material.checkbox();
 		});
 	});
 	
@@ -38,5 +44,13 @@ var tab = function(url){
 			displayMessages(eval(messages));
 		});
 	});
-	
+
+	$('#tab-container').on('change', 'input[name="isDefault"]', function(e){
+		var id = $('#Tab input[name="id"]').val();
+		if($(this).is(":checked")) {
+			$.post(url+'/tabs/setdefault?id='+id, function(data){
+				displayMessages(data.messages);
+			});
+        }
+	});
 };

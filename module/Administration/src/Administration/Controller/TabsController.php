@@ -180,9 +180,10 @@ class TabsController extends FormController
         return new JsonModel();
     }
     
-    public function setDefaultAction()
+    public function setdefaultAction()
     {
         $id = $this->params()->fromQuery('id', null);
+        $messages = array();
         if($id) {
             $objectManager = $this->getEntityManager();
             $tabs = $objectManager->getRepository('Application\Entity\Tab')->findAll();
@@ -195,9 +196,14 @@ class TabsController extends FormController
             }
             try{
                 $objectManager->flush();
+                $messages['success'][] = "Onglet correctement passé par défaut.";
             } catch (\Exception $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                $messages['error'][] = "Une erreur est survenue.";
+                $messages['error'][] = $e->getMessage();
             }
         }
+        $json = array();
+        $json['messages'] = $messages;
+        return new JsonModel($json);
     }
 }

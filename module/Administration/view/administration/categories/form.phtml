@@ -26,9 +26,7 @@ echo $this->controlGroup($this->form->get('color')->setAttribute('class', 'pick-
 		
 echo $this->controlGroup($this->form->get('compactmode'));
 
-echo $this->controlGroup($this->form->get('timeline'));
-
-echo '<div id="tcdiv" title="Seulement si Timeline est actif" data-toggle="tooltip">';
+echo '<div id="tcdiv" title="Seulement pour l\'onglet principal" data-toggle="tooltip">';
 echo $this->controlGroup($this->form->get('timelineconfirmed'));
 echo '</div>';
 

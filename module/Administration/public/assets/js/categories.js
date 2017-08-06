@@ -46,23 +46,6 @@ var categories = function(url){
                         function(){
                                 $("#form").find(".pick-a-color").pickAColor();
                                 $.material.checkbox();
-                                $('#tcdiv').tooltip();
-                                $('.form-control[name="timeline"]').change(function () {
-                                        if (this.checked) {
-                                                $('.form-control[name="timelineconfirmed"]').prop('disabled', false);
-                                                $('#tcdiv').css({ opacity: 1 });
-                                        } else {
-                                                $('.form-control[name="timelineconfirmed"]').prop('disabled', true).attr('checked', false);
-                                                $('#tcdiv').css({ opacity: 0.5 });
-                                        }
-                                });
-                                if ($('.form-control[name="timeline"]').is(':checked')) {
-                                        $('.form-control[name="timelineconfirmed"]').prop('disabled', false);
-                                        $('#tcdiv').css({ opacity: 1 });
-                                } else {
-                                        $('.form-control[name="timelineconfirmed"]').prop('disabled', true).attr('checked', false);
-                                        $('#tcdiv').css({ opacity: 0.5 });
-                                }
                 });
         });
 

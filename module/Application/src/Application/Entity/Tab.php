@@ -93,7 +93,7 @@ class Tab
      * Default tab. Only one default tab allowed.
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Onglet principal"})
+     * @Annotation\Options({"label":"Onglet principal :"})
      */
     protected $isDefault = false;
     

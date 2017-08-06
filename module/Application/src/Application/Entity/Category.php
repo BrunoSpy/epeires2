@@ -25,9 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * @ORM\Table(name="categories", indexes={@ORM\Index(name="search_idx", columns={"timeline"}),
-                                          @ORM\Index(name="discr_idx", columns={"discr"})
-                                          })
+ * @ORM\Table(name="categories", indexes={@ORM\Index(name="discr_idx", columns={"discr"})})
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
@@ -103,15 +101,8 @@ class Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Timeline"})
-     */
-    protected $timeline;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Mode confirmé"})
-     * @Annotation\Attributes({"id":"timelineconfirmed","title":"Disponible uniquement si Timeline est actif", "data-toggle":"tooltip"})
+     * @Annotation\Attributes({"id":"timelineconfirmed","title":"Valable uniquement pour l'onglet principal", "data-toggle":"tooltip"})
      */
     protected $timelineconfirmed;
 
@@ -276,19 +267,9 @@ class Category
         $this->color = $color;
     }
 
-    public function isTimeline()
-    {
-        return $this->timeline;
-    }
-
     public function isTimelineConfirmed()
     {
         return $this->timelineconfirmed;
-    }
-
-    public function setTimeline($timeline)
-    {
-        $this->timeline = $timeline;
     }
 
     public function setTimelineConfirmed($timelineconfirmed)
