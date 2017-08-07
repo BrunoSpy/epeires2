@@ -68,6 +68,7 @@
         "satooshi/php-coveralls": "dev-master",
         "codeception/codeception": "^2.2",
         "zfcampus/zf-apigility-admin": "~1.0",
-        "zendframework/zend-developer-tools": "^1.1"
+        "zendframework/zend-developer-tools": "^1.1",
+        "phpunit/php-token-stream": "1.4.*"
     }
 }
