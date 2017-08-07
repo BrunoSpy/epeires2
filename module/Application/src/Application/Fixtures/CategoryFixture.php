@@ -20,6 +20,7 @@ namespace ApplicationFixtures;
 
 
 use Application\Entity\Category;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -36,7 +37,12 @@ class CategoryFixture extends AbstractFixture implements FixtureInterface
         $category->setCompactMode(false);
         $category->setTimelineConfirmed(false);
 
+        $tab = $manager->getRepository('Application\Entity\Tab')->findOneBy(array('isDefault' => true));
+        $categories = new ArrayCollection();
+        $categories->add($category);
+        
         $manager->persist($category);
+        $manager->persist($tab);
         $manager->flush();
 
         $this->addReference("category", $category);
