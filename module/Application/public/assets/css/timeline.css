@@ -249,13 +249,16 @@
 	width: 30px;
 	text-align: center;
 	font-weight: bold;
+	display:flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .category .verticaltxt {
 	width: 10px;
 	word-wrap: break-word;
 	white-space: pre-wrap;
-	margin-left: 10px;
+	letter-spacing: 5px;
 }
 
 .elmt.notpunctual .rect_elmt.pulseshadow {
