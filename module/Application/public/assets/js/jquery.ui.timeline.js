@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.1",
+        version: "1.1.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1681,6 +1681,9 @@
             elmt_rect.find('.milestone').remove();
             //////
 
+            //mise à jour des attributs en fonction du statut
+            this._updateStatus(event, elmt);
+
             //création de l'évènement en plusieurs étapes :
             // 1* construction des éléments : libellé, heures de début et de fin, boutons
             // 2* dessin
@@ -1756,13 +1759,13 @@
             //taille finale de la boite
             var totalWidth = 0;
 
-            var txtSize = this._computeTextSize(elmt_txt.text().trim(), "RobotoDraft", "700", "14px");
+            var txtSize = this._computeTextSize(elmt_txt.text().trim(), elmt_txt.css('font-style'), "RobotoDraft", "700", "14px");
 
             event.txtSize = txtSize;
             //taille totale de la boite contenant le texte et les icônes
             var txt_wid = txtSize +
                 + 17*3
-                + (elmt_txt.find('.badge').length * 13)
+                + (elmt_txt.find('.badge').length * 14)
                 + 4 //padding
                 + 2; //border-width*2
             //place à droite du texte
@@ -1798,7 +1801,7 @@
                 /* 3: Positionnement du label  */
                 lien.addClass('disp').show();
                 // on place l'heure à droite
-                if (startdate.getDate() !== d_actuelle.getDate()) {
+                if (!this._isToday(startdate)) {
                     elmt_deb.css({'top':'-6px'});
                 } else {
                     elmt_deb.css({'top':'4px'});
@@ -1838,7 +1841,7 @@
                 elmt_txt.css('color', 'black');
                 elmt_txt.find('a > span.glyphicon').css('color', 'black');
 
-                /* 4: positionnement final de la boit englobante */
+                /* 4: positionnement final de la boite englobante */
                 elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
                     'width': totalWidth+'px'});
                 elmt.children().css({'left':'+='+offset+'px'});
@@ -1979,8 +1982,6 @@
             event.xend = x_end;
             event.offset = offset;
             event.totalWidth = totalWidth;
-            //mise à jour des attributs en fonction du statut
-            this._updateStatus(event, elmt);
 
             //une fois le statut analysé, on sait si l'affichage de l'heure est forcé ou non
             if(event.outside === 0) {//inside
@@ -2421,14 +2422,14 @@
             fakeEl.remove();
             return size;
         },
-        _computeTextSize: function (str, font, fontWeight, fontSize) {
+        _computeTextSize: function (str, fontStyle, font, fontWeight, fontSize) {
             if (!jQuery._cacheCanvas) {
                 var canvas = document.createElement('canvas');
                 var docFragment = document.createDocumentFragment();
                 docFragment.appendChild(canvas);
                 jQuery._cacheCanvas = canvas;
             }
-            jQuery._cacheCanvas.getContext("2d").font = fontWeight + " " + fontSize + " " + font;
+            jQuery._cacheCanvas.getContext("2d").font = fontStyle + " "+fontWeight + " " + fontSize + " " + font;
             var size = jQuery._cacheCanvas.getContext("2d").measureText(str).width;
             return size;
         },
