@@ -523,16 +523,20 @@ var antenna = function(url, frequencyTestMenu){
             }
             if (value['backupclimax']) {
                 if (sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').length > 0) {
-                    changeantenna(key, '.backupantenna-climax.antenna-climax-color', value.backupclimax);
+                    changeantenna(key, '.backupantenna-color.antenna-climax-color', value.backupclimax);
                 } else {
                     createantenna(key, 'backupantenna-color', value.backupclimax);
                 }
             } else {
                 sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').empty().data('antennaid','');
             }
-            if(!value['mainclimax'] && !value['backupclimax'] && sector.closest('.sector').find('.antennas').length > 1){
-                sector.closest('.sector').find('.antennas:last-child').remove();
-            }
+
+            sector.each(function(i, item){
+                if(!value['mainclimax'] && !value['backupclimax'] && $(this).closest('.sector').find('.antennas').length > 1){
+                    $(this).closest('.sector').find('.antennas:last-child').remove();
+                }
+            });
+
 
             if(value.status != 0 && value.otherfreq == 0 && value.cov == 0 && $failAntennas == 0){
                 //prise en compte des évts planifiés uniquement si pas d'evt en cours => statut ok
