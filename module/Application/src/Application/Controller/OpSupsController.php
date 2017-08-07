@@ -73,9 +73,7 @@ class OpSupsController extends AbstractEntityManagerAwareController
 
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
-
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
+        
         $daystart = new \DateTime($day);
         $offset = $daystart->getTimezone()->getOffset($daystart);
         $daystart->setTimezone(new \DateTimeZone('UTC'));
@@ -87,7 +85,7 @@ class OpSupsController extends AbstractEntityManagerAwareController
         $dayend->add(new \DateInterval("PT" . $offset . "S"));
         $dayend->setTime(23, 59, 59);
 
-        $opsups = $em->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, true);
+        $opsups = $this->getEntityManager()->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, true);
 
         $viewmodel->setVariables(array('opsups' => $opsups, 'day' => $daystart));
         
