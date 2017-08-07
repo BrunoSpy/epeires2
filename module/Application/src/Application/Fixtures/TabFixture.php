@@ -28,6 +28,11 @@ use Doctrine\Common\Persistence\ObjectManager;
 class TabFixture extends AbstractFixture implements FixtureInterface
 {
     
+    public function getDependencies()
+    {
+        return array('ApplicationFixtures\CategoryFixture');
+    }
+    
     public function load(ObjectManager $manager) {
     
         $category = $this->getReference("category");
