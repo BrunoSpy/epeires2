@@ -27,7 +27,6 @@ class CategoryEntityFactoryTest extends \Codeception\Test\Unit
         $milcategory->setShortName("Mil");
         $milcategory->setColor("#00FF00");
         $milcategory->setCompactMode(false);
-        $milcategory->setTimeline(true);
         $milcategory->setTimelineConfirmed(false);
 
         $em->persist($milcategory);
