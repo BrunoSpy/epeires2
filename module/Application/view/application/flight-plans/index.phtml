@@ -136,7 +136,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
 $("table th:first").trigger('click');
 
 //init form
-form('<?php echo $this->url('application');?>', 'timeline');
+form('<?php echo $this->url('application');?>', <?php echo $this->tabid; ?>);
 
 flightplan('<?php echo $this->url('application'); ?>');
 

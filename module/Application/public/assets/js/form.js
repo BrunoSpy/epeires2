@@ -787,7 +787,7 @@ var form = function(url, tabid){
 
 		if(root_value > 0) {
 			$.when(
-				$.post(url+'events/subform?part=subcategories&id='+root_value + (tabid === 'timeline' ? '&onlytimeline=true' : '&tabid='+tabid),
+				$.post(url+'events/subform?part=subcategories&id='+root_value + '&tabid='+tabid,
 					function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);
@@ -805,14 +805,14 @@ var form = function(url, tabid){
                 } else {
                     $.when(//récupération des modèles
                         $.post(
-                            url+'events/subform?part=predefined_events&id='+root_value,
+                            url+'events/subform?part=predefined_events&id='+root_value+ '&tabid='+tabid,
                             function(data){
                                 $("#predefined_events").html(data);
                                 $.material.checkbox();
                             }
                         ),
                         $.post(
-                            url+'events/subform?part=custom_fields&id='+root_value,
+                            url+'events/subform?part=custom_fields&id='+root_value+ '&tabid='+tabid,
                             function(data){
                                 $("#custom_fields").html(data);
                                 $("#custom_fields input, #custom_fields select").on("invalid", function(event){
@@ -850,7 +850,7 @@ var form = function(url, tabid){
         rebootTabs();
         $("input[name='category']").val(subcatid);
         return $.when(
-            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid,
+            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid+ '&tabid='+tabid,
                 function(data) {
                     $("#custom_fields").html(data);
                     $("#event input, #event select").on("invalid", function(event){
@@ -862,7 +862,7 @@ var form = function(url, tabid){
                 }
             ),
             $.post(
-                url + 'events/subform?part=predefined_events&id=' + subcatid,
+                url + 'events/subform?part=predefined_events&id=' + subcatid+ '&tabid='+tabid,
                 function(data){
                     $("#predefined_events").html(data);
                     //don't open model panel if there is no model

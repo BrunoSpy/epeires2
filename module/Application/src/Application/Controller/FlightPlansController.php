@@ -53,9 +53,13 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     public function indexAction()
     {
         if (!$this->authFlightPlans('read')) return new JsonModel();
+        
+        $timelineTab = $this->em->getRepository('Application\Entity\Tab')->findOneBy(array('isDefault'=>true));
+        
         return (new ViewModel())
             ->setVariables([
                 'cat' => $this->getCatId(),
+                'tabid' => $timelineTab->getId()
             ]);
     }
     

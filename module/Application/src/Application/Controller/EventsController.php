@@ -1028,6 +1028,7 @@ class EventsController extends TabController
     public function subformAction()
     {
         $part = $this->params()->fromQuery('part', null);
+        $tabid = $this->params()->fromQuery('tabid', null);
         
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
@@ -1037,16 +1038,14 @@ class EventsController extends TabController
         
         $em = $this->getEntityManager();
         
-        $form = $this->getSkeletonForm(null);
+        $form = $this->getSkeletonForm($tabid);
         
         if ($part) {
             switch ($part) {
                 case 'subcategories':
                     $id = $this->params()->fromQuery('id');
-                    $onlytimeline = $this->params()->fromQuery('onlytimeline', false);
-                    $tabid = $this->params()->fromQuery('tabid', null);
                     $subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
-                        ->getChilds($onlytimeline, $id));
+                        ->getChilds($id));
                     if ($tabid !== null) {
                         $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
                         if ($tab) {
@@ -1142,8 +1141,6 @@ class EventsController extends TabController
         
         $tabid = $this->params()->fromQuery('tabid', null);
         
-        $onlytimeline = ($tabid === 'timeline' || $tabid === null) ;
-        
         $form = $this->getSkeletonForm($tabid);
         
         $id = $this->params()->fromQuery('id', null);
@@ -1182,7 +1179,7 @@ class EventsController extends TabController
                 $form->get('categories')
                     ->get('subcategories')
                     ->setValueOptions($em->getRepository('Application\Entity\Category')
-                    ->getChildsAsArray($onlytimeline, $cat->getParent()->getId()));
+                    ->getChildsAsArray($cat->getParent()->getId()));
                 
                 $form->get('categories')
                     ->get('root_categories')
@@ -1326,18 +1323,15 @@ class EventsController extends TabController
         
         // add default fieldsets
         $rootCategories = array();
-        if ($tabid === 'timeline' || $tabid === null) {
-            $rootCategories = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
-                ->getRoots(null, true));
-        } else {
-            $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
-            if ($tab) {
-                $cats = $tab->getCategories()->filter(function ($a) {
-                    return $a->getParent() === null;
-                });
-                $rootCategories = $this->filterReadableCategories($cats);
-            }
+        
+        $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
+        if ($tab) {
+            $cats = $tab->getCategories()->filter(function ($a) {
+                return $a->getParent() === null;
+            });
+            $rootCategories = $this->filterReadableCategories($cats);
         }
+        
         $rootarray = array();
         foreach ($rootCategories as $cat) {
             $rootarray[$cat->getId()] = $cat->getName();

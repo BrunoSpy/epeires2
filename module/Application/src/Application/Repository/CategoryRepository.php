@@ -31,21 +31,19 @@ class CategoryRepository extends ExtendedRepository
      *
      * @return array
      */
-    public function getRootsAsArray($id = null, $timeline = null, $system = true)
+    public function getRootsAsArray($id = null, $system = true)
     {
         $res = array();
-        foreach ($this->getRoots($id, $timeline, $system) as $element) {
+        foreach ($this->getRoots($id, $system) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;
     }
 
-    public function getRoots($id = null, $timeline = null, $system = true)
+    public function getRoots($id = null, $system = true)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
-        if ($timeline) {
-            $criteria->andWhere(Criteria::expr()->eq('timeline', true));
-        }
+        
         if ($id) {
             $criteria->andWhere(Criteria::expr()->neq('id', $id));
         }
@@ -59,15 +57,12 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
-    public function getChilds($onlytimeline, $parentId = null)
+    public function getChilds($parentId = null)
     {
         if ($parentId) {
             $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', parent::find($parentId)));
         } else {
             $criteria = Criteria::create()->where(Criteria::expr()->neq('parent', null));
-        }
-        if ($onlytimeline) {
-            $criteria->andWhere(Criteria::expr()->eq('timeline', true));
         }
         $criteria->orderBy(array(
             'place' => Criteria::ASC
@@ -77,10 +72,10 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
-    public function getChildsAsArray($onlytimeline, $parentId = null)
+    public function getChildsAsArray($parentId = null)
     {
         $res = array();
-        foreach ($this->getChilds($onlytimeline, $parentId) as $element) {
+        foreach ($this->getChilds($parentId) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;
