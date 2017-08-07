@@ -19,27 +19,30 @@
 namespace ApplicationFixtures;
 
 
-use Application\Entity\Category;
+use Application\Entity\Tab;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class CategoryFixture extends AbstractFixture implements FixtureInterface
+class TabFixture extends AbstractFixture implements FixtureInterface
 {
-
+    
     public function load(ObjectManager $manager) {
-        $category = new Category();
-
-        $category->setName("TestCat");
-        $category->setShortName("Test");
-        $category->setColor("#FF0000");
-        $category->setCompactMode(false);
-        $category->setTimelineConfirmed(false);
-
-        $manager->persist($category);
+    
+        $category = $this->getReference("category");
+        
+        $tab = new Tab();
+        $tab->setName('Timeline principale');
+        $tab->setShortName('Timeline');
+        $tab->setDefault('true');
+        
+        $categories = new ArrayCollection();
+        $categories->add($category);
+        $tab->addCategories($categories);
+        
+        $manager->persist($tab);
         $manager->flush();
-
-        $this->addReference("category", $category);
-
+        
     }
 }
