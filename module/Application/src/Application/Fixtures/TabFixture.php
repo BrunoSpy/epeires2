@@ -35,7 +35,7 @@ class TabFixture extends AbstractFixture implements FixtureInterface
         $tab = new Tab();
         $tab->setName('Timeline principale');
         $tab->setShortName('Timeline');
-        $tab->setDefault('true');
+        $tab->setDefault(true);
         
         $categories = new ArrayCollection();
         $categories->add($category);
