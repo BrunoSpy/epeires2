@@ -126,6 +126,7 @@ var models = function(url, urlapp){
 		var catid = $("#PredefinedEvent select[name=category] option:selected").val();
 		$.post($("#model-form #PredefinedEvent").attr('action')+'?catid='+catid, $("#model-form form#PredefinedEvent").serialize(), function(data){
 			var id = $("#PredefinedEvent input[type=hidden]").val();
+			var messages = data.messages;
 			if(id > 0){
 				var tr = $("#models-container tr#"+data.id);
 				tr.find('td:eq(0)').html(data.name);
@@ -159,8 +160,10 @@ var models = function(url, urlapp){
 			}
 			$("#model-container").modal('hide');
 			//reload only if no other modal
-			if(!$("#models-container").is(':visible')){
+			if(!$("#models-container").is(':visible') && !messages.error){
 				location.reload();
+			} else {
+				displayMessages(messages);
 			}
 		}, 'json');
 	});

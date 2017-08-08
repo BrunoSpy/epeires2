@@ -366,6 +366,10 @@ class ModelsController extends FormController
                 $pevent->setImpact($objectManager->getRepository('Application\Entity\Impact')
                     ->find($post['impact']));
                 
+                if(isset($post['duration']) && ($post['duration'] == '' || intval($post['duration']) == 0)) {
+                    $pevent->setDuration(-1);
+                }
+                
                 // alarms
                 if (isset($post['alarm']) && is_array($post['alarm'])) {
                     foreach ($post['alarm'] as $key => $alarmpost) {
