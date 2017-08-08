@@ -164,6 +164,12 @@
     							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Onglet radio</a>
     						</li>
                             <?php endif; ?>
+                            <?php if($this->isGranted('admin.radar')) : ?>
+                                <li><a
+                                        data-title="Onglets > Radar"
+                                        href="<?php echo $this->url('administration', array('controller'=> 'radars', 'action' => 'config'))?>">Onglet radar</a>
+                                </li>
+                            <?php endif; ?>
                             <?php if($this->isGranted('admin.zonesmil')) : ?>
                             <li><a
     							data-title="Onglets > Zones militaires"

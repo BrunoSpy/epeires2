@@ -1,0 +1,31 @@
+
+
+<?php 
+$this->form->setAttribute('action', $this->url('administration', array('controller'=>'radars', 'action'=>'saveradarmodel')));
+$this->form->setAttribute('class', 'form-horizontal');
+$this->form->prepare();
+
+echo $this->form()->openTag($this->form);
+?>
+<div class="modal-body">
+<?php
+
+
+echo $this->formHidden($this->form->get('id'));
+
+echo $this->controlGroup($this->form->get('models'));
+
+?>
+
+
+</div>
+<div class="modal-footer">
+<?php 
+
+	echo $this->formSubmit($this->form->get('submit'));
+?>
+<button class="btn" href="#" data-dismiss="modal" aria-hidden="true">Annuler</button>
+</div>
+<?php 
+echo $this->form()->closeTag();
+?>

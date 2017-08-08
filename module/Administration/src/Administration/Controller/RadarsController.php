@@ -133,4 +133,131 @@ class RadarsController extends AbstractEntityManagerAwareController
             'radar' => $radar
         );
     }
+    
+    public function configAction()
+    {
+        $viewmodel = new ViewModel();
+        $this->layout()->title = "Onglets > Radars";
+        
+        $viewmodel->setVariable(
+            'radars', $this->getEntityManager()->getRepository('Application\Entity\Radar')
+                ->findBy(array(), array('name' => 'ASC'))
+        );
+        
+        return $viewmodel;
+    }
+    
+    public function formradarmodelAction()
+    {
+        $request = $this->getRequest();
+        $viewmodel = new ViewModel();
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+        
+        $id = $this->params()->fromQuery('id', null);
+        
+        $getform = $this->getFormRadarModel($id);
+        
+        $form = $getform['form'];
+        $form->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Enregistrer',
+                'class' => 'btn btn-primary'
+            )
+        ));
+        
+        $viewmodel->setVariables(array(
+            'form' => $form
+        ));
+        return $viewmodel;
+    }
+    
+    public function saveradarmodelAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $id = $post['id'];
+            
+            $getform = $this->getFormRadarModel($id);
+            $form = $getform['form'];
+            $form->setData($post);
+            
+            if ($form->isValid()) {
+                $radar = $getform['radar'];
+                $radar->setModel($this->getEntityManager()->getRepository('Application\Entity\PredefinedEvent')
+                    ->find($form->get("models")
+                        ->getValue()));
+                $this->getEntityManager()->persist($radar);
+                try {
+                    $this->getEntityManager()->flush();
+                    $this->flashMessenger()->addSuccessMessage("Modèle correctement associé.");
+                } catch (\Exception $ex) {
+                    $this->flashMessenger()->addErrorMessage($ex->getMessage());
+                }
+            } else {
+                $this->processFormMessages($form->getMessages());
+            }
+        }
+        
+        $json = array(
+            'id' => $radar->getId(),
+            'name' => $radar->getName()
+        );
+        
+        return new JsonModel($json);
+    }
+    
+    private function getFormRadarModel($id)
+    {
+        $datas = array();
+        $form = null;
+        if ($id) {
+            $radar = $this->getEntityManager()->getRepository('Application\Entity\Radar')->find($id);
+            if ($radar) {
+                $datas['radar'] = $radar;
+                $qb = $this->getEntityManager()->createQueryBuilder();
+                $qb->select(array(
+                    'p',
+                    'c'
+                ))
+                    ->from('Application\Entity\PredefinedEvent', 'p')
+                    ->leftJoin('p.category', 'c')
+                    ->andWhere('c INSTANCE OF Application\Entity\RadarCategory');
+                $models = array();
+                foreach ($qb->getQuery()->getResult() as $model) {
+                    foreach ($model->getCustomFieldsValues() as $value) {
+                        if ($value->getCustomField()->getID() == $model->getCategory()
+                                ->getRadarfield()
+                                ->getId()) {
+                            if ($value->getValue() == $id) {
+                                $models[] = $model;
+                            }
+                        }
+                    }
+                }
+                $form = new \Zend\Form\Form("model");
+                $hidden = new \Zend\Form\Element\Hidden("id");
+                $hidden->setValue($id);
+                $form->add($hidden);
+                $select = new \Zend\Form\Element\Select("models");
+                $optionsModels = array();
+                foreach ($models as $model) {
+                    $optionsModels[$model->getId()] = $model->getName();
+                }
+                $select->setValueOptions($optionsModels);
+                if (count($optionsModels) == 0) {
+                    $select->setEmptyOption("Aucun modèle à associer");
+                } else {
+                    $select->setEmptyOption("Choisir le modèle à associer.");
+                }
+                $select->setLabel("Modèle : ");
+                $form->add($select);
+                
+                $datas['form'] = $form;
+            }
+        }
+        return $datas;
+    }
 }

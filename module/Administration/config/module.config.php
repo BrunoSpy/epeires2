@@ -151,6 +151,10 @@ return array(
                 'name' => 'Onglets',
                 'description' => ''
             ),
+            'admin.radar' => array(
+                'name' => 'Radars',
+                'description' => ''
+            )
         )
     ),
     'zfc_rbac' => array(

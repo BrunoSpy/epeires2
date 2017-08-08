@@ -61,7 +61,12 @@ class Radar extends TemporaryResource
      * @Annotation\Options({"label":"Nom abrégé :"})
      */
     protected $shortname;
-
+    
+    /**
+     * @ORM\OneToOne(targetEntity="PredefinedEvent")
+     */
+    protected $model;
+    
     public function getId()
     {
         return $this->id;
@@ -96,7 +101,17 @@ class Radar extends TemporaryResource
     {
         return $this->organisation;
     }
-
+    
+    public function getModel()
+    {
+        return $this->model;
+    }
+    
+    public function setModel($model)
+    {
+        $this->model = $model;
+    }
+    
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);

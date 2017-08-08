@@ -204,6 +204,39 @@ class RadarsController extends TabController
                                     }
                                 }
                             }
+    
+                            // création de la fiche réflexe
+                            if ($radar->getModel()) {
+                                foreach ($this->entityManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
+                                    'parent' => $radar->getModel()->getId()
+                                )) as $action) {
+                                    $child = new Event();
+                                    $child->setParent($event);
+                                    $child->setAuthor($event->getAuthor());
+                                    $child->setOrganisation($event->getOrganisation());
+                                    $child->createFromPredefinedEvent($action);
+                                    $child->setStatus($this->entityManager->getRepository('Application\Entity\Status')
+                                        ->findOneBy(array(
+                                            'defaut' => true,
+                                            'open' => true
+                                        )));
+                                    foreach ($action->getCustomFieldsValues() as $value) {
+                                        $newvalue = new CustomFieldValue();
+                                        $newvalue->setEvent($child);
+                                        $newvalue->setCustomField($value->getCustomField());
+                                        $newvalue->setValue($value->getValue());
+                                        $child->addCustomFieldValue($newvalue);
+                                        $this->entityManager->persist($newvalue);
+                                    }
+                                    $child->updateAlarmDate();
+                                    $this->entityManager->persist($child);
+                                }
+                                // ajout des fichiers
+                                foreach ($radar->getModel()->getFiles() as $file) {
+                                    $file->addEvent($event);
+                                }
+                            }
+                            
                             //et on sauve le tout
                             $this->entityManager->persist($event);
                             try {

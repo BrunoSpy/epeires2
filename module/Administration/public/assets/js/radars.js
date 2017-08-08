@@ -39,5 +39,17 @@ var radars = function(url){
 			location.reload();
 		});
 	});
-	
+
+	//Modèles associés
+    $(".change-model").on('click', function(){
+        $("#model-title").html('Modification de <em>'+$(this).data('name')+'</em>');
+        $("#model-form").load(url+'/radars/formradarmodel?id='+$(this).data('id'));
+    });
+
+    $("#model-container").on('submit', function(event){
+        event.preventDefault();
+        $.post(url+'/radars/saveradarmodel', $("#model").serialize(), function(data){
+            location.reload();
+        });
+    });
 };
