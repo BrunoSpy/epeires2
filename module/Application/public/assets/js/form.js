@@ -332,7 +332,21 @@ var form = function(url, tabid){
 		}
 		//mise à jour des alarmes
 		updateAlarmForms();
+		//alert if date != today
+		if(deb.getUTCFullYear() !== nowUTC.getUTCFullYear() ||
+		deb.getUTCMonth() !== nowUTC.getUTCMonth() ||
+		deb.getUTCDate() !== nowUTC.getUTCDate()){
+			$("#start table").tooltip({
+				title: '<span class="glyphicon glyphicon-warning-sign"></span> La date est différente de la date du jour.',
+				container: 'body',
+				placement: 'right',
+				html: true
+			}).tooltip('show');
+        } else {
+            $("#start table").tooltip('destroy');
+		}
 	});
+
 
 	$('#event').on('change', 'input[name=enddate]', function() {
 		var dateDeb = $("#hours-tab #start").siblings("input[type=hidden]");
