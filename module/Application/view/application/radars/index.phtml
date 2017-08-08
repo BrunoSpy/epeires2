@@ -1,92 +1,98 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radar.js')?>
 
-<div class="container-fluid">
-	<p></p>
-	<div class="row">
-		<div class="col-sm-4 col-sm-offset-4">
-            <?php if($this->radars) : ?>
-			<table class="table table-striped table-hover table-bordered sortable" id="radars">
-				<thead>
-					<tr>
-						<th data-sort="string" data-autosort="true">Nom</th>
-						<th>État</th>
-					</tr>
-				</thead>
-				<tbody>
-				<?php 
-				foreach ($this->radars as $radarid => $radar){
-					echo '<tr>';
-					echo '<td>'.$radar['name'].'</td>';
-					echo '<td>';
-					
-					echo	'<div class="togglebutton togglebuton-red">';
-					    echo '<label>';
-						echo '<input
+<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+
+<div class="main-nav panel-left" id="fiche" data-url="radars/getfiche"></div>
+<div class="page-wrap">
+    <div class="container-fluid" id="radar">
+        <p></p>
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-4" id="radars">
+                <?php if($this->radars) : ?>
+                    <table class="table table-striped table-hover table-bordered sortable" id="radars">
+                        <thead>
+                        <tr>
+                            <th data-sort="string" data-autosort="true">Nom</th>
+                            <th>État</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($this->radars as $radarid => $radar){
+                            echo '<tr id="radar-'.$radarid.'">';
+                            echo '<td>'.$radar['name'];
+                            echo ' <a href="#" data-id="'.$radarid.'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                            echo '</td>';
+                            echo '<td>';
+                            
+                            echo	'<div class="togglebutton togglebutton-red">';
+                            echo '<label>';
+                            echo '<input
 	                            id="switch_'.$radarid.'" 
 								data-radarid="'.$radarid.'"
 								data-radar="'.$radar['name'].'" 
-								data-href="'.$this->url('application', 
-													array('controller'=>'radars', 'action' => 'switchradar'), 
-													array('query' => array('radarid' => $radarid))).'" 
+								data-href="'.$this->url('application',
+                                    array('controller'=>'radars', 'action' => 'switchradar'),
+                                    array('query' => array('radarid' => $radarid))).'"
 	                            class="radar-switch" type="checkbox" '.($radar['status'] ? 'checked="checked"' : '').
-								($this->isGranted('events.write') ? '' : ' disabled="disabled"').
-								'>';
-						echo '</label>';
-					echo '</div>';
-
-					echo '</td>';
-					echo '</tr>';
-				}
-				?>
-				</tbody>
-			</table>
-            <?php else: ?>
-            <p>Aucun radar configuré.</p>
-            <?php endif; ?>
-		</div>
-	</div>
+                                ($this->isGranted('events.write') ? '' : ' disabled="disabled"').
+                                '>';
+                            echo '</label>';
+                            echo '</div>';
+                            
+                            echo '</td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>Aucun radar configuré.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
-
-<?php 
+<?php
 if($this->radars) {
-	$this->form->setAttribute('class', 'form-horizontal');
-	$this->form->prepare();
-
-	$form = $this->form()->openTag($this->form);
-
-	$form .= '<div class="modal-body">';
-	$form .= '<div id="message"></div>';
-	foreach ($this->form->get('custom_fields')->getElements() as $element) {
-		$form .= $this->controlGroup($element);
-	}
-	$form .= '</div>';
-	$form .= '<div class="modal-footer">';
-	$form .= '<button class="btn btn-danger" id="end-radar-href" type="submit">Confirmer</button>';
-	$form .= "<button class=\"btn\" href=\"#\" id=\"cancel-radar\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
-
-	$form .= '</div>';
-	$form .= $this->form()->closeTag();
-
-
-	echo $this->modalwindow("confirm-end-event",
-		"<h3>Radar <em><span id=\"radar_name\"></span></em></h3>",
-		"",
-		null,
-		$form);
+    $this->form->setAttribute('class', 'form-horizontal');
+    $this->form->prepare();
+    
+    $form = $this->form()->openTag($this->form);
+    
+    $form .= '<div class="modal-body">';
+    $form .= '<div id="message"></div>';
+    foreach ($this->form->get('custom_fields')->getElements() as $element) {
+        $form .= $this->controlGroup($element);
+    }
+    $form .= '</div>';
+    $form .= '<div class="modal-footer">';
+    $form .= '<button class="btn btn-danger" id="end-radar-href" type="submit">Confirmer</button>';
+    $form .= "<button class=\"btn\" href=\"#\" id=\"cancel-radar\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
+    
+    $form .= '</div>';
+    $form .= $this->form()->closeTag();
+    
+    
+    echo $this->modalwindow("confirm-end-event",
+        "<h3>Radar <em><span id=\"radar_name\"></span></em></h3>",
+        "",
+        null,
+        $form);
 }
 ?>
 <?php $this->inlineScript()->captureStart();?>
 
 $("#home").removeClass("dropdown-toggle")
-		  .attr('data-toggle', '')
-		  .html('<span class="glyphicon glyphicon-home"></span> Évènements');
+          .attr('data-toggle', '')
+          .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-$("#create-link").remove();		  
+$("#create-link").remove();
 
 $("#zoomform").remove();
 
 $('#search').remove();
-	
+
 radar('<?php echo $this->url('application'); ?>');
-		  
+
 <?php $this->inlineScript()->captureEnd();?>

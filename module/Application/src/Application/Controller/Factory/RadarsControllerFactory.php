@@ -29,6 +29,7 @@ class RadarsControllerFactory implements FactoryInterface {
         return new RadarsController(
             $service->get('Doctrine\ORM\EntityManager'),
             $service->get('CustomFieldService'),
+            $service->get('EventService'),
             $service->get('config'));
     }
 

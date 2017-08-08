@@ -18,6 +18,7 @@
 namespace Application\Controller;
 
 use Application\Services\CustomFieldService;
+use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -36,14 +37,17 @@ class RadarsController extends TabController
 
     private $entityManager;
     private $customfieldservice;
+    private $eventservice;
 
     public function __construct(EntityManager $entityManager,
                                 CustomFieldService $customfieldService,
+                                EventService $eventservice,
                                 $config)
     {
         parent::__construct($config);
         $this->entityManager = $entityManager;
         $this->customfieldservice = $customfieldService;
+        $this->eventservice = $eventservice;
     }
 
     public function indexAction()
@@ -274,5 +278,58 @@ class RadarsController extends TabController
         }
         
         return $radars;
+    }
+
+    public function  getficheAction()
+    {
+        $viewmodel = new ViewModel();
+        $request = $this->getRequest();
+    
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+    
+        $radarId = $this->params()->fromQuery('id', null);
+        
+        $radar = $this->entityManager->getRepository('Application\Entity\Radar')->find($radarId);
+        
+        $fiche = null;
+        $history = null;
+        $actions = null;
+        if($radar) {
+            $events = $this->entityManager
+                ->getRepository('Application\Entity\Event')
+                ->getCurrentEvents('Application\Entity\RadarCategory');
+            $radarEvents = array();
+            foreach ($events as $event) {
+                $radarField = $event->getCustomFieldValue($event->getCategory()->getRadarfield());
+                if ($radarField->getValue() == $radarId) {
+                    $radarEvents[] = $event;
+                }
+            }
+    
+            if (count($radarEvents) >= 1) {
+                $event = $radarEvents[0];
+                $fiche = $event;
+                $history = $this->eventservice->getHistory($event);
+    
+    
+                $qb = $this->entityManager->createQueryBuilder();
+                $qb->select(array(
+                    'e',
+                    'cat'
+                ))
+                    ->from('Application\Entity\AbstractEvent', 'e')
+                    ->innerJoin('e.category', 'cat')
+                    ->andWhere('cat INSTANCE OF Application\Entity\ActionCategory')
+                    ->andWhere($qb->expr()
+                        ->eq('e.parent', $fiche->getId()));
+    
+                $actions = $qb->getQuery()->getResult();
+            }
+        }
+        $viewmodel->setVariable('history', $history);
+        $viewmodel->setVariable('fiche', $fiche);
+        $viewmodel->setVariable('actions', $actions);
+        return $viewmodel;
     }
 }

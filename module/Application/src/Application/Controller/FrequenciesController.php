@@ -833,7 +833,9 @@ class FrequenciesController extends TabController
         $fiche = null;
         $history = null;
         if ($antenna) {
-            $events = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AntennaCategory');
+            $events = $this->entityManager
+                ->getRepository('Application\Entity\Event')
+                ->getCurrentEvents('Application\Entity\AntennaCategory');
             $antennaEvents = array();
             foreach ($events as $event) {
                 foreach ($event->getCustomFieldsValues() as $value) {

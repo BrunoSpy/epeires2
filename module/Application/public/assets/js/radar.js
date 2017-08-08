@@ -24,53 +24,63 @@ var radar = function(url){
     var back = true;
 
     $('.radar-switch').on('change', function(e){
-	var newState = $(this).is(':checked');
-	$('button#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
-	$('#radar_name').html($(this).data('radar'));
-	$("#cancel-radar").data('radar', $(this).data('radarid')) ;
+        var newState = $(this).is(':checked');
+        $('button#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
+        $('#radar_name').html($(this).data('radar'));
+        $("#cancel-radar").data('radar', $(this).data('radarid')) ;
 
-	if(!newState){
-	    $("#confirm-end-event .modal-body #message").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
-	    "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
-	    $('.form-group').show();
-	} else {
-	    $("#confirm-end-event .modal-body #message").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
-	    "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
-	    $('.form-group').hide();
-	}
-	$("#confirm-end-event").modal('show');
+        if(!newState){
+            $("#confirm-end-event .modal-body #message").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
+                "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
+            $('.form-group').show();
+        } else {
+            $("#confirm-end-event .modal-body #message").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
+                "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
+            $('.form-group').hide();
+        }
+        $("#confirm-end-event").modal('show');
     });
 
     $("#confirm-end-event").on('hide.bs.modal', function(){
-	if(back){
-	    var button = $('#switch_'+$("#cancel-radar").data('radar'));
-	    button.prop('checked', !button.is(':checked') );
-	}
+        if(back){
+            var button = $('#switch_'+$("#cancel-radar").data('radar'));
+            button.prop('checked', !button.is(':checked') );
+        }
     });
 
     $("#Event").on('submit', function(event){
-	event.preventDefault();
-	back = false;
-	$("#confirm-end-event").modal('hide');
-	$.post($("#end-radar-href").attr('href'), $("#Event").serialize(), function(data){
-	    displayMessages(data);
-	    back = true;
-	    if(data['error']){
-		//dans le doute, on remet le bouton à son état antérieur
-		var button = $('#switch_'+$("#cancel-radar").data('radar'));
-		button.prop('checked', !button.is(':checked') );
-	    }
-	}, 'json');
+        event.preventDefault();
+        back = false;
+        $("#confirm-end-event").modal('hide');
+        $.post($("#end-radar-href").attr('href'), $("#Event").serialize(), function(data){
+            displayMessages(data);
+            back = true;
+            var button = $('#switch_'+$("#cancel-radar").data('radar'));
+            if(data['error']){
+                //dans le doute, on remet le bouton à son état antérieur
+                button.prop('checked', !button.is(':checked') );
+            }
+            if(!button.is(':checked')) {
+                $("#radar-"+$("#cancel-radar").data('radar')+" a.open-fiche").show();
+            } else {
+                $("#radar-"+$("#cancel-radar").data('radar')+" a.open-fiche").hide();
+            }
+        }, 'json');
     });
 
     //refresh page every 30s
     (function doPoll(){
-	$.post(url+'radars/getradarstate')
-	.done(function(data) {
-	    $.each(data, function(key, value){
-		$('#switch_'+key).prop('checked', value);
-	    });
-	})
-	.always(function() { setTimeout(doPoll, 30000);});
+        $.post(url+'radars/getradarstate')
+            .done(function(data) {
+                $.each(data, function(key, value){
+                    $('#switch_'+key).prop('checked', value);
+                    if(!value) {
+                        $("#radar-"+key+" a.open-fiche").show();
+                    } else {
+                        $("#radar-"+key+" a.open-fiche").hide();
+                    }
+                });
+            })
+            .always(function() { setTimeout(doPoll, 30000);});
     })();
 };
