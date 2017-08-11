@@ -64,6 +64,20 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         if (!$this->authSarBeacons('read')) return new JsonModel();
     }
 
+    public function getnbcurrentipAction() 
+    {
+        return new JsonModel([
+            'nbip' => count($this->em->getRepository(Event::class)->getCurrentIntPlanEvents())
+        ]);
+    }
+
+    public function getnbendedipAction() 
+    {
+        return new JsonModel([
+            'nbip' => count($this->em->getRepository(Event::class)->getEndedIntPlanEvents())
+        ]);
+    }
+
     public function getArrayCopy($ip) 
     {
         $ev = [
@@ -132,6 +146,22 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         return $alertid;
     } 
 
+    public function showAction()
+    {
+        if (!$this->authSarBeacons('read')) return new JsonModel();
+
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+            
+        $ip = $this->em->getRepository(Event::class)->find($id);  
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'ip' => $this->getArrayCopy($ip)
+            ]);       
+    }
+
     public function getipAction()
     {
         if (!$this->authSarBeacons('read')) return new JsonModel();
@@ -183,6 +213,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             }
 
         }
+
         return new JsonModel([
             'lat' => $lat,
             'lon' => $lon,
@@ -651,7 +682,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $typealerte = new Element\Select('typealerte');
         $typealerte->setLabel('Type d\'alerte');
         $typealerte->setValueOptions([
-            'INCERFA' => 'INCERFA',
+            // 'INCERFA' => 'INCERFA',
             'ALERTFA' => 'ALERTFA',
             'DETRESSFA' => 'DETRESSFA', 
         ]);

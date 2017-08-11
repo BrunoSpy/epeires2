@@ -55,7 +55,8 @@ body,
 
 #tabs-1,
 #tabs-2,
-#tabs-3 {
+#tabs-3,
+#tabs-4 {
     margin: 0px;
     margin-right: 30px;
     padding: 0px;
@@ -159,30 +160,33 @@ body,
     right: 0;
     /*border: 1px solid lightgrey;   */
 }
-#list-ip {
+.list-ip {
     margin-top:5px;
     margin-left:0px;
     /*margin:0;*/
-    padding:0;
 }
 
-#list-ip .btn-cache-ip {
-    margin-right:5px;
+.list-ip-content {
+    padding:30px;
 }
 
-#list-ip h3 {
+.btn-cache-ip {
+    margin-right: 6px;
+}
+
+/*.list-ip h3 {
     margin: 7px 0 5px;
 }
 
-#list-ip h4 {
+.list-ip h4 {
     font-size: 16px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
-#list-ip li {
+.list-ip li {
     padding: 7px;
-}
+}*/
 
 #pio-mod-form ul {
     margin-top: 20px;

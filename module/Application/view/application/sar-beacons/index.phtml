@@ -1,6 +1,7 @@
 <?php
 $this->headLink()->prependStylesheet($this->basePath() . '/components/leaflet/dist/leaflet.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/sarbeacons.css');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js'); 
 $this->headScript()->appendFile($this->basePath() . '/components/leaflet/dist/leaflet.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
 ?>
@@ -11,10 +12,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
 
     <div id="tabs" class="col-sm-3">
         <ul class="nav nav-pills">
-            <li class="active"><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li>
-            <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li>
-            <li><a href="#tabs-3" id="a-now"><span class="glyphicon glyphicon-list"></span></a></li>
-            <li><a href="#tabs-4" id="a-arch"><span class="glyphicon glyphicon-list"></span></a></li>
+            <!-- <li class="active"><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li> -->
+            <li class="active"><a href="#tabs-1">Déclencher</a></li>
+            <!-- <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li> -->
+            <li><a href="#tabs-2">Terrains</a></li>
+            <!-- <li><a href="#tabs-3" id="a-now"><span class="glyphicon glyphicon-list"></span></a></li> -->
+            <li><a href="#tabs-3" id="a-now">En cours<span class="badge badge-important">0</span></a></li>
+            <!-- <li><a href="#tabs-4" id="a-arch"><span class="glyphicon glyphicon-list"></span></a></li> -->
+            <li><a href="#tabs-4" id="a-arch">Terminé<span class="badge badge-important">0</span></a></li>
         </ul>
 
         <div id="tabs-1">
@@ -92,15 +97,15 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
             </div>
         </div>
         <div id="tabs-3">
-            <h4>Plan d'interrogation en cours</h4>
-            <ul id="list-ip" class="list-group">
+            <!-- <h4>Plan(s) d'interrogation en cours</h4> -->
+            <ul id="currentip" class="list-ip list-group">
 
             </ul>
         </div>
 
         <div id="tabs-4">
-            <h4>Plan d'interrogation terminé</h4>
-            <ul id="archives" class="list-group">
+            <!-- <h4>Plan(s) d'interrogation terminé(s)</h4> -->
+            <ul id="archives" class="list-ip list-group">
 
             </ul>
         </div>
@@ -111,6 +116,12 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
                         "<h3 id='title-edit-ip'></h3>", 
                         "", 
                         "<div id='f-edit-ip'></div>")
+                        ?>
+
+<?=$this->modalWindow(  "mdl-show-ip", 
+                        "<h3 id='title-show-ip'></h3>", 
+                        "", 
+                        "<div id='f-show-ip'></div>")
                         ?>
 
 <?=$this->modalWindow(  "mdl-start-ip", 

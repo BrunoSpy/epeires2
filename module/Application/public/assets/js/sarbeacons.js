@@ -554,8 +554,10 @@
         $carInner = $('.carousel-inner'),
         $carIndic = $('.carousel-indicators'),
 
-        $aHist = $('#a-hist'),
-        $listIp = $('#list-ip');
+        $aNow = $('#a-now'),
+        $aArch = $('#a-arch'),
+        // $aHist = $('#a-hist'),
+        $currentIp = $('#currentip');
     /* Flags */
     var editHasBeenClicked = false;
 
@@ -651,7 +653,7 @@
     $bSavIp.click(btnSaveIpHandler);
     $bPrintIp.click(printIp);
     $bMailIp.click(mailIp);
-    $aHist.click(aHistHandler);
+
     /* Boutons d'action */
     // var listBtn = new ListBtn();
     // listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
@@ -660,9 +662,32 @@
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
-    $('#a-now').click(function() {
-        $listIp.load(url + 'sarbeacons/list', function() 
+    $.get(url + 'sarbeacons/getnbcurrentip', function(data) {
+        $aNow.find('span').html(data.nbip);
+    })
+
+    $.get(url + 'sarbeacons/getnbendedip', function(data) {
+        $aArch.find('span').html(data.nbip);
+    })
+
+    $('#tabs > ul >li > a').first().click(function() {
+        // pas de pio de travail
+        idIp = null;
+        resetMap();
+    });
+
+
+    $aNow.click(function() 
+    {
+        $currentIp.load(url + 'sarbeacons/list', function() 
         {
+            $('.list-group-item').click(function() {
+                $('#title-show-ip').html('A');
+                $('#f-show-ip').load(url + 'sarbeacons/show', {id: $(this).data('id')}, function() {
+
+                });
+            });
+
             $('.btn-cache-ip').click(function() {
                 $(this).parents('li').find('.list-ip-content')
                     .toggleClass('cache');
@@ -780,9 +805,14 @@
         )
     });
 
-    $('#a-arch').click(function(data) {
+
+    $aArch.click(function(data) {
         $('#archives').load(url + 'sarbeacons/archives', function(data) 
         {
+            // $(this).find('.list-ip-content').toggleClass('cache');
+            $(this).parents('li').find('.list-ip-content')
+                    .toggleClass('cache');
+
             $('.btn-end-ip, .btn-show-ip, .btn-edit-ip').hide();
             $('.btn-cache-ip').click(function() {
                 $(this).parents('li').find('.list-ip-content')
@@ -797,14 +827,20 @@
     orbit.on('contextmenu', function(e) {
         if ($tabs.find('.ui-state-active').is($tabs.find('.nav-pills>li').eq(0))) 
         {
-            if (pioLay) orbit.removeLayer(pioLay);
-            if (mkSelected) orbit.removeLayer(mkSelected);
+            resetMap();
             refreshCoord([e.latlng.lat, e.latlng.lng]);
             setCoord([e.latlng.lat, e.latlng.lng]);
         }
     });
 
     setMapButtons();
+
+    function resetMap() {
+        if (pioLay) orbit.removeLayer(pioLay);
+        if (mkSelected) orbit.removeLayer(mkSelected);
+        if (mkSAR) orbit.removeLayer(mkSAR);
+        centerMap();
+    }
 
     function centerMap(latLon=DFLT_LAT_LNG, zoom=DFLT_ZOOM) {
         if (zoom == true) zoom = orbit.getZoom();
@@ -903,9 +939,6 @@
         $iLon.val(coord[1].toFixed(4)).trigger('keyup');
     }
 
-    function aHistHandler(e) {
-        if (!$listIp.children('a').length) loadListIp();
-    }
 
     function editBtnState($btn, etat) {
         if (etat)
@@ -1344,53 +1377,6 @@
             });
 
         })
-    }
-
-    function loadListIp() {
-        
-
-        //     $.each($listIp.find('a'), function() {
-        //         var id = $(this).data().id;
-        //         $(this).click(function(e) {
-        //             $(this).find('.list-ip-content')
-        //                 // .toggleClass('cache');
-        //         });
-
-        //         $(this).find('.btn-show').click(function(e) {
-        //             e.stopPropagation();
-        //             $.post(url + 'sarbeacons/get', { 'id': id }, function(data) {
-        //                 $fEditIp.find('form').remove();
-        //                 console.log(data);
-        //                 triggerIp([
-        //                     data.latitude,
-        //                     data.longitude
-        //                 ], data.startTime.date, id);
- 
-        //                 listBtn.setStates(3);
-        //                 // TODO un peu bourrin
-        //                 $.each(data.fields, function(i, field) {
-        //                     $.each($carInner.find('em'), function(j, val) {
-        //                         $(this).parent().siblings('button').eq(0).hide();
-        //                         // console.log($(this).html());
-        //                         // console.log(field);
-        //                         if ($(this).html() == field.name) {
-        //                             intPlan.addIp(j);
-        //                             var $btnContact = $(this).parents('button');
-        //                             var $a = $(this).parents('a');
-        //                             $a.addClass('list-group-item-success');
-        //                             if (field.comment) {
-        //                                 $a.find('.comment').show();
-        //                                 $a.find('textarea')
-        //                                     .prop('readonly', true)
-        //                                     .html(field.comment);
-        //                             }
-        //                         }
-        //                     });
-        //                 });
-        //             })
-        //         });
-        //     });
-        // });
     }
 
     function clickIconFieldHandler() {
