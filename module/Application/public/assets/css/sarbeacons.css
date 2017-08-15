@@ -40,17 +40,12 @@ body,
     margin: 0px;
     padding: 0px;
     border: 0;
-    background-color: #FFF;
+    /*background-color: #FFF;*/
 }
 
 #tabs .nav-pills {
     margin-top: 10px;
     margin-left: 0px;
-}
-
-#tabs h4 {
-    margin-top: 15px;
-    margin-bottom: 15px;
 }
 
 #tabs-1,
@@ -110,6 +105,9 @@ body,
     width: 26px;
 }
 
+/*
+ * CAROUSEL
+ */
 #myCarousel {
     margin: 0;
     padding: 0;
@@ -160,35 +158,41 @@ body,
     right: 0;
     /*border: 1px solid lightgrey;   */
 }
+
+
+
+
+
+/* 
+ *  Liste des Plans d'interrogation, archive ou courant
+ */
 .list-ip {
-    margin-top:5px;
-    margin-left:0px;
-    /*margin:0;*/
+    margin: 10px 0 0 0;
+    padding:0px;
+}
+.list-ip a{
+    /*margin:5px;*/
+    padding:8px;
 }
 
-.list-ip-content {
-    padding:30px;
-}
-
-.btn-cache-ip {
+/*.btn-cache-ip {
     margin-right: 6px;
-}
-
-/*.list-ip h3 {
-    margin: 7px 0 5px;
-}
+}*/
 
 .list-ip h4 {
+    margin: 0px;
+}
+
+
+/*.list-ip h4 {
     font-size: 16px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
+*/
 
-.list-ip li {
-    padding: 7px;
-}*/
 
-#pio-mod-form ul {
+/*#pio-mod-form ul {
     margin-top: 20px;
     list-style: none;
 }
@@ -219,6 +223,25 @@ body,
 
 #f-edit-ip textarea {
     margin-bottom: 25px;
+}
+*/
+
+
+
+/*
+ * Présentationd des Plans d'interrogation dans modal
+ */
+
+#f-show-ip {
+    padding: 10px;
+}
+#f-show-ip div.panel {
+    padding: 10px;
+}
+#f-show-ip h3 {
+    margin-bottom: 12px;
+
+    
 }
 
 .ui-autocomplete {

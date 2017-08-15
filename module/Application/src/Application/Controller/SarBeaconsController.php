@@ -107,6 +107,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         foreach ($ip->getChildren() as $fieldEvent)
         {
             $field = [
+                'idevent' => $fieldEvent->getId(),
                 'start_date' => $fieldEvent->getStartDate(),
                 'updates' => []
             ];
@@ -168,57 +169,65 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $post = $this->getRequest()->getPost();
         $id = (int) $post['id'];
+        $ip = null;
 
-        $lat = null;
-        $lon = null;
-
-        if ($id > 0) 
-        {
-            $ip = $this->em->getRepository(Event::class)->find($id);  
-            $cat = $ip->getCategory();  
-
-            foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
-            {
-                switch ($customfieldvalue->getCustomField()->getId()) 
-                {
-                    case $cat->getLatField()->getId() :
-                        $lat = $customfieldvalue->getValue();
-                        break;
-                    case $cat->getLongField()->getId() :
-                        $lon = $customfieldvalue->getValue();
-                        break;
-                }
-            }
-            $fields = [];
-            foreach ($ip->getChildren() as $fieldEvent)
-            {
-                $field = [
-                    'idevent' => $fieldEvent->getId(),
-                    'start_date' => $fieldEvent->getStartDate(),
-                    'updates' => []
-                ];
-
-                foreach ($fieldEvent->getUpdates() as $update) {
-                    $field['updates'][] = [
-                        'text' => $update->getText(),
-                        'created_on' => $update->getCreatedOn()
-                    ];
-                }
-                $codefield = $fieldEvent->getCategory()->getCodeField()->getId();
-                foreach ($fieldEvent->getCustomFieldsValues() as $value) 
-                {
-                    if ($value->getCustomField()->getId() == $codefield) $field['code'] = $value->getValue();
-                }
-                $fields[] = $field;
-            }
-
+        if ($id > 0) { 
+            $ip = $this->em->getRepository(Event::class)->find($id); 
+            $ip = $this->getArrayCopy($ip);
         }
 
         return new JsonModel([
-            'lat' => $lat,
-            'lon' => $lon,
-            'fields' => $fields
-        ]);        
+            'ip' => $ip
+        ]); 
+
+        // $lat = null;
+        // $lon = null;
+        // $fields = null;
+
+        //     $cat = $ip->getCategory();  
+
+        //     foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
+        //     {
+        //         switch ($customfieldvalue->getCustomField()->getId()) 
+        //         {
+        //             case $cat->getLatField()->getId() :
+        //                 $lat = $customfieldvalue->getValue();
+        //                 break;
+        //             case $cat->getLongField()->getId() :
+        //                 $lon = $customfieldvalue->getValue();
+        //                 break;
+        //         }
+        //     }
+        //     $fields = [];
+        //     foreach ($ip->getChildren() as $fieldEvent)
+        //     {
+        //         $field = [
+        //             'idevent' => $fieldEvent->getId(),
+        //             'start_date' => $fieldEvent->getStartDate(),
+        //             'updates' => []
+        //         ];
+
+        //         foreach ($fieldEvent->getUpdates() as $update) {
+        //             $field['updates'][] = [
+        //                 'text' => $update->getText(),
+        //                 'created_on' => $update->getCreatedOn()
+        //             ];
+        //         }
+        //         $codefield = $fieldEvent->getCategory()->getCodeField()->getId();
+        //         foreach ($fieldEvent->getCustomFieldsValues() as $value) 
+        //         {
+        //             if ($value->getCustomField()->getId() == $codefield) $field['code'] = $value->getValue();
+        //         }
+        //         $fields[] = $field;
+        //     }
+
+        // }
+
+        // return new JsonModel([
+        //     'lat' => $lat,
+        //     'lon' => $lon,
+        //     'fields' => (count($fields) > 0) ? $fields : null
+        // ]);        
     }
 
     public function startAction() 
@@ -683,8 +692,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $typealerte->setLabel('Type d\'alerte');
         $typealerte->setValueOptions([
             // 'INCERFA' => 'INCERFA',
-            'ALERTFA' => 'ALERTFA',
-            'DETRESSFA' => 'DETRESSFA', 
+            'ALERFA' => 'ALERFA',
+            'DETRESFA' => 'DETRESFA', 
         ]);
         (isset($formval['Alerte']['Type'])) ? $typealerte->setValue($formval['Alerte']['Type']):null;
         $form->add($typealerte);

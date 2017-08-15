@@ -682,86 +682,78 @@
         $currentIp.load(url + 'sarbeacons/list', function() 
         {
             $('.list-group-item').click(function() {
-                $('#title-show-ip').html('A');
-                $('#f-show-ip').load(url + 'sarbeacons/show', {id: $(this).data('id')}, function() {
-
+                var clickedIdIp = $(this).data('id');
+                $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
+                    $('#title-show-ip').html(data.ip.Alerte.Type);
                 });
-            });
+                
+                $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {
+                    // $('.btn-edit-ip').click(function() {
+                    //     console.log('aaa');
+                    //     $('#a-start-ip-ok').data('trig', false);
+                    //     idIp = clickedIdIp;
+                    //     $('#f-start-ip').load(url + 'sarbeacons/form', {id: clickedIdIp}, function (data) 
+                    //     {
+                    //         $('#title-start-ip').html('Modifier un plan d\'interrogation');
+                    //         $('#a-start-ip-ok')
+                    //             .data('lat', $('input[name="lat"]').val())
+                    //             .data('lon', $('input[name="lon"]').val());
+                    //         $('input[name="lat"]').prop('disabled', true);
+                    //         $('input[name="lon"]').prop('disabled', true);
+                    //     });
+                    // });
 
-            $('.btn-cache-ip').click(function() {
-                $(this).parents('li').find('.list-ip-content')
-                    .toggleClass('cache');
-                $(this).toggleClass('btn-info');
-                if ($(this).hasClass('btn-info')) $(this).html('-')
-                else $(this).html('+');
-            });
 
-            $('.btn-edit-ip').click(function() {
-                $('#a-start-ip-ok').data('trig', false);
-                var id = $(this).parents('li').data('id');
-                idIp = id;
-                $('#f-start-ip').load(url + 'sarbeacons/form', {id: id}, function (data) 
-                {
-                    $('#title-start-ip').html('Modifier un plan d\'interrogation');
-                    $('#a-start-ip-ok')
-                        .data('lat', $('input[name="lat"]').val())
-                        .data('lon', $('input[name="lon"]').val());
-                    $('input[name="lat"]').prop('disabled', true);
-                    $('input[name="lon"]').prop('disabled', true);
-                });
-            });
+                    $('.btn-show-ip').click(function() {
+                        idIp = clickedIdIp;
+                        triggerIp();
+                        $('#mdl-show-ip').modal('hide');
+                    });
 
-            $('.btn-show-ip').click(function() {
-                var id = $(this).parents('li').data('id');
-                idIp = id;
-                triggerIp();
-            });
+                    $('.btn-print-ip').click(function() {
+                        // if ($(this).hasClass('disabled')) return false;
+                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            // if(data[0] !== 'error') {
+                                location.href = url + 'sarbeacons/print/' + clickedIdIp;
+                            // } else {
+                                noty({
+                                    text: data[1],
+                                    type: data[0],
+                                    timeout: 4000,
+                                });               
+                        });
+                    });
 
-            $('.btn-print-ip').click(function() {
-                var id = $(this).parents('li').data('id');
-                // if ($(this).hasClass('disabled')) return false;
-                $.get(url + 'sarbeacons/validpdf/' + id, function(data) {
-                    // if(data[0] !== 'error') {
-                        location.href = url + 'sarbeacons/print/' + id;
-                    // } else {
-                        noty({
-                            text: data[1],
-                            type: data[0],
-                            timeout: 4000,
-                        });               
-                });
-            });
+                    $('.btn-mail-ip').click(function() {
+                        // if ($(this).hasClass('disabled')) return false;
+                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            // if(data[0] !== 'error') {
+                            $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
+                            // } else {
+                                noty({
+                                    text: data[1],
+                                    type: data[0],
+                                    timeout: 4000,
+                                });               
+                            });
+                        });
+                    });
 
-            $('.btn-mail-ip').click(function() {
-                var id = $(this).parents('li').data('id');
-                // if ($(this).hasClass('disabled')) return false;
-                $.get(url + 'sarbeacons/validpdf/' + id, function(data) {
-                    // if(data[0] !== 'error') {
-                    $.post(url + 'sarbeacons/mail', {id: id}, function(data) {
-                    // } else {
-                        noty({
-                            text: data[1],
-                            type: data[0],
-                            timeout: 4000,
-                        });               
+                    $('.btn-end-ip').click(function() {
+                        idIp = clickedIdIp
+                        $('input[name=end-date]')
+                            .timepickerform({
+                                'id':'start', 
+                                'clearable':true, 
+                                'init':true
+                            });    
                     });
                 });
             });
 
-            $('.btn-end-ip').click(function() {
-                idIp = $(this).parents('li').data('id');
-                $('input[name=end-date]')
-                    .timepickerform({
-                        'id':'start', 
-                        'clearable':true, 
-                        'init':true
-                    });    
-            });
-
             $(this).children().each(function() {
                 if ($(this).data('id') == idIp) {
-                    //console.log($(this).find('.btn-cache-ip'));
-                    $(this).find('.btn-cache-ip').trigger('click');
+                    $(this).addClass('active');
                 }
             });
         });
@@ -796,6 +788,7 @@
                 $('#a-now').trigger('click');
                 idIp = null;
                 $('#mdl-end-ip').modal('hide');
+                $('#mdl-show-ip').modal('hide');
                 noty({
                     text: data.msg,
                     type: data.type,
@@ -1147,9 +1140,12 @@
         if (idIp) 
         {
             $.post(url + 'sarbeacons/getip', {id : idIp}, function (data) {
-                latLon = [data['lat'], data['lon']];
+                latLon = [data.ip.Latitude, data.ip.Longitude];
                 trigDisplay();
-                trigList(data['fields']);
+                $.each(data.ip.fields, function() {
+                    this.code = this['Code OACI'];
+                });
+                trigList(data.ip.fields);
             });
         } 
         else 
@@ -1265,7 +1261,7 @@
     }
 
     function btnEditIpHandler(e) {
-        console.log($(this));
+        // console.log($(this));
         e.preventDefault();
         if ($(this).hasClass('disabled')) return false;
         $('#title-edit-ip').html("Editer le Plan d'Interrogation");
@@ -1406,6 +1402,8 @@
         var $ter = $(this).parent();
         var index = $(this).data().index;
         var note = $(this).prev().find('textarea').val();
+
+        // console.log($(this).data());
 
         $.post(url + 'sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
             intPlan.get(index).addUpdate(moment(), note);

@@ -7,8 +7,8 @@
 
     $typealert = (isset($ip['Alerte']['Type'])) ? $ip['Alerte']['Type'] : null;
 ?>
-<h2><?php echo $ip['Type']; ?> <?php echo $ip['start_date']->format('\à H:i:s \l\e d-m-Y'); ?></h2>
-    <div class = "list-ip-content">
+<h2><?php //echo $ip['Type']; ?> <?php //echo $ip['start_date']->format('\à H:i:s \l\e d-m-Y'); ?></h2>
+    <div class = "panel list-ip-content">
         <h3 class="list-group-item-heading">Informations <a href="#mdl-start-ip" data-toggle="modal" class = "btn-edit-ip notinpdf">
         <span class="glyphicon glyphicon-pencil"></span>
         </a></h3>
@@ -17,7 +17,9 @@
         <p class="list-group-item-text">Type : <b><?php echo $ip['Type']?></b></p>
         <p class="list-group-item-text">Alerte : <b><?php echo (isset($typealert)) ? $typealert : NIL; ?></b></p>
         <p class="list-group-item-text comment">Cause : <br ><b><?php echo (isset($ip['Alerte']['Cause'])) ? $ip['Alerte']['Cause'] : null; ?></b></p>
+    </div>
 
+    <div class = "panel list-ip-content">
         <h3 class="list-group-item-heading">Terrains interrogés <a href="#" class = "btn-show-ip notinpdf">
         <span class="glyphicon glyphicon-pencil"></span>
         </a><br /></h3>
@@ -33,7 +35,9 @@
                 <?php
                 }
             }
-            ?> 
+            ?>
+    </div>
+    <div class = "panel list-ip-content">
         <h3 class="list-group-item-heading notinpdf">Actions</h3>
 
         <a href="#" class = "btn-show-ip notinpdf">
