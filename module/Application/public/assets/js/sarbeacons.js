@@ -121,7 +121,8 @@
                 ;
                 var updates = '';
                 $.each(this.updates, function(i, update) {
-                    updates += '<p>' + update.date + ' : ' + update.text + '</p>';
+                    console.log(update);
+                    updates += '<p>' + moment.utc(update.date).format('DD-MM-YY HH:mm:ss') + ' : <strong>' + update.text + '</strong></p>';
                 });
                 $text.removeClass('cache');
 
@@ -684,7 +685,10 @@
             $('.list-group-item').click(function() {
                 var clickedIdIp = $(this).data('id');
                 $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
-                    $('#title-show-ip').html(data.ip.Alerte.Type);
+                    console.log(data.ip.start_date)
+                    $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
+                        data.ip.Alerte.Type 
+                    );
                 });
                 
                 $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {

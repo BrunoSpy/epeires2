@@ -47,6 +47,8 @@ use Zend\Mime\Message as MimeMessage;
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
+    const ACCES_REQUIRED = "Droits d'accès insuffisants";
+
     private $em, $viewpdfrenderer, $config;
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config)
@@ -61,7 +63,10 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function indexAction()
     {
-        if (!$this->authSarBeacons('read')) return new JsonModel();
+        if (!$this->authSarBeacons('read')) {
+            echo self::ACCES_REQUIRED;
+            return new JsonModel();
+        };
     }
 
     public function getnbcurrentipAction() 

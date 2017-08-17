@@ -41,6 +41,8 @@ use Application\Entity\CustomFieldValue;
  */
 class FlightPlansController extends AbstractEntityManagerAwareController
 {
+    const ACCES_REQUIRED = "Droits d'accès insuffisants";
+
     protected $em, $cf, $repo, $form;
 
     public function __construct(EntityManager $em, CustomFieldService $cf)
@@ -52,7 +54,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     
     public function indexAction()
     {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
+        // if (!$this->authFlightPlans('read')) return new JsonModel();
         
         $timelineTab = $this->em->getRepository('Application\Entity\Tab')->findOneBy(array('isDefault'=>true));
         
@@ -163,8 +165,10 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
     public function getAction() 
     {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
-        $post = $this->getRequest()->getPost();
+        if (!$this->authFlightPlans('read')) {
+            echo self::ACCES_REQUIRED;
+            return new JsonModel();
+        };
         //TODO : tester validité date
         if (isset($post['date']) && $post['date'] != '') {
             $start = new DateTime($post['date']); 

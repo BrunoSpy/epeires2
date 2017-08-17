@@ -192,7 +192,7 @@ body,
 */
 
 
-/*#pio-mod-form ul {
+#pio-mod-form ul {
     margin-top: 20px;
     list-style: none;
 }
@@ -224,7 +224,7 @@ body,
 #f-edit-ip textarea {
     margin-bottom: 25px;
 }
-*/
+
 
 
 
@@ -239,9 +239,16 @@ body,
     padding: 10px;
 }
 #f-show-ip h3 {
-    margin-bottom: 12px;
+    margin-bottom: 12px;   
+}
 
-    
+#f-show-ip h5 {
+    margin-top: 10px;
+}
+
+#f-show-ip .comment{
+    margin-left:7px;
+    margin-top:7px;
 }
 
 .ui-autocomplete {
