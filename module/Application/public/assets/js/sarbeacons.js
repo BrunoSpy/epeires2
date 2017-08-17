@@ -692,6 +692,10 @@
                 });
                 
                 $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {
+
+                    $('#f-show-ip .list-fields').click(function() {
+                        $(this).children('p').toggleClass('cache');
+                    });
                     // $('.btn-edit-ip').click(function() {
                     //     console.log('aaa');
                     //     $('#a-start-ip-ok').data('trig', false);

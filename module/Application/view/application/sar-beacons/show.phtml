@@ -19,23 +19,41 @@
     </div>
 
     <div class = "panel list-ip-content">
-        <h3 class="list-group-item-heading">Terrains interrogés <a href="#" class = "btn-show-ip notinpdf">
-        <span class="glyphicon glyphicon-pencil"></span>
-        </a><br /></h3>
-            <?php 
-            if (isset($ip['fields'])) { 
-                foreach ($ip['fields'] as $i => $f) {
-                ?> 
-                <h5 class="list-group-item-heading"><strong><?php echo $f['Nom'];?></strong> [<?php echo $f['start_date']->format('H:i:s');?>]</h5>
-                <?php if (isset($f['updates'])) : ?>
-                    <?php foreach($f['updates'] as $updates) :?>
-                    <p class="list-group-item-text comment"><?php echo $updates['text'];?></p>
-                    <?php endforeach; endif;?>
+        <h3 class="list-group-item-heading">
+            Terrains interrogés <a href="#" class = "btn-show-ip notinpdf"><span class="glyphicon glyphicon-pencil"></span></a>
+        </h3>
+        <?php 
+        if (isset($ip['fields'])) { 
+            foreach ($ip['fields'] as $i => $f) 
+            {
+                ?>
+                <div class = "list-fields">
                 <?php
+                if (count($f['updates']) > 0) {
+                    ?>
+                    <a href = "#">
+                        <h5 class="list-group-item-heading"><?php echo $f['Nom'];?> [<?php echo $f['start_date']->format('H:i:s');?>]</h5>
+                    </a>
+                    <?php
+                    foreach($f['updates'] as $updates) 
+                    {
+                        ?>
+                        <p class="list-group-item-text comment cache"><?php echo $updates['text'];?></p>
+                        <?php
+                    }
+                } else {
+                    ?>
+                        <h5 class="list-group-item-heading"><?php echo $f['Nom'];?> [<?php echo $f['start_date']->format('H:i:s');?>]</h5>
+                    <?php                        
                 }
+                ?>
+                </div>
+                <?php
             }
-            ?>
+        }
+        ?>
     </div>
+
     <div class = "panel list-ip-content">
         <h3 class="list-group-item-heading notinpdf">Actions</h3>
 
