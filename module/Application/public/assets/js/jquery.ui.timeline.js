@@ -1743,8 +1743,9 @@
             //affichage des boutons en fonction des droits
             if (event.modifiable) {
                 elmt_mod.addClass('disp');
-                elmt_check.addClass('disp');
             }
+            //checklist doit être accessible en lecture
+            elmt_check.addClass('disp');
             elmt_tooltip.addClass('disp');
 
             //calcul des tailles des éléments pour le dessin
