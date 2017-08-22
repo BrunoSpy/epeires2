@@ -34,7 +34,7 @@ class SectorRepository extends ExtendedRepository
         $list = parent::findAll();
         $res = array();
         foreach ($list as $element) {
-            if ($element->getFrequency() == null) {
+            if ($element->getFrequency() == null && !$element->isDecommissionned()) {
                 $res[$element->getId()] = $element->getName();
             }
         }

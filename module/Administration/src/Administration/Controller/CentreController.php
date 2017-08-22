@@ -556,6 +556,10 @@ class CentreController extends FormController
                 $objectManager->persist($sector);
                 try {
                     $objectManager->flush();
+                    if ($sector->isDecommissionned()) {
+                        // sets all related events read-only
+                        $objectManager->getRepository('Application\Entity\Event')->setReadOnly($sector);
+                    }
                     if(!$id) {
                         $this->flashMessenger()->addSuccessMessage('Nouveau secteur enregistré.');
                     } else {

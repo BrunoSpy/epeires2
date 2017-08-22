@@ -30,8 +30,13 @@
 					</a>
 				</li>
                 <li>
+                    <a href="#OldSecteurs">
+                        6. Anciens secteurs
+                    </a>
+                </li>
+                <li>
                     <a href="#OldAttentes">
-                        6. Anciennes attentes
+                        7. Anciennes attentes
                     </a>
                 </li>
 			</ul>
@@ -190,6 +195,23 @@
 					<h4 class="panel-title" id="Secteurs">4. Secteurs</h4>
 				</div>
 				<div class="panel-body">
+                    <?php
+                    $alert = array();
+                    foreach ($this->sectors as $sector){
+                        if(!$sector->isDecommissionned() &&
+                            (!$sector->getFrequency() || ($sector->getFrequency() && $sector->getFrequency()->isDecommissionned()))){
+                            $alert[] = $sector->getName();
+                        }
+                    }
+                    if(count($alert) > 0){
+                        echo '<div class="alert alert-warning">';
+                        echo "Attention : les secteurs suivants n'ont pas de fréquence associée ou la fréquence associée est hors service :";
+                        foreach ($alert as $a) {
+                            echo " ".$a;
+                        }
+                        echo '.</div>';
+                    }
+                    ?>
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>
@@ -204,32 +226,37 @@
 						<tbody>
 							<?php 
 							foreach ($this->sectors as $sector){
-								echo '<tr>';
-									echo '<td>'.$sector->getId().'</td>';
-									echo '<td>'.$sector->getZone()->getName().'</td>';
-									echo '<td>'.$sector->getName().'</td>';
-									echo '<td>'.($sector->getFrequency() ? $sector->getFrequency()->getValue() : "").'</td>';
-									echo '<td>';
-									foreach ($sector->getSectorsgroups() as $group){
-										echo $group->getName()." ";
-									}
-									echo '</td>';
-									echo "<td>";
-										echo "<a
+							    if(!$sector->isDecommissionned()) {
+                                    echo '<tr>';
+                                    echo '<td>' . $sector->getId() . '</td>';
+                                    echo '<td>' . $sector->getZone()->getName() . '</td>';
+                                    echo '<td>' . $sector->getName() . '</td>';
+                                    echo '<td>' . ($sector->getFrequency() ? $sector->getFrequency()->getValue() : "") . '</td>';
+                                    echo '<td>';
+                                    foreach ($sector->getSectorsgroups() as $group) {
+                                        echo $group->getName() . " ";
+                                    }
+                                    echo '</td>';
+                                    echo "<td>";
+                                    echo "<a
 												title=\"Modifier\"
 												href=\"#sector-container\"
 												class=\"mod-sector\"
-												data-id=\"".$sector->getId()."\"
-												data-name=\"".$sector->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
-										echo "<a
+												data-id=\"" . $sector->getId() . "\"
+												data-name=\"" . $sector->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                                    echo "<a
 												title=\"Supprimer\"
 												href=\"#confirm-delete-sector\"
-												data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletesector'))."?id=".$sector->getId()."\"
+												data-href=\"" . $this->url('administration', array(
+                                            'controller' => 'centre',
+                                            'action' => 'deletesector'
+                                        )) . "?id=" . $sector->getId() . "\"
 												class=\"delete-sector\"
-												data-id=\"".$sector->getId()."\"
-												data-name=\"".$sector->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
-									echo "</td>";
-								echo '</tr>';
+												data-id=\"" . $sector->getId() . "\"
+												data-name=\"" . $sector->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                                    echo "</td>";
+                                    echo '</tr>';
+                                }
 							}							
 							?>
 						</tbody>
@@ -287,9 +314,67 @@
 					</table>
 				</div>
 			</div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4 class="panel-title" id="OldAttentes">6. Anciennes attentes</h4>
+                    <h4 class="panel-title" id="OldSecteurs">6. Anciens secteurs</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                        <tr>
+                            <th data-sort="int">Id</th>
+                            <th data-sort="string">Zone</th>
+                            <th data-sort="string" data-autosort="true">Nom</th>
+                            <th>Fréquence</th>
+                            <th>Regroupements</th>
+                            <th><a href="#sector-container" id="add-sector" data-toggle="modal" class="btn btn-xs btn-primary">Ajouter</a></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($this->sectors as $sector){
+                            if($sector->isDecommissionned()) {
+                                echo '<tr>';
+                                echo '<td>' . $sector->getId() . '</td>';
+                                echo '<td>' . $sector->getZone()->getName() . '</td>';
+                                echo '<td>' . $sector->getName() . '</td>';
+                                echo '<td>' . ($sector->getFrequency() ? $sector->getFrequency()->getValue() : "") . '</td>';
+                                echo '<td>';
+                                foreach ($sector->getSectorsgroups() as $group) {
+                                    echo $group->getName() . " ";
+                                }
+                                echo '</td>';
+                                echo "<td>";
+                                echo "<a
+												title=\"Modifier\"
+												href=\"#sector-container\"
+												class=\"mod-sector\"
+												data-id=\"" . $sector->getId() . "\"
+												data-name=\"" . $sector->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                                echo "<a
+												title=\"Supprimer\"
+												href=\"#confirm-delete-sector\"
+												data-href=\"" . $this->url('administration', array(
+                                        'controller' => 'centre',
+                                        'action' => 'deletesector'
+                                    )) . "?id=" . $sector->getId() . "\"
+												class=\"delete-sector\"
+												data-id=\"" . $sector->getId() . "\"
+												data-name=\"" . $sector->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                                echo "</td>";
+                                echo '</tr>';
+                            }
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title" id="OldAttentes">7. Anciennes attentes</h4>
                 </div>
                 <div class="panel-body">
                     <table class="table table-striped sortable">
@@ -378,8 +463,10 @@
 <?php echo $this->modalwindow("confirm-delete-sector",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer le secteur <em><span id=\"sector-name\"></span></em> ?</p>",
+						null,
+                        "<div class=\"alert alert-warning\">La suppression définitive d'un secteur impacte les évènements existants liés à ce secteur."
+                        ." Si des évènements liés à ce secteur existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+                        ."<p>Voulez-vous vraiment supprimer le secteur <em><span id=\"sector-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-sector-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 

@@ -61,7 +61,11 @@ class RadioController extends \Application\Controller\FormController
         
         $criteria = Criteria::create();
         $criteria->where(Criteria::expr()->eq('decommissionned', false));
-        $criteria->andWhere(Criteria::expr()->orX(Criteria::expr()->in('mainantenna', $decommissionnedAntennas), Criteria::expr()->in('backupantenna', $decommissionnedAntennas), Criteria::expr()->in('mainantennaclimax', $decommissionnedAntennas), Criteria::expr()->in('backupantennaclimax', $decommissionnedAntennas)));
+        $criteria->andWhere(Criteria::expr()->orX(
+            Criteria::expr()->in('mainantenna', $decommissionnedAntennas),
+            Criteria::expr()->in('backupantenna', $decommissionnedAntennas),
+            Criteria::expr()->in('mainantennaclimax', $decommissionnedAntennas),
+            Criteria::expr()->in('backupantennaclimax', $decommissionnedAntennas)));
         
         $errorFrequencies = $this->objectManager->getRepository('Application\Entity\Frequency')->matching($criteria);
         

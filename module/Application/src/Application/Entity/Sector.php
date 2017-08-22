@@ -29,7 +29,7 @@ use Zend\Form\Annotation;
  * @author Bruno Spyckerelle
  *        
  */
-class Sector
+class Sector extends TemporaryResource
 {
 
     /**

@@ -321,7 +321,9 @@ class CustomFieldService
             case 'text':
                 break;
             case 'sector':
-                $value_options = $om->getRepository('Application\Entity\Sector')->getAllAsArray();
+                $value_options = $om->getRepository('Application\Entity\Sector')->getAllAsArray(array(
+                    'decommissionned' => false
+                ));
                 break;
             case 'antenna':
                 $value_options = $om->getRepository('Application\Entity\Antenna')->getAllAsArray(array(

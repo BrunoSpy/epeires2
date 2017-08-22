@@ -84,6 +84,39 @@
 					<h4 class="panel-title" id="frequencies">2. Fréquences</h4>
 				</div>
 				<div class="panel-body">
+                    <?php
+                    $alert = array();
+                    $alertAntenne = array();
+                    foreach ($this->frequencies as $frequency) {
+                        if(!$frequency->isDecommissionned()){
+                            if($frequency->getDefaultSector() && $frequency->getDefaultSector()->isDecommissionned()) {
+                                $alert[] = $frequency->getValue();
+                            }
+                            if(($frequency->getMainAntenna() && $frequency->getMainAntenna()->isDecommissionned()) ||
+                                ($frequency->getBackupantenna() && $frequency->getBackupantenna()->isDecommissionned()) ||
+                                ($frequency->getMainantennaclimax() && $frequency->getMainantennaclimax()->isDecommissionned()) ||
+                                ($frequency->getBackupantennaclimax() && $frequency->getBackupantennaclimax()->isDecommissionned()) ){
+                                $alertAntenne[] = $frequency->getValue();
+                            }
+                        }
+                    }
+                    if(count($alert) > 0){
+                        echo '<div class="alert alert-warning">';
+                        echo "Attention : les fréquences suivantes ont un secteur par défaut hors service :";
+                        foreach ($alert as $a){
+                            echo " ".$a;
+                        }
+                        echo '.</div>';
+                    }
+                    if(count($alertAntenne) > 0){
+                        echo '<div class="alert alert-warning">';
+                        echo "Attention : les fréquences suivantes ont au moins une antenne hors service :";
+                        foreach ($alertAntenne as $a){
+                            echo " ".$a;
+                        }
+                        echo '.</div>';
+                    }
+                    ?>
 					<table class="table table-striped sortable">
 						<thead>
 							<tr>

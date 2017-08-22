@@ -172,7 +172,9 @@ var centre = function(url){
 	
 	$(".mod-sector").on('click', function(){
 		$("#sector-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#sector-form").load(url+'/centre/formsector?id='+$(this).data('id'));
+		$("#sector-form").load(url+'/centre/formsector?id='+$(this).data('id'), function(e){
+            $.material.checkbox();
+        });
 	});
 
 	$("#sector-container").on('change', 'select[name=zone]', function(){
