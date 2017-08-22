@@ -121,7 +121,6 @@
                 ;
                 var updates = '';
                 $.each(this.updates, function(i, update) {
-                    console.log(update);
                     updates += '<p>' + moment.utc(update.date).format('DD-MM-YY HH:mm:ss') + ' : <strong>' + update.text + '</strong></p>';
                 });
                 $text.removeClass('cache');
@@ -685,7 +684,6 @@
             $('.list-group-item').click(function() {
                 var clickedIdIp = $(this).data('id');
                 $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
-                    console.log(data.ip.start_date)
                     $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
                         data.ip.Alerte.Type 
                     );
@@ -696,20 +694,21 @@
                     $('#f-show-ip .list-fields').click(function() {
                         $(this).children('p').toggleClass('cache');
                     });
-                    // $('.btn-edit-ip').click(function() {
-                    //     console.log('aaa');
-                    //     $('#a-start-ip-ok').data('trig', false);
-                    //     idIp = clickedIdIp;
-                    //     $('#f-start-ip').load(url + 'sarbeacons/form', {id: clickedIdIp}, function (data) 
-                    //     {
-                    //         $('#title-start-ip').html('Modifier un plan d\'interrogation');
-                    //         $('#a-start-ip-ok')
-                    //             .data('lat', $('input[name="lat"]').val())
-                    //             .data('lon', $('input[name="lon"]').val());
-                    //         $('input[name="lat"]').prop('disabled', true);
-                    //         $('input[name="lon"]').prop('disabled', true);
-                    //     });
-                    // });
+
+                    $('.btn-edit-ip').click(function() {
+                        $('#mdl-show-ip').modal('hide');
+                        $('#a-start-ip-ok').data('trig', false);
+                        idIp = clickedIdIp;
+                        $('#f-start-ip').load(url + 'sarbeacons/form', {id: clickedIdIp}, function (data) 
+                        {
+                            $('#title-start-ip').html('Modifier un plan d\'interrogation');
+                            $('#a-start-ip-ok')
+                                .data('lat', $('input[name="lat"]').val())
+                                .data('lon', $('input[name="lon"]').val());
+                            $('input[name="lat"]').prop('disabled', true);
+                            $('input[name="lon"]').prop('disabled', true);
+                        });
+                    });
 
 
                     $('.btn-show-ip').click(function() {
@@ -777,7 +776,11 @@
             $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
                 idIp = data['id'];
                 $("#mdl-start-ip").modal('hide');
-                if (trig != true) $('#a-now').trigger('click');
+                if (trig != true) {
+                    $aNow.trigger('click');
+                    $('.list-group-item').filter('[data-id="' + idIp +'"]').trigger('click');
+                }
+
                 noty({
                     text: data['msg'],
                     type: data['type'],
@@ -960,8 +963,6 @@
         $(this).addClass('cache')
             .prev().val('')
             .parent().addClass('has-error');
-
-            // console.log($(this).closest('.row'));
         editBtnState($bRecC, 0);
     }
 
@@ -1061,7 +1062,6 @@
             editBtnState($bRecB, 0);
         } else {
             $(this).parent().removeClass('has-error');
-            // editBtnState($bRecB, 1);
 
             var coord = beacons[iBal].geometry.coordinates;
             refreshCoord([coord[1], coord[0]]);
@@ -1078,8 +1078,6 @@
     function findByBeacon() {
         if (!$(this).hasClass('btn-warning')) {
             var latlon = $iBal.data('latLon');
-            // console.log(latlon);
-            // centerMap(latlon);
             triggerIp(latlon);
         }
     }
@@ -1269,7 +1267,6 @@
     }
 
     function btnEditIpHandler(e) {
-        // console.log($(this));
         e.preventDefault();
         if ($(this).hasClass('disabled')) return false;
         $('#title-edit-ip').html("Editer le Plan d'Interrogation");
@@ -1410,8 +1407,6 @@
         var $ter = $(this).parent();
         var index = $(this).data().index;
         var note = $(this).prev().find('textarea').val();
-
-        // console.log($(this).data());
 
         $.post(url + 'sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
             intPlan.get(index).addUpdate(moment(), note);

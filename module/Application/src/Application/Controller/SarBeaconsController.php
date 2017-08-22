@@ -759,7 +759,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setTerminal(true)
             ->setTemplate('application/sar-beacons/print')
             ->setVariables([
-                'ipArray' => $ipArray
+                'ip' => $ipArray
             ]);
 
         $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
@@ -796,7 +796,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setOption('paperSize', 'a4')
             ->setOption('filename', $ipArray['pdffilepath'])
             ->setVariables([
-                'ipArray' => $ipArray
+                'ip' => $ipArray
             ]);
 
         return $pdf;

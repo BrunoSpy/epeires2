@@ -8,7 +8,7 @@
     $typealert = (isset($ip['Alerte']['Type'])) ? $ip['Alerte']['Type'] : null;
 ?>
     <div class = "panel list-ip-content">
-        <h3 class="list-group-item-heading">Informations <a href="#mdl-start-ip" data-toggle="modal" class = "btn-edit-ip notinpdf">
+        <h3 class="list-group-item-heading">Informations <a href="#mdl-start-ip" data-toggle="modal" class = "btn-edit-ip ">
         <span class="glyphicon glyphicon-pencil"></span>
         </a></h3>
         <p class="list-group-item-text">Latitude : <b><?php echo $ip['Latitude']?></b></p>
@@ -20,7 +20,7 @@
 
     <div class = "panel list-ip-content">
         <h3 class="list-group-item-heading">
-            Terrains interrogés <a href="#" class = "btn-show-ip notinpdf"><span class="glyphicon glyphicon-pencil"></span></a>
+            Terrains interrogés <a href="#" class = "btn-show-ip "><span class="glyphicon glyphicon-pencil"></span></a>
         </h3>
         <?php 
         if (isset($ip['fields'])) { 
@@ -55,22 +55,22 @@
     </div>
 
     <div class = "panel list-ip-content">
-        <h3 class="list-group-item-heading notinpdf">Actions</h3>
+        <h3 class="list-group-item-heading ">Actions</h3>
 
-        <a href="#" class = "btn-show-ip notinpdf">
+        <a href="#" class = "btn-show-ip ">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
         Sélectionner
         </a><br />
 
-        <a href="#" class = "btn-print-ip notinpdf">
+        <a href="#" class = "btn-print-ip ">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
         Imprimer
         </a><br />
-        <a href="#" class = "btn-mail-ip notinpdf">
+        <a href="#" class = "btn-mail-ip ">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
         Courriel
         </a><br />
-        <a href="#mdl-end-ip" data-toggle="modal" class = "btn-end-ip notinpdf">
+        <a href="#mdl-end-ip" data-toggle="modal" class = "btn-end-ip ">
         <!-- <span class="glyphicon glyphicon-pencil"></span> -->
         Clôturer
         </a>

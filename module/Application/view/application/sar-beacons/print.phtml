@@ -63,29 +63,26 @@
                 width: 90%;
             }
 
-            .badge, button, h1, .notinpdf {
-                display:none;
+            h2{
+                margin:10 0 15 0;
             }
-
+            h5{
+                margin:5 0 5 15;
+            }
+            p {
+                margin:5px;
+            }
             body, div {
                 font-family: sans-serif;
-            }
-
-            h3 {
-                margin-top:25px;
             }
 
             #intplan-pdf {
                 padding:30px 65px 0px 65px;
             }
 
-            p, h4{
-                margin-left:8px;
-            }
-
             .comment {
                 white-space: pre-wrap;
-                margin-left:35px;
+                /*margin-left:5px;*/
             }
 
             #signature {
@@ -106,10 +103,52 @@
             </table>
         </div>
         <div id="title" class="text-center">
-            <h2><?php echo $ipArray['Type'];?> démarré le <?php echo $formatterJour->format($ipArray['start_date']); ?> à <?php echo $formatterHeure->format($ipArray['start_date']); ?></h2>
+            <h2><?php echo $ip['Alerte']['Type'];?> démarré le <?php echo $formatterJour->format($ip['start_date']); ?> à <?php echo $formatterHeure->format($ip['start_date']); ?></h2>
         </div>
         <div id="intplan-pdf">
-            <?php  echo $this->sbViewHelper()->renderIp($ipArray); ?>
+            <?php //print_r($ip); ?>
+
+            <div class = "panel list-ip-content">
+                <h2 class="list-group-item-heading">Informations</h2>
+                <p class="list-group-item-text">Latitude : <b><?php echo $ip['Latitude']?></b></p>
+                <p class="list-group-item-text">Longitude : <b><?php echo $ip['Longitude']?></b></p>
+                <p class="list-group-item-text">Type : <b><?php echo $ip['Type']?></b></p>
+                <p class="list-group-item-text">Alerte : <b><?php echo (isset($ip['Alerte']['Type'])) ? $ip['Alerte']['Type'] : null; ?></b></p>
+                <p class="list-group-item-text comment">Cause : <br ><b><?php echo (isset($ip['Alerte']['Cause'])) ? $ip['Alerte']['Cause'] : null; ?></b></p>
+            </div>
+
+            <div class = "panel list-ip-content">
+                <h2 class="list-group-item-heading">Terrains interrogés</h2>
+                <?php 
+                if (isset($ip['fields'])) { 
+                    foreach ($ip['fields'] as $i => $f) 
+                    {
+                        ?>
+                        <div class = "list-fields">
+                        <?php
+                        if (count($f['updates']) > 0) {
+                            ?>
+                                <h5 class="list-group-item-heading"><?php echo $f['Nom'];?> [<?php echo $f['start_date']->format('H:i:s');?>]</h5>
+                            <?php
+                            foreach($f['updates'] as $updates) 
+                            {
+                                ?>
+                                <p class="list-group-item-text comment cache"><?php echo $updates['text'];?></p>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                                <h5 class="list-group-item-heading"><?php echo $f['Nom'];?> [<?php echo $f['start_date']->format('H:i:s');?>]</h5>
+                            <?php                        
+                        }
+                        ?>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
+            </div>
+
             <p id = "signature">BTIV du CRNA-N</p>
         </div>
     </body>
