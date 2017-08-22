@@ -361,6 +361,8 @@ class CustomFieldService
                     's'
                 ))
                     ->from('Application\Entity\Stack', 's')
+                    ->where($qb->expr()
+                    ->eq('s.decommissionned', 'false'))
                     ->addOrderBy('s.name', 'ASC');
                 $results = array();
                 foreach ($qb->getQuery()->getResult() as $stack) {

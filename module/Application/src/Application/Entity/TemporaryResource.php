@@ -25,7 +25,7 @@ use Zend\Form\Annotation;
  * ..)
  * 
  * @author Bruno Spyckerelle
- *         @ORM\MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class TemporaryResource
 {

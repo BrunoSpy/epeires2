@@ -221,7 +221,9 @@ var centre = function(url){
 	
 	$(".mod-stack").on('click', function(){
 		$("#stack-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#stack-form").load(url+'/centre/formstack?id='+$(this).data('id'));
+		$("#stack-form").load(url+'/centre/formstack?id='+$(this).data('id'), function(e){
+            $.material.checkbox();
+		});
 	});
 	
 	$("#stack-container").on('submit', function(event){

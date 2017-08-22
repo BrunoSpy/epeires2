@@ -21,6 +21,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\Stack;
 use Application\Entity\Tab;
 use Application\Entity\TemporaryResource;
 use Application\Entity\Radar;
@@ -1480,6 +1481,12 @@ class EventRepository extends ExtendedRepository
                 ->eq('t.type', '?1'), $qbEvents->expr()
                 ->eq('v.value', $resource->getId())));
             $qbEvents->setParameter('1', 'antenna');
+        } elseif ($resource instanceof Stack) {
+            $qbEvents->andWhere($qbEvents->expr()
+                ->andX($qbEvents->expr()
+                    ->eq('t.type', '?1'), $qbEvents->expr()
+                    ->eq('v.value', $resource->getId())));
+            $qbEvents->setParameter('1', 'stack');
         }
         
         $query = $qbEvents->getQuery();

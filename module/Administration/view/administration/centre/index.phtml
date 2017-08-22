@@ -29,6 +29,11 @@
 						5. Attentes
 					</a>
 				</li>
+                <li>
+                    <a href="#OldAttentes">
+                        6. Anciennes attentes
+                    </a>
+                </li>
 			</ul>
 		</div>
 		<div class="col-md-9">
@@ -250,34 +255,89 @@
 						<tboby>
 						<?php 
 						foreach ($this->stacks as $stack){
-							echo "<tr>";
-							echo "<td>".$stack->getId()."</td>";
-							echo "<td>".$stack->getName()."</td>";
-							echo "<td>".$stack->getZone()->getOrganisation()->getName()."</td>";
-							echo "<td>".$stack->getZone()->getName()."</td>";
-							echo "<td>";
-							echo "<a
+                            if(!$stack->isDecommissionned()) {
+                                echo "<tr>";
+                                echo "<td>" . $stack->getId() . "</td>";
+                                echo "<td>" . $stack->getName() . "</td>";
+                                echo "<td>" . $stack->getZone()->getOrganisation()->getName() . "</td>";
+                                echo "<td>" . $stack->getZone()->getName() . "</td>";
+                                echo "<td>";
+                                echo "<a
 									title=\"Modifier\"
 									href=\"#stack-container\"
 									class=\"mod-stack\"
-									data-id=\"".$stack->getId()."\"
-									data-name=\"".$stack->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
-							echo "<a
+									data-id=\"" . $stack->getId() . "\"
+									data-name=\"" . $stack->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                                echo "<a
 									title=\"Supprimer\"
 									href=\"#confirm-delete-stack\"
-									data-href=\"".$this->url('administration', array('controller' => 'centre', 'action' => 'deletestack'))."?id=".$stack->getId()."\"
+									data-href=\"" . $this->url('administration', array(
+                                        'controller' => 'centre',
+                                        'action' => 'deletestack'
+                                    )) . "?id=" . $stack->getId() . "\"
 									class=\"delete-stack\"
-									data-id=\"".$stack->getId()."\"
-									data-name=\"".$stack->getName()."\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
-							echo "</td>";
-							echo "</tr>";
+									data-id=\"" . $stack->getId() . "\"
+									data-name=\"" . $stack->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                                echo "</td>";
+                                echo "</tr>";
+                            }
 						}
 						?>
 						</tboby>
 					</table>
 				</div>
-			</div>	
-		</div>
+			</div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title" id="OldAttentes">6. Anciennes attentes</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                        <tr>
+                            <th data-sort="int">Id</th>
+                            <th data-sort="string" data-autosort="true">Nom</th>
+                            <th data-sort="string">Organisation</th>
+                            <th data-sort="string">Zone de qualification</th>
+                            <th><a href="#stack-container" class="btn btn-xs btn-primary" id="add-stack" data-toggle="modal">Ajouter</a></th>
+                        </tr>
+                        </thead>
+                        <tboby>
+                            <?php
+                            foreach ($this->stacks as $stack){
+                                if($stack->isDecommissionned()) {
+                                    echo "<tr>";
+                                    echo "<td>" . $stack->getId() . "</td>";
+                                    echo "<td>" . $stack->getName() . "</td>";
+                                    echo "<td>" . $stack->getZone()->getOrganisation()->getName() . "</td>";
+                                    echo "<td>" . $stack->getZone()->getName() . "</td>";
+                                    echo "<td>";
+                                    echo "<a
+									title=\"Modifier\"
+									href=\"#stack-container\"
+									class=\"mod-stack\"
+									data-id=\"" . $stack->getId() . "\"
+									data-name=\"" . $stack->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a> ";
+                                    echo "<a
+									title=\"Supprimer\"
+									href=\"#confirm-delete-stack\"
+									data-href=\"" . $this->url('administration', array(
+                                            'controller' => 'centre',
+                                            'action' => 'deletestack'
+                                        )) . "?id=" . $stack->getId() . "\"
+									class=\"delete-stack\"
+									data-id=\"" . $stack->getId() . "\"
+									data-name=\"" . $stack->getName() . "\" data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                            }
+                            ?>
+                        </tboby>
+                    </table>
+                </div>
+            </div>
+        </div>
 	</div>
 </div>
 
@@ -328,8 +388,10 @@
 <?php echo $this->modalwindow("confirm-delete-stack",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer l'attente <em><span id=\"stack-name\"></span></em> ?</p>",
+						null,
+                        "<div class=\"alert alert-warning\">La suppression définitive d'une attente impacte les évènements existants liés à cette attente."
+                        ." Si des évènements liés à cette attente existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+						."<p>Voulez-vous vraiment supprimer l'attente <em><span id=\"stack-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-stack-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 

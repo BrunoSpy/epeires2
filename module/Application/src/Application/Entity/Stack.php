@@ -27,7 +27,7 @@ use Zend\Form\Annotation;
  * @author Bruno Spyckerelle
  *        
  */
-class Stack
+class Stack extends TemporaryResource
 {
 
     /**

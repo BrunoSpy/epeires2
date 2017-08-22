@@ -688,6 +688,10 @@ class CentreController extends FormController
                 $objectManager->persist($stack);
                 try {
                     $objectManager->flush();
+                    if ($stack->isDecommissionned()) {
+                        // sets all related events read-only
+                        $objectManager->getRepository('Application\Entity\Event')->setReadOnly($stack);
+                    }
                 } catch (\Exception $e) {
                     $this->flashMessenger()->addErrorMessage(addslashes($e->getMessage()));
                 }
