@@ -109,8 +109,10 @@
 <?php echo $this->modalwindow("confirm-delete-radar",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer le radar <em><span id=\"radar-name\"></span></em> ?</p>",
+						null,
+                        "<div class=\"alert alert-warning\">La suppression définitive d'un radar impacte les évènements existants liés à ce radar."
+                        ." Si des évènements liés à ce radar existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+						."<p>Voulez-vous vraiment supprimer le radar <em><span id=\"radar-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-radar-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 
