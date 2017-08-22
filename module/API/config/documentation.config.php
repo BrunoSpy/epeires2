@@ -102,4 +102,20 @@ return array(
             ),
         ),
     ),
+    'API\\V1\\Rest\\Sector\\Controller' => array(
+        'description' => 'Get sectors',
+        'entity' => array(
+            'GET' => array(
+                'description' => 'Get a sector by its name',
+                'response' => '{
+   "_links": {
+       "self": {
+           "href": "/sector[/:sector_id]"
+       }
+   }
+
+}',
+            ),
+        ),
+    ),
 );

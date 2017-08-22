@@ -983,7 +983,7 @@ class EventRepository extends ExtendedRepository
      * @param Frequency $frequency
      * @return array
      */
-    private function getFrequencyEvents(Frequency $frequency) {
+    public function getFrequencyEvents(Frequency $frequency) {
         $events = $this->getCurrentEvents('Application\Entity\FrequencyCategory');
         $freqEvents = array();
         foreach ($events as $e){

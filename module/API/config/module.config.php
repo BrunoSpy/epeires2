@@ -4,6 +4,7 @@ return array(
         'factories' => array(
             'API\\V1\\Rest\\Frequency\\FrequencyResource' => 'API\\V1\\Rest\\Frequency\\FrequencyResourceFactory',
             'API\\V1\\Rest\\Event\\EventResource' => 'API\\V1\\Rest\\Event\\EventResourceFactory',
+            'API\\V1\\Rest\\Sector\\SectorResource' => 'API\\V1\\Rest\\Sector\\SectorResourceFactory',
         ),
     ),
     'router' => array(
@@ -26,12 +27,22 @@ return array(
                     ),
                 ),
             ),
+            'api.rest.sector' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/sector[/:sector_name]',
+                    'defaults' => array(
+                        'controller' => 'API\\V1\\Rest\\Sector\\Controller',
+                    ),
+                ),
+            ),
         ),
     ),
     'zf-versioning' => array(
         'uri' => array(
             0 => 'api.rest.frequency',
             1 => 'api.rest.event',
+            2 => 'api.rest.sector',
         ),
     ),
     'zf-rest' => array(
@@ -71,11 +82,30 @@ return array(
             'collection_class' => 'API\\V1\\Rest\\Event\\EventCollection',
             'service_name' => 'event',
         ),
+        'API\\V1\\Rest\\Sector\\Controller' => array(
+            'listener' => 'API\\V1\\Rest\\Sector\\SectorResource',
+            'route_name' => 'api.rest.sector',
+            'route_identifier_name' => 'sector_name',
+            'collection_name' => 'sector',
+            'entity_http_methods' => array(
+                0 => 'GET',
+            ),
+            'collection_http_methods' => array(
+                0 => 'GET',
+            ),
+            'collection_query_whitelist' => array(),
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => 'Application\\Entity\\Sector',
+            'collection_class' => 'API\\V1\\Rest\\Sector\\SectorCollection',
+            'service_name' => 'sector',
+        ),
     ),
     'zf-content-negotiation' => array(
         'controllers' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => 'HalJson',
             'API\\V1\\Rest\\Event\\Controller' => 'HalJson',
+            'API\\V1\\Rest\\Sector\\Controller' => 'HalJson',
         ),
         'accept_whitelist' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => array(
@@ -88,6 +118,11 @@ return array(
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ),
+            'API\\V1\\Rest\\Sector\\Controller' => array(
+                0 => 'application/vnd.api.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ),
         ),
         'content_type_whitelist' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => array(
@@ -95,6 +130,10 @@ return array(
                 1 => 'application/json',
             ),
             'API\\V1\\Rest\\Event\\Controller' => array(
+                0 => 'application/vnd.api.v1+json',
+                1 => 'application/json',
+            ),
+            'API\\V1\\Rest\\Sector\\Controller' => array(
                 0 => 'application/vnd.api.v1+json',
                 1 => 'application/json',
             ),
@@ -136,6 +175,24 @@ return array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.event',
                 'route_identifier_name' => 'event_id',
+                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+            ),
+            'API\\V1\\Rest\\Sector\\SectorEntity' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api.rest.sector',
+                'route_identifier_name' => 'sector_id',
+                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+            ),
+            'API\\V1\\Rest\\Sector\\SectorCollection' => array(
+                'entity_identifier_name' => 'name',
+                'route_name' => 'api.rest.sector',
+                'route_identifier_name' => 'sector_name',
+                'is_collection' => true,
+            ),
+            'Application\\Entity\\Sector' => array(
+                'entity_identifier_name' => 'name',
+                'route_name' => 'api.rest.sector',
+                'route_identifier_name' => 'sector_name',
                 'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
             ),
         ),
@@ -184,6 +241,22 @@ return array(
                 ),
             ),
             'API\\V1\\Rest\\Event\\Controller' => array(
+                'collection' => array(
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ),
+                'entity' => array(
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ),
+            ),
+            'API\\V1\\Rest\\Sector\\Controller' => array(
                 'collection' => array(
                     'GET' => true,
                     'POST' => false,
