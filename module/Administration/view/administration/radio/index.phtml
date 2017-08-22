@@ -261,8 +261,10 @@
 <?php echo $this->modalwindow("confirm-delete-antenna",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer l'antenne <em><span id=\"antenna-name\"></span></em> ?</p>",
+						null,
+                        "<div class=\"alert alert-warning\">La suppression définitive d'une antenne impacte les évènements existants liés à cette antenne."
+                        ." Si des évènements liés à cette antenne existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+						."<p>Voulez-vous vraiment supprimer l'antenne <em><span id=\"antenna-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-antenna-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 						
@@ -271,8 +273,10 @@
 <?php echo $this->modalwindow("confirm-delete-frequency",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer la fréquence <em><span id=\"frequency-name\"></span></em> ?</p>",
+						null,
+                        "<div class=\"alert alert-warning\">La suppression définitive d'une fréquence impacte les évènements existants liés à cette fréquence."
+                        ." Si des évènements liés à cette fréquence existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+						."<p>Voulez-vous vraiment supprimer la fréquence <em><span id=\"frequency-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-frequency-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>				
 
