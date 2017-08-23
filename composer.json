@@ -69,5 +69,10 @@
     "codeception/codeception": "^2.2",
     "zfcampus/zf-apigility-admin": "~1.0",
     "zendframework/zend-developer-tools": "^1.1"
+  },
+  "config": {
+    "platform": {
+      "php": "7.0"
+    }
   }
 }
