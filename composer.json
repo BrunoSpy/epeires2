@@ -59,13 +59,7 @@
     "zfcampus/zf-apigility": "~1.0",
     "zfcampus/zf-apigility-documentation": "^1.2",
     "zfcampus/zf-apigility-documentation-swagger": "^1.2",
-    "zfcampus/zf-development-mode": "~2.0",
-    "doctrine/annotations": "1.4.*",
-    "doctrine/cache": "1.6.*",
-    "doctrine/collections": "1.4.*",
-    "doctrine/inflector": "1.1.*",
-    "doctrine/common": "2.7.*",
-    "doctrine/dbal": "2.5.*"
+    "zfcampus/zf-development-mode": "~2.0"
   },
   "require-dev":{
     "zendframework/zend-test": "^2.5",
@@ -74,7 +68,11 @@
     "satooshi/php-coveralls": "dev-master",
     "codeception/codeception": "^2.2",
     "zfcampus/zf-apigility-admin": "~1.0",
-    "zendframework/zend-developer-tools": "^1.1",
-    "phpunit/php-token-stream": "1.4.*"
+    "zendframework/zend-developer-tools": "^1.1"
+  },
+  "config": {
+    "platform": {
+      "php": "5.6"
+    }
   }
 }
