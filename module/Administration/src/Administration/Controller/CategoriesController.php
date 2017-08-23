@@ -439,7 +439,6 @@ class CategoriesController extends FormController
                         $this->getEntityManager()->persist($e);
                     }
                     foreach ($this->getEntityManager()->getRepository('Application\Entity\Event')->getFutureEventsCategory($cat->getName()) as $e) {
-                        error_log('future event');
                         $e->cancelEvent($cancelstatus);
                         $this->getEntityManager()->persist($e);
                     }

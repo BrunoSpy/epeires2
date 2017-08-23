@@ -343,7 +343,7 @@ class Event extends AbstractEvent
 
     /**
      * Annule l'évènement et tous ses enfants
-     * Si pas d'heure de fin programmée, utilisation de l'heure actuelle
+     * Si pas d'heure de fin programmée, utilisation de l'heure actuelle +1h
      * 
      * @param \Application\Entity\Status $status            
      * @throws \RuntimeException

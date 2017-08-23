@@ -1934,8 +1934,6 @@ class EventsController extends TabController
             )
         ->setParameter(1, $day->format('Y-m-d H:i:s'));
         
-        error_log($day->format('Y-m-d H:i:s'));
-        
         $rootonly = $this->params()->fromQuery('rootonly', true);
         $cats = $this->params()->fromQuery('cats', null);
         if ($cats) {
