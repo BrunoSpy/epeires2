@@ -1,13 +1,12 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radars.js')?>
 <?php 
 	
-	function trRadar($radar, $deleteUrl){
+	function trRadar($radar, $deleteUrl, $decommissionurl = null){
 		echo '<tr>';
 		echo '<td>'.$radar->getId().'</td>';
 		echo '<td>'.$radar->getName().'</td>';
 		echo '<td>'.$radar->getShortname().'</td>';
 		echo '<td>'.$radar->getOrganisation()->getName().'</td>';
-		echo '<td>'.($radar->isDecommissionned() ? '<span class="glyphicon glyphicon-remove"></span>' : '<span class="glyphicon glyphicon-ok"></span>');
 		echo '<td>';
 		echo "<a
 				title=\"Modifier\"
@@ -16,6 +15,16 @@
 				data-id=\"".$radar->getId()."\"
 				data-name=\"".$radar->getName()."\"
 				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+		if($decommissionurl) {
+            echo "<a
+				title=\"Archiver\"
+				href=\"#confirm-decommission-radar\"
+				data-href=\"" . $decommissionurl . "\"
+				class=\"decommission-radar\"
+				data-id=\"" . $radar->getId() . "\"
+				data-name=\"" . $radar->getName() . "\"
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-hdd\"></span></a>  ";
+        }
 		echo "<a
 				title=\"Supprimer\"
 				href=\"#confirm-delete-radar\"
@@ -23,7 +32,7 @@
 				class=\"delete-radar\"
 				data-id=\"".$radar->getId()."\"
 				data-name=\"".$radar->getName()."\"
-				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span></a>";
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -55,7 +64,6 @@
                         		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
-                        		<th>En service</th>
                         		<th><a class="btn btn-xs btn-primary" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
                         	</tr>
                         </thead>
@@ -63,7 +71,11 @@
                         	<?php 	
                         	foreach ($this->radars as $radar){
                         		if(!$radar->isDecommissionned()){
-                        			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
+                        			trRadar(
+                        			        $radar,
+                                            $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))),
+                                            $this->url('administration', array('controller'=>'radars', 'action'=>'decommission'), array('query'=>array('id'=>$radar->getId())))
+                                    );
                         		}
                         	}
                         	?>
@@ -83,7 +95,6 @@
                         		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
-                        		<th>En service</th>
                         		<th></th>
                         	</tr>
                         </thead>
@@ -92,7 +103,10 @@
                         	<?php 	
                         	foreach ($this->radars as $radar){
                         		if($radar->isDecommissionned()){
-                        			trRadar($radar, $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))));
+                                    trRadar(
+                                        $radar,
+                                        $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId())))
+                                    );
                         		}
                         	}
                         	?>
@@ -112,10 +126,17 @@
 						null,
                         "<div class=\"alert alert-warning\">La suppression définitive d'un radar impacte les évènements existants liés à ce radar."
                         ." Si des évènements liés à ce radar existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
-						."<p>Voulez-vous vraiment supprimer le radar <em><span id=\"radar-name\"></span></em> ?</p>",
+						."<p>Voulez-vous vraiment supprimer le radar <em><span class=\"radar-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-radar-href\">Confirmer</a>
-						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
+<?php echo $this->modalwindow("confirm-decommission-radar",
+    "<h4>Confirmer l'archivage ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment archiver le radar <em><span class=\"radar-name\"></span></em> ?</p>",
+    "<a class=\"btn btn-danger\" id=\"decommission-radar-href\">Confirmer</a>
+						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
 

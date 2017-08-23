@@ -27,10 +27,25 @@ var radars = function(url){
 	
 	$(".delete-radar").on('click', function(event){
 		$('a#delete-radar-href').attr('href', $(this).data('href'));
-		$('#radar-name').html($(this).data('name'));
+		$('.radar-name').html($(this).data('name'));
 		$("#delete-radar-href").data('id', $(this).data('id'));
 	});
-	
+
+	$(".decommission-radar").on('click', function(e){
+        $('a#decommission-radar-href').attr('href', $(this).data('href'));
+        $('.radar-name').html($(this).data('name'));
+        $("#decommission-radar-href").data('id', $(this).data('id'));
+	});
+
+    $("#confirm-decommission-radar").on('click', '#decommission-radar-href', function(event){
+        event.preventDefault();
+        var me = $(this);
+        $("#confirm-decommission-radar").modal('hide');
+        $.post(me.attr('href'), function(){
+            location.reload();
+        });
+    });
+
 	$("#confirm-delete-radar").on('click', '#delete-radar-href', function(event){
 		event.preventDefault();
 		var me = $(this);

@@ -18,6 +18,7 @@
 namespace Administration\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
+use Zend\Json\Json;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -34,15 +35,31 @@ class RadarsController extends AbstractEntityManagerAwareController
 
     public function indexAction()
     {
+        $viewmodel = new ViewModel();
+    
         $this->layout()->title = "Centres > Radars";
         
         $objectManager = $this->getEntityManager();
         
         $radars = $objectManager->getRepository('Application\Entity\Radar')->findAll();
-        
-        return array(
+    
+        $return = array();
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $return['error'] = $this->flashMessenger()->getErrorMessages();
+        }
+    
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $return['success'] = $this->flashMessenger()->getSuccessMessages();
+        }
+    
+        $this->flashMessenger()->clearMessages();
+    
+        $viewmodel->setVariables(array(
+            'messages' => $return,
             'radars' => $radars
-        );
+        ));
+        
+        return $viewmodel;
     }
 
     public function saveAction()
@@ -70,6 +87,24 @@ class RadarsController extends AbstractEntityManagerAwareController
         return new JsonModel();
     }
 
+    public function decommissionAction() {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getEntityManager();
+        $radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
+        if($radar) {
+            $radar->setDecommissionned(true);
+            $objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
+            $objectManager->persist($radar);
+            try{
+                $objectManager->flush();
+                $this->flashMessenger()->addSuccessMessage('Radar '.$radar->getName().' correctement archivé.');
+            } catch(\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return new JsonModel();
+    }
+    
     public function deleteAction()
     {
         $id = $this->params()->fromQuery('id', null);
