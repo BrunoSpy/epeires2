@@ -748,6 +748,7 @@
 
                     $('.btn-end-ip').click(function() {
                         idIp = clickedIdIp
+                        $('#mdl-show-ip').modal('hide');
                         $('input[name=end-date]')
                             .timepickerform({
                                 'id':'start', 
@@ -796,7 +797,7 @@
             url+'sarbeacons/end', 
             {id: idIp, end_date: $('input[name=end-date]').val()}, 
             function (data) {
-                $('#a-now').trigger('click');
+                $aArch.trigger('click');
                 idIp = null;
                 $('#mdl-end-ip').modal('hide');
                 $('#mdl-show-ip').modal('hide');
