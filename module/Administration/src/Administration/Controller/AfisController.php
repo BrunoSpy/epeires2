@@ -35,4 +35,11 @@ class AfisController extends FormController
         $this->entityManager = $entityManager;
     }
 
+    public function indexAction()
+    {
+        $this->layout()->title = "Centres > AFIS";
+        
+        return parent::indexAction();
+    }
+    
 }
