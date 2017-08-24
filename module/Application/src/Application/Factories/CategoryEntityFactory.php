@@ -596,7 +596,7 @@ class CategoryEntityFactory
         $typefield->setName('Type');
         $typefield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
-                'type' => 'select'
+                'type' => 'string'
             )));
 
         $latfield = new CustomField();

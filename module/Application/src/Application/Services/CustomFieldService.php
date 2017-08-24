@@ -182,21 +182,6 @@ class CustomFieldService
                     }
                 }
                 break;
-
-            // case 'alert':
-            //     $alt = $this->em->getRepository('Application\Entity\Event')->find($fieldvalue);
-            //     if ($alt) 
-            //     {
-            //         $cat = $alt->getCategory();
-            //         foreach($alt->getCustomFieldValues() as $value) 
-            //         {
-            //             if ($value->getCustomField()->getId() == $cat->getTypeField()) 
-            //             {
-            //                 $name = $value->getValue();
-            //             }
-            //         }
-            //     } 
-            //     break;
             case 'boolean':
                 $name = ($fieldvalue ? "Oui" : "Non");
                 break;
