@@ -116,7 +116,7 @@ class AfisController extends AbstractEntityManagerAwareController
             CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR',
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
-
+        session_write_close();
         $output = curl_exec($curl);
 
         $res = ($output === false) ? 0 : 1;

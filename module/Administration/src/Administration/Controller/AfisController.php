@@ -39,7 +39,7 @@ class AfisController extends FormController
     {
         $this->layout()->title = "Centres > AFIS";
         
-        return parent::indexAction();
+        return array();
     }
     
 }
