@@ -64,25 +64,7 @@
   color: rgba(255,255,255,.84);
   transition: background-color .2s ease,box-shadow .28s cubic-bezier(.4,0,.2,1);
   outline: none !important;
-  line-height: 1.5;
   font-weight: 400;
   text-align: center;
   vertical-align: middle;
 }
-/*
-.fc-icon-left-double-arrow,
-.fc-icon-right-double-arrow {
-  top: .08em !important;
-}
-
-.fc-icon-left-single-arrow,
-.fc-icon-right-single-arrow {
-  top: 0 !important;
-}
-
-.fc-icon-left-double-arrow::after,
-.fc-icon-left-single-arrow::after,
-.fc-icon-right-single-arrow::after,
-.fc-icon-right-double-arrow::after {
-  top: 0%;
-}*/
