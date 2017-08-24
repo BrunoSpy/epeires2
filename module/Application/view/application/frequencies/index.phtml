@@ -112,7 +112,31 @@ foreach ($this->frequencyColors as $status => $color) {
 					</table>
 				</div>
 			</div>
-
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Légende</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table legend">
+                        <tr>
+                            <td class="background-status-ok"></td>
+                            <td>État nominal</td>
+                        </tr>
+                        <tr>
+                            <td class="background-status-warning"></td>
+                            <td>État dégradé</td>
+                        </tr>
+                        <tr>
+                            <td class="background-status-fail"></td>
+                            <td>État indisponible</td>
+                        </tr>
+                        <tr>
+                            <td class="background-status-planned"></td>
+                            <td>Maintenance prévue dans les 12 heures</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 		</div>
 	</div>
 </div>
@@ -140,7 +164,7 @@ $("#create-link").remove();
 
 $("#create-evt").remove();
 
-$("#zoomform").remove();
+$("#changeview").remove();
 
 $('#search').remove();
 
