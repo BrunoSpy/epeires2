@@ -1411,8 +1411,8 @@
 
         $.post(url + 'sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
             intPlan.get(index).addUpdate(moment(), note);
-            $ter.parent().find('a').eq(index).after(intPlan.get(index).getHtml());
-            $ter.remove();
+            $ter.after(intPlan.get(index).getHtml())
+                .remove();
 
             noty({
                 text: data['msg'],
@@ -1423,31 +1423,18 @@
     }
 
     function clickContactHandler() {
-        // var $fOptCom = $(this).parent().find('.form-group');
         var index = $(this).data().index;
         var field = intPlan.get(index);
         var $ter = $(this).parent();
-        // $carInner.find('a.active')
-        //     .removeClass('active');
-        // $(this)
-        //     .toggleClass('btn-info')
-        //     .toggleClass('btn-danger');
-        // $(this).find('span')
-        //     .toggleClass('glyphicon-check')
-        //     .toggleClass('glyphicon-remove');
-        // $(this).parent('.list-group-item')
-        //     .toggleClass('list-group-item-success')
-        //     .addClass('active');
 
         if (!$(this).hasClass('btn-danger')) {
             // $fOptCom.show();
             
             $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
-                // $fOptCom.find('textarea').data('id', data['id']);
                 field.setIdEvent(data['id']);
                 intPlan.addIp(index);
-                $ter.parent().find('a').eq(index).after(field.getHtml());
-                $ter.remove();
+                $ter.after(field.getHtml())
+                    .remove();
                 noty({
                     text: data['msg'],
                     type: data['type'],
@@ -1455,11 +1442,10 @@
                 });    
             })
         } else {
-            // $fOptCom.hide();
             $.post(url + 'sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
                 intPlan.delIp(index);
-                $ter.parent().find('a').eq(index).after(field.getHtml());
-                $ter.remove();
+                $ter.after(field.getHtml())
+                    .remove();
                 noty({
                     text: data['msg'],
                     type: data['type'],

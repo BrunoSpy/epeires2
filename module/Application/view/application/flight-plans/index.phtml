@@ -1,11 +1,7 @@
 <?php 
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeline.js');
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
-// $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan.css');
 ?>
 
@@ -29,7 +25,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
-            <?php if($cat == 0): ?>
+            <?php if(count($cat) == 0): ?>
             <p class="text-warning">Aucun catégorie Plan de vol n'existe, impossible de continuer.</p>
             <?php endif; ?>
             <div class="panel-heading">
@@ -105,7 +101,7 @@ $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-if (<?php echo $cat; ?> == 0) {
+if (<?php echo count($cat); ?> == 0) {
     $("#create-link").hide();
 } else {
     $("#create-link")
@@ -113,7 +109,6 @@ if (<?php echo $cat; ?> == 0) {
         .clone(true)
         .show()
         .prependTo('.content')
-        .data('id', <?php echo $cat; ?>)
         .addClass('category');
 }
 
@@ -136,7 +131,7 @@ $(".sortable").bind('aftertablesort', function(event, data){
 $("table th:first").trigger('click');
 
 //init form
-form('<?php echo $this->url('application');?>', <?php echo $this->tabid; ?>);
+form('<?php echo $this->url('application');?>');
 
 flightplan('<?php echo $this->url('application'); ?>');
 
