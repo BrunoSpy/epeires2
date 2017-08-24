@@ -17,6 +17,9 @@
  */
 namespace Application\Controller;
 
+use Core\Controller\AbstractEntityManagerAwareController;
+use Core\NMB2B\EAUPChain;
+use Core\NMB2B\EAUPRSAs;
 use Zend\Console\Request as ConsoleRequest;
 use Zend\Mvc\Controller\AbstractActionController;
 
@@ -81,7 +84,7 @@ class MilController extends AbstractActionController
         try {
             $startSeq = microtime(true);
             echo "Récupération du nombre de séquences\n";
-            $eaupchain = new \Core\NMB2B\EAUPChain($nmservice->getEAUPCHain($day));
+            $eaupchain = new EAUPChain($nmservice->getEAUPCHain($day));
             $dl = microtime(true) - $startSeq;
             $totalDL += $dl;
             echo "Séquences récupérées en ".$dl." secondes\n";
@@ -93,8 +96,9 @@ class MilController extends AbstractActionController
             echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
             return;
         }
-
-        $lastSequence = $eaupchain->getLastSequenceNumber();
+        
+        $lastAUPSequenceNumber = $eaupchain->getAUPSequenceNumber();
+        
         $milcats = $objectManager->getRepository('Application\Entity\MilCategory')->findBy(array(
             'nmB2B' => true
         ));
@@ -110,35 +114,38 @@ class MilController extends AbstractActionController
             }
         }
 
-        for ($i = 1; $i <= $lastSequence; $i ++) {
-            foreach ($designators as $designator) {
-                try {
-                    $startSeq = microtime(true);
-                    echo "Téléchargement des zones ".$designator.", séquence ".$i."\n";
-                    $eauprsas = new \Core\NMB2B\EAUPRSAs($nmservice->getEAUPRSA($designator.'*', $day, $i));
-                    $dl = microtime(true) - $startSeq;
-                    $totalDL += $dl;
-                    echo "Téléchargement terminé en ".$dl." secondes"."\n";
-                } catch(\RuntimeException $e) {
-                    $dl = microtime(true) - $startSeq;
-                    echo "Erreur au bout de ". $dl . " secondes.\n";
-                    echo "Erreur fatale pendant le téléchargement"."\n";
-                    echo "Les données téléchargées sont incomplètes"."\n";
-                    echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
-                    //abort import
-                    //email sent by service
-                    return;
-                }
-                $startEpeires = microtime(true);
-                echo "Création des évènements ".$designator.' séquence '.$i." dans Epeires..."."\n";
-                foreach ($milcats as $cat) {
-                    $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
-                }
-                $tr = microtime(true) - $startEpeires;
-                $totalTR += $tr;
-                echo "Evènements créés en ".$tr.' secondes'."\n";
+
+        //for ($i = 1; $i <= $lastSequence; $i ++) {
+        foreach ($designators as $designator) {
+            try {
+                $startSeq = microtime(true);
+                echo "Téléchargement des zones ".$designator.", séquence ".$lastAUPSequenceNumber."\n";
+                $eauprsas = new EAUPRSAs($nmservice->getEAUPRSA($designator.'*', $day, $lastAUPSequenceNumber));
+                $dl = microtime(true) - $startSeq;
+                $totalDL += $dl;
+                echo "Téléchargement terminé en ".$dl." secondes"."\n";
+            } catch(\RuntimeException $e) {
+                $dl = microtime(true) - $startSeq;
+                echo "Erreur au bout de ". $dl . " secondes.\n";
+                echo "Erreur fatale pendant le téléchargement"."\n";
+                echo "Les données téléchargées sont incomplètes"."\n";
+                echo "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré"."\n";
+                //abort import
+                //email sent by service
+                return;
             }
+            $startEpeires = microtime(true);
+            
+            echo "Création des évènements ".$designator.' séquence '.$lastAUPSequenceNumber." dans Epeires..."."\n";
+            $evts = 0;
+            foreach ($milcats as $cat) {
+                $evts += $objectManager->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+            }
+            $tr = microtime(true) - $startEpeires;
+            $totalTR += $tr;
+            echo $evts . " évènements créés en ".$tr.' secondes'."\n";
         }
+        //}
         echo "Fin de l'import de l'AUP en ".(microtime(true)-$startImport).' secondes'."\n";
         echo 'Téléchargement : '.$totalDL.' secondes'."\n";
         echo 'Traitement : '.$totalTR.' secondes'."\n";
