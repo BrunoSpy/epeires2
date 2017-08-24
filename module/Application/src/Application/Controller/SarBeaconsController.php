@@ -704,6 +704,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $form->add($typealerte);
 
         $cause = new Element\Textarea('cause');
+        $cause->setAttributes(['rows' => 7]);
         $cause->setLabel('Raison');
         (isset($formval['Alerte']['Cause'])) ? $cause->setValue($formval['Alerte']['Cause']):null;
         $form->add($cause);

@@ -275,7 +275,7 @@ var afis = function(url) {
     });
 
 
-    function loadAfisForm(id = null) 
+    function loadAfisForm(id) 
     {
         $fEditAf.load(url + 'afis/form', { id: id }, function() {
             if(id) $fEditAf.find('input[name=code]').prop('disabled', true);
