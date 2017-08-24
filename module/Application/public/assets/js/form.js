@@ -264,6 +264,8 @@ var form = function(url, tabid){
 	//gestion des tabs
 	$('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
 		updateIconTabs();
+		//suppression du tooltip qui traine
+        $("#start table").tooltip('destroy');
 	});
 
     var updateFormError = function() {
@@ -513,6 +515,10 @@ var form = function(url, tabid){
 		event.preventDefault();
 		$("#create-evt").modal('hide');
 		restoreUpdateAlarms();
+	});
+
+	$("#create-evt").on('hide.bs.modal', function(e){
+        $("#start table").tooltip('destroy');
 	});
 
 	var cat_id = -1;
