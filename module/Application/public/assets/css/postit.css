@@ -1,0 +1,100 @@
+div.floating-notes {
+    position: absolute;
+    z-index: 1000;
+    width: 0px;
+    right: 265px;
+}
+#notes li {
+    margin: 0px 40px 30px 0px;
+    float: left;
+}
+
+#notes li:first-child {
+    margin-top: 10px;
+}
+
+#notes li, ul.tag-list li {
+    list-style: none;
+}
+
+#notes li div small {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 10px;
+}
+
+div.rotate-1 {
+    transform: rotate(-3deg) translate3d(0px,0px,1px);
+}
+
+div.rotate-2 {
+    transform: rotate(4deg) translate3d(0px,0px,1px);
+    position: relative;
+    top: 5px;
+}
+
+.lazur-bg {
+    background-color: #23c6c8;
+    color: #ffffff;
+}
+
+.red-bg {
+    background-color: #ed5565;
+    color: #ffffff;
+}
+
+.navy-bg {
+    background-color: #1ab394;
+    color: #ffffff;
+}
+
+.yellow-bg {
+    background-color: #f8ac59;
+    color: #ffffff;
+}
+
+#notes li > div {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    height: 200px;
+    width: 200px;
+    padding: 1em;
+    -moz-box-shadow: 5px 5px 7px #212121;
+    -webkit-box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
+    box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
+    -moz-transition: -moz-transform 0.15s linear;
+    -o-transition: -o-transform 0.15s linear;
+    -webkit-transition: -webkit-transform 0.15s linear;
+    overflow-y: auto;
+}
+
+#notes .postit-handle {
+    cursor: move;
+}
+
+#notes h5 {
+    text-decoration: underline;
+}
+
+#notes .buttons {
+    position: fixed;
+    bottom: 0px;
+    right: 5px;
+}
+
+#notes .postit-content {
+    overflow-y: auto;
+    height: 115px;
+}
+
+#add-postit-btn {
+    margin-top: 5px;
+    width: 46px;
+    height: 46px;
+    font-size: 20px;
+    right: -260px;
+    float: right;
+    box-shadow: 0 6px 13px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+}

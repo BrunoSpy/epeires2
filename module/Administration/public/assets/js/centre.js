@@ -141,7 +141,6 @@ var centre = function(url){
 	$("#group-container").on('submit', function(event){
 		event.preventDefault();
 		var postData = $("#SectorGroup").serialize()+'&' + $("#sectors").sortable("serialize");
-        console.log(postData);
 		$.post(url+'/centre/savegroup', postData, function(data){
 			location.reload();
 		}, 'json');
