@@ -479,7 +479,7 @@ class EventRepository extends ExtendedRepository
      * @param DateTime $end
      * @return array
      */
-    public function getFlightPlanEvents($start=null, $end=null)
+    public function getFlightPlanEvents($start=null, $end=null, $status=[1,2,3])
     {
 
         if ($start == null && $end == null) {
@@ -505,7 +505,7 @@ class EventRepository extends ExtendedRepository
             ->setParameters([
                 1 => $start,
                 2 => $end,
-                3 => [1, 2, 3]
+                3 => $status
             ]);
         
         return $qbEvents->getQuery()->getResult();

@@ -1633,7 +1633,7 @@ class EventsController extends TabController
         $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
         $json['radio'] = count($em->getRepository('Application\Entity\Event')->getRadioEvents());
         $json['afis'] = count($em->getRepository('Application\Entity\Event')->getAfisEvents());
-        $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents());
+        $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents(null,null,[1,2]));
         $json['sarbeacons'] = count($em->getRepository('Application\Entity\Event')->getCurrentIntPlanEvents());
 
         return new JsonModel($json);
