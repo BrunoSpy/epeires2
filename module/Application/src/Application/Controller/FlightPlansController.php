@@ -53,11 +53,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     }
     
     public function indexAction()
-    {
-        // if (!$this->authFlightPlans('read')) return new JsonModel();
-        
-        // $timelineTab = $this->em->getRepository('Application\Entity\Tab')->findOneBy(array('isDefault'=>true));
-        
+    {        
         $cats = array();
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
@@ -68,17 +64,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 'cats' => $cats
             ]);
     }
-    
-    // public function sarAction()
-    // {
-    //     if (!$this->authFlightPlans('read')) return new JsonModel();
-
-    //     return (new ViewModel())
-    //         ->setTemplate('application/flight-plans/index')
-    //         ->setVariables([
-    //             'cat' => $this->getCatId(),
-    //         ]);
-    // }  
 
     private function getCatId() {
         $cat = $this->getCat();
@@ -108,8 +93,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 $namefield = (isset($customfield)) ? $customfield->getName() : null; 
                 $valuefield = $value->getValue();
                 (isset($namefield)) ? $ev[$namefield] = $valuefield : null;
-                // echo $customfield->getId();
-                // echo $cat->getAlertfield>getId();
                 if($customfield->getId() == $cat->getAlertfield()->getId()) 
                 {
                     if($valuefield > 0) {
@@ -130,10 +113,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             }
             if($sar == true && isset($ev['alert'])) $fpEvents[] = $ev;
             if($sar == false && !isset($ev['alert'])) $fpEvents[] = $ev;            
-            // elseif($sar == true && !$valuefield) $push = false; 
-            // elseif($sar == false && $valuefield > 0) $push = false;
-            // if($push == true) 
-            // $fpEvents[] = $ev;
         }
         return $fpEvents;
     }
@@ -143,12 +122,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $alertid = null;
         if (is_a($fp, Event::class)) 
         {
-            // $alertev = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-            // On va chercher l'id de l'event d'alerte
             foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
             {
-                // echo $this->getCat()->getAlertfield()->getId();
-                // echo $customfieldvalue->getCustomField()->getId();
                 if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
                 {
                     $alertid = $customfieldvalue->getValue();        
@@ -174,6 +149,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             return new JsonModel();
         };
         //TODO : tester validité date
+        $post = $this->getRequest()->getPost(); 
         if (isset($post['date']) && $post['date'] != '') {
             $start = new DateTime($post['date']); 
             $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
@@ -424,20 +400,4 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             'msg' => $msg
         ]);
     }
-
-    // private function validateFlightPlan($params) 
-    // {
-    //     if (!is_a($params, Parameters::class) && !is_array($params)) return false;
-
-    //     $id = intval($params['id']);
-    //     $fp = ($id) ? $this->repo->find($id) : new FlightPlan();
-    //     $this->form->setData($params);
-
-    //     if (!$this->form->isValid()) $ret = false;
-    //     else 
-    //     { 
-    //         $ret = $this->repo->hydrate($this->form->getData(), $fp);
-    //     }
-    //     return $ret;
-    // }
 }
