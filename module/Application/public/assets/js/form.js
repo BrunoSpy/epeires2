@@ -164,7 +164,7 @@ var formModifyAlarm = function(alarm) {
 	$('#alarm-table').append(tr);
 };
 
-var form = function(url, tabid){
+var form = function(url, cats){
 
 	urlt = url;
 
@@ -330,7 +330,7 @@ var form = function(url, tabid){
 		if($('#event form').data('confirmauto')
 			&& $("#event select[name=status] option:selected").val() == '1'
 			&& (diff < 10)){
-			$("#event select[name=status] option[value=2]").prop('selected', true);
+			$("#event select[name=status] option[value='2']").prop('selected', true);
 		}
 		//mise à jour des alarmes
 		updateAlarmForms();
@@ -386,14 +386,14 @@ var form = function(url, tabid){
 				&& $('#event input[name=id]').val() > 0 //id != 0 => modif
 				&& (deb < nowUTC || $('#event select[name=status] option:selected').val() == '2')
 				&& end < nowUTCplus) {
-				$('#event select[name=status] option[value=3]').prop('selected', true);
+				$('#event select[name=status] option[value="3"]').prop('selected', true);
 			} else if($('#event form').data('confirmauto')
 				&& $('#event input[name=id]').val() == 0){
 				//en cas de création on se permet le changement de statut
 				if(deb < nowUTC && end < nowUTCplus){
-					$('#event select[name=status] option[value=3]').prop('selected', true);
+					$('#event select[name=status] option[value="3"]').prop('selected', true);
 				} else {
-					$('#event select[name=status] option[value=2]').prop('selected', true);
+					$('#event select[name=status] option[value="2"]').prop('selected', true);
 				}
 			}
 			//mise à jour des alarmes
@@ -531,7 +531,7 @@ var form = function(url, tabid){
 			$("#event").html('');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
-				url+'events/form'+'?tabid='+tabid,
+				url+'events/form'+'?'+cats,
 				function(){
 					initTabs(0);
 					$("#event input[name=startdate]").timepickerform({'id':'start'});
@@ -562,7 +562,7 @@ var form = function(url, tabid){
 		$("#event").html('');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
-		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&tabid='+tabid, function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
@@ -579,7 +579,7 @@ var form = function(url, tabid){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
 
-		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&tabid='+tabid, function(){
+		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&'+cats, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start'});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
@@ -621,7 +621,7 @@ var form = function(url, tabid){
 
         $("#create-evt").modal('show');
 
-        $("#event").load(url+'events/form?id='+id+'&tabid='+tabid, function(){
+        $("#event").load(url+'events/form?id='+id+'&'+cats, function(){
             initTabs(1);
             $("#event input[name=exclude]").val(exclude);
             $("#event input[name=startdate]").timepickerform({'id':'start'});
@@ -800,7 +800,7 @@ var form = function(url, tabid){
 	//choosing a category
 	$("#event").on("change", "#root_categories", function(){
 		//disable subcategories select form before getting datas
-		$('#subcategories option[value=-1]').prop('selected', true);
+		$('#subcategories option[value="-1"]').prop('selected', true);
 		$('#subcategories').prop('disabled',true);
 		rebootTabs();
 
@@ -808,7 +808,7 @@ var form = function(url, tabid){
 
 		if(root_value > 0) {
 			$.when(
-				$.post(url+'events/subform?part=subcategories&id='+root_value + '&tabid='+tabid,
+				$.post(url+'events/subform?part=subcategories&id='+root_value + '&'+cats,
 					function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);
@@ -826,14 +826,14 @@ var form = function(url, tabid){
                 } else {
                     $.when(//récupération des modèles
                         $.post(
-                            url+'events/subform?part=predefined_events&id='+root_value+ '&tabid='+tabid,
+                            url+'events/subform?part=predefined_events&id='+root_value+ '&'+cats,
                             function(data){
                                 $("#predefined_events").html(data);
                                 $.material.checkbox();
                             }
                         ),
                         $.post(
-                            url+'events/subform?part=custom_fields&id='+root_value+ '&tabid='+tabid,
+                            url+'events/subform?part=custom_fields&id='+root_value+ '&'+cats,
                             function(data){
                                 $("#custom_fields").html(data);
                                 $("#custom_fields input, #custom_fields select").on("invalid", function(event){
@@ -871,7 +871,7 @@ var form = function(url, tabid){
         rebootTabs();
         $("input[name='category']").val(subcatid);
         return $.when(
-            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid+ '&tabid='+tabid,
+            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid+ '&'+cats,
                 function(data) {
                     $("#custom_fields").html(data);
                     $("#event input, #event select").on("invalid", function(event){
@@ -883,7 +883,7 @@ var form = function(url, tabid){
                 }
             ),
             $.post(
-                url + 'events/subform?part=predefined_events&id=' + subcatid+ '&tabid='+tabid,
+                url + 'events/subform?part=predefined_events&id=' + subcatid+ '&'+cats,
                 function(data){
                     $("#predefined_events").html(data);
                     //don't open model panel if there is no model

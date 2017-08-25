@@ -58,10 +58,14 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         
         // $timelineTab = $this->em->getRepository('Application\Entity\Tab')->findOneBy(array('isDefault'=>true));
         
+        $cats = array();
+        foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
+            $cats[] = $cat->getId();
+        }
+        
         return (new ViewModel())
             ->setVariables([
-                'cat' => $this->em->getRepository(FlightPlanCategory::class)->findAll()
-                // 'tabid' => $timelineTab->getId()
+                'cats' => $cats
             ]);
     }
     

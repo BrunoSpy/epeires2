@@ -19,6 +19,7 @@ namespace Application\Controller;
 
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
+use Application\Entity\Category;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\Recurrence;
@@ -26,6 +27,7 @@ use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\PredefinedEvent;
 
+use Application\Entity\Tab;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -1028,8 +1030,8 @@ class EventsController extends TabController
     public function subformAction()
     {
         $part = $this->params()->fromQuery('part', null);
-        $tabid = $this->params()->fromQuery('tabid', null);
-        
+        //$tabid = $this->params()->fromQuery('tabid', null);
+        $cats = $this->params()->fromQuery('cats', null);
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
         
@@ -1038,7 +1040,7 @@ class EventsController extends TabController
         
         $em = $this->getEntityManager();
         
-        $form = $this->getSkeletonForm($tabid);
+        $form = $this->getSkeletonForm($cats);
         
         if ($part) {
             switch ($part) {
@@ -1046,22 +1048,15 @@ class EventsController extends TabController
                     $id = $this->params()->fromQuery('id');
                     $subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
                         ->getChilds($id));
-                    if ($tabid !== null) {
-                        $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
-                        if ($tab) {
-                            $tabcats = $tab->getCategories();
-                            $tabcatsid = $tabcats->map(function ($a) {
-                                return $a->getId();
-                            })
-                                ->toArray();
-                            $tempsubcat = array();
-                            foreach ($subcat as $cat) {
-                                if (in_array($cat->getId(), $tabcatsid)) {
-                                    $tempsubcat[] = $cat;
-                                }
+                    if ($cats !== null) {
+                        //restrict subcats to those present in cats list
+                        $tempsubcat = array();
+                        foreach ($subcat as $cat) {
+                            if (in_array($cat->getId(), $cats)) {
+                                $tempsubcat[] = $cat;
                             }
-                            $subcat = $tempsubcat;
                         }
+                        $subcat = $tempsubcat;
                     }
                     $subcatarray = array();
                     foreach ($subcat as $cat) {
@@ -1139,9 +1134,11 @@ class EventsController extends TabController
         
         // création du formulaire : identique en cas de modif ou création
         
-        $tabid = $this->params()->fromQuery('tabid', null);
+        //$tabid = $this->params()->fromQuery('tabid', null);
         
-        $form = $this->getSkeletonForm($tabid);
+        $cats = $this->params()->fromQuery('cats', null);
+        
+        $form = $this->getSkeletonForm($cats);
         
         $id = $this->params()->fromQuery('id', null);
         
@@ -1295,7 +1292,7 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
-    private function getSkeletonForm($tabid, $event = null)
+    private function getSkeletonForm($cats, $event = null)
     {
         $em = $this->getEntityManager();
         
@@ -1323,7 +1320,15 @@ class EventsController extends TabController
         
         // add default fieldsets
         $rootCategories = array();
-        
+        $tempRootCategories = array();
+        foreach($cats as $catid){
+            $cat = $em->getRepository(Category::class)->find($catid);
+            if($cat && $cat->getParent() === null) {
+                $tempRootCategories[] = $cat;
+            }
+        }
+        $rootCategories = $this->filterReadableCategories($tempRootCategories);
+        /*
         $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
         if ($tab) {
             $cats = $tab->getCategories()->filter(function ($a) {
@@ -1331,7 +1336,7 @@ class EventsController extends TabController
             });
             $rootCategories = $this->filterReadableCategories($cats);
         }
-        
+        */
         $rootarray = array();
         foreach ($rootCategories as $cat) {
             $rootarray[$cat->getId()] = $cat->getName();
