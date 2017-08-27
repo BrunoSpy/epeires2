@@ -27,6 +27,14 @@ var refreshPostit = function(url){
                 if ($("#postit-" + value.id).length === 0) {
                     if (value.open == '1') {
                         var newPostItem = newPostIt(value.id, value.date, value.name, value.content);
+                        var position = Cookies.getJSON('postit-'+value.id);
+                        if(typeof(position) !== 'undefined') {
+                            newPostItem.css({
+                               "position": "relative",
+                               "top": position.top,
+                               "left": position.left
+                            });
+                        }
                         $("#notes").append(newPostItem);
                     }
                 } else {
@@ -41,7 +49,12 @@ var refreshPostit = function(url){
             });
         }
     }).always(function(e){
-        $( "ul#notes li" ).draggable({ handle: ".postit-handle" });
+        $( "ul#notes li" ).draggable({
+            handle: ".postit-handle",
+            stop: function(event, ui){
+                Cookies.set('postit-'+$(event.target).data('id'),ui.position);
+            }
+        });
         timerpostit = setTimeout(function(){refreshPostit(url)}, 10000);
     });
 };
@@ -82,5 +95,6 @@ var postit = function(url) {
             refreshPostit(url);
         });
     });
+
 };
 
