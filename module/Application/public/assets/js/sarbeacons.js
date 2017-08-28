@@ -718,25 +718,19 @@
                     });
 
                     $('.btn-print-ip').click(function() {
-                        // if ($(this).hasClass('disabled')) return false;
                         $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            // if(data[0] !== 'error') {
-                                location.href = url + 'sarbeacons/print/' + clickedIdIp;
-                            // } else {
-                                noty({
-                                    text: data[1],
-                                    type: data[0],
-                                    timeout: 4000,
-                                });               
+                            location.href = url + 'sarbeacons/print/' + clickedIdIp;
+                            // noty({
+                            //     text: data[1],
+                            //     type: data[0],
+                            //     timeout: 4000,
+                            // });               
                         });
                     });
 
                     $('.btn-mail-ip').click(function() {
-                        // if ($(this).hasClass('disabled')) return false;
                         $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            // if(data[0] !== 'error') {
                             $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                            // } else {
                                 noty({
                                     text: data[1],
                                     type: data[0],
@@ -829,25 +823,19 @@
                     });
 
                     $('.btn-print-ip').click(function() {
-                        // if ($(this).hasClass('disabled')) return false;
                         $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            // if(data[0] !== 'error') {
-                                location.href = url + 'sarbeacons/print/' + clickedIdIp;
-                            // } else {
-                                noty({
-                                    text: data[1],
-                                    type: data[0],
-                                    timeout: 4000,
-                                });               
+                            location.href = url + 'sarbeacons/print/' + clickedIdIp;
+                            // noty({
+                            //     text: data['msg'],
+                            //     type: data['type'],
+                            //     timeout: 4000,             
+                            // });
                         });
                     });
 
                     $('.btn-mail-ip').click(function() {
-                        // if ($(this).hasClass('disabled')) return false;
                         $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            // if(data[0] !== 'error') {
                             $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                            // } else {
                                 noty({
                                     text: data[1],
                                     type: data[0],
