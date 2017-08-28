@@ -814,17 +814,51 @@
     $aArch.click(function(data) {
         $('#archives').load(url + 'sarbeacons/archives', function(data) 
         {
-            // $(this).find('.list-ip-content').toggleClass('cache');
-            $(this).parents('li').find('.list-ip-content')
-                    .toggleClass('cache');
+            $('.list-group-item').click(function() {
+                var clickedIdIp = $(this).data('id');
+                $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
+                    $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
+                        data.ip.Alerte.Type 
+                    );
+                });
+                
+                $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {
 
-            $('.btn-end-ip, .btn-show-ip, .btn-edit-ip').hide();
-            $('.btn-cache-ip').click(function() {
-                $(this).parents('li').find('.list-ip-content')
-                    .toggleClass('cache');
-                $(this).toggleClass('btn-info');
-                if ($(this).hasClass('btn-info')) $(this).html('-')
-                else $(this).html('+');
+                    $('#f-show-ip .list-fields').click(function() {
+                        $(this).children('p').toggleClass('cache');
+                    });
+
+                    $('.btn-print-ip').click(function() {
+                        // if ($(this).hasClass('disabled')) return false;
+                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            // if(data[0] !== 'error') {
+                                location.href = url + 'sarbeacons/print/' + clickedIdIp;
+                            // } else {
+                                noty({
+                                    text: data[1],
+                                    type: data[0],
+                                    timeout: 4000,
+                                });               
+                        });
+                    });
+
+                    $('.btn-mail-ip').click(function() {
+                        // if ($(this).hasClass('disabled')) return false;
+                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            // if(data[0] !== 'error') {
+                            $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
+                            // } else {
+                                noty({
+                                    text: data[1],
+                                    type: data[0],
+                                    timeout: 4000,
+                                });               
+                            });
+                        });
+                    });
+
+                    $('.btn-end-ip,.btn-show-ip,.btn-edit-ip').hide();
+                });
             });
         });
     });
@@ -1428,7 +1462,6 @@
         var $ter = $(this).parent();
 
         if (!$(this).hasClass('btn-danger')) {
-            // $fOptCom.show();
             
             $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
                 field.setIdEvent(data['id']);
