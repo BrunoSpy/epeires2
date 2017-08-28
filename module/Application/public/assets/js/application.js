@@ -129,7 +129,7 @@ var loadFiche = function(id, actionUrl, files) {
         } else {
             $('#fiche').load(url+actionUrl+'?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
-                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('id'));
             });
         }
     } else {
@@ -139,7 +139,7 @@ var loadFiche = function(id, actionUrl, files) {
             if(files){
                 $("#files-panel").trigger('click');
             }
-            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('id'));
         });
 
         openFiche();
@@ -156,32 +156,32 @@ $("#fiche").on('click', "#close-panel", function(e){
     e.preventDefault();
     closeFiche();
 });
- 
- var updateFiche = function(id){
+
+var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
     //sinon on a un effet de flip-flop sur les panneaux
     var change = false;
     $.getJSON(url + 'events/actionsStatus?id=' + id, function(data){
-	$.each(data, function(key, value){
-	    var td = $('tr[data-id='+key+'] td:last a');
-	    if(value && td.hasClass('btn-success')) {
-		change = true;
-		td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
-	    } else if (!value && td.hasClass('btn-primary')) {
-		change = true;
-		td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
-	    }
-	});
-	//il faut aussi mettre l'historique à jour si il y a eu un changement
-	if(change == true){
-	    //mise à jour histo
-	    $("#history").load(url+'events/gethistory?id='+id, function(){
-		$("#history").closest('.panel').find("span.badge").html($("#history dd").length);
-	    });
-	}
-	timerFiche = setTimeout(updateFiche, 10000, id);
+        $.each(data, function(key, value){
+            var td = $('tr[data-id='+key+'] td:last a');
+            if(value && td.hasClass('btn-success')) {
+                change = true;
+                td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
+            } else if (!value && td.hasClass('btn-primary')) {
+                change = true;
+                td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
+            }
+        });
+        //il faut aussi mettre l'historique à jour si il y a eu un changement
+        if(change == true){
+            //mise à jour histo
+            $("#history").load(url+'events/gethistory?id='+id, function(){
+                $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
+            });
+        }
+        timerFiche = setTimeout(updateFiche, 10000, id);
     });
- };
+};
 /* **** End Left Panel  **** */
 
 
