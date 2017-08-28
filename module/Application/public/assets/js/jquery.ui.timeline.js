@@ -316,6 +316,11 @@
             $(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                } else {
+                    $("#alert-bottom").hide();
+                }
                 //$("#timeline-background").css('top', $(window).scrollTop());
             });
 /*
@@ -1014,6 +1019,13 @@
             } else {
                 self._hideCategories();
             }
+            //finally find if elements are out of view
+            $("#alert-bottom").hide();
+            $(".elmt, .category").filter(":animated").promise().done(function() {
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                }
+            });
             //then update height of timeline
             //var height = $(window).height() - this.options.topOffset;
             //maxY = (maxY > height ? maxY : height);
@@ -2559,6 +2571,17 @@
         _shadeRGBColor:function (color, percent) {
             var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
             return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
+        },
+        _elementsOutOfView:function() {
+            var innerHeight = window.innerHeight;
+            var outOfView = false;
+            $('.elmt').each(function(index, element){
+                if(element.getBoundingClientRect().y + element.getBoundingClientRect().height > innerHeight) {
+                    outOfView = true;
+                    return false; //break loop
+                }
+            });
+            return outOfView;
         }
     });
 })(jQuery);

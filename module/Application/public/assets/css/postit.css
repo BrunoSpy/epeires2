@@ -1,5 +1,5 @@
 div.floating-notes {
-    position: absolute;
+    position: fixed;
     z-index: 1000;
     width: 0px;
     right: 265px;

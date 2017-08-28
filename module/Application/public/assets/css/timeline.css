@@ -330,3 +330,14 @@
 	border-width: 2px;
 	margin-top: 3px;
 }
+
+#alert-bottom {
+	position: fixed;
+	height: 50px;
+	background: linear-gradient(0deg, #ff6060, rgba(1,0,0,0));
+	z-index: 30;
+	bottom: 0px;
+	width: 100%;
+	pointer-events: none;
+	display: none;
+}
