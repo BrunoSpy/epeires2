@@ -10,7 +10,7 @@ var newPostIt = function(id, date, name, content) {
     var rotation = rotate[Math.round(Math.random())];
     var options = {year: "numeric", month: "numeric", day: "numeric",
         hour: "numeric", minute: "numeric"};
-    var dateString = new Intl.DateTimeFormat('fr-FR', options).format(date);
+    var dateString = new Intl.DateTimeFormat('fr-FR', options).format(new Date(date));
     var li = $('<li data-id="'+id+'" id="postit-'+id+'"><div class="'+bg+' '+rotation+'">'
                 +'<div class="postit-handle"><small>'+dateString+'</small><h5>'+name+'</h5></div>'
                 +'<p class="postit-content">'+content+'</p>'
@@ -26,7 +26,7 @@ var refreshPostit = function(url){
             $.each(data, function (index, value) {
                 if ($("#postit-" + value.id).length === 0) {
                     if (value.open == '1') {
-                        var newPostItem = newPostIt(value.id, value.date, value.name, value.content);
+                        var newPostItem = newPostIt(value.id, value.datetime, value.name, value.content);
                         var position = Cookies.getJSON('postit-'+value.id);
                         if(typeof(position) !== 'undefined') {
                             newPostItem.css({
@@ -47,6 +47,12 @@ var refreshPostit = function(url){
                             newPostItem.css({
                                 "position": "relative",
                                 "top": top+"px"});
+                        }
+                        var classes = Cookies.get('postit-css-'+value.id);
+                        if(typeof(classes) !== 'undefined') {
+                            newPostItem.children().removeClass().addClass(classes);
+                        } else {
+                            Cookies.set('postit-css-'+value.id, newPostItem.children().attr('class'));
                         }
                         $("#notes").append(newPostItem);
                     }
