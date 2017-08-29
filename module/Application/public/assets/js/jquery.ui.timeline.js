@@ -1924,8 +1924,9 @@
                     event.outside = 1;
                 }
                 totalWidth += debWidth + txt_wid;
-                elmt_txt.css('color', 'black');
-                elmt_txt.find('a > span.glyphicon').css('color', 'black');
+                textColor = (event.status_id == 4 ? 'grey' : 'black');
+                elmt_txt.css('color', textColor);
+                elmt_txt.find('a > span.glyphicon').css('color', textColor);
 
                 /* 4: positionnement final de la boite englobante */
                 elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
@@ -2032,8 +2033,9 @@
                     var place = (100 - x_end) * this.largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
-                    elmt_txt.css('color', 'black');
-                    elmt_txt.find('a > span.glyphicon').css('color', 'black');
+                    textColor = (event.status_id == 4 ? 'grey' : 'black');
+                    elmt_txt.css('color', textColor);
+                    elmt_txt.find('a > span.glyphicon').css('color', textColor);
                     if (endWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': 'calc(100% - '+txt_wid+'px)'});
                         totalWidth += txt_wid;
