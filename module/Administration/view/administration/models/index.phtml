@@ -23,7 +23,7 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
                                 <th>Fichiers</th>
                         		<th>Ponctuel</th>
                         		<th data-container="body" data-toggle="tooltip" title="Afficher le modèle dans la liste lors de la création d'un nouvel évènement.">Liste<sup>?</sup></th>
-                            <th data-container="body" data-toggle="tooltip" title="Afficher le modèle dans la liste des modèles de la catégorie racine.">Forcer racine<sup>?</sup></th>
+                                <th data-container="body" data-toggle="tooltip" title="Afficher le modèle dans la liste des modèles de la catégorie racine.">Forcer racine<sup>?</sup></th>
                         		<th>Recherche</th>
                         		<th><a class="btn btn-xs btn-primary" href="#model-container" data-toggle="modal" id="add-model">Ajouter</a></th>
                         	</tr>
@@ -51,8 +51,8 @@ $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jqu
                                                     }
                                             echo ">";
                                         echo '</td>';
-                        		echo '<td>'.($model->isSearchable()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
-                            echo '<td>'.($model->isForceroot()?"<span class=\"glyphicon glyphicon-check\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+                                echo '<td>'.($model->isForceroot()?"<span class=\"glyphicon glyphicon-check\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+                                echo '<td>'.($model->isSearchable()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
                         		echo '<td>';
                         		echo "<a 
                         				title=\"Modifier\" 
