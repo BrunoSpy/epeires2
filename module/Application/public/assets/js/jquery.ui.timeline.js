@@ -1760,7 +1760,7 @@
             //////
 
             //mise à jour des attributs en fonction du statut
-            this._updateStatus(event, elmt);
+            this._updateStatus(event, elmt, textColor);
 
             //création de l'évènement en plusieurs étapes :
             // 1* construction des éléments : libellé, heures de début et de fin, boutons
@@ -1864,16 +1864,18 @@
                 elmt_rect.css({'left': -larg + 'px',
                     'border-left-width': larg + 'px',
                     'border-right-width': larg + 'px',
-                    'border-bottom-width': haut + 'px',
-                    'border-bottom-color': couleur});
+                    'border-bottom-width': haut + 'px'});
                 elmt_compl.show();
                 elmt_compl.css({
                     'border-left-width': larg + 'px',
                     'border-right-width': larg + 'px',
                     'border-top-width': haut + 'px',
-                    'border-top-color': couleur,
                     'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px',
                     'left' : '0px'});
+                if(event.status_id == 2) {
+                    elmt_rect.css({'border-bottom-color': couleur});
+                    elmt_compl.css({'border-top-color': couleur});
+                }
                 totalWidth += larg * 2;
                 x_end = x_deb;
 
@@ -1967,9 +1969,11 @@
                     elmt_compl.css({'left': 'auto',
                         'right' : - haut - 3 +'px',
                         'border-left-width': haut + 'px',
-                        'border-left-color' : couleur,
                         'border-top-width': haut / 2 + 1 + 'px',
                         'border-bottom-width': haut / 2 + 1 + 'px'});
+                    if(event.status_id == 2) {
+                        elmt_compl.css({'border-left-color' : couleur});
+                    }
                     elmt_compl.show();
                     //positionnement de l'élément pour être au bon endroit en cas d'utilisation de la poignée d'heure de fin
                     elmt_fin.css({'left': 'auto','right': -(4 + endWidth) + 'px'});
@@ -1981,8 +1985,10 @@
                     move_fin.css({'right': 12 + 'px'});
                 }
                 elmt_rect.css({'left': 0 + 'px',
-                    'height': this.options.eventHeight,
-                    'background-color': couleur});
+                    'height': this.options.eventHeight});
+                if(event.status_id == 2) {
+                    elmt_rect.css({'background-color': couleur})
+                }
 
                 //milestones
                 $.each(event.milestones, function(index, item){
@@ -2013,7 +2019,7 @@
                     event.outside = 0;
                     elmt_txt.css({'left': 22 + debWidth + 'px',
                         'top': (this.options.eventHeight/2-11)+'px'});
-                    elmt_txt.css('color', textColor);
+                    //elmt_txt.css('color', textColor);
                     elmt_txt.find('a > span.glyphicon').css('color', textColor);
                 } else {
                     elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
@@ -2140,7 +2146,7 @@
          * @param {type} elmt jquery elmt representing an event
          * @returns {undefined}
          */
-        _updateStatus: function (event, elmt) {
+        _updateStatus: function (event, elmt, textColor) {
             var elmt_txt = elmt.find('.label_elmt');
             var elmt_deb = elmt.find('.elmt_deb');
             var elmt_fin = elmt.find('.elmt_fin');
@@ -2158,6 +2164,9 @@
                 case 1: //nouveau
                     //label en italique
                     elmt_txt.css({'font-style': 'italic'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début cliquable
@@ -2214,6 +2223,9 @@
                 case 2: //confirmé
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début : non cliquable, sur demande avec case cochée
@@ -2251,6 +2263,9 @@
                 case 3: //terminé
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
