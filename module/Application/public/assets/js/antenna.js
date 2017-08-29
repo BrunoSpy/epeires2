@@ -81,13 +81,15 @@ var antenna = function(url, frequencyTestMenu){
                     '<div class="col-sm-9">'+select[0].outerHTML+'</div>'+
                     '</div></form>')
                 $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
-                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>").append(form);
+                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>" +
+                    "<p><strong>Astuce</strong> : laissez vide pour sélectionner toutes les fréquences ou utilisez CTRL pour sélectionner plusieurs fréquences.</p>").append(form);
             });
 
         } else {
             $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>"+
                 "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
         }
+        clearTimeout(timer);
         $("#confirm-end-event").modal('show');
     });
 
@@ -96,6 +98,7 @@ var antenna = function(url, frequencyTestMenu){
             var button = $('#switch_'+$("#cancel-antenna").data('antenna'));
             button.prop('checked', !button.is(':checked') );
         }
+        timer = setTimeout(doFullUpdate, 30000);
     });
 
     $("#end-antenna-href").on('click', function(event){
