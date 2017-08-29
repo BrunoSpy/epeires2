@@ -311,6 +311,11 @@
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
                 self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                } else {
+                    $("#alert-bottom").hide();
+                }
             });
 
             $(window).scroll(function(){
