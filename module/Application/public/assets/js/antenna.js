@@ -263,21 +263,24 @@ var antenna = function(url, frequencyTestMenu){
 
             var mainantennacolor = sector.find('.antennas .mainantenna-color');
             var backupantennacolor = sector.find('.antennas .backupantenna-color');
-            if(mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length){
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
-            }
-            if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
-            }
-            if(frequencyTestMenu
-                && mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length
-                && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cause=\"Test couverture secours\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + "Test couverture secours" + "</a></li>");
-            }
-            //retour à la fréquence nominale
-            if(sector.find(".sector-name span").length > 0){
-                list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+sector.data('freq')+
-                    "\" data-tofreq=\""+sector.data('freq')+"\">Retour à la fréquence nominale</a></li>");
+            if(sector.find(".antennas li").length > 1) {
+                //menus inutiles si une seule couv
+                if (mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\"" + $(this).data('freq') + "\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
+                }
+                if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\"" + $(this).data('freq') + "\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
+                }
+                if (frequencyTestMenu
+                    && mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length
+                    && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cause=\"Test couverture secours\" data-cov=\"1\" data-freqid=\"" + $(this).data('freq') + "\">" + "Test couverture secours" + "</a></li>");
+                }
+                //retour à la fréquence nominale
+                if (sector.find(".sector-name span").length > 0) {
+                    list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\"" + sector.data('freq') +
+                        "\" data-tofreq=\"" + sector.data('freq') + "\">Retour à la fréquence nominale</a></li>");
+                }
             }
             var submenu = $("<li class=\"submenu\"></li>");
             submenu.append("<a id=\"changefreq\" data-groupid=\""+groupid+"\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
