@@ -20,7 +20,6 @@ namespace Application\Controller;
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\Category;
-use Application\Entity\CustomField;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\PostItCategory;
@@ -30,7 +29,6 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\PredefinedEvent;
 
 use Application\Entity\Status;
-use Application\Entity\Tab;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -52,10 +50,9 @@ use ZfcRbac\Exception\UnauthorizedException;
  *
  * @author Bruno Spyckerelle
  */
-class EventsController extends TabController
+class EventsController extends TabsController
 {
 
-    private $entityManager;
     private $eventservice;
     private $customfieldservice;
     private $zfcRbacOptions;
@@ -66,19 +63,10 @@ class EventsController extends TabController
                                 $zfcrbacOptions,
                                 $config)
     {
-        parent::__construct($config);
-        $this->entityManager = $entityManager;
+        parent::__construct($entityManager, $config);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
-    }
-
-    /**
-     * @return EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
     }
     
     public function indexAction()
@@ -112,9 +100,7 @@ class EventsController extends TabController
             $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
         }
     
-        $this->viewmodel->setVariables(array(
-            'messages' => $return
-        ));
+        $this->viewmodel->setVariable('messages', $return);
     
         return $this->viewmodel;
     }
@@ -2391,7 +2377,7 @@ class EventsController extends TabController
                 }
                 $child->setStatus($event->getStatus());
             } else 
-                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
+                if ($child->getCategory() instanceof AlarmCategory) {
                     // si evt annulé uniquement : on annule toutes les alarmes
                     if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
                         $child->setStatus($event->getStatus());
@@ -2585,7 +2571,7 @@ class EventsController extends TabController
                          ->getRoles() as $role) {
                 $userroles[] = $role->getId();
             }
-            $qbEvents = $this->entityManager->createQueryBuilder();
+            $qbEvents = $this->getEntityManager()->createQueryBuilder();
             $qbEvents->select(array(
                 'e',
                 'cat',

@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -30,7 +31,7 @@ use Zend\View\Model\ViewModel;
 class TabsController extends TabController
 {
 
-    private $entityManager;
+    protected $entityManager;
 
     public function __construct(EntityManager $entityManager,
                                 $config)
@@ -75,11 +76,35 @@ class TabsController extends TabController
         } else {
             $return['error'][] = "Aucun onglet défini. Contactez votre administrateur.";
         }
-
-        $this->viewmodel->setVariables(array(
-            'messages' => $return
-        ));
+        $postitAllowed = false;
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+            //determine if user can create postit
+            $postitCategory = $this->entityManager->getRepository(Category::class)->findOneBy(array('name'=>'PostIt'));
+            $userroles = $this->zfcUserAuthentication()->getIdentity()->getRoles();
+            foreach ($userroles as $role) {
+                foreach ($role->getReadCategories() as $cat) {
+                    if($cat->getId() == $postitCategory->getId()) {
+                        $postitAllowed = true;
+                        break;
+                    }
+                }
+                if($postitAllowed) {
+                    break;
+                }
+            }
+        }
+        $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
+        
+        $this->viewmodel->setVariable('messages', $return);
         
         return $this->viewmodel;
+    }
+    
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
     }
 }

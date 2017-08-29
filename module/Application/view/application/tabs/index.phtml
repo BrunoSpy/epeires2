@@ -55,9 +55,11 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 </div>
 
 <div class="floating-notes">
+    <?php if($this->postitAllowed):?>
     <button data-toggle="modal"
             href="#add-postit-modal"
             class="btn btn-sm btn-fab btn-default btn-mdi-raised" id="add-postit-btn"><span class="glyphicon glyphicon-tag"></span></button>
+    <?php endif; ?>
     <ul id="notes">
     
     </ul>
