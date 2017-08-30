@@ -1877,7 +1877,7 @@
                     'border-top-width': haut + 'px',
                     'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px',
                     'left' : '0px'});
-                if(event.status_id == 2) {
+                if(event.status_id == 2 || event.status_id == 3) {
                     elmt_rect.css({'border-bottom-color': couleur});
                     elmt_compl.css({'border-top-color': couleur});
                 }
@@ -1977,7 +1977,7 @@
                         'border-left-width': haut + 'px',
                         'border-top-width': haut / 2 + 1 + 'px',
                         'border-bottom-width': haut / 2 + 1 + 'px'});
-                    if(event.status_id == 2) {
+                    if(event.status_id == 2 || event.status_id == 3) {
                         elmt_compl.css({'border-left-color' : couleur});
                     }
                     elmt_compl.show();
@@ -1992,8 +1992,8 @@
                 }
                 elmt_rect.css({'left': 0 + 'px',
                     'height': this.options.eventHeight});
-                if(event.status_id == 2) {
-                    elmt_rect.css({'background-color': couleur})
+                if(event.status_id == 2 || event.status_id == 3) {
+                    elmt_rect.css({'background-color': couleur});
                 }
 
                 //milestones
