@@ -6,8 +6,8 @@ var lastupdate_postit;
 var timerpostit;
 
 var newPostIt = function(id, date, name, content) {
-    var bg = background[Math.round(Math.random()*3)];
-    var rotation = rotate[Math.round(Math.random())];
+    var bg = background[Math.floor(Math.random()*4)];
+    var rotation = rotate[(Math.random() < 0.5 ? 0 : 1)];
     var options = {year: "numeric", month: "numeric", day: "numeric",
         hour: "numeric", minute: "numeric"};
     var dateString = new Intl.DateTimeFormat('fr-FR', options).format(new Date(date));
@@ -31,19 +31,24 @@ var refreshPostit = function(url){
                         if(typeof(position) !== 'undefined') {
                             newPostItem.css({
                                "position": "relative",
-                               "top": position.top,
-                               "left": position.left
+                               "top": position.top+'px',
+                               "left": position.left+'px'
                             });
                         } else {
                             var nextTop = 0;
                             $("#notes li").each(function(i,e){
                                 var cssTop = $(this).css('top');
-                                var currentTop = parseInt(cssTop.substr(0, cssTop.length-2)) + i*240;
+                                var currentTop = parseInt(cssTop.substr(0, cssTop.length-2)) + i*230;
                                 if(currentTop > nextTop) {
                                     nextTop = currentTop;
                                 }
                             });
-                            var top = nextTop+240-240*($("#notes li").length);
+                            var existingNotes = $("#notes li").length;
+                            var top = (existingNotes == 0 ? nextTop : nextTop+230-230*existingNotes);
+                            if(top + existingNotes*230 + 230 > window.innerHeight) {
+                                //out of view -> random vertical position Math.abs(Math.floor(Math.random()*(window.innerHeight-240)))
+                                top = Math.abs(Math.floor(Math.random()*(window.innerHeight-340))) - 230*existingNotes;
+                            }
                             newPostItem.css({
                                 "position": "relative",
                                 "top": top+"px"});
@@ -58,7 +63,14 @@ var refreshPostit = function(url){
                     }
                 } else {
                     if (value.open == '0') {
-                        $("#postit-" + value.id).nextAll().css('top', '+=240px');
+                        $("#postit-" + value.id).nextAll().each(function(i,e){
+                            $(this).css('top', '+=230px');
+                            var id = $(this).data('id');
+                            var topCss = $(this).css('top');
+                            var leftCss = $(this).css('left');
+                            Cookies.set('postit-'+id, {top: topCss.substr(0, topCss.length-2), left: leftCss.substr(0, leftCss.length-2)});
+                        });
+
                         $("#postit-" + value.id).remove();
                     } else {
                         var postitItem = $("#postit-" + value.id);
