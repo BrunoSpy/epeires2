@@ -9,6 +9,22 @@
 				<h4 class="panel-title">Onglets </h4>
 			</div>
 			<div class="panel-body">
+          <?php
+          if(count($this->defectroles) > 0){
+            echo '<div class="alert alert-warning">';
+            echo '<p>Attention, certains rôles sont affectés à plusieurs onglets principaux :</p>';
+            echo '<ul>';
+            foreach ($this->defectroles as $role => $tabs) {
+              echo '<li>' . $role . ' : ';
+              foreach ($tabs as $t){
+                echo $t . (next($tabs) === false ? '.' : ' - ');
+              }
+              echo '</li>';
+            }
+            echo '</ul>';
+            echo '</div>';
+          }
+          ?>
 				<table class="table table-striped sortable">
                                     <thead>
                                     <tr>
@@ -101,6 +117,7 @@
                 <div class="panel-body">
                     <p>Cette page permet de configurer de nouveaux onglets, positionnés après les onglets Radio et Radar.</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
+                  <p><strong>Attention : </strong>Il peut y avoir plusieurs onglets principaux, mais un rôle ne peut être affecté qu'à un seul onglet principal.</p>
                 </div>
             </div>
         </div>

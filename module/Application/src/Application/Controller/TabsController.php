@@ -68,7 +68,6 @@ class TabsController extends TabController
                 }
                 $this->viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
                 $this->viewmodel->setVariable('cats', $cats);
-                $this->viewmodel->setVariable('tabid', $tabid);
                 $this->viewmodel->setVariable('default', false);
             } else {
                 $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";

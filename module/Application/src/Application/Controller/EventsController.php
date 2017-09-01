@@ -84,21 +84,55 @@ class EventsController extends TabsController
         }
     
         $this->flashMessenger()->clearMessages();
-      
-        $tab = $this->entityManager->getRepository('Application\Entity\Tab')->findOneBy(array("isDefault" => true));
-        if ($tab) {
-            $categories = $tab->getCategories();
-            $cats = array();
-            foreach ($categories as $cat) {
-                $cats[] = $cat->getId();
+
+        $userauth = $this->zfcUserAuthentication();
+        $onlyroot = false;
+        $cats = array();
+
+        //fusion des tabs principaux pour les rôles de l'utilisateur
+        if ($userauth != null && $userauth->hasIdentity()) {
+            $roles = $userauth->getIdentity()->getRoles();
+            foreach ($roles as $r) {
+                $tabs = $r->getReadtabs();
+                foreach ($tabs as $t) {
+                    if($t->isDefault()) {
+                        foreach ($t->getCategories() as $c) {
+                            if(!in_array($c->getId(), $cats)) {
+                                $cats[] = $c->getId();
+                            }
+                        }
+                        $onlyroot += $t->isOnlyroot();
+                        break;
+                    }
+                }
             }
-            $this->viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
-            $this->viewmodel->setVariable('cats', $cats);
-            $this->viewmodel->setVariable('tabid', $tab->getId());
-            $this->viewmodel->setVariable('default', true);
         } else {
-            $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
+            if ($userauth != null) {
+                $roleentity = $this->getEntityManager()
+                    ->getRepository('Core\Entity\Role')
+                    ->findOneBy(array(
+                        'name' => 'guest'
+                    ));
+                if ($roleentity) {
+                    foreach ($roleentity->getReadtabs() as $t) {
+                        if($t->isDefault()) {
+                            foreach ($t->getCategories() as $c) {
+                                if (!in_array($c->getId(), $cats)) {
+                                    $cats[] = $c->getId();
+                                }
+                            }
+                            $onlyroot = $t->isDefault();
+                        }
+                    }
+                }
+            }
         }
+
+
+        $this->viewmodel->setVariable('onlyroot', $onlyroot);
+        $this->viewmodel->setVariable('cats', $cats);
+        $this->viewmodel->setVariable('default', true);
+
     
         $this->viewmodel->setVariable('messages', $return);
     

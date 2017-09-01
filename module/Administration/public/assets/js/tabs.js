@@ -51,6 +51,10 @@ var tab = function(url){
 			$.post(url+'/tabs/setdefault?id='+id, function(data){
 				displayMessages(data.messages);
 			});
-        }
+        } else {
+            $.post(url+'/tabs/unsetdefault?id='+id, function(data){
+                displayMessages(data.messages);
+            });
+		}
 	});
 };

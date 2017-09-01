@@ -18,6 +18,7 @@
 namespace Administration\Controller;
 
 use Application\Controller\FormController;
+use Application\Entity\Tab;
 use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -56,7 +57,19 @@ class TabsController extends FormController
             'tabs' => $objectManager->getRepository('Application\Entity\Tab')
                 ->findAll()
         ));
-        
+
+        //find if a role is affected to more than one default tab
+        $defaulttabs = $objectManager->getRepository(Tab::class)->findBy(array('isDefault'=>true));
+        $tempdefectroles = array();
+        foreach ($defaulttabs as $t){
+            $readroles = $t->getReadroles();
+            foreach ($readroles as $r){
+                $tempdefectroles[$r->getName()][] = $t->getName();
+            }
+        }
+        $defectroles = array_filter($tempdefectroles, function($v, $k){return count($v) > 1;}, ARRAY_FILTER_USE_BOTH);
+        $viewmodel->setVariable('defectroles', $defectroles);
+
         // gestion des erreurs lors d'un reload
         $return = array();
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -190,13 +203,36 @@ class TabsController extends FormController
         $messages = array();
         if($id) {
             $objectManager = $this->getEntityManager();
-            $tabs = $objectManager->getRepository('Application\Entity\Tab')->findAll();
-            foreach ($tabs as $tab) {
-                if ($tab->getId() == $id) {
-                    $tab->setDefault(true);
-                } else {
-                    $tab->setDefault(false);
-                }
+            $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
+            if($tab) {
+                $tab->setDefault(true);
+            } else {
+                $messages['error'][] = "Impossible de trouver l'onglet correspondant.";
+            }
+            try{
+                $objectManager->flush();
+                $messages['success'][] = "Onglet correctement passé par défaut.";
+            } catch (\Exception $e) {
+                $messages['error'][] = "Une erreur est survenue.";
+                $messages['error'][] = $e->getMessage();
+            }
+        }
+        $json = array();
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    public function unsetdefaultAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $messages = array();
+        if($id) {
+            $objectManager = $this->getEntityManager();
+            $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
+            if($tab) {
+                $tab->setDefault(false);
+            } else {
+                $messages['error'][] = "Impossible de trouver l'onglet correspondant.";
             }
             try{
                 $objectManager->flush();
