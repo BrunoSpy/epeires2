@@ -81,6 +81,10 @@
          */
         currentDay: new Date(),
         /**
+         * If day = today, center the view on current hour or not.
+         */
+        center24 : false,
+        /**
          * Beginning of the timeline
          */
         timelineBegin: new Date(),
@@ -765,7 +769,9 @@
                 this.dayview = true;
                 if (day === undefined) {
                     this.currentDay = new Date(); //now
+                    this.center24 = true;
                 } else {
+                    this.center24 = false;
                     var tempday = new Date(day);
                     if (this._isValidDate(tempday)) {
                         this.currentDay = tempday;
@@ -780,7 +786,12 @@
                 this.dayview = false;
                 this.element.find("#timeline-background").removeClass('anotherday');
                 $.when(self._refreshCategories()).then(function(){
-                    self.forceUpdateView(true);
+                    if(!self._isToday(self.currentDay)) {
+                        //we need to fetch today's events
+                        self._updateEvents(true);
+                    } else {
+                        self.forceUpdateView(true);
+                    }
                 });
             }
         },
@@ -792,8 +803,14 @@
         day: function (date) {
             var self = this;
             if (this.dayview) {
+                this.center24 = false;
+                var refresh = true;
                 var tempday = new Date(date);
                 if (this._isValidDate(tempday)) {
+                    if(self._isValidDate(self.currentDay) && self._isSameDay(self.currentDay, tempday)) {
+                        //pas de changement de jour -> inutile de recharger les évènements
+                        refresh = false;
+                    }
                     this.currentDay = tempday;
                 } else {
                     this.currentDay = new Date();
@@ -812,21 +829,26 @@
                 } else {
                     url += '?day=' + self.currentDay.toUTCString();
                 }
-                $.when(self._refreshCategories())
-                .then(function(){//we need updated categories before getting events
-                    $.when($.getJSON(url,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                self.pauseUpdateView();
-                                self.addEvents(data);
-                            }
-                        }))
-                    .then(function(){
-                        self.forceUpdateView(true);
-                        self._restoreUpdate();
-                        self.element.find('.loading').hide();
-                    })
-                });
+                if(refresh) {
+                    $.when(self._refreshCategories())
+                        .then(function () {//we need updated categories before getting events
+                            $.when($.getJSON(url,
+                                function (data, textStatus, jqHXR) {
+                                    if (jqHXR.status !== 304) {
+                                        self.pauseUpdateView();
+                                        self.addEvents(data);
+                                    }
+                                }))
+                                .then(function () {
+                                    self.forceUpdateView(true);
+                                    self._restoreUpdate();
+                                    self.element.find('.loading').hide();
+                                })
+                        });
+                } else {
+                    this.element.find(".loading").hide();
+                    self.forceUpdateView(true);
+                }
             }
             //else : do nothing
         },
@@ -965,7 +987,7 @@
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
-                if(this._isToday(this.currentDay)) {
+                if(this._isToday(this.currentDay) && this.center24) {
                     //if today -> center the timeline around actual hour
                     var now = new Date();
                     this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 11, 0, 0);
@@ -2513,6 +2535,11 @@
             return (date.getUTCFullYear() == now.getUTCFullYear() &&
                     date.getUTCMonth() == now.getUTCMonth() &&
                     date.getUTCDate() == now.getUTCDate());
+        },
+        _isSameDay: function(date1, date2){
+            return (date1.getUTCFullYear() == date2.getUTCFullYear() &&
+                date1.getUTCMonth() == date2.getUTCMonth() &&
+                date1.getUTCDate() == date2.getUTCDate());
         },
         _computeTextSizeDOM: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);

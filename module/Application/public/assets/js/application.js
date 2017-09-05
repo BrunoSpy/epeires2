@@ -508,6 +508,8 @@ $(document).ready(function(){
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
             $.post(url + 'events/saveview?view=24');
+            //first activation of 24 view -> center on current hour
+            $("#calendar input[type=text].date").data('center', true);
         } else if(view.localeCompare("month") == 0) {
             $("#calendarview").show();
             $("#calendarview").fullCalendar('changeView', 'basicWeek');
@@ -800,7 +802,7 @@ $(document).ready(function(){
             nowText: "Jour",
             switchOnClick: true
     });
-    
+
     $("#date").on('change', function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
         var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
@@ -810,12 +812,21 @@ $(document).ready(function(){
     
     $("#day-backward").on('click', function(e) {
         e.preventDefault();
-        var temp = $('#calendar input[type=text].date').val().split('/');
-        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
-        var back = new Date(date.getTime() - (24 * 60 * 60 * 1000));
-        var day = back.getUTCDate();
-        var month = back.getUTCMonth() + 1;
-        var year = back.getUTCFullYear();
+        if($('#calendar input[type=text].date').data('center') == true && (new Date().getUTCHours() > 12)) {
+            //affichage du jour actuel en entier pour éviter un trou
+            var now = new Date();
+            var day = now.getUTCDate();
+            var month = now.getUTCMonth() + 1;
+            var year = now.getUTCFullYear();
+        } else {
+            var temp = $('#calendar input[type=text].date').val().split('/');
+            var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+            var back = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+            var day = back.getUTCDate();
+            var month = back.getUTCMonth() + 1;
+            var year = back.getUTCFullYear();
+        }
+        $('#calendar input[type=text].date').data('center', false);
         var backString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
         $("#calendar input[type=text].date").val(backString);
         $("#calendar input[type=text].date").trigger('change');
@@ -823,12 +834,20 @@ $(document).ready(function(){
 
     $("#day-forward").on('click', function(e) {
         e.preventDefault();
-        var temp = $('#calendar input[type=text].date').val().split('/');
-        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
-        var forward = new Date(date.getTime() + (24 * 60 * 60 * 1000));
-        var day = forward.getUTCDate();
-        var month = forward.getUTCMonth() + 1;
-        var year = forward.getUTCFullYear();
+        if($('#calendar input[type=text].date').data('center') == true && (new Date().getUTCHours() < 12)) {
+            var now = new Date();
+            var day = now.getUTCDate();
+            var month = now.getUTCMonth() + 1;
+            var year = now.getUTCFullYear();
+        } else {
+            var temp = $('#calendar input[type=text].date').val().split('/');
+            var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+            var forward = new Date(date.getTime() + (24 * 60 * 60 * 1000));
+            var day = forward.getUTCDate();
+            var month = forward.getUTCMonth() + 1;
+            var year = forward.getUTCFullYear();
+        }
+        $('#calendar input[type=text].date').data('center', false);
         var forwardString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
         $("#calendar input[type=text].date").val(forwardString);
         $("#calendar input[type=text].date").trigger('change');
