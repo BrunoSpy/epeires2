@@ -405,6 +405,9 @@ class EventRepository extends ExtendedRepository
     {
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
+        //on ajoute qq secondes pour éviter les effets de bords
+        //notamment les requêtes qui suivent immédiatementla cloture d'un évènement
+        $now->add(new \DateInterval('PT10S'));
         $qbEvents = $this->getEntityManager()->createQueryBuilder();
         $qbEvents->select(array(
             'e',

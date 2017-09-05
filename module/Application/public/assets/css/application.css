@@ -378,6 +378,10 @@ body {
 	background-color: #FFBF00;
 }
 
+.togglebutton.togglebutton-blue label input[type="checkbox"]:checked + .toggle::after {
+	background-color: rgb(91, 192, 222);
+}
+
 .togglebutton.togglebutton-red label .toggle.togglebutton label .toggle,
 .togglebutton.togglebutton-orange label .toggle.togglebutton label .toggle {
 	background-color: #bdbdbd;

@@ -98,6 +98,7 @@ var antenna = function(url, frequencyTestMenu){
             var button = $('#switch_'+$("#cancel-antenna").data('antenna'));
             button.prop('checked', !button.is(':checked') );
         }
+        clearTimeout(timer);
         timer = setTimeout(doFullUpdate, 30000);
     });
 
@@ -418,9 +419,9 @@ var antenna = function(url, frequencyTestMenu){
             var antennatd = $("#antenna-"+key+" td:first");
             var antenna = $('.antenna-color.antenna-'+key);
             if(!value.status) {
+                //affichage du panneau contextuel
+                antennatd.find('a').show();
                 if(value.full_fault) {
-                    //affichage de la fiche réflexe
-                    antennatd.find('a').show();
                     //bouton rouge
                     antennabutton.removeClass('togglebutton-orange').addClass('togglebutton-red');
                     //antennes des fréquences en rouge
@@ -428,8 +429,6 @@ var antenna = function(url, frequencyTestMenu){
                         .removeClass('background-status-planned')
                         .addClass('background-status-fail');
                 } else {
-                    //pas de fiche réflexe sur panne partielle
-                    antennatd.find('a').hide();
                     //bouton jaune
                     antennabutton.addClass('togglebutton-orange').removeClass('togglebutton-red');
                     //antennes des fréquences impactées en rouge
@@ -450,12 +449,12 @@ var antenna = function(url, frequencyTestMenu){
                         .addClass('background-status-ok');
                 antennatd.find('a').hide();
                 if (value.planned) {
+                    antennatd.find('a').show();
+                    antennabutton.addClass('togglebutton-blue');
                     if(value.full_fault) {
-                        antennatd.find('a').show();
                         antenna.removeClass('background-status-ok')
                             .addClass('background-status-planned');
                     } else {
-                        antennatd.find('a').hide();
                         antenna.each(function(i){
                             var freqid = $(this).closest('.sector').find('.actions-freq').data('freq')+"";
                             if($.inArray(freqid,value.frequencies) !== -1 ){
@@ -465,7 +464,7 @@ var antenna = function(url, frequencyTestMenu){
                         });
                     }
                 } else {
-                    //nothing more to do
+                    antennabutton.removeClass('togglebutton-blue');
                 }
             }
         });
@@ -510,7 +509,7 @@ var antenna = function(url, frequencyTestMenu){
                 var name = sector.find('.sector-name').html();
                 sector.find('.sector-name').html(name+'<span> <span class="glyphicon glyphicon-forward"></span> '+value.otherfreqname);
             } else {
-                sector.find('.actions-freq').html(value.name).removeClass('em');
+                sector.find('.actions-freq').html(value.name).removeClass('em').data('freq', key);
                 sector.find('.sector-name span').remove();
             }
             //mise à jour des antennes (uniquement si passage en autre freq ou retour en freq normale
