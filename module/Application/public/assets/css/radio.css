@@ -222,3 +222,7 @@ ul>.antennas:last-child>.mainantenna-wide {
 .open-fiche {
 	display: none;
 }
+
+.table.legend > tbody > tr > td {
+	border: 2px solid white;
+}

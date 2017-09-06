@@ -129,7 +129,7 @@ var loadFiche = function(id, actionUrl, files) {
         } else {
             $('#fiche').load(url+actionUrl+'?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
-                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+                timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('id'));
             });
         }
     } else {
@@ -139,7 +139,7 @@ var loadFiche = function(id, actionUrl, files) {
             if(files){
                 $("#files-panel").trigger('click');
             }
-            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('parentid'));
+            timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('id'));
         });
 
         openFiche();
@@ -156,32 +156,32 @@ $("#fiche").on('click', "#close-panel", function(e){
     e.preventDefault();
     closeFiche();
 });
- 
- var updateFiche = function(id){
+
+var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
     //sinon on a un effet de flip-flop sur les panneaux
     var change = false;
     $.getJSON(url + 'events/actionsStatus?id=' + id, function(data){
-	$.each(data, function(key, value){
-	    var td = $('tr[data-id='+key+'] td:last a');
-	    if(value && td.hasClass('btn-success')) {
-		change = true;
-		td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
-	    } else if (!value && td.hasClass('btn-primary')) {
-		change = true;
-		td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
-	    }
-	});
-	//il faut aussi mettre l'historique à jour si il y a eu un changement
-	if(change == true){
-	    //mise à jour histo
-	    $("#history").load(url+'events/gethistory?id='+id, function(){
-		$("#history").closest('.panel').find("span.badge").html($("#history dd").length);
-	    });
-	}
-	timerFiche = setTimeout(updateFiche, 10000, id);
+        $.each(data, function(key, value){
+            var td = $('tr[data-id='+key+'] td:last a');
+            if(value && td.hasClass('btn-success')) {
+                change = true;
+                td.removeClass('active btn-success').addClass('btn-primary').html('<strong>A faire</strong>');
+            } else if (!value && td.hasClass('btn-primary')) {
+                change = true;
+                td.addClass('active btn-success').removeClass('btn-primary').html('<strong>Fait</strong>');
+            }
+        });
+        //il faut aussi mettre l'historique à jour si il y a eu un changement
+        if(change == true){
+            //mise à jour histo
+            $("#history").load(url+'events/gethistory?id='+id, function(){
+                $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
+            });
+        }
+        timerFiche = setTimeout(updateFiche, 10000, id);
     });
- };
+};
 /* **** End Left Panel  **** */
 
 
@@ -508,6 +508,8 @@ $(document).ready(function(){
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
             $.post(url + 'events/saveview?view=24');
+            //first activation of 24 view -> center on current hour
+            $("#calendar input[type=text].date").data('center', true);
         } else if(view.localeCompare("month") == 0) {
             $("#calendarview").show();
             $("#calendarview").fullCalendar('changeView', 'basicWeek');
@@ -800,7 +802,7 @@ $(document).ready(function(){
             nowText: "Jour",
             switchOnClick: true
     });
-    
+
     $("#date").on('change', function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
         var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
@@ -810,12 +812,21 @@ $(document).ready(function(){
     
     $("#day-backward").on('click', function(e) {
         e.preventDefault();
-        var temp = $('#calendar input[type=text].date').val().split('/');
-        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
-        var back = new Date(date.getTime() - (24 * 60 * 60 * 1000));
-        var day = back.getUTCDate();
-        var month = back.getUTCMonth() + 1;
-        var year = back.getUTCFullYear();
+        if($('#calendar input[type=text].date').data('center') == true && (new Date().getUTCHours() > 12)) {
+            //affichage du jour actuel en entier pour éviter un trou
+            var now = new Date();
+            var day = now.getUTCDate();
+            var month = now.getUTCMonth() + 1;
+            var year = now.getUTCFullYear();
+        } else {
+            var temp = $('#calendar input[type=text].date').val().split('/');
+            var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+            var back = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+            var day = back.getUTCDate();
+            var month = back.getUTCMonth() + 1;
+            var year = back.getUTCFullYear();
+        }
+        $('#calendar input[type=text].date').data('center', false);
         var backString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
         $("#calendar input[type=text].date").val(backString);
         $("#calendar input[type=text].date").trigger('change');
@@ -823,12 +834,20 @@ $(document).ready(function(){
 
     $("#day-forward").on('click', function(e) {
         e.preventDefault();
-        var temp = $('#calendar input[type=text].date').val().split('/');
-        var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
-        var forward = new Date(date.getTime() + (24 * 60 * 60 * 1000));
-        var day = forward.getUTCDate();
-        var month = forward.getUTCMonth() + 1;
-        var year = forward.getUTCFullYear();
+        if($('#calendar input[type=text].date').data('center') == true && (new Date().getUTCHours() < 12)) {
+            var now = new Date();
+            var day = now.getUTCDate();
+            var month = now.getUTCMonth() + 1;
+            var year = now.getUTCFullYear();
+        } else {
+            var temp = $('#calendar input[type=text].date').val().split('/');
+            var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
+            var forward = new Date(date.getTime() + (24 * 60 * 60 * 1000));
+            var day = forward.getUTCDate();
+            var month = forward.getUTCMonth() + 1;
+            var year = forward.getUTCFullYear();
+        }
+        $('#calendar input[type=text].date').data('center', false);
         var forwardString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
         $("#calendar input[type=text].date").val(forwardString);
         $("#calendar input[type=text].date").trigger('change');

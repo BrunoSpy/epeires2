@@ -42,14 +42,17 @@ use Application\Entity\Afis;
 class AfisController extends AbstractEntityManagerAwareController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
+    const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
+    const CURL_TIMEOUT = 3;
 
     private $em, $cf, $repo, $form;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf)
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config)
     {
         parent::__construct($em);
         $this->em = $this->getEntityManager();
         $this->cf = $cf;
+        $this->config = $config;
         $this->repo = $this->em->getRepository(Afis::class);
 
         $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
@@ -61,19 +64,11 @@ class AfisController extends AbstractEntityManagerAwareController
                     ->getAllAsArray()
                 );
 
-
-
-        $categories = $this->em->getRepository(AfisCategory::class)->findBy([
-            'defaultafiscategory' => true
-        ]);
-
-        if ($categories) {
-            $cat = $categories[0];
-            // $this->form->add(new CustomFieldset($this->em, $this->cf, $cat->getId()));
-            // $this->form->get('custom_fields')->remove($cat->getAfisfield()->getId());
-            // $this->form->get('custom_fields')->remove($cat->getStatefield()->getId());
+        if (isset($this->config['btiv']['proxynotam'])) {
+            $this->proxy = $this->config['btiv']['proxynotam'];
+        } else {
+            $this->proxy = '';
         }
-
     }
 
     private function getAfis($decom = 0)
@@ -112,13 +107,15 @@ class AfisController extends AbstractEntityManagerAwareController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR',
+            CURLOPT_URL => self::URL_NOTAMWEB,
+            CURLOPT_PROXY => $this->proxy,
+            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
+            CURLOPT_RETURNTRANSFER => 1,          
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
+        session_write_close();
 
         $output = curl_exec($curl);
-
         $res = ($output === false) ? 0 : 1;
 
         curl_close($curl);
@@ -131,7 +128,6 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function getnotamsAction() 
     {
-
         $code = $this->params()->fromQuery('code');
         $fields = [
             'AERO_CM_GPS' => '2',
@@ -164,8 +160,10 @@ class AfisController extends AbstractEntityManagerAwareController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
+            CURLOPT_URL => self::URL_NOTAMWEB,
+            CURLOPT_PROXY => $this->proxy,
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR',
+            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
             CURLOPT_POST => $fields,
             CURLOPT_POSTFIELDS => $fields_string,
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
@@ -194,11 +192,6 @@ class AfisController extends AbstractEntityManagerAwareController
             $content = "";
         }
         curl_close($curl);
-        // return (new ViewModel())
-        //     ->setTerminal($this->getRequest()->isXmlHttpRequest())
-        //     ->setVariables([
-
-        //     ]);
 
         return new JsonModel([
             'msg'      => $msg,
@@ -228,8 +221,6 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function formAction()
     {
-
-
         $id = intval($this->getRequest()->getPost()['id']);
         $afis = ($id) ? $this->repo->find($id) : new Afis();
         $this->form->bind($afis);
@@ -377,15 +368,6 @@ class AfisController extends AbstractEntityManagerAwareController
     {
         if (!$this->authAfis('read')) return new JsonModel();
 
-        // $post = [
-        //     'organisation' => 1,
-        //     'name' => "LAFL",
-        //     'id' => '',
-        //     'code' => 'LFFF',
-        //     'openedhours' => '15-22',
-        //     'contacts' => 'Sylvestre : 06060606',
-        //     'decommissionned' => 0
-        // ];
         $post = $this->getRequest()->getPost();
         $afis = $this->validateAfis($post);
 
@@ -457,13 +439,5 @@ class AfisController extends AbstractEntityManagerAwareController
             $ret = $hydrator->hydrate($this->form->getData(), $afis);
         }
         return $ret;
-    }
-
-   private function showErrors() {
-        $str = '';
-        foreach ($this->form->getMessages() as $field => $messages)
-        foreach ($messages as $typeErr => $message)
-        $str.= " | ".$field.' : ['.$typeErr.'] '.$message;
-        return $str;
     }
 }

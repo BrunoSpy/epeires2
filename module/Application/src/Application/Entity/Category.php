@@ -41,7 +41,8 @@ use Doctrine\Common\Collections\Collection;
  * "flightplan" = "FlightPlanCategory",
  * "alert" = "AlertCategory",
  * "intplan" = "InterrogationPlanCategory",
- * "field" = "FieldCategory"})
+ * "field" = "FieldCategory",
+ * "postit" = "PostItCategory"})
  *
  * Catégorie d'évènements.
  * Peut avoir une catégorie parente.

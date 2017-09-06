@@ -1,11 +1,8 @@
 <?php 
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/jquery.ui.timeline.js');
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
-// $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
-// $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan.css');
 ?>
 
@@ -28,8 +25,9 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 
 <div class="container-fluid">
     <div class="row col-sm-10 col-sm-offset-1">
+        <p></p>
         <div class="panel panel-default">
-            <?php if($cat == 0): ?>
+            <?php if(count($cats) == 0): ?>
             <p class="text-warning">Aucun catégorie Plan de vol n'existe, impossible de continuer.</p>
             <?php endif; ?>
             <div class="panel-heading">
@@ -87,7 +85,8 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         "<h3>Déclencher une alerte ?</h3>",
                         "", 
                         null, 
-                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p><textarea id = 't-causealt'></textarea>" ,
+                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p>
+                        <textarea class=\"form-control\" id = 't-causealt'></textarea>" ,
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
@@ -105,7 +104,7 @@ $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-if (<?php echo $cat; ?> == 0) {
+if (<?php echo count($cats); ?> == 0) {
     $("#create-link").hide();
 } else {
     $("#create-link")
@@ -113,13 +112,10 @@ if (<?php echo $cat; ?> == 0) {
         .clone(true)
         .show()
         .prependTo('.content')
-        .data('id', <?php echo $cat; ?>)
         .addClass('category');
 }
 
 $("#changeview").remove();
-
-$("#zoomform").remove();
 
 $('#search').remove();
 
@@ -134,9 +130,24 @@ $(".sortable").bind('aftertablesort', function(event, data){
 
 //sort the table by name
 $("table th:first").trigger('click');
-
+<?php
+if($this->cats) {
+    $catsString = "";
+    $i = 0;
+    foreach ($this->cats as $cat) {
+        if(strlen($catsString) > 0) {
+            $catsString .= "&";
+        }
+        $catsString .= 'cats[' . $i . ']=' . $cat;
+        $i++;
+    }
+    echo 'cats = "'.$catsString.'";';
+} else {
+    echo 'cats = null;';
+}
+?>
 //init form
-form('<?php echo $this->url('application');?>', <?php echo $this->tabid; ?>);
+form('<?php echo $this->url('application');?>', cats);
 
 flightplan('<?php echo $this->url('application'); ?>');
 

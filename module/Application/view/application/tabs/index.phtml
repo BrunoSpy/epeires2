@@ -2,8 +2,11 @@
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
+$this->headScript()->appendFile($this->basePath() . '/components/js-cookie/src/js.cookie.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/postit.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/fullcalendar.material.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/postit.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.css');
 
 ?>
@@ -51,6 +54,19 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 </div>
 </div>
 
+<div class="floating-notes">
+    <?php if($this->postitAllowed):?>
+    <button data-toggle="modal"
+            href="#add-postit-modal"
+            class="btn btn-sm btn-fab btn-default btn-mdi-raised" id="add-postit-btn"><span class="glyphicon glyphicon-tag"></span></button>
+    <?php endif; ?>
+    <ul id="notes">
+    
+    </ul>
+</div>
+
+<div id="alert-bottom"></div>
+
 <?php 
 //modal windows to modify or delete file
 echo $this->modalwindow("confirm-delete-file",
@@ -92,6 +108,29 @@ echo $this->modalwindow('add-note-modal',
             . "<input type=\"submit\" class=\"btn btn-sm btn-primary\" value=\"Ajouter la note\"></input>"
         . "</div>"
         . "</form>");
+
+echo $this->modalwindow('add-postit-modal',
+    "<h4>Ajout d'un postit</h4>",
+    "",
+    "<form id=\"add-postit\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addpostit'))?>\">"
+    . "<div class=\"modal-body\">"
+    . "<div class=\"form-group\">"
+    . "<label class=\"control-label col-sm-2\">Titre : </label>"
+    . "<div class=\"col-sm-10\">"
+    . "<input type='text' class=\"form-control\" name=\"name\" placeholder=\"Titre.\"></input>"
+    . "</div>"
+    . "</div>"
+    . "<div class=\"form-group\">"
+    . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+    . "<div class=\"col-sm-10\">"
+    . "<textarea class=\"form-control\" name=\"content\" placeholder=\"Contenu.\"></textarea>"
+    . "</div>"
+    . "</div>"
+    . "</div>"
+    . "<div class=\"modal-footer\">"
+    . "<input type=\"submit\" class=\"btn btn-sm btn-primary\" value=\"Enregistrer\"></input>"
+    . "</div>"
+    . "</form>");
 
 echo $this->partial('events/recurrence-form.html');
 
@@ -193,12 +232,14 @@ $('#timeline').timeline({
     }
 });
 //init form
-form('<?php echo $this->url('application');?>', '<?php echo $this->tabid; ?>');
+form('<?php echo $this->url('application');?>', cats);
 
 fileupload('<?php echo $this->url('application')?>');
 
 //search
 search('<?php echo $this->url('application', array('controller'=>'events'));?>');
+
+postit('<?php echo $this->url('application');?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

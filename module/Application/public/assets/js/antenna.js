@@ -81,13 +81,15 @@ var antenna = function(url, frequencyTestMenu){
                     '<div class="col-sm-9">'+select[0].outerHTML+'</div>'+
                     '</div></form>')
                 $("#confirm-end-event .modal-body").html("<p>Voulez-vous vraiment créer un nouvel évènement antenne ?</p>"+
-                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>").append(form);
+                    "<p>L'heure actuelle sera utilisée comme heure de début.</p>" +
+                    "<p><strong>Astuce</strong> : laissez vide pour sélectionner toutes les fréquences ou utilisez CTRL pour sélectionner plusieurs fréquences.</p>").append(form);
             });
 
         } else {
             $("#confirm-end-event .modal-body").html( "<p>Voulez-vous vraiment terminer l'évènement antenne en cours ?</p>"+
                 "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
         }
+        clearTimeout(timer);
         $("#confirm-end-event").modal('show');
     });
 
@@ -96,6 +98,8 @@ var antenna = function(url, frequencyTestMenu){
             var button = $('#switch_'+$("#cancel-antenna").data('antenna'));
             button.prop('checked', !button.is(':checked') );
         }
+        clearTimeout(timer);
+        timer = setTimeout(doFullUpdate, 30000);
     });
 
     $("#end-antenna-href").on('click', function(event){
@@ -263,21 +267,24 @@ var antenna = function(url, frequencyTestMenu){
 
             var mainantennacolor = sector.find('.antennas .mainantenna-color');
             var backupantennacolor = sector.find('.antennas .backupantenna-color');
-            if(mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length){
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
-            }
-            if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\""+$(this).data('freq')+"\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
-            }
-            if(frequencyTestMenu
-                && mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length
-                && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
-                list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cause=\"Test couverture secours\" data-cov=\"1\" data-freqid=\""+$(this).data('freq')+"\">" + "Test couverture secours" + "</a></li>");
-            }
-            //retour à la fréquence nominale
-            if(sector.find(".sector-name span").length > 0){
-                list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\""+sector.data('freq')+
-                    "\" data-tofreq=\""+sector.data('freq')+"\">Retour à la fréquence nominale</a></li>");
+            if(sector.find(".antennas li").length > 1) {
+                //menus inutiles si une seule couv
+                if (mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\"" + $(this).data('freq') + "\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
+                }
+                if (backupantennacolor.filter('.background-selected').find('li').length === backupantennacolor.find('li').length && mainantennacolor.filter('.background-status-ok').find('li').length === mainantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"0\" data-freqid=\"" + $(this).data('freq') + "\">" + i18n.t('frequencies.change_couv_normale') + "</a></li>");
+                }
+                if (frequencyTestMenu
+                    && mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length
+                    && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
+                    list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cause=\"Test couverture secours\" data-cov=\"1\" data-freqid=\"" + $(this).data('freq') + "\">" + "Test couverture secours" + "</a></li>");
+                }
+                //retour à la fréquence nominale
+                if (sector.find(".sector-name span").length > 0) {
+                    list.append("<li><a href=\"#\" class=\"action-changefreq\" data-fromfreq=\"" + sector.data('freq') +
+                        "\" data-tofreq=\"" + sector.data('freq') + "\">Retour à la fréquence nominale</a></li>");
+                }
             }
             var submenu = $("<li class=\"submenu\"></li>");
             submenu.append("<a id=\"changefreq\" data-groupid=\""+groupid+"\" data-freqid=\""+sector.data('freq')+"\" href=\#\>Changer de fréquence &nbsp;</a>");
@@ -412,9 +419,9 @@ var antenna = function(url, frequencyTestMenu){
             var antennatd = $("#antenna-"+key+" td:first");
             var antenna = $('.antenna-color.antenna-'+key);
             if(!value.status) {
+                //affichage du panneau contextuel
+                antennatd.find('a').show();
                 if(value.full_fault) {
-                    //affichage de la fiche réflexe
-                    antennatd.find('a').show();
                     //bouton rouge
                     antennabutton.removeClass('togglebutton-orange').addClass('togglebutton-red');
                     //antennes des fréquences en rouge
@@ -422,8 +429,6 @@ var antenna = function(url, frequencyTestMenu){
                         .removeClass('background-status-planned')
                         .addClass('background-status-fail');
                 } else {
-                    //pas de fiche réflexe sur panne partielle
-                    antennatd.find('a').hide();
                     //bouton jaune
                     antennabutton.addClass('togglebutton-orange').removeClass('togglebutton-red');
                     //antennes des fréquences impactées en rouge
@@ -444,12 +449,12 @@ var antenna = function(url, frequencyTestMenu){
                         .addClass('background-status-ok');
                 antennatd.find('a').hide();
                 if (value.planned) {
+                    antennatd.find('a').show();
+                    antennabutton.addClass('togglebutton-blue');
                     if(value.full_fault) {
-                        antennatd.find('a').show();
                         antenna.removeClass('background-status-ok')
                             .addClass('background-status-planned');
                     } else {
-                        antennatd.find('a').hide();
                         antenna.each(function(i){
                             var freqid = $(this).closest('.sector').find('.actions-freq').data('freq')+"";
                             if($.inArray(freqid,value.frequencies) !== -1 ){
@@ -459,7 +464,7 @@ var antenna = function(url, frequencyTestMenu){
                         });
                     }
                 } else {
-                    //nothing more to do
+                    antennabutton.removeClass('togglebutton-blue');
                 }
             }
         });
@@ -504,7 +509,7 @@ var antenna = function(url, frequencyTestMenu){
                 var name = sector.find('.sector-name').html();
                 sector.find('.sector-name').html(name+'<span> <span class="glyphicon glyphicon-forward"></span> '+value.otherfreqname);
             } else {
-                sector.find('.actions-freq').html(value.name).removeClass('em');
+                sector.find('.actions-freq').html(value.name).removeClass('em').data('freq', key);
                 sector.find('.sector-name span').remove();
             }
             //mise à jour des antennes (uniquement si passage en autre freq ou retour en freq normale

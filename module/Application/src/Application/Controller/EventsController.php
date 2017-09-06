@@ -19,13 +19,16 @@ namespace Application\Controller;
 
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
+use Application\Entity\Category;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\PostItCategory;
 use Application\Entity\Recurrence;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\PredefinedEvent;
 
+use Application\Entity\Status;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -47,10 +50,9 @@ use ZfcRbac\Exception\UnauthorizedException;
  *
  * @author Bruno Spyckerelle
  */
-class EventsController extends TabController
+class EventsController extends TabsController
 {
 
-    private $entityManager;
     private $eventservice;
     private $customfieldservice;
     private $zfcRbacOptions;
@@ -61,19 +63,10 @@ class EventsController extends TabController
                                 $zfcrbacOptions,
                                 $config)
     {
-        parent::__construct($config);
-        $this->entityManager = $entityManager;
+        parent::__construct($entityManager, $config);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
-    }
-
-    /**
-     * @return EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
     }
     
     public function indexAction()
@@ -91,25 +84,57 @@ class EventsController extends TabController
         }
     
         $this->flashMessenger()->clearMessages();
-      
-        $tab = $this->entityManager->getRepository('Application\Entity\Tab')->findOneBy(array("isDefault" => true));
-        if ($tab) {
-            $categories = $tab->getCategories();
-            $cats = array();
-            foreach ($categories as $cat) {
-                $cats[] = $cat->getId();
+
+        $userauth = $this->zfcUserAuthentication();
+        $onlyroot = false;
+        $cats = array();
+
+        //fusion des tabs principaux pour les rôles de l'utilisateur
+        if ($userauth != null && $userauth->hasIdentity()) {
+            $roles = $userauth->getIdentity()->getRoles();
+            foreach ($roles as $r) {
+                $tabs = $r->getReadtabs();
+                foreach ($tabs as $t) {
+                    if($t->isDefault()) {
+                        foreach ($t->getCategories() as $c) {
+                            if(!in_array($c->getId(), $cats)) {
+                                $cats[] = $c->getId();
+                            }
+                        }
+                        $onlyroot += $t->isOnlyroot();
+                        break;
+                    }
+                }
             }
-            $this->viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
-            $this->viewmodel->setVariable('cats', $cats);
-            $this->viewmodel->setVariable('tabid', $tab->getId());
-            $this->viewmodel->setVariable('default', true);
         } else {
-            $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
+            if ($userauth != null) {
+                $roleentity = $this->getEntityManager()
+                    ->getRepository('Core\Entity\Role')
+                    ->findOneBy(array(
+                        'name' => 'guest'
+                    ));
+                if ($roleentity) {
+                    foreach ($roleentity->getReadtabs() as $t) {
+                        if($t->isDefault()) {
+                            foreach ($t->getCategories() as $c) {
+                                if (!in_array($c->getId(), $cats)) {
+                                    $cats[] = $c->getId();
+                                }
+                            }
+                            $onlyroot = $t->isDefault();
+                        }
+                    }
+                }
+            }
         }
+
+
+        $this->viewmodel->setVariable('onlyroot', $onlyroot);
+        $this->viewmodel->setVariable('cats', $cats);
+        $this->viewmodel->setVariable('default', true);
+
     
-        $this->viewmodel->setVariables(array(
-            'messages' => $return
-        ));
+        $this->viewmodel->setVariable('messages', $return);
     
         return $this->viewmodel;
     }
@@ -1028,8 +1053,8 @@ class EventsController extends TabController
     public function subformAction()
     {
         $part = $this->params()->fromQuery('part', null);
-        $tabid = $this->params()->fromQuery('tabid', null);
-        
+        //$tabid = $this->params()->fromQuery('tabid', null);
+        $cats = $this->params()->fromQuery('cats', null);
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
         
@@ -1038,7 +1063,7 @@ class EventsController extends TabController
         
         $em = $this->getEntityManager();
         
-        $form = $this->getSkeletonForm($tabid);
+        $form = $this->getSkeletonForm($cats);
         
         if ($part) {
             switch ($part) {
@@ -1046,22 +1071,15 @@ class EventsController extends TabController
                     $id = $this->params()->fromQuery('id');
                     $subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
                         ->getChilds($id));
-                    if ($tabid !== null) {
-                        $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
-                        if ($tab) {
-                            $tabcats = $tab->getCategories();
-                            $tabcatsid = $tabcats->map(function ($a) {
-                                return $a->getId();
-                            })
-                                ->toArray();
-                            $tempsubcat = array();
-                            foreach ($subcat as $cat) {
-                                if (in_array($cat->getId(), $tabcatsid)) {
-                                    $tempsubcat[] = $cat;
-                                }
+                    if ($cats !== null) {
+                        //restrict subcats to those present in cats list
+                        $tempsubcat = array();
+                        foreach ($subcat as $cat) {
+                            if (in_array($cat->getId(), $cats)) {
+                                $tempsubcat[] = $cat;
                             }
-                            $subcat = $tempsubcat;
                         }
+                        $subcat = $tempsubcat;
                     }
                     $subcatarray = array();
                     foreach ($subcat as $cat) {
@@ -1139,9 +1157,11 @@ class EventsController extends TabController
         
         // création du formulaire : identique en cas de modif ou création
         
-        $tabid = $this->params()->fromQuery('tabid', null);
+        //$tabid = $this->params()->fromQuery('tabid', null);
         
-        $form = $this->getSkeletonForm($tabid);
+        $cats = $this->params()->fromQuery('cats', null);
+        
+        $form = $this->getSkeletonForm($cats);
         
         $id = $this->params()->fromQuery('id', null);
         
@@ -1295,7 +1315,7 @@ class EventsController extends TabController
         return $viewmodel;
     }
 
-    private function getSkeletonForm($tabid, $event = null)
+    private function getSkeletonForm($cats, $event = null)
     {
         $em = $this->getEntityManager();
         
@@ -1323,7 +1343,15 @@ class EventsController extends TabController
         
         // add default fieldsets
         $rootCategories = array();
-        
+        $tempRootCategories = array();
+        foreach($cats as $catid){
+            $cat = $em->getRepository(Category::class)->find($catid);
+            if($cat && $cat->getParent() === null) {
+                $tempRootCategories[] = $cat;
+            }
+        }
+        $rootCategories = $this->filterReadableCategories($tempRootCategories);
+        /*
         $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);
         if ($tab) {
             $cats = $tab->getCategories()->filter(function ($a) {
@@ -1331,7 +1359,7 @@ class EventsController extends TabController
             });
             $rootCategories = $this->filterReadableCategories($cats);
         }
-        
+        */
         $rootarray = array();
         foreach ($rootCategories as $cat) {
             $rootarray[$cat->getId()] = $cat->getName();
@@ -1625,7 +1653,7 @@ class EventsController extends TabController
         $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
         $json['radio'] = count($em->getRepository('Application\Entity\Event')->getRadioEvents());
         $json['afis'] = count($em->getRepository('Application\Entity\Event')->getAfisEvents());
-        $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents());
+        $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents(null,null,[1,2]));
         $json['sarbeacons'] = count($em->getRepository('Application\Entity\Event')->getCurrentIntPlanEvents());
 
         return new JsonModel($json);
@@ -2383,7 +2411,7 @@ class EventsController extends TabController
                 }
                 $child->setStatus($event->getStatus());
             } else 
-                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
+                if ($child->getCategory() instanceof AlarmCategory) {
                     // si evt annulé uniquement : on annule toutes les alarmes
                     if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
                         $child->setStatus($event->getStatus());
@@ -2544,5 +2572,215 @@ class EventsController extends TabController
             $json = $shifthours;
         }
         return new JsonModel($json);
+    }
+    
+    /*
+     * Post-it en cours non acquittés.
+     * Seuls les postits de l'utilisateur sont envoyés.
+     * Si lastupdate contient une date valide, envoit les postits modifiés depuis lastupdate, y compris ceux acquittés
+     * Dans tous les cas : nécessite d'être identifié.
+     */
+    public function getpostitsAction()
+    {
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'HH:mm'
+        );
+        $postits = array();
+        if ($this->zfcUserAuthentication()->hasIdentity()) {
+            
+            $user = $this->zfcUserAuthentication()
+                ->getIdentity()
+                ->getId();
+            
+            $lastupdate = $this->params()->fromQuery('lastupdate', null);
+            
+            $userroles = array();
+            foreach ($this->zfcUserAuthentication()
+                         ->getIdentity()
+                         ->getRoles() as $role) {
+                $userroles[] = $role->getId();
+            }
+            $qbEvents = $this->getEntityManager()->createQueryBuilder();
+            $qbEvents->select(array(
+                'e',
+                'cat',
+                'roles'
+            ))
+                ->from('Application\Entity\Event', 'e')
+                ->innerJoin('e.category', 'cat')
+                ->innerJoin('cat.readroles', 'roles')
+                ->andWhere($qbEvents->expr()
+                    ->eq('e.author', $user))
+                ->andWhere('cat INSTANCE OF Application\Entity\PostItCategory')
+                ->andWhere($qbEvents->expr()
+                    ->in('e.status', '?2'))
+                ->andWhere($qbEvents->expr()
+                    ->in('roles.id', '?3'))
+                ->andWhere($qbEvents->expr()
+                    ->lte('e.startdate', '?1'));
+            
+            $now = new \DateTime('NOW');
+            $now->setTimezone(new \DateTimeZone("UTC"));
+    
+            $qbEvents
+                ->setParameters(array(
+                    1 => $now->format('Y-m-d H:i:s'),
+                    3 => $userroles
+                ));
+            
+            if ($lastupdate && $lastupdate != 'undefined') {
+                $from = new \DateTime($lastupdate);
+                $from->setTimezone(new \DateTimeZone("UTC"));
+                // uniquement les postits créés et modifiées à partir de lastupdate
+                $qbEvents->andWhere($qbEvents->expr()
+                    ->gte('e.last_modified_on', '?4'))
+                    ->setParameter(4, $from->format('Y-m-d H:i:s'))
+                    ->setParameter(2, array( 1, 2, 3, 4, 5));
+            } else {
+                //lors de l'initialisation, on ne prend que les postits ouverts
+                $qbEvents->setParameter(2, array(1,2));
+            }
+            $result = $qbEvents->getQuery()->getResult();
+            foreach ($result as $p) {
+                $postit = $this->entityManager->getRepository('Application\Entity\Event')->find($p->getId());
+                $namefield = $postit->getCustomFieldValue($postit->getCategory()->getNamefield());
+                if($namefield) {
+                    $name =  $namefield->getValue();
+                } else {
+                    $name = "Pas de titre";
+                }
+                $contentfield = $postit->getCustomFieldValue($postit->getCategory()->getTextfield());
+                if($contentfield){
+                    $content = $contentfield->getValue();
+                } else {
+                    $content = "";
+                }
+                
+                $postitjson = array();
+                $postitjson['id'] = $postit->getId();
+                $postitjson['datetime'] = $postit->getStartdate()->format(DATE_RFC2822);
+                if($postit->getStatus()->getId() == 2) {
+                    $postitjson['open'] = 1;
+                } else {
+                    $postitjson['open'] = 0;
+                }
+                $postitjson['name'] = $name;
+                $postitjson['content'] = $content;
+                $postits[] = $postitjson;
+            }
+        }
+        if (empty($postits)) {
+            $this->getResponse()->setStatusCode(304);
+            return new JsonModel();
+        }
+        $this->getResponse()
+            ->getHeaders()
+            ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
+        
+        return new JsonModel($postits);
+    }
+    
+    public function addpostitAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $em = $this->getEntityManager();
+        $messages = array();
+        if ($this->isGranted('events.create') && $this->zfcUserAuthentication()->hasIdentity()) {
+            if ($this->getRequest()->isPost()) {
+        
+                $post = $this->getRequest()->getPost();
+                if ($id) {
+                    //update
+                    $postit = $em->getRepository(Event::class)->find($id);
+                    if($postit) {
+                        $name = $postit->getCustomFieldValue($postit->getCategory()->getNamefield());
+                        $name->setValue($post['name']);
+                        $text = $postit->getCustomFieldValue($postit->getCategory()->getTextfield());
+                        $text->setValue($post['content']);
+                        $postit->setLastModifiedOn();
+                        $em->persist($name);
+                        $em->persist($text);
+                        $em->persist($postit);
+                        try{
+                            $em->flush();
+                            $messages['success'][] = 'Post-It correctement mis à jour.';
+                        } catch(\Exception $e){
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    }
+                } else {
+                    //new postit
+                    $cat = $em->getRepository(PostItCategory::class)->findAll();
+                    if (count($cat) !== 1) {
+                        $messages['error'][] = "Impossible d'ajouter la note. Contactez votre administrateur : la catégorie système est mal configurée.";
+                    } else {
+                        $postitCategory = $cat[0];
+                        $postit = new Event();
+                        $now = new \DateTime();
+                        $now->setTimezone(new \DateTimeZone("UTC"));
+                        $postit->setStartdate($now);
+                        $postit->setCategory($postitCategory);
+                        $postit->setPunctual(false);
+                        $postit->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                        
+                        $confirmedStatus = $em->getRepository(Status::class)->find('2');
+                        $postit->setStatus($confirmedStatus);
+                        $postit->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                        $name = new CustomFieldValue();
+                        $name->setCustomField($postitCategory->getNamefield());
+                        $name->setValue($post['name']);
+                        $name->setEvent($postit);
+                        $content = new CustomFieldValue();
+                        $content->setEvent($postit);
+                        $content->setValue($post['content']);
+                        $content->setCustomField($postitCategory->getTextfield());
+                        $em->persist($name);
+                        $em->persist($content);
+                        $em->persist($postit);
+                
+                        try {
+                            $em->flush();
+                            $messages['success'][] = "Post-It correctement enregistré";
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    }
+            
+                }
+        
+            } else {
+                $messages['error'][] = "Impossible d'ajouter le post-it.";
+            }
+        } else {
+            $messages['error'][] = "Impossible de créer le post-it : droits insuffisants.";
+        }
+        return new JsonModel($messages);
+    }
+    
+    public function deletepostitAction(){
+        $id = $this->params()->fromQuery('id', null);
+        $em = $this->getEntityManager();
+        $messages = array();
+        if($id) {
+            $p = $em->getRepository(Event::class)->find($id);
+            $closeStatus = $em->getRepository(Status::class)->find('3');
+            if($p) {
+                $now = new \DateTime();
+                $now->setTimezone(new \DateTimeZone('UTC'));
+                $p->close($closeStatus, $now);
+                $em->persist($p);
+                try{
+                    $em->flush();
+                    $messages['success'][] = "Post-It correctement supprimé";
+                } catch(\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
     }
 }

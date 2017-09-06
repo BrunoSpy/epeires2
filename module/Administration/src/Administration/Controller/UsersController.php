@@ -38,10 +38,12 @@ class UsersController extends FormController
 {
 
     private $entityManager;
+    private $zfcUserModuleOptions;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, $userModuleOptions)
     {
         $this->entityManager = $entityManager;
+        $this->zfcUserModuleOptions = $userModuleOptions;
     }
 
     public function getEntityManager()
@@ -93,8 +95,7 @@ class UsersController extends FormController
             if ($form->isValid()) {
                 if (isset($post['password'])) {
                     $bcrypt = new Bcrypt();
-                    $bcrypt->setCost($this->getServiceLocator()
-                        ->get('zfcuser_module_options')
+                    $bcrypt->setCost($this->zfcUserModuleOptions
                         ->getPasswordCost());
                     $user->setPassword($bcrypt->create($user->getPassword()));
                 }

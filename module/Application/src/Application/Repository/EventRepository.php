@@ -405,6 +405,9 @@ class EventRepository extends ExtendedRepository
     {
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
+        //on ajoute qq secondes pour éviter les effets de bords
+        //notamment les requêtes qui suivent immédiatementla cloture d'un évènement
+        $now->add(new \DateInterval('PT10S'));
         $qbEvents = $this->getEntityManager()->createQueryBuilder();
         $qbEvents->select(array(
             'e',
@@ -446,7 +449,7 @@ class EventRepository extends ExtendedRepository
         $qbEvents = $this->getQueryEvents();
         $qbEvents->andWhere($qbEvents->expr()
             ->orX('cat INSTANCE OF Application\Entity\FrequencyCategory', 'cat INSTANCE OF Application\Entity\AntennaCategory', 'cat INSTANCE OF Application\Entity\BrouillageCategory'));
-        
+        $qbEvents->andWhere($qbEvents->expr()->eq('cat.archived', 'false'));
         $query = $qbEvents->getQuery();
         
         return $query->getResult();
@@ -456,6 +459,7 @@ class EventRepository extends ExtendedRepository
     {
         $qbEvents = $this->getQueryEvents();
         $qbEvents->andWhere('cat INSTANCE OF Application\Entity\RadarCategory');
+        $qbEvents->andWhere($qbEvents->expr()->eq('cat.archived', 'false'));
         
         $query = $qbEvents->getQuery();
         
@@ -479,7 +483,7 @@ class EventRepository extends ExtendedRepository
      * @param DateTime $end
      * @return array
      */
-    public function getFlightPlanEvents($start=null, $end=null)
+    public function getFlightPlanEvents($start=null, $end=null, $status=[1,2,3])
     {
 
         if ($start == null && $end == null) {
@@ -505,7 +509,7 @@ class EventRepository extends ExtendedRepository
             ->setParameters([
                 1 => $start,
                 2 => $end,
-                3 => [1, 2, 3]
+                3 => $status
             ]);
         
         return $qbEvents->getQuery()->getResult();
@@ -552,7 +556,7 @@ class EventRepository extends ExtendedRepository
     }
 
     /**
-     * Tous les évènements en cours et à venir dans moins d'une heure pour un onglet
+     * Tous les évènements en cours pour un onglet
      * 
      * @param Tab $tab
      * @return array
@@ -562,7 +566,9 @@ class EventRepository extends ExtendedRepository
         $qbEvents = $this->getQueryEvents();
         $catsid = array();
         foreach ($tab->getCategories() as $cat) {
-            $catsid[] = $cat->getId();
+            if(!$cat->isArchived()){
+                $catsid[] = $cat->getId();
+            }
         }
         $qbEvents->andWhere($qbEvents->expr()
             ->in('cat.id', '?4'))

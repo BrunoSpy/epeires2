@@ -56,4 +56,38 @@ class EAUPChain
         }
         return $sequenceNumber;
     }
+    
+    /**
+     * Return the sequence number corresponding to the last UUP which validity->wef is 0600
+     * @return int
+     */
+    public function getAUPSequenceNumber()
+    {
+        $sequenceNumber = -1;
+        $validity = new \DateTime($this->xml
+            ->children('http://schemas.xmlsoap.org/soap/envelope/')
+            ->Body
+            ->children('eurocontrol/cfmu/b2b/AirspaceServices')
+            ->EAUPChainRetrievalReply
+            ->children('')
+            ->data
+            ->chain
+            ->chainDate . ' 06:00:00');
+        foreach ($this->xml
+                     ->children('http://schemas.xmlsoap.org/soap/envelope/')
+                     ->Body
+                     ->children('eurocontrol/cfmu/b2b/AirspaceServices')
+                     ->EAUPChainRetrievalReply
+                     ->children('')
+                     ->data
+                     ->chain
+                     ->eaups as $eaup) {
+            $wef = new \DateTime($eaup->validityPeriod->wef);
+            $seq = intval($eaup->eaupId->sequenceNumber);
+            if($wef == $validity && $sequenceNumber < $seq) {
+                $sequenceNumber = $seq;
+            }
+        }
+        return $sequenceNumber;
+    }
 }

@@ -81,6 +81,10 @@
          */
         currentDay: new Date(),
         /**
+         * If day = today, center the view on current hour or not.
+         */
+        center24 : false,
+        /**
          * Beginning of the timeline
          */
         timelineBegin: new Date(),
@@ -311,11 +315,21 @@
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
                 self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                } else {
+                    $("#alert-bottom").hide();
+                }
             });
 
             $(window).scroll(function(){
                 $('.Base').css('top', $(window).scrollTop());
                 $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                } else {
+                    $("#alert-bottom").hide();
+                }
                 //$("#timeline-background").css('top', $(window).scrollTop());
             });
 /*
@@ -755,7 +769,9 @@
                 this.dayview = true;
                 if (day === undefined) {
                     this.currentDay = new Date(); //now
+                    this.center24 = true;
                 } else {
+                    this.center24 = false;
                     var tempday = new Date(day);
                     if (this._isValidDate(tempday)) {
                         this.currentDay = tempday;
@@ -770,7 +786,12 @@
                 this.dayview = false;
                 this.element.find("#timeline-background").removeClass('anotherday');
                 $.when(self._refreshCategories()).then(function(){
-                    self.forceUpdateView(true);
+                    if(!self._isToday(self.currentDay)) {
+                        //we need to fetch today's events
+                        self._updateEvents(true);
+                    } else {
+                        self.forceUpdateView(true);
+                    }
                 });
             }
         },
@@ -782,8 +803,14 @@
         day: function (date) {
             var self = this;
             if (this.dayview) {
+                this.center24 = false;
+                var refresh = true;
                 var tempday = new Date(date);
                 if (this._isValidDate(tempday)) {
+                    if(self._isValidDate(self.currentDay) && self._isSameDay(self.currentDay, tempday)) {
+                        //pas de changement de jour -> inutile de recharger les évènements
+                        refresh = false;
+                    }
                     this.currentDay = tempday;
                 } else {
                     this.currentDay = new Date();
@@ -802,21 +829,26 @@
                 } else {
                     url += '?day=' + self.currentDay.toUTCString();
                 }
-                $.when(self._refreshCategories())
-                .then(function(){//we need updated categories before getting events
-                    $.when($.getJSON(url,
-                        function (data, textStatus, jqHXR) {
-                            if (jqHXR.status !== 304) {
-                                self.pauseUpdateView();
-                                self.addEvents(data);
-                            }
-                        }))
-                    .then(function(){
-                        self.forceUpdateView(true);
-                        self._restoreUpdate();
-                        self.element.find('.loading').hide();
-                    })
-                });
+                if(refresh) {
+                    $.when(self._refreshCategories())
+                        .then(function () {//we need updated categories before getting events
+                            $.when($.getJSON(url,
+                                function (data, textStatus, jqHXR) {
+                                    if (jqHXR.status !== 304) {
+                                        self.pauseUpdateView();
+                                        self.addEvents(data);
+                                    }
+                                }))
+                                .then(function () {
+                                    self.forceUpdateView(true);
+                                    self._restoreUpdate();
+                                    self.element.find('.loading').hide();
+                                })
+                        });
+                } else {
+                    this.element.find(".loading").hide();
+                    self.forceUpdateView(true);
+                }
             }
             //else : do nothing
         },
@@ -955,7 +987,7 @@
             //update local var
             if (this.dayview) {
                 this.timelineDuration = 24;
-                if(this._isToday(this.currentDay)) {
+                if(this._isToday(this.currentDay) && this.center24) {
                     //if today -> center the timeline around actual hour
                     var now = new Date();
                     this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 11, 0, 0);
@@ -1014,6 +1046,13 @@
             } else {
                 self._hideCategories();
             }
+            //finally find if elements are out of view
+            $("#alert-bottom").hide();
+            $(".elmt, .category").filter(":animated").promise().done(function() {
+                if(self._elementsOutOfView()) {
+                    $("#alert-bottom").show();
+                }
+            });
             //then update height of timeline
             //var height = $(window).height() - this.options.topOffset;
             //maxY = (maxY > height ? maxY : height);
@@ -1748,7 +1787,7 @@
             //////
 
             //mise à jour des attributs en fonction du statut
-            this._updateStatus(event, elmt);
+            this._updateStatus(event, elmt, textColor);
 
             //création de l'évènement en plusieurs étapes :
             // 1* construction des éléments : libellé, heures de début et de fin, boutons
@@ -1852,16 +1891,18 @@
                 elmt_rect.css({'left': -larg + 'px',
                     'border-left-width': larg + 'px',
                     'border-right-width': larg + 'px',
-                    'border-bottom-width': haut + 'px',
-                    'border-bottom-color': couleur});
+                    'border-bottom-width': haut + 'px'});
                 elmt_compl.show();
                 elmt_compl.css({
                     'border-left-width': larg + 'px',
                     'border-right-width': larg + 'px',
                     'border-top-width': haut + 'px',
-                    'border-top-color': couleur,
                     'margin': haut * 3 / 8 + 'px 0 0 -' + larg + 'px',
                     'left' : '0px'});
+                if(event.status_id == 2 || event.status_id == 3) {
+                    elmt_rect.css({'border-bottom-color': couleur});
+                    elmt_compl.css({'border-top-color': couleur});
+                }
                 totalWidth += larg * 2;
                 x_end = x_deb;
 
@@ -1905,8 +1946,9 @@
                     event.outside = 1;
                 }
                 totalWidth += debWidth + txt_wid;
-                elmt_txt.css('color', 'black');
-                elmt_txt.find('a > span.glyphicon').css('color', 'black');
+                textColor = (event.status_id == 4 ? 'grey' : 'black');
+                elmt_txt.css('color', textColor);
+                elmt_txt.find('a > span.glyphicon').css('color', textColor);
 
                 /* 4: positionnement final de la boite englobante */
                 elmt.css({'left': 'calc('+x_deb+'% - '+offset+'px)',
@@ -1955,9 +1997,11 @@
                     elmt_compl.css({'left': 'auto',
                         'right' : - haut - 3 +'px',
                         'border-left-width': haut + 'px',
-                        'border-left-color' : couleur,
                         'border-top-width': haut / 2 + 1 + 'px',
                         'border-bottom-width': haut / 2 + 1 + 'px'});
+                    if(event.status_id == 2 || event.status_id == 3) {
+                        elmt_compl.css({'border-left-color' : couleur});
+                    }
                     elmt_compl.show();
                     //positionnement de l'élément pour être au bon endroit en cas d'utilisation de la poignée d'heure de fin
                     elmt_fin.css({'left': 'auto','right': -(4 + endWidth) + 'px'});
@@ -1969,8 +2013,10 @@
                     move_fin.css({'right': 12 + 'px'});
                 }
                 elmt_rect.css({'left': 0 + 'px',
-                    'height': this.options.eventHeight,
-                    'background-color': couleur});
+                    'height': this.options.eventHeight});
+                if(event.status_id == 2 || event.status_id == 3) {
+                    elmt_rect.css({'background-color': couleur});
+                }
 
                 //milestones
                 $.each(event.milestones, function(index, item){
@@ -2001,7 +2047,7 @@
                     event.outside = 0;
                     elmt_txt.css({'left': 22 + debWidth + 'px',
                         'top': (this.options.eventHeight/2-11)+'px'});
-                    elmt_txt.css('color', textColor);
+                    //elmt_txt.css('color', textColor);
                     elmt_txt.find('a > span.glyphicon').css('color', textColor);
                 } else {
                     elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
@@ -2009,8 +2055,9 @@
                     var place = (100 - x_end) * this.largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
-                    elmt_txt.css('color', 'black');
-                    elmt_txt.find('a > span.glyphicon').css('color', 'black');
+                    textColor = (event.status_id == 4 ? 'grey' : 'black');
+                    elmt_txt.css('color', textColor);
+                    elmt_txt.find('a > span.glyphicon').css('color', textColor);
                     if (endWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': 'calc(100% - '+txt_wid+'px)'});
                         totalWidth += txt_wid;
@@ -2128,7 +2175,7 @@
          * @param {type} elmt jquery elmt representing an event
          * @returns {undefined}
          */
-        _updateStatus: function (event, elmt) {
+        _updateStatus: function (event, elmt, textColor) {
             var elmt_txt = elmt.find('.label_elmt');
             var elmt_deb = elmt.find('.elmt_deb');
             var elmt_fin = elmt.find('.elmt_fin');
@@ -2146,6 +2193,9 @@
                 case 1: //nouveau
                     //label en italique
                     elmt_txt.css({'font-style': 'italic'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début cliquable
@@ -2202,6 +2252,9 @@
                 case 2: //confirmé
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début : non cliquable, sur demande avec case cochée
@@ -2239,6 +2292,9 @@
                 case 3: //terminé
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
+                    if(typeof(textColor) !== 'undefined'){
+                        elmt_txt.css({'color': textColor});
+                    }
                     elmt_txt.find('span').css({'text-decoration': ''});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande avec case cochée
@@ -2480,6 +2536,11 @@
                     date.getUTCMonth() == now.getUTCMonth() &&
                     date.getUTCDate() == now.getUTCDate());
         },
+        _isSameDay: function(date1, date2){
+            return (date1.getUTCFullYear() == date2.getUTCFullYear() &&
+                date1.getUTCMonth() == date2.getUTCMonth() &&
+                date1.getUTCDate() == date2.getUTCDate());
+        },
         _computeTextSizeDOM: function (str, font, fontWeight, fontSize) {
             var fakeEl = $('<span>').hide().appendTo(document.body);
             fakeEl.text(str).css({'font' : font,
@@ -2559,6 +2620,17 @@
         _shadeRGBColor:function (color, percent) {
             var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
             return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
+        },
+        _elementsOutOfView:function() {
+            var innerHeight = window.innerHeight;
+            var outOfView = false;
+            $('.elmt').each(function(index, element){
+                if(element.getBoundingClientRect().y + element.getBoundingClientRect().height > innerHeight) {
+                    outOfView = true;
+                    return false; //break loop
+                }
+            });
+            return outOfView;
         }
     });
 })(jQuery);
