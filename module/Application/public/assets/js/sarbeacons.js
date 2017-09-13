@@ -674,8 +674,10 @@
         // pas de pio de travail
         idIp = null;
         resetMap();
+        centerMap();
     });
 
+    setMapButtons();
 
     $aNow.click(function() 
     {
@@ -825,11 +827,6 @@
                     $('.btn-print-ip').click(function() {
                         $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             location.href = url + 'sarbeacons/print/' + clickedIdIp;
-                            // noty({
-                            //     text: data['msg'],
-                            //     type: data['type'],
-                            //     timeout: 4000,             
-                            // });
                         });
                     });
 
@@ -860,13 +857,10 @@
         }
     });
 
-    setMapButtons();
-
     function resetMap() {
         if (pioLay) orbit.removeLayer(pioLay);
         if (mkSelected) orbit.removeLayer(mkSelected);
         if (mkSAR) orbit.removeLayer(mkSAR);
-        centerMap();
     }
 
     function centerMap(latLon=DFLT_LAT_LNG, zoom=DFLT_ZOOM) {
@@ -881,6 +875,21 @@
         if (icon) marker.setIcon(icon);
         orbit.addLayer(marker);
         return marker;
+    }
+
+    function refreshCoord(coord) 
+    {
+        centerMap(coord, true);
+        mkSAR = updateMarker(mkSAR, coord, icSAR);
+        mkSAR.bindPopup('<h3>Point de l\'alerte</h3><h4>Latitude : ' + coord[0] + '</h5><h4>Longitude : '+coord[1]+'</h4>');
+        btnCenterSar._button.latLon = coord;
+        btnCenterSar.addTo(orbit);
+    }
+
+    function setCoord(coord) 
+    {
+        $iLat.val(coord[0].toFixed(4)).trigger('keyup');
+        $iLon.val(coord[1].toFixed(4)).trigger('keyup');
     }
 
     function setMapButtons() {
@@ -950,22 +959,6 @@
         }).addTo(orbit);
 
     }
-
-    function refreshCoord(coord) 
-    {
-        centerMap(coord, true);
-        mkSAR = updateMarker(mkSAR, coord, icSAR);
-        mkSAR.bindPopup('<h4>Latitude : ' + coord[0] + '</h5><h4>Longitude : '+coord[1]+'</h4>');
-        btnCenterSar._button.latLon = coord;
-        btnCenterSar.addTo(orbit);
-    }
-
-    function setCoord(coord) 
-    {
-        $iLat.val(coord[0].toFixed(4)).trigger('keyup');
-        $iLon.val(coord[1].toFixed(4)).trigger('keyup');
-    }
-
 
     function editBtnState($btn, etat) {
         if (etat)
