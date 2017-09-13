@@ -102,6 +102,19 @@ class AfisController extends AbstractEntityManagerAwareController
         return $allAfis;
     }
 
+    public function indexAction() 
+    {
+        $cats = [];
+        foreach ($this->em->getRepository(AfisCategory::class)->findAll() as $cat) {
+            $cats[] = $cat->getId();
+        }
+        
+        return (new ViewModel())
+            ->setVariables([
+                'cats' => $cats,
+            ]);
+    }
+
     public function testNotamAction() 
     {
         $curl = curl_init();

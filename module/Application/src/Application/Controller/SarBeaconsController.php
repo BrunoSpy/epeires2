@@ -24,15 +24,6 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use Doctrine\ORM\EntityManager;
 use DOMPDFModule\View\Model\PdfModel;
 
-use Core\Controller\AbstractEntityManagerAwareController;
-
-use Application\Entity\InterrogationPlan;
-use Application\Entity\Field;
-use Application\Entity\Organisation;
-use Application\Entity\Event;
-use Application\Entity\EventUpdate;
-use Application\Entity\CustomFieldValue;
-
 use Zend\Form\Element;
 use Zend\Form\Form;
 use Zend\Mail\Message;
@@ -41,6 +32,17 @@ use Zend\Mail\Transport\SmtpOptions;
 use Zend\Mime\Mime;
 use Zend\Mime\Part as MimePart;
 use Zend\Mime\Message as MimeMessage;
+
+use Core\Controller\AbstractEntityManagerAwareController;
+
+use Application\Entity\Organisation;
+use Application\Entity\Event;
+use Application\Entity\EventUpdate;
+use Application\Entity\CustomFieldValue;
+
+use Application\Entity\InterrogationPlanCategory;
+use Application\Entity\AlertCategory;
+use Application\Entity\FieldCategory;
 /**
  *
  * @author Loïc Perrin
@@ -67,6 +69,28 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             echo self::ACCES_REQUIRED;
             return new JsonModel();
         };
+
+        $cats = [];
+        foreach ($this->em->getRepository(InterrogationPlanCategory::class)->findAll() as $cat) {
+            $cats[] = $cat->getId();
+        }
+ 
+        $alertcats = [];
+        foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
+            $alertcats[] = $cat->getId();
+        }
+
+        $fieldscats = [];
+        foreach ($this->em->getRepository(FieldCategory::class)->findAll() as $cat) {
+            $fieldscats[] = $cat->getId();
+        }
+
+        return (new ViewModel())
+            ->setVariables([
+                'cats' => $cats,
+                'fieldcats' => $fieldscats,
+                'alertcats' => $alertcats
+            ]);
     }
 
     public function getnbcurrentipAction() 

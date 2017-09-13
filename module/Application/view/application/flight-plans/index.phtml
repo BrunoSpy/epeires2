@@ -24,12 +24,16 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 
 
 <div class="container-fluid">
+    <?php if(count($alertcats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Alerte' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
+    <?php if(count($cats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Plan de Vol' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
     <div class="row col-sm-10 col-sm-offset-1">
-        <p></p>
-        <div class="panel panel-default">
-            <?php if(count($cats) == 0): ?>
-            <p class="text-warning">Aucun catégorie Plan de vol n'existe, impossible de continuer.</p>
-            <?php endif; ?>
+        <div class="panel panel-default">       
             <div class="panel-heading">
                 <div>
                     <a href="#" id="a-date-back">
@@ -63,6 +67,9 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
             </div>
         </div>
     </div>
+
+     <?php endif; ?>
+     <?php endif; ?>
 </div>
 
 <?=$this->modalWindow(  "mdl-edit-fp", 

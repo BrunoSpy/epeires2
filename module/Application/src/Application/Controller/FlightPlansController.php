@@ -32,6 +32,7 @@ use Application\Services\CustomFieldService;
 use Application\Form\CustomFieldset;
 
 use Application\Entity\FlightPlanCategory;
+use Application\Entity\AlertCategory;
 use Application\Entity\Organisation;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
@@ -54,14 +55,20 @@ class FlightPlansController extends AbstractEntityManagerAwareController
     
     public function indexAction()
     {        
-        $cats = array();
+        $cats = [];
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
         }
         
+        $alertcats = [];
+        foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
+            $alertcats[] = $cat->getId();
+        }
+        
         return (new ViewModel())
             ->setVariables([
-                'cats' => $cats
+                'cats' => $cats,
+                'alertcats' => $alertcats
             ]);
     }
 

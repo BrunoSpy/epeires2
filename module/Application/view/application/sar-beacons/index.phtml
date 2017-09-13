@@ -6,23 +6,33 @@ $this->headScript()->appendFile($this->basePath() . '/components/leaflet/dist/le
 $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
 ?>
 <div class="row">
+
+    <?php if(count($alertcats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Alerte' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+       
+    <?php if(count($cats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Plan d'Interrogation' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
+    <?php if(count($fieldcats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Terrain' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
     <div class="col-sm-9 fill">
         <div id="mapid"></div>
     </div>
 
     <div id="tabs" class="col-sm-3">
         <ul class="nav nav-pills">
-            <!-- <li class="active"><a href="#tabs-1"><span class="glyphicon glyphicon-search"></span></a></li> -->
             <li class="active"><a href="#tabs-1">Déclencher</a></li>
-            <!-- <li><a href="#tabs-2"><span class="glyphicon glyphicon-screenshot"></span></a></li> -->
             <li><a href="#tabs-2">Terrains</a></li>
-            <!-- <li><a href="#tabs-3" id="a-now"><span class="glyphicon glyphicon-list"></span></a></li> -->
             <li><a href="#tabs-3" id="a-now">En cours<span class="badge badge-important">0</span></a></li>
-            <!-- <li><a href="#tabs-4" id="a-arch"><span class="glyphicon glyphicon-list"></span></a></li> -->
             <li><a href="#tabs-4" id="a-arch">Terminé<span class="badge badge-important">0</span></a></li>
         </ul>
 
         <div id="tabs-1">
+
             <h4>Coordonnées de l'alerte</h4>
             <div class="row">
                 <div class="col-sm-5 form-group has-error">
@@ -43,9 +53,6 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
                     <input id="inp-bal" type="text" class="form-control"  placeholder="ex : 'OKIPA'" />
                      <span class="raz-bal cache glyphicon glyphicon-remove-circle"></span>
                 </div>
-  <!--               <div class="col-sm-2">
-                    <button id="btn-rech-bal" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
-                </div> -->
             </div>
             <h4>Terrains</h4>
             <div class="row">
@@ -53,28 +60,14 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
                     <input id="inp-ter" type="text" class="form-control" placeholder="ex : 'LFH464'" />
                      <span class="raz-ter cache glyphicon glyphicon-remove-circle"></span>
                 </div>
-<!--                 <div class="col-sm-2">
-                    <button id="btn-rech-ter" type="button" class="btn btn-warning disabled"><span class="glyphicon glyphicon-alert"></span></button>
-                </div> -->
             </div>
-<!--             <div class="row">
-                <button id="btn-trig-alt" type="button" class="btn btn-primary disabled">Démarrer le plan d'interrogation</button>
-            </div> -->
         </div>
         <div id="tabs-2">
             <h4>Terrains à proximité</h4>
             <div id="f-ip" class="cache">
-                <!-- <h4></h4> -->
 
-<!--                 <button class="btn btn-action-ip" id="btn-edit-ip" title="Modifier" data-toggle="modal" data-action="edit" data-state="2" href="#mdl-edit-ip"><span class="glyphicon glyphicon-edit"></span></button>
-
-                <button class="btn btn-action-ip" id="btn-sav-ip" title="Sauvegarder" data-action="sav" data-state="1"><span class="glyphicon glyphicon-floppy-save"></span></button>
-
-                <button class="btn btn-action-ip" id="btn-mail-ip" title="Envoyer par e-mail" data-action="mail" data-state="1"><span class="glyphicon glyphicon-envelope"></span></button>
-
-                <button class="btn btn-action-ip" id="btn-print-ip" title="Imprimer" data-action="print" data-state="1"><span class="glyphicon glyphicon-print"></span></button> -->
             </div>
-<!--                     <h4>Résultats des recherches de terrains</h4> -->
+
             <div id="req-pio" class="carousel slide cache" data-ride="carousel">
                 <div class ="row">
                     <div class="col-sm-2">
@@ -110,6 +103,9 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/sarbeacons.js');
             </ul>
         </div>
     </div>
+    <?php endif; ?>
+    <?php endif; ?>
+    <?php endif; ?>
 </div>
 
 <?=$this->modalWindow(  "mdl-edit-ip", 
