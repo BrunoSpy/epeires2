@@ -104,17 +104,19 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 {
                     if($valuefield > 0) {
                         $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        $ev['alert'] = [
-                            'id' => $altEv->getId(),
-                            'start_date' => $altEv->getStartDate(),
-                            'end_date' => $altEv->getEndDate()
-                        ];
-                        foreach ($altEv->getCustomFieldsValues() as $altvalue) 
-                        {
-                            $altcustomfield = $altvalue->getCustomField();
-                            $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
-                            (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
-                        } 
+                        if($altEv instanceof Event) {
+                            $ev['alert'] = [
+                                'id' => $altEv->getId(),
+                                'start_date' => $altEv->getStartDate(),
+                                'end_date' => $altEv->getEndDate()
+                            ];
+                            foreach ($altEv->getCustomFieldsValues() as $altvalue) 
+                            {
+                                $altcustomfield = $altvalue->getCustomField();
+                                $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
+                                (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
+                            }
+                        }
                     }
                 }
             }
@@ -306,15 +308,15 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
                     $now = new \DateTime('NOW');
                     $now->setTimezone(new \DateTimeZone("UTC"));
-
-                    $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
                     // crétation de l'evenement d'alerte
                     $event = new Event();
                     $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
                     $event->setStartdate($now);
                     $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
                     $event->setPunctual(false);
-                    $event->setOrganisation($organisation);
+                    $event->setOrganisation($this->zfcUserAuthentication()
+                        ->getIdentity()
+                        ->getOrganisation());
                     $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
                     
                     $categories = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();

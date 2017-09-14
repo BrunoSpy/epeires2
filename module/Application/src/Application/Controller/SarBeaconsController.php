@@ -326,15 +326,15 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
-
-            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
             // crétation de l'evenement d'alerte
             $event = new Event();
             $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
             $event->setStartdate($now);
             $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
             $event->setPunctual(false);
-            $event->setOrganisation($organisation);
+            $event->setOrganisation($this->zfcUserAuthentication()
+                        ->getIdentity()
+                        ->getOrganisation());
             $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
 
             $categories = $this->em->getRepository('Application\Entity\InterrogationPlanCategory')->findAll();
@@ -375,7 +375,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                     $alertevent->setStartdate($now);
                     $alertevent->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
                     $alertevent->setPunctual(false);
-                    $alertevent->setOrganisation($organisation);
+                    $alertevent->setOrganisation($event->getOrganisation());
                     $alertevent->setAuthor($this->zfcUserAuthentication()->getIdentity());
                     $alertevent->setCategory($alertcat);
 
@@ -554,15 +554,16 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $idfield = 0;
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
-
-            $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
+            
             // crétation de l'evenement d'alerte
             $event = new Event();
             $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
             $event->setStartdate($now);
             $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
             $event->setPunctual(false);
-            $event->setOrganisation($organisation);
+            $event->setOrganisation($this->zfcUserAuthentication()
+                        ->getIdentity()
+                        ->getOrganisation());
             $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
             $event->setParent($ip);
 
