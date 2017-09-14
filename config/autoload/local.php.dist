@@ -63,8 +63,14 @@ return array(
     ),
 
     'btiv' => [
-        // used by curl to get notam
-        'proxynotam' => 'adresse' 
-
+        // proxy pour récupérer notam sur le site du SIA
+        'proxynotam' => 'http://proxy.???',
+        'ipemailfrom' => 'emetteur@aviation-civile.gouv.fr',
+        'ipemailto' => [
+            'receveur1@?.?',
+            'receveur2@?.?'
+            // etc.
+        ],
+        'ipemailtext' => "Veuillez trouver ci-joint un plan d'interrogation pour une alerte."
     ],
 );

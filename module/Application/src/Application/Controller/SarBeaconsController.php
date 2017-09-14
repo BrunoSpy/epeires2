@@ -207,56 +207,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         return new JsonModel([
             'ip' => $ip
-        ]); 
-
-        // $lat = null;
-        // $lon = null;
-        // $fields = null;
-
-        //     $cat = $ip->getCategory();  
-
-        //     foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
-        //     {
-        //         switch ($customfieldvalue->getCustomField()->getId()) 
-        //         {
-        //             case $cat->getLatField()->getId() :
-        //                 $lat = $customfieldvalue->getValue();
-        //                 break;
-        //             case $cat->getLongField()->getId() :
-        //                 $lon = $customfieldvalue->getValue();
-        //                 break;
-        //         }
-        //     }
-        //     $fields = [];
-        //     foreach ($ip->getChildren() as $fieldEvent)
-        //     {
-        //         $field = [
-        //             'idevent' => $fieldEvent->getId(),
-        //             'start_date' => $fieldEvent->getStartDate(),
-        //             'updates' => []
-        //         ];
-
-        //         foreach ($fieldEvent->getUpdates() as $update) {
-        //             $field['updates'][] = [
-        //                 'text' => $update->getText(),
-        //                 'created_on' => $update->getCreatedOn()
-        //             ];
-        //         }
-        //         $codefield = $fieldEvent->getCategory()->getCodeField()->getId();
-        //         foreach ($fieldEvent->getCustomFieldsValues() as $value) 
-        //         {
-        //             if ($value->getCustomField()->getId() == $codefield) $field['code'] = $value->getValue();
-        //         }
-        //         $fields[] = $field;
-        //     }
-
-        // }
-
-        // return new JsonModel([
-        //     'lat' => $lat,
-        //     'lon' => $lon,
-        //     'fields' => (count($fields) > 0) ? $fields : null
-        // ]);        
+        ]);       
     }
 
     public function startAction() 
@@ -554,7 +505,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $idfield = 0;
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
-            
+
             // crétation de l'evenement d'alerte
             $event = new Event();
             $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
@@ -829,7 +780,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     }
 
     public function mailAction() {
-        if (!array_key_exists('emailfrom', $this->config) | !array_key_exists('smtp', $this->config)) return new JsonModel(['error', 'Problème de configuration des adresses email.']);
+        // if (!array_key_exists('ipemailfrom', $this->config['btiv']) | !array_key_exists('ipemailto', $this->config['btiv'])) return new JsonModel(['error', 'Problème de configuration des adresses email.']);
 
         $post = $this->getRequest()->getPost();
         $id = (int) $post['id'];
@@ -838,7 +789,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $ip = $this->em->getRepository(Event::class)->find($id);
             $ipArray = $this->getArrayCopy($ip);
 
-            $text = new MimePart('Veuillez trouver ci-joint un plan d\'interrogation.');
+            $text = new MimePart($this->config['btiv']['ipemailtext']);
             $text->type = Mime::TYPE_TEXT;
             $text->charset = 'utf-8';
             
@@ -850,7 +801,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
             $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
             $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
-            
+            print_r($this->config['btiv']);
             $body = new MimeMessage();
             $body
                 ->setParts([
@@ -860,10 +811,13 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
             $message = (new Message())
                 ->setEncoding("UTF-8")
-                ->addFrom($this->config['emailfrom'])
-                ->addTo('loic.perrin@aviation-civile.gouv.fr')
+                ->addFrom($this->config['btiv']['ipemailfrom'])
                 ->setSubject('Plan d\'interrogation')
                 ->setBody($body);
+
+            foreach($this->config['btiv']['ipemailto'] as $receiver) {
+                $message->addTo($receiver);
+            }
 
             if($message->isValid()) 
             {
