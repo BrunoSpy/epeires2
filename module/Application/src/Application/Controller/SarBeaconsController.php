@@ -50,8 +50,8 @@ use Application\Entity\FieldCategory;
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
     const ERR_ACCES = "Droits d'accès insuffisants.";
-    const ERR_NO_CONF_BTIV = "Configuration btiv inexistante.";
-    const ERR_NO_CONF_MAIL = "Configuration envoi de mail inexistante.";
+    const ERR_NO_CONF_BTIV = "Configuration btiv inexistante. Vérifier dans local.php que le tableau ['btiv'] est bien défini.";
+    const ERR_NO_CONF_MAIL = "Des paramétres requis ne sont pas configurés pour l'envoi de courriels. Vérifier dans local.php que ipemailfrom/ipemailto/ipemailtext/ipemailsubject sont bien définis.";
     const ERR_NO_IP = "Impossible de trouver le plan d'interrogation.";
     const ERR_EMAIL_INVALID = "Le message à envoyer n'est pas formaté correctement.";
 
@@ -789,6 +789,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     /* Envoi du plan d'interrogation par mail. Configuration dans local.php, clé btiv.  */
     public function mailAction() 
     {
+        // vérification utilisateur autorisé
+        if (!$this->authSarBeacons('read')) return new JsonModel();
         /* Vérification de la config */
         // clé btiv n'existe pas dans ['config']
         if (!array_key_exists('btiv', $this->config)) {
