@@ -116,10 +116,12 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function getArrayCopy($ip) 
     {
+        $dirname =  $this->config['btiv']['ipdir'].'/';
+        $filename = $ip->getStartDate()->format('Ymd').'_Alerte_id'.$ip->getId().'.pdf';
         $ev = [
             'id' => $ip->getId(),
-            'pdffilepath' => 'data/interrogation-plans/'.$ip->getId(),
-            'pdffilename' => $ip->getId(),
+            'pdffilepath' => $dirname.$filename,
+            'pdffilename' => $filename,
             'start_date' => $ip->getStartDate(),
         ];
 
@@ -500,6 +502,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function addfieldAction() 
     {
+         // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
         $msgType = 'error';
 
@@ -623,22 +626,34 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     }
 
+    /* création du formulaire pour le démarrage d'un plan */
     public function formAction() 
     {
+         // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
-
+        // récupération de l'id du plan d'interrogation à envoyer 
         $post = $this->getRequest()->getPost();
         $id = (int) $post['id'];
-        if ($id > 0) {
+
+        // formulaire de modification => id > 0
+        if ($id > 0)
+        {
+            // interrogation de la bdd
             $ip = $this->em->getRepository(Event::class)->find($id);
-            if ($ip) 
+            // test si le plan existe bien
+            if(!is_a($ip, Event::class)) {
+                return new JsonModel(['error', self::ERR_NO_IP]);
+            } 
+            else 
             {
+                // récupération des valeurs des customfield pour remplir le formulaire de modification
                 $formval = [];
                 foreach ($ip->getCustomFieldsValues() as $customfieldvalue) 
                 {
                     $formval[$customfieldvalue->getCustomField()->getName()] = $customfieldvalue->getValue();
                 } 
-                if ($formval['Alerte']) {
+                if ($formval['Alerte']) 
+                {
                     $alt = $this->em->getRepository(Event::class)->find($formval['Alerte']);
                     if ($alt) 
                     {
@@ -651,6 +666,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
                 }  
             }
         }
+        // création du formulaire
         $form = new Form('sarbeacons');
 
         $idfield = new Element\Hidden('id');
@@ -679,9 +695,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $typealerte = new Element\Select('typealerte');
         $typealerte->setLabel('Type d\'alerte');
         $typealerte->setValueOptions([
-            // 'INCERFA' => 'INCERFA',
-            'ALERFA' => 'ALERFA',
-            'DETRESFA' => 'DETRESFA', 
+            AlertCategory::TYPES_ALERT[1] => AlertCategory::TYPES_ALERT[1],
+            AlertCategory::TYPES_ALERT[2] => AlertCategory::TYPES_ALERT[2], 
         ]);
         (isset($formval['Alerte']['Type'])) ? $typealerte->setValue($formval['Alerte']['Type']):null;
         $form->add($typealerte);
@@ -699,39 +714,45 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ]);
     }
 
+    /* accès aux plans en cours */
     public function listAction() 
     {
+        // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
-
+        // récupération de tous les plans en cours
         $allIntPlans = $this->em->getRepository(Event::class)->getCurrentIntPlanEvents();
+        // on va stocker les versions tableau des plans dans un seul tableau     
         $intPlans = [];
-        foreach ($allIntPlans as $ip) {
-            $intPlans[] = $this->getArrayCopy($ip);
-        }
+        foreach ($allIntPlans as $ip) $intPlans[] = $this->getArrayCopy($ip);
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
+                 // les derniers plans crées doivent être affichés en haut
                 'intPlans' => array_reverse($intPlans)
             ]);
     }
 
+    /* accès aux plans archivés */
     public function archivesAction() 
     {
+        // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
-
+        // récupération de tous les plans terminés
         $allIntPlans = $this->em->getRepository(Event::class)->getEndedIntPlanEvents();
+        // on va stocker les versions tableau des plans dans un seul tableau
         $intPlans = [];
-        foreach ($allIntPlans as $ip) {
-            $intPlans[] = $this->getArrayCopy($ip);
-        }
+        foreach ($allIntPlans as $ip) $intPlans[] = $this->getArrayCopy($ip);
+
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setTemplate('application/sar-beacons/list')
             ->setVariables([
+                // les derniers plans crées doivent être affichés en haut
                 'intPlans' => array_reverse($intPlans)
             ]);
     }
 
+    /* génération du pdf */
     private function saveToPdf($ipArray) 
     {
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
@@ -741,6 +762,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
         $pdfView = (new ViewModel($pdf))
             ->setTerminal(true)
+            // vue particulière pour le pdf
             ->setTemplate('application/sar-beacons/print')
             ->setVariables([
                 'ip' => $ipArray
@@ -751,38 +773,57 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $engine->load_html($html);
         $engine->render();
 
-        $dir = 'data/interrogation-plans';
-        if(! is_dir($dir)) mkdir($dir);
+        $dir = $this->config['btiv']['ipdir'];
+        // vérification de l'existence du répertoire où les pdf sont sauvegardés. S'il n'existe pas, il est crée.
+        if(!is_dir($dir)) mkdir($dir);
+        // sauvegarde du fichier
         file_put_contents($ipArray['pdffilepath'], $engine->output());
     }
 
+    /* création du pdf avant de l'imprimer / envoyer par email */
     public function validpdfAction() 
     {
+        // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
-
-        $ip = $this->em->getRepository(Event::class)->find($this->params()->fromRoute('id'));
+        // récupération de l'id du plan d'interrogation à envoyer 
+        $id = (int) $this->params()->fromRoute('id');
+        $ip = $this->em->getRepository(Event::class)->find($id);
+        // interrogation de la bdd
+        if(!is_a($ip, Event::class)) {
+            return new JsonModel(['error', self::ERR_NO_IP]);
+        } 
+        // récupération des données du plan en tableau
         $ipArray = $this->getArrayCopy($ip);
+        // création du pdf
         $this->saveToPdf($ipArray);
-        if (!file_exists($ipArray['pdffilepath'])) 
-            return new JsonModel(['error', 'Problème lors du chargement du fichier pdf. Impossible de continuer.']); 
+        // vérification de l'existence du fichier pdf crée
+        if (!file_exists($ipArray['pdffilepath'])) {
+            return new JsonModel(['error', 'Problème lors du chargement du fichier pdf. Impossible de continuer.']);
+        }
         else return new JsonModel();
-
     }
 
+    /* 'Impression' (ou plutot sauvegarde en fichier pdf pour impression) */
     public function printAction()
     {
+        // vérification utilisateur autorisé
         if (!$this->authSarBeacons('read')) return new JsonModel();
-
-        $ip = $this->em->getRepository(Event::class)->find($this->params()->fromRoute('id'));
+        // récupération de l'id du plan d'interrogation à envoyer 
+        $id = (int) $this->params()->fromRoute('id');
+        $ip = $this->em->getRepository(Event::class)->find($id);
+        // interrogation de la bdd
+        if(!is_a($ip, Event::class)) {
+            return new JsonModel(['error', self::ERR_NO_IP]);
+        } 
+        // récupération des données du plan en tableau
         $ipArray = $this->getArrayCopy($ip);
-
+        // récupération du fichier pdf préalablement crée dans validpdf puis savetopdf
         $pdf = (new PdfModel())             
             ->setOption('paperSize', 'a4')
-            ->setOption('filename', $ipArray['pdffilepath'])
+            ->setOption('filename', $ipArray['pdffilename'])
             ->setVariables([
                 'ip' => $ipArray
             ]);
-
         return $pdf;
     }
 
@@ -818,13 +859,11 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         else 
         {
             $ipArray = $this->getArrayCopy($ip);
-
             /* préparation de l'email */
             // texte du message issue de la config
             $text = new MimePart($this->config['btiv']['ipemailtext']);
             $text->type = Mime::TYPE_TEXT;
-            $text->charset = 'utf-8';
-            
+            $text->charset = 'utf-8';          
             // attachement du pdf au message
             $fileContents = fopen($ipArray['pdffilepath'], 'r');
             $attachment = new MimePart($fileContents);
@@ -832,23 +871,19 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $attachment->filename = $ipArray['pdffilename'];
             $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
             $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
-
             // création du body
             $body = new MimeMessage();
             $body->setParts([$text, $attachment]);
-
             // enfin, création du message complet
             $message = (new Message())
                 ->setEncoding("UTF-8")
                 ->addFrom($this->config['btiv']['ipemailfrom'])
                 ->setSubject($this->config['btiv']['ipemailsubject'])
                 ->setBody($body);
-
             // ajout des destinataires
             foreach($this->config['btiv']['ipemailto'] as $receiver) {
                 $message->addTo($receiver);
             }
-
             // vérification de la validité du message crée
             if($message->isValid()) 
             {

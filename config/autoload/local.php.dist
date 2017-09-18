@@ -65,13 +65,20 @@ return array(
     'btiv' => [
         // proxy pour récupérer notam sur le site du SIA
         'proxynotam' => 'http://proxy.???',
+        // emetteur des emails pour les plans d'interrogation
         'ipemailfrom' => 'emetteur@aviation-civile.gouv.fr',
+        // receveurs des emails pour les plans d'interrogation
         'ipemailto' => [
             'receveur1@?.?',
             'receveur2@?.?'
             // etc.
         ],
+        // sujet des messages envoyés pour les plans d'interrogation 
         'ipemailsubject' => 'titre des email',
-        'ipemailtext' => 'corps des email'
+        // texte des messages envoyés pour les plans d'interrogation
+        'ipemailtext' => 'corps des email',
+        // repertoire de sauvegarde des pdf des plans d'interrogation
+        // pas de / à la fin
+        'ipdir' => 'data/plans'
     ],
 );
