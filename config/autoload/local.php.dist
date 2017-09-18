@@ -71,6 +71,7 @@ return array(
             'receveur2@?.?'
             // etc.
         ],
-        'ipemailtext' => "Veuillez trouver ci-joint un plan d'interrogation pour une alerte."
+        'ipemailsubject' => 'titre des email',
+        'ipemailtext' => 'corps des email'
     ],
 );

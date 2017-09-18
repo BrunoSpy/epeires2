@@ -49,7 +49,14 @@ use Application\Entity\FieldCategory;
  */
 class SarBeaconsController extends AbstractEntityManagerAwareController
 {
-    const ACCES_REQUIRED = "Droits d'accès insuffisants";
+    const ERR_ACCES = "Droits d'accès insuffisants.";
+    const ERR_NO_CONF_BTIV = "Configuration btiv inexistante.";
+    const ERR_NO_CONF_MAIL = "Configuration envoi de mail inexistante.";
+    const ERR_NO_IP = "Impossible de trouver le plan d'interrogation.";
+    const ERR_EMAIL_INVALID = "Le message à envoyer n'est pas formaté correctement.";
+
+    const OK_SEND_EMAIL = "Courriels envoyés avec succès.";
+
 
     private $em, $viewpdfrenderer, $config;
 
@@ -66,7 +73,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     public function indexAction()
     {
         if (!$this->authSarBeacons('read')) {
-            echo self::ACCES_REQUIRED;
+            echo self::ERR_ACCES;
             return new JsonModel();
         };
 
@@ -779,55 +786,79 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         return $pdf;
     }
 
-    public function mailAction() {
-        // if (!array_key_exists('ipemailfrom', $this->config['btiv']) | !array_key_exists('ipemailto', $this->config['btiv'])) return new JsonModel(['error', 'Problème de configuration des adresses email.']);
-
+    /* Envoi du plan d'interrogation par mail. Configuration dans local.php, clé btiv.  */
+    public function mailAction() 
+    {
+        /* Vérification de la config */
+        // clé btiv n'existe pas dans ['config']
+        if (!array_key_exists('btiv', $this->config)) {
+            return new JsonModel(['error', self::ERR_NO_CONF_BTIV]);
+        } else {
+            // clés pour l'envoi de mail n'existent pas 
+            if( !array_key_exists('ipemailfrom', $this->config['btiv']) | 
+                !array_key_exists('ipemailto', $this->config['btiv']) |
+                !array_key_exists('ipemailsubject', $this->config['btiv']) |
+                !array_key_exists('ipemailtext', $this->config['btiv']) 
+            ) {
+                return new JsonModel(['error', self::ERR_NO_CONF_MAIL]);
+            } 
+        }
+        
+        // récupération de l'id du plan d'interrogation à envoyer 
         $post = $this->getRequest()->getPost();
         $id = (int) $post['id'];
-
-        if ($id > 0) {
-            $ip = $this->em->getRepository(Event::class)->find($id);
+        // interrogation de la bdd
+        $ip = $this->em->getRepository(Event::class)->find($id);
+        // test si le plan existe bien
+        if(!is_a($ip, Event::class)) {
+            return new JsonModel(['error', self::ERR_NO_IP]);
+        } 
+        else 
+        {
             $ipArray = $this->getArrayCopy($ip);
 
+            /* préparation de l'email */
+            // texte du message issue de la config
             $text = new MimePart($this->config['btiv']['ipemailtext']);
             $text->type = Mime::TYPE_TEXT;
             $text->charset = 'utf-8';
             
+            // attachement du pdf au message
             $fileContents = fopen($ipArray['pdffilepath'], 'r');
             $attachment = new MimePart($fileContents);
             $attachment->type = 'application/pdf';
-
             $attachment->filename = $ipArray['pdffilename'];
-
             $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
             $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
-            print_r($this->config['btiv']);
-            $body = new MimeMessage();
-            $body
-                ->setParts([
-                    $text,
-                    $attachment
-                ]);
 
+            // création du body
+            $body = new MimeMessage();
+            $body->setParts([$text, $attachment]);
+
+            // enfin, création du message complet
             $message = (new Message())
                 ->setEncoding("UTF-8")
                 ->addFrom($this->config['btiv']['ipemailfrom'])
-                ->setSubject('Plan d\'interrogation')
+                ->setSubject($this->config['btiv']['ipemailsubject'])
                 ->setBody($body);
 
+            // ajout des destinataires
             foreach($this->config['btiv']['ipemailto'] as $receiver) {
                 $message->addTo($receiver);
             }
 
+            // vérification de la validité du message crée
             if($message->isValid()) 
             {
                 $transportOptions = new SmtpOptions($this->config['smtp']);
                 $transport = (new Smtp())
                     ->setOptions($transportOptions)
                     ->send($message);
+                return new JsonModel(['success', self::OK_SEND_EMAIL]);
+            } else {
+                return new JsonModel(['error', self::ERR_EMAIL_INVALID]);
             }
         }
-        return new JsonModel(['success', 'Courriel(s) envoyé(s) avec succès.']);
     }
 
     private function authSarBeacons($action) {
