@@ -259,7 +259,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
         $msgType = 'error';
-
         $req = $this->getRequest()->getPost();
         $id = (int) $req['id'];
         $type = $req['type'];
