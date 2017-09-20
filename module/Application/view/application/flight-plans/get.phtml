@@ -42,7 +42,7 @@ else {
 	    	if (isset($fp['Type'])) { 
 	    		if (!isset($fp['alert']['end_date'])) { 
 	    		?>
-	    		<a class="a-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
+	    		<a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
 	    		<?php 
 	    		} else {
 	    		?>

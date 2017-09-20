@@ -55,6 +55,24 @@ var flightplan = function(url)
         )
     });
 
+    $('#a-end-alt-ok').click(function()
+    {
+        $('#mdl-end-alt').modal('hide');
+        $.post(
+            url+'flightplans/endAlert', 
+            {id: idEvent, end_date: $('input[name=end-date]').val()}, 
+            function (data) {
+                refresh();
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            }
+        );
+    });   
+
+
     $('#a-trig-alt-ok').click(function() {
         $('#mdl-trig-fp').modal('hide');
         $.post(
@@ -102,18 +120,13 @@ var flightplan = function(url)
                 });
 
                 $('.a-end-alt').click(function() {
-                    $.post(
-                        url+'flightplans/endAlert', 
-                        {id: $(this).data('id')}, 
-                        function (data) {
-                            refresh();
-                            noty({
-                                text: data.msg,
-                                type: data.type,
-                                timeout: 4000,
-                            });
-                        }
-                    );    
+                    idEvent = $(this).data('id');
+                    $('input[name=end-date]')
+                        .timepickerform({
+                            'id':'start', 
+                            'clearable':true, 
+                            'init':true
+                        });    
                 });
             });
         });    

@@ -220,15 +220,19 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $post = $this->getRequest()->getPost();
         $msgType = 'error';
         $id = (int) $post['id'];
+        $end_date = $post['end_date'];
         if($id > 0) 
         {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
+            if (isset($end_date)) $end_date = new \DateTime($end_date);
+            else $end_date = $now;
+
             $event = $this->em->getRepository(Event::class)->find($id);
             $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
             $event->setStatus($endstatus);
-            $event->setEnddate($now);
+            $event->setEnddate($end_date);
             $this->em->persist($event);
             
             try 
@@ -239,7 +243,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }
-        } else $msg = "Impossible de trouver le vol.";
+        } else $msg = "Impossible de trouver l'événement alerte.";
 
         return new JsonModel([
             'type' => $msgType, 
