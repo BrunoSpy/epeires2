@@ -1,7 +1,8 @@
 var flightplan = function(url) 
 {
     "use strict";
-    $("#create-link").click(function() {
+    $("#create-link,.modify-evt").click(function() {
+        if($(this).hasClass('.modify-evt')) $('#form-title').html('Modifier l\'événement');
         removeAlertField();
         setClickSubmit();
     });
