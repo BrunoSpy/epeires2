@@ -666,6 +666,7 @@
     $bPrintIp.click(printIp);
     $bMailIp.click(mailIp);
 
+    setMapButtons();
     /* Boutons d'action */
     // var listBtn = new ListBtn();
     // listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
@@ -673,6 +674,13 @@
     // listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
+
+    $tabs.first().click(function() {
+        idIp = null;
+        resetMap();
+        centerMap();
+        refreshIp();
+    });
 
     function refreshNbEvents() {
         $.get(url + 'sarbeacons/getnbcurrentip', function(data) {
@@ -686,17 +694,7 @@
             .html(data.nbip)
             .show();
         })
-
-        $('#tabs > ul >li > a').first().click(function() {
-            // pas de pio de travail
-            idIp = null;
-            resetMap();
-            centerMap();
-        });
     }
-
-
-    setMapButtons();
 
     $aNow.click(function() 
     {
@@ -1180,6 +1178,19 @@
         return iTer;
     }
 
+    function refreshIp() {
+        $carIndic.find('li').remove();
+        $carInner.find('div.item').remove();
+        $tab2.find('h4').eq(0).html('');
+        $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
+        $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
+
+        // listBtn.setStates();
+
+        $fEditIp.find('input').val('');
+        $fEditIp.find('li').remove();
+    }
+
     function triggerIp(latLon, starttime = moment(), setIdIp = null) 
     {
         if (idIp) 
@@ -1270,18 +1281,6 @@
             btnCenterSar.addTo(orbit);
         }
 
-        function refreshIp() {
-            $carIndic.find('li').remove();
-            $carInner.find('div.item').remove();
-            $tab2.find('h4').eq(0).html('');
-            $fIp.hasClass('cache') ? $fIp.removeClass('cache') : '';
-            $reqPio.hasClass('cache') ? $reqPio.removeClass('cache') : '';
-
-            // listBtn.setStates();
-
-            $fEditIp.find('input').val('');
-            $fEditIp.find('li').remove();
-        }
 
         function createIpMarker(i, latlon, popuphtml) {
             var icon = L.icon({
