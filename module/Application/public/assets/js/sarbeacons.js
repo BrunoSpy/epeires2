@@ -565,7 +565,6 @@
 
         $aNow = $('#a-now'),
         $aArch = $('#a-arch'),
-        // $aHist = $('#a-hist'),
         $currentIp = $('#currentip');
     /* Flags */
     var editHasBeenClicked = false;
@@ -615,6 +614,10 @@
         })
         .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
 
+    $aNow.find('.badge').hide();
+    $aArch.find('.badge').hide();
+
+    refreshNbEvents();
     /*  Le carousel reste statique */
     $reqPio.carousel({
         interval: false
@@ -671,20 +674,27 @@
     // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
     // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
-    $.get(url + 'sarbeacons/getnbcurrentip', function(data) {
-        $aNow.find('span').html(data.nbip);
-    })
+    function refreshNbEvents() {
+        $.get(url + 'sarbeacons/getnbcurrentip', function(data) {
+            $aNow.find('.badge')
+            .html(data.nbip)
+            .show();
+        })
 
-    $.get(url + 'sarbeacons/getnbendedip', function(data) {
-        $aArch.find('span').html(data.nbip);
-    })
+        $.get(url + 'sarbeacons/getnbendedip', function(data) {
+            $aArch.find('span')
+            .html(data.nbip)
+            .show();
+        })
 
-    $('#tabs > ul >li > a').first().click(function() {
-        // pas de pio de travail
-        idIp = null;
-        resetMap();
-        centerMap();
-    });
+        $('#tabs > ul >li > a').first().click(function() {
+            // pas de pio de travail
+            idIp = null;
+            resetMap();
+            centerMap();
+        });
+    }
+
 
     setMapButtons();
 
@@ -780,6 +790,8 @@
             var trig = $(this).data('trig');
             if (trig  == true) triggerIp([lat, lon]); 
             $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
+                headerbar(url);
+                refreshNbEvents();
                 idIp = data['id'];
                 $("#mdl-start-ip").modal('hide');
                 if (trig != true) {
@@ -802,7 +814,9 @@
             url+'sarbeacons/end', 
             {id: idIp, end_date: $('input[name=end-date]').val()}, 
             function (data) {
-                $aArch.trigger('click');
+                $aNow.trigger('click');
+                headerbar(url);
+                refreshNbEvents();
                 idIp = null;
                 $('#mdl-end-ip').modal('hide');
                 $('#mdl-show-ip').modal('hide');
