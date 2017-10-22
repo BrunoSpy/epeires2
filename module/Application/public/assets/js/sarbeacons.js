@@ -14,8 +14,10 @@
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  */
  
- var sarbeacons = function(url) {
+ var sarbeacons = function(url, conf) {
     "use strict";
+    // récupération de la conf BTIV (local.php)
+    var tabconf = $.parseJSON(conf);
 
     var Field = function(index, intPlan, field, d, cap) 
     {
@@ -432,9 +434,10 @@
         }
 
     });
+
     /* nombre de résultats à afficher pour un PI */
-    const NB_RESULT_PIO_AFF = 5;
-    const NB_RESULT_PIO = 30;
+    const NB_RESULT_PIO_AFF = tabconf['ip_nb_par_pages'];
+    const NB_RESULT_PIO = tabconf['ip_nb_terrains'];
     /* nombre de proposition pour l'autocompletion (balise & terrain) */
     const NB_RESULT_AUTOCOMP = 20;
     /* paramètres des coordonnées et pour le calcul des distances & cap */
@@ -456,13 +459,13 @@
         IC_BAL_SIZE = 10,
         IC_PIO_SIZE = 20,
         IC_HEL_SIZE = 20,
-        IC_SAR_SIZE = 30,
+        IC_SAR_SIZE = 40,
         IC_SEL_SIZE = 40,
         IC_SAR_ANCH = IC_SAR_SIZE / 2;
     const
         icSel = L.icon({
             iconUrl: URL_IMG + 'marker-sel.png',
-            iconSize: [2 * NB_RESULT_PIO, 2 * NB_RESULT_PIO]
+            iconSize: [IC_SAR_SIZE, IC_SAR_SIZE]
         }),
 
         icTer = L.icon({
@@ -493,11 +496,18 @@
     var orbit = L.map('mapid').setView(DFLT_LAT_LNG, DFLT_ZOOM);
     orbit.zoomControl.setPosition('topright');
 
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'oziatek.ppg7d633',
-        accessToken: 'pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw'
+    // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    //     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    //     maxZoom: 18,
+    //     id: 'oziatek.ppg7d633',
+    //     accessToken: 'pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw'
+    // }).addTo(orbit);
+    console.log(tabconf.ip_map);
+    L.tileLayer(tabconf.ip_map.url, {
+        attribution: tabconf.ip_map.attribution,
+        maxZoom: tabconf.ip_map.maxZoom,
+        id: tabconf.ip_map.id,
+        accessToken: tabconf.ip_map.accessToken
     }).addTo(orbit);
 
     /* calques contenant résultat des pi*/
@@ -1164,9 +1174,11 @@
             $.post(url + 'sarbeacons/getip', {id : idIp}, function (data) {
                 latLon = [data.ip.Latitude, data.ip.Longitude];
                 trigDisplay();
-                $.each(data.ip.fields, function() {
-                    this.code = this['Code OACI'];
-                });
+                if(data.ip.fields) {
+                    $.each(data.ip.fields, function() {
+                        this.code = this['Code OACI'];
+                    });
+                }
                 trigList(data.ip.fields);
             });
         } 
@@ -1261,11 +1273,11 @@
         function createIpMarker(i, latlon, popuphtml) {
             var icon = L.icon({
                 iconUrl: IMG_PIO,
-                iconSize: [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i]
+                iconSize: [IC_SAR_SIZE, IC_SAR_SIZE]
             });
             return L.marker([latlon[1], latlon[0]], {
                 icon: icon,
-                opacity: (NB_RESULT_PIO - i) / NB_RESULT_PIO
+                opacity: (IC_SAR_SIZE - i) / IC_SAR_SIZE
             })
             .bindPopup(popuphtml);
         }
@@ -1406,7 +1418,7 @@
         var i = $(this).data('index');
         var ter = intPlan.get(i);
 
-        icSel.options.iconSize = [2 * NB_RESULT_PIO - 2 * i, 2 * NB_RESULT_PIO - 2 * i];
+        icSel.options.iconSize = [IC_SAR_SIZE, IC_SAR_SIZE];
         mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], icSel, ter.getPopup());
 
         $('.carousel-inner a.active').removeClass('active');

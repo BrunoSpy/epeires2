@@ -64,21 +64,33 @@ return array(
 
     'btiv' => [
         // proxy pour récupérer notam sur le site du SIA
-        'proxynotam' => 'http://proxy.???',
+        'af_proxynotam' => 'http://proxy.???',
+        // paramétrage du serveur de carte, ici mapbox
+        'ip_map' => [
+            'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", 
+            'attribution' => 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>',
+            'maxZoom' => 18,
+            'id' => "oziatek.ppg7d633",
+            'accessToken' => "pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw"
+        ],
+        // nombre de résultats du déclenchement d'un plan d'interrogation
+        'ip_nb_terrains' => 30,
+        // nombre de résultats par page du déclenchement d'un plan d'interrogation
+        'ip_nb_par_pages' => 5,
         // emetteur des emails pour les plans d'interrogation
-        'ipemailfrom' => 'emetteur@aviation-civile.gouv.fr',
+        'ip_email_from' => 'emetteur@aviation-civile.gouv.fr',
         // receveurs des emails pour les plans d'interrogation
-        'ipemailto' => [
+        'ip_email_to' => [
             'receveur1@?.?',
             'receveur2@?.?'
             // etc.
         ],
         // sujet des messages envoyés pour les plans d'interrogation 
-        'ipemailsubject' => 'titre des email',
+        'ip_email_subject' => 'titre des email',
         // texte des messages envoyés pour les plans d'interrogation
-        'ipemailtext' => 'corps des email',
+        'ip_email_text' => 'corps des email',
         // repertoire de sauvegarde des pdf des plans d'interrogation
         // pas de / à la fin
-        'ipdir' => 'data/plans'
+        'ip_dir' => 'data/plans'
     ],
 );

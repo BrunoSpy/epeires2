@@ -64,8 +64,8 @@ class AfisController extends AbstractEntityManagerAwareController
                     ->getAllAsArray()
                 );
 
-        if (isset($this->config['btiv']['proxynotam'])) {
-            $this->proxy = $this->config['btiv']['proxynotam'];
+        if (isset($this->config['btiv']['af_proxynotam'])) {
+            $this->proxy = $this->config['btiv']['af_proxynotam'];
         } else {
             $this->proxy = '';
         }

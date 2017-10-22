@@ -51,7 +51,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 {
     const ERR_ACCES = "Droits d'accès insuffisants.";
     const ERR_NO_CONF_BTIV = "Configuration btiv inexistante. Vérifier dans local.php que le tableau ['btiv'] est bien défini.";
-    const ERR_NO_CONF_MAIL = "Des paramétres requis ne sont pas configurés pour l'envoi de courriels. Vérifier dans local.php que ipemailfrom/ipemailto/ipemailtext/ipemailsubject sont bien définis.";
+    const ERR_NO_CONF_MAIL = "Des paramétres requis ne sont pas configurés pour l'envoi de courriels. Vérifier dans local.php que ip_email_from/ip_email_to/ip_email_text/ip_email_subject sont bien définis.";
     const ERR_NO_IP = "Impossible de trouver le plan d'interrogation.";
     const ERR_EMAIL_INVALID = "Le message à envoyer n'est pas formaté correctement.";
 
@@ -96,7 +96,8 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             ->setVariables([
                 'cats' => $cats,
                 'fieldcats' => $fieldscats,
-                'alertcats' => $alertcats
+                'alertcats' => $alertcats,
+                'btivCONF' => $this->config['btiv']
             ]);
     }
 
@@ -116,7 +117,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
 
     public function getArrayCopy($ip) 
     {
-        $dirname =  $this->config['btiv']['ipdir'].'/';
+        $dirname =  $this->config['btiv']['ip_dir'].'/';
         $filename = $ip->getStartDate()->format('Ymd').'_Alerte_id'.$ip->getId().'.pdf';
         $ev = [
             'id' => $ip->getId(),
@@ -773,7 +774,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
         $engine->load_html($html);
         $engine->render();
 
-        $dir = $this->config['btiv']['ipdir'];
+        $dir = $this->config['btiv']['ip_dir'];
         // vérification de l'existence du répertoire où les pdf sont sauvegardés. S'il n'existe pas, il est crée.
         if(!is_dir($dir)) mkdir($dir);
         // sauvegarde du fichier
@@ -838,10 +839,10 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             return new JsonModel(['error', self::ERR_NO_CONF_BTIV]);
         } else {
             // clés pour l'envoi de mail n'existent pas 
-            if( !array_key_exists('ipemailfrom', $this->config['btiv']) | 
-                !array_key_exists('ipemailto', $this->config['btiv']) |
-                !array_key_exists('ipemailsubject', $this->config['btiv']) |
-                !array_key_exists('ipemailtext', $this->config['btiv']) 
+            if( !array_key_exists('ip_email_from', $this->config['btiv']) | 
+                !array_key_exists('ip_email_to', $this->config['btiv']) |
+                !array_key_exists('ip_email_subject', $this->config['btiv']) |
+                !array_key_exists('ip_email_text', $this->config['btiv']) 
             ) {
                 return new JsonModel(['error', self::ERR_NO_CONF_MAIL]);
             } 
@@ -861,7 +862,7 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             $ipArray = $this->getArrayCopy($ip);
             /* préparation de l'email */
             // texte du message issue de la config
-            $text = new MimePart($this->config['btiv']['ipemailtext']);
+            $text = new MimePart($this->config['btiv']['ip_email_text']);
             $text->type = Mime::TYPE_TEXT;
             $text->charset = 'utf-8';          
             // attachement du pdf au message
@@ -877,11 +878,11 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
             // enfin, création du message complet
             $message = (new Message())
                 ->setEncoding("UTF-8")
-                ->addFrom($this->config['btiv']['ipemailfrom'])
-                ->setSubject($this->config['btiv']['ipemailsubject'])
+                ->addFrom($this->config['btiv']['ip_email_from'])
+                ->setSubject($this->config['btiv']['ip_email_subject'])
                 ->setBody($body);
             // ajout des destinataires
-            foreach($this->config['btiv']['ipemailto'] as $receiver) {
+            foreach($this->config['btiv']['ip_email_to'] as $receiver) {
                 $message->addTo($receiver);
             }
             // vérification de la validité du message crée
