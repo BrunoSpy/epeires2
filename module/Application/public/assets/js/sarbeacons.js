@@ -502,7 +502,6 @@
     //     id: 'oziatek.ppg7d633',
     //     accessToken: 'pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw'
     // }).addTo(orbit);
-    console.log(tabconf.ip_map);
     L.tileLayer(tabconf.ip_map.url, {
         attribution: tabconf.ip_map.attribution,
         maxZoom: tabconf.ip_map.maxZoom,
