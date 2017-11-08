@@ -1071,6 +1071,7 @@ class EventsController extends TabsController
                     $id = $this->params()->fromQuery('id');
                     $subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
                         ->getChilds($id));
+                    $other = true;
                     if ($cats !== null) {
                         //restrict subcats to those present in cats list
                         $tempsubcat = array();
@@ -1080,12 +1081,17 @@ class EventsController extends TabsController
                             }
                         }
                         $subcat = $tempsubcat;
+                        //don't add 'other' field if list is restricted and parent not in list
+                        if(!in_array($id, $cats)) {
+                            $other = false;
+                        }
                     }
                     $subcatarray = array();
                     foreach ($subcat as $cat) {
                         $subcatarray[$cat->getId()] = $cat->getName();
                     }
                     $viewmodel->setVariables(array(
+                        'other' => $other,
                         'part' => $part,
                         'values' => $subcatarray
                     ));
@@ -1346,8 +1352,16 @@ class EventsController extends TabsController
         $tempRootCategories = array();
         foreach($cats as $catid){
             $cat = $em->getRepository(Category::class)->find($catid);
-            if($cat && $cat->getParent() === null) {
-                $tempRootCategories[] = $cat;
+            if($cat) {
+                if($cat->getParent() === null) {
+                    if (!in_array($cat, $tempRootCategories)) {
+                        $tempRootCategories[] = $cat;
+                    }
+                } else {
+                    if (!in_array($cat->getParent(), $tempRootCategories)) {
+                        $tempRootCategories[] = $cat->getParent();
+                    }
+                }
             }
         }
         $rootCategories = $this->filterReadableCategories($tempRootCategories);

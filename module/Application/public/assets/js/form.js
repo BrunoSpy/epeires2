@@ -539,8 +539,12 @@ var form = function(url, cats){
 					updateHours();
 					//updateHourTitle();
 					if(cat_parent_id >= 0){
-						$("#root_categories").val(cat_parent_id);
-						$('#root_categories').trigger('change');
+						if(cat_id >= 0) {
+							changeSubCat(cat_id);
+						} else {
+                            $("#root_categories").val(cat_parent_id);
+                            $('#root_categories').trigger('change');
+                        }
 					} else {
 						//pas de parent : cat_parent_id === -1
 						if(cat_id >= 0) {
@@ -823,7 +827,9 @@ var form = function(url, cats){
                 if(cat_parent_id >= 0){
                     $("#subcategories").val(cat_id);
                     $("#subcategories").trigger('change');
-                } else {
+                } else if($('#subcategories option[value="-1"]').length == 0) {
+                    changeSubCat($('#subcategories option:first-child').val());
+				} else {
                     $.when(//récupération des modèles
                         $.post(
                             url+'events/subform?part=predefined_events&id='+root_value+ '&'+cats,
