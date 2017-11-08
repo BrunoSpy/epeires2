@@ -57,7 +57,30 @@ class TabsController extends TabController
         $this->flashMessenger()->clearMessages();
 
         $tabid = $this->params()->fromQuery('tabid', null);
-        
+
+        $userauth = $this->zfcUserAuthentication();
+        $this->layout()->showHome = true;
+        //determine if there's a default tab to show home entry or not
+        if ($userauth != null && $userauth->hasIdentity()) {
+            $roles = $userauth->getIdentity()->getRoles();
+            $hasDefaultTab = false;
+            foreach ($roles as $r) {
+                $tabs = $r->getReadtabs();
+                foreach ($tabs as $t) {
+                    if($t->isDefault()) {
+                        $hasDefaultTab = true;
+                        break;
+                    }
+                }
+                if(!$hasDefaultTab) {
+                    if(!empty($tabs)){
+                        $this->layout()->showHome = false;
+                    }
+
+                }
+            }
+        }
+
         if ($tabid) {
             $tab = $this->entityManager->getRepository('Application\Entity\Tab')->find($tabid);
             if ($tab) {
@@ -76,7 +99,7 @@ class TabsController extends TabController
             $return['error'][] = "Aucun onglet défini. Contactez votre administrateur.";
         }
         $postitAllowed = false;
-        if($this->zfcUserAuthentication()->hasIdentity()) {
+        if($userauth->hasIdentity()) {
             //determine if user can create postit
             $postitCategory = $this->entityManager->getRepository(Category::class)->findOneBy(array('name'=>'PostIt'));
             $userroles = $this->zfcUserAuthentication()->getIdentity()->getRoles();

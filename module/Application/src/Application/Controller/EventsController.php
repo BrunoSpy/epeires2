@@ -89,9 +89,12 @@ class EventsController extends TabsController
         $onlyroot = false;
         $cats = array();
 
+        $hasDefaultTab = false;
+
         //fusion des tabs principaux pour les rôles de l'utilisateur
         if ($userauth != null && $userauth->hasIdentity()) {
             $roles = $userauth->getIdentity()->getRoles();
+
             foreach ($roles as $r) {
                 $tabs = $r->getReadtabs();
                 foreach ($tabs as $t) {
@@ -101,9 +104,17 @@ class EventsController extends TabsController
                                 $cats[] = $c->getId();
                             }
                         }
+                        $hasDefaultTab = true;
                         $onlyroot += $t->isOnlyroot();
-                        break;
+                        //break;
                     }
+                }
+                if(!$hasDefaultTab) {
+                    if(!empty($tabs)){
+                        //pas de tab par défaut -> suppression bouton + passage au premier tab
+                        return $this->redirect()->toRoute('application', array('controller' => 'tabs'), array('query' => array('tabid' => $tabs[0]->getId())));
+                    }
+
                 }
             }
         } else {
@@ -128,6 +139,7 @@ class EventsController extends TabsController
             }
         }
 
+        $this->layout()->showHome = true;
 
         $this->viewmodel->setVariable('onlyroot', $onlyroot);
         $this->viewmodel->setVariable('cats', $cats);
