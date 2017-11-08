@@ -539,12 +539,8 @@ var form = function(url, cats){
 					updateHours();
 					//updateHourTitle();
 					if(cat_parent_id >= 0){
-						if(cat_id >= 0) {
-							changeSubCat(cat_id);
-						} else {
-                            $("#root_categories").val(cat_parent_id);
-                            $('#root_categories').trigger('change');
-                        }
+                        $("#root_categories").val(cat_parent_id);
+						$('#root_categories').trigger('change');
 					} else {
 						//pas de parent : cat_parent_id === -1
 						if(cat_id >= 0) {
