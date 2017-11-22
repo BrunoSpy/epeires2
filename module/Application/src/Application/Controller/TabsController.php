@@ -59,27 +59,6 @@ class TabsController extends TabController
         $tabid = $this->params()->fromQuery('tabid', null);
 
         $userauth = $this->zfcUserAuthentication();
-        $this->layout()->showHome = true;
-        //determine if there's a default tab to show home entry or not
-        if ($userauth != null && $userauth->hasIdentity()) {
-            $roles = $userauth->getIdentity()->getRoles();
-            $hasDefaultTab = false;
-            foreach ($roles as $r) {
-                $tabs = $r->getReadtabs();
-                foreach ($tabs as $t) {
-                    if($t->isDefault()) {
-                        $hasDefaultTab = true;
-                        break;
-                    }
-                }
-                if(!$hasDefaultTab) {
-                    if(!empty($tabs)){
-                        $this->layout()->showHome = false;
-                    }
-
-                }
-            }
-        }
 
         if ($tabid) {
             $tab = $this->entityManager->getRepository('Application\Entity\Tab')->find($tabid);

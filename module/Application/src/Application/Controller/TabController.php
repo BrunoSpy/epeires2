@@ -54,7 +54,30 @@ class TabController extends ZoneController
                 $this->layout()->iponumber = "(" . $iponumber . ")";
             }
         }
-        
+
+        $userauth = $this->zfcUserAuthentication();
+        $this->layout()->showHome = true;
+        //determine if there's a default tab to show home entry or not
+        if ($userauth != null && $userauth->hasIdentity()) {
+            $roles = $userauth->getIdentity()->getRoles();
+            $hasDefaultTab = false;
+            foreach ($roles as $r) {
+                $tabs = $r->getReadtabs();
+                foreach ($tabs as $t) {
+                    if($t->isDefault()) {
+                        $hasDefaultTab = true;
+                        break;
+                    }
+                }
+                if(!$hasDefaultTab) {
+                    if(!empty($tabs)){
+                        $this->layout()->showHome = false;
+                    }
+
+                }
+            }
+        }
+
         // initialisation de la session si utilisateur connecté
         $session = new Container('zone');
         if ($session->zoneshortname == null) {

@@ -39,7 +39,7 @@ use Application\Entity\Afis;
  *
  * @author Loïc Perrin
  */
-class AfisController extends AbstractEntityManagerAwareController
+class AfisController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
@@ -49,8 +49,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function __construct(EntityManager $em, CustomFieldService $cf, $config)
     {
-        parent::__construct($em);
-        $this->em = $this->getEntityManager();
+        $this->em = $em;
         $this->cf = $cf;
         $this->config = $config;
         $this->repo = $this->em->getRepository(Afis::class);
@@ -104,6 +103,7 @@ class AfisController extends AbstractEntityManagerAwareController
 
     public function indexAction() 
     {
+        parent::indexAction();
         $cats = [];
         foreach ($this->em->getRepository(AfisCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();

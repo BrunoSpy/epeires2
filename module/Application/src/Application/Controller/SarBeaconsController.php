@@ -47,7 +47,7 @@ use Application\Entity\FieldCategory;
  *
  * @author Loïc Perrin
  */
-class SarBeaconsController extends AbstractEntityManagerAwareController
+class SarBeaconsController extends TabController
 {
     const ERR_ACCES = "Droits d'accès insuffisants.";
     const ERR_NO_CONF_BTIV = "Configuration btiv inexistante. Vérifier dans local.php que le tableau ['btiv'] est bien défini.";
@@ -58,20 +58,20 @@ class SarBeaconsController extends AbstractEntityManagerAwareController
     const OK_SEND_EMAIL = "Courriels envoyés avec succès.";
 
 
-    private $em, $viewpdfrenderer, $config;
+    private $em, $viewpdfrenderer;
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config)
     {
-        parent::__construct($em);
-        $this->em = $this->getEntityManager();
+        parent::__construct($config);
+        $this->em = $em;
 
         $this->viewpdfrenderer = $viewpdfrenderer;
-        $this->config = $config;
     }
 
 
     public function indexAction()
     {
+        parent::indexAction();
         if (!$this->authSarBeacons('read')) {
             echo self::ERR_ACCES;
             return new JsonModel();

@@ -49,6 +49,8 @@ var updateNavbarTop = function() {
 
     totalWidth += 30; //some margin
 
+    totalWidth += 20; //another margin if scroll
+
     if(windowWidth > 768) {
         if(totalWidth > windowWidth) {
             //remove day

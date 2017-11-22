@@ -40,7 +40,7 @@ use Application\Entity\CustomFieldValue;
  *
  * @author Loïc Perrin
  */
-class FlightPlansController extends AbstractEntityManagerAwareController
+class FlightPlansController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
 
@@ -48,13 +48,13 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
     public function __construct(EntityManager $em, CustomFieldService $cf)
     {
-        parent::__construct($em);
-        $this->em = $this->getEntityManager();
+        $this->em = $em;
         $this->cf = $cf;
     }
     
     public function indexAction()
-    {        
+    {
+        parent::indexAction();
         $cats = [];
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
