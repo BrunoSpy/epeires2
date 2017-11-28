@@ -38,6 +38,7 @@ before_script:
 #populate database
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
+- php public/index.php initDB
 - php public/index.php data-fixture:import --no-interaction --append
 - chmod a+rwx -Rf ./data
 #launch server
