@@ -44,6 +44,15 @@ return array(
                             'action' => 'cleanLogs'
                         )
                     )
+                ),
+                'initDB' => array(
+                    'options' => array(
+                        'route' => 'initDB',
+                        'defaults' => array(
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'initDB'
+                        )
+                    )
                 )
             )
         )

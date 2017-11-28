@@ -17,7 +17,14 @@
  */
 namespace Administration\Controller;
 
+use Application\Entity\Category;
+use Application\Entity\Tab;
 use Core\Controller\AbstractEntityManagerAwareController;
+use Core\Entity\Permission;
+use Core\Entity\Role;
+use Core\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 use Zend\Console\Request as ConsoleRequest;
 
 /**
@@ -26,6 +33,13 @@ use Zend\Console\Request as ConsoleRequest;
  */
 class MaintenanceController extends AbstractEntityManagerAwareController
 {
+    private $config;
+
+    public function __construct(EntityManager $entityManager, $config)
+    {
+        parent::__construct($entityManager);
+        $this->config = $config;
+    }
 
     public function deleteEventsAction()
     {
@@ -124,6 +138,61 @@ class MaintenanceController extends AbstractEntityManagerAwareController
             return "Nettoyage des logs effectué.";
         } catch (\Exception $ex) {
             error_log($ex->getMessage());
+        }
+    }
+
+    /**
+     * Initialise la base de données avec des valeurs par défaut permettant l'utilisation de l'application
+     */
+    public function initdbAction() {
+        $request = $this->getRequest();
+
+        if(! $request instanceof ConsoleRequest) {
+            throw new \RuntimeException('Action only available from console.');
+        }
+
+        $objectManager = $this->getEntityManager();
+
+        //vérification du stade initial de la base de données
+        //méthode empirique : uniquement 3 catégories, 1 seul utilisateur, rôle affecté au tab par défaut
+        $numberCat = count($objectManager->getRepository(Category::class)->findAll());
+        $numberUser = count($objectManager->getRepository(User::class)->findAll());
+        $tab = $objectManager->getRepository(Tab::class)->find(1);
+        $numberRoles = count($tab->getReadRoles());
+
+        if($numberCat !== 3 || $numberUser != 1 || $numberRoles !== 0) {
+            throw new \RuntimeException('Database already modified.');
+        }
+
+        //ajout du rôle admin dans les rôles autorisés à voir l'onglet principal
+        $roleAdmin = $objectManager->getRepository(Role::class)->find(1);
+        $rolesCollection = new ArrayCollection();
+        $rolesCollection->add($roleAdmin);
+        $tab->addReadRoles($rolesCollection);
+
+        //ajout des droits au rôle admin
+        $permissions = $this->config['permissions']['Administration'];
+        $permissionCollection = new ArrayCollection();
+        foreach ($permissions as $permission => $description) {
+            $perm = $objectManager->getRepository(Permission::class)->findOneBy(array(
+                'name' => $permission
+            ));
+            if (! $perm) {
+                // create new permission
+                $perm = new Permission();
+                $perm->setName($permission);
+                $objectManager->persist($perm);
+                $permissionCollection->add($perm);
+            }
+        }
+        $roleAdmin->addPermissions($permissionCollection);
+        $objectManager->persist($roleAdmin);
+
+        try {
+            $objectManager->flush();
+            return "Base de données correctement initialisée";
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
         }
     }
 }
