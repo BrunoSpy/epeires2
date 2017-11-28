@@ -161,7 +161,7 @@ class MaintenanceController extends AbstractEntityManagerAwareController
         $numberRoles = count($tab->getReadRoles());
 
         if($numberCat !== 3 || $numberUser != 1 || $numberRoles !== 0) {
-            throw new \RuntimeException('Database already modified.');
+            return 'Impossible d\'initialiser la base de données : des modifications ont déjà été apportées.'."\n";
         }
 
         //ajout du rôle admin dans les rôles autorisés à voir l'onglet principal
