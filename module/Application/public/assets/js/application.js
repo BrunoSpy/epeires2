@@ -862,6 +862,22 @@ $(document).ready(function(){
         window.open(url+'report/daily?day='+date.toUTCString());
     });
 
+    $("#print").on('click', function(e){
+        e.preventDefault();
+        var fullHeight = $("#timeline")[0].scrollHeight;
+        var height = $('#timeline').height();
+        $("#timeline").height(fullHeight)
+        var element = document.getElementById('timeline');
+        html2pdf(element, {
+            filename:     'timeline.pdf',
+            margin: 5,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { dpi: 192, letterRendering: true, height: fullHeight },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        });
+        $("#timeline").height(height);
+    });
+
     /**
      * Ouverture des protections via le label
      */

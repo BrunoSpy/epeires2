@@ -26,6 +26,7 @@
         <?php
         echo $this->headScript()
 			->prependFile($this->basePath() . '/assets/js/application.js')
+            ->prependFile($this->basePath() . '/components/html2pdf/html2pdf.bundle.min.js')
 			->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
                         ->prependFile($this->basePath() . '/assets/js/headerbar.js')
                         ->prependFile($this->basePath() . '/assets/js/alarm.js')
