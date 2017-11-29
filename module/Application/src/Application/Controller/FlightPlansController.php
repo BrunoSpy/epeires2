@@ -174,7 +174,8 @@ class FlightPlansController extends TabController
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
                     'fields' => $this->getFields(),
-                    'flightplans' => $flightplans
+                    'flightplans' => $flightplans,
+                    'sar' => $post['sar']
                 ]);
     }   
 

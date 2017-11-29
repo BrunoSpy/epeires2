@@ -667,19 +667,13 @@
     $bMailIp.click(mailIp);
 
     setMapButtons();
-    /* Boutons d'action */
-    // var listBtn = new ListBtn();
-    // listBtn.addBtn($fIp.find('.btn-action-ip').toArray());
-    // // On enregistre des tableaux d'etat pour les boutons, l'etat d'index 0 étant l'état initiale
-    // listBtn.addStates([3, 2, 1, 1]); // index 1 : EDIT OK
-    // listBtn.addStates([3, 3, 2, 2]); // index 2 : SAV OK
-    // listBtn.addStates([1, 1, 2, 2]); // index 3 : REJEU
 
-    $tabs.first().click(function() {
+    $tabs.find('li').first().click(function() {
         idIp = null;
         resetMap();
         centerMap();
         refreshIp();
+        $('.raz-coord, .raz-bal, .raz-ter').trigger('click');
     });
 
     function refreshNbEvents() {
@@ -1296,15 +1290,15 @@
 
     }
 
-    function activateSavBtn() {
-        if (editHasBeenClicked && intPlan.getIp().length > 0) {
-            listBtn.setBtn('edit', 3);
-            listBtn.setBtn('sav', 2);
-        } else {
-            listBtn.setBtn('edit', 2);
-            listBtn.setBtn('sav', 1);
-        }
-    }
+    // function activateSavBtn() {
+    //     if (editHasBeenClicked && intPlan.getIp().length > 0) {
+    //         listBtn.setBtn('edit', 3);
+    //         listBtn.setBtn('sav', 2);
+    //     } else {
+    //         listBtn.setBtn('edit', 2);
+    //         listBtn.setBtn('sav', 1);
+    //     }
+    // }
 
     function btnEditIpHandler(e) {
         e.preventDefault();
@@ -1429,7 +1423,6 @@
         var coord = intPlan.get($(this).data().index).getCoord();
         var i = $(this).data('index');
         var ter = intPlan.get(i);
-
         icSel.options.iconSize = [IC_SAR_SIZE, IC_SAR_SIZE];
         mkSelected = updateMarker(mkSelected, [coord[1], coord[0]], icSel, ter.getPopup());
 

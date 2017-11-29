@@ -1,5 +1,9 @@
 <?php 
-if (count($flightplans) == 0) echo "Pas de plan de vol à afficher";
+
+if (count($flightplans) == 0) {
+	if ($sar == 0) echo "Aucun vol.";
+	else echo "Aucun vol en alerte.";
+}
 else {
 ?> 
 
