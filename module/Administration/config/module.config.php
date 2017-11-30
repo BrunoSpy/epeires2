@@ -53,7 +53,16 @@ return array(
                             'action' => 'initDB'
                         )
                     )
-                )
+                ),
+                'initbtivDB' => array(
+                    'options' => array(
+                        'route' => 'initbtivDB',
+                        'defaults' => array(
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'initbtivDB'
+                        )
+                    )
+                ),
             )
         )
     ),

@@ -27,6 +27,7 @@ class MaintenanceControllerFactory implements FactoryInterface {
     {
         return new MaintenanceController(
             $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
+            $serviceLocator->getServiceLocator()->get('categoryfactory'),
             $serviceLocator->getServiceLocator()->get('config'));
     }
 

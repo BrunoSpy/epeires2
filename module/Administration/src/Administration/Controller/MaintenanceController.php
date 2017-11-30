@@ -19,6 +19,11 @@ namespace Administration\Controller;
 
 use Application\Entity\Category;
 use Application\Entity\Tab;
+use Application\Entity\AfisCategory;
+use Application\Entity\AlertCategory;
+use Application\Entity\FlightPlanCategory;
+use Application\Entity\FieldCategory;
+use Application\Entity\InterrogationPlanCategory;
 use Core\Controller\AbstractEntityManagerAwareController;
 use Core\Entity\Permission;
 use Core\Entity\Role;
@@ -35,9 +40,10 @@ class MaintenanceController extends AbstractEntityManagerAwareController
 {
     private $config;
 
-    public function __construct(EntityManager $entityManager, $config)
+    public function __construct(EntityManager $entityManager, $categoryfactory, $config)
     {
         parent::__construct($entityManager);
+        $this->categoryfactory = $categoryfactory;
         $this->config = $config;
     }
 
@@ -192,6 +198,89 @@ class MaintenanceController extends AbstractEntityManagerAwareController
             $objectManager->flush();
             return "Base de données correctement initialisée";
         } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
+
+    /**
+     * Initialise la base de données avec des valeurs par défaut permettant l'utilisation de l'application pour les BTIV
+     */
+    public function initbtivdbAction() {
+        $request = $this->getRequest();
+
+        if(! $request instanceof ConsoleRequest) {
+            throw new \RuntimeException('Action only available from console.');
+        }
+
+        $objectManager = $this->getEntityManager();
+
+        //vérification du stade initial de la base de données
+        //pas de categories BTIV (afis/pln/alertes/pio/terrains)
+        $nAfisCat = count($objectManager->getRepository(AfisCategory::class)->findAll());
+        $nPlnCat = count($objectManager->getRepository(FlightPlanCategory::class)->findAll());
+        $nAltCat = count($objectManager->getRepository(AlertCategory::class)->findAll());
+        $nPiCat = count($objectManager->getRepository(InterrogationPlanCategory::class)->findAll());
+        $nFieldCat = count($objectManager->getRepository(FieldCategory::class)->findAll());
+
+        if (array_sum([$nAfisCat, $nPlnCat, $nAltCat, $nPiCat, $nFieldCat]) > 0) {
+            return 'Impossible d\'initialiser les catégories btiv dans la base de données : des modifications ont déjà été apportées.'."\n";
+        }
+
+        //ajout de la catégorie d'événement AFIS
+        $afisCat = $this->categoryfactory->createAfisCategory();
+        $afisCat->setName("AFIS");
+        $afisCat->setShortName("AF");
+        $afisCat->setCompactMode(0);
+        $afisCat->setTimelineConfirmed(0);       
+        $afisCat->setColor("#008000");
+
+        $objectManager->persist($afisCat);
+
+        //ajout de la catégorie d'événement PLN
+        $plnCat = $this->categoryfactory->createFlightPlanCategory();
+        $plnCat->setName("GESTION PLN");
+        $plnCat->setShortName("PLN");
+        $plnCat->setCompactMode(0);
+        $plnCat->setTimelineConfirmed(0);       
+        $plnCat->setColor("#0000FF");
+
+        $objectManager->persist($plnCat);
+
+        //ajout de la catégorie d'événement Alerte
+        $AltCat = $this->categoryfactory->createAlertCategory();
+        $AltCat->setName("ALERTES");
+        $AltCat->setShortName("ALT");
+        $AltCat->setCompactMode(0);
+        $AltCat->setTimelineConfirmed(0);       
+        $AltCat->setColor("#FF0000");
+
+        $objectManager->persist($AltCat);
+
+        //ajout de la catégorie d'événement PIO
+        $ipCat = $this->categoryfactory->createInterrogationPlanCategory();
+        $ipCat->setName("PIO/PIA");
+        $ipCat->setShortName("PI");
+        $ipCat->setCompactMode(0);
+        $ipCat->setTimelineConfirmed(0);       
+        $ipCat->setColor("#FF6600");
+
+        $objectManager->persist($ipCat);
+
+        //ajout de la catégorie d'événement terrains interrogés pour les PIO
+        $fCat = $this->categoryfactory->createFieldCategory();
+        $fCat->setName("TERRAINS");
+        $fCat->setShortName("TER");
+        $fCat->setCompactMode(0);
+        $fCat->setTimelineConfirmed(0);       
+        $fCat->setColor("#800080");
+
+        $objectManager->persist($fCat);
+
+        try {
+            $objectManager->flush();
+            return "Données BTIV correctement initialisées";
+        } catch (\Exception $e) {
+            // echo $e->getMessage();
             error_log($e->getMessage());
         }
     }
