@@ -1178,7 +1178,7 @@ class EventsController extends TabsController
         //$tabid = $this->params()->fromQuery('tabid', null);
         
         $cats = $this->params()->fromQuery('cats', null);
-        
+
         $form = $this->getSkeletonForm($cats);
         
         $id = $this->params()->fromQuery('id', null);

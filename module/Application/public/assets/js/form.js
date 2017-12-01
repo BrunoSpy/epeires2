@@ -167,7 +167,7 @@ var formModifyAlarm = function(alarm) {
 var form = function(url, cats){
 
 	urlt = url;
-
+	
 	/**
 	 *
 	 * @param newevt 0 : nouvel évènement, 1 : modification d'un evt, 2 : copie d'un evt ou intanciation modèle via recherche

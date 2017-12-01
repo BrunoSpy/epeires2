@@ -68,7 +68,9 @@ class Module implements ConsoleUsageProviderInterface
         return array(
             // Describe available commands
             'delete-events <orgshortname>' => 'Delete all events in database',
-            'clean-logs' => 'Remove useless logs entries'
+            'clean-logs' => 'Remove useless logs entries',
+            'initDB' => 'Fresh install database initialisation',
+            'initbtivDB' => 'Create mandatory categories for BTIV module activation'
         );
     }
 }

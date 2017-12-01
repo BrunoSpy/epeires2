@@ -128,16 +128,17 @@ $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-if (<?php echo count($cats); ?> == 0) {
-    $("#create-link").hide();
-} else {
-    $("#create-link")
+<?php
+if($this->hasAccess) {
+    echo '$("#create-link")
         .hide()
         .clone(true)
         .show()
-        .prependTo('.content')
-        .addClass('category');
-}
+        .prependTo(\'.content\')
+        .addClass(\'category\');';
+} else {
+    echo '$("#create-link").hide();';
+} ?>
 
 $("#changeview").remove();
 

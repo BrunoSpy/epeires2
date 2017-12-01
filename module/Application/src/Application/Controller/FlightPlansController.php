@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\Category;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
@@ -59,7 +60,35 @@ class FlightPlansController extends TabController
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
         }
-        
+
+        //determine if user has access to at least one category
+        $readablecat = array();
+        foreach ($cats as $cat) {
+            $category = $this->em->getRepository(Category::class)->find($cat);
+            if ($this->zfcUserAuthentication()->hasIdentity()) {
+                $roles = $this->zfcUserAuthentication()
+                    ->getIdentity()
+                    ->getRoles();
+                foreach ($roles as $role) {
+                    if ($category->getReadroles(true)->contains($role)) {
+                        $readablecat[] = $category;
+                        break;
+                    }
+                }
+            } else {
+                $role = $this->zfcRbacOptions->getGuestRole();
+                $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
+                    'name' => $role
+                ));
+                if ($roleentity) {
+                    if ($category->getReadroles(true)->contains($roleentity)) {
+                        $readablecat[] = $category;
+                    }
+                }
+            }
+        }
+        $hasAccess = (count($readablecat) > 0);
+
         $alertcats = [];
         foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
             $alertcats[] = $cat->getId();
@@ -68,7 +97,8 @@ class FlightPlansController extends TabController
         return (new ViewModel())
             ->setVariables([
                 'cats' => $cats,
-                'alertcats' => $alertcats
+                'alertcats' => $alertcats,
+                'hasAccess' => $hasAccess
             ]);
     }
 
