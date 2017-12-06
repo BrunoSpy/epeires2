@@ -5,10 +5,11 @@ cache:
 before_script:
 #use proxy cache
 - export http_proxy=http://10.196.32.91:3142
+- echo 'deb http://deb.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/backports.list
 #install git and unzip for composer, libmcrypt for php-mcrypt
 - apt-get update && apt-get install -qqy git unzip libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
 #ajout xvfb for selenium
-- apt-get install -qqy xvfb wget openjdk-7-jre-headless firefox-esr
+- apt-get install -qqy xvfb wget openjdk-8-jre-headless firefox-esr
 #stop using proxy cache, unless you want composer to crash
 - export http_proxy=""
 - export https_proxy=""
