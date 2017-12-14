@@ -30,6 +30,7 @@
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
+    "ext-mcrypt": "*",
     "ext-soap": "*",
     "ext-openssl": "*",
     "zendframework/zend-mvc": "^2.7",
