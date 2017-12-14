@@ -85,11 +85,3 @@ test:7.1:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.2:
-  image: php:7.2-apache
-  variables:
-    OPENJDK: "default-jre-headless"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
