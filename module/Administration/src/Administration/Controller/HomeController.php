@@ -50,7 +50,9 @@ class HomeController extends AbstractActionController
         $extensions['intl'] = extension_loaded('intl');
         $extensions['soap'] = extension_loaded('soap');
         $extensions['openssl'] = extension_loaded('openssl');
-        $extensions['mcrypt'] = extension_loaded('mcrypt');
+        if(PHP_VERSION_ID < 70200) {
+            $extensions['mcrypt'] = extension_loaded('mcrypt');
+        }
 
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
@@ -58,7 +60,8 @@ class HomeController extends AbstractActionController
             'latestversion' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getLatestVersion()),
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations,
-            'extensions' => $extensions
+            'extensions' => $extensions,
+            'phpversionid' => PHP_VERSION_ID
         );
     }
 }
