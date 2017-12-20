@@ -110,7 +110,7 @@ class EventsController extends TabsController
                     }
                 }
                 if(!$hasDefaultTab) {
-                    if(!empty($tabs)){
+                    if(!empty($tabs) && $tabs[0] !== null){
                         //pas de tab par défaut -> suppression bouton + passage au premier tab
                         return $this->redirect()->toRoute('application', array('controller' => 'tabs'), array('query' => array('tabid' => $tabs[0]->getId())));
                     }
