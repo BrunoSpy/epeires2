@@ -267,7 +267,8 @@ var antenna = function(url, frequencyTestMenu){
 
             var mainantennacolor = sector.find('.antennas .mainantenna-color');
             var backupantennacolor = sector.find('.antennas .backupantenna-color');
-            if(sector.find(".antennas li").length > 1) {
+            var bicouv = (sector.find(".antennas li").length > 1);
+            if(bicouv) {
                 //menus inutiles si une seule couv
                 if (mainantennacolor.filter('.background-selected').find('li').length === mainantennacolor.find('li').length && backupantennacolor.filter('.background-status-ok').find('li').length === backupantennacolor.find('li').length) {
                     list.append("<li><a href=\"#\" class=\"switch-coverture\" data-cov=\"1\" data-freqid=\"" + $(this).data('freq') + "\">" + i18n.t('frequencies.change_couv_secours') + "</a></li>");
@@ -298,11 +299,13 @@ var antenna = function(url, frequencyTestMenu){
             } else {
                 list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+mainantenna.data('antennaid')+"\">Antenne principale OPE (uniquement cette fréq.)</a></li>");
             }
-            var backupantenna = sector.find('.antennas .backupantenna-color.antenna-color:not(.antenna-climax-color)');
-            if(backupantenna.hasClass('background-status-ok')){
-                list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours HS (uniquement cette fréq.)</a></li>");
-            } else {
-                list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+backupantenna.data('antennaid')+"\">Antenne secours OPE (uniquement cette fréq.)</a></li>");
+            if(bicouv) {
+                var backupantenna = sector.find('.antennas .backupantenna-color.antenna-color:not(.antenna-climax-color)');
+                if (backupantenna.hasClass('background-status-ok')) {
+                    list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\"" + freqid + "\" data-state=\"false\" data-antennaid=\"" + backupantenna.data('antennaid') + "\">Antenne secours HS (uniquement cette fréq.)</a></li>");
+                } else {
+                    list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\"" + freqid + "\" data-state=\"true\" data-antennaid=\"" + backupantenna.data('antennaid') + "\">Antenne secours OPE (uniquement cette fréq.)</a></li>");
+                }
             }
             //si climax
             var mainantennaclimax = sector.find('.antennas .mainantenna-color.antenna-climax-color');
@@ -313,12 +316,14 @@ var antenna = function(url, frequencyTestMenu){
                     list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+mainantennaclimax.data('antennaid')+"\">Antenne principale climaxée OPE (uniquement cette fréq.)</a></li>");
                 }
             }
-            var backupantennaclimax = sector.find('.antennas .backupantenna-color.antenna-climax-color');
-            if(backupantennaclimax.length > 0){
-                if(backupantennaclimax.hasClass('background-status-ok')){
-                    list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"false\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée HS (uniquement cette fréq.)</a></li>");
-                } else {
-                    list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\""+freqid+"\" data-state=\"true\" data-antennaid=\""+backupantennaclimax.data('antennaid')+"\">Antenne secours climaxée OPE (uniquement cette fréq.)</a></li>");
+            if(bicouv) {
+                var backupantennaclimax = sector.find('.antennas .backupantenna-color.antenna-climax-color');
+                if (backupantennaclimax.length > 0) {
+                    if (backupantennaclimax.hasClass('background-status-ok')) {
+                        list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\"" + freqid + "\" data-state=\"false\" data-antennaid=\"" + backupantennaclimax.data('antennaid') + "\">Antenne secours climaxée HS (uniquement cette fréq.)</a></li>");
+                    } else {
+                        list.append("<li><a href=\"#\" class=\"switch-antenna\" data-freqid=\"" + freqid + "\" data-state=\"true\" data-antennaid=\"" + backupantennaclimax.data('antennaid') + "\">Antenne secours climaxée OPE (uniquement cette fréq.)</a></li>");
+                    }
                 }
             }
             if(list.find('li').length > 0 ){
