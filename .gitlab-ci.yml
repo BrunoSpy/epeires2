@@ -22,7 +22,7 @@ before_script:
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #install needed php extensions
-- docker-php-ext-install -j$(nproc) iconv mcrypt soap intl pdo_mysql zip bcmath
+- docker-php-ext-install -j$(nproc) iconv $MCRYPT soap intl pdo_mysql zip bcmath
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 - docker-php-ext-install -j$(nproc) gd
 #install xdebug for codeception
@@ -66,24 +66,32 @@ variables:
 
 test:5.6:
   image: php:5.6-apache
+  variables:
+    MCRYPT: "mcrypt"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.0:
   image: php:7.0-apache
+  variables:
+    MCRYPT: "mcrypt"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.1:
   image: php:7.1-apache
+  variables:
+    MCRYPT: "mcrypt"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.2:
   image: php:7.2-apache
+  variables:
+    MCRYPT: ""
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
