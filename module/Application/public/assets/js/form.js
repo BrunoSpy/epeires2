@@ -167,7 +167,7 @@ var formModifyAlarm = function(alarm) {
 var form = function(url, cats){
 
 	urlt = url;
-
+	
 	/**
 	 *
 	 * @param newevt 0 : nouvel évènement, 1 : modification d'un evt, 2 : copie d'un evt ou intanciation modèle via recherche
@@ -539,7 +539,7 @@ var form = function(url, cats){
 					updateHours();
 					//updateHourTitle();
 					if(cat_parent_id >= 0){
-						$("#root_categories").val(cat_parent_id);
+                        $("#root_categories").val(cat_parent_id);
 						$('#root_categories').trigger('change');
 					} else {
 						//pas de parent : cat_parent_id === -1
@@ -823,7 +823,9 @@ var form = function(url, cats){
                 if(cat_parent_id >= 0){
                     $("#subcategories").val(cat_id);
                     $("#subcategories").trigger('change');
-                } else {
+                } else if($('#subcategories option[value="-1"]').length == 0) {
+                    changeSubCat($('#subcategories option:first-child').val());
+				} else {
                     $.when(//récupération des modèles
                         $.post(
                             url+'events/subform?part=predefined_events&id='+root_value+ '&'+cats,

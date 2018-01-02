@@ -25,7 +25,10 @@ class MaintenanceControllerFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new MaintenanceController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new MaintenanceController(
+            $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
+            $serviceLocator->getServiceLocator()->get('categoryfactory'),
+            $serviceLocator->getServiceLocator()->get('config'));
     }
 
 }

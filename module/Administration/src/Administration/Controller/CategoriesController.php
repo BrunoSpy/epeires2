@@ -337,6 +337,33 @@ class CategoriesController extends FormController
                 $category->setLowerLevelField(null);
                 $category->setUpperLevelField(null);
             }
+            if($category instanceof AfisCategory) {
+                $category->setAfisfield(null);
+                $category->setStatefield(null);
+            }
+            if($category instanceof FlightPlanCategory) {
+                $category->setAircraftidfield(null);
+                $category->setDestinationfield(null);
+                $category->setStartfield(null);
+                $category->setAlertfield(null);
+                $category->setEstimatedtimeofarrivalfield(null);
+            }
+            if($category instanceof AlertCategory) {
+                $category->setTypeField(null);
+                $category->setCauseField(null);
+            }
+            if($category instanceof InterrogationPlanCategory) {
+                $category->setTypeField(null);
+                $category->setLatField(null);
+                $category->setLongField(null);
+                $category->setAlertField(null);
+            }
+            if($category instanceof FieldCategory) {
+                $category->setNameField(null);
+                $category->setCodeField(null);
+                $category->setLatField(null);
+                $category->setLongField(null);
+            }
             $objectManager->persist($category);
             $objectManager->flush();
             // suppression des evts associés par cascade

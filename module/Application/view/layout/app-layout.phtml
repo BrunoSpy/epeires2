@@ -26,6 +26,7 @@
         <?php
         echo $this->headScript()
 			->prependFile($this->basePath() . '/assets/js/application.js')
+            ->prependFile($this->basePath() . '/components/html2pdf/html2pdf.bundle.min.js')
 			->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
                         ->prependFile($this->basePath() . '/assets/js/headerbar.js')
                         ->prependFile($this->basePath() . '/assets/js/alarm.js')
@@ -56,7 +57,7 @@
 
 	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform); ?>
 
-	<?php echo $this->navbar("blue"); ?>
+	<?php echo $this->navbar("blue", $this->showHome); ?>
 
     <?php if($this->isGranted('events.create')):?>
 			<a id="create-link" href="#" type="button" class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>

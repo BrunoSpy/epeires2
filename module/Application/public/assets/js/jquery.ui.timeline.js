@@ -1686,10 +1686,10 @@
         _hideEvent: function (event) {
             var elmt = this.element.find('#event' + event.id);
             if(elmt.size() > 0) {
-                //remove tooltips before
-                elmt.find('span.badge.recurrence').tooltip('destroy');
-                elmt.tooltip('destroy');
                 elmt.fadeOut(function () {
+                    //remove tooltips before
+                    $(this).find('span.badge.recurrence').tooltip('destroy');
+                    $(this).tooltip('destroy');
                     //remove from DOM
                     $(this).remove();
                 });

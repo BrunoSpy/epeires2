@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\Category;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
@@ -32,6 +33,7 @@ use Application\Services\CustomFieldService;
 use Application\Form\CustomFieldset;
 
 use Application\Entity\FlightPlanCategory;
+use Application\Entity\AlertCategory;
 use Application\Entity\Organisation;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
@@ -39,7 +41,7 @@ use Application\Entity\CustomFieldValue;
  *
  * @author Loïc Perrin
  */
-class FlightPlansController extends AbstractEntityManagerAwareController
+class FlightPlansController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
 
@@ -47,21 +49,56 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
     public function __construct(EntityManager $em, CustomFieldService $cf)
     {
-        parent::__construct($em);
-        $this->em = $this->getEntityManager();
+        $this->em = $em;
         $this->cf = $cf;
     }
     
     public function indexAction()
-    {        
-        $cats = array();
+    {
+        parent::indexAction();
+        $cats = [];
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
+        }
+
+        //determine if user has access to at least one category
+        $readablecat = array();
+        foreach ($cats as $cat) {
+            $category = $this->em->getRepository(Category::class)->find($cat);
+            if ($this->zfcUserAuthentication()->hasIdentity()) {
+                $roles = $this->zfcUserAuthentication()
+                    ->getIdentity()
+                    ->getRoles();
+                foreach ($roles as $role) {
+                    if ($category->getReadroles(true)->contains($role)) {
+                        $readablecat[] = $category;
+                        break;
+                    }
+                }
+            } else {
+                $role = $this->zfcRbacOptions->getGuestRole();
+                $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
+                    'name' => $role
+                ));
+                if ($roleentity) {
+                    if ($category->getReadroles(true)->contains($roleentity)) {
+                        $readablecat[] = $category;
+                    }
+                }
+            }
+        }
+        $hasAccess = (count($readablecat) > 0);
+
+        $alertcats = [];
+        foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
+            $alertcats[] = $cat->getId();
         }
         
         return (new ViewModel())
             ->setVariables([
-                'cats' => $cats
+                'cats' => $cats,
+                'alertcats' => $alertcats,
+                'hasAccess' => $hasAccess
             ]);
     }
 
@@ -97,17 +134,19 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 {
                     if($valuefield > 0) {
                         $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        $ev['alert'] = [
-                            'id' => $altEv->getId(),
-                            'start_date' => $altEv->getStartDate(),
-                            'end_date' => $altEv->getEndDate()
-                        ];
-                        foreach ($altEv->getCustomFieldsValues() as $altvalue) 
-                        {
-                            $altcustomfield = $altvalue->getCustomField();
-                            $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
-                            (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
-                        } 
+                        if($altEv instanceof Event) {
+                            $ev['alert'] = [
+                                'id' => $altEv->getId(),
+                                'start_date' => $altEv->getStartDate(),
+                                'end_date' => $altEv->getEndDate()
+                            ];
+                            foreach ($altEv->getCustomFieldsValues() as $altvalue) 
+                            {
+                                $altcustomfield = $altvalue->getCustomField();
+                                $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
+                                (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
+                            }
+                        }
                     }
                 }
             }
@@ -165,7 +204,8 @@ class FlightPlansController extends AbstractEntityManagerAwareController
                 ->setTerminal($this->getRequest()->isXmlHttpRequest())
                 ->setVariables([
                     'fields' => $this->getFields(),
-                    'flightplans' => $flightplans
+                    'flightplans' => $flightplans,
+                    'sar' => $post['sar']
                 ]);
     }   
 
@@ -211,15 +251,19 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         $post = $this->getRequest()->getPost();
         $msgType = 'error';
         $id = (int) $post['id'];
+        $end_date = $post['end_date'];
         if($id > 0) 
         {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
+            if (isset($end_date)) $end_date = new \DateTime($end_date);
+            else $end_date = $now;
+
             $event = $this->em->getRepository(Event::class)->find($id);
             $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
             $event->setStatus($endstatus);
-            $event->setEnddate($now);
+            $event->setEnddate($end_date);
             $this->em->persist($event);
             
             try 
@@ -230,7 +274,7 @@ class FlightPlansController extends AbstractEntityManagerAwareController
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }
-        } else $msg = "Impossible de trouver le vol.";
+        } else $msg = "Impossible de trouver l'événement alerte.";
 
         return new JsonModel([
             'type' => $msgType, 
@@ -246,7 +290,6 @@ class FlightPlansController extends AbstractEntityManagerAwareController
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
         $msgType = 'error';
-
         $req = $this->getRequest()->getPost();
         $id = (int) $req['id'];
         $type = $req['type'];
@@ -299,15 +342,15 @@ class FlightPlansController extends AbstractEntityManagerAwareController
 
                     $now = new \DateTime('NOW');
                     $now->setTimezone(new \DateTimeZone("UTC"));
-
-                    $organisation = $this->em->getRepository(Organisation::class)->findOneBy(['id' => 1]);
                     // crétation de l'evenement d'alerte
                     $event = new Event();
                     $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
                     $event->setStartdate($now);
                     $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
                     $event->setPunctual(false);
-                    $event->setOrganisation($organisation);
+                    $event->setOrganisation($this->zfcUserAuthentication()
+                        ->getIdentity()
+                        ->getOrganisation());
                     $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
                     
                     $categories = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();

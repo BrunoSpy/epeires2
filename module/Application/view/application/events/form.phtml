@@ -297,9 +297,11 @@ echo $this->formHidden($this->form->get('category'));
                     //pas de modification possible d'un modèle
                     $mod = false;
                 }
+            } else {
+                $mod = false;
             }
             //ajout de fichier si nouvel evt ou mod avec droits ok
-            if(!$this->event || $this->model || ($this->event && $mod)){
+            if((!$this->event || $this->model || ($this->event && $mod)) && $this->isGranted('events.mod-files')){
                 echo "<a id=\"addfile\" href=\"#add-file\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span> Ajouter un fichier</a>";
             }
             echo '<table class="table table-hover" id="file-table">';
@@ -325,7 +327,7 @@ echo $this->formHidden($this->form->get('category'));
                         echo "<td>";
                         echo "<a href=\"".$this->basePath().$file->getPath()."\" rel=\"external\"><span class=\"glyphicon glyphicon-download\"></span></a>";
                         echo "</td>";
-                        if($mod){//suppression d'un fichier possible si le fichier ne vient pas d'un modèle ou si droits ok
+                        if($mod && $this->isGranted('events.mod-files')){//suppression d'un fichier possible si le fichier ne vient pas d'un modèle ou si droits ok
                             echo "<td>";
                             //TODO
                             //$html .= "<a href=\"#\"><i class=\"icon-pencil mod-file\"></i></a> ";

@@ -44,7 +44,25 @@ return array(
                             'action' => 'cleanLogs'
                         )
                     )
-                )
+                ),
+                'initDB' => array(
+                    'options' => array(
+                        'route' => 'initDB',
+                        'defaults' => array(
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'initDB'
+                        )
+                    )
+                ),
+                'initbtivDB' => array(
+                    'options' => array(
+                        'route' => 'initbtivDB',
+                        'defaults' => array(
+                            'controller' => 'Administration\Controller\Maintenance',
+                            'action' => 'initbtivDB'
+                        )
+                    )
+                ),
             )
         )
     ),

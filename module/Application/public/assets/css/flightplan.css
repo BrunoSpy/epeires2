@@ -11,10 +11,19 @@
     border:1px;
 }
 
-.a-trig-alt button {
-    opacity:0.25;
+.a-trig-alt button.disabled {
+	opacity: 0.05
 }
 
-.active-alt button{
+.active-alt button.disabled {
+	opacity:0.25;
+}
+
+.a-trig-alt button {
+    opacity:0.35;
+}
+
+
+.active-alt button {
     opacity:1;
 }

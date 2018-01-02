@@ -226,7 +226,7 @@
                 div.on('click', '.minute .next', function(event) {
                     event.preventDefault();
                     var input = $(this).closest('td').find('input');
-                    input.val(minuteplusone(input, 1));
+                    input.val(minuteplusone(input, 5));
                     input.trigger('change');
                 });
 
@@ -240,7 +240,7 @@
                 div.on('click', '.minute .previous', function(event) {
                     event.preventDefault();
                     var input = $(this).closest('td').find('input');
-                    input.val(minuteplusone(input, -1));
+                    input.val(minuteplusone(input, -5));
                     input.trigger('change');
                 });
 

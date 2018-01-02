@@ -1,5 +1,9 @@
 <?php 
-if (count($flightplans) == 0) echo "Pas de plan de vol pour cette journée.";
+
+if (count($flightplans) == 0) {
+	if ($sar == 0) echo "Aucun vol.";
+	else echo "Aucun vol en alerte.";
+}
 else {
 ?> 
 
@@ -28,21 +32,36 @@ else {
 	    	foreach ($tAlertes as $index => $alt) 
 	    	{
 	    		$act = '';
-				$title = (isset($fp['Cause'])) ? $fp['Cause'] : '';
-	    		if(isset($fp['Type']) && $alt == $fp['Type']) {
-	    			
-	    			$act = 'active-alt';
+	    		$cause = '';
+	    		$title = '';
+	    		$modal = "#mdl-trig-fp";
+	    		if(isset($fp['Type'])) {
+	    			$modal = "#mdl-edit-alt";
+	    			$cause = (isset($fp['Cause'])) ? $fp['Cause'] : '';
+	    			if($alt == $fp['Type']) {
+	    				$act = 'active-alt';
+	    				$title = 'title = "'.$cause.'"';
+	    			}
 	    		}
+	    		// alerte non-clôturée
+	    		if(!isset($fp['alert']['end_date'])) {
 		    	?>
-		        <a title="<?php echo $title; ?>"" class="a-trig-alt <?php echo $act; ?>" href="#mdl-trig-fp" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-toggle="modal">
+		        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " href="<?php echo $modal; ?>" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-cause="<?php echo $cause;?>" data-toggle="modal">
 		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
 		        </a>
-	        <?php
+		        <?php
+		    	} else {
+		    	?>
+		        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>"  data-cause="<?php echo $cause;?>" >
+		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?> disabled"><?php echo $alt[0]; ?></button>
+		        </a>
+		        <?php
+		    	}
 	    	}
 	    	if (isset($fp['Type'])) { 
 	    		if (!isset($fp['alert']['end_date'])) { 
 	    		?>
-	    		<a class="a-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
+	    		<a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
 	    		<?php 
 	    		} else {
 	    		?>

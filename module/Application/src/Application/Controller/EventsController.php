@@ -89,9 +89,12 @@ class EventsController extends TabsController
         $onlyroot = false;
         $cats = array();
 
+        $hasDefaultTab = false;
+
         //fusion des tabs principaux pour les rôles de l'utilisateur
         if ($userauth != null && $userauth->hasIdentity()) {
             $roles = $userauth->getIdentity()->getRoles();
+
             foreach ($roles as $r) {
                 $tabs = $r->getReadtabs();
                 foreach ($tabs as $t) {
@@ -101,9 +104,17 @@ class EventsController extends TabsController
                                 $cats[] = $c->getId();
                             }
                         }
+                        $hasDefaultTab = true;
                         $onlyroot += $t->isOnlyroot();
-                        break;
+                        //break;
                     }
+                }
+                if(!$hasDefaultTab) {
+                    if(!empty($tabs) && $tabs[0] !== null){
+                        //pas de tab par défaut -> suppression bouton + passage au premier tab
+                        return $this->redirect()->toRoute('application', array('controller' => 'tabs'), array('query' => array('tabid' => $tabs[0]->getId())));
+                    }
+
                 }
             }
         } else {
@@ -128,6 +139,7 @@ class EventsController extends TabsController
             }
         }
 
+        $this->layout()->showHome = true;
 
         $this->viewmodel->setVariable('onlyroot', $onlyroot);
         $this->viewmodel->setVariable('cats', $cats);
@@ -1071,6 +1083,7 @@ class EventsController extends TabsController
                     $id = $this->params()->fromQuery('id');
                     $subcat = $this->filterReadableCategories($em->getRepository('Application\Entity\Category')
                         ->getChilds($id));
+                    $other = true;
                     if ($cats !== null) {
                         //restrict subcats to those present in cats list
                         $tempsubcat = array();
@@ -1080,12 +1093,17 @@ class EventsController extends TabsController
                             }
                         }
                         $subcat = $tempsubcat;
+                        //don't add 'other' field if list is restricted and parent not in list
+                        if(!in_array($id, $cats)) {
+                            $other = false;
+                        }
                     }
                     $subcatarray = array();
                     foreach ($subcat as $cat) {
                         $subcatarray[$cat->getId()] = $cat->getName();
                     }
                     $viewmodel->setVariables(array(
+                        'other' => $other,
                         'part' => $part,
                         'values' => $subcatarray
                     ));
@@ -1160,7 +1178,7 @@ class EventsController extends TabsController
         //$tabid = $this->params()->fromQuery('tabid', null);
         
         $cats = $this->params()->fromQuery('cats', null);
-        
+
         $form = $this->getSkeletonForm($cats);
         
         $id = $this->params()->fromQuery('id', null);
@@ -1346,8 +1364,16 @@ class EventsController extends TabsController
         $tempRootCategories = array();
         foreach($cats as $catid){
             $cat = $em->getRepository(Category::class)->find($catid);
-            if($cat && $cat->getParent() === null) {
-                $tempRootCategories[] = $cat;
+            if($cat) {
+                if($cat->getParent() === null) {
+                    if (!in_array($cat, $tempRootCategories)) {
+                        $tempRootCategories[] = $cat;
+                    }
+                } else {
+                    if (!in_array($cat->getParent(), $tempRootCategories)) {
+                        $tempRootCategories[] = $cat->getParent();
+                    }
+                }
             }
         }
         $rootCategories = $this->filterReadableCategories($tempRootCategories);

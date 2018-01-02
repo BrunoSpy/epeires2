@@ -3,6 +3,10 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js'); ?>
 
 <div class="row col-sm-8 col-sm-offset-2">
+    <?php if(count($cats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Afis' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
      <div id="search-afis" class="form-group form-group-material-blue-500 has-feedback">
         <input class="form-control" placeholder="LFXX" type="text"><span class="glyphicon glyphicon-search form-control-feedback"></span>
     </div>       
@@ -26,6 +30,7 @@
             </table>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <?=$this->modalWindow(  "mdl-show-not", 

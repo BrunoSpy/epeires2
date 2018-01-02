@@ -158,8 +158,7 @@ class UsersController extends FormController
                 $user = $objectManager->getRepository('Core\Entity\User')->find($post['id']);
                 if ($user && isset($post['newCredential'])) {
                     $bcrypt = new Bcrypt();
-                    $bcrypt->setCost($this->getServiceLocator()
-                        ->get('zfcuser_module_options')
+                    $bcrypt->setCost($this->zfcUserModuleOptions
                         ->getPasswordCost());
                     $user->setPassword($bcrypt->create($post['newCredential']));
                 }

@@ -49,6 +49,8 @@ var updateNavbarTop = function() {
 
     totalWidth += 30; //some margin
 
+    totalWidth += 20; //another margin if scroll
+
     if(windowWidth > 768) {
         if(totalWidth > windowWidth) {
             //remove day
@@ -858,6 +860,22 @@ $(document).ready(function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
     	var date = new Date(temp[2],temp[1]-1,temp[0],"5");
         window.open(url+'report/daily?day='+date.toUTCString());
+    });
+
+    $("#print").on('click', function(e){
+        e.preventDefault();
+        var fullHeight = $("#timeline")[0].scrollHeight;
+        var height = $('#timeline').height();
+        $("#timeline").height(fullHeight)
+        var element = document.getElementById('timeline');
+        html2pdf(element, {
+            filename:     'timeline.pdf',
+            margin: 5,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { dpi: 192, letterRendering: true, height: fullHeight },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        });
+        $("#timeline").height(height);
     });
 
     /**

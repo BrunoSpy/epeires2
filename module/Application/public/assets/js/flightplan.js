@@ -1,7 +1,8 @@
 var flightplan = function(url) 
 {
     "use strict";
-    $("#create-link").click(function() {
+    $("#create-link,.modify-evt").click(function() {
+        if($(this).hasClass('.modify-evt')) $('#form-title').html('Modifier l\'événement');
         removeAlertField();
         setClickSubmit();
     });
@@ -55,11 +56,44 @@ var flightplan = function(url)
         )
     });
 
+    $('#a-end-alt-ok').click(function()
+    {
+        $('#mdl-end-alt').modal('hide');
+        $.post(
+            url+'flightplans/endAlert', 
+            {id: idEvent, end_date: $('input[name=end-date]').val()}, 
+            function (data) {
+                refresh();
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            }
+        );
+    });   
+
+    $('#a-edit-alt-ok').click(function() {
+        $('#mdl-edit-alt').modal('hide');
+        $.post(
+            url+'flightplans/triggerAlert', 
+            {id: idEvent, type: $('#mdl-edit-alt .s-trig-alt').html(), cause: $('#mdl-edit-alt .t-causealt').val()}, 
+            function (data) {
+                refresh();
+                noty({
+                    text: data.msg,
+                    type: data.type,
+                    timeout: 4000,
+                });
+            }
+        );      
+    });
+
     $('#a-trig-alt-ok').click(function() {
         $('#mdl-trig-fp').modal('hide');
         $.post(
             url+'flightplans/triggerAlert', 
-            {id: idEvent, type: $('#s-trig-alt').html(), cause: $('#t-causealt').val()}, 
+            {id: idEvent, type: $('#mdl-trig-fp .s-trig-alt').html(), cause: $('#mdl-trig-fp .t-causealt').val()}, 
             function (data) {
                 refresh();
                 noty({
@@ -79,15 +113,27 @@ var flightplan = function(url)
         $('.a-trig-alt .a-end-fp .a-end-alt').remove();
 
         $('.sar').load(url+'flightplans/get', {date: globdate, sar:1}, function() {
-            $('.nosar').load(url+'flightplans/get', {date: globdate, sar:0}, function() {
+            $('.nosar').load(url+'flightplans/get', {date: globdate, sar:0}, function() 
+            {
+                // on selectionne les boutons de déclenchement qui ne sont pas inactifs (cas d'une alerte clôturée)
                 var $btnAlts = $(".a-trig-alt");
 
                 $btnAlts.click(function() {
-                    $('#s-trig-alt').html($(this).data('type'));
-                    $('#s-trig-airid').html($(this).data('air-id'));
-                    $('#t-causealt').val($(this).data('original-title'));
-                    idEvent = $(this).data('id');
-                }).tooltip();
+                    // on ne fait rien si le bouton est inactif
+                    if($(this).find('button').not('.disabled')) {
+                        $('.s-trig-alt').html($(this).data('type'));
+                        $('.s-trig-airid').html($(this).data('air-id'));
+                        $('.t-causealt').val($(this).data('cause'));
+                        idEvent = $(this).data('id');
+
+                        if($(this).hasClass('active-alt')) 
+                            $('#mdl-edit-alt').find('p').hide();
+                        else
+                            $('#mdl-edit-alt').find('p').show();
+                    }
+                });
+
+                $('.active-alt').tooltip();
 
                 $('.a-end-fp').click(function() 
                 {
@@ -102,18 +148,13 @@ var flightplan = function(url)
                 });
 
                 $('.a-end-alt').click(function() {
-                    $.post(
-                        url+'flightplans/endAlert', 
-                        {id: $(this).data('id')}, 
-                        function (data) {
-                            refresh();
-                            noty({
-                                text: data.msg,
-                                type: data.type,
-                                timeout: 4000,
-                            });
-                        }
-                    );    
+                    idEvent = $(this).data('id');
+                    $('input[name=end-date]')
+                        .timepickerform({
+                            'id':'start', 
+                            'clearable':true, 
+                            'init':true
+                        });    
                 });
             });
         });    

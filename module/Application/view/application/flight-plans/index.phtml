@@ -24,12 +24,16 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 
 
 <div class="container-fluid">
+    <?php if(count($alertcats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Alerte' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
+    <?php if(count($cats) == 0): ?>
+    <p class="text-warning">Aucune catégorie d'événement 'Plan de Vol' n'existe, impossible de continuer.</p>
+    <?php else: ?>
+
     <div class="row col-sm-10 col-sm-offset-1">
-        <p></p>
-        <div class="panel panel-default">
-            <?php if(count($cats) == 0): ?>
-            <p class="text-warning">Aucun catégorie Plan de vol n'existe, impossible de continuer.</p>
-            <?php endif; ?>
+        <div class="panel panel-default">       
             <div class="panel-heading">
                 <div>
                     <a href="#" id="a-date-back">
@@ -47,7 +51,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                 </div>
             </div>
             <div class="panel-body">
-                <table class="table table-striped table-hover sortable nosar">
+                <table class="table table-striped table-hover sortable sar">
 
                 </table>
             </div>
@@ -57,12 +61,15 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
             <div class="panel-body">
-                <table class="table table-striped table-hover sortable sar">
+                <table class="table table-striped table-hover sortable nosar">
 
                 </table>
             </div>
         </div>
     </div>
+
+     <?php endif; ?>
+     <?php endif; ?>
 </div>
 
 <?=$this->modalWindow(  "mdl-edit-fp", 
@@ -74,20 +81,29 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         "modal-lg"); ?>
 
 <?=$this->modalwindow(  "mdl-del-fp",
-                        "<h3>Confirmer la suppression ?</h3>",
+                        "<h3>Confirmer la suppression</h3>",
                         "", 
                         null, 
-                        "<p>Voulez-vous vraiment supprimer le vol <em><span id ='s-del-fp-airid'></span></em> ?</p>",
+                        "<p>Voulez-vous vraiment supprimer le vol <strong><span id ='s-del-fp-airid'></span></strong> ?</p>",
                         "<a class='btn btn-danger' id='a-del-fp-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
 <?=$this->modalwindow(  "mdl-trig-fp",
-                        "<h3>Déclencher une alerte ?</h3>",
+                        "<h3>Déclenchement d'une phase d'alerte</h3>",
                         "", 
                         null, 
-                        "<p>Voulez-vous vraiment déclencher une alerte de type <em><span id ='s-trig-alt'></span></em> pour le vol <em><span id ='s-trig-airid'></span></em>?</p>
-                        <textarea class=\"form-control\" id = 't-causealt'></textarea>" ,
+                        "<p>Confirmer le déclenchement d'une phase d'alerte de type <strong><span class ='s-trig-alt'></span></strong> pour le vol <strong><span class ='s-trig-airid'></span></strong>?</p>
+                        <textarea placeholder=\"Commentaire sur la phase d'alerte\" class=\"form-control t-causealt\"'></textarea>" ,
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
+<?=$this->modalwindow(  "mdl-edit-alt",
+                        "<h3>Modification d'une phase d'alerte</h3>",
+                        "", 
+                        null, 
+                        "<p>Voulez-vous vraiment modifier la phase d'alerte en <strong><span class ='s-trig-alt'></span></strong> pour le vol <strong><span class ='s-trig-airid'></span></strong>?</p>
+                        <textarea class=\"form-control t-causealt\"></textarea>" ,
+                        "<a class='btn btn-danger' id='a-edit-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
 <?=$this->modalwindow(  "mdl-end-fp",
@@ -98,22 +114,31 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         "<a class='btn btn-danger' id='a-end-fp-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
+<?=$this->modalwindow(  "mdl-end-alt",
+                        "<h3>Clore l'alerte</h3>",
+                        "", 
+                        null, 
+                        "<input type='datetime' name='end-date'></input>",
+                        "<a class='btn btn-danger' id='a-end-alt-ok'>Confirmer</a>
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
 <?php $this->inlineScript()->captureStart(); ?>
 
 $("#home").removeClass("dropdown-toggle")
           .attr('data-toggle', '')
           .html('<span class="glyphicon glyphicon-home"></span> Évènements');
 
-if (<?php echo count($cats); ?> == 0) {
-    $("#create-link").hide();
-} else {
-    $("#create-link")
+<?php
+if($this->hasAccess) {
+    echo '$("#create-link")
         .hide()
         .clone(true)
         .show()
-        .prependTo('.content')
-        .addClass('category');
-}
+        .prependTo(\'.content\')
+        .addClass(\'category\');';
+} else {
+    echo '$("#create-link").hide();';
+} ?>
 
 $("#changeview").remove();
 

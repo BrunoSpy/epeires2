@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AlertCategory extends Category
 {
+    const TYPES_ALERT = ['INCERFA', 'ALERFA', 'DETRESFA'];
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
      */

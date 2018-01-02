@@ -139,7 +139,7 @@ class Module implements ConsoleUsageProviderInterface
             'report [--email] [--delta=] orgshortname' => 'Generate a daily report for an organisation',
             array(
                 '--email',
-                'Send an email to IPO'
+                '(optional) Send an email to IPO'
             ),
             array(
                 '--delta',

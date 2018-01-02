@@ -28,6 +28,7 @@ class LoginCest
             'identity' => 'admin',
             'credential' => 'adminadmin'
         ));
+        $I->waitForElementVisible('#create-link');
         $I->seeElement('#create-link');
     }
 }
