@@ -220,7 +220,7 @@ class CustomField
     }
 
     public function isHidden() {
-        return $hidden;
+        return $this->hidden;
     }
 
     public function setHidden($hidden) {

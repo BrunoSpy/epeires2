@@ -1870,6 +1870,8 @@ class EventsController extends TabsController
         );
         $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
+            if($value->getCustomField()->isHidden()) //don't display
+                continue;
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
                     $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
