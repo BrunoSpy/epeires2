@@ -64,14 +64,14 @@ class Afis extends TemporaryResource
     protected $organisation;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Options({"label":"Horaires ouvertures :"})
      */
     protected $openedhours;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @Annotation\Type("Zend\Form\Element\Textarea")
      * @Annotation\Options({"label":"Contacts :"})
      */
