@@ -113,6 +113,14 @@ class CustomField
     protected $milestone = false;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Caché"})
+     */
+    protected $hidden = false;
+
+    /**
      * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
      */
     protected $values;
@@ -209,6 +217,14 @@ class CustomField
     public function setTooltip($tooltip)
     {
         $this->tooltip = $tooltip;
+    }
+
+    public function isHidden() {
+        return $hidden;
+    }
+
+    public function setHidden($hidden) {
+        $this->hidden = $hidden;
     }
 
     public function getArrayCopy()

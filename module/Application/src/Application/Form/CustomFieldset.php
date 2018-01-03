@@ -41,7 +41,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
         $this->names = array();
         
         $category = $entityManager->getRepository('Application\Entity\Category')->find($categoryid);
-        $customfields = $entityManager->getRepository('Application\Entity\CustomField')->matching(Criteria::create()->where(Criteria::expr()->eq('category', $category))
+        $customfields = $entityManager
+            ->getRepository('Application\Entity\CustomField')
+            ->matching(Criteria::create()
+                ->where(Criteria::expr()->eq('category', $category))
+                ->andWhere(Criteria::expr()->eq('hidden', false))
             ->orderBy(array(
             "place" => Criteria::ASC
         )));

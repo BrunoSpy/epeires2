@@ -17,6 +17,7 @@
  */
 namespace Application\Repository;
 
+use Application\Entity\ATFCMCategory;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
@@ -31,6 +32,7 @@ use Application\Entity\Antenna;
 use Core\Entity\User;
 use Core\NMB2B\EAUPRSAs;
 
+use Core\NMB2B\RegulationListReply;
 use Zend\Session\Container;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
@@ -1650,5 +1652,130 @@ class EventRepository extends ExtendedRepository
         }
         return $newevent;
     }
-    
+
+    /**
+     * @param $regulation
+     * @param \Application\Entity\ATFCMCategory $category
+     * @param $organisation
+     * @param $user
+     * @param \DateTime $day
+     */
+    public function addRegulation($regulation, \Application\Entity\ATFCMCategory $category, $organisation, $user, $day, &$messages = null) {
+        //first find if a regulation already exists
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        // restriction aux evts intersectant le jour spécifié
+        $daystart = clone $day;
+        $daystart->setTime(0, 0, 0);
+        $dayend = clone $day;
+        $dayend->setTime(23, 59, 59);
+        $daystart = $daystart->format("Y-m-d H:i:s");
+        $dayend = $dayend->format("Y-m-d H:i:s");
+
+        $internalid = RegulationListReply::getDataId($regulation);
+
+        $qb->select(array(
+            'e',
+            'v',
+            'cat'
+        ))
+            ->from('Application\Entity\Event', 'e')
+            ->leftJoin('e.custom_fields_values', 'v')
+            ->leftJoin('e.category', 'cat')
+            ->andWhere('cat INSTANCE OF Application\Entity\ATFCMCategory')
+            ->andWhere($qb->expr()
+                ->andX($qb->expr()
+                    ->lte('e.startdate', '?2'), $qb->expr()
+                    ->gte('e.enddate', '?1')))
+            ->setParameters(array(
+                1 => $daystart,
+                2 => $dayend
+            ));
+
+        $results = $qb->getQuery()->getResult();
+
+        $count = 0;
+
+        $tempresults = array();
+
+        foreach ($results as $e) {
+            $this->getEntityManager()->refresh($e);
+            $event = $this->getEntityManager()->getRepository(Event::class)->find($e->getId());
+            if(strcmp($event->getCustomFieldValue($category->getInternalId())->getValue(), $internalid) == 0) {
+                $tempresults[] = $event;
+            }
+        }
+
+        $results = $tempresults;
+
+        if(count($results) == 0) {
+            //do create a new event
+            $this->doAddRegulationEvent(
+                $category,
+                RegulationListReply::getRegulationName($regulation),
+                RegulationListReply::getDataId($regulation),
+                RegulationListReply::getDateTimeStart($regulation),
+                RegulationListReply::getDateTimeEnd($regulation),
+                RegulationListReply::getReason($regulation),
+                $organisation,
+                $user,
+                $messages);
+            $count++;
+        } else {
+            if(count($results) > 1) {
+                //BUG
+            } else {
+                //TODO update parameters
+            }
+        }
+        return $count;
+    }
+
+    private function doAddRegulationEvent(ATFCMCategory $cat, $regulname, $internalidvalue, $timeBegin, $timeEnd, $reason, $organisation, $user, &$messages) {
+        $event = new Event();
+        $event->setOrganisation($organisation);
+        $event->setAuthor($user);
+        $event->setCategory($cat);
+        $event->setScheduled(false);
+        $event->setPunctual(false);
+        $event->setStartdate($timeBegin);
+        $status = $this->getEntityManager()
+            ->getRepository('Application\Entity\Status')
+            ->find('1');
+        $event->setStatus($status);
+        $impact = $this->getEntityManager()
+            ->getRepository('Application\Entity\Impact')
+            ->find('2');
+        $event->setImpact($impact);
+        $event->setEnddate($timeEnd);
+        // name
+        $name = new \Application\Entity\CustomFieldValue();
+        $name->setCustomField($cat->getFieldname());
+        $name->setEvent($event);
+        $name->setValue($regulname);
+        //internalid
+        $internalid = new CustomFieldValue();
+        $internalid->setCustomField($cat->getInternalId());
+        $internalid->setEvent($event);
+        $internalid->setValue($internalidvalue);
+        //reason
+        $reasonvalue = new CustomFieldValue();
+        $reasonvalue->setCustomField($cat->getReasonField());
+        $reasonvalue->setEvent($event);
+        $reasonvalue->setValue($reason);
+
+        try {
+            $this->getEntityManager()->persist($reasonvalue);
+            $this->getEntityManager()->persist($internalid);
+            $this->getEntityManager()->persist($name);
+            $this->getEntityManager()->persist($event);
+            $this->getEntityManager()->flush();
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            if ($messages != null) {
+                $messages['error'][] = $e->getMessage();
+            }
+        }
+    }
+
 }

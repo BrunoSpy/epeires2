@@ -176,6 +176,12 @@
     							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
     						</li>
     						<?php endif;?>
+                            <?php if($this->isGranted('admin.atfcm')) : ?>
+                                <li><a
+                                        data-title="Onglets > ATFCM"
+                                        href="<?php echo $this->url('administration', array('controller'=> 'atfcm', 'action' => 'config'))?>">Onglet Régulations</a>
+                                </li>
+                            <?php endif;?>
     					</ul>
     				</li>
                     <?php endif;?>

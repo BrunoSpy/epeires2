@@ -17,6 +17,8 @@
  */
 namespace Application\Factories;
 
+use Application\Entity\ATFCMCategory;
+use Application\Entity\CustomFieldType;
 use Application\Entity\RadarCategory;
 use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
@@ -705,5 +707,48 @@ class CategoryEntityFactory
         $em->persist($latfield);
         $em->persist($longfield);
         return $fieldcat;
+    }
+
+    public function createATFCMCategory() {
+        $em = $this->entityManager;
+
+        $atfcmcategory = new ATFCMCategory();
+
+        $namefield = new CustomField();
+        $namefield->setPlace(1);
+        $namefield->setDefaultValue("");
+        $namefield->setTooltip("");
+        $namefield->setName("Nom");
+        $namefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $namefield->setCategory($atfcmcategory);
+
+        $reasonfield = new CustomField();
+        $reasonfield->setPlace(2);
+        $reasonfield->setDefaultValue("");
+        $reasonfield->setTooltip("");
+        $reasonfield->setName("Raison");
+        $reasonfield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $reasonfield->setCategory($atfcmcategory);
+
+        $internalidfield = new CustomField();
+        $internalidfield->setPlace(2);
+        $internalidfield->setDefaultValue("");
+        $internalidfield->setTooltip("");
+        $internalidfield->setName("Internal Id");
+        $internalidfield->setHidden(true);
+        $internalidfield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $internalidfield->setCategory($atfcmcategory);
+
+        $atfcmcategory->setFieldname($namefield);
+        $atfcmcategory->setReasonField($reasonfield);
+        $atfcmcategory->setInternalId($internalidfield);
+
+        $em->persist($namefield);
+        $em->persist($reasonfield);
+        $em->persist($internalidfield);
+
+        $atfcmcategory->setTvs('');
+
+        return $atfcmcategory;
     }
 }
