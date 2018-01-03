@@ -8,7 +8,9 @@ before_script:
 #install git and unzip for composer, libmcrypt for php-mcrypt
 - apt-get update && apt-get install -qqy git unzip libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
 #ajout xvfb for selenium
-- apt-get install -qqy xvfb wget $OPENJDK firefox-esr
+- apt-get install -qqy xvfb wget firefox-esr
+- mkdir -p /usr/share/man/man1 #fix issue with debian-stretch-slim
+- apt-get install -qqy default-jre
 #stop using proxy cache, unless you want composer to crash
 - export http_proxy=""
 - export https_proxy=""
@@ -20,7 +22,7 @@ before_script:
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #install needed php extensions
-- docker-php-ext-install -j$(nproc) iconv mcrypt soap intl pdo_mysql zip bcmath
+- docker-php-ext-install -j$(nproc) iconv $MCRYPT soap intl pdo_mysql zip bcmath
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 - docker-php-ext-install -j$(nproc) gd
 #install xdebug for codeception
@@ -65,7 +67,7 @@ variables:
 test:7.0:
   image: php:7.0-apache
   variables:
-    OPENJDK: "openjdk-7-jre-headless"
+    MCRYPT: "mcrypt"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -73,7 +75,7 @@ test:7.0:
 test:7.1:
   image: php:7.1-apache
   variables:
-    OPENJDK: "openjdk-7-jre-headless"
+    MCRYPT: "mcrypt"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -81,7 +83,7 @@ test:7.1:
 test:7.2:
   image: php:7.2-apache
   variables:
-    OPENJDK: "openjdk-8-jre-headless"
+    MCRYPT: ""
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
