@@ -273,6 +273,7 @@ class MaintenanceController extends AbstractEntityManagerAwareController
         $fCat->setCompactMode(0);
         $fCat->setTimelineConfirmed(0);       
         $fCat->setColor("#800080");
+        $fCat->setParent($ipCat);
 
         $objectManager->persist($fCat);
 
