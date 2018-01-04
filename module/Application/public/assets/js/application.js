@@ -898,7 +898,40 @@ $(document).ready(function(){
         	}
         }
     });
-    
+
+    $('select[name="nameopsup"]').on ('change', function(e){
+        $("#releve-content").load(url+'briefing/briefing');
+        $('#releveWindow').modal('show');
+    });
+
+
+
+    $("#editwindow").on('shown.bs.modal', function(e){
+        $("#editor-briefing").markdown({
+            hiddenButtons:'cmdPreview',
+            onChange:function(e){
+                $('#editor-preview').html(e.parseContent())
+            },
+            resize: "vertical",
+            language: "fr",
+            onShow:function(e){
+                $.getJSON(url + 'briefing/getBriefing', function (data) {
+                    e.setContent(data.briefing);
+                });
+            },
+            onSave:function(e){
+                $.post(url + 'briefing/save', {content: e.getContent()}, function(data){
+                    if(data['messages']) {
+                        displayMessages(data.messages);
+                    }
+                    $("#editwindow").modal('hide');
+                    $("#briefing-content").html(e.parseContent());
+                });
+            },
+            savable: true
+        });
+    });
+
     /* ******************************* */
 
     //hack très moche pour corriger la couleur des dropdown dans la navbar sous chrome

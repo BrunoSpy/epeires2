@@ -1,0 +1,55 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">1. Évènements importants en cours</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <thead></thead>
+            <tbody>
+            <?php
+            foreach ($this->events as $event) {
+                echo '<tr>';
+                    echo '<td>' . $event->getId() . ' ' . $this->eventName($event) . '</td>';
+                echo '</tr>';
+            }
+            ?>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">2. Régulations en cours </h4>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <thead></thead>
+            <tbody>
+            <?php
+            foreach ($this->regulations as $event) {
+                echo '<tr>';
+                echo '<td>' . $event->getId() . ' ' . $this->eventName($event) . '</td>';
+                echo '</tr>';
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">3. Informations importantes en vigueur <?php
+            if($this->isGranted('events.mod-briefing')) {
+                echo '<button title="Modifier" style="margin:0px; padding-top: 0px; padding-bottom: 0px" class="btn btn-sm" id="edit-markdown" data-toggle="modal" data-target="#editwindow"><span class="glyphicon glyphicon-edit"></span></button>';
+            }
+            ?></h4>
+    </div>
+    <div class="panel-body" id="briefing-content">
+        <?php
+        echo $this->markdown($this->informations);
+        ?>
+    </div>
+</div>

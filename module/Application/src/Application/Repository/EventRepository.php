@@ -296,8 +296,12 @@ class EventRepository extends ExtendedRepository
         
         $events = $qb->getQuery()->getResult();
         
+        return $this->restrictToReadableEvents($events, $userauth);
+    }
+
+    private function restrictToReadableEvents($events, $userauth) {
         $readableEvents = array();
-        
+
         if ($userauth != null && $userauth->hasIdentity()) {
             $roles = $userauth->getIdentity()->getRoles();
             foreach ($events as $event) {
@@ -309,13 +313,13 @@ class EventRepository extends ExtendedRepository
                     }
                 }
             }
-        } else 
+        } else
             if ($userauth != null) {
                 $roleentity = $this->getEntityManager()
                     ->getRepository('Core\Entity\Role')
                     ->findOneBy(array(
-                    'name' => 'guest'
-                ));
+                        'name' => 'guest'
+                    ));
                 if ($roleentity) {
                     foreach ($events as $event) {
                         $eventroles = $event->getCategory()->getReadroles();
@@ -327,7 +331,7 @@ class EventRepository extends ExtendedRepository
             } else {
                 $readableEvents = $events;
             }
-        
+
         return $readableEvents;
     }
 
@@ -398,6 +402,18 @@ class EventRepository extends ExtendedRepository
         } else {
             return array();
         }
+    }
+
+    public function getCurrentImportantEvents($user) {
+        $qb = $this->getQueryEvents();
+        $qb->andWhere($qb->expr()->eq('e.star', 'true'));
+        if ($user !== null && $user->hasIdentity()) {
+            $org = $user->getIdentity()->getOrganisation();
+
+            $qb->andWhere($qb->expr()
+                ->eq('e.organisation', $org->getId()));
+        }
+        return $this->restrictToReadableEvents($qb->getQuery()->getResult(), $user);
     }
 
     /**
@@ -476,6 +492,18 @@ class EventRepository extends ExtendedRepository
         $query = $qbEvents->getQuery();
         
         return $query->getResult();
+    }
+
+    public function getCurrentRegulations($user) {
+        $qb = $this->getQueryEvents();
+        $qb->andWhere('cat INSTANCE OF Application\Entity\ATFCMCategory');
+        if ($user !== null && $user->hasIdentity()) {
+            $org = $user->getIdentity()->getOrganisation();
+
+            $qb->andWhere($qb->expr()
+                ->eq('e.organisation', $org->getId()));
+        }
+        return $this->restrictToReadableEvents($qb->getQuery()->getResult(), $user);
     }
 
     /**

@@ -34,6 +34,7 @@ $modules = array(
         'Application',
         'Administration',
         'IPO',
+        'MaglMarkdown',
         'ZF\\Apigility',
         'ZF\\Apigility\\Provider',
         'ZF\\ApiProblem',
