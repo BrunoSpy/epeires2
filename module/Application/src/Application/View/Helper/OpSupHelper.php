@@ -51,18 +51,21 @@ class OpSupHelper extends AbstractHelper
                 ->getId();
 
             $criteria['type'] = $id;
+            $criteria['archived'] = false;
 
             $query = $objectmanager->createQueryBuilder();
             $query->select('o')
                 ->from('Application\Entity\OperationalSupervisor', 'o')
                 ->where('o.type = ?1')
+                ->andWhere('o.archived = ?2')
                 ->groupBy('o.zone')
-                ->setParameter(1, $id);
+                ->setParameter(1, $id)
+                ->setParameter(2, false);
 
 
             if ($zfcuserauth->getIdentity()->getZone()) {
-                $query->andWhere($query->expr()->eq('o.zone', '?2'))
-                    ->setParameter(2, $zfcuserauth->getIdentity()->getZone()->getId());
+                $query->andWhere($query->expr()->eq('o.zone', '?3'))
+                    ->setParameter(3, $zfcuserauth->getIdentity()->getZone()->getId());
             }
 
             $zones = $query->getQuery()->getResult();

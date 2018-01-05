@@ -54,7 +54,9 @@ class OpSupsController extends FormController
         
         $objectManager = $this->getEntityManager();
         
-        $opsups = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->findAll();
+        $opsups = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->findBy(array("archived" => false));
+
+        $opsupsArchived = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->findBy(array('archived' => true));
 
         $types = $objectManager->getRepository('Application\Entity\OpSupType')->findAll();
 
@@ -77,6 +79,7 @@ class OpSupsController extends FormController
         $viewmodel->setVariables(array(
             'messages' => $return,
             'opsups' => $opsups,
+            'opsupsArchived' => $opsupsArchived,
             'types' => $types,
             'shifthours' => $shifthours
         ));
@@ -119,6 +122,23 @@ class OpSupsController extends FormController
         if ($opsup) {
             $objectManager->remove($opsup);
             try {
+                $objectManager->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return new JsonModel();
+    }
+
+    public function archiveopsupAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getEntityManager();
+        $opsup = $objectManager->getRepository('Application\Entity\OperationalSupervisor')->find($id);
+        if ($opsup) {
+            $opsup->setArchived(true);
+            try {
+                $objectManager->persist($opsup);
                 $objectManager->flush();
             } catch (\Exception $e) {
                 $this->flashMessenger()->addErrorMessage($e->getMessage());

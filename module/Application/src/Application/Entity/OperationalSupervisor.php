@@ -78,6 +78,24 @@ class OperationalSupervisor
      */
     protected $current = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Archivé :"})
+     * @Annotation\Attributes({"title":"En cochant cette option, tous les évènements liés ne seront plus modifiables."})
+     */
+    protected $archived = false;
+
+    public function isArchived()
+    {
+        return $this->archived;
+    }
+
+    public function setArchived($d)
+    {
+        $this->archived = $d;
+    }
+
     public function getId()
     {
         return $this->id;

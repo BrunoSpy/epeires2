@@ -43,6 +43,11 @@ $formatterHourLoc = \IntlDateFormatter::create(
                     3. Liste des superviseurs opérationnels
                 </a>
             </li>
+            <li>
+                <a href="#Opsups-archived">
+                    4. Liste des superviseurs opérationnels archivés
+                </a>
+            </li>
         </ul>
     </div>
     <div class="col-md-9">
@@ -180,13 +185,13 @@ $formatterHourLoc = \IntlDateFormatter::create(
 				data-name=\"".$opsup->getName()."\" 
 				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 		echo "<a 
-				title=\"Supprimer\" 
-				href=\"#confirm-delete-opsup\" 
-				data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'deleteopsup'), array('query'=>array('id'=>$opsup->getId())))."\" 
-				class=\"delete-opsup\" 
+				title=\"Archiver\" 
+				href=\"#confirm-archive-opsup\" 
+				data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'archiveopsup'), array('query'=>array('id'=>$opsup->getId())))."\" 
+				class=\"archive-opsup\" 
 				data-id=\"".$opsup->getId()."\" 
 				data-name=\"".$opsup->getName()."\" 
-				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-folder-close\"></span> </a>";
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -196,6 +201,60 @@ $formatterHourLoc = \IntlDateFormatter::create(
 </table>
 </div>
 </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title" id="Opsups-archived">Liste des superviseurs opérationnels archivés</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped sortable">
+                    <thead>
+                    <tr>
+                        <th data-sort="int">id</th>
+                        <th data-sort="string" data-autosort="true">Nom</th>
+                        <th data-sort="string">Organisation</th>
+                        <th>Zone de qualification</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <?php
+                    foreach ($this->opsupsArchived as $opsup){
+                        echo '<tr>';
+                        echo '<td>'.$opsup->getId().'</td>';
+                        echo '<td>'.$opsup->getName().'</td>';
+                        echo '<td>'.$opsup->getOrganisation()->getName().'</td>';
+                        echo '<td>'.$opsup->getZone()->getName().'</td>';
+                        echo '<td>'.$opsup->getType()->getName().'</td>';
+                        echo '<td>';
+                        echo "<a 
+				title=\"Modifier\" 
+				href=\"#opsup-container\" 
+				class=\"mod-opsup\" 
+				data-id=\"".$opsup->getId()."\" 
+				data-name=\"".$opsup->getName()."\" 
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+                        echo "<a 
+				title=\"Supprimer\" 
+				href=\"#confirm-delete-opsup\" 
+				data-href=\"".$this->url('administration', array('controller'=>'opsups', 'action'=>'deleteopsup'), array('query'=>array('id'=>$opsup->getId())))."\" 
+				class=\"delete-opsup\" 
+				data-id=\"".$opsup->getId()."\" 
+				data-name=\"".$opsup->getName()."\" 
+				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                    ?>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
 
 </div>
 </div>
@@ -221,6 +280,14 @@ $formatterHourLoc = \IntlDateFormatter::create(
 						"<p>Voulez-vous vraiment supprimer le chef OP <em><span id=\"opsup-name\"></span></em> de la liste ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-opsup-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
+<?php echo $this->modalwindow("confirm-archive-opsup",
+    "<h4>Confirmer l'archivage ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment archiver le chef OP <em><span id=\"opsup-name\"></span></em> de la liste ?</p>",
+    "<a class=\"btn btn-danger\" id=\"archive-opsup-href\">Confirmer</a>
+	<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
 <?php echo $this->modalWindow("opsuptype-container", "<h4 id=\"opsuptype-title\">Nouveau type OP Sup</h4>", "", "<div id=\"opsuptype-form\"></div>")?>
 
