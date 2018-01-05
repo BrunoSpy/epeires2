@@ -45,10 +45,8 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             ->getRepository('Application\Entity\CustomField')
             ->matching(Criteria::create()
                 ->where(Criteria::expr()->eq('category', $category))
-                ->andWhere(Criteria::expr()->eq('hidden', false))
-            ->orderBy(array(
-            "place" => Criteria::ASC
-        )));
+                ->orderBy(array("place" => Criteria::ASC))
+            );
         
         // add category id to regenerate fieldset during creation process
         $this->add(array(
@@ -60,6 +58,9 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
         ));
         
         foreach ($customfields as $customfield) {
+            if($customfield->isHidden())
+                continue;
+            
             $definition = array();
             $definition['name'] = $customfield->getId();
             $this->names[] = $customfield->getId();
