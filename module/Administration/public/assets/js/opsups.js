@@ -11,7 +11,9 @@ var opsups = function(url){
 	
 	$(".mod-opsup").on('click', function(){
 		$("#opsup-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#opsup-form").load(url+'/op-sups/form?opsupid='+$(this).data('id'));
+		$("#opsup-form").load(url+'/op-sups/form?opsupid='+$(this).data('id'), function(e){
+            $.material.checkbox();
+		});
 	});
 	
 	$("#opsup-container").on('submit', function(event){
@@ -47,6 +49,21 @@ var opsups = function(url){
 		});
 	});
 
+    $(".archive-opsup").on('click', function(event){
+        $('a#archive-opsup-href').attr('href', $(this).data('href'));
+        $('#opsup-name').html($(this).data('name'));
+        $("#archive-opsup-href").data('id', $(this).data('id'));
+    });
+
+    $("#confirm-archive-opsup").on('click', '#archive-opsup-href', function(event){
+        event.preventDefault();
+        var me = $(this);
+        $("#confirm-archive-opsup").modal('hide');
+        $.post(me.attr('href'), function(){
+            location.reload();
+        });
+    });
+
 	$("#add-opsuptype").on('click', function(){
 		$("#opsuptype-title").html("Nouveau type Op Sup");
 		$("#opsuptype-form").load(url+'/op-sups/formtype');
@@ -78,6 +95,8 @@ var opsups = function(url){
 			location.reload();
 		});
 	});
+
+
 
 	/**** Shift Hour ****/
 	$("#add-shifthour").on('click', function(){
