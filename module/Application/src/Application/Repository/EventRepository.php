@@ -1321,6 +1321,7 @@ class EventRepository extends ExtendedRepository
     public function addZoneMilEvents(EAUPRSAs $eauprsas, \Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, &$messages = null)
     {
         $addedEvents = 0;
+        $zones = array();
         foreach ($eauprsas->getAirspacesWithDesignator($cat->getFilter()) as $airspace) {
             $designator = (string) EAUPRSAs::getAirspaceDesignator($airspace);
             if (preg_match($cat->getZonesRegex(), $designator)) {
@@ -1328,15 +1329,78 @@ class EventRepository extends ExtendedRepository
                 $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
                 $lowerlevel = (string) EAUPRSAs::getAirspaceLowerLimit($airspace);
                 $upperlevel = (string) EAUPRSAs::getAirspaceUpperLimit($airspace);
-                $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
-                // si aucun evt pour la même zone (= même nom, même niveaux) existe ou inclus le nouvel evt
-                // on en crée un nouveau
-                if (count($previousEvents) == 0) {
-                    $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
-                    $addedEvents++;
+
+                $zone = array($designator, $timeBegin, $timeEnd, $lowerlevel, $upperlevel);
+                $zones[] = $zone;
+            }
+        }
+
+        //merge zones
+        $zoneMerged = true;
+        //à chaque fois qu'une zone est fusionnée, on repasse le tableau à la recherche d'une correspondance
+        //on s'arrête quand plus aucune zone n'a été fusionnée
+        while($zoneMerged) {
+            $zoneMerged = false;
+            for($i = 0, $size = count($zones); $i < $size; ++$i) {
+                $zoneRef = $zones[$i];
+                for($j = 0, $size2 = count($zones); $j < $size2; ++$j) {
+                    if($j == $i)
+                        continue;
+                    $zoneComp = $zones[$j];
+
+                    if(strcmp($zoneRef[0], $zoneComp[0]) == 0) {
+                        if($zoneRef[1] == $zoneComp[1] && $zoneRef[2] == $zoneComp[2]) {
+                            //même heures, on check les niveaux
+                            if(strcmp($zoneRef[4], $zoneComp[3]) == 0){
+                                $zones[$i][4] = $zoneComp[4];
+                                array_splice($zones, $j, 1);
+                                $zoneMerged = true;
+                                break 2;
+                            }
+                            if(strcmp($zoneRef[3], $zoneComp[4]) == 0) {
+                                $zones[$i][3] = $zoneComp[3];
+                                array_splice($zones, $j, 1);
+                                $zoneMerged = true;
+                                break 2;
+                            }
+                        } else if(strcmp($zoneRef[3], $zoneComp[3]) == 0 && strcmp($zoneRef[4], $zoneComp[4]) == 0) {
+                            //mêmes niveaux, on check les heures
+                            if($zoneRef[1] == $zoneComp[2]){
+                                //fusion, on mets à jour le tableau et on recommence à zéro
+                                $zones[$i][1] = $zoneComp[1];
+                                array_splice($zones, $j, 1);
+                                $zoneMerged = true;
+                                break 2;
+                            }
+                            if($zoneRef[2] == $zoneComp[1]) {
+                                $zones[$i][2] = $zoneComp[2];
+                                array_splice($zones, $j, 1);
+                                $zoneMerged = true;
+                                break 2;
+                            }
+                        }
+
+                    }
                 }
             }
         }
+
+        //add events
+        foreach ($zones as $zone){
+            $designator = $zone[0];
+            $timeBegin = $zone[1];
+            $timeEnd = $zone[2];
+            $lowerlevel = $zone[3];
+            $upperlevel = $zone[4];
+            $previousEvents = $this->findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel);
+            // si aucun evt pour la même zone (= même nom, même niveaux) existe ou inclus le nouvel evt
+            // on en crée un nouveau
+            if (count($previousEvents) == 0) {
+                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
+                $addedEvents++;
+            }
+        }
+
         return $addedEvents;
     }
 
