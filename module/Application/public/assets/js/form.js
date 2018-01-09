@@ -759,7 +759,7 @@ var form = function(url, cats){
     };
 
 	//click on a predefined events
-	$("#event").on("click", "#predefined_events button", function(e){
+	$("#event").on("click", "#predefined_events a", function(e){
 		e.preventDefault();
 		var me = $(this);
 		var customvalues;

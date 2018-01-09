@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.2",
+        version: "1.1.3",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -100,10 +100,6 @@
          * Intervalle entre deux barres "heure"
          */
         intervalle: 0.0,
-        /**
-         * Largeur disponible pour la timeline, en pixels
-         */
-        largeurDisponible: 0,
         /**
          * Memorize current scroll position
          */
@@ -177,7 +173,6 @@
             });
             this.element.append(eventsContainer);
             this.element.prepend('<div id="timeline-background"></div>');
-            this.largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             var urlDay = '';
             var urlEvent = this.options.eventUrl;
             if(this.options.view == "day") {
@@ -314,7 +309,6 @@
             $(window).resize(function () {
                 var height = $(window).height() - self.options.topOffset + 'px';
                 self.element.css('height', height);
-                self.largeurDisponible = self.element.width() - self.options.leftOffset - self.options.rightOffset;
                 if(self._elementsOutOfView()) {
                     $("#alert-bottom").show();
                 } else {
@@ -387,7 +381,7 @@
                 var elmt_compl = elmt.find('.complement');
                 var rect_width = rect_elmt.width();
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
+                var pix_time = 30 * 60000 / (self.intervalle * self._getWidthAvalaible() / 100);
                 var elmt_fin = elmt.find('.elmt_fin');
 
                 var id = elmt.data('ident');
@@ -440,7 +434,7 @@
                 var rect_width = rect_elmt.width();
                 var elmt_fin = elmt.find('.elmt_fin');
                 var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / (self.intervalle * self.largeurDisponible / 100);
+                var pix_time = 30 * 60000 / (self.intervalle * self._getWidthAvalaible() / 100);
 
                 //récupération de l'heure de fin
                 var id = elmt.data('ident');
@@ -1403,12 +1397,7 @@
                 'width': '100%',
                 'height': 1});
 
-            var largeurDisponible = this.element.width() - this.options.leftOffset - this.options.rightOffset;
-            //if scrollbar visible, width is different
-            //TODO : do it better
-            if ($(document).height() > $(window).height()) {
-                largeurDisponible += this._getScrollbarWidth();
-            }
+            var largeurDisponible = this._getWidthAvalaible();
             //nombre d'éléments "heure" à afficher
             var nbHours = this.timelineDuration + 1;
             var tailleTotaleHours = nbHours * 37; //37px = taille de la boite TODO : à calculer dynamiquement
@@ -1769,6 +1758,7 @@
             } else {
                 enddate = -1;
             }
+            var largeurDisponible = this._getWidthAvalaible();
 
             ////// réini
             event.label = true;
@@ -1919,7 +1909,7 @@
                 elmt_txt.css({'top': '0px'});
 
                 //calcul de la place restante à droite
-                var place = (100 - x_deb) * this.largeurDisponible / 100;
+                var place = (100 - x_deb) * largeurDisponible / 100;
 
                 if ( larg + debWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                     elmt_txt.css({
@@ -2032,7 +2022,7 @@
 
                 /* 3: Positionnement du label  */
                 //conversion en pixel de la taille du rectangle
-                var rectPixels = (x_end - x_deb) * this.largeurDisponible / 100;
+                var rectPixels = (x_end - x_deb) * largeurDisponible / 100;
                 if(rectPixels < 40) {
                     // suppression des barres de modifcations des heures
                     // qui se chevauchent
@@ -2052,7 +2042,7 @@
                 } else {
                     elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
                     //positionnement à droite ou à gauche
-                    var place = (100 - x_end) * this.largeurDisponible / 100;
+                    var place = (100 - x_end) * largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
                     textColor = (event.status_id == 4 ? 'grey' : 'black');
@@ -2088,8 +2078,8 @@
 
             //pour les besoins de comparaison des positions des évènements
             //on a besoin de positions absolues
-            event.xleft = x_deb * this.largeurDisponible / 100 - offset;
-            event.xright = x_end * this.largeurDisponible / 100 + totalWidth - offset;
+            event.xleft = x_deb * largeurDisponible / 100 - offset;
+            event.xright = x_end * largeurDisponible / 100 + totalWidth - offset;
             //impossible de récupérer la règle calc() par la suite
             //on stocke donc les éléments permettant de la recalculer
             event.xdeb = x_deb;
@@ -2434,7 +2424,13 @@
         /* *********************** */
         /* ** Utilitary methods ** */
         /* *********************** */
-
+        _getWidthAvalaible: function() {
+            var largeurDispo = this.element.width() - this.options.leftOffset - this.options.rightOffset;
+            if ($(document).height() > $(window).height()) {
+                largeurDispo += this._getScrollbarWidth();
+            }
+            return largeurDispo;
+        },
         /**
          * Format a number into a string with a predefined length
          * @param {type} num
