@@ -372,6 +372,7 @@ class CategoriesController extends FormController
             if($category instanceof ATFCMCategory) {
                 $category->setNameField(null);
                 $category->setReasonField(null);
+                $category->setDescriptionField(null);
             }
             $objectManager->persist($category);
             $objectManager->flush();

@@ -56,7 +56,11 @@ class RegulationListReply
      * @return string
      */
     public static function getRegulationName($regulation) {
-        return (string) $regulation->regulationId;
+        return (string) $regulation->location->id;
+    }
+
+    public static function getDescription($regulation) {
+        return (string) $regulation->location->description;
     }
 
     /**

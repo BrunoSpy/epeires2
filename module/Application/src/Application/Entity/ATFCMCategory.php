@@ -50,6 +50,11 @@ class ATFCMCategory extends Category
      */
     protected $internalId;
 
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $descriptionfield;
+
     public function setTvs($tvs) {
         $this->tvs = $tvs;
     }
@@ -74,6 +79,14 @@ class ATFCMCategory extends Category
     public function setReasonField($reason)
     {
         $this->reasonField = $reason;
+    }
+
+    public function getDescriptionField(){
+        return $this->descriptionfield;
+    }
+
+    public function setDescriptionField($field){
+        $this->descriptionfield = $field;
     }
 
     public function getArrayCopy()

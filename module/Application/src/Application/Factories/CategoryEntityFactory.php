@@ -730,8 +730,16 @@ class CategoryEntityFactory
         $reasonfield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
         $reasonfield->setCategory($atfcmcategory);
 
+        $descriptionfield = new CustomField();
+        $descriptionfield->setPlace(2);
+        $descriptionfield->setDefaultValue("");
+        $descriptionfield->setTooltip("");
+        $descriptionfield->setName("Description");
+        $descriptionfield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'text')));
+        $descriptionfield->setCategory($atfcmcategory);
+
         $internalidfield = new CustomField();
-        $internalidfield->setPlace(2);
+        $internalidfield->setPlace(3);
         $internalidfield->setDefaultValue("");
         $internalidfield->setTooltip("");
         $internalidfield->setName("Internal Id");

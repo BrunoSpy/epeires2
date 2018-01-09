@@ -1793,7 +1793,7 @@ class EventRepository extends ExtendedRepository
         foreach ($results as $e) {
             $this->getEntityManager()->refresh($e);
             $event = $this->getEntityManager()->getRepository(Event::class)->find($e->getId());
-            if(strcmp($event->getCustomFieldValue($category->getInternalId())->getValue(), $internalid) == 0) {
+            if($event->getCustomFieldValue($category->getInternalId()) !== null && strcmp($event->getCustomFieldValue($category->getInternalId())->getValue(), $internalid) == 0) {
                 $tempresults[] = $event;
             }
         }
@@ -1809,6 +1809,7 @@ class EventRepository extends ExtendedRepository
                 RegulationListReply::getDateTimeStart($regulation),
                 RegulationListReply::getDateTimeEnd($regulation),
                 RegulationListReply::getReason($regulation),
+                RegulationListReply::getDescription($regulation),
                 $organisation,
                 $user,
                 $messages);
@@ -1823,7 +1824,18 @@ class EventRepository extends ExtendedRepository
         return $count;
     }
 
-    private function doAddRegulationEvent(ATFCMCategory $cat, $regulname, $internalidvalue, $timeBegin, $timeEnd, $reason, $organisation, $user, &$messages) {
+    private function doAddRegulationEvent(
+        ATFCMCategory $cat,
+        $regulname,
+        $internalidvalue,
+        $timeBegin,
+        $timeEnd,
+        $reason,
+        $description,
+        $organisation,
+        $user,
+        &$messages)
+    {
         $event = new Event();
         $event->setOrganisation($organisation);
         $event->setAuthor($user);
@@ -1855,8 +1867,13 @@ class EventRepository extends ExtendedRepository
         $reasonvalue->setCustomField($cat->getReasonField());
         $reasonvalue->setEvent($event);
         $reasonvalue->setValue($reason);
-
+        //description
+        $descriptionvalue = new CustomFieldValue();
+        $descriptionvalue->setCustomField($cat->getDescriptionField());
+        $descriptionvalue->setEvent($event);
+        $descriptionvalue->setValue($description);
         try {
+            $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);
             $this->getEntityManager()->persist($internalid);
             $this->getEntityManager()->persist($name);
