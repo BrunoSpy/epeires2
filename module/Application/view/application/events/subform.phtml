@@ -29,7 +29,7 @@ switch ($this->part) {
                     echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
                     echo '</td>';
                     echo '<td class="tr-value"> '.$value.'</td>';
-                    echo '<td><span class="pull-right"><button data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span></td>';
+                    echo '<td><span class="pull-right"><a data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</a></span></td>';
                     echo '</tr>';
 
                     if ($i >= $count / 2 && ! $separated) {
@@ -60,7 +60,7 @@ switch ($this->part) {
                     echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
                     echo '</td>';
                     echo '<td class="tr-value"> '.$value['name'].'</td>';
-                    echo '<td><span class="pull-right"><button data-catid="'.$value['catid'].'" data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</button></span></td>';
+                    echo '<td><span class="pull-right"><a data-catid="'.$value['catid'].'" data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</a></span></td>';
                     echo '</tr>';
 
                     if ($i >= $count / 2 && ! $separated) {
