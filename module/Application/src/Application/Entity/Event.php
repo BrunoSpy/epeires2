@@ -303,6 +303,7 @@ class Event extends AbstractEvent
         $this->setCategory($predefined->getCategory());
         $this->setImpact($predefined->getImpact());
         $this->setPunctual($predefined->isPunctual());
+        $this->setPlace($predefined->getPlace());
     }
 
     public function createFromEvent(Event $e){
@@ -311,6 +312,7 @@ class Event extends AbstractEvent
         $this->setOrganisation($e->getOrganisation());
         $this->setImpact($e->getImpact());
         $this->setPunctual($e->isPunctual());
+        $this->setPlace($e->getPlace());
     }
     
     /**
