@@ -1194,16 +1194,16 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.4.32",
+            "version": "v2.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "a268224b312353be62d72e6390a286f4166a7542"
+                "reference": "d5fdc573b6a2ecfa29c070ecb3db8397ac55ed78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/a268224b312353be62d72e6390a286f4166a7542",
-                "reference": "a268224b312353be62d72e6390a286f4166a7542",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/d5fdc573b6a2ecfa29c070ecb3db8397ac55ed78",
+                "reference": "d5fdc573b6a2ecfa29c070ecb3db8397ac55ed78",
                 "shasum": ""
             },
             "require": {
@@ -1268,7 +1268,7 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2017-12-28T14:36:10+00:00"
+            "time": "2018-01-08T14:13:45+00:00"
         },
         {
             "name": "kipperlenny/opentbs-bundle",
