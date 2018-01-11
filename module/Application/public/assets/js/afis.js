@@ -218,7 +218,6 @@ var afis = function(url)
         function keyPressedCodeHandler(e) 
         {
             $(this).val($(this).val().toUpperCase());
-            console.log(e.which);
             if ($(this).val().length == 4 && keyIsValid(e.which)) {
                 var code = $(this).val();
                 noty({
