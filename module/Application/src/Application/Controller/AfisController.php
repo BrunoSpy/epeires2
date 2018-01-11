@@ -199,7 +199,7 @@ class AfisController extends TabController
             $content = preg_replace('/<script.*\/>/msi','',$content);
 
             $msgType = "success";
-            $msg = "NOTAM téléchargés.";
+            $msg = "Données téléchargées depuis les NOTAM du SIA.";
         } else {
             $msg = "Pas d'accès aux NOTAM.";
             $content = "";
