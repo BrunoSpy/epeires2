@@ -1873,10 +1873,10 @@ class EventRepository extends ExtendedRepository
         $descriptionvalue->setEvent($event);
         $descriptionvalue->setValue($description);
         try {
+            $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);
             $this->getEntityManager()->persist($internalid);
-            $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($event);
             $this->getEntityManager()->flush();
         } catch (\Exception $e) {
