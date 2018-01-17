@@ -1,99 +1,197 @@
-<?php 
-
-if (count($flightplans) == 0) {
-	if ($sar == 0) echo "Aucun vol.";
-	else echo "Aucun vol en alerte.";
-}
-else {
-?> 
-
-<thead>
-	<tr>
-	<?php foreach ($fields as $field) : ?>
-		<th <?php echo ($field == 'Aircraft-Id') ? 'data-sort="string"' : ''; ?>><?php echo $field; ?></th>
-	<?php endforeach; ?>
-		<th>Départ</th>
-		<th>Arrivée</th>
-		<th></th>
-	</tr>
-</thead>
-
-<tbody id = "list-fp">
-<?php foreach ($flightplans as $fp) : ?>
-	<tr>
+<h4>Vols en alerte</h4>
+<?php if (count($flightplansWAlt) == 0) : ?>
+<div class="alert alert-info">
+    Aucun vol en alerte.
+</div>
+<?php else : ?>
+<table class="table table-striped table-hover sortable">
+    <thead>
+	    <tr>
 	    <?php foreach ($fields as $field) : ?>
-	    <td>
-	    <?php
-	    if ($field == 'Aircraft-Id') $airId = $fp[$field];
-	    if ($field == 'Alerte') 
-	    {
-	    	$tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
-	    	$bAlertes = ['info', 'warning', 'danger'];
-	    	foreach ($tAlertes as $index => $alt) 
-	    	{
-	    		$act = '';
-	    		$cause = '';
-	    		$title = '';
-	    		$modal = "#mdl-trig-fp";
-	    		if(isset($fp['Type'])) {
-	    			$modal = "#mdl-edit-alt";
-	    			$cause = (isset($fp['Cause'])) ? $fp['Cause'] : '';
-	    			if($alt == $fp['Type']) {
-	    				$act = 'active-alt';
-	    				$title = 'title = "'.$cause.'"';
-	    			}
-	    		}
-	    		// alerte non-clôturée
-	    		if(!isset($fp['alert']['end_date'])) {
-		    	?>
-		        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " href="<?php echo $modal; ?>" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-cause="<?php echo $cause;?>" data-toggle="modal">
-		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
-		        </a>
-		        <?php
-		    	} else {
-		    	?>
-		        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>"  data-cause="<?php echo $cause;?>" >
-		        	<button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?> disabled"><?php echo $alt[0]; ?></button>
-		        </a>
-		        <?php
-		    	}
-	    	}
-	    	if (isset($fp['Type'])) { 
-	    		if (!isset($fp['alert']['end_date'])) { 
-	    		?>
-	    		<a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
-	    		<?php 
-	    		} else {
-	    		?>
-	    		<a class="a-end-alt"><button class="btn btn-xs btn-primary" disabled>CLOS</button></a>
-	    		<?php
-	    		} 	    		
-	    	}
-	    } 
-	    else
-	    {
-	        echo (isset($fp[$field])) ? $fp[$field] : '';
-	    }
-	    ?>
-	    </td>
+		    <th <?php echo ($field == 'Aircraft-Id') ? 'data-sort="string"' : ''; ?>><?php echo $field; ?></th>
 	    <?php endforeach; ?>
-	    <td>
-	    	<?php echo $fp['start_date']->format('H:i');; ?>
-	    </td>
+		    <th>Départ</th>
+		    <th>Arrivée</th>
+		    <th></th>
+	    </tr>
+    </thead>
 
-	    <td>
-	    	<?php if (isset($fp['end_date'])) : ?>
-	    	<?php echo $fp['end_date']->format('H:i'); ?>
-	    	<?php else: ?>
-	    	<a class="a-end-fp" href="#mdl-end-fp" data-air-id="<?php echo $airId; ?>" data-toggle="modal" data-id="<?php echo $fp['id']; ?>" href="#"><button class="btn btn-xs btn-primary">CLORE PLN</button></a>
-	    	<?php endif; ?>
-	    </td>
-	    <td id="list-fp">
-	        <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-	    </td>
-	</tr>
-<?php endforeach; ?>
-</tbody>
-<?php 
-} 
-?>
+    <tbody id = "list-fp">
+    <?php foreach ($flightplansWAlt as $fp) : ?>
+        <tr>
+            <?php foreach ($fields as $field) : ?>
+            <td>
+            <?php
+            if ($field == 'Aircraft-Id') $airId = $fp[$field];
+            if ($field == 'Alerte')
+            {
+                $tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
+                $bAlertes = ['info', 'warning', 'danger'];
+                foreach ($tAlertes as $index => $alt)
+                {
+                    $act = '';
+                    $cause = '';
+                    $title = '';
+                    $modal = "#mdl-trig-fp";
+                    if(isset($fp['Type'])) {
+                        $modal = "#mdl-edit-alt";
+                        $cause = (isset($fp['Cause'])) ? $fp['Cause'] : '';
+                        if($alt == $fp['Type']) {
+                            $act = 'active-alt';
+                            $title = 'title = "'.$cause.'"';
+                        }
+                    }
+//                    // alerte non-clôturée
+                    if(!isset($fp['alert']['end_date'])) {
+                    ?>
+                    <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " href="<?php echo $modal; ?>" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-cause="<?php echo $cause;?>" data-toggle="modal">
+                        <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
+                    </a>
+                    <?php
+                    } else {
+                    ?>
+                    <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>"  data-cause="<?php echo $cause;?>" >
+                        <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?> disabled"><?php echo $alt[0]; ?></button>
+                    </a>
+                    <?php
+                    }
+                }
+                if (isset($fp['Type'])) {
+                    if (!isset($fp['alert']['end_date'])) {
+                    ?>
+                    <a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
+                    <?php
+                    } else {
+                    ?>
+                    <a class="a-end-alt"><button class="btn btn-xs btn-primary" disabled>CLOS</button></a>
+                    <?php
+                    }
+                }
+            }
+            else
+            {
+                echo (isset($fp[$field])) ? $fp[$field] : '';
+            }
+            ?>
+            </td>
+            <?php endforeach; ?>
+            <td>
+                <?php echo $fp['start_date']->format('H:i');; ?>
+            </td>
+
+            <td>
+                <?php if (isset($fp['end_date'])) : ?>
+                <?php echo $fp['end_date']->format('H:i'); ?>
+                <?php else: ?>
+                <a class="a-end-fp" href="#mdl-end-fp" data-air-id="<?php echo $airId; ?>" data-toggle="modal" data-id="<?php echo $fp['id']; ?>" href="#"><button class="btn btn-xs btn-primary">CLORE PLN</button></a>
+                <?php endif; ?>
+            </td>
+            <td id="list-fp">
+                <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+    <?php
+//    }
+    ?>
+</table>
+<?php endif; ?>
+<hr />
+<h4>Vols sans alerte</h4>
+<?php if (count($flightplans) == 0) : ?>
+    <div class="alert alert-info">
+        Aucun vol.
+    </div>
+<?php else : ?>
+<table class="table table-striped table-hover sortable">
+    <thead>
+	    <tr>
+	    <?php foreach ($fields as $field) : ?>
+		    <th <?php echo ($field == 'Aircraft-Id') ? 'data-sort="string"' : ''; ?>><?php echo $field; ?></th>
+	    <?php endforeach; ?>
+		    <th>Départ</th>
+		    <th>Arrivée</th>
+		    <th></th>
+	    </tr>
+    </thead>
+
+    <tbody id = "list-fp">
+    <?php foreach ($flightplans as $fp) : ?>
+        <tr>
+            <?php foreach ($fields as $field) : ?>
+            <td>
+            <?php
+            if ($field == 'Aircraft-Id') $airId = $fp[$field];
+            if ($field == 'Alerte')
+            {
+                $tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
+                $bAlertes = ['info', 'warning', 'danger'];
+                foreach ($tAlertes as $index => $alt)
+                {
+                    $act = '';
+                    $cause = '';
+                    $title = '';
+                    $modal = "#mdl-trig-fp";
+                    if(isset($fp['Type'])) {
+                        $modal = "#mdl-edit-alt";
+                        $cause = (isset($fp['Cause'])) ? $fp['Cause'] : '';
+                        if($alt == $fp['Type']) {
+                            $act = 'active-alt';
+                            $title = 'title = "'.$cause.'"';
+                        }
+                    }
+//                    // alerte non-clôturée
+                    if(!isset($fp['alert']['end_date'])) {
+                    ?>
+                    <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " href="<?php echo $modal; ?>" data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-cause="<?php echo $cause;?>" data-toggle="modal">
+                        <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
+                    </a>
+                    <?php
+                    } else {
+                    ?>
+                    <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " data-id="<?php echo $fp['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>"  data-cause="<?php echo $cause;?>" >
+                        <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?> disabled"><?php echo $alt[0]; ?></button>
+                    </a>
+                    <?php
+                    }
+                }
+                if (isset($fp['Type'])) {
+                    if (!isset($fp['alert']['end_date'])) {
+                    ?>
+                    <a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $fp['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
+                    <?php
+                    } else {
+                    ?>
+                    <a class="a-end-alt"><button class="btn btn-xs btn-primary" disabled>CLOS</button></a>
+                    <?php
+                    }
+                }
+            }
+            else
+            {
+                echo (isset($fp[$field])) ? $fp[$field] : ''
+                ;
+            }
+            ?>
+            </td>
+            <?php endforeach; ?>
+            <td>
+                <?php echo $fp['start_date']->format('H:i');; ?>
+            </td>
+
+            <td>
+                <?php if (isset($fp['end_date'])) : ?>
+                <?php echo $fp['end_date']->format('H:i'); ?>
+                <?php else: ?>
+                <a class="a-end-fp" href="#mdl-end-fp" data-air-id="<?php echo $airId; ?>" data-toggle="modal" data-id="<?php echo $fp['id']; ?>" href="#"><button class="btn btn-xs btn-primary">CLORE PLN</button></a>
+                <?php endif; ?>
+            </td>
+            <td id="list-fp">
+                <a class="modify-evt" data-id="<?php echo $fp['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+<?php endif; ?>
