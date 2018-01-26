@@ -100,6 +100,10 @@ class TabController extends ZoneController
         }
 
         $this->layout()->lang = $this->config['lang'];
+
+        //add mattermost chat
+        $this->layout()->mattermost = $this->config['mattermost'];
+
     }
 
     public function savedayAction()
