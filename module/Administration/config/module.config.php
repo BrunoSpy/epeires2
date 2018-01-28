@@ -178,6 +178,16 @@ return array(
                 'name' => 'ATFCM',
                 'description' => ''
             )
+        ),
+        'Messagerie instantanée' => array(
+            'chat.access' => array(
+                'name' => 'Actif',
+                'description' => 'Activer le module de messagerie instantanée'
+            ),
+            'chat.write' => array(
+                'name' => 'Envoi',
+                'description' => 'Autoriser l\'envoi de messages.'
+            )
         )
     ),
     'zfc_rbac' => array(
