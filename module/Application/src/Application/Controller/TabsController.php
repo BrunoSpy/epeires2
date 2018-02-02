@@ -34,9 +34,9 @@ class TabsController extends TabController
     protected $entityManager;
 
     public function __construct(EntityManager $entityManager,
-                                $config)
+                                $config, $mattermost)
     {
-        parent::__construct($config);
+        parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
     }
 

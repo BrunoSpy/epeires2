@@ -47,8 +47,9 @@ class FlightPlansController extends TabController
 
     protected $em, $cf, $repo, $form;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf)
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
     {
+        parent::__construct($config, $mattermost);
         $this->em = $em;
         $this->cf = $cf;
     }

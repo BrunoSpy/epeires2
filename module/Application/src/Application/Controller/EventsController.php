@@ -61,9 +61,9 @@ class EventsController extends TabsController
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config)
+                                $config, $mattermost)
     {
-        parent::__construct($entityManager, $config);
+        parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;

@@ -176,13 +176,18 @@
         	fallbackLng: 'fr_FR',
         	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
         });
+        <?php if($this->isGranted('chat.access')) {
+            echo "$('.chat-container').mattermost({";
+            echo "baseUrl: '". $this->basePath()."',";
+            echo "userName: '".$this->mattermost['login']."',";
+            echo "teamName: '".$this->mattermost['team_id']."',";
+            echo "channelId: '".$this->mattermost['defaultchannelid']."',";
+            echo "token: '".$this->mattermost['token']."',";
+            echo "serverUrl: '".$this->mattermost['server_url']."'";
+            echo "});";
+        }
+        ?>
 
-        $('.chat-container').mattermost({
-            baseUrl: '<?php echo $this->basePath(); ?>',
-            userName: '<?php echo $this->mattermost['login'];?>',
-            teamName: '<?php echo $this->mattermost['team_id'];?>',
-            channelId: '<?php echo $this->mattermost['defaultchannelid'];?>'
-        });
 
     <?php $this->inlineScript()->captureEnd();?>
                         

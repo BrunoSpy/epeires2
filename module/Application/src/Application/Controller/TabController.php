@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use MattermostMessenger\Service\MattermostService;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -32,10 +33,12 @@ class TabController extends ZoneController
     protected $viewmodel;
 
     protected $config;
+    protected $mattermost;
 
-    public function __construct($config)
+    public function __construct($config, MattermostService $mattermost)
     {
         $this->config = $config;
+        $this->mattermost = $mattermost;
     }
 
     public function indexAction()
@@ -102,7 +105,9 @@ class TabController extends ZoneController
         $this->layout()->lang = $this->config['lang'];
 
         //add mattermost chat
-        $this->layout()->mattermost = $this->config['mattermost'];
+        $configMattermost = $this->config['mattermost'];
+        $configMattermost['token'] = $this->mattermost->getToken();
+        $this->layout()->mattermost = $configMattermost;
 
     }
 
