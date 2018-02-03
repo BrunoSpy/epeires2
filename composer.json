@@ -66,7 +66,8 @@
     "zfcampus/zf-apigility-documentation-swagger": "^1.2",
     "zfcampus/zf-development-mode": "~2.0",
     "maglnet/magl-markdown": "~1.1",
-    "brunospy/mattermostmodule": "dev-master"
+    "brunospy/mattermostmodule": "dev-master",
+    "gnello/php-mattermost-driver": "dev-master"
   },
   "require-dev":{
     "zendframework/zend-test": "^2.5",

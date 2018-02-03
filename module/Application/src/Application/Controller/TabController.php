@@ -105,10 +105,17 @@ class TabController extends ZoneController
         $this->layout()->lang = $this->config['lang'];
 
         //add mattermost chat
-        $configMattermost = $this->config['mattermost'];
-        $configMattermost['token'] = $this->mattermost->getToken();
-        $this->layout()->mattermost = $configMattermost;
+        if($this->zfcUserAuthentication()->hasIdentity()) {
+            $user = $this->zfcUserAuthentication()->getIdentity();
+            $mattermostLogin = $user->getMattermostUsername();
+            if($mattermostLogin && strlen($mattermostLogin) > 0) {
+                $this->config['mattermost']['login'] = $mattermostLogin;
+                $configMattermost = $this->config['mattermost'];
+                $configMattermost['token'] = $this->mattermost->getToken();
+                $this->layout()->mattermost = $configMattermost;
+            }
 
+        }
     }
 
     public function savedayAction()

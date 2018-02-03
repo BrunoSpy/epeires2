@@ -8,7 +8,8 @@
         <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
 
         <!-- Le styles -->
-        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+        <?php
+        $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
                         ->prependStylesheet($this->basePath() . '/assets/css/application.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/core.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
@@ -20,23 +21,22 @@
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-epeirespalette.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
-                        ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
-        				?>
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css');
 
-      <?php
-      if($this->isGranted('chat.access')) {
-          echo $this->headLink()
-              ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.min.css')
-              ->appendStylesheet($this->basePath() . '/assets/css/mattermostchat.css');
-      }
+        if($this->isGranted('chat.access') && $this->mattermost) {
+            $this->headLink()
+                ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.min.css')
+                ->appendStylesheet($this->basePath() . '/assets/css/mattermostchat.css');
+        }
+        echo $this->headLink();
       ?>
 
         <!-- Scripts -->
         <?php
-        echo $this->headScript()
-			->prependFile($this->basePath() . '/assets/js/application.js')
+        $this->headScript()
+			      ->prependFile($this->basePath() . '/assets/js/application.js')
             ->prependFile($this->basePath() . '/components/html2pdf/html2pdf.bundle.min.js')
-			->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
+			      ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
             ->prependFile($this->basePath() . '/assets/js/headerbar.js')
             ->prependFile($this->basePath() . '/assets/js/alarm.js')
             ->prependFile($this->basePath() . '/assets/js/form.js')
@@ -60,16 +60,16 @@
             ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
             ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
             ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
-            ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
+            ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js');
 
-        ?>
 
-        <?php
-        if($this->isGranted('chat.access')){
-          echo $this->headScript()
+        if($this->isGranted('chat.access') && $this->mattermost){
+          $this->headScript()
               ->appendFile($this->basePath() . '/components/list.js/dist/list.min.js')
               ->appendFile($this->basePath() . '/assets/js/mattermostchat.js');
         }
+
+        echo $this->headScript();
         ?>
 
     </head>
@@ -86,7 +86,7 @@
     <div class="content">
         <?php echo $this->content; ?>
         <?php
-        if($this->isGranted('chat.access')) {
+        if($this->isGranted('chat.access') && $this->mattermost) {
           echo '<div class="chat-container">';
           echo $this->mattermostchat();
           echo '</div>';
@@ -176,14 +176,16 @@
         	fallbackLng: 'fr_FR',
         	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
         });
-        <?php if($this->isGranted('chat.access')) {
+        <?php if($this->isGranted('chat.access') && $this->mattermost) {
             echo "$('.chat-container').mattermost({";
             echo "baseUrl: '". $this->basePath()."',";
             echo "userName: '".$this->mattermost['login']."',";
             echo "teamName: '".$this->mattermost['team_id']."',";
             echo "channelId: '".$this->mattermost['defaultchannelid']."',";
             echo "token: '".$this->mattermost['token']."',";
-            echo "serverUrl: '".$this->mattermost['server_url']."'";
+            echo "serverUrl: '".$this->mattermost['server_url']."',";
+            echo "acknowledgement: true,";
+            echo "minimized: true";
             echo "});";
         }
         ?>

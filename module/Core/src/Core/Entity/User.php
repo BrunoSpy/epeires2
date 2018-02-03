@@ -28,7 +28,7 @@ use Doctrine\ORM\PersistentCollection;
  *
  * @ORM\Entity
  * @ORM\Table(name="users")
- *
+
  * @author Bruno Spyckerelle
  */
 class User implements UserInterface, IdentityInterface
@@ -75,6 +75,24 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Validator({"name":"StringLength", "options":{"min":"6"}})
      */
     protected $password;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Mattermost Username :"})
+     */
+    protected $mattermostUsername = "";
+
+        /**
+     * @ORM\Column(type="string", length=128, nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Password")
+     * @Annotation\Options({"label":"Mot de passe Mattermost:"})
+     * @Annotation\Attributes({"data-rule-minlength":"6"})
+     * @Annotation\Required(false)
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":"6"}})
+     */
+    protected $mattermostPassword;
 
     /**
      */
@@ -270,6 +288,38 @@ class User implements UserInterface, IdentityInterface
     public function setZone($zone)
     {
         $this->zone = $zone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMattermostUsername()
+    {
+        return $this->mattermostUsername;
+    }
+
+    /**
+     * @param mixed $mattermostUsername
+     */
+    public function setMattermostUsername($mattermostUsername)
+    {
+        $this->mattermostUsername = $mattermostUsername;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMattermostPassword()
+    {
+        return $this->mattermostPassword;
+    }
+
+    /**
+     * @param mixed $mattermostPassword
+     */
+    public function setMattermostPassword($mattermostPassword)
+    {
+        $this->mattermostPassword = $mattermostPassword;
     }
 
     /**

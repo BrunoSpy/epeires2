@@ -39,11 +39,13 @@ class UsersController extends FormController
 
     private $entityManager;
     private $zfcUserModuleOptions;
+    private $config;
 
-    public function __construct(EntityManager $entityManager, $userModuleOptions)
+    public function __construct(EntityManager $entityManager, $userModuleOptions, $config)
     {
         $this->entityManager = $entityManager;
         $this->zfcUserModuleOptions = $userModuleOptions;
+        $this->config = $config;
     }
 
     public function getEntityManager()
@@ -98,6 +100,15 @@ class UsersController extends FormController
                     $bcrypt->setCost($this->zfcUserModuleOptions
                         ->getPasswordCost());
                     $user->setPassword($bcrypt->create($user->getPassword()));
+                }
+                if(isset($post['mattermostPassword'])) {
+                    $user->setMattermostPassword(base64_encode(openssl_encrypt(
+                        $user->getMattermostPassword(),
+                        "AES-256-CBC",
+                        $this->config['secret_key'],
+                        0,
+                        $this->config['secret_init']
+                    )));
                 }
                 try {
                     $objectManager->persist($user);
