@@ -229,8 +229,12 @@ $('#timeline').timeline({
     day: '<?php echo ($this->day !== null ? str_replace('"','',$this->day) : ''); ?>',
     initComplete: function(){
         $("#timeline .loading").hide();
+    }<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost){echo ',';
+      echo 'mattermost: true';
     }
+    ?>
 });
+
 //init form
 form('<?php echo $this->url('application');?>', cats);
 

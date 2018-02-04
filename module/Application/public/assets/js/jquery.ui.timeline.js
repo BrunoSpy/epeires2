@@ -26,7 +26,8 @@
  *      leftOffset: left offset in pixels,
  *      rightOffset: right offset in pixels,
  *      eventHeight: height of an event in pixels,
- *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true)
+ *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true),
+ *      mattermost: if true, add action to send event to mattermost chat
  * });
  * 
  * @author Jonathan Colson
@@ -41,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.3",
+        version: "1.2.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -157,7 +158,8 @@
             category: "",
             compact: false,
             view: "",
-            day: ""
+            day: "",
+            mattermost: false
         },
         //Main function
         //Initialize the timeline
@@ -574,6 +576,9 @@
                 var txt = '<p class="elmt_tooltip actions">'
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
                 var event = self.events[self.eventsPosition[id]];
+                if(self.options.mattermost) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="send-mattermost"><span class="glyphicon glyphicon-send"></span> Envoyer sur le chat</a>';
+                }
                 if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
                     if(event.punctual === false){
                         if(event.star === true){
@@ -688,6 +693,22 @@
                     }).always(function(){
                     self.forceUpdateView(false);
                 });
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+
+            this.element.on('click', '.send-mattermost', function(e){
+                var id = $(this).data('id');
+                var event = self.events[self.eventsPosition[id]];
+                var message = "## "+event.name+"\n"+
+                    "* _Début_ : "+moment(event.start_date).format("lll")+"\n";
+                if(event.end_date) {
+                    message += "* _Fin_ : "+moment(event.end_date).format("lll")+"\n";
+                }
+                message += "### Description"+"\n"
+                $.each(event.fields, function (nom, contenu) {
+                        message += "* _" + nom + "_ : " + contenu+"\n";
+                    });
+                $(".chat-container").mattermost("sendMessage", message);
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
         },
