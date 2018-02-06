@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "29ad0aaf585c8b70dd4db52ed0511331",
+    "content-hash": "594c15d893f7d1f8ba588f2a941c9e1e",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -56,16 +56,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/MattermostModule.git",
-                "reference": "7dc91deba5547c17ced46bcaa15ec6282abfbd0f"
+                "reference": "88d404ef434241af19a8762706332aca7fd00c75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/7dc91deba5547c17ced46bcaa15ec6282abfbd0f",
-                "reference": "7dc91deba5547c17ced46bcaa15ec6282abfbd0f",
+                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/88d404ef434241af19a8762706332aca7fd00c75",
+                "reference": "88d404ef434241af19a8762706332aca7fd00c75",
                 "shasum": ""
             },
             "require": {
-                "gnello/php-mattermost-driver": "dev-master",
+                "gnello/php-mattermost-driver": "^2.4",
                 "maglnet/magl-markdown": "~1.1",
                 "zendframework/zend-mvc": "^2.7"
             },
@@ -94,7 +94,7 @@
                 "chat",
                 "zf2"
             ],
-            "time": "2018-02-02T08:37:49+00:00"
+            "time": "2018-02-04T13:25:17+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
@@ -1318,21 +1318,21 @@
         },
         {
             "name": "gnello/php-mattermost-driver",
-            "version": "dev-master",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gnello/php-mattermost-driver.git",
-                "reference": "0c981ba2126f9118c3daf00d9901cda6b92fcbb9"
+                "reference": "50ed85dc9ae7cd4dd021ee8af9a56945eda10dff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gnello/php-mattermost-driver/zipball/0c981ba2126f9118c3daf00d9901cda6b92fcbb9",
-                "reference": "0c981ba2126f9118c3daf00d9901cda6b92fcbb9",
+                "url": "https://api.github.com/repos/gnello/php-mattermost-driver/zipball/50ed85dc9ae7cd4dd021ee8af9a56945eda10dff",
+                "reference": "50ed85dc9ae7cd4dd021ee8af9a56945eda10dff",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.2",
-                "php": ">=5.4.0",
+                "php": ">=5.5.0",
                 "pimple/pimple": "~3.0",
                 "psr/http-message": "^1.0"
             },
@@ -1361,7 +1361,7 @@
                 "Mattermost",
                 "chat"
             ],
-            "time": "2018-02-01T13:06:05+00:00"
+            "time": "2018-02-04T12:03:32+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -8584,7 +8584,6 @@
         "murganikolay/doctrine-migrations-module": 20,
         "kipperlenny/opentbs-bundle": 20,
         "brunospy/mattermostmodule": 20,
-        "gnello/php-mattermost-driver": 20,
         "hounddog/doctrine-data-fixture-module": 20,
         "satooshi/php-coveralls": 20
     },

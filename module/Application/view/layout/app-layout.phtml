@@ -26,6 +26,7 @@
         if($this->isGranted('chat.access') && $this->mattermost) {
             $this->headLink()
                 ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.min.css')
+                ->appendStylesheet($this->basePath() . '/components/lightbox2/dist/css/lightbox.min.css')
                 ->appendStylesheet($this->basePath() . '/assets/css/mattermostchat.css');
         }
         echo $this->headLink();
@@ -66,6 +67,7 @@
         if($this->isGranted('chat.access') && $this->mattermost){
           $this->headScript()
               ->appendFile($this->basePath() . '/components/list.js/dist/list.min.js')
+              ->appendFile($this->basePath() . '/components/lightbox2/dist/js/lightbox.min.js')
               ->appendFile($this->basePath() . '/assets/js/mattermostchat.js');
         }
 
