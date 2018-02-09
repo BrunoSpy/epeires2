@@ -35,6 +35,8 @@ class TabController extends ZoneController
     protected $config;
     protected $mattermost;
 
+    protected $messages;
+
     public function __construct($config, MattermostService $mattermost)
     {
         $this->config = $config;
@@ -44,7 +46,9 @@ class TabController extends ZoneController
     public function indexAction()
     {
         parent::indexAction();
-        
+
+        $this->messages = array();
+
         $this->viewmodel = new ViewModel();
         
         $this->layout()->iponumber = "";
@@ -108,13 +112,16 @@ class TabController extends ZoneController
         if($this->zfcUserAuthentication()->hasIdentity()) {
             $user = $this->zfcUserAuthentication()->getIdentity();
             $mattermostLogin = $user->getMattermostUsername();
-            if($mattermostLogin && strlen($mattermostLogin) > 0) {
-                $this->config['mattermost']['login'] = $mattermostLogin;
-                $configMattermost = $this->config['mattermost'];
-                $configMattermost['token'] = $this->mattermost->getToken();
-                $this->layout()->mattermost = $configMattermost;
+            try{
+                if($mattermostLogin && strlen($mattermostLogin) > 0) {
+                    $this->config['mattermost']['login'] = $mattermostLogin;
+                    $configMattermost = $this->config['mattermost'];
+                    $configMattermost['token'] = $this->mattermost->getToken();
+                    $this->layout()->mattermost = $configMattermost;
+                }
+            } catch (\Exception $e) {
+                $this->messages['error'][] = "Impossible de se connecter au serveur Mattermost : ".$e->getMessage();
             }
-
         }
     }
 
