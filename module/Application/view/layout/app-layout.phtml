@@ -183,7 +183,9 @@
             echo "baseUrl: '". $this->basePath()."',";
             echo "userName: '".$this->mattermost['login']."',";
             echo "teamName: '".$this->mattermost['team_id']."',";
-            echo "channelId: '".$this->mattermost['defaultchannelid']."',";
+            if(array_key_exists('defaultchannelid',$this->mattermost)) {
+                echo "channelId: '".$this->mattermost['defaultchannelid']."',";
+            }
             echo "token: '".$this->mattermost['token']."',";
             echo "serverUrl: '".$this->mattermost['server_url']."',";
             echo "acknowledgement: true,";

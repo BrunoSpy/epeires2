@@ -1860,7 +1860,8 @@ class EventsController extends TabsController
             'star' => $event->isStar() ? true : false,
             'scheduled' => $event->isScheduled() ? true : false,
             'recurr' => $event->getRecurrence() ? true : false,
-            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : ''
+            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',
+            'mattermostid' => $event->getMattermostPostId()
         );
         
         $fields = array();
@@ -2809,6 +2810,29 @@ class EventsController extends TabsController
                     $em->flush();
                     $messages['success'][] = "Post-It correctement supprimé";
                 } catch(\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+
+    /**
+     * Add a reference to the Mattermost post
+     */
+    public function linkEventToPostAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $postid = $this->params()->fromQuery('postid', null);
+        $messages = array();
+        if($id && $postid) {
+            $event = $this->getEntityManager()->getRepository(Event::class)->find($id);
+            if($event) {
+                $event->setMattermostPostId($postid);
+                try {
+                    $this->getEntityManager()->persist($event);
+                    $this->getEntityManager()->flush();
+                } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }
             }

@@ -501,7 +501,7 @@ var form = function(url, cats){
 				//update timeline
 				if(data['events']){
 					$("#timeline").timeline('pauseUpdateView');
-					$('#timeline').timeline('addEvents', data.events);
+					$('#timeline').timeline('addEvents', data.events, true);
 					$('#timeline').timeline('forceUpdateView');
 					$('#calendarview').fullCalendar('refetchEvents');
 				}
