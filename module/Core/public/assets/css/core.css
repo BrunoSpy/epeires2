@@ -253,6 +253,10 @@ li .nav-header {
     padding-top: 4px;
 }
 
+.modal-dialog.modal-xlg {
+    width: 90%;
+}
+
 /* ************************** */
 
 a.em {

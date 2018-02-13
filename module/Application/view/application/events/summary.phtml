@@ -1,6 +1,8 @@
 <dl class="dl-horizontal">
     <?php
         foreach ($this->event->getCustomFieldsValues() as $value){
+            if($value->getCustomfield()->isHidden())
+                continue;
             echo '<dt>' . $value->getCustomfield()->getName().'</dt>';
             echo '<dd>'.nl2br($this->customfieldvalue($value)).' </dd>';
         }

@@ -27,7 +27,8 @@ class UsersControllerFactory implements FactoryInterface {
     {
         return new UsersController(
             $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
-            $serviceLocator->getServiceLocator()->get('zfcuser_module_options'));
+            $serviceLocator->getServiceLocator()->get('zfcuser_module_options'),
+            $serviceLocator->getServiceLocator()->get('config'));
     }
 
 }

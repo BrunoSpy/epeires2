@@ -114,6 +114,13 @@ class Event extends AbstractEvent
      */
     protected $recurrence;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * Id of the mattermost post.
+     * Added only when the event has been posted on a channel
+     */
+    protected $mattermostPostId;
+
     public function __construct()
     {
         parent::__construct();
@@ -297,6 +304,15 @@ class Event extends AbstractEvent
         $this->recurrence = $recurrence;
     }
 
+    public function setMattermostPostId($postId)
+    {
+        $this->mattermostPostId = $postId;
+    }
+
+    public function getMattermostPostId()
+    {
+        return $this->mattermostPostId;
+    }
 
     public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
     {

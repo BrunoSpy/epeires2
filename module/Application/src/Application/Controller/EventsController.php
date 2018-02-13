@@ -61,9 +61,9 @@ class EventsController extends TabsController
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config)
+                                $config, $mattermost)
     {
-        parent::__construct($entityManager, $config);
+        parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
@@ -72,15 +72,19 @@ class EventsController extends TabsController
     public function indexAction()
     {
         parent::indexAction();
-    
-        $return = array();
-    
+
+        $return = $this->messages;
+
         if ($this->flashMessenger()->hasErrorMessages()) {
-            $return['error'] = $this->flashMessenger()->getErrorMessages();
+            foreach ($this->flashMessenger()->getErrorMessages() as $m) {
+                $return['error'][] = $m;
+            }
         }
-    
+
         if ($this->flashMessenger()->hasSuccessMessages()) {
-            $return['success'] = $this->flashMessenger()->getSuccessMessages();
+            foreach ($this->flashMessenger()->getSuccessMessages() as $m) {
+                $return['success'][] = $m;
+            }
         }
     
         $this->flashMessenger()->clearMessages();
@@ -1856,7 +1860,8 @@ class EventsController extends TabsController
             'star' => $event->isStar() ? true : false,
             'scheduled' => $event->isScheduled() ? true : false,
             'recurr' => $event->getRecurrence() ? true : false,
-            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : ''
+            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',
+            'mattermostid' => $event->getMattermostPostId()
         );
         
         $fields = array();
@@ -1870,6 +1875,8 @@ class EventsController extends TabsController
         );
         $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
+            if($value->getCustomField()->isHidden()) //don't display
+                continue;
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
                     $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
@@ -2803,6 +2810,29 @@ class EventsController extends TabsController
                     $em->flush();
                     $messages['success'][] = "Post-It correctement supprimé";
                 } catch(\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+
+    /**
+     * Add a reference to the Mattermost post
+     */
+    public function linkEventToPostAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $postid = $this->params()->fromQuery('postid', null);
+        $messages = array();
+        if($id && $postid) {
+            $event = $this->getEntityManager()->getRepository(Event::class)->find($id);
+            if($event) {
+                $event->setMattermostPostId($postid);
+                try {
+                    $this->getEntityManager()->persist($event);
+                    $this->getEntityManager()->flush();
+                } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }
             }

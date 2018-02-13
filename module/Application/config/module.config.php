@@ -57,6 +57,15 @@ return array(
                             'action' => 'importNMB2B'
                         )
                     )
+                ),
+                'import-regulations' => array(
+                    'options' => array(
+                        'route' => 'import-regulations [--delta=] <orgshortname> <username>',
+                        'defaults' => array(
+                            'controller' => 'Application\Controller\ATFCM',
+                            'action' => 'importRegulations'
+                        )
+                    )
                 )
             )
         )
@@ -99,6 +108,8 @@ return array(
             'Application\Controller\Afis' => 'Application\Controller\Factory\AfisControllerFactory',
             'Application\Controller\FlightPlans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
             'Application\Controller\SarBeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
+            'Application\Controller\ATFCM' => 'Application\Controller\Factory\ATFCMControllerFactory',
+            'Application\Controller\Briefing' => 'Application\Controller\Factory\BriefingControllerFactory',
         )
     ),
     'view_helpers' => array(
@@ -205,6 +216,10 @@ return array(
             'events.mod-opsup' => array(
                 'name' => 'Modifier Chef Op',
                 'description' => ''
+            ),
+            'events.mod-briefing' => array(
+                'name' => 'Modifier Briefing',
+                'description' => 'Autoriser la modification de la zone de texte libre du briefing chef de salle'
             )
         ),
         'Radio' => array(

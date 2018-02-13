@@ -34,9 +34,9 @@ class TabsController extends TabController
     protected $entityManager;
 
     public function __construct(EntityManager $entityManager,
-                                $config)
+                                $config, $mattermost)
     {
-        parent::__construct($config);
+        parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
     }
 
@@ -44,14 +44,18 @@ class TabsController extends TabController
     {
         parent::indexAction();
         
-        $return = array();
-        
+        $return = $this->messages;
+
         if ($this->flashMessenger()->hasErrorMessages()) {
-            $return['error'] = $this->flashMessenger()->getErrorMessages();
+            foreach ($this->flashMessenger()->getErrorMessages() as $m) {
+                $return['error'][] = $m;
+            }
         }
         
         if ($this->flashMessenger()->hasSuccessMessages()) {
-            $return['success'] = $this->flashMessenger()->getSuccessMessages();
+            foreach ($this->flashMessenger()->getSuccessMessages() as $m) {
+                $return['success'][] = $m;
+            }
         }
         
         $this->flashMessenger()->clearMessages();

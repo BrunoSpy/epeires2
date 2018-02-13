@@ -34,8 +34,9 @@ class NMB2BService
     
     private $config;
     
-    private $client = null;
+    private $airspaceClient = null;
 
+    private $flowClient = null;
 
     public function __construct(EntityManager $entityManager, $config)
     {
@@ -44,55 +45,68 @@ class NMB2BService
         $this->nmb2b = $config['nm_b2b'];
     }
 
-    private function getSoapClient()
-    {
-        if($this->client == null) {
-            $options = array();
-            $options['trace'] = 1;
-            $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
-            if(array_key_exists("timeout", $this->nmb2b)) {
-                $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
-                ini_set('default_socket_timeout', $socket_timeout);
-            }
-            $options['exceptions'] = true;
-            $options['cache_wsdl'] = WSDL_CACHE_NONE;
-            $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
-            $options['passphrase'] = $this->nmb2b['cert_password'];
-
-            $options['stream_context'] = stream_context_create(array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true
-                )
-            ));
-
-            if (array_key_exists('proxy_host', $this->nmb2b)) {
-                $options['proxy_host'] = $this->nmb2b['proxy_host'];
-            }
-            if (array_key_exists('proxy_port', $this->nmb2b)) {
-                $options['proxy_port'] = $this->nmb2b['proxy_port'];
-            }
-            if (array_key_exists('force_url', $this->nmb2b)) {
-                $options['location'] = $this->nmb2b['force_url'];
-            }
-            try {
-                $this->client = new \SoapClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['airspace_wsdl_filename'], $options);
-            } catch (\SoapFault $e) {
-                $text = "Message d'erreur : \n";
-                $text .= $e->getMessage()."\n";
-                $text .= "Last Request Header\n";
-                $text .= $this->client->__getLastRequestHeaders()."\n";
-                $text .= "Last Request\n";
-                $text .= $this->client->__getLastRequest();
-                $text .= "Last Response Header\n";
-                $text .= $this->client->__getLastResponseHeaders()."\n";
-                $text .= "Last Response\n";
-                $text .= $this->client->__getLastResponse()."\n";
-                $this->sendErrorEmail($text);
-            }
+    private function getClient($wsdl) {
+        $client = null;
+        $options = array();
+        $options['trace'] = 1;
+        $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
+        if(array_key_exists("timeout", $this->nmb2b)) {
+            $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
+            ini_set('default_socket_timeout', $socket_timeout);
         }
-        return $this->client;
+        $options['exceptions'] = true;
+        $options['cache_wsdl'] = WSDL_CACHE_NONE;
+        $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
+        $options['passphrase'] = $this->nmb2b['cert_password'];
+
+        $options['stream_context'] = stream_context_create(array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        ));
+
+        if (array_key_exists('proxy_host', $this->nmb2b)) {
+            $options['proxy_host'] = $this->nmb2b['proxy_host'];
+        }
+        if (array_key_exists('proxy_port', $this->nmb2b)) {
+            $options['proxy_port'] = $this->nmb2b['proxy_port'];
+        }
+        if (array_key_exists('force_url', $this->nmb2b)) {
+            $options['location'] = $this->nmb2b['force_url'];
+        }
+        try {
+            $client = new \SoapClient($wsdl, $options);
+        } catch (\SoapFault $e) {
+            $text = "Message d'erreur : \n";
+            $text .= $e->getMessage()."\n";
+            $text .= "Last Request Header\n";
+            $text .= $client->__getLastRequestHeaders()."\n";
+            $text .= "Last Request\n";
+            $text .= $client->__getLastRequest();
+            $text .= "Last Response Header\n";
+            $text .= $client->__getLastResponseHeaders()."\n";
+            $text .= "Last Response\n";
+            $text .= $client->__getLastResponse()."\n";
+            $this->sendErrorEmail($text);
+        }
+        return $client;
+    }
+
+    private function getAirspaceSoapClient()
+    {
+        if($this->airspaceClient == null) {
+            return $this->getClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['airspace_wsdl_filename']);
+        }
+        return $this->airspaceClient;
+    }
+
+    private function getFlowSoapClient() {
+        if($this->flowClient == null) {
+            return $this->getClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['flow_wsdl_filename']);
+        }
+        return $this->flowClient;
     }
 
     /**
@@ -105,7 +119,7 @@ class NMB2BService
      */
     public function getEAUPRSA($designators, \DateTime $date, $sequencenumber)
     {
-        $client = $this->getSoapClient();
+        $client = $this->getAirspaceSoapClient();
         
         $now = new \DateTime('now');
         
@@ -145,7 +159,7 @@ class NMB2BService
      */
     public function getEAUPChain(\DateTime $date)
     {
-        $client = $this->getSoapClient();
+        $client = $this->getAirspaceSoapClient();
         $now = new \DateTime('now');
         
         $params = array(
@@ -155,6 +169,53 @@ class NMB2BService
         try {
             $client->retrieveEAUPChain($params);
         } catch(\SoapFault $e){
+            $text = "Message d'erreur : \n";
+            $text .= $e->getMessage()."\n\n";
+            $text .= "Last Request Header\n";
+            $text .= $client->__getLastRequestHeaders()."\n\n";
+            $text .= "Last Request\n";
+            $text .= $client->__getLastRequest()."\n\n";
+            $text .= "Last Response Header\n";
+            $text .= $client->__getLastResponseHeaders()."\n\n";
+            $text .= "Last Response\n";
+            $text .= $client->__getLastResponse()."\n";
+            $this->sendErrorEmail($text);
+            throw new \RuntimeException('Erreur NM B2B');
+            return null;
+        }
+        return $client->__getLastResponse();
+    }
+
+    /**
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param string $regex
+     * @return null|string
+     */
+    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "LF*") {
+        $client = $this->getFlowSoapClient();
+        $now = new \DateTime('now');
+
+        $params = array(
+            'sendTime' => $now->format('Y-m-d H:i:s'),
+            'queryPeriod' => array(
+                'wef' => $start->format('Y-m-d H:i'),
+                'unt' => $end->format('Y-m-d H:i')
+            ),
+            'dataset' => array(
+                'type' => 'OPERATIONAL'
+            ),
+            'tvs' => array(
+                'item' => $regex
+            ),
+            'requestedRegulationFields' => array(
+                'item' => array('location','reason','lastUpdate', 'applicability', 'dataId')
+            )
+        );
+
+        try {
+            $client->queryRegulations($params);
+        } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
             $text .= "Last Request Header\n";

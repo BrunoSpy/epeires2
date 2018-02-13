@@ -26,7 +26,8 @@
  *      leftOffset: left offset in pixels,
  *      rightOffset: right offset in pixels,
  *      eventHeight: height of an event in pixels,
- *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true)
+ *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true),
+ *      mattermost: if true, add action to send event to mattermost chat
  * });
  * 
  * @author Jonathan Colson
@@ -41,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.3",
+        version: "1.2.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -157,7 +158,8 @@
             category: "",
             compact: false,
             view: "",
-            day: ""
+            day: "",
+            mattermost: false
         },
         //Main function
         //Initialize the timeline
@@ -492,7 +494,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event);
+                                    self.addEvents(data.event, true);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -504,7 +506,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event);
+                                    self.addEvents(data.event, true);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -516,7 +518,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event);
+                                    self.addEvents(data.event, true);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -538,7 +540,7 @@
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event);
+                            self.addEvents(data.event, true);
                         }
                     }
                 ).always(function(){
@@ -558,7 +560,7 @@
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event);
+                            self.addEvents(data.event, true);
                         }
                     }
                 ).always(function(){
@@ -574,6 +576,13 @@
                 var txt = '<p class="elmt_tooltip actions">'
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
                 var event = self.events[self.eventsPosition[id]];
+                if(self.options.mattermost) {
+                    txt += '<p><a ' +
+                        'href="#" ' +
+                        'data-id="'+id+'" ' +
+                        'data-mattermostid="'+event.mattermostid+'" ' +
+                        'class="send-mattermost"><span class="glyphicon glyphicon-send"></span> '+(event.mattermostid == null ? 'Envoyer sur le chat' : 'Mettre à jour sur le chat')+'</a>';
+                }
                 if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
                     if(event.punctual === false){
                         if(event.star === true){
@@ -690,6 +699,14 @@
                 });
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
+
+            this.element.on('click', '.send-mattermost', function(e){
+                var me = $(this);
+                var id = me.data('id');
+                var event = self.events[self.eventsPosition[id]];
+                self._sendToMattermost(event);
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -732,12 +749,16 @@
         /**
          * Add or modify multiple events at once
          * @param {type} eventsList
+         * @param sendToMattermost : if true, send events to Mattermost
          * @returns {undefined}
          */
-        addEvents: function (eventsList) {
+        addEvents: function (eventsList, sendToMattermost) {
             var self = this;
             $.each(eventsList, function (key, value) {
                 self.addEvent(value, false);
+                if(typeof sendToMattermost !== "undefined" && sendToMattermost == true) {
+                    self._sendToMattermost(value);
+                }
             });
             //sort events
             this.sortEvents();
@@ -2420,6 +2441,32 @@
             move_deb.css({'height': dy - 8});
             move_fin.css({'height': dy - 8});
             return elmt;
+        },
+        _sendToMattermost: function(event) {
+            if(this.options.mattermost) {
+                var mattermostId = event.mattermostid;
+                var id = event.id;
+                var self = this;
+                var message = "## " + event.name + "\n" +
+                    "* _Début_ : " + moment(event.start_date).utc().format("lll") + "\n";
+                if (event.end_date) {
+                    message += "* _Fin_ : " + moment(event.end_date).utc().format("lll") + "\n";
+                }
+                message += "### Description" + "\n";
+                $.each(event.fields, function (nom, contenu) {
+                    message += "* _" + nom + "_ : " + contenu + "\n";
+                });
+                if (mattermostId == null) {
+                    //new post
+                    $(".chat-container").mattermost("sendMessage", message, function (data) {
+                        var mattermostId = data.id;
+                        $.getJSON(self.options.controllerUrl + '/linkEventToPost?id=' + id + '&postid=' + mattermostId);
+                    });
+                } else {
+                    //modify post
+                    $(".chat-container").mattermost("patchMessage", message, mattermostId);
+                }
+            }
         },
         /* *********************** */
         /* ** Utilitary methods ** */

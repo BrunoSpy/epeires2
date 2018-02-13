@@ -30,6 +30,8 @@ $modules = array(
         'AssetManager',
         'DOMPDFModule',
         'OpentbsBundle',
+        'MaglMarkdown',
+        'MattermostMessenger',
         'Core',
         'Application',
         'Administration',

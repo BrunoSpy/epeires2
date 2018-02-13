@@ -42,7 +42,8 @@ use Doctrine\Common\Collections\Collection;
  * "alert" = "AlertCategory",
  * "intplan" = "InterrogationPlanCategory",
  * "field" = "FieldCategory",
- * "postit" = "PostItCategory"})
+ * "postit" = "PostItCategory",
+ * "atfcm" = "ATFCMCategory"})
  *
  * Catégorie d'évènements.
  * Peut avoir une catégorie parente.
@@ -200,6 +201,7 @@ class Category
         $type['intplan'] = "Plan d'interrogation";
         $type['field'] = "Terrain";
         $type['alert'] = "Alerte";
+        $type['atfcm'] = "ATFCM";
         return $type;
     }
 
