@@ -898,7 +898,7 @@ $(document).ready(function(){
         	}
         }
     });
-/*
+
     $('select[name="nameopsup"]').on ('change', function(e){
         $("#releve-content").load(url+'briefing/briefing', function(){$("#briefing-content table").addClass("table");});
         $('#releveWindow').modal('show');
@@ -935,7 +935,7 @@ $(document).ready(function(){
             savable: true
         });
     });
-*/
+
     /* ******************************* */
 
     //hack très moche pour corriger la couleur des dropdown dans la navbar sous chrome
