@@ -394,9 +394,9 @@ $(document).ready(function(){
         var p = $(this).closest('p');
         p.empty();
         var form = $('<form data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></form>');
-        form.append('<textarea name="note">'+me+'</textarea>');
+        form.append('<textarea name="note" class="form-control">'+me.replace(/<br\s*\/?>/mg,"\n")+'</textarea>');
         form.append('<button class="btn btn-xs btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span></button>');
-        form.append('<button href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button>');
+        form.append('<button href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-repeat"></span></button>');
         p.append(form);
     });
     
@@ -423,7 +423,10 @@ $(document).ready(function(){
         p.empty();
         p.append(span);
     });
-    
+
+    $('#add-note-modal').on('shown.bs.modal', function () {
+        $('textarea').focus()
+    });
 
     /* ******************************* */
     /* *** Contrôle de la timeline *** */

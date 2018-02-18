@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.2.0",
+        version: "1.2.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -548,6 +548,13 @@
                 });
             });
 
+            /**
+             * Modify evt on double click
+             */
+            this.element.on('dblclick', '.rect_elmt', function(e){
+                $(this).closest('.elmt').find('.modify-evt').trigger('click');
+            });
+
             //clic sur heure de fin => passage à terminé
             this.element.on('click', '.elmt_fin', function(e){
                 e.preventDefault();
@@ -620,7 +627,10 @@
 
             this.element.on('click', '.add-note', function(e){
                 e.preventDefault();
-                $("#add-note").data('id', $(this).data('id'));
+                var me = $(this);
+                var id = me.data('id');
+                $("#add-note").data('id', id);
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
 
             this.element.on('click', '.evt-important', function(e){
