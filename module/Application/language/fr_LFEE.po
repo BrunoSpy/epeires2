@@ -32,7 +32,7 @@ msgstr "Epeires²"
 #: ../Administration/view/layout/adminlayout.phtml:114
 #: ../Administration/view/layout/adminlayout.phtml:115
 msgid "IPO"
-msgstr "IPO"
+msgstr "RPO"
 
 #: ../Administration/view/layout/adminlayout.phtml:6
 msgid "Epeires² - Administration"
@@ -40,7 +40,7 @@ msgstr "Epeires² - Administration"
 
 #: ../Application/view/application/frequencies/index.phtml:69
 msgid "Antennas"
-msgstr "Pylônes"
+msgstr "Antennes"
 
 #: ../Core/view/error/404.phtml:1
 msgid "A 404 error occurred"

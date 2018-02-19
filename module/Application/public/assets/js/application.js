@@ -635,7 +635,7 @@ $(document).ready(function(){
             element.find('.fc-content').append(actions);
             var id = event.id;
             var txt = '<p class="elmt_tooltip actions">'
-                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
             if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
                 if(event.punctual === false){
                     if(event.star === true){

@@ -581,7 +581,7 @@
                 var me = $(this);
                 var id = me.data('id');
                 var txt = '<p class="elmt_tooltip actions">'
-                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
                 if(self.options.mattermost) {
                     txt += '<p><a ' +
