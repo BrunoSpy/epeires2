@@ -93,8 +93,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
         $totalTR = 0;
         $totalEvents = 0;
         echo "Lancement du téléchargement des reguls pour " . $organisation->getName()."\n";
-
-        foreach ($this->getEntityManager()->getRepository(ATFCMCategory::class)->findAll() as $cat) {
+        foreach ($this->getEntityManager()->getRepository(ATFCMCategory::class)->findBy(array('nmB2B' => true)) as $cat) {
             try {
                 $startSeq = microtime(true);
                 echo "Récupération des régulations\n";

@@ -370,9 +370,10 @@ class CategoriesController extends FormController
                 $category->setLongField(null);
             }
             if($category instanceof ATFCMCategory) {
-                $category->setNameField(null);
                 $category->setReasonField(null);
                 $category->setDescriptionField(null);
+                $category->setInternalId(null);
+                $category->setNormalRateField(null);
             }
             $objectManager->persist($category);
             $objectManager->flush();

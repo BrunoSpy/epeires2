@@ -747,10 +747,22 @@ class CategoryEntityFactory
         $internalidfield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
         $internalidfield->setCategory($atfcmcategory);
 
+        $normalratefield = new CustomField();
+        $normalratefield->setPlace(4);
+        $normalratefield->setDefaultValue("");
+        $normalratefield->setTooltip("");
+        $normalratefield->setName("Taux");
+        $normalratefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $normalratefield->setCategory($atfcmcategory);
+
         $atfcmcategory->setFieldname($namefield);
         $atfcmcategory->setReasonField($reasonfield);
         $atfcmcategory->setInternalId($internalidfield);
+        $atfcmcategory->setDescriptionField($descriptionfield);
+        $atfcmcategory->setNormalRateField($normalratefield);
 
+        $em->persist($normalratefield);
+        $em->persist($descriptionfield);
         $em->persist($namefield);
         $em->persist($reasonfield);
         $em->persist($internalidfield);

@@ -2527,7 +2527,7 @@ class EventsController extends TabsController
             $note = $em->getRepository('Application\Entity\EventUpdate')->find($id);
             $post = $this->getRequest()->getPost();
             if ($note) {
-                $note->setText($post['note']);
+                $note->setText(nl2br($post['note']));
                 $em->persist($note);
                 $note->getEvent()->setLastModifiedOn();
                 $em->persist($note->getEvent());

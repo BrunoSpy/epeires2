@@ -88,6 +88,21 @@
 	padding: 20px
 }
 
+#Event .notes {
+	margin: -15px;
+	max-height: 600px;
+	overflow-y: auto;
+}
+
+#Event .notes h3 .btn {
+	margin: 0px;
+}
+
+#Event .notes textarea {
+	width: 100%;
+	max-height: 5.9em;
+}
+
 #predefined_events {
 	margin-top: 10px;
 }

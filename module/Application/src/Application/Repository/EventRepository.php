@@ -1810,6 +1810,7 @@ class EventRepository extends ExtendedRepository
                 RegulationListReply::getDateTimeEnd($regulation),
                 RegulationListReply::getReason($regulation),
                 RegulationListReply::getDescription($regulation),
+                RegulationListReply::getNormalRate($regulation),
                 $organisation,
                 $user,
                 $messages);
@@ -1818,7 +1819,43 @@ class EventRepository extends ExtendedRepository
             if(count($results) > 1) {
                 //BUG
             } else {
-                //TODO update parameters
+                //update parameters
+                $event = $results[0];
+                $event->setStartdate(RegulationListReply::getDateTimeStart($regulation));
+                $event->setEnddate(RegulationListReply::getDateTimeEnd($regulation));
+                $reason = $event->getCustomFieldValue($category->getReasonField());
+                if(!$reason) {
+                    $reason = new CustomFieldValue();
+                    $reason->setEvent($event);
+                    $reason->setCustomField($category->getReasonField());
+                }
+                $reason->setValue(RegulationListReply::getReason($regulation));
+                $description = $event->getCustomFieldValue($category->getDescriptionField());
+                if(!$description) {
+                    $description = new CustomFieldValue();
+                    $description->setEvent($event);
+                    $description->setCustomField($category->getDescriptionField());
+                }
+                $description->setValue(RegulationListReply::getDescription($regulation));
+                $normalRate = $event->getCustomFieldValue($category->getNormalRateField());
+                if(!$normalRate){
+                    $normalRate = new CustomFieldValue();
+                    $normalRate->setCustomField($category->getNormalRateField());
+                    $normalRate->setEvent($event);
+                }
+                $normalRate->setValue(RegulationListReply::getNormalRate($regulation));
+                try {
+                    $this->getEntityManager()->persist($normalRate);
+                    $this->getEntityManager()->persist($reason);
+                    $this->getEntityManager()->persist($description);
+                    $this->getEntityManager()->persist($event);
+                    $this->getEntityManager()->flush();
+                } catch (\Exception $e) {
+                    error_log($e->getMessage());
+                    if ($messages != null) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                }
             }
         }
         return $count;
@@ -1832,6 +1869,7 @@ class EventRepository extends ExtendedRepository
         $timeEnd,
         $reason,
         $description,
+        $normalRate,
         $organisation,
         $user,
         &$messages)
@@ -1843,6 +1881,7 @@ class EventRepository extends ExtendedRepository
         $event->setScheduled(false);
         $event->setPunctual(false);
         $event->setStartdate($timeBegin);
+        $event->setReadOnly(true);
         $status = $this->getEntityManager()
             ->getRepository('Application\Entity\Status')
             ->find('1');
@@ -1872,7 +1911,13 @@ class EventRepository extends ExtendedRepository
         $descriptionvalue->setCustomField($cat->getDescriptionField());
         $descriptionvalue->setEvent($event);
         $descriptionvalue->setValue($description);
+        //normalRate
+        $normalRatevalue = new CustomFieldValue();
+        $normalRatevalue->setCustomField($cat->getNormalRateField());
+        $normalRatevalue->setEvent($event);
+        $normalRatevalue->setValue($normalRate);
         try {
+            $this->getEntityManager()->persist($normalRatevalue);
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);

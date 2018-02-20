@@ -56,7 +56,7 @@ $modules = array(
 
 if ($env == 'development') {
 
-    $modules [] = 'ZendDeveloperTools';
+    //$modules [] = 'ZendDeveloperTools';
     $modules[] = 'DoctrineDataFixtureModule';
 }
 
