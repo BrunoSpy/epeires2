@@ -36,6 +36,7 @@ class ATFCMCategory extends Category
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Options({"label":"TVs (séparés par une virgule) :"})
+     * @Annotation\Attributes({"placeholder":"Par défaut : LF*"})
      * TVs to fetch
      */
     protected $tvs;
