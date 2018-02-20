@@ -55,6 +55,19 @@ class ATFCMCategory extends Category
      */
     protected $descriptionfield;
 
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $normalRateField;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
+     */
+    protected $nmB2B = false;
+
     public function setTvs($tvs) {
         $this->tvs = $tvs;
     }
@@ -87,6 +100,26 @@ class ATFCMCategory extends Category
 
     public function setDescriptionField($field){
         $this->descriptionfield = $field;
+    }
+
+    public function setNormalRateField($field)
+    {
+        $this->normalRateField = $field;
+    }
+
+    public function getNormalRateField()
+    {
+        return $this->normalRateField;
+    }
+
+    public function setNMB2B($nmb2b)
+    {
+        $this->nmB2B = $nmb2b;
+    }
+
+    public function isNMB2B()
+    {
+        return $this->nmB2B;
     }
 
     public function getArrayCopy()

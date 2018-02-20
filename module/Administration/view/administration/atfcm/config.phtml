@@ -18,6 +18,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/atfcm.js');
                                         <th data-sort="string" data-autosort="true">Nom</th>
                                         <th>Couleur</th>
                                         <th>TVs</th>
+                                        <th>NM B2B</th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -29,6 +30,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/atfcm.js');
                                             echo '<td>'.$cat->getName().'</td>';
                                             echo "<td><span class=\"label\" style=\"background-color:".$cat->getColor()."\">".$cat->getColor()."</span></td>";
                                             echo '<td>'.$cat->getTvs().'</td>';
+                                            echo '<td>'.($cat->isNMB2B()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
                                             echo '<td><a '
                                                     . 'href="#atfcm-container" '
                                                     . 'class="mod-atfcm" '
@@ -53,8 +55,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/atfcm.js');
                 <div class="panel-body">
                     <p>Cette page permet de configurer les régulations affectées aux catégories de type "ATFCM".</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
-                    <p>La création d'un oglet spécifique doit se faire dans la page de configuration spécifique.</p>
                     <p>La récupération des données via NM B2B nécessite que la connexion soit préalablement configurée par l'administrateur technique.</p>
+                    <p>À noter : les régulations créées par import NM B2B ne sont pas modifiables.</p>
                 </div>
             </div>
         </div>
