@@ -206,7 +206,7 @@ class NMB2BService
                 'type' => 'OPERATIONAL'
             ),
             'tvs' => array(
-                'item' => $regex
+                'item' => explode(",",$regex)
             ),
             'requestedRegulationFields' => array(
                 'item' => array('location','reason','lastUpdate', 'applicability', 'dataId', 'initialConstraints')
