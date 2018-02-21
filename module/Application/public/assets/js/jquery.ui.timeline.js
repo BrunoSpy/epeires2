@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.2.1",
+        version: "1.2.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -484,9 +484,11 @@
                 self.element.unbind('mousemove');
                 self.pauseUpdateView();
                 var elmt = self.element.find('.on_drag');
-                if (elmt[0] !== null) {
+                if (elmt[0] !== null && elmt.data('ident') !== undefined) {
                     elmt.removeClass('on_drag');
                     var id = elmt.data("ident");
+                    var event = self.events[self.eventsPosition[id]];
+                    var sendToMattermost = (event.mattermostid !== null);
                     if (self.on_drag === 1) {
                         var time = new Date();
                         time.setTime(elmt.data('start'));
@@ -494,7 +496,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -506,7 +508,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -518,7 +520,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -535,12 +537,15 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 2;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event, true);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
@@ -552,7 +557,13 @@
              * Modify evt on double click
              */
             this.element.on('dblclick', '.rect_elmt', function(e){
-                $(this).closest('.elmt').find('.modify-evt').trigger('click');
+                if($(e.target).hasClass('rect_elmt')){
+                    var id = $(this).closest('.elmt').data('ident');
+                    var event = self.events[self.eventsPosition[id]];
+                    if(event.modifiable) {
+                        $(this).closest('.elmt').find('.modify-evt').trigger('click');
+                    }
+                }
             });
 
             //clic sur heure de fin => passage à terminé
@@ -562,12 +573,15 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 3;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event, true);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
@@ -590,16 +604,20 @@
                         'data-mattermostid="'+event.mattermostid+'" ' +
                         'class="send-mattermost"><span class="glyphicon glyphicon-send"></span> '+(event.mattermostid == null ? 'Envoyer sur le chat' : 'Mettre à jour sur le chat')+'</a>';
                 }
-                if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
-                    if(event.punctual === false){
-                        if(event.star === true){
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                if(event.status_id < 4){ //non annulé et non supprimé
+                    //ajout de notes et flag important dispo pour tout évènement
+                    if (event.punctual === false) {
+                        if (event.star === true) {
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
                         } else {
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
                         }
                     }
-                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    if(event.modifiable) {
+                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+
+                    }
                 }
                 if(event.status_id < 5 && event.deleteable) {
                     txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
