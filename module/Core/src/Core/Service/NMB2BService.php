@@ -196,6 +196,8 @@ class NMB2BService
         $client = $this->getFlowSoapClient();
         $now = new \DateTime('now');
 
+        if(strlen($regex) == 0) $regex = "LF*";
+
         $params = array(
             'sendTime' => $now->format('Y-m-d H:i:s'),
             'queryPeriod' => array(
@@ -209,7 +211,7 @@ class NMB2BService
                 'item' => explode(",",$regex)
             ),
             'requestedRegulationFields' => array(
-                'item' => array('location','reason','lastUpdate', 'applicability', 'dataId', 'initialConstraints')
+                'item' => array('location','reason','lastUpdate', 'applicability', 'initialConstraints')
             )
         );
 

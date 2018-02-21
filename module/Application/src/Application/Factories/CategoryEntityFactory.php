@@ -731,7 +731,7 @@ class CategoryEntityFactory
         $reasonfield->setCategory($atfcmcategory);
 
         $descriptionfield = new CustomField();
-        $descriptionfield->setPlace(2);
+        $descriptionfield->setPlace(3);
         $descriptionfield->setDefaultValue("");
         $descriptionfield->setTooltip("");
         $descriptionfield->setName("Description");
@@ -739,7 +739,7 @@ class CategoryEntityFactory
         $descriptionfield->setCategory($atfcmcategory);
 
         $internalidfield = new CustomField();
-        $internalidfield->setPlace(3);
+        $internalidfield->setPlace(4);
         $internalidfield->setDefaultValue("");
         $internalidfield->setTooltip("");
         $internalidfield->setName("Internal Id");
@@ -748,7 +748,7 @@ class CategoryEntityFactory
         $internalidfield->setCategory($atfcmcategory);
 
         $normalratefield = new CustomField();
-        $normalratefield->setPlace(4);
+        $normalratefield->setPlace(5);
         $normalratefield->setDefaultValue("");
         $normalratefield->setTooltip("");
         $normalratefield->setName("Taux");

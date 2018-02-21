@@ -48,7 +48,7 @@ class RegulationListReply
      * @return string
      */
     public static function getDataId($regulation) {
-        return (string) $regulation->dataId;
+        return (string) $regulation->regulationId;
     }
 
     /**
