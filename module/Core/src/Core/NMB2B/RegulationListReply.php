@@ -63,6 +63,11 @@ class RegulationListReply
         return (string) $regulation->location->description;
     }
 
+    public static function getNormalRate($regulation)
+    {
+        return (string) $regulation->initialConstraints->normalRate;
+    }
+
     /**
      * @param $regulation
      * @return string

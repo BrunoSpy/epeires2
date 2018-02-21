@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.2.0",
+        version: "1.2.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -548,6 +548,13 @@
                 });
             });
 
+            /**
+             * Modify evt on double click
+             */
+            this.element.on('dblclick', '.rect_elmt', function(e){
+                $(this).closest('.elmt').find('.modify-evt').trigger('click');
+            });
+
             //clic sur heure de fin => passage à terminé
             this.element.on('click', '.elmt_fin', function(e){
                 e.preventDefault();
@@ -574,7 +581,7 @@
                 var me = $(this);
                 var id = me.data('id');
                 var txt = '<p class="elmt_tooltip actions">'
-                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
                 if(self.options.mattermost) {
                     txt += '<p><a ' +
@@ -620,7 +627,10 @@
 
             this.element.on('click', '.add-note', function(e){
                 e.preventDefault();
-                $("#add-note").data('id', $(this).data('id'));
+                var me = $(this);
+                var id = me.data('id');
+                $("#add-note").data('id', id);
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
 
             this.element.on('click', '.evt-important', function(e){
