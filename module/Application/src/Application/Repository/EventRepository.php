@@ -1884,7 +1884,7 @@ class EventRepository extends ExtendedRepository
         $event->setReadOnly(true);
         $status = $this->getEntityManager()
             ->getRepository('Application\Entity\Status')
-            ->find('1');
+            ->find('3');
         $event->setStatus($status);
         $impact = $this->getEntityManager()
             ->getRepository('Application\Entity\Impact')
@@ -1917,10 +1917,10 @@ class EventRepository extends ExtendedRepository
         $normalRatevalue->setEvent($event);
         $normalRatevalue->setValue($normalRate);
         try {
-            $this->getEntityManager()->persist($normalRatevalue);
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);
+            $this->getEntityManager()->persist($normalRatevalue);
             $this->getEntityManager()->persist($internalid);
             $this->getEntityManager()->persist($event);
             $this->getEntityManager()->flush();
