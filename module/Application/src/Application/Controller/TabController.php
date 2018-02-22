@@ -116,7 +116,6 @@ class TabController extends ZoneController
                 if($mattermostLogin && strlen($mattermostLogin) > 0) {
                     $this->config['mattermost']['login'] = $mattermostLogin;
                     $configMattermost = $this->config['mattermost'];
-                    $configMattermost['token'] = $this->mattermost->getToken();
                     $this->layout()->mattermost = $configMattermost;
                 }
             } catch (\Exception $e) {

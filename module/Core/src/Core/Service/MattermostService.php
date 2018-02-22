@@ -37,6 +37,8 @@ class MattermostService extends Mattermost
 
     protected function getClient()
     {
+        //we do not need session here
+        session_write_close();
         if($this->client == null) {
             if ($this->auth->hasIdentity()) {
                 $user = $this->auth->getIdentity();

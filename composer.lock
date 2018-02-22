@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/MattermostModule.git",
-                "reference": "0f08a7b33fcaf450059206d815fb5ad90f12d486"
+                "reference": "2ad3e860c746bfcd28c13c8d7691330c6ffdc9e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/0f08a7b33fcaf450059206d815fb5ad90f12d486",
-                "reference": "0f08a7b33fcaf450059206d815fb5ad90f12d486",
+                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/2ad3e860c746bfcd28c13c8d7691330c6ffdc9e7",
+                "reference": "2ad3e860c746bfcd28c13c8d7691330c6ffdc9e7",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +94,7 @@
                 "chat",
                 "zf2"
             ],
-            "time": "2018-02-13T09:05:21+00:00"
+            "time": "2018-02-22T16:59:19+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
@@ -1318,16 +1318,16 @@
         },
         {
             "name": "gnello/php-mattermost-driver",
-            "version": "v2.4.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gnello/php-mattermost-driver.git",
-                "reference": "50ed85dc9ae7cd4dd021ee8af9a56945eda10dff"
+                "reference": "f1160989c5ca2cb90f8d32631ce9f20191b4f08b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gnello/php-mattermost-driver/zipball/50ed85dc9ae7cd4dd021ee8af9a56945eda10dff",
-                "reference": "50ed85dc9ae7cd4dd021ee8af9a56945eda10dff",
+                "url": "https://api.github.com/repos/gnello/php-mattermost-driver/zipball/f1160989c5ca2cb90f8d32631ce9f20191b4f08b",
+                "reference": "f1160989c5ca2cb90f8d32631ce9f20191b4f08b",
                 "shasum": ""
             },
             "require": {
@@ -1361,7 +1361,7 @@
                 "Mattermost",
                 "chat"
             ],
-            "time": "2018-02-04T12:03:32+00:00"
+            "time": "2018-02-21T08:38:44+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -4479,16 +4479,16 @@
         },
         {
             "name": "zendframework/zend-session",
-            "version": "2.8.4",
+            "version": "2.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-session.git",
-                "reference": "9338f1ae483bcc18cc3b6c0347c8ba4f448b3e2a"
+                "reference": "2cfd90e1a2f6b066b9f908599251d8f64f07021b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-session/zipball/9338f1ae483bcc18cc3b6c0347c8ba4f448b3e2a",
-                "reference": "9338f1ae483bcc18cc3b6c0347c8ba4f448b3e2a",
+                "url": "https://api.github.com/repos/zendframework/zend-session/zipball/2cfd90e1a2f6b066b9f908599251d8f64f07021b",
+                "reference": "2cfd90e1a2f6b066b9f908599251d8f64f07021b",
                 "shasum": ""
             },
             "require": {
@@ -4496,14 +4496,11 @@
                 "zendframework/zend-eventmanager": "^2.6.2 || ^3.0",
                 "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
-            "conflict": {
-                "phpunit/phpunit": ">=6.5.0"
-            },
             "require-dev": {
                 "container-interop/container-interop": "^1.1",
                 "mongodb/mongodb": "^1.0.1",
                 "php-mock/php-mock-phpunit": "^1.1.2 || ^2.0",
-                "phpunit/phpunit": "^5.7.5 || ^6.0.13",
+                "phpunit/phpunit": "^5.7.5 || >=6.0.13 <6.5.0",
                 "zendframework/zend-cache": "^2.6.1",
                 "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-db": "^2.7",
@@ -4545,7 +4542,7 @@
                 "session",
                 "zf"
             ],
-            "time": "2018-01-31T17:38:47+00:00"
+            "time": "2018-02-22T16:33:54+00:00"
         },
         {
             "name": "zendframework/zend-stdlib",
@@ -6682,16 +6679,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.7.4",
+            "version": "1.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "9f901e29c93dae4aa77c0bb161df4276f9c9a1be"
+                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/9f901e29c93dae4aa77c0bb161df4276f9c9a1be",
-                "reference": "9f901e29c93dae4aa77c0bb161df4276f9c9a1be",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/dfd6be44111a7c41c2e884a336cc4f461b3b2401",
+                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401",
                 "shasum": ""
             },
             "require": {
@@ -6741,7 +6738,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-02-11T18:49:29+00:00"
+            "time": "2018-02-19T10:16:54+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
