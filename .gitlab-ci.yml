@@ -55,8 +55,6 @@ before_script:
   #Make sure webserver is running
 - curl http://localhost/events/testAuthentication
 - apache2ctl -S
-services:
-- mariadb:latest
 
 variables:
   MYSQL_DATABASE: epeires2
@@ -66,6 +64,19 @@ variables:
 
 test:5.6:
   image: php:5.6-apache
+  services:
+  - mariadb:latest
+  variables:
+    MCRYPT: "mcrypt"
+    XDEBUG: "xdebug-2.5.5"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:5.6-mysql:
+  image: php:5.6-apache
+  services:
+  - mysql:latest
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug-2.5.5"
@@ -75,6 +86,8 @@ test:5.6:
 
 test:7.0:
   image: php:7.0-apache
+  services:
+  - mariadb:latest
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -84,6 +97,8 @@ test:7.0:
 
 test:7.1:
   image: php:7.1-apache
+  services:
+  - mariadb:latest
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -93,6 +108,8 @@ test:7.1:
 
 test:7.2:
   image: php:7.2-apache
+  services:
+  - mariadb:latest
   variables:
     MCRYPT: ""
     XDEBUG: "xdebug"
