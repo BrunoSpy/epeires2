@@ -30,7 +30,9 @@ class MattermostService extends Mattermost
 
     public function __construct($config, $auth)
     {
-        $this->mattermost = $config['mattermost'];
+        if(array_key_exists('mattermost', $config)) {
+            $this->mattermost = $config['mattermost'];
+        }
         $this->auth = $auth;
         $this->config = $config;
     }
