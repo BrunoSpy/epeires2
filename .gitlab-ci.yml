@@ -36,7 +36,7 @@ before_script:
 - composer global require --optimize-autoloader "hirak/prestissimo"
 - composer install --no-interaction --prefer-dist
 #configure database
-- cp config/autoload/doctrine.gitlab-ci.php config/autoload/doctrine.local.php
+- cp $DOCTRINE config/autoload/doctrine.local.php
 #populate database
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
@@ -69,6 +69,7 @@ test:5.6:
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug-2.5.5"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -80,6 +81,7 @@ test:5.6-mysql:
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug-2.5.5"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -91,6 +93,7 @@ test:7.0:
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -102,6 +105,7 @@ test:7.1:
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -113,6 +117,7 @@ test:7.2:
   variables:
     MCRYPT: ""
     XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
