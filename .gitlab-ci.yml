@@ -1,3 +1,6 @@
+stages:
+  - test
+  - build_image
 cache:
   paths:
   - vendor/
@@ -64,6 +67,7 @@ variables:
 
 test:5.6:
   image: php:5.6-apache
+  stage: test
   services:
   - mariadb:latest
   variables:
@@ -88,6 +92,7 @@ test:5.6-mysql:
 
 test:7.0:
   image: php:7.0-apache
+  stage: test
   services:
   - mariadb:latest
   variables:
@@ -100,6 +105,7 @@ test:7.0:
 
 test:7.1:
   image: php:7.1-apache
+  stage: test
   services:
   - mariadb:latest
   variables:
@@ -112,6 +118,8 @@ test:7.1:
 
 test:7.2:
   image: php:7.2-apache
+  stage: test
+  allow_failure: true
   services:
   - mariadb:latest
   variables:
@@ -121,3 +129,15 @@ test:7.2:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+docker_images:
+  before_script:
+    - echo 'Short circuit global before_script'
+  stage: build_image
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME .
+    - docker push $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
