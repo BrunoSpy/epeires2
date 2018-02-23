@@ -1,0 +1,96 @@
+<?php
+/**
+ * Local Configuration Override
+ *
+ * This configuration override file is for overriding environment-specific and
+ * security-sensitive configuration information. Copy this file without the
+ * .dist extension at the end and populate values as needed.
+ *
+ * @NOTE: This file is ignored from Git by default with the .gitignore included
+ * in ZendSkeletonApplication. This is a good practice, as it prevents sensitive
+ * credentials from accidentally being committed into version control.
+ */
+
+return array(
+    
+    'zfc_rbac' => array(
+        'guards' => array(
+            //Configure autoconnection according to the example below
+            //Clients with IP matching this list won't be able to connect with another user
+            'Core\Guard\AutoConnectGuard' => array(
+                '127.0.0.1' => array(
+                    'user' => 'admin',
+                    'password' => 'adminadmin')
+            )
+        )
+    ),
+    //specify another translation file
+    'lang' => 'fr_FR',
+    'translator' => array(
+            'locale' => 'fr_FR',
+    ),
+    //activate special radio menu for frequencies test
+    'frequency_test_menu' => true,
+
+    //change frequency colors
+    //available pairs :
+    //  'ok' => 'green' (default)
+    //  'ok' => 'grey'
+    //  'warning' => 'yellow'
+    //  'warning' => 'orange' (default)
+    //  'fail' => 'red' (default)
+    //  'planned' => 'blue' (default)
+    //example : change warning color to yellow
+    'frequency_tab_colors' => array(
+        'warning' => 'yellow'
+    ),
+    //API Authentication configuration
+    'zf-mvc-auth' => array(
+        'authentication' => array(
+            'adapters' => array(
+                'basic' => array(
+                    'adapter' => 'ZF\\MvcAuth\\Authentication\\HttpAdapter',
+                    'options' => array(
+                        'accept_schemes' => array(
+                            0 => 'basic',
+                        ),
+                        'realm' => 'api',
+                        'htpasswd' => 'data/users.htpasswd',
+                    ),
+                ),
+            ),
+        ),
+    ),
+
+    'btiv' => [
+        // proxy pour récupérer notam sur le site du SIA
+        'af_proxynotam' => 'http://proxy.???',
+        // paramétrage du serveur de carte, ici mapbox
+        'ip_map' => [
+            'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", 
+            'attribution' => 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>',
+            'maxZoom' => 18,
+            'id' => "oziatek.ppg7d633",
+            'accessToken' => "pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw"
+        ],
+        // nombre de résultats du déclenchement d'un plan d'interrogation
+        'ip_nb_terrains' => 30,
+        // nombre de résultats par page du déclenchement d'un plan d'interrogation
+        'ip_nb_par_pages' => 5,
+        // emetteur des emails pour les plans d'interrogation
+        'ip_email_from' => 'emetteur@aviation-civile.gouv.fr',
+        // receveurs des emails pour les plans d'interrogation
+        'ip_email_to' => [
+            'receveur1@?.?',
+            'receveur2@?.?'
+            // etc.
+        ],
+        // sujet des messages envoyés pour les plans d'interrogation 
+        'ip_email_subject' => 'titre des email',
+        // texte des messages envoyés pour les plans d'interrogation
+        'ip_email_text' => 'corps des email',
+        // repertoire de sauvegarde des pdf des plans d'interrogation
+        // pas de / à la fin
+        'ip_dir' => 'data/plans'
+    ],
+);
