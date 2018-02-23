@@ -55,6 +55,18 @@ class HomeController extends AbstractActionController
             $extensions['mcrypt'] = extension_loaded('mcrypt');
         }
 
+        if(array_key_exists('nm_b2b', $this->config)) {
+            $certifValidTo = new \DateTime();
+            $certif = openssl_x509_parse(file_get_contents(ROOT_PATH . $this->config['nm_b2b']['cert_path']));
+            $certifValidTo->setTimestamp($certif['validTo_time_t']);
+            $certifAssignTo = $certif['subject']['OU'][0];
+            $certifName = $certif['subject']['CN'];
+        } else {
+            $certifValidTo = null;
+            $certifAssignTo = null;
+            $certifName = null;
+        }
+
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
             'version' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getCurrentVersion()),
@@ -62,7 +74,10 @@ class HomeController extends AbstractActionController
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations,
             'extensions' => $extensions,
-            'phpversionid' => PHP_VERSION_ID
+            'phpversionid' => PHP_VERSION_ID,
+            'certifvalid' => $certifValidTo,
+            'certifassign' => $certifAssignTo,
+            'certifname' => $certifName
         );
     }
 }
