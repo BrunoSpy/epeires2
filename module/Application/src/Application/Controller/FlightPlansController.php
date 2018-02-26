@@ -224,7 +224,7 @@ class FlightPlansController extends TabController
 
             $event = $this->em->getRepository(Event::class)->find($id);
             $startDate = $event->getStartdate();
-            if ($startDate < $endDate) {
+            if ($startDate <= $endDate) {
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
@@ -263,7 +263,7 @@ class FlightPlansController extends TabController
             $event = $this->em->getRepository(Event::class)->find($id);
             $startDate = $event->getStartdate();
 
-            if ($startDate < $endDate) {
+            if ($startDate <= $endDate) {
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
