@@ -93,4 +93,9 @@ class RegulationListReply
         $time = $regulation->applicability->unt . '+00:00';
         return new \DateTime($time);
     }
+
+    public static function getRegulationState($regulation)
+    {
+        return (string) $regulation->regulationState;
+    }
 }

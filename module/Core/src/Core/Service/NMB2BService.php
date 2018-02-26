@@ -211,7 +211,7 @@ class NMB2BService
                 'item' => explode(",",$regex)
             ),
             'requestedRegulationFields' => array(
-                'item' => array('location','reason','lastUpdate', 'applicability', 'initialConstraints')
+                'item' => array('location','reason','lastUpdate', 'applicability', 'initialConstraints', 'regulationState')
             )
         );
 

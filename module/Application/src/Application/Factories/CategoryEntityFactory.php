@@ -755,12 +755,23 @@ class CategoryEntityFactory
         $normalratefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
         $normalratefield->setCategory($atfcmcategory);
 
+        $statefield = new CustomField();
+        $statefield->setPlace(6);
+        $statefield->setDefaultValue("");
+        $statefield->setHidden(true);
+        $statefield->setTooltip("");
+        $statefield->setName("Etat");
+        $statefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $statefield->setCategory($atfcmcategory);
+
         $atfcmcategory->setFieldname($namefield);
         $atfcmcategory->setReasonField($reasonfield);
         $atfcmcategory->setInternalId($internalidfield);
         $atfcmcategory->setDescriptionField($descriptionfield);
         $atfcmcategory->setNormalRateField($normalratefield);
+        $atfcmcategory->setRegulationStateField($statefield);
 
+        $em->persist($statefield);
         $em->persist($normalratefield);
         $em->persist($descriptionfield);
         $em->persist($namefield);
