@@ -41,7 +41,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.3",
+        version: "1.2.3",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1666,6 +1666,7 @@
                 rect.css('background-color', newcolor);
                 compl.css('border-left-color', newcolor);
             }
+            return newcolor;
         },
         /**
          * Hide an event if displayed
@@ -2305,7 +2306,6 @@
                     break;
                 case 4: //annulé
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
@@ -2325,14 +2325,14 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2351,7 +2351,8 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement supprimé ne peut pas être important
                     this._highlightElmt(elmt, false);
