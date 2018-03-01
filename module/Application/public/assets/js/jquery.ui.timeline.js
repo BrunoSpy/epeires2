@@ -2243,19 +2243,29 @@
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                        elmt_deb.removeClass('disp').show().tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.removeClass('disp').show();
+                        if(event.modifiable) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                         event.hourBeginForced = true;
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                        elmt_deb.addClass('disp').tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.addClass('disp');
+                        if(event.modifiable) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                     }
                     //heure de fin cliquable
@@ -2267,19 +2277,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable) {
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -2310,19 +2330,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
