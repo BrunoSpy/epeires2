@@ -86,7 +86,7 @@ var refreshPostit = function(url){
             stop: function(event, ui){
                 Cookies.set('postit-'+$(event.target).data('id'),ui.position);
             },
-            containment:"#timeline"
+            containment:".page-wrap"
         });
         timerpostit = setTimeout(function(){refreshPostit(url)}, 10000);
     });
