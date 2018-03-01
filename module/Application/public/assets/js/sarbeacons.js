@@ -505,7 +505,8 @@
     L.tileLayer(tabconf.ip_map.url, {
         attribution: tabconf.ip_map.attribution,
         maxZoom: tabconf.ip_map.maxZoom,
-        id: tabconf.ip_map.id,
+        // id: tabconf.ip_map.id,
+        id: 'mapbox.light',
         accessToken: tabconf.ip_map.accessToken
     }).addTo(orbit);
 
