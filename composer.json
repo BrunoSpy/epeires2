@@ -70,7 +70,7 @@
   },
   "require-dev":{
     "zendframework/zend-test": "^2.5",
-    "phpunit/phpunit": "^5.6",
+    "phpunit/phpunit": ">=5.6",
     "hounddog/doctrine-data-fixture-module": "dev-master",
     "codeception/codeception": "^2.3",
     "zfcampus/zf-apigility-admin": "~1.0",
