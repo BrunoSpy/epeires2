@@ -65,6 +65,31 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
+test:7.0:
+  image: php:7.0-apache
+  stage: test
+  services:
+  - mariadb:latest
+  variables:
+    MCRYPT: "mcrypt"
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.0-mysql:
+  image: php:7.0-apache
+  services:
+  - mysql:latest
+  variables:
+    MCRYPT: "mcrypt"
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 test:7.1:
   image: php:7.1-apache
   stage: test
@@ -91,19 +116,19 @@ test:docker:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
-test:7.2:
-  image: php:7.2-apache
-  stage: test
-  allow_failure: true
-  services:
-  - mariadb:latest
-  variables:
-    MCRYPT: ""
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
+#test:7.2:
+#  image: php:7.2-apache
+#  stage: test
+#  allow_failure: true
+#  services:
+#  - mariadb:latest
+#  variables:
+#    MCRYPT: ""
+#    XDEBUG: "xdebug"
+#    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+#  script:
+#  - php vendor/bin/codecept run acceptance
+#  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 docker_images:
   before_script:

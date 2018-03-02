@@ -26,7 +26,7 @@
     }
   ],
   "require": {
-    "php": "^7.1 || ^7.2",
+    "php": "^7.0 || ^7.1",
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
@@ -69,8 +69,8 @@
     "brunospy/mattermostmodule": "dev-master"
   },
   "require-dev":{
-    "zendframework/zend-test": "^2.5",
-    "phpunit/phpunit": ">=5.6",
+    "zendframework/zend-test": "^2.3",
+    "phpunit/phpunit": "^5.6",
     "hounddog/doctrine-data-fixture-module": "dev-master",
     "codeception/codeception": "^2.3",
     "zfcampus/zf-apigility-admin": "~1.0",
@@ -78,7 +78,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.1"
+      "php": "7.0"
     }
   }
 }
