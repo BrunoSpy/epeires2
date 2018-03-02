@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.2.1",
+        version: "1.2.3",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -484,9 +484,11 @@
                 self.element.unbind('mousemove');
                 self.pauseUpdateView();
                 var elmt = self.element.find('.on_drag');
-                if (elmt[0] !== null) {
+                if (elmt[0] !== null && elmt.data('ident') !== undefined) {
                     elmt.removeClass('on_drag');
                     var id = elmt.data("ident");
+                    var event = self.events[self.eventsPosition[id]];
+                    var sendToMattermost = (event.mattermostid !== null);
                     if (self.on_drag === 1) {
                         var time = new Date();
                         time.setTime(elmt.data('start'));
@@ -494,7 +496,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -506,7 +508,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -518,7 +520,7 @@
                             function (data) {
                                 displayMessages(data.messages);
                                 if (data['event']) {
-                                    self.addEvents(data.event, true);
+                                    self.addEvents(data.event, sendToMattermost);
                                 }
                             }).always(function(){
                             self.forceUpdateView(false);
@@ -535,12 +537,15 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 2;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event, true);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
@@ -552,7 +557,13 @@
              * Modify evt on double click
              */
             this.element.on('dblclick', '.rect_elmt', function(e){
-                $(this).closest('.elmt').find('.modify-evt').trigger('click');
+                if($(e.target).hasClass('rect_elmt')){
+                    var id = $(this).closest('.elmt').data('ident');
+                    var event = self.events[self.eventsPosition[id]];
+                    if(event.modifiable) {
+                        $(this).closest('.elmt').find('.modify-evt').trigger('click');
+                    }
+                }
             });
 
             //clic sur heure de fin => passage à terminé
@@ -562,12 +573,15 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 3;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event, true);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
@@ -590,16 +604,20 @@
                         'data-mattermostid="'+event.mattermostid+'" ' +
                         'class="send-mattermost"><span class="glyphicon glyphicon-send"></span> '+(event.mattermostid == null ? 'Envoyer sur le chat' : 'Mettre à jour sur le chat')+'</a>';
                 }
-                if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
-                    if(event.punctual === false){
-                        if(event.star === true){
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                if(event.status_id < 4){ //non annulé et non supprimé
+                    //ajout de notes et flag important dispo pour tout évènement
+                    if (event.punctual === false) {
+                        if (event.star === true) {
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
                         } else {
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
                         }
                     }
-                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    if(event.modifiable) {
+                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+
+                    }
                 }
                 if(event.status_id < 5 && event.deleteable) {
                     txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
@@ -1697,6 +1715,7 @@
                 rect.css('background-color', newcolor);
                 compl.css('border-left-color', newcolor);
             }
+            return newcolor;
         },
         /**
          * Hide an event if displayed
@@ -2224,19 +2243,29 @@
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                        elmt_deb.removeClass('disp').show().tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.removeClass('disp').show();
+                        if(event.modifiable) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                         event.hourBeginForced = true;
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                        elmt_deb.addClass('disp').tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.addClass('disp');
+                        if(event.modifiable) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                     }
                     //heure de fin cliquable
@@ -2248,19 +2277,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable) {
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -2291,19 +2330,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -2336,7 +2385,6 @@
                     break;
                 case 4: //annulé
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
@@ -2356,14 +2404,14 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2382,7 +2430,8 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement supprimé ne peut pas être important
                     this._highlightElmt(elmt, false);

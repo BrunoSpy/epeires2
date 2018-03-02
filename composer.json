@@ -26,7 +26,7 @@
     }
   ],
   "require": {
-    "php": "^7.0 || ^7.1 || ^7.2",
+    "php": "^7.1 || ^7.2",
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
@@ -72,14 +72,13 @@
     "zendframework/zend-test": "^2.5",
     "phpunit/phpunit": "^5.6",
     "hounddog/doctrine-data-fixture-module": "dev-master",
-    "satooshi/php-coveralls": "dev-master",
     "codeception/codeception": "^2.3",
     "zfcampus/zf-apigility-admin": "~1.0",
     "zendframework/zend-developer-tools": "^1.1"
   },
   "config": {
     "platform": {
-      "php": "7.0"
+      "php": "7.1"
     }
   }
 }

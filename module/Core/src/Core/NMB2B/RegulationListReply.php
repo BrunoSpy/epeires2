@@ -48,7 +48,7 @@ class RegulationListReply
      * @return string
      */
     public static function getDataId($regulation) {
-        return (string) $regulation->dataId;
+        return (string) $regulation->regulationId;
     }
 
     /**
@@ -92,5 +92,10 @@ class RegulationListReply
     public static function getDateTimeEnd($regulation) {
         $time = $regulation->applicability->unt . '+00:00';
         return new \DateTime($time);
+    }
+
+    public static function getRegulationState($regulation)
+    {
+        return (string) $regulation->regulationState;
     }
 }

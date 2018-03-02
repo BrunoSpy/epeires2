@@ -1811,6 +1811,7 @@ class EventRepository extends ExtendedRepository
                 RegulationListReply::getReason($regulation),
                 RegulationListReply::getDescription($regulation),
                 RegulationListReply::getNormalRate($regulation),
+                RegulationListReply::getRegulationState($regulation),
                 $organisation,
                 $user,
                 $messages);
@@ -1844,6 +1845,30 @@ class EventRepository extends ExtendedRepository
                     $normalRate->setEvent($event);
                 }
                 $normalRate->setValue(RegulationListReply::getNormalRate($regulation));
+                switch (RegulationListReply::getRegulationState($regulation)) {
+                    case ATFCMCategory::APPLIED:
+                    case ATFCMCategory::APPLYING:
+                        $status = $this->getEntityManager()
+                            ->getRepository('Application\Entity\Status')
+                            ->find('2');
+                        break;
+                    case ATFCMCategory::CANCELLED:
+                    case ATFCMCategory::CANCELLING:
+                        $status = $this->getEntityManager()
+                            ->getRepository('Application\Entity\Status')
+                            ->find('4');
+                        break;
+                    case ATFCMCategory::TERMINATED:
+                        $status = $this->getEntityManager()
+                            ->getRepository('Application\Entity\Status')
+                            ->find('3');
+                        break;
+                    default:
+                        $status = $this->getEntityManager()
+                            ->getRepository('Application\Entity\Status')
+                            ->find('3');
+                }
+                $event->setStatus($status);
                 try {
                     $this->getEntityManager()->persist($normalRate);
                     $this->getEntityManager()->persist($reason);
@@ -1870,6 +1895,7 @@ class EventRepository extends ExtendedRepository
         $reason,
         $description,
         $normalRate,
+        $regulationState,
         $organisation,
         $user,
         &$messages)
@@ -1882,9 +1908,29 @@ class EventRepository extends ExtendedRepository
         $event->setPunctual(false);
         $event->setStartdate($timeBegin);
         $event->setReadOnly(true);
-        $status = $this->getEntityManager()
-            ->getRepository('Application\Entity\Status')
-            ->find('1');
+        switch ($regulationState) {
+            case ATFCMCategory::APPLIED:
+            case ATFCMCategory::APPLYING:
+                $status = $this->getEntityManager()
+                    ->getRepository('Application\Entity\Status')
+                    ->find('2');
+                break;
+            case ATFCMCategory::CANCELLED:
+            case ATFCMCategory::CANCELLING:
+                $status = $this->getEntityManager()
+                    ->getRepository('Application\Entity\Status')
+                    ->find('4');
+                break;
+            case ATFCMCategory::TERMINATED:
+                $status = $this->getEntityManager()
+                    ->getRepository('Application\Entity\Status')
+                    ->find('3');
+                break;
+            default:
+                $status = $this->getEntityManager()
+                    ->getRepository('Application\Entity\Status')
+                    ->find('3');
+        }
         $event->setStatus($status);
         $impact = $this->getEntityManager()
             ->getRepository('Application\Entity\Impact')
@@ -1916,12 +1962,18 @@ class EventRepository extends ExtendedRepository
         $normalRatevalue->setCustomField($cat->getNormalRateField());
         $normalRatevalue->setEvent($event);
         $normalRatevalue->setValue($normalRate);
+        //regulation state
+        $regulationStateValue = new CustomFieldValue();
+        $regulationStateValue->setCustomField($cat->getRegulationStateField());
+        $regulationStateValue->setEvent($event);
+        $regulationStateValue->setValue($regulationState);
         try {
-            $this->getEntityManager()->persist($normalRatevalue);
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);
+            $this->getEntityManager()->persist($normalRatevalue);
             $this->getEntityManager()->persist($internalid);
+            $this->getEntityManager()->persist($regulationStateValue);
             $this->getEntityManager()->persist($event);
             $this->getEntityManager()->flush();
         } catch (\Exception $e) {

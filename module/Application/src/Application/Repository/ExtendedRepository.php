@@ -62,8 +62,11 @@ class ExtendedRepository extends EntityRepository
         $query = $qb->getQuery();
         return new Paginator($query);
     }
-    
-    public function count()
+
+    /**
+     * @return int
+     */
+    public function count(array $criteria)
     {
         $query = $this->getEntityManager()->createQueryBuilder();
         $query->select(array('u.id'))

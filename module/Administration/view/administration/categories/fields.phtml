@@ -12,6 +12,7 @@
                 <th>Aide</th>
 				<th data-container="body" data-toggle="tooltip" title="Tracer les changements dans le compte-rendu IPO">Trace<sup>?</sup></th>
                 <th data-container="body" data-toggle="tooltip" title="Matérialise les changements de valeur sur la timeline">Jalon<sup>?</sup></th>
+                <th>Caché</th>
                 <th> </th>
 				<th><a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-xs btn-primary" id="new-field">Ajouter</a></th>
 			</tr>
@@ -52,6 +53,13 @@
                 } else {
                     echo '<span class="glyphicon glyphicon-remove"></span>';
                 }
+            echo "</td>";
+            echo "<td>";
+            if($field->isHidden()){
+                echo '<span class="glyphicon glyphicon-ok"></span>';
+            } else {
+                echo '<span class="glyphicon glyphicon-remove"></span>';
+            }
             echo "</td>";
 			echo "<td>";
 				echo "<a href=\"".$this->url('administration', array('controller'=>'fields', 'action'=>'fieldup'))."?id=".$field->getId()."\" class=\"up".($i==1?" disabled\"":"\"")."><span class=\"up-caret middle\"></span></a> ";

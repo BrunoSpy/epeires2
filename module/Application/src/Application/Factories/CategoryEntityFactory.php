@@ -731,7 +731,7 @@ class CategoryEntityFactory
         $reasonfield->setCategory($atfcmcategory);
 
         $descriptionfield = new CustomField();
-        $descriptionfield->setPlace(2);
+        $descriptionfield->setPlace(3);
         $descriptionfield->setDefaultValue("");
         $descriptionfield->setTooltip("");
         $descriptionfield->setName("Description");
@@ -739,7 +739,7 @@ class CategoryEntityFactory
         $descriptionfield->setCategory($atfcmcategory);
 
         $internalidfield = new CustomField();
-        $internalidfield->setPlace(3);
+        $internalidfield->setPlace(4);
         $internalidfield->setDefaultValue("");
         $internalidfield->setTooltip("");
         $internalidfield->setName("Internal Id");
@@ -748,19 +748,30 @@ class CategoryEntityFactory
         $internalidfield->setCategory($atfcmcategory);
 
         $normalratefield = new CustomField();
-        $normalratefield->setPlace(4);
+        $normalratefield->setPlace(5);
         $normalratefield->setDefaultValue("");
         $normalratefield->setTooltip("");
         $normalratefield->setName("Taux");
         $normalratefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
         $normalratefield->setCategory($atfcmcategory);
 
+        $statefield = new CustomField();
+        $statefield->setPlace(6);
+        $statefield->setDefaultValue("");
+        $statefield->setHidden(true);
+        $statefield->setTooltip("");
+        $statefield->setName("Etat");
+        $statefield->setType($em->getRepository(CustomFieldType::class)->findOneBy(array('type'=>'string')));
+        $statefield->setCategory($atfcmcategory);
+
         $atfcmcategory->setFieldname($namefield);
         $atfcmcategory->setReasonField($reasonfield);
         $atfcmcategory->setInternalId($internalidfield);
         $atfcmcategory->setDescriptionField($descriptionfield);
         $atfcmcategory->setNormalRateField($normalratefield);
+        $atfcmcategory->setRegulationStateField($statefield);
 
+        $em->persist($statefield);
         $em->persist($normalratefield);
         $em->persist($descriptionfield);
         $em->persist($namefield);

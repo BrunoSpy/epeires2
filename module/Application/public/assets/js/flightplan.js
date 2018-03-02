@@ -41,10 +41,12 @@ var flightplan = function(url)
 
     $('#a-end-fp-ok').click(function()
     {
+        // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
+        var endDate = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-fp').modal('hide');
         $.post(
             url+'flightplans/end', 
-            {id: idEvent, endDate: $('input[name=end-date]').val()},
+            {id: idEvent, endDate},
             function (data) {
                 refresh();
                 noty({
@@ -58,10 +60,12 @@ var flightplan = function(url)
 
     $('#a-end-alt-ok').click(function()
     {
+        // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
+        var endAltDate = moment.utc($('input[name=end-alt-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-alt').modal('hide');
         $.post(
             url+'flightplans/endAlert', 
-            {id: idEvent, endAltDate: $('input[name=end-alt-date]').val()},
+            {id: idEvent, endAltDate},
             function (data) {
                 refresh();
                 noty({
@@ -162,7 +166,6 @@ var flightplan = function(url)
         function endAltHandler() {
             idEvent = $(this).data('id');
             $('input[name=end-alt-date]')
-                .val('')
                 .timepickerform({
                     'id':'start',
                     'clearable':true,

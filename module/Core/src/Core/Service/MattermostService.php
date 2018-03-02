@@ -30,13 +30,17 @@ class MattermostService extends Mattermost
 
     public function __construct($config, $auth)
     {
-        $this->mattermost = $config['mattermost'];
+        if(array_key_exists('mattermost', $config)) {
+            $this->mattermost = $config['mattermost'];
+        }
         $this->auth = $auth;
         $this->config = $config;
     }
 
     protected function getClient()
     {
+        //we do not need session here
+        session_write_close();
         if($this->client == null) {
             if ($this->auth->hasIdentity()) {
                 $user = $this->auth->getIdentity();

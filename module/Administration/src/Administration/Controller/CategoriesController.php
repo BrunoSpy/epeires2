@@ -374,6 +374,7 @@ class CategoriesController extends FormController
                 $category->setDescriptionField(null);
                 $category->setInternalId(null);
                 $category->setNormalRateField(null);
+                $category->setRegulationStateField(null);
             }
             $objectManager->persist($category);
             $objectManager->flush();

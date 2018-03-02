@@ -32,6 +32,12 @@ use Doctrine\ORM\Mapping as ORM;
 class ATFCMCategory extends Category
 {
 
+    const APPLIED = "APPLIED";
+    const APPLYING = "APPLYING";
+    const CANCELLED = "CANCELLED";
+    const CANCELLING = "CANCELLING";
+    const TERMINATED = "TERMINATED";
+
     /**
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
@@ -60,6 +66,11 @@ class ATFCMCategory extends Category
      * @ORM\OneToOne(targetEntity="CustomField")
      */
     protected $normalRateField;
+
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $regulationStateField;
 
     /**
      * @ORM\Column(type="boolean")
@@ -111,6 +122,16 @@ class ATFCMCategory extends Category
     public function getNormalRateField()
     {
         return $this->normalRateField;
+    }
+
+    public function getRegulationStateField()
+    {
+        return $this->regulationStateField;
+    }
+
+    public function setRegulationStateField($field)
+    {
+        $this->regulationStateField = $field;
     }
 
     public function setNMB2B($nmb2b)

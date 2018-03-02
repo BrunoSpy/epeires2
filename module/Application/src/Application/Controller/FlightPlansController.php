@@ -51,6 +51,11 @@ class FlightPlansController extends TabController
     public function indexAction()
     {
         parent::indexAction();
+        if (!$this->authFlightPlans('read')) {
+            echo "Droits d'accès requis.";
+            return false;
+        }
+
         $cats = [];
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
@@ -224,7 +229,7 @@ class FlightPlansController extends TabController
 
             $event = $this->em->getRepository(Event::class)->find($id);
             $startDate = $event->getStartdate();
-            if ($startDate < $endDate) {
+            if ($startDate <= $endDate) {
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
@@ -236,7 +241,7 @@ class FlightPlansController extends TabController
                 } catch (\Exception $e) {
                     $msg = $e->getMessage();
                 }
-            } else $msg = "Date de fin > date de début.";
+            } else $msg = "Heure de cloture du vol > heure de début du vol.";
         } else $msg = "Impossible de trouver le vol.";
 
         return new JsonModel([
@@ -263,7 +268,7 @@ class FlightPlansController extends TabController
             $event = $this->em->getRepository(Event::class)->find($id);
             $startDate = $event->getStartdate();
 
-            if ($startDate < $endDate) {
+            if ($startDate <= $endDate) {
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
@@ -275,7 +280,7 @@ class FlightPlansController extends TabController
                 } catch (\Exception $e) {
                     $msg = $e->getMessage();
                 }
-            } else $msg = "Date de fin > date de début.";
+            } else $msg = "Heure de fin de l'alerte > heure de début de l'alerte.";
         } else $msg = "Impossible de trouver l'événement alerte.";
 
         return new JsonModel([

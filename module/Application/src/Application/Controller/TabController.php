@@ -109,15 +109,16 @@ class TabController extends ZoneController
         $this->layout()->lang = $this->config['lang'];
 
         //add mattermost chat
-        if($this->zfcUserAuthentication()->hasIdentity()) {
+        if($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('chat.access')) {
             $user = $this->zfcUserAuthentication()->getIdentity();
             $mattermostLogin = $user->getMattermostUsername();
             try{
-                if($mattermostLogin && strlen($mattermostLogin) > 0) {
+                if($mattermostLogin && strlen($mattermostLogin) > 0 && array_key_exists('mattermost', $this->config)) {
                     $this->config['mattermost']['login'] = $mattermostLogin;
                     $configMattermost = $this->config['mattermost'];
-                    $configMattermost['token'] = $this->mattermost->getToken();
                     $this->layout()->mattermost = $configMattermost;
+                } else {
+                    $this->messages['error'][] = "Impossible de se connecter au serveur Mattermost : configuration incomplète.";
                 }
             } catch (\Exception $e) {
                 $this->messages['error'][] = "Impossible de se connecter au serveur Mattermost : ".$e->getMessage();

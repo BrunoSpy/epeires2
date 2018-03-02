@@ -54,6 +54,3 @@ before_script:
 script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-xml
-  
-after_success:
-  - travis_retry php vendor/bin/coveralls -v
