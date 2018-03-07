@@ -189,6 +189,9 @@
             echo "serverUrl: '".$this->mattermost['server_url']."',";
             echo "acknowledgement: true,";
             echo "minimized: true,";
+            if(array_key_exists('monochannel', $this->mattermost)){
+                echo "monochannel: ".$this->mattermost['monochannel'].",";
+            }
             echo "utc: true";
             echo "});";
         }
