@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/MattermostModule.git",
-                "reference": "540d8bc3e748d4d62b38b14d044e7521e762ed40"
+                "reference": "0700e92d1fc82bb12e7da137a166434cff179256"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/540d8bc3e748d4d62b38b14d044e7521e762ed40",
-                "reference": "540d8bc3e748d4d62b38b14d044e7521e762ed40",
+                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/0700e92d1fc82bb12e7da137a166434cff179256",
+                "reference": "0700e92d1fc82bb12e7da137a166434cff179256",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +94,7 @@
                 "chat",
                 "zf2"
             ],
-            "time": "2018-03-07T13:53:54+00:00"
+            "time": "2018-03-07T14:47:32+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
