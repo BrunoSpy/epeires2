@@ -1845,7 +1845,15 @@ class EventRepository extends ExtendedRepository
                     $normalRate->setEvent($event);
                 }
                 $normalRate->setValue(RegulationListReply::getNormalRate($regulation));
-                switch (RegulationListReply::getRegulationState($regulation)) {
+                $newRegulationState = RegulationListReply::getRegulationState($regulation);
+                $regulationState = $event->getCustomFieldValue($category->getRegulationStateField());
+                if(!$regulationState) {
+                    $regulationState = new CustomFieldValue();
+                    $regulationState->setCustomField($category->getRegulationStateField());
+                    $regulationState->setEvent($event);
+                }
+                $regulationState->setValue($newRegulationState);
+                switch ($newRegulationState) {
                     case ATFCMCategory::APPLIED:
                     case ATFCMCategory::APPLYING:
                         $status = $this->getEntityManager()
@@ -1873,6 +1881,7 @@ class EventRepository extends ExtendedRepository
                     $this->getEntityManager()->persist($normalRate);
                     $this->getEntityManager()->persist($reason);
                     $this->getEntityManager()->persist($description);
+                    $this->getEntityManager()->persist($regulationState);
                     $this->getEntityManager()->persist($event);
                     $this->getEntityManager()->flush();
                 } catch (\Exception $e) {
