@@ -65,32 +65,14 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-<<<<<<< HEAD
-test:7.0:
+test:7.0-mariadb:
   image: php:7.0-apache
-=======
-test:5.6-mariadb:
-  image: php:5.6-apache
->>>>>>> asap/test
-  stage: test
   services:
   - mariadb:latest
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.0-mysql:
-  image: php:7.0-apache
-  services:
-  - mysql:latest
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -117,6 +99,19 @@ test:7.1-mariadb:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.1-mysql:
+  image: php:7.1-apache
+  stage: test
+  services:
+  - mysql:latest
+  variables:
+    MCRYPT: "mcrypt"
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
