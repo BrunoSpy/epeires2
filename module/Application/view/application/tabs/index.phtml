@@ -162,12 +162,7 @@ if($this->isGranted('events.recurrent')) {
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
-<?php if($this->default == false) {
-    echo "$(\"#home\").removeClass(\"dropdown-toggle\")"
-    . ".attr('data-toggle', '')"
-    . ".html('<span class=\"glyphicon glyphicon-home\"></span> Évènements');";
-    
-}
+<?php
 if($this->view == "30") {
     echo 'forceMonth = true;';
 }
