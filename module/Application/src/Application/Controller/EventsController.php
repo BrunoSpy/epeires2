@@ -2211,6 +2211,7 @@ class EventsController extends TabsController
 
     /**
      * Change the status of an event to "Supprimé"
+     * If event has no end date, sets end date = start date + 1h
      * @return JsonModel
      */
     public function deleteeventAction()
@@ -2225,6 +2226,11 @@ class EventsController extends TabsController
                 if ($event) {
                     $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
                     $event->setStatus($deleteStatus);
+                    if(!$event->isPunctual() && $event->getEnddate() == null) {
+                        $enddate = clone $event->getStartdate();
+                        $enddate->add(new \DateInterval('PT1H'));
+                        $event->setEnddate($enddate);
+                    }
                     $this->closeEvent($event);
                     try {
                         $objectManager->persist($event);
@@ -2237,7 +2243,7 @@ class EventsController extends TabsController
                         $messages['error'][] = $e->getMessage();
                     }
                 } else {
-                    $messages['error'][] = "Suppression d'évènement impossible : évènment non trouvé.";
+                    $messages['error'][] = "Suppression d'évènement impossible : évènement non trouvé.";
                 }
             } else {
                 $messages['error'][] = "Suppression d'évènement impossible : ID non valide.";
