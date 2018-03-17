@@ -20,6 +20,7 @@ namespace Application\Controller;
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\Category;
+use Application\Entity\EventUpdate;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\PostItCategory;
@@ -2283,7 +2284,7 @@ class EventsController extends TabsController
                     $text
                 ));
                 
-                if (! $this->config['emailfrom'] || ! $this->config['smtp']) {
+                if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
                     $message = new \Zend\Mail\Message();
@@ -2298,6 +2299,12 @@ class EventsController extends TabsController
                     $transport->setOptions($transportOptions);
                     try {
                         $transport->send($message);
+                        $update = new EventUpdate();
+                        $update->setHidden(true);
+                        $update->setEvent($event);
+                        $update->setText("Evènement envoyé par email à " . $event->getOrganisation()->getIpoEmail());
+                        $this->getEntityManager()->persist($update);
+                        $this->getEntityManager()->flush();
                         $messages['success'][] = "Evènement correctement envoyé à " . $event->getOrganisation()->getIpoEmail();
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();

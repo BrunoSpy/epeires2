@@ -13,6 +13,8 @@ if ($this->updates) {
     if (count($this->updates) > 0) {
        // echo '<dl>';
         foreach ($this->updates as $update) {
+            if($update->isHidden())
+                continue;
             echo "<blockquote>";
             echo "<p><span class=\"note\" data-id=\"".$update->getID()."\">". nl2br($update->getText()) ."</span></p>";
             echo "<small>".$this->updateAuthor($update)." à ".$formatter->format($update->getCreatedOn())."</small>";

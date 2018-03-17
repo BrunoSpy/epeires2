@@ -54,6 +54,11 @@ class EventUpdate
      */
     protected $created_on;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $hidden = false;
+
     public function getId()
     {
         return $this->id;
@@ -103,5 +108,21 @@ class EventUpdate
     public function getEvent()
     {
         return $this->event;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @param mixed $hidden
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
     }
 }
