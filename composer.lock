@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4bc251603be91c80f6466fb7a34d5c8b",
+    "content-hash": "1f9b6d7d9a2439fb4356c49bbd0a9a4a",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -6286,16 +6286,16 @@
         },
         {
             "name": "codeception/phpunit-wrapper",
-            "version": "6.0.7",
+            "version": "6.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/phpunit-wrapper.git",
-                "reference": "d020db336c52af4498aefe5905a17333b26486c8"
+                "reference": "e18f3ea1f841bfd2cecaf6e183e584127b9d467b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/d020db336c52af4498aefe5905a17333b26486c8",
-                "reference": "d020db336c52af4498aefe5905a17333b26486c8",
+                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/e18f3ea1f841bfd2cecaf6e183e584127b9d467b",
+                "reference": "e18f3ea1f841bfd2cecaf6e183e584127b9d467b",
                 "shasum": ""
             },
             "require": {
@@ -6328,7 +6328,7 @@
                 }
             ],
             "description": "PHPUnit classes used by Codeception",
-            "time": "2018-03-13T02:15:58+00:00"
+            "time": "2018-03-16T10:17:47+00:00"
         },
         {
             "name": "codeception/stub",
@@ -8384,7 +8384,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^5.6 || ^7.0 || ^7.1",
+        "php": "^5.6 || ^7.0",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
