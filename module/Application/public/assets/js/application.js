@@ -206,7 +206,8 @@ $(document).ready(function(){
 	   }
 	   return this.href == urlt; 
    }).parent().addClass('active') //on ajoute la classe active
-       .siblings().removeClass('active') //suppression des classes active positionnées dans la page
+       .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
+    $("#navbar-tabs .nav > li.dropdown:not(.active)")
        .find('a').removeClass("dropdown-toggle").attr('data-toggle', '').find('span.caret').removeClass('caret')
        .parent().siblings('ul').remove() ;
    

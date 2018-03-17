@@ -37,7 +37,7 @@ class NavBar extends AbstractHelper
         $urlHelper = $this->view->plugin('url');
         $em = $this->sm->get('Doctrine\ORM\EntityManager');
         
-        $html .= '<nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-'.$color.'-500 shadow-z-2">';
+        $html .= '<nav id="navbar-tabs" class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-'.$color.'-500 shadow-z-2">';
         
         $html .= '<div class="container-fluid">';
         
