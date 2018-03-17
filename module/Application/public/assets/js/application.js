@@ -470,9 +470,7 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', function(evt) {return true;});
         $('#timeline').timeline('forceUpdateView', false);
-        if($("#calendarview").is(':visible')) {
-            $("#calendarview").fullCalendar('refetchEvents');
-        }
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
     $("#filter_deleted").on('click', function(e){
@@ -482,9 +480,7 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', "default");
         $('#timeline').timeline('forceUpdateView', false);
-        if($("#calendarview").is(':visible')) {
-            $("#calendarview").fullCalendar('refetchEvents');
-        }
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
     $("input[name=viewOptions]").on('change', function(e){
@@ -606,7 +602,7 @@ $(document).ready(function(){
                         } else {
                             element.find('.fc-title').addClass('dlt-black');
                         }
-                    } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
+                    } else if($('#filter_deleted').length == 0 || $('#filter_deleted').closest('.filter').hasClass('active')) {
                         element.hide();
                     }
                     break;
@@ -623,9 +619,11 @@ $(document).ready(function(){
             }
             //actions
             var actions = $('<span class="actions"></span>');
-            actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
-                ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
-                '</a>'));
+            if(event.modifiable) {
+                actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
+                    ' <span class="glyphicon glyphicon-pencil" style="color:' + event.textColor + '"></span>' +
+                    '</a>'));
+            }
             actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
                 ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
                 '</a>'));
@@ -638,7 +636,7 @@ $(document).ready(function(){
             var id = event.id;
             var txt = '<p class="elmt_tooltip actions">'
                 + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
-            if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
+            if(event.status_id < 4){ //modifiable, non annulé et non supprimé
                 if(event.punctual === false){
                     if(event.star === true){
                         txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
@@ -647,7 +645,9 @@ $(document).ready(function(){
                     }
                 }
                 txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                if(event.modifiable) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                }
             }
             if(event.status_id < 5 && event.deleteable) {
                 txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
