@@ -49,11 +49,7 @@ echo $this->formHidden($this->form->get('category'));
         <li role="presentation" id="actions-title">
             <a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="tasks" class="glyphicon glyphicon-tasks"></span></div> Fiche réflèxe<span class="badge ext">0</span></a>
         </li>
-      <!--
-        <li role="presentation" id="notes-title">
-            <a href="#notes-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="edit" class="glyphicon glyphicon-edit"></span></div> Notes<span class="badge ext">0</span></a>
-        </li>
-        -->
+
     </ul>
 
     <div class="tab-content">
@@ -137,7 +133,9 @@ echo $this->formHidden($this->form->get('category'));
         <div role="tabpanel" class="tab-pane fade" id="description-tab">
             <div class="row">
                 <?php
-                if($this->event) echo '<div class="col-sm-8">';
+                if($this->event) {
+                  echo '<div class="col-sm-8">';
+                }
 
                 echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
                 echo "<div id=\"custom_fields\">";
@@ -172,14 +170,16 @@ echo $this->formHidden($this->form->get('category'));
                         'dd LLL, HH:mm');
                     echo '<div id="form-notes">';
                     foreach ($this->event->getUpdates() as $update){
-                        echo "<blockquote>"
-                            . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
-                            . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
-                            . "</blockquote>";
+                      if($update->isHidden())
+                        continue;
+                      echo "<blockquote>"
+                          . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
+                          . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
+                          . "</blockquote>";
                     }
                     echo '</div>';
+                    echo '</div>';
                 }
-                echo '</div>';
                 ?>
             </div>
         </div>
@@ -411,11 +411,6 @@ echo $this->formHidden($this->form->get('category'));
             ?>
         </div>
 
-      <!--
-        <div role="tabpanel" class="tab-pane fade" id="notes-tab">
-
-        </div>
--->
     </div>
 
 </div>
