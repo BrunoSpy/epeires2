@@ -2523,7 +2523,9 @@
                     });
                 } else {
                     //modify post
-                    $(".chat-container").mattermost("patchMessage", message, mattermostId);
+                    $(".chat-container").mattermost("patchMessage", message, mattermostId, function(data){
+                        $(".chat-container").mattermost("sendMessage", "Évènement modifié : ["+event.name+"]("+data.permalink+")");
+                    });
                 }
             }
         },
