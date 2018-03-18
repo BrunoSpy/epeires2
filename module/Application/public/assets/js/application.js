@@ -192,6 +192,8 @@ var updateFiche = function(id){
      url = urlt;
  };
 
+ var enableBriefing = false;
+
 $(document).ready(function(){
     
     $.material.init();
@@ -904,44 +906,54 @@ $(document).ready(function(){
         	}
         }
     });
-/*
-    $('select[name="nameopsup"]').on ('change', function(e){
-        $("#releve-content").load(url+'briefing/briefing', function(){$("#briefing-content table").addClass("table");});
-        $('#releveWindow').modal('show');
 
+    $('select[name="nameopsup"]').on ('change', function(e){
+        if(enableBriefing) {
+            $("#releve-content").load(url + 'briefing/briefing', function () {
+                $("#briefing-content table").addClass("table");
+            });
+            $('#releveWindow').modal('show');
+        }
     });
 
-
+    $('#usermenu-mod-briefing').on('click', function(e){
+        $("#releve-content").load(url + 'briefing/briefing', function () {
+            $("#briefing-content table").addClass("table");
+        });
+        $('#releveWindow').modal('show');
+    });
 
     $("#editwindow").on('shown.bs.modal', function(e){
-        $("#editor-briefing").markdown({
-            hiddenButtons:'cmdPreview',
-            onChange:function(e){
-                $('#editor-preview').html(e.parseContent());
-                $("#editor-preview table").addClass("table");
-            },
-            resize: "vertical",
-            language: "fr",
-            onShow:function(e){
-                $.getJSON(url + 'briefing/getBriefing', function (data) {
-                    e.setContent(data.briefing);
-                    $("#briefing-content table").addClass("table");
-                });
-            },
-            onSave:function(e){
-                $.post(url + 'briefing/save', {content: e.getContent()}, function(data){
-                    if(data['messages']) {
-                        displayMessages(data.messages);
-                    }
-                    $("#editwindow").modal('hide');
-                    $("#briefing-content").html(e.parseContent());
-                    $("#briefing-content table").addClass("table");
-                });
-            },
-            savable: true
-        });
+        if(enableBriefing) {
+            $("#editor-briefing").markdown({
+                hiddenButtons: 'cmdPreview',
+                onChange: function (e) {
+                    $('#editor-preview').html(e.parseContent());
+                    $("#editor-preview table").addClass("table");
+                },
+                resize: "vertical",
+                language: "fr",
+                onShow: function (e) {
+                    $.getJSON(url + 'briefing/getBriefing', function (data) {
+                        e.setContent(data.briefing);
+                        $("#briefing-content table").addClass("table");
+                    });
+                },
+                onSave: function (e) {
+                    $.post(url + 'briefing/save', {content: e.getContent()}, function (data) {
+                        if (data['messages']) {
+                            displayMessages(data.messages);
+                        }
+                        $("#editwindow").modal('hide');
+                        $("#briefing-content").html(e.parseContent());
+                        $("#briefing-content table").addClass("table");
+                    });
+                },
+                savable: true
+            });
+        }
     });
-*/
+
     /* ******************************* */
 
     //hack très moche pour corriger la couleur des dropdown dans la navbar sous chrome

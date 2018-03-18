@@ -162,7 +162,13 @@
     ?>
 
         <?php $this->inlineScript()->captureStart();?>
-                
+
+      <?php
+      if($this->isGranted('briefing.enable')) {
+        echo "enableBriefing = true;";
+      }
+      ?>
+
         setURL('<?php echo $this->url('application');?>');
 		
 		//init header bar

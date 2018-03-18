@@ -69,6 +69,9 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
                     )) . "\">Interface administration</a></li>";
                 }
             }
+            if($this->auth->isGranted('briefing.mod')) {
+                $html .= "<li><a href='#' id='usermenu-mod-briefing'>Modifier texte briefing</a></li>";
+            }
             $html .= "<li><a href=\"" . $urlHelper('zfcuser/logout') . "?redirect=" . $urlHelper('application') . "\">Se déconnecter</a></li>";
         } else {
             $html .= "<li><a id=\"openloginwindow\" href=\"#loginwindow\" data-toggle=\"modal\" >Se connecter</a></li>";
