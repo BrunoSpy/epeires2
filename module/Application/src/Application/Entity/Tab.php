@@ -57,6 +57,9 @@ class Tab
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Attributes({"min":0})
+     * @Annotation\Options({"label":"Place :"})
      * @Gedmo\SortablePosition
      */
     protected $place;
@@ -197,6 +200,22 @@ class Tab
             $names[] = $role->getName();
         }
         return $names;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPlace()
+    {
+        return $this->place;
+    }
+
+    /**
+     * @param mixed $place
+     */
+    public function setPlace($place)
+    {
+        $this->place = $place;
     }
 
     public function getArrayCopy()

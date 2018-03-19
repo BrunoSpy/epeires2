@@ -124,7 +124,7 @@ class NavBar extends AbstractHelper
         $tabs = $em->getRepository('Application\Entity\Tab')->findBy(array(), array(
             'place' => 'ASC'
         ));
-        ;
+        
         foreach ($tabs as $tab) {
             if (!$tab->isDefault() && $this->view->hasRole($tab->getReadRoleNames())) {
                 $html .= '<li class="dropdown">'.
