@@ -1,254 +1,256 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/ipo_show.js');
 
 $formatter = \IntlDateFormatter::create(
-		\Locale::getDefault(),
-		\IntlDateFormatter::FULL,
-		\IntlDateFormatter::FULL,
-		'UTC',
-		\IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
+    \Locale::getDefault(),
+    \IntlDateFormatter::FULL,
+    \IntlDateFormatter::FULL,
+    'UTC',
+    \IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
 ?>
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-3" id="sidebar">
-			<ul class="nav report-sidenav">
-				<li>
-					<a href="#AClasser">
-						<span class="glyphicon glyphicon-random"></span> Évènements à classer
-					</a>
-				</li>
-				<?php 
-				foreach ($this->reportcategories as $reportcategory){
-					if($reportcategory['category'] !== null) {
-						echo "<li>";
-						echo '<a  href="#'.$reportcategory['category']->getShortname().'">';
-						echo $reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName();
-						echo '</a>';
-						echo "</li>";
-					}
-				}
-				?>
-			<li>
-					<a href="#Exclus">
-						Évènements exclus
-					</a>
-				</li>	
-			<li>
-				<a href="<?php echo $this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId() ?>" class="btn"><span class="glyphicon glyphicon-download-alt"></span>Télécharger</a>
-			</li>
-			</ul>
-		</div>
-		<div class="col-md-9">
-		<?php if($this->report !== null) :?>
-			<h1>&Eacute;dition du rapport <?php echo $this->report->getName() ?></h1>
-			<div class="panel panel-default">
-			<div class="panel-heading">
-			<h2 class="panel-title" id="AClasser">&Eacute;vènements à classer</h2>
-			</div>
-			<div class="panel-body">
-	           <table class="table table-striped" id="toclassify">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Titre</th>
-						<th>Date de début</th>
-						<th>Date de fin</th>
-						<th>
-						<?php 
-						echo '<select name="bulkcat" data-reportid="'.$report->getId().'">';
-	           		    echo '<option value="">Classer les évènements cochés</option>';
-						echo '<option value="-1">Exclure du rapport</option>';
-						foreach ($this->reportcategories as $reportcategory){
-						    if($reportcategory['category'] !== null) {
-						        echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
-						    }
-						}
-						echo "</select>";
-						?>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-	           <?php 
-	           foreach ($this->unclassified as $event){
-	           		echo '<tr id="event_'.$event->getId().'">';
-	           		echo '<td><input type="checkbox" name="bulk" data-id="'.$event->getId().'" /></td>';
-	           		$title = '<span class="elmt_tooltip"><table class="table"><tbody>';
-	           		foreach ( $event->getCustomFieldsValues () as $value ) {
-						$formattedvalue = $this->customfieldvalue ($value);
-						if ($formattedvalue != '') {
-							$title .= '<tr><td>'.$value->getCustomField ()->getName () . '</td><td> :&nbsp;</td><td>'. $formattedvalue.'</td>';
-						}
-					}
-				    $title .= "</tbody></table></span>";
-	           		echo '<td data-toggle="tooltip" title="'.htmlentities($title, ENT_QUOTES).'" data-html="true" data-container="body"'
-						.' data-template="<div class=&quot;tooltip tooltip-actions&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-arrow&quot;></div><div class=&quot;tooltip-inner&quot;></div></div>">'
-						.$this->eventname($event)
-						."</td>";
-	           		echo "<td>".$formatter->format($event->getStartdate())."</td>";
-	           		echo "<td>"; 
-	           		if($event->getEnddate() !== null){
-	           			echo $formatter->format($event->getEnddate());
-	           		} else {
-	           			echo "--";	
-	           		}	           		
-	           		echo "</td>";
-	           		echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
-	           		echo '<option value="">Classer l\'évènement</option>';
-	           		echo '<option value="-1">Exclure du rapport</option>';
-	           		foreach ($this->reportcategories as $reportcategory){
-	           			if($reportcategory['category'] !== null) {
-	           				echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
-	           			}
-	           		}
-	           		echo "</select></td>";
-	           		echo "</tr>";
-	           }
-	           
-	           ?>
-	           </tbody>
-			</table>
-			</div>
-			</div>
-			<?php 
-			foreach ($this->reportcategories as $reportcategory){
-				if($reportcategory['category'] !== null) {
-				    echo '<div class="panel panel-default">';
-				    echo '<div class="panel-heading">';
-					echo '<h2 class="panel-title" id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
-					echo '</div>';
-					echo '<div class="panel-body">';
-					echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
-					echo '<thead>';
-					echo '<tr><th>Titre</th>';
-					echo '<th>Date de début</th><th>Date de fin</th><th></th><th></th>';
-					echo '</tr>';
-					echo '</thead>';
-					echo '<tbody>';
-					foreach ($reportcategory['events'] as $event){
-						echo '<tr id="event_'.$event->getId().'">';
-						echo '<td>'.$this->eventname($event).'</td>';
-						echo "<td>".$formatter->format($event->getStartdate())."</td>";
-						echo "<td>";
-						if($event->getEnddate() !== null){
-							echo $formatter->format($event->getEnddate());
-						} else {
-							echo "--";
-						}
-						echo "</td>";
-						echo '<td><a href="#add-note-modal" title="Ajouter une note" data-toggle="modal" class="add-note" data-eventid="'.$event->getId().'"><span class="glyphicon glyphicon-comment"></span></a></td>';
-						echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
-	           				echo '<option value="">Classer l\'évènement</option>';
-	           				echo '<option value="-1">Exclure du rapport</option>';
-	           				foreach ($this->reportcategories as $reportcat){
-	           					if($reportcat['category'] !== null) {
-	           						echo '<option '.($reportcat['category']->getId() == $reportcategory['category']->getId() ? 'selected="selected"' : '').' value="'.$reportcat['category']->getId().'">'.$reportcat['category']->getPlace().'. '.$reportcat['category']->getName().'</option>';
-	           					}
-	           				}
-	           			echo "</select></td>";
-						echo '</tr>';
-					}
-					echo '</tbody>';
-					echo '</table>';
-					echo '</div></div>';
-				} else {
-				    echo '<div class="panel panel-default">';
-				    echo '<div class="panel-heading">';
-					echo '<h2 class="panel-title" id="Exclus">Évènements exclus</h2>';
-					echo '</div>';
-					echo '<div class="panel-body">';
-					echo '<table class="table table-striped" id="category_null">';
-					echo '<thead>';
-					echo '<tr><th>Titre</th>';
-					echo '<th>Date de début</th><th>Date de fin</th><th></th>';
-					echo '</tr>';
-					echo '</thead>';
-					echo '<tbody>';
-					foreach ($reportcategory['events'] as $event){
-						echo '<tr id="event_'.$event->getId().'">';
-						echo '<td>'.$this->eventname($event).'</td>';
-						echo "<td>".$formatter->format($event->getStartdate())."</td>";
-						echo "<td>";
-						if($event->getEnddate() !== null){
-							echo $formatter->format($event->getEnddate());
-						} else {
-							echo "--";
-						}
-						echo "</td>";
-						echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
-	           				echo '<option value="">Classer l\'évènement</option>';
-	           				echo '<option value="-1">Exclure du rapport</option>';
-	           				foreach ($this->reportcategories as $reportcategory){
-	           					if($reportcategory['category'] !== null) {
-	           						echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
-	           					}
-	           				}
-	           			echo "</select></td>";
-						echo '</tr>';
-					}
-					echo '</tbody>';
-					echo '</table>';
-					echo '</div></div>';
-				}
-			}
-			
-			?>
-		<?php else :?>
-		<div class="alert alert-error">
-		Aucun rapport trouvé.
-		</div>
-		<?php endif;?>	
-        </div>
-	</div>
-</div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3" id="sidebar">
+        <ul class="nav report-sidenav">
+          <li>
+            <a href="#AClasser">
+              <span class="glyphicon glyphicon-random"></span> Évènements à classer
+            </a>
+          </li>
+            <?php
+            foreach ($this->reportcategories as $reportcategory){
+                if($reportcategory['category'] !== null) {
+                    echo "<li>";
+                    echo '<a  href="#'.$reportcategory['category']->getShortname().'">';
+                    echo $reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName();
+                    echo '</a>';
+                    echo "</li>";
+                }
+            }
+            ?>
+          <li>
+            <a href="#Exclus">
+              Évènements exclus
+            </a>
+          </li>
+          <li>
+            <a href="<?php echo $this->url('ipo', array('controller' => 'report', 'action' => 'export')).'?id='.$report->getId() ?>" class="btn"><span class="glyphicon glyphicon-download-alt"></span>Télécharger</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-9">
+          <?php if($this->report !== null) :?>
+            <h1>&Eacute;dition du rapport <?php echo $this->report->getName() ?></h1>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h2 class="panel-title" id="AClasser">&Eacute;vènements à classer</h2>
+              </div>
+              <div class="panel-body">
+                <table class="table table-striped" id="toclassify">
+                  <thead>
+                  <tr>
+                    <th></th>
+                    <th>Titre</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>
+                        <?php
+                        echo '<select name="bulkcat" data-reportid="'.$report->getId().'">';
+                        echo '<option value="">Classer les évènements cochés</option>';
+                        echo '<option value="-1">Exclure du rapport</option>';
+                        foreach ($this->reportcategories as $reportcategory){
+                            if($reportcategory['category'] !== null) {
+                                echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+                            }
+                        }
+                        echo "</select>";
+                        ?>
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <?php
+                  foreach ($this->unclassified as $event){
+                      echo '<tr id="event_'.$event->getId().'">';
+                      echo '<td><input type="checkbox" name="bulk" data-id="'.$event->getId().'" /></td>';
+                      $title = '<span class="elmt_tooltip"><table class="table"><tbody>';
+                      foreach ( $event->getCustomFieldsValues () as $value ) {
+                          if($value->getCustomField()->isHidden())
+                            continue;
+                          $formattedvalue = $this->customfieldvalue ($value);
+                          if ($formattedvalue != '') {
+                              $title .= '<tr><td>'.$value->getCustomField ()->getName () . '</td><td> :&nbsp;</td><td>'. $formattedvalue.'</td>';
+                          }
+                      }
+                      $title .= "</tbody></table></span>";
+                      echo '<td data-toggle="tooltip" title="'.htmlentities($title, ENT_QUOTES).'" data-html="true" data-container="body"'
+                          .' data-template="<div class=&quot;tooltip tooltip-actions&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-arrow&quot;></div><div class=&quot;tooltip-inner&quot;></div></div>">'
+                          .$this->eventname($event)
+                          ."</td>";
+                      echo "<td>".$formatter->format($event->getStartdate())."</td>";
+                      echo "<td>";
+                      if($event->getEnddate() !== null){
+                          echo $formatter->format($event->getEnddate());
+                      } else {
+                          echo "--";
+                      }
+                      echo "</td>";
+                      echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+                      echo '<option value="">Classer l\'évènement</option>';
+                      echo '<option value="-1">Exclure du rapport</option>';
+                      foreach ($this->reportcategories as $reportcategory){
+                          if($reportcategory['category'] !== null) {
+                              echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+                          }
+                      }
+                      echo "</select></td>";
+                      echo "</tr>";
+                  }
+
+                  ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+              <?php
+              foreach ($this->reportcategories as $reportcategory){
+                  if($reportcategory['category'] !== null) {
+                      echo '<div class="panel panel-default">';
+                      echo '<div class="panel-heading">';
+                      echo '<h2 class="panel-title" id="'.$reportcategory['category']->getShortname().'">'.$reportcategory['category']->getPlace().". ".$reportcategory['category']->getName()."</h2>";
+                      echo '</div>';
+                      echo '<div class="panel-body">';
+                      echo '<table class="table table-striped" id="category_'.$reportcategory['category']->getId().'">';
+                      echo '<thead>';
+                      echo '<tr><th>Titre</th>';
+                      echo '<th>Date de début</th><th>Date de fin</th><th></th><th></th>';
+                      echo '</tr>';
+                      echo '</thead>';
+                      echo '<tbody>';
+                      foreach ($reportcategory['events'] as $event){
+                          echo '<tr id="event_'.$event->getId().'">';
+                          echo '<td>'.$this->eventname($event).'</td>';
+                          echo "<td>".$formatter->format($event->getStartdate())."</td>";
+                          echo "<td>";
+                          if($event->getEnddate() !== null){
+                              echo $formatter->format($event->getEnddate());
+                          } else {
+                              echo "--";
+                          }
+                          echo "</td>";
+                          echo '<td><a href="#add-note-modal" title="Ajouter une note" data-toggle="modal" class="add-note" data-eventid="'.$event->getId().'"><span class="glyphicon glyphicon-comment"></span></a></td>';
+                          echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+                          echo '<option value="">Classer l\'évènement</option>';
+                          echo '<option value="-1">Exclure du rapport</option>';
+                          foreach ($this->reportcategories as $reportcat){
+                              if($reportcat['category'] !== null) {
+                                  echo '<option '.($reportcat['category']->getId() == $reportcategory['category']->getId() ? 'selected="selected"' : '').' value="'.$reportcat['category']->getId().'">'.$reportcat['category']->getPlace().'. '.$reportcat['category']->getName().'</option>';
+                              }
+                          }
+                          echo "</select></td>";
+                          echo '</tr>';
+                      }
+                      echo '</tbody>';
+                      echo '</table>';
+                      echo '</div></div>';
+                  } else {
+                      echo '<div class="panel panel-default">';
+                      echo '<div class="panel-heading">';
+                      echo '<h2 class="panel-title" id="Exclus">Évènements exclus</h2>';
+                      echo '</div>';
+                      echo '<div class="panel-body">';
+                      echo '<table class="table table-striped" id="category_null">';
+                      echo '<thead>';
+                      echo '<tr><th>Titre</th>';
+                      echo '<th>Date de début</th><th>Date de fin</th><th></th>';
+                      echo '</tr>';
+                      echo '</thead>';
+                      echo '<tbody>';
+                      foreach ($reportcategory['events'] as $event){
+                          echo '<tr id="event_'.$event->getId().'">';
+                          echo '<td>'.$this->eventname($event).'</td>';
+                          echo "<td>".$formatter->format($event->getStartdate())."</td>";
+                          echo "<td>";
+                          if($event->getEnddate() !== null){
+                              echo $formatter->format($event->getEnddate());
+                          } else {
+                              echo "--";
+                          }
+                          echo "</td>";
+                          echo '<td><select name="cat" data-eventid="'.$event->getId().'" data-reportid="'.$report->getId().'">';
+                          echo '<option value="">Classer l\'évènement</option>';
+                          echo '<option value="-1">Exclure du rapport</option>';
+                          foreach ($this->reportcategories as $reportcategory){
+                              if($reportcategory['category'] !== null) {
+                                  echo '<option value="'.$reportcategory['category']->getId().'">'.$reportcategory['category']->getPlace().'. '.$reportcategory['category']->getName().'</option>';
+                              }
+                          }
+                          echo "</select></td>";
+                          echo '</tr>';
+                      }
+                      echo '</tbody>';
+                      echo '</table>';
+                      echo '</div></div>';
+                  }
+              }
+
+              ?>
+          <?php else :?>
+            <div class="alert alert-error">
+              Aucun rapport trouvé.
+            </div>
+          <?php endif;?>
+      </div>
+    </div>
+  </div>
 
 <?php
 
 echo $this->modalwindow("report-container", "<h3 id=\"report-title\"></h3>", "", "<div id=\"report-form\"></div>");
 
 echo $this->modalwindow('add-note-modal',
-        "<h4 class=\"modal-title\">Ajout d'une note</h4>",
-        "",
-        "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
-        . "<div class=\"modal-body\">"
-            . "<div class=\"form-group\">"
-                . "<label class=\"control-label col-sm-2\">Contenu : </label>"
-                . "<div class=\"col-sm-10\"><textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
-            . "</div>"
-        . "</div>"
-        . "<div class=\"modal-footer\">"
-                . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
-        . "</div>"
-        . "</form>");
+    "<h4 class=\"modal-title\">Ajout d'une note</h4>",
+    "",
+    "<form id=\"add-note\" class=\"form-horizontal\">" //gestion du POST dans application.js
+    . "<div class=\"modal-body\">"
+    . "<div class=\"form-group\">"
+    . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+    . "<div class=\"col-sm-10\"><textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea></div>"
+    . "</div>"
+    . "</div>"
+    . "<div class=\"modal-footer\">"
+    . "<input type=\"submit\" class=\"btn btn-sm btn-primary pull-right\" value=\"Ajouter la note\"></input>"
+    . "</div>"
+    . "</form>");
 ?>
 
 <?php $this->inlineScript()->captureStart();?>
 
-$(".report-sidenav").affix();
+  $(".report-sidenav").affix();
 
-$('body').scrollspy({target: '#sidebar', offset:120});
+  $('body').scrollspy({target: '#sidebar', offset:120});
 
-setURL('<?php echo $this->url('application');?>');
+  setURL('<?php echo $this->url('application');?>');
 
-iposhow('<?php echo $this->url('ipo'); ?>');
+  iposhow('<?php echo $this->url('ipo'); ?>');
 
-$(document).on('click', '.add-note', function(e){
-	$('#add-note').data('id', $(this).data('eventid'));
-});
+  $(document).on('click', '.add-note', function(e){
+  $('#add-note').data('id', $(this).data('eventid'));
+  });
 
 <?php if (isset($this->messages['success'])) { ?>
-	<?php foreach ($this->messages['success'] as $message) { ?>
-		var n = noty({text:'<?php echo $message ?>', 
-					type:'success',
-					layout: 'bottomRight',});
-	<?php }?>
+    <?php foreach ($this->messages['success'] as $message) { ?>
+    var n = noty({text:'<?php echo $message ?>',
+    type:'success',
+    layout: 'bottomRight',});
+    <?php }?>
 <?php } ?>
 
 <?php if (isset($this->messages['error'])) { ?>
-	<?php foreach ($this->messages['error'] as $message) { ?>
-		var n = noty({text:"<?php echo $message ?>", 
-					type:'error',
-					layout: 'bottomRight',});
-	<?php }?>
+    <?php foreach ($this->messages['error'] as $message) { ?>
+    var n = noty({text:"<?php echo $message ?>",
+    type:'error',
+    layout: 'bottomRight',});
+    <?php }?>
 <?php } ?>
 
 

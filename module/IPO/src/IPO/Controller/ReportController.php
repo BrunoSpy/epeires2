@@ -128,6 +128,8 @@ class ReportController extends AbstractEntityManagerAwareController
                                 $newevent['author'] = $event->getAuthor()->getDisplayName();
                                 $newevent['fields'] = array();
                                 foreach ($event->getCustomFieldsValues() as $value) {
+                                    if($value->getCustomField()->isHidden())
+                                        continue;
                                     if(!$value->getCustomField()->isTraceable()) {
                                         $val = array();
                                         $val['name'] = $value->getCustomfield()->getName();
