@@ -59,6 +59,7 @@ class Tab
      * @ORM\Column(type="integer", nullable=true)
      * @Annotation\Type("Zend\Form\Element\Number")
      * @Annotation\Attributes({"min":0})
+     * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Place :"})
      * @Gedmo\SortablePosition
      */
