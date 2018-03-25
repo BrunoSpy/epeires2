@@ -216,7 +216,14 @@ $(document).ready(function(){
    $("a[data-toggle=tooltip], th[data-toggle=tooltip], td[data-toggle=tooltip], ul[data-toggle=tooltip]").tooltip();
    
    $("a[data-toggle=popover]").popover();
-   
+
+   //deactivate links to mattermost
+    $(document).on('click', '#conversation a', function(e){
+        if(mattermostHostname !== undefined && e.target.hostname.localeCompare(mattermostHostname) == 0 ) {
+            e.preventDefault();
+        }
+    });
+
    //sortable tables
    $("table.sortable").stupidtable();
    //add arrow
