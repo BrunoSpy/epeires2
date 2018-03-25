@@ -149,10 +149,14 @@ class Module implements ConsoleUsageProviderInterface
                 'orgshortname',
                 'Shortname of the organisation as configured in the database'
             ),
-            'import-nmb2b [--delta=] orgshortname username' => 'Import RSAs from NM B2B WS',
+            'import-nmb2b [--delta=] --email orgshortname username' => 'Import RSAs from NM B2B WS',
             array(
                 '--delta',
                 '(optional) Delta to add to the current day (-1=yesterday)'
+            ),
+            array(
+                '--email',
+                '(optional) Send an email to IPO if error during import.'
             ),
             array(
                 'orgshortname',
@@ -162,10 +166,14 @@ class Module implements ConsoleUsageProviderInterface
                 'username',
                 'User Name of the author of created events'
             ),
-            'import-regulations [--delta=] orgshortname username' => 'Import Regulations from NM B2B WS',
+            'import-regulations [--delta=] [--email] orgshortname username' => 'Import Regulations from NM B2B WS',
             array(
                 '--delta',
                 '(optional) Delta to add to the current day (-1=yesterday)'
+            ),
+            array(
+                '--email',
+                '(optional) Send an email to IPO if error during import.'
             ),
             array(
                 'orgshortname',

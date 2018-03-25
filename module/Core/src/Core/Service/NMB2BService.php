@@ -38,6 +38,8 @@ class NMB2BService
 
     private $flowClient = null;
 
+    private $errorEmail = false;
+
     public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
@@ -89,7 +91,11 @@ class NMB2BService
             $text .= $client->__getLastResponseHeaders()."\n";
             $text .= "Last Response\n";
             $text .= $client->__getLastResponse()."\n";
-            $this->sendErrorEmail($text);
+            if($this->errorEmail) {
+                $this->sendErrorEmail($text);
+            } else {
+                error_log($text);
+            }
         }
         return $client;
     }
@@ -147,7 +153,11 @@ class NMB2BService
             $text .= $client->__getLastResponseHeaders()."\n\n";
             $text .= "Last Response\n";
             $text .= $client->__getLastResponse()."\n";
-            $this->sendErrorEmail($text);
+            if($this->errorEmail) {
+                $this->sendErrorEmail($text);
+            } else {
+                error_log($text);
+            }
             throw new \RuntimeException('Erreur NM B2B');
         }
         return $client->__getLastResponse();
@@ -179,7 +189,11 @@ class NMB2BService
             $text .= $client->__getLastResponseHeaders()."\n\n";
             $text .= "Last Response\n";
             $text .= $client->__getLastResponse()."\n";
-            $this->sendErrorEmail($text);
+            if($this->errorEmail) {
+                $this->sendErrorEmail($text);
+            } else {
+                error_log($text);
+            }
             throw new \RuntimeException('Erreur NM B2B');
             return null;
         }
@@ -228,11 +242,25 @@ class NMB2BService
             $text .= $client->__getLastResponseHeaders()."\n\n";
             $text .= "Last Response\n";
             $text .= $client->__getLastResponse()."\n";
-            $this->sendErrorEmail($text);
+            if($this->errorEmail) {
+                $this->sendErrorEmail($text);
+            } else {
+                error_log($text);
+            }
             throw new \RuntimeException('Erreur NM B2B');
             return null;
         }
         return $client->__getLastResponse();
+    }
+
+    public function activateErrorEmail()
+    {
+        $this->errorEmail = true;
+    }
+
+    public function deActivateErrorEmail()
+    {
+        $this->errorEmail = false;
     }
 
     public function sendErrorEmail($textError) {

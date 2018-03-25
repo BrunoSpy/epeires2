@@ -51,7 +51,7 @@ return array(
                 ),
                 'import-nmb2b' => array(
                     'options' => array(
-                        'route' => 'import-nmb2b [--delta=] <orgshortname> <username>',
+                        'route' => 'import-nmb2b [--delta=] [--email] <orgshortname> <username>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Mil',
                             'action' => 'importNMB2B'
@@ -60,7 +60,7 @@ return array(
                 ),
                 'import-regulations' => array(
                     'options' => array(
-                        'route' => 'import-regulations [--delta=] <orgshortname> <username>',
+                        'route' => 'import-regulations [--delta=] [--email] <orgshortname> <username>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\ATFCM',
                             'action' => 'importRegulations'

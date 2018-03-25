@@ -59,7 +59,15 @@ class MilController extends AbstractEntityManagerAwareController
         if (! $organisation) {
             throw new \RuntimeException('Unable to find organisation.');
         }
-        
+
+        $email = $request->getParam('email');
+
+        if($email) {
+            $this->nmb2b->activateErrorEmail();
+        } else {
+            $this->nmb2b->deActivateErrorEmail();
+        }
+
         $username = $request->getParam('username');
         
         $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
