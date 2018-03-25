@@ -622,7 +622,7 @@ $(document).ready(function(){
             }
             //actions
             var actions = $('<span class="actions"></span>');
-            if(event.modifiable) {
+            if(event.modifiable && !event.readonly) {
                 actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
                     ' <span class="glyphicon glyphicon-pencil" style="color:' + event.textColor + '"></span>' +
                     '</a>'));
@@ -630,40 +630,42 @@ $(document).ready(function(){
             actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
                 ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
                 '</a>'));
-            var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
-                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
-                '</a>');
-            actions.append(tooltip)
-            actions.css('display', "none");
-            element.find('.fc-content').append(actions);
-            var id = event.id;
-            var txt = '<p class="elmt_tooltip actions">'
-                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
-            if(event.status_id < 4){ //modifiable, non annulé et non supprimé
-                if(event.punctual === false){
-                    if(event.star === true){
-                        txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
-                    } else {
-                        txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+            if(event.modifiable) {
+                var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">' +
+                    ' <span class="glyphicon glyphicon-chevron-up" style="color:' + event.textColor + '"></span>' +
+                    '</a>');
+                actions.append(tooltip)
+                var id = event.id;
+                var txt = '<p class="elmt_tooltip actions">'
+                    + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
+                if(event.status_id < 4){ //modifiable, non annulé et non supprimé
+                    if(event.punctual === false){
+                        if(event.star === true){
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                        } else {
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                        }
+                    }
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    if(event.modifiable && !event.readonly) {
+                        txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
                     }
                 }
-                txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                if(event.modifiable) {
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                if(event.status_id < 5 && event.deleteable && !event.readonly) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
+                txt += '</p>';
+                tooltip.popover({
+                    container: '#calendarview',
+                    content: txt,
+                    placement:'auto top',
+                    html: 'true',
+                    viewport: '#calendarview',
+                    template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                });
             }
-            if(event.status_id < 5 && event.deleteable) {
-                txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
-            }
-            txt += '</p>';
-            tooltip.popover({
-                container: '#calendarview',
-                content: txt,
-                placement:'auto top',
-                html: 'true',
-                viewport: '#calendarview',
-                template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-            });
+            actions.css('display', "none");
+            element.find('.fc-content').append(actions);
         }
     });
 

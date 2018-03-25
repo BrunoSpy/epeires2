@@ -1832,8 +1832,9 @@ class EventsController extends TabsController
         $json = array(
             'id' => $event->getId(),
             'name' => $this->eventservice->getName($event),
-            'modifiable' => ($this->eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'modifiable' => $this->eventservice->isModifiable($event) ? true : false,
             'deleteable' => $this->isGranted('events.delete') ? true : false,
+            'readonly' => $event->isReadOnly() ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
             'punctual' => $event->isPunctual() ? true : false,
