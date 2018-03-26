@@ -74,7 +74,8 @@
     "hounddog/doctrine-data-fixture-module": "dev-master",
     "codeception/codeception": "^2.3",
     "zfcampus/zf-apigility-admin": "~1.0",
-    "zendframework/zend-developer-tools": "^1.1"
+    "zendframework/zend-developer-tools": "^1.1",
+    "sensiolabs/security-checker": "^4.1.0"
   },
   "config": {
     "platform": {
