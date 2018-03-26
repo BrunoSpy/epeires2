@@ -699,7 +699,7 @@
                 var clickedIdIp = $(this).data('id');
                 $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
                     $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
-                        data.ip.Alerte.Type 
+                        data.ip.Alerte.Type
                     );
                 });
                 
@@ -803,9 +803,10 @@
 
 
     $('#a-end-ip-ok').click(function(data) {
+        var end_date = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $.post(
             url+'sarbeacons/end', 
-            {id: idIp, end_date: $('input[name=end-date]').val()}, 
+            {id: idIp, end_date: end_date}, 
             function (data) {
                 $aNow.trigger('click');
                 headerbar(url);
