@@ -1,48 +1,114 @@
+<?php
+    $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'dd LLL, HH:mm');
+$countChapters = 0;
+    ?>
+<?php if($this->isGranted('briefing.importants')) :?>
+<?php $countChapters++ ?>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4 class="panel-title">1. Évènements importants en cours</h4>
+        <h4 class="panel-title"><?php echo $countChapters?>. Évènements importants en cours</h4>
     </div>
     <div class="panel-body">
+      <?php if(count($this->events) == 0): ?>
+      <p><em>Aucun évènement important.</em></p>
+      <?php else : ?>
         <table class="table">
-            <thead></thead>
+            <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Description</th>
+              <th>Début</th>
+              <th>Fin</th>
+            </tr>
+            </thead>
             <tbody>
             <?php
             foreach ($this->events as $event) {
                 echo '<tr>';
-                    echo '<td>' . $event->getId() . ' ' . $this->eventName($event) . '</td>';
+                  echo '<td><span class="label label-primary" style="background-color:'.$event->getCategory()->getColor().'">'.$event->getCategory()->getName().'</span> </td>';
+                  $title = '<table class="table table-condensed table-noborder"><tbody>';
+                  foreach ( $event->getCustomFieldsValues () as $value ) {
+                      $formattedvalue = $this->customfieldvalue ($value);
+                      if ($formattedvalue != '') {
+                          $title .= '<tr><td>'.$value->getCustomField ()->getName () . '</td><td> :&nbsp;</td><td>'. $formattedvalue.'</td>';
+                      }
+                  }
+                  $title .= "</tbody></table>";
+                  echo '<td>'.$title.'</td>';
+                  echo '<td>'.$formatter->format($event->getStartdate()).'</td>';
+                  echo '<td>';
+                    if($event->getEnddate()) {
+                      echo $formatter->format($event->getEnddate());
+                    }
+                  echo '</td>';
                 echo '</tr>';
             }
             ?>
             </tbody>
         </table>
-
+      <?php endif; ?>
     </div>
 </div>
+<?php endif; ?>
 
+<?php if($this->isGranted('briefing.regulations')) :?>
+<?php $countChapters++ ?>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4 class="panel-title">2. Régulations en cours </h4>
+        <h4 class="panel-title"><?php echo $countChapters; ?>. Régulations en cours </h4>
     </div>
     <div class="panel-body">
+        <?php if(count($this->regulations) == 0): ?>
+          <p><em>Aucun évènement important.</em></p>
+        <?php else : ?>
         <table class="table">
-            <thead></thead>
+            <thead>
+            <tr>
+              <th>Régulation</th>
+              <th>Description</th>
+              <th>Cause</th>
+              <th>Taux</th>
+            </tr>
+            </thead>
             <tbody>
             <?php
             foreach ($this->regulations as $event) {
                 echo '<tr>';
-                echo '<td>' . $event->getId() . ' ' . $this->eventName($event) . '</td>';
+                echo '<td>' . $this->eventName($event) . '</td>';
+                echo '<td>';
+                $descriptionField = $event->getCategory()->getDescriptionField();
+                $value = $event->getCustomFieldValue($descriptionField);
+                echo $value->getValue();
+                echo '</td>';
+                echo '<td>';
+                $reasonField = $event->getCategory()->getReasonField();
+                $value = $event->getCustomFieldValue($reasonField);
+                echo $value->getValue();
+                echo '</td>';
+                echo '<td>';
+                $rateField = $event->getCategory()->getNormalRateField();
+                $value = $event->getCustomFieldValue($rateField);
+                echo $value->getValue();
+                echo '</td>';
                 echo '</tr>';
             }
             ?>
             </tbody>
         </table>
+      <?php endif; ?>
     </div>
 </div>
-
+<?php endif; ?>
+<?php $countChapters++ ?>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4 class="panel-title">3. Informations importantes en vigueur <?php
-            if($this->isGranted('events.mod-briefing')) {
+        <h4 class="panel-title"><?php if($countChapters > 1) echo $countChapters.'. ';?>Informations importantes en vigueur <?php
+            if($this->isGranted('briefing.mod')) {
                 echo '<button title="Modifier" style="margin:0px; padding-top: 0px; padding-bottom: 0px" class="btn btn-sm" id="edit-markdown" data-toggle="modal" data-target="#editwindow"><span class="glyphicon glyphicon-edit"></span></button>';
             }
             ?></h4>

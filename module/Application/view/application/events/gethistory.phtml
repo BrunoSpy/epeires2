@@ -1,53 +1,55 @@
 <?php
 
 if($this->history){
-	
-	$history = $this->history;
-        $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd LLL, HH:mm');
-	if(count($history) > 0) {
-            echo '<dl>';
-            foreach ($history as $key => $value){
-		echo '<dt>'.$formatter->format($value['date']).' UTC ('.$value['user'].')</dt>';
 
-		foreach($value['changes'] as $change){
-			echo '<dd>';
-			if ($change['fieldname'] == 'action') {
-                                if(!$change['status']->isOpen()){
-                                    echo "Action \"".$change['newvalue']."\" effectuée";
-                                }
-                        } else if($change['fieldname'] == 'note'){
-                            echo nl2br($change['newvalue']);
-                        } else if($change['fieldname'] == 'alarm') {
-                            if(!$change['status']->isOpen()){
-                                echo 'Mémo <em>'.$change['newvalue'].'</em> acquitté';
-                            }
-                        } else if($change['fieldname'] == 'create') {
-                            echo 'Evènement créé';
+    $history = $this->history;
+    $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+        \IntlDateFormatter::FULL,
+        \IntlDateFormatter::FULL,
+        'UTC',
+        \IntlDateFormatter::GREGORIAN,
+        'dd LLL, HH:mm');
+    if(count($history) > 0) {
+        echo '<dl>';
+        foreach ($history as $key => $value){
+            echo '<dt>'.$formatter->format($value['date']).' UTC ('.$value['user'].')</dt>';
+
+            foreach($value['changes'] as $change){
+                echo '<dd>';
+                if ($change['fieldname'] == 'action') {
+                    if(!$change['status']->isOpen()){
+                        echo "Action \"".$change['newvalue']."\" effectuée";
+                    }
+                } else if($change['fieldname'] == 'note'){
+                    echo nl2br($change['newvalue']);
+                } else if($change['fieldname'] == 'alarm') {
+                    if(!$change['status']->isOpen()){
+                        echo 'Mémo <em>'.$change['newvalue'].'</em> acquitté';
+                    }
+                } else if($change['fieldname'] == 'create') {
+                    echo 'Évènement créé';
+                } else if ($change['fieldname'] == 'mattermostPostId'){
+                    echo 'Évènement envoyé sur Mattermost';
+                } else {
+                    echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
+                    if(empty($change['oldvalue'])){
+                        echo ' enregistré à <em>'.$change['newvalue'].'</em>';
+                    } else {
+                        if($change['newvalue'] != null) {
+                            echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
                         } else {
-				echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
-				if(empty($change['oldvalue'])){
-					echo ' enregistré à <em>'.$change['newvalue'].'</em>';
-				} else {
-                                    if($change['newvalue'] != null) {
-                                        echo ' modifié de <em>'.$change['oldvalue'].'</em> à <em>'.$change['newvalue'].'</em>';
-                                    } else {
-                                        echo ' <em>'.$change['oldvalue'].'</em> effacé.';
-                                    }
-				}
-			}
-			echo '</dd>';
-		}
-
+                            echo ' <em>'.$change['oldvalue'].'</em> effacé.';
+                        }
+                    }
+                }
+                echo '</dd>';
             }
-            echo '</dl>';
-        } else {
-            echo "<p>Aucun historique à afficher.</p>";
+
         }
+        echo '</dl>';
+    } else {
+        echo "<p>Aucun historique à afficher.</p>";
+    }
 } else {
     echo "<p>Aucun historique à afficher.</p>";
 }

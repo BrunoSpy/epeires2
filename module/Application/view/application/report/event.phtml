@@ -14,52 +14,54 @@ $formatterHeure = \IntlDateFormatter::create(\Locale::getDefault(),
 ?>
 <div class="event">
 
-<p class="event_title">
-    <span class="event_name"><?php echo $this->eventName($this->event) ?></span><?php 
-    if($this->event->isPunctual()){
-        echo ' à '.$formatterHeure->format($this->event->getStartDate()).".";
-    } else {
-        if($this->event->getEndDate()){
-            echo ' du '.$formatterJour->format($this->event->getStartDate()).' '.$formatterHeure->format($this->event->getStartdate()).
-                ' au '.$formatterJour->format($this->event->getEndDate()).' '.$formatterHeure->format($this->event->getEnddate());
-        } else {
-            echo ' à partir du '.$formatterJour->format($this->event->getStartDate()).' '.$formatterHeure->format($this->event->getStartdate());
-        }
-    }
-    echo ' (créé par '.$this->event->getAuthor()->getDisplayName().', évènement '. strtolower($this->event->getStatus()->getName()).')';    
-    ?>
-</p>
-<table class="table">
-<?php 
-foreach ($this->event->getCustomFieldsValues() as $value){
-    if($this->customfieldvalue($value) != ''){
-        if($value->getCustomField()->isTraceable() && $this->logs != null) {
-            foreach(array_reverse($this->logs->getLogEntries($value)) as $log) {
-                echo '<tr>';
-                echo '<td></td>';
-                echo '<td>' . $formatterJour->format($log->getLoggedAt())
-                    . ' ' . $formatterHeure->format($log->getLoggedAt())
-                    . ' ' . $value->getCustomField()->getName()
-                    . ' : </td>';
-                echo '<td colspan="3">' . nl2br($this->customfieldvalue($value, $log->getData()["value"])).'</td>';
-                echo '</tr>';
-            }
-        } else {
-            echo '<tr>';
-            echo '<td></td>';
-            echo '<td>' . $value->getCustomfield()->getName().' : </td>';
-            echo '<td colspan="3">'.nl2br($this->customfieldvalue($value)).'</td>';
-            echo '</tr>';
-        }
-    }
-}
-foreach ($this->event->getUpdates() as $update){
-    echo '<tr>';
-    echo '<td></td>';
-    echo '<td>'.$this->updateAuthor($update).' le '.$formatterJour->format($update->getCreatedOn()).' à '.$formatterHeure->format($update->getCreatedOn()).' : </td>';
-    echo '<td colspan="3">'.nl2br($update->getText()).'</td>';
-    echo '</tr>';
-}
-?>
-</table>
+  <p class="event_title">
+    <span class="event_name"><?php echo $this->eventName($this->event) ?></span><?php
+      if($this->event->isPunctual()){
+          echo ' à '.$formatterHeure->format($this->event->getStartDate()).".";
+      } else {
+          if($this->event->getEndDate()){
+              echo ' du '.$formatterJour->format($this->event->getStartDate()).' '.$formatterHeure->format($this->event->getStartdate()).
+                  ' au '.$formatterJour->format($this->event->getEndDate()).' '.$formatterHeure->format($this->event->getEnddate());
+          } else {
+              echo ' à partir du '.$formatterJour->format($this->event->getStartDate()).' '.$formatterHeure->format($this->event->getStartdate());
+          }
+      }
+      echo ' (créé par '.$this->event->getAuthor()->getDisplayName().', évènement '. strtolower($this->event->getStatus()->getName()).')';
+      ?>
+  </p>
+  <table class="table">
+      <?php
+      foreach ($this->event->getCustomFieldsValues() as $value){
+          if($value->getCustomField()->isHidden())
+            continue;
+          if($this->customfieldvalue($value) != ''){
+              if($value->getCustomField()->isTraceable() && $this->logs != null) {
+                  foreach(array_reverse($this->logs->getLogEntries($value)) as $log) {
+                      echo '<tr>';
+                      echo '<td></td>';
+                      echo '<td>' . $formatterJour->format($log->getLoggedAt())
+                          . ' ' . $formatterHeure->format($log->getLoggedAt())
+                          . ' ' . $value->getCustomField()->getName()
+                          . ' : </td>';
+                      echo '<td colspan="3">' . nl2br($this->customfieldvalue($value, $log->getData()["value"])).'</td>';
+                      echo '</tr>';
+                  }
+              } else {
+                  echo '<tr>';
+                  echo '<td></td>';
+                  echo '<td>' . $value->getCustomfield()->getName().' : </td>';
+                  echo '<td colspan="3">'.nl2br($this->customfieldvalue($value)).'</td>';
+                  echo '</tr>';
+              }
+          }
+      }
+      foreach ($this->event->getUpdates() as $update){
+          echo '<tr>';
+          echo '<td></td>';
+          echo '<td>'.$this->updateAuthor($update).' le '.$formatterJour->format($update->getCreatedOn()).' à '.$formatterHeure->format($update->getCreatedOn()).' : </td>';
+          echo '<td colspan="3">'.nl2br($update->getText()).'</td>';
+          echo '</tr>';
+      }
+      ?>
+  </table>
 </div>

@@ -2,114 +2,116 @@
 
 <div class="container-fluid">
     <div class="row">
-	<div class="col-md-9">
-		<p></p>
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">Onglets </h4>
-			</div>
-			<div class="panel-body">
-          <?php
-          if(count($this->defectroles) > 0){
-            echo '<div class="alert alert-warning">';
-            echo '<p>Attention, certains rôles sont affectés à plusieurs onglets principaux :</p>';
-            echo '<ul>';
-            foreach ($this->defectroles as $role => $tabs) {
-              echo '<li>' . $role . ' : ';
-              foreach ($tabs as $t){
-                echo $t . (next($tabs) === false ? '.' : ' - ');
-              }
-              echo '</li>';
-            }
-            echo '</ul>';
-            echo '</div>';
-          }
-          ?>
-				<table class="table table-striped sortable">
-                                    <thead>
-                                    <tr>
-                                        <th data-sort="int">id</th>
-                                        <th data-sort="string" data-autosort="true">Nom</th>
-                                        <th>Nom court</th>
-                                        <th>Catégories associées</th>
-                                        <th>Rôles autorisés</th>
-                                        <th>Onglet principal</th>
-                                        <th data-toggle="tooltip" data-container="body" title="Nécessite la sélection de la catégorie racine dans la liste des catégories associées">Catégories racines seulement<sup>?</sup></th>
-                                        <th><a class="btn btn-xs btn-primary" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        function sortTabs($a, $b){
-                                        	if($a->getParent() !== null && $b->getParent() !== null) {
-                                        		if($a->getParent()->getId() === $b->getParent()->getId()) {
-                                        			return $a->getPlace() - $b->getPlace();
-                                        		} else {
-                                        			return $a->getParent()->getPlace() - $b->getParent()->getPlace();
-                                        		}
-                                        	} else if($a->getParent() !== null && $b->getParent() == null) {
-                                        		if($a->getParent()->getId() === $b->getId()){
-                                        			return 1;
-                                        		} else {
-                                        			return $a->getParent()->getPlace() - $b->getPlace();
-                                        		}
-                                        	} else if($a->getParent() == null && $b->getParent() !== null) {
-                                        		if($b->getParent()->getId() === $a->getId()){
-                                        			return -1;
-                                        		} else {
-                                        			return $a->getPlace() - $b->getParent()->getPlace();
-                                        		}
-                                        	} else if($a->getParent() == null && $b->getParent() == null){
-                                        		return $a->getPlace() - $b->getPlace();
-                                        	}
-                                        }
-                                        foreach ($this->tabs as $tab){
-                                            echo '<tr>';
-                                            echo '<td>'.$tab->getId().'</td>';
-                                            echo '<td>'.$tab->getName().'</td>';
-                                            echo '<td>'.$tab->getShortname().'</td>';
-                                            echo '<td>';
-                                            $tabsArray = $tab->getCategories()->toArray();
-                                            uasort($tabsArray, "sortTabs");
-                                            foreach ($tabsArray as $cat){
-                                            	if($cat->getParent() !== null){
-                                            		echo ' > ';
-                                            	}
-                                            	echo $cat->getName().'<br/>';
-                                            }
-                                            echo '</td>';
-                                            echo '<td>';
-                                            foreach ($tab->getReadroles() as $role){
-                                            	echo $role->getName().'<br/>';
-                                            }
-                                            echo '</td>';
-                                            echo '<td><span class="'.($tab->isDefault() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove').'"></span></td>';
-                                            echo '<td><span class="'.($tab->isOnlyroot() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' ).'"></span></td>';
-                                            echo '<td><a '
-                                                    . 'href="#tab-container" '
-                                                    . 'class="mod-tab" '
-                                                    . 'data-id="'.$tab->getId().'" '
-                                                    . 'data-name="'.$tab->getName().'" '
-                                                    . 'title="Modifier" '
-                                                    . 'data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></a>';
-                                            echo ' <a '
-                                            		. 'href="#tab-rm-container" '
-                                            		. 'class="rm-tab" '
-                                            		. 'data-id="'.$tab->getId().'" '
-                                                    . 'data-name="'.$tab->getName().'" '
-                                                    . 'title="Supprimer" '
-                                                    . 'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></a>';
-                                            echo '</td>';
-                                            echo '</tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-			</div>
-		</div>
-	</div>
+        <div class="col-md-9">
+            <p></p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Onglets </h4>
+                </div>
+                <div class="panel-body">
+                    <?php
+                    if(count($this->defectroles) > 0){
+                        echo '<div class="alert alert-warning">';
+                        echo '<p>Attention, certains rôles sont affectés à plusieurs onglets principaux :</p>';
+                        echo '<ul>';
+                        foreach ($this->defectroles as $role => $tabs) {
+                            echo '<li>' . $role . ' : ';
+                            foreach ($tabs as $t){
+                                echo $t . (next($tabs) === false ? '.' : ' - ');
+                            }
+                            echo '</li>';
+                        }
+                        echo '</ul>';
+                        echo '</div>';
+                    }
+                    ?>
+                    <table class="table table-striped sortable">
+                        <thead>
+                        <tr>
+                            <th data-sort="int">id</th>
+                            <th data-sort="string" data-autosort="true">Nom</th>
+                            <th>Nom court</th>
+                            <th>Catégories associées</th>
+                            <th>Rôles autorisés</th>
+                            <th>Onglet principal</th>
+                            <th data-toggle="tooltip" data-container="body" title="Nécessite la sélection de la catégorie racine dans la liste des catégories associées">Catégories racines seulement<sup>?</sup></th>
+                            <th data-sort="int" data-toggle="tooltip" data-container="body" title="Uniquement valable pour les onglets non principaux">Place<sup>?</sup></th>
+                            <th><a class="btn btn-xs btn-primary" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        function sortTabs($a, $b){
+                            if($a->getParent() !== null && $b->getParent() !== null) {
+                                if($a->getParent()->getId() === $b->getParent()->getId()) {
+                                    return $a->getPlace() - $b->getPlace();
+                                } else {
+                                    return $a->getParent()->getPlace() - $b->getParent()->getPlace();
+                                }
+                            } else if($a->getParent() !== null && $b->getParent() == null) {
+                                if($a->getParent()->getId() === $b->getId()){
+                                    return 1;
+                                } else {
+                                    return $a->getParent()->getPlace() - $b->getPlace();
+                                }
+                            } else if($a->getParent() == null && $b->getParent() !== null) {
+                                if($b->getParent()->getId() === $a->getId()){
+                                    return -1;
+                                } else {
+                                    return $a->getPlace() - $b->getParent()->getPlace();
+                                }
+                            } else if($a->getParent() == null && $b->getParent() == null){
+                                return $a->getPlace() - $b->getPlace();
+                            }
+                        }
+                        foreach ($this->tabs as $tab){
+                            echo '<tr>';
+                            echo '<td>'.$tab->getId().'</td>';
+                            echo '<td>'.$tab->getName().'</td>';
+                            echo '<td>'.$tab->getShortname().'</td>';
+                            echo '<td>';
+                            $tabsArray = $tab->getCategories()->toArray();
+                            uasort($tabsArray, "sortTabs");
+                            foreach ($tabsArray as $cat){
+                                if($cat->getParent() !== null){
+                                    echo ' > ';
+                                }
+                                echo $cat->getName().'<br/>';
+                            }
+                            echo '</td>';
+                            echo '<td>';
+                            foreach ($tab->getReadroles() as $role){
+                                echo $role->getName().'<br/>';
+                            }
+                            echo '</td>';
+                            echo '<td><span class="'.($tab->isDefault() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove').'"></span></td>';
+                            echo '<td><span class="'.($tab->isOnlyroot() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' ).'"></span></td>';
+                            echo '<td>' . $tab->getPlace() . '</td>';
+                            echo '<td><a '
+                                . 'href="#tab-container" '
+                                . 'class="mod-tab" '
+                                . 'data-id="'.$tab->getId().'" '
+                                . 'data-name="'.$tab->getName().'" '
+                                . 'title="Modifier" '
+                                . 'data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></a>';
+                            echo ' <a '
+                                . 'href="#tab-rm-container" '
+                                . 'class="rm-tab" '
+                                . 'data-id="'.$tab->getId().'" '
+                                . 'data-name="'.$tab->getName().'" '
+                                . 'title="Supprimer" '
+                                . 'data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></a>';
+                            echo '</td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <div class="col-md-3">
-        	<p></p>
+            <p></p>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">Aide</h4>
@@ -117,22 +119,22 @@
                 <div class="panel-body">
                     <p>Cette page permet de configurer de nouveaux onglets, positionnés après les onglets Radio et Radar.</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
-                  <p><strong>Attention : </strong>Il peut y avoir plusieurs onglets principaux, mais un rôle ne peut être affecté qu'à un seul onglet principal.</p>
+                    <p><strong>Attention : </strong>Il peut y avoir plusieurs onglets principaux, mais un rôle ne peut être affecté qu'à un seul onglet principal.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-			
+
 <?php echo $this->modalwindow("tab-container", "<h4 id=\"tab-title\"></h4>", "", "<div id=\"tab-form\"></div>") ?>
 
 <?php echo $this->modalwindow("tab-rm-container",
-						"<h4>Confirmer la suppression ?</h4>",
-						"", 
-						null, 
-						"<p>Voulez-vous vraiment supprimer l'onglet <em><span id=\"tab-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-tab-href\">Confirmer</a>
+    "<h4>Confirmer la suppression ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment supprimer l'onglet <em><span id=\"tab-name\"></span></em> ?</p>",
+    "<a class=\"btn btn-danger\" id=\"delete-tab-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
@@ -142,5 +144,5 @@ tab('<?php echo $this->url('administration'); ?>');
 $("table th:eq(1)").trigger('click');
 
 <?php echo $this->notifications($this->messages); ?>
-                                        
+
 <?php $this->inlineScript()->captureEnd();?>

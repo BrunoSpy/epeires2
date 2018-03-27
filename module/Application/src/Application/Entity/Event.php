@@ -116,6 +116,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Gedmo\Versioned
      * Id of the mattermost post.
      * Added only when the event has been posted on a channel
      */

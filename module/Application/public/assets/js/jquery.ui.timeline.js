@@ -560,7 +560,7 @@
                 if($(e.target).hasClass('rect_elmt')){
                     var id = $(this).closest('.elmt').data('ident');
                     var event = self.events[self.eventsPosition[id]];
-                    if(event.modifiable) {
+                    if(event.modifiable && !event.readonly) {
                         $(this).closest('.elmt').find('.modify-evt').trigger('click');
                     }
                 }
@@ -614,12 +614,12 @@
                         }
                     }
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    if(event.modifiable) {
+                    if(event.modifiable && !event.readonly) {
                         txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
 
                     }
                 }
-                if(event.status_id < 5 && event.deleteable) {
+                if(event.status_id < 5 && event.deleteable && !event.readonly) {
                     txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
                 txt += '</p>';
@@ -1886,12 +1886,14 @@
             elmt_fin.css({'top': yEnd + 'px'});
 
             //affichage des boutons en fonction des droits
-            if (event.modifiable) {
+            if (event.modifiable && !event.readonly) {
                 elmt_mod.addClass('disp');
             }
             //checklist doit être accessible en lecture
             elmt_check.addClass('disp');
-            elmt_tooltip.addClass('disp');
+            if(event.modifiable) {
+                elmt_tooltip.addClass('disp');
+            }
 
             //calcul des tailles des éléments pour le dessin
             // et le positionnement
@@ -2009,7 +2011,7 @@
                     totalWidth += offset;
                     elmt_deb.css({'left': -(debWidth + 14)+'px'});
                 } else {
-                    if(event.modifiable && event.recurr == false){
+                    if(event.modifiable && event.recurr == false && !event.readonly){
                         move_deb.addClass('disp');
                         move_deb.css({'left': 8 + 'px'});
                     }
@@ -2048,7 +2050,7 @@
                     totalWidth += haut;
                 }
                 //dans tous les cas
-                if(event.modifiable){
+                if(event.modifiable && !event.readonly){
                     move_fin.addClass('disp');
                     move_fin.css({'right': 12 + 'px'});
                 }
@@ -2244,7 +2246,7 @@
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                         elmt_deb.removeClass('disp').show();
-                        if(event.modifiable) {
+                        if(event.modifiable && !event.readonly) {
                             elmt_deb.tooltip({
                                 title: "Cliquer pour confirmer l'heure de début.",
                                 container: 'body'
@@ -2258,7 +2260,7 @@
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                         elmt_deb.addClass('disp');
-                        if(event.modifiable) {
+                        if(event.modifiable && !event.readonly) {
                             elmt_deb.tooltip({
                                 title: "Cliquer pour confirmer l'heure de début.",
                                 container: 'body'
@@ -2278,7 +2280,7 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show();
-                            if(event.modifiable) {
+                            if(event.modifiable && !event.readonly) {
                                 elmt_fin.tooltip({
                                     title: "Cliquer pour confirmer l'heure de fin.",
                                     container: 'body'
@@ -2292,7 +2294,7 @@
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide();
-                            if(event.modifiable){
+                            if(event.modifiable && !event.readonly){
                                 elmt_fin.tooltip({
                                     title: "Cliquer pour confirmer l'heure de fin.",
                                     container: 'body'
@@ -2331,7 +2333,7 @@
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
                             elmt_fin.removeClass('disp').show();
-                            if(event.modifiable){
+                            if(event.modifiable && !event.readonly){
                                 elmt_fin.tooltip({
                                     title: "Cliquer pour confirmer l'heure de fin.",
                                     container: 'body'
@@ -2345,7 +2347,7 @@
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
                             elmt_fin.addClass('disp').hide();
-                            if(event.modifiable){
+                            if(event.modifiable && !event.readonly){
                                 elmt_fin.tooltip({
                                     title: "Cliquer pour confirmer l'heure de fin.",
                                     container: 'body'
@@ -2473,7 +2475,7 @@
             elmt_txt.append(elmt_b2);
             elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
             //ajout bouton ouverture menu tooltip
-            var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
+            var elmt_b3 = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
             elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
             elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
@@ -2523,7 +2525,9 @@
                     });
                 } else {
                     //modify post
-                    $(".chat-container").mattermost("patchMessage", message, mattermostId);
+                    $(".chat-container").mattermost("patchMessage", message, mattermostId, function(data){
+                        $(".chat-container").mattermost("sendMessage", "Évènement modifié : ["+event.name+"]("+data.permalink+")");
+                    });
                 }
             }
         },

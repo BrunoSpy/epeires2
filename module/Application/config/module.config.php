@@ -51,7 +51,7 @@ return array(
                 ),
                 'import-nmb2b' => array(
                     'options' => array(
-                        'route' => 'import-nmb2b [--delta=] <orgshortname> <username>',
+                        'route' => 'import-nmb2b [--delta=] [--email] <orgshortname> <username>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Mil',
                             'action' => 'importNMB2B'
@@ -60,7 +60,7 @@ return array(
                 ),
                 'import-regulations' => array(
                     'options' => array(
-                        'route' => 'import-regulations [--delta=] <orgshortname> <username>',
+                        'route' => 'import-regulations [--delta=] [--email] <orgshortname> <username>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\ATFCM',
                             'action' => 'importRegulations'
@@ -216,10 +216,6 @@ return array(
             'events.mod-opsup' => array(
                 'name' => 'Modifier Chef Op',
                 'description' => ''
-            ),
-            'events.mod-briefing' => array(
-                'name' => 'Modifier Briefing',
-                'description' => 'Autoriser la modification de la zone de texte libre du briefing chef de salle'
             )
         ),
         'Radio' => array(
@@ -256,6 +252,24 @@ return array(
                 'description' => 'Permet d\'effectuer des plans d\'interrogations'
             )
         ),
+        'Briefing' => array(
+            'briefing.enable' => array(
+                'name' => "Actif",
+                'description' => "Active le briefing au changement de chef de salle"
+            ),
+            'briefing.importants' =>array(
+                'name' => "Évènements importants",
+                'description' => "Active l'affichage des évènements importants en cours"
+            ),
+            'briefing.regulations' => array(
+                'name' => "Régulations",
+                'description' => "Active l'affichage des régulations en cours"
+            ),
+            'briefing.mod' => array(
+                'name' => 'Modifier Briefing',
+                'description' => 'Autoriser la modification de la zone de texte libre'
+            )
+        )
     ),
     
     'zfc_rbac' => array(

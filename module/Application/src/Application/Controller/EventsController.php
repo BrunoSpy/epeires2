@@ -20,6 +20,7 @@ namespace Application\Controller;
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\Category;
+use Application\Entity\EventUpdate;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\PostItCategory;
@@ -1831,8 +1832,9 @@ class EventsController extends TabsController
         $json = array(
             'id' => $event->getId(),
             'name' => $this->eventservice->getName($event),
-            'modifiable' => ($this->eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'modifiable' => $this->eventservice->isModifiable($event) ? true : false,
             'deleteable' => $this->isGranted('events.delete') ? true : false,
+            'readonly' => $event->isReadOnly() ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
             'punctual' => $event->isPunctual() ? true : false,
@@ -2211,6 +2213,7 @@ class EventsController extends TabsController
 
     /**
      * Change the status of an event to "Supprimé"
+     * If event has no end date, sets end date = start date + 1h
      * @return JsonModel
      */
     public function deleteeventAction()
@@ -2225,6 +2228,11 @@ class EventsController extends TabsController
                 if ($event) {
                     $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
                     $event->setStatus($deleteStatus);
+                    if(!$event->isPunctual() && $event->getEnddate() == null) {
+                        $enddate = clone $event->getStartdate();
+                        $enddate->add(new \DateInterval('PT1H'));
+                        $event->setEnddate($enddate);
+                    }
                     $this->closeEvent($event);
                     try {
                         $objectManager->persist($event);
@@ -2237,7 +2245,7 @@ class EventsController extends TabsController
                         $messages['error'][] = $e->getMessage();
                     }
                 } else {
-                    $messages['error'][] = "Suppression d'évènement impossible : évènment non trouvé.";
+                    $messages['error'][] = "Suppression d'évènement impossible : évènement non trouvé.";
                 }
             } else {
                 $messages['error'][] = "Suppression d'évènement impossible : ID non valide.";
@@ -2277,7 +2285,7 @@ class EventsController extends TabsController
                     $text
                 ));
                 
-                if (! $this->config['emailfrom'] || ! $this->config['smtp']) {
+                if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
                     $message = new \Zend\Mail\Message();
@@ -2292,6 +2300,12 @@ class EventsController extends TabsController
                     $transport->setOptions($transportOptions);
                     try {
                         $transport->send($message);
+                        $update = new EventUpdate();
+                        $update->setHidden(true);
+                        $update->setEvent($event);
+                        $update->setText("Evènement envoyé par email à " . $event->getOrganisation()->getIpoEmail());
+                        $this->getEntityManager()->persist($update);
+                        $this->getEntityManager()->flush();
                         $messages['success'][] = "Evènement correctement envoyé à " . $event->getOrganisation()->getIpoEmail();
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();

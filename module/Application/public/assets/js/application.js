@@ -192,6 +192,8 @@ var updateFiche = function(id){
      url = urlt;
  };
 
+ var enableBriefing = false;
+
 $(document).ready(function(){
     
     $.material.init();
@@ -206,12 +208,22 @@ $(document).ready(function(){
 	   }
 	   return this.href == urlt; 
    }).parent().addClass('active') //on ajoute la classe active
-   .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
+       .siblings().removeClass('active'); //suppression des classes active positionnées dans la page
+    $("#navbar-tabs .nav > li.dropdown:not(.active)")
+       .find('a').removeClass("dropdown-toggle").attr('data-toggle', '').find('span.caret').removeClass('caret')
+       .parent().siblings('ul').remove() ;
    
    $("a[data-toggle=tooltip], th[data-toggle=tooltip], td[data-toggle=tooltip], ul[data-toggle=tooltip]").tooltip();
    
    $("a[data-toggle=popover]").popover();
-   
+
+   //deactivate links to mattermost
+    $(document).on('click', '#conversation a', function(e){
+        if(mattermostHostname !== undefined && e.target.hostname.localeCompare(mattermostHostname) == 0 ) {
+            e.preventDefault();
+        }
+    });
+
    //sortable tables
    $("table.sortable").stupidtable();
    //add arrow
@@ -468,9 +480,7 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', function(evt) {return true;});
         $('#timeline').timeline('forceUpdateView', false);
-        if($("#calendarview").is(':visible')) {
-            $("#calendarview").fullCalendar('refetchEvents');
-        }
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
     $("#filter_deleted").on('click', function(e){
@@ -480,9 +490,7 @@ $(document).ready(function(){
         $("#timeline").timeline('pauseUpdateView');
         $("#timeline").timeline('filter', "default");
         $('#timeline').timeline('forceUpdateView', false);
-        if($("#calendarview").is(':visible')) {
-            $("#calendarview").fullCalendar('refetchEvents');
-        }
+        $("#calendarview").fullCalendar('refetchEvents');
     });
 
     $("input[name=viewOptions]").on('change', function(e){
@@ -604,7 +612,7 @@ $(document).ready(function(){
                         } else {
                             element.find('.fc-title').addClass('dlt-black');
                         }
-                    } else if($('#filter_deleted').closest('.filter').hasClass('active')) {
+                    } else if($('#filter_deleted').length == 0 || $('#filter_deleted').closest('.filter').hasClass('active')) {
                         element.hide();
                     }
                     break;
@@ -621,44 +629,50 @@ $(document).ready(function(){
             }
             //actions
             var actions = $('<span class="actions"></span>');
-            actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
-                ' <span class="glyphicon glyphicon-pencil" style="color:'+event.textColor+'"></span>' +
-                '</a>'));
+            if(event.modifiable && !event.readonly) {
+                actions.append($('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '">' +
+                    ' <span class="glyphicon glyphicon-pencil" style="color:' + event.textColor + '"></span>' +
+                    '</a>'));
+            }
             actions.append($('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '">'+
                 ' <span class="glyphicon glyphicon-tasks" style="color:'+event.textColor+'"></span>'+
                 '</a>'));
-            var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">'+
-                ' <span class="glyphicon glyphicon-chevron-up" style="color:'+event.textColor+'"></span>'+
-                '</a>');
-            actions.append(tooltip)
-            actions.css('display', "none");
-            element.find('.fc-content').append(actions);
-            var id = event.id;
-            var txt = '<p class="elmt_tooltip actions">'
-                + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
-            if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
-                if(event.punctual === false){
-                    if(event.star === true){
-                        txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
-                    } else {
-                        txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+            if(event.modifiable) {
+                var tooltip = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '">' +
+                    ' <span class="glyphicon glyphicon-chevron-up" style="color:' + event.textColor + '"></span>' +
+                    '</a>');
+                actions.append(tooltip)
+                var id = event.id;
+                var txt = '<p class="elmt_tooltip actions">'
+                    + '<p><a href="#" data-id="'+event.id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
+                if(event.status_id < 4){ //modifiable, non annulé et non supprimé
+                    if(event.punctual === false){
+                        if(event.star === true){
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                        } else {
+                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                        }
+                    }
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    if(event.modifiable && !event.readonly) {
+                        txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
                     }
                 }
-                txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                if(event.status_id < 5 && event.deleteable && !event.readonly) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
+                }
+                txt += '</p>';
+                tooltip.popover({
+                    container: '#calendarview',
+                    content: txt,
+                    placement:'auto top',
+                    html: 'true',
+                    viewport: '#calendarview',
+                    template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                });
             }
-            if(event.status_id < 5 && event.deleteable) {
-                txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
-            }
-            txt += '</p>';
-            tooltip.popover({
-                container: '#calendarview',
-                content: txt,
-                placement:'auto top',
-                html: 'true',
-                viewport: '#calendarview',
-                template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-            });
+            actions.css('display', "none");
+            element.find('.fc-content').append(actions);
         }
     });
 
@@ -903,40 +917,50 @@ $(document).ready(function(){
     });
 
     $('select[name="nameopsup"]').on ('change', function(e){
-        $("#releve-content").load(url+'briefing/briefing', function(){$("#briefing-content table").addClass("table");});
-        $('#releveWindow').modal('show');
-
+        if(enableBriefing) {
+            $("#releve-content").load(url + 'briefing/briefing', function () {
+                $("#briefing-content table").addClass("table");
+            });
+            $('#releveWindow').modal('show');
+        }
     });
 
-
+    $('#usermenu-mod-briefing').on('click', function(e){
+        $("#releve-content").load(url + 'briefing/briefing', function () {
+            $("#briefing-content table").addClass("table");
+        });
+        $('#releveWindow').modal('show');
+    });
 
     $("#editwindow").on('shown.bs.modal', function(e){
-        $("#editor-briefing").markdown({
-            hiddenButtons:'cmdPreview',
-            onChange:function(e){
-                $('#editor-preview').html(e.parseContent());
-                $("#editor-preview table").addClass("table");
-            },
-            resize: "vertical",
-            language: "fr",
-            onShow:function(e){
-                $.getJSON(url + 'briefing/getBriefing', function (data) {
-                    e.setContent(data.briefing);
-                    $("#briefing-content table").addClass("table");
-                });
-            },
-            onSave:function(e){
-                $.post(url + 'briefing/save', {content: e.getContent()}, function(data){
-                    if(data['messages']) {
-                        displayMessages(data.messages);
-                    }
-                    $("#editwindow").modal('hide');
-                    $("#briefing-content").html(e.parseContent());
-                    $("#briefing-content table").addClass("table");
-                });
-            },
-            savable: true
-        });
+        if(enableBriefing) {
+            $("#editor-briefing").markdown({
+                hiddenButtons: 'cmdPreview',
+                onChange: function (e) {
+                    $('#editor-preview').html(e.parseContent());
+                    $("#editor-preview table").addClass("table");
+                },
+                resize: "vertical",
+                language: "fr",
+                onShow: function (e) {
+                    $.getJSON(url + 'briefing/getBriefing', function (data) {
+                        e.setContent(data.briefing);
+                        $("#briefing-content table").addClass("table");
+                    });
+                },
+                onSave: function (e) {
+                    $.post(url + 'briefing/save', {content: e.getContent()}, function (data) {
+                        if (data['messages']) {
+                            displayMessages(data.messages);
+                        }
+                        $("#editwindow").modal('hide');
+                        $("#briefing-content").html(e.parseContent());
+                        $("#briefing-content table").addClass("table");
+                    });
+                },
+                savable: true
+            });
+        }
     });
 
     /* ******************************* */

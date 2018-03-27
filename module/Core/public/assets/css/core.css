@@ -272,3 +272,12 @@ a.disabled {
 .unvisible{
 	display:none !important;
 }
+
+.table-noborder>tbody>tr>td {
+  border: none;
+  margin-bottom: 0px;
+}
+
+.table-noborder {
+  margin-bottom: 0px;
+}

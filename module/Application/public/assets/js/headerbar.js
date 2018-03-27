@@ -82,30 +82,30 @@ var headerbar = function (url) {
     			var span = $('<span class="exp badge badge-important">'+count+'</span>');
     			if(key === 'radar'){
     				if(isNaN(count) || count <= 0) {
-    					$('#radartab').find('span').remove();
+    					$('#radartab').find('span.exp').remove();
     				} else {
-    					if($('#radartab span').length > 0){
-    						$('#radartab span').text(count);
+    					if($('#radartab span.exp').length > 0){
+    						$('#radartab span.exp').text(count);
     					} else {
     						$('#radartab').append(span);
     					}
     				}
     			} else if(key === 'radio'){
     				if(isNaN(count) || count <= 0) {
-    					$('#frequency').find('span').remove();
+    					$('#frequency').find('span.exp').remove();
     				} else {
-    					if($('#frequency span').length > 0){
-    						$('#frequency span').text(count);
+    					if($('#frequency span.exp').length > 0){
+    						$('#frequency span.exp').text(count);
     					} else {
     						$('#frequency').append(span);
     					}
     				}
     			} else {
     				if(isNaN(count) || count <= 0) {
-    					$('#tab-'+key).find('span').remove();
+    					$('#tab-'+key).find('span.exp').remove();
     				} else {
-    					if($('#tab-'+key+' span').length > 0){
-    						$('#tab-'+key+' span').text(count);
+    					if($('#tab-'+key+' span.exp').length > 0){
+    						$('#tab-'+key+' span.exp').text(count);
     					} else {
     						$('#tab-'+key).append(span);
     					}

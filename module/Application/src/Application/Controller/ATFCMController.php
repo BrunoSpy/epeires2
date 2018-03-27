@@ -55,6 +55,14 @@ class ATFCMController extends AbstractEntityManagerAwareController
 
         $org = $request->getParam('orgshortname');
 
+        $email = $request->getParam('email');
+
+        if($email) {
+            $this->nmb2b->activateErrorEmail();
+        } else {
+            $this->nmb2b->deActivateErrorEmail();
+        }
+
         $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
             'shortname' => $org
         ));

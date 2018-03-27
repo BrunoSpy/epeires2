@@ -205,8 +205,8 @@ class EventService
                 } else {
                     foreach ($logentry->getData() as $key => $value) {
                         // sometimes log stores values that didn't changed
-                        if ($ref[$key] != $value) {
-                            if (! array_key_exists($logentry->getLoggedAt()->format(DATE_RFC2822), $history)) {
+                        if (array_key_exists($key, $ref) && $ref[$key] != $value) {
+                            if (!array_key_exists($logentry->getLoggedAt()->format(DATE_RFC2822), $history)) {
                                 $entry = array();
                                 $entry['date'] = $logentry->getLoggedAt();
                                 $entry['changes'] = array();
@@ -223,7 +223,7 @@ class EventService
                                 }
                                 $historyentry['oldvalue'] = ($ref[$key] ? $formatter->format($ref[$key]) : '');
                                 $historyentry['newvalue'] = ($value ? $formatter->format($value) : null);
-                            } else 
+                            } else
                                 if ($key == 'punctual') {
                                     $historyentry['oldvalue'] = ($ref[$key] ? "Oui" : "Non");
                                     $historyentry['newvalue'] = ($value ? "Oui" : "Non");
@@ -237,6 +237,9 @@ class EventService
                                     $new = $this->em->getRepository('Application\Entity\Impact')->find($value['id']);
                                     $historyentry['oldvalue'] = $old->getName();
                                     $historyentry['newvalue'] = $new->getName();
+                                } elseif ($key == 'mattermostPostId') {
+                                    $historyentry['oldvalue'] = '';
+                                    $historyentry['newvalue'] = '';
                                 } else {
                                     $historyentry['oldvalue'] = $ref[$key];
                                     $historyentry['newvalue'] = $value;

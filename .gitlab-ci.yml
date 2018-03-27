@@ -77,6 +77,7 @@ test:7.1-mariadb:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.1-mysql:
   image: php:7.1-apache
@@ -90,6 +91,7 @@ test:7.1-mysql:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mariadb:
   image: php:7.2-apache
@@ -104,6 +106,7 @@ test:7.2-mariadb:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
 
 test:docker:
   image: php:7.1.14-apache-jessie
@@ -117,6 +120,7 @@ test:docker:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
 
 docker_images:
   before_script:
