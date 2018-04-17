@@ -209,7 +209,6 @@ class SarBeaconsController extends TabController
         $post = $this->getRequest()->getPost();
         $id = (int) $post['id'];
         $ip = null;
-
         if ($id > 0) { 
             $ip = $this->em->getRepository(Event::class)->find($id); 
             $ip = $this->getArrayCopy($ip);
@@ -419,12 +418,14 @@ class SarBeaconsController extends TabController
         $id = (int) $post['id'];    
         $end_date = $post['end_date'];
 
-        if ($id > 0) 
-        {
+        if ($id > 0) {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
-            if (isset($end_date)) $end_date = new \DateTime($end_date);
+            if (isset($end_date)) {
+                $end_date = new \DateTime($end_date);
+                $end_date->setTimezone(new \DateTimeZone("UTC"));
+            }
             else $end_date = $now;
 
             $ip = $this->em->getRepository(Event::class)->find($id);
