@@ -30,9 +30,9 @@ use Application\Entity\Radar;
 use Application\Entity\Antenna;
 
 use Core\Entity\User;
-use Core\NMB2B\EAUPRSAs;
 
-use Core\NMB2B\RegulationListReply;
+use DSNA\NMB2BDriver\Models\EAUPRSAs;
+use DSNA\NMB2BDriver\Models\RegulationListReply;
 use Zend\Session\Container;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
@@ -1345,7 +1345,7 @@ class EventRepository extends ExtendedRepository
 
     /*
      * Add events from <code>$eauprsas</code> to the corresponding <code>$cat</code>
-     * @param \Core\NMB2B\EAUPRSAs $eauprsas
+     * @param EAUPRSAs $eauprsas
      * @param \Application\Entity\MilCategory $cat
      */
     public function addZoneMilEvents(EAUPRSAs $eauprsas, \Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, &$messages = null)

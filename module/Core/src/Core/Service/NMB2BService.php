@@ -78,45 +78,27 @@ class NMB2BService
      * @param \DateTime $date
      * @param int $sequencenumber
      * @return type
+     * @throws WSDLFileUnavailable
      */
     public function getEAUPRSA($designators, \DateTime $date, $sequencenumber)
     {
-        $client = $this->getAirspaceSoapClient();
-        
-        $now = new \DateTime('now');
-        
-        $params = array(
-            'sendTime' => $now->format('Y-m-d H:i:s'),
-            'eaupId' => array(
-                'chainDate' => $date->format('Y-m-d'),
-                'sequenceNumber' => $sequencenumber
-            )
-        );
-        
-        if ($designators !== null && strlen($designators) > 0) {
-            $params['rsaDesignators'] = $designators;
-        }
+
         try {
-            $client->retrieveEAUPRSAs($params);
+            return $this->nmb2bClient->airspaceServices()->retrieveEAUPRSAs($designators, $date, $sequencenumber);
         } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
             $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getFullErrorMessage();
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
                 error_log($text);
             }
             throw new \RuntimeException('Erreur NM B2B');
+        }catch (WSDLFileUnavailable $e) {
+            error_log($e->getMessage());
         }
-        return $client->__getLastResponse();
     }
 
     /**
@@ -126,25 +108,12 @@ class NMB2BService
      */
     public function getEAUPChain(\DateTime $date)
     {
-        $now = new \DateTime('now');
-        
-        $params = array(
-            'sendTime' => $now->format('Y-m-d H:i:s'),
-            'chainDate' => $date->format('Y-m-d')
-        );
         try {
-            return $this->nmb2bClient->airspaceServices()->retrieveEAUPChain($params);
+            return $this->nmb2bClient->airspaceServices()->retrieveEAUPChain($date);
         } catch(\SoapFault $e){
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
-            $text .= "Last Request Header\n";
-            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastResponse()."\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getFullErrorMessage();
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
@@ -153,7 +122,7 @@ class NMB2BService
             throw new \RuntimeException('Erreur NM B2B');
             return null;
         } catch (WSDLFileUnavailable $e) {
-            return null;
+            error_log($e->getMessage());
         }
     }
 
@@ -164,41 +133,13 @@ class NMB2BService
      * @return null|string
      */
     public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "LF*") {
-        $client = $this->getFlowSoapClient();
-        $now = new \DateTime('now');
-
-        if(strlen($regex) == 0) $regex = "LF*";
-
-        $params = array(
-            'sendTime' => $now->format('Y-m-d H:i:s'),
-            'queryPeriod' => array(
-                'wef' => $start->format('Y-m-d H:i'),
-                'unt' => $end->format('Y-m-d H:i')
-            ),
-            'dataset' => array(
-                'type' => 'OPERATIONAL'
-            ),
-            'tvs' => array(
-                'item' => explode(",",$regex)
-            ),
-            'requestedRegulationFields' => array(
-                'item' => array('location','reason','lastUpdate', 'applicability', 'initialConstraints', 'regulationState')
-            )
-        );
 
         try {
-            $client->queryRegulations($params);
+            return $this->nmb2bClient->flowServices()->queryRegulations($start, $end, $regex);
         } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
-            $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->nmb2bClient->flowServices()->getFullErrorMessage();
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {

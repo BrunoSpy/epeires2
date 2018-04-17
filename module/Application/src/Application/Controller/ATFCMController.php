@@ -105,7 +105,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
             try {
                 $startSeq = microtime(true);
                 echo "Récupération des régulations\n";
-                $regulations = new RegulationListReply($this->nmb2b->getRegulationsList($day, $end, $cat->getTvs()));
+                $regulations = $this->nmb2b->getRegulationsList($day, $end, $cat->getTvs());
                 $dl = microtime(true) - $startSeq;
                 $totalDL += $dl;
                 echo "Régulations récupérées en ".$dl." secondes\n";

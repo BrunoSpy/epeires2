@@ -134,7 +134,7 @@ class MilController extends AbstractEntityManagerAwareController
             try {
                 $startSeq = microtime(true);
                 echo "Téléchargement des zones ".$designator.", séquence ".$lastAUPSequenceNumber."\n";
-                $eauprsas = new EAUPRSAs($this->nmb2b->getEAUPRSA($designator.'*', $day, $lastAUPSequenceNumber));
+                $eauprsas = $this->nmb2b->getEAUPRSA($designator.'*', $day, $lastAUPSequenceNumber);
                 $dl = microtime(true) - $startSeq;
                 $totalDL += $dl;
                 echo "Téléchargement terminé en ".$dl." secondes"."\n";

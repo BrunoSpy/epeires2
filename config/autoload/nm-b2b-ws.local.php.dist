@@ -3,9 +3,10 @@ return array(
     'nm_b2b' => array(
         'cert_path' => 'path_to_certificate_file',//mandatory
         'cert_password' => 'password',//mandatory
-        'wsdl_path' => 'path to wsdl directory',//mandatory
-        'airspace_wsdl_filename' => 'filename',//mandatory
-        'flow_wsdl_filename' => 'filename', //mandatory
+        'wsdl' => array(
+            'airspaceservices' => 'path to airspace services wsdl file',//to enable AUP import
+            'flowservices' => 'path to flow services wsdl file',//to enable regulations import
+        ),
         'proxy_host' => 'http or https proxy', //optional
         'proxy_port' => 'proxy port' //optional
     ),
