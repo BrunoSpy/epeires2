@@ -18,8 +18,11 @@
 namespace Core\Service;
 
 use Doctrine\ORM\EntityManager;
+use DSNA\NMB2BDriver\Exception\WSDLFileUnavailable;
+use DSNA\NMB2BDriver\Models\EAUPChain;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use DSNA\NMB2BDriver\NMB2BClient;
 
 /**
  *
@@ -34,9 +37,7 @@ class NMB2BService
     
     private $config;
     
-    private $airspaceClient = null;
-
-    private $flowClient = null;
+    private $nmb2bClient;
 
     private $errorEmail = false;
 
@@ -45,30 +46,13 @@ class NMB2BService
         $this->entityManager = $entityManager;
         $this->config = $config;
         $this->nmb2b = $config['nm_b2b'];
-    }
 
-    private function getClient($wsdl) {
-        $client = null;
         $options = array();
-        $options['trace'] = 1;
         $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
         if(array_key_exists("timeout", $this->nmb2b)) {
             $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
             ini_set('default_socket_timeout', $socket_timeout);
         }
-        $options['exceptions'] = true;
-        $options['cache_wsdl'] = WSDL_CACHE_NONE;
-        $options['local_cert'] = ROOT_PATH . $this->nmb2b['cert_path'];
-        $options['passphrase'] = $this->nmb2b['cert_password'];
-
-        $options['stream_context'] = stream_context_create(array(
-            'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            )
-        ));
-
         if (array_key_exists('proxy_host', $this->nmb2b)) {
             $options['proxy_host'] = $this->nmb2b['proxy_host'];
         }
@@ -78,41 +62,13 @@ class NMB2BService
         if (array_key_exists('force_url', $this->nmb2b)) {
             $options['location'] = $this->nmb2b['force_url'];
         }
-        try {
-            $client = new \SoapClient($wsdl, $options);
-        } catch (\SoapFault $e) {
-            $text = "Message d'erreur : \n";
-            $text .= $e->getMessage()."\n";
-            $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest();
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
-            if($this->errorEmail) {
-                $this->sendErrorEmail($text);
-            } else {
-                error_log($text);
-            }
-        }
-        return $client;
-    }
 
-    private function getAirspaceSoapClient()
-    {
-        if($this->airspaceClient == null) {
-            return $this->getClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['airspace_wsdl_filename']);
-        }
-        return $this->airspaceClient;
-    }
-
-    private function getFlowSoapClient() {
-        if($this->flowClient == null) {
-            return $this->getClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['flow_wsdl_filename']);
-        }
-        return $this->flowClient;
+        $this->nmb2bClient = new NMB2BClient(
+            ROOT_PATH . $this->nmb2b['cert_path'],
+            $this->nmb2b['cert_password'],
+            $this->nmb2b['wsdl'],
+            $options
+        );
     }
 
     /**
@@ -165,11 +121,11 @@ class NMB2BService
 
     /**
      *
-     * @param \DateTime $date            
+     * @param \DateTime $date
+     * @return EAUPChain
      */
     public function getEAUPChain(\DateTime $date)
     {
-        $client = $this->getAirspaceSoapClient();
         $now = new \DateTime('now');
         
         $params = array(
@@ -177,18 +133,18 @@ class NMB2BService
             'chainDate' => $date->format('Y-m-d')
         );
         try {
-            $client->retrieveEAUPChain($params);
+            return $this->nmb2bClient->airspaceServices()->retrieveEAUPChain($params);
         } catch(\SoapFault $e){
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
             $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastRequestHeaders()."\n\n";
             $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastRequest()."\n\n";
             $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastResponseHeaders()."\n\n";
             $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->nmb2bClient->airspaceServices()->getSoapClient()->__getLastResponse()."\n";
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
@@ -196,8 +152,9 @@ class NMB2BService
             }
             throw new \RuntimeException('Erreur NM B2B');
             return null;
+        } catch (WSDLFileUnavailable $e) {
+            return null;
         }
-        return $client->__getLastResponse();
     }
 
     /**

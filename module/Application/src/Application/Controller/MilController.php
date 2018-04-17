@@ -98,7 +98,7 @@ class MilController extends AbstractEntityManagerAwareController
         try {
             $startSeq = microtime(true);
             echo "Récupération du nombre de séquences\n";
-            $eaupchain = new EAUPChain($this->nmb2b->getEAUPCHain($day));
+            $eaupchain = $this->nmb2b->getEAUPCHain($day);
             $dl = microtime(true) - $startSeq;
             $totalDL += $dl;
             echo "Séquences récupérées en ".$dl." secondes\n";

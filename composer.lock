@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5320de437dcf7b551d7c1321a9d0d19",
+    "content-hash": "9d336717261a6567e19483a04082d8ce",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -536,16 +536,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.6.3",
+            "version": "v2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "e3eed9b1facbb0ced3a0995244843a189e7d1b13"
+                "reference": "11037b4352c008373561dc6fc836834eed80c3b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/e3eed9b1facbb0ced3a0995244843a189e7d1b13",
-                "reference": "e3eed9b1facbb0ced3a0995244843a189e7d1b13",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/11037b4352c008373561dc6fc836834eed80c3b5",
+                "reference": "11037b4352c008373561dc6fc836834eed80c3b5",
                 "shasum": ""
             },
             "require": {
@@ -554,9 +554,11 @@
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.4.6",
+                "doctrine/coding-standard": "^4.0",
+                "phpunit/phpunit": "^7.0",
                 "phpunit/phpunit-mock-objects": "!=3.2.4,!=3.2.5",
-                "symfony/console": "2.*||^3.0"
+                "symfony/console": "^2.0.5||^3.0",
+                "symfony/phpunit-bridge": "^3.4.5|^4.0.5"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -567,7 +569,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6.x-dev"
+                    "dev-master": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -605,7 +607,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2017-11-19T13:38:54+00:00"
+            "time": "2018-04-07T18:44:18+00:00"
         },
         {
             "name": "doctrine/doctrine-module",
@@ -701,16 +703,16 @@
         },
         {
             "name": "doctrine/doctrine-orm-module",
-            "version": "1.1.6",
+            "version": "1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineORMModule.git",
-                "reference": "c8a865aff5c68c439a834a6f8b88f03433ab5657"
+                "reference": "d0ff7aaa1c4eabf4bab2a6ae73317c34330467c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineORMModule/zipball/c8a865aff5c68c439a834a6f8b88f03433ab5657",
-                "reference": "c8a865aff5c68c439a834a6f8b88f03433ab5657",
+                "url": "https://api.github.com/repos/doctrine/DoctrineORMModule/zipball/d0ff7aaa1c4eabf4bab2a6ae73317c34330467c3",
+                "reference": "d0ff7aaa1c4eabf4bab2a6ae73317c34330467c3",
                 "shasum": ""
             },
             "require": {
@@ -785,7 +787,7 @@
                 "orm",
                 "zf"
             ],
-            "time": "2018-03-26T19:47:07+00:00"
+            "time": "2018-04-15T22:58:02+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -1158,6 +1160,43 @@
                 "source": "https://github.com/BrunoSpy/dompdf/tree/v0.6.3"
             },
             "time": "2017-11-27T09:05:59+00:00"
+        },
+        {
+            "name": "dsna/nmb2b-phpclient",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DGACfr/nmb2b-phpclient.git",
+                "reference": "e1a79b4c78e2e1f7e2c604d4f3c151fca7f29f30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DGACfr/nmb2b-phpclient/zipball/e1a79b4c78e2e1f7e2c604d4f3c151fca7f29f30",
+                "reference": "e1a79b4c78e2e1f7e2c604d4f3c151fca7f29f30",
+                "shasum": ""
+            },
+            "require": {
+                "ext-soap": "*",
+                "php": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "DSNA\\NMB2BDriver\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Spyckerelle",
+                    "email": "bruno@spyckerelle.fr"
+                }
+            ],
+            "description": "PHP Client for NM B2B Web services",
+            "time": "2018-04-15T16:03:59+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -1696,16 +1735,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "0.17.3",
+            "version": "0.17.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "fae7d27d6667365b0f497418014916d9918827ab"
+                "reference": "82d7ab62d7f68391cb9d323f3ccce50be24a5369"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/fae7d27d6667365b0f497418014916d9918827ab",
-                "reference": "fae7d27d6667365b0f497418014916d9918827ab",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/82d7ab62d7f68391cb9d323f3ccce50be24a5369",
+                "reference": "82d7ab62d7f68391cb9d323f3ccce50be24a5369",
                 "shasum": ""
             },
             "require": {
@@ -1761,7 +1800,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-03-26T20:05:02+00:00"
+            "time": "2018-03-29T14:35:19+00:00"
         },
         {
             "name": "maglnet/magl-markdown",
@@ -2264,16 +2303,16 @@
         },
         {
             "name": "rlanvin/php-rrule",
-            "version": "v1.6.0",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rlanvin/php-rrule.git",
-                "reference": "c543bda87d2f8b6c490210f1a6e2bf0d79162a4a"
+                "reference": "44b820dd1b72d497c0ed1e1e2cd8b14700b7780b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/c543bda87d2f8b6c490210f1a6e2bf0d79162a4a",
-                "reference": "c543bda87d2f8b6c490210f1a6e2bf0d79162a4a",
+                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/44b820dd1b72d497c0ed1e1e2cd8b14700b7780b",
+                "reference": "44b820dd1b72d497c0ed1e1e2cd8b14700b7780b",
                 "shasum": ""
             },
             "require": {
@@ -2304,7 +2343,7 @@
                 "recurring",
                 "rrule"
             ],
-            "time": "2017-10-11T12:23:40+00:00"
+            "time": "2018-04-13T09:24:21+00:00"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -2666,32 +2705,32 @@
         },
         {
             "name": "zendframework/zend-authentication",
-            "version": "2.5.3",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-authentication.git",
-                "reference": "1422dec160eb769c719cad2229847fcbf20a1405"
+                "reference": "ebc9464c11a5203e5256439f1079a7d6efe89eec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-authentication/zipball/1422dec160eb769c719cad2229847fcbf20a1405",
-                "reference": "1422dec160eb769c719cad2229847fcbf20a1405",
+                "url": "https://api.github.com/repos/zendframework/zend-authentication/zipball/ebc9464c11a5203e5256439f1079a7d6efe89eec",
+                "reference": "ebc9464c11a5203e5256439f1079a7d6efe89eec",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.1"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
-                "zendframework/zend-crypt": "^2.6",
-                "zendframework/zend-db": "^2.7",
-                "zendframework/zend-http": "^2.5.4",
-                "zendframework/zend-ldap": "^2.6",
-                "zendframework/zend-session": "^2.6.2",
-                "zendframework/zend-uri": "^2.5",
-                "zendframework/zend-validator": "^2.6"
+                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-crypt": "^2.6 || ^3.2.1",
+                "zendframework/zend-db": "^2.8.2",
+                "zendframework/zend-http": "^2.7",
+                "zendframework/zend-ldap": "^2.8",
+                "zendframework/zend-session": "^2.8",
+                "zendframework/zend-uri": "^2.5.2",
+                "zendframework/zend-validator": "^2.10.1"
             },
             "suggest": {
                 "zendframework/zend-crypt": "Zend\\Crypt component",
@@ -2705,8 +2744,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.6.x-dev",
+                    "dev-develop": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -2719,12 +2758,12 @@
                 "BSD-3-Clause"
             ],
             "description": "provides an API for authentication and includes concrete authentication adapters for common use case scenarios",
-            "homepage": "https://github.com/zendframework/zend-authentication",
             "keywords": [
                 "Authentication",
-                "zf2"
+                "ZendFramework",
+                "zf"
             ],
-            "time": "2016-02-28T15:02:34+00:00"
+            "time": "2018-04-12T21:09:22+00:00"
         },
         {
             "name": "zendframework/zend-cache",
@@ -3266,29 +3305,32 @@
         },
         {
             "name": "zendframework/zend-filter",
-            "version": "2.7.2",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "b8d0ff872f126631bf63a932e33aa2d22d467175"
+                "reference": "7b997dbe79459f1652deccc8786d7407fb66caa9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/b8d0ff872f126631bf63a932e33aa2d22d467175",
-                "reference": "b8d0ff872f126631bf63a932e33aa2d22d467175",
+                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/7b997dbe79459f1652deccc8786d7407fb66caa9",
+                "reference": "7b997dbe79459f1652deccc8786d7407fb66caa9",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.1"
+            },
+            "conflict": {
+                "zendframework/zend-validator": "<2.10.1"
             },
             "require-dev": {
-                "pear/archive_tar": "^1.4",
-                "phpunit/phpunit": "^6.0.10 || ^5.7.17",
+                "pear/archive_tar": "^1.4.3",
+                "phpunit/phpunit": "^5.7.23 || ^6.4.3",
                 "zendframework/zend-coding-standard": "~1.0.0",
-                "zendframework/zend-crypt": "^2.6 || ^3.0",
-                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
-                "zendframework/zend-uri": "^2.5"
+                "zendframework/zend-crypt": "^3.2.1",
+                "zendframework/zend-servicemanager": "^2.7.8 || ^3.3",
+                "zendframework/zend-uri": "^2.6"
             },
             "suggest": {
                 "zendframework/zend-crypt": "Zend\\Crypt component, for encryption filters",
@@ -3299,8 +3341,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev",
-                    "dev-develop": "2.8-dev"
+                    "dev-master": "2.8.x-dev",
+                    "dev-develop": "2.9.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Filter",
@@ -3317,12 +3359,12 @@
                 "BSD-3-Clause"
             ],
             "description": "provides a set of commonly needed data filters",
-            "homepage": "https://github.com/zendframework/zend-filter",
             "keywords": [
+                "ZendFramework",
                 "filter",
-                "zf2"
+                "zf"
             ],
-            "time": "2017-05-17T20:56:17+00:00"
+            "time": "2018-04-11T16:20:04+00:00"
         },
         {
             "name": "zendframework/zend-form",
@@ -4663,32 +4705,32 @@
         },
         {
             "name": "zendframework/zend-uri",
-            "version": "2.5.2",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-uri.git",
-                "reference": "0bf717a239432b1a1675ae314f7c4acd742749ed"
+                "reference": "fb998b9487ea8c5f4aaac0e536190709bdd5353b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/0bf717a239432b1a1675ae314f7c4acd742749ed",
-                "reference": "0bf717a239432b1a1675ae314f7c4acd742749ed",
+                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/fb998b9487ea8c5f4aaac0e536190709bdd5353b",
+                "reference": "fb998b9487ea8c5f4aaac0e536190709bdd5353b",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
+                "php": "^5.6 || ^7.0",
                 "zendframework/zend-escaper": "^2.5",
                 "zendframework/zend-validator": "^2.5"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "^6.2.1 || ^5.7.15",
+                "zendframework/zend-coding-standard": "~1.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev",
-                    "dev-develop": "2.6-dev"
+                    "dev-master": "2.6.x-dev",
+                    "dev-develop": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -4706,7 +4748,7 @@
                 "uri",
                 "zf2"
             ],
-            "time": "2016-02-17T22:38:51+00:00"
+            "time": "2018-04-10T17:08:10+00:00"
         },
         {
             "name": "zendframework/zend-validator",
@@ -8496,6 +8538,7 @@
         "murganikolay/doctrine-migrations-module": 20,
         "kipperlenny/opentbs-bundle": 20,
         "brunospy/mattermostmodule": 20,
+        "dsna/nmb2b-phpclient": 20,
         "hounddog/doctrine-data-fixture-module": 20
     },
     "prefer-stable": false,
