@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/MattermostModule.git",
-                "reference": "8769c3f69e75b4cbf6ff3d22fa65dbe2c8d4992c"
+                "reference": "b7717a95e3d57bae9e529890b596231bd09c0bd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/8769c3f69e75b4cbf6ff3d22fa65dbe2c8d4992c",
-                "reference": "8769c3f69e75b4cbf6ff3d22fa65dbe2c8d4992c",
+                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/b7717a95e3d57bae9e529890b596231bd09c0bd9",
+                "reference": "b7717a95e3d57bae9e529890b596231bd09c0bd9",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +94,7 @@
                 "chat",
                 "zf2"
             ],
-            "time": "2018-03-24T10:06:42+00:00"
+            "time": "2018-05-03T13:00:53+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
@@ -4137,21 +4137,22 @@
         },
         {
             "name": "zendframework/zend-mvc",
-            "version": "2.7.14",
+            "version": "2.7.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-mvc.git",
-                "reference": "7077532c5a970a7a65d0463901fbdeb473547a8d"
+                "reference": "a8d45689d37a9e4ff4b75ea0b7478fa3d4f9c089"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-mvc/zipball/7077532c5a970a7a65d0463901fbdeb473547a8d",
-                "reference": "7077532c5a970a7a65d0463901fbdeb473547a8d",
+                "url": "https://api.github.com/repos/zendframework/zend-mvc/zipball/a8d45689d37a9e4ff4b75ea0b7478fa3d4f9c089",
+                "reference": "a8d45689d37a9e4ff4b75ea0b7478fa3d4f9c089",
                 "shasum": ""
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
                 "php": "^5.5 || ^7.0",
+                "zendframework/zend-console": "^2.7",
                 "zendframework/zend-eventmanager": "^2.6.4 || ^3.0",
                 "zendframework/zend-form": "^2.11",
                 "zendframework/zend-hydrator": "^1.1 || ^2.4",
@@ -4169,7 +4170,6 @@
                 "sebastian/version": "^1.0.4",
                 "zendframework/zend-authentication": "^2.6",
                 "zendframework/zend-cache": "^2.8",
-                "zendframework/zend-console": "^2.7",
                 "zendframework/zend-di": "^2.6",
                 "zendframework/zend-filter": "^2.8",
                 "zendframework/zend-http": "^2.8",
@@ -4188,7 +4188,6 @@
             "suggest": {
                 "zendframework/zend-authentication": "Zend\\Authentication component for Identity plugin",
                 "zendframework/zend-config": "Zend\\Config component",
-                "zendframework/zend-console": "Zend\\Console component",
                 "zendframework/zend-di": "Zend\\Di component",
                 "zendframework/zend-filter": "Zend\\Filter component",
                 "zendframework/zend-http": "Zend\\Http component",
@@ -4229,7 +4228,7 @@
                 "mvc",
                 "zf2"
             ],
-            "time": "2018-05-02T22:30:37+00:00"
+            "time": "2018-05-03T13:13:41+00:00"
         },
         {
             "name": "zendframework/zend-paginator",
