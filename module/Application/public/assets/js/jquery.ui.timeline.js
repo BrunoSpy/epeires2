@@ -2424,6 +2424,7 @@
                     $(".chat-container").mattermost("sendMessage", message, function (data) {
                         var mattermostId = data.id;
                         $.getJSON(self.options.controllerUrl + '/linkEventToPost?id=' + id + '&postid=' + mattermostId);
+                        self.events[self.eventsPosition[id]].mattermostid = mattermostId;
                     });
                 } else {
                     //modify post
