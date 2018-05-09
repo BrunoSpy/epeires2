@@ -1,7 +1,7 @@
 <p></p>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-sm-4">
+		<div class="col-sm-offset-1 col-sm-10">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title">Statuts</h4>
@@ -34,40 +34,8 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="col-sm-4">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title">Impacts</h4>
-				</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Id</th>
-								<th>Nom</th>
-								<th>Valeur</th>
-								<th>Style</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php 
-							foreach ($this->impacts as $impact){
-								echo '<tr>';
-									echo '<td>'.$impact->getId().'</td>';
-									echo '<td>'.$impact->getName().'</td>';
-									echo '<td>'.$impact->getValue().'</td>';
-									echo '<td><span class="label label-'.$impact->getStyle().'">'.$impact->getName().'</span></td>';
-								echo '</tr>';
-							}							
-							?>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
 		
-		<div class="col-sm-4">
+		<div class="col-sm-offset-1 col-sm-10">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title">Champs types disponibles</h4>
@@ -96,6 +64,34 @@
 				</div>
 			</div>
 		</div>
-		
+
+        <div class="col-sm-offset-1 col-sm-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Paramètres divers</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Valeur</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($this->params as $key => $value){
+                            echo '<tr>';
+                            echo '<td>'.$key.'</td>';
+                            echo '<td>'.$value.'</td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
 	</div>
 </div>
