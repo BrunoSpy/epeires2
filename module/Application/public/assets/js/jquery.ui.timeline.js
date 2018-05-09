@@ -492,7 +492,7 @@
                     }
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
                     if(event.modifiable && !event.readonly) {
-                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler évènement</a></p>';
 
                     }
                 }
@@ -2135,6 +2135,7 @@
             event.hourEndForced = false;
             switch (event.status_id) {
                 case 1: //nouveau
+                    elmt.removeClass('terminated');
                     //label en italique
                     elmt_txt.css({'font-style': 'italic'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2214,6 +2215,7 @@
                     }
                     break;
                 case 2: //confirmé
+                    elmt.removeClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2264,6 +2266,7 @@
                     rect.removeClass('stripes');
                     break;
                 case 3: //terminé
+                    elmt.addClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2288,6 +2291,7 @@
                     rect.removeClass('stripes');
                     break;
                 case 4: //annulé
+                    elmt.removeClass('terminated');
                     //label barré
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
@@ -2315,6 +2319,7 @@
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
+                    elmt.removeClass('terminated');
                     //label barré
                     elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
