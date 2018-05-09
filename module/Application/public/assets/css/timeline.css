@@ -130,7 +130,7 @@
 .elmt.star.notpunctual .rect_elmt {
 	border-style: solid;
 	border-color: black;
-	box-shadow: 0px 2px 2px 0px;
+	box-shadow: 1px 2px 2px 1px;
 }
 
 .elmt.star.notpunctual .rect_shadow {
@@ -140,7 +140,8 @@
 } 
 
 .elmt.star.notpunctual .label_elmt {
-	text-shadow: #666 2px 2px 2px;
+	text-shadow: 2px 2px 5px;
+	font-variant: small-caps;
 }
 
 .elmt .elmt_deb, .elmt .elmt_fin, .elmt .but_deb, .elmt .but_fin {
