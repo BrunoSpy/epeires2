@@ -1715,7 +1715,9 @@ class EventsController extends TabsController
         $cats = $this->params()->fromQuery('cats', null);
 
         $default = $this->params()->fromQuery('default', null);
-        
+
+        $extendedFormat = $this->params()->fromQuery('ext', false);
+
         $json = array();
         
         $objectManager = $this->getEntityManager();
@@ -1730,7 +1732,7 @@ class EventsController extends TabsController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->getEventJson($event);
+            $json[$event->getId()] = $this->getEventJson($event, $extendedFormat);
         }
         
         if (count($json) === 0) {
@@ -1820,7 +1822,13 @@ class EventsController extends TabsController
         return new JsonModel($events);
     }
 
-    private function getEventJson(Event $event)
+    /**
+     * @param Event $event
+     * @param bool $extendedFormat if true, add initial value for start and end days
+     * @return array
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function getEventJson(Event $event, $extendedFormat = false)
     {
         $objectManager = $this->getEntityManager();
         $logsRepo = $objectManager->getRepository("Application\Entity\Log");
@@ -1899,6 +1907,18 @@ class EventsController extends TabsController
                     }
                     $i++;
                 }
+            }
+        }
+
+        if($extendedFormat) {
+            $eventLogEntries = $logsRepo->getLogEntries($event);
+            $createLog = array_reverse($eventLogEntries)[0];
+            $json['startdate_ini'] = $createLog->getData()['startdate']->format(DATE_RFC2822);
+            $enddateIni = $createLog->getData()['enddate'];
+            if($enddateIni !== null) {
+                $json['enddate_ini'] = $enddateIni->format(DATE_RFC2822);
+            } else {
+                $json['enddate_ini'] = null;
             }
         }
 
