@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bcde955d39482fc8bc01fbda0b744ab",
+    "content-hash": "cb9516d702b408e09ea16c55bd2d9c25",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -49,52 +49,6 @@
                 "transliterator"
             ],
             "time": "2017-04-04T11:38:05+00:00"
-        },
-        {
-            "name": "brunospy/mattermostmodule",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BrunoSpy/MattermostModule.git",
-                "reference": "b7717a95e3d57bae9e529890b596231bd09c0bd9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/MattermostModule/zipball/b7717a95e3d57bae9e529890b596231bd09c0bd9",
-                "reference": "b7717a95e3d57bae9e529890b596231bd09c0bd9",
-                "shasum": ""
-            },
-            "require": {
-                "gnello/php-mattermost-driver": "^2.4",
-                "maglnet/magl-markdown": "~1.1",
-                "zendframework/zend-mvc": "^2.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "MattermostMessenger\\": "src/MattermostMessenger/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Bruno Spyckerelle",
-                    "email": "bruno@spyckerelle.fr"
-                }
-            ],
-            "description": "Module to use Mattermost in a Zend Framework and Bootstrap application",
-            "homepage": "https://github.com/BrunoSpy/MattermostModule",
-            "keywords": [
-                "Mattermost",
-                "Zend Framework",
-                "bootstrap",
-                "chat",
-                "zf2"
-            ],
-            "time": "2018-05-03T13:00:53+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
@@ -184,6 +138,52 @@
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
             "time": "2017-02-14T19:40:03+00:00"
+        },
+        {
+            "name": "dgac/mattermostmodule",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DGAC/MattermostModule.git",
+                "reference": "02da5791d70715d2478d816c28fc034707c9d341"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/02da5791d70715d2478d816c28fc034707c9d341",
+                "reference": "02da5791d70715d2478d816c28fc034707c9d341",
+                "shasum": ""
+            },
+            "require": {
+                "gnello/php-mattermost-driver": "^2.4",
+                "maglnet/magl-markdown": "~1.1",
+                "zendframework/zend-mvc": "^2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MattermostMessenger\\": "src/MattermostMessenger/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Spyckerelle",
+                    "email": "bruno.spyckerelle@aviation-civile.gouv.fr"
+                }
+            ],
+            "description": "Module to use Mattermost in a Zend Framework and Bootstrap application",
+            "homepage": "https://github.com/DGAC/MattermostModule",
+            "keywords": [
+                "Mattermost",
+                "Zend Framework",
+                "bootstrap",
+                "chat",
+                "zf2"
+            ],
+            "time": "2018-05-16T07:38:18+00:00"
         },
         {
             "name": "dino/dompdf-module",
@@ -3739,16 +3739,16 @@
         },
         {
             "name": "zendframework/zend-inputfilter",
-            "version": "2.8.1",
+            "version": "2.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-inputfilter.git",
-                "reference": "55d1430db559e9781b147e73c2c0ce6635d8efe2"
+                "reference": "3f02179e014d9ef0faccda2ad6c65d38adc338d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-inputfilter/zipball/55d1430db559e9781b147e73c2c0ce6635d8efe2",
-                "reference": "55d1430db559e9781b147e73c2c0ce6635d8efe2",
+                "url": "https://api.github.com/repos/zendframework/zend-inputfilter/zipball/3f02179e014d9ef0faccda2ad6c65d38adc338d8",
+                "reference": "3f02179e014d9ef0faccda2ad6c65d38adc338d8",
                 "shasum": ""
             },
             "require": {
@@ -3788,7 +3788,7 @@
                 "inputfilter",
                 "zf"
             ],
-            "time": "2018-01-22T19:41:18+00:00"
+            "time": "2018-05-14T17:38:03+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -4075,16 +4075,16 @@
         },
         {
             "name": "zendframework/zend-mime",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-mime.git",
-                "reference": "5db38e92f8a6c7c5e25c8afce6e2d0bd49340c5f"
+                "reference": "52ae5fa9f12845cae749271034a2d594f0e4c6f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-mime/zipball/5db38e92f8a6c7c5e25c8afce6e2d0bd49340c5f",
-                "reference": "5db38e92f8a6c7c5e25c8afce6e2d0bd49340c5f",
+                "url": "https://api.github.com/repos/zendframework/zend-mime/zipball/52ae5fa9f12845cae749271034a2d594f0e4c6f2",
+                "reference": "52ae5fa9f12845cae749271034a2d594f0e4c6f2",
                 "shasum": ""
             },
             "require": {
@@ -4122,7 +4122,7 @@
                 "mime",
                 "zf"
             ],
-            "time": "2017-11-28T15:02:22+00:00"
+            "time": "2018-05-14T19:02:50+00:00"
         },
         {
             "name": "zendframework/zend-modulemanager",
@@ -4541,16 +4541,16 @@
         },
         {
             "name": "zendframework/zend-serializer",
-            "version": "2.8.1",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-serializer.git",
-                "reference": "7ac42b9a47e9cb23895173a3096bc3b3fb7ac580"
+                "reference": "0172690db48d8935edaf625c4cba38b79719892c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-serializer/zipball/7ac42b9a47e9cb23895173a3096bc3b3fb7ac580",
-                "reference": "7ac42b9a47e9cb23895173a3096bc3b3fb7ac580",
+                "url": "https://api.github.com/repos/zendframework/zend-serializer/zipball/0172690db48d8935edaf625c4cba38b79719892c",
+                "reference": "0172690db48d8935edaf625c4cba38b79719892c",
                 "shasum": ""
             },
             "require": {
@@ -4559,10 +4559,9 @@
                 "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
             "require-dev": {
-                "doctrine/instantiator": "1.0.*",
-                "phpunit/phpunit": "^5.5",
+                "phpunit/phpunit": "^5.7.25 || ^6.4.4",
                 "zendframework/zend-coding-standard": "~1.0.0",
-                "zendframework/zend-math": "^2.6",
+                "zendframework/zend-math": "^2.6 || ^3.0",
                 "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3"
             },
             "suggest": {
@@ -4572,8 +4571,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev",
-                    "dev-develop": "2.9-dev"
+                    "dev-master": "2.9.x-dev",
+                    "dev-develop": "2.10.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Serializer",
@@ -4590,12 +4589,12 @@
                 "BSD-3-Clause"
             ],
             "description": "provides an adapter based interface to simply generate storable representation of PHP types by different facilities, and recover",
-            "homepage": "https://github.com/zendframework/zend-serializer",
             "keywords": [
+                "ZendFramework",
                 "serializer",
-                "zf2"
+                "zf"
             ],
-            "time": "2017-11-20T22:21:04+00:00"
+            "time": "2018-05-14T18:45:18+00:00"
         },
         {
             "name": "zendframework/zend-servicemanager",
@@ -8651,7 +8650,7 @@
         "zf-commons/zfc-user-doctrine-orm": 20,
         "murganikolay/doctrine-migrations-module": 20,
         "kipperlenny/opentbs-bundle": 20,
-        "brunospy/mattermostmodule": 20,
+        "dgac/mattermostmodule": 20,
         "hounddog/doctrine-data-fixture-module": 20
     },
     "prefer-stable": false,
