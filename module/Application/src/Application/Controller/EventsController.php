@@ -1922,6 +1922,8 @@ class EventsController extends TabsController
             'dd LLL, HH:mm'
         );
         foreach ($event->getUpdates() as $update) {
+            if($update->isHidden())
+                continue;
             $key = $formatter->format($update->getCreatedOn());
             $tempkey = $formatter->format($update->getCreatedOn());
             $i = 0;

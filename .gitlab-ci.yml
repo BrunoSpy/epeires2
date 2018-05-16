@@ -69,7 +69,7 @@ test:7.1-mariadb:
   image: php:7.1-apache
   stage: test
   services:
-  - mariadb:latest
+  - mariadb:10.2
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -83,7 +83,7 @@ test:7.1-mysql:
   image: php:7.1-apache
   stage: test
   services:
-  - mysql:latest
+  - mysql:5.7
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -96,9 +96,8 @@ test:7.1-mysql:
 test:7.2-mariadb:
   image: php:7.2-apache
   stage: test
-  allow_failure: true
   services:
-  - mariadb:latest
+  - mariadb:10.2
   variables:
     MCRYPT: ""
     XDEBUG: "xdebug"
@@ -109,10 +108,10 @@ test:7.2-mariadb:
   - php vendor/bin/security-checker security:check composer.lock
 
 test:docker:
-  image: php:7.1.14-apache-jessie
+  image: php:7.1.17-apache-jessie
   stage: test
   services:
-  - mariadb:10.2.13
+  - mariadb:10.2.14
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"

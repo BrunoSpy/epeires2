@@ -25,7 +25,9 @@ class ConfigControllerFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new ConfigController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new ConfigController(
+            $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
+            $serviceLocator->getServiceLocator()->get('config'));
     }
 
 }

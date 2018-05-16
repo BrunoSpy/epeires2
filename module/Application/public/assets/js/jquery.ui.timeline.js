@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.3.0",
+        version: "1.3.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -492,7 +492,7 @@
                     }
                     txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
                     if(event.modifiable && !event.readonly) {
-                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler évènement</a></p>';
 
                     }
                 }
@@ -537,6 +537,8 @@
                         displayMessages(data.messages);
                         if(data['event']){
                             self._highlightEvent(id, true);
+                            self.sortEvents();
+                            self.forceUpdateView(false);
                         }
                     }
                 );
@@ -552,6 +554,8 @@
                         displayMessages(data.messages);
                         if(data['event']){
                             self._highlightEvent(id, false);
+                            self.sortEvents();
+                            self.forceUpdateView(false);
                         }
                     }
                 );
@@ -782,7 +786,7 @@
             //comparateur par défaut 
             if (comparator === "default" || (comparator === undefined && this.lastEventComparator === undefined)) {
                 if (this.options.showCategories === true) {
-                    //catégorie racine, puis catégorie, puis nom, puis date de début
+                    //catégorie racine, puis catégorie, puis importants, puis nom, puis date de début
                     this.events.sort(function (a, b) {
                         if(self.options.showOnlyRootCategories) {
                             var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
@@ -790,6 +794,12 @@
                             if (aPosition < bPosition) {
                                 return -1;
                             } else if (aPosition > bPosition) {
+                                return 1;
+                            }
+                            //sort important events before sub-cat
+                            if(a.star && ! b.star) {
+                                return -1;
+                            } else if(! a.star && b.star) {
                                 return 1;
                             }
                             if (a.category_place < b.category_place) {
@@ -805,6 +815,11 @@
                             } else if (aPosition > bPosition) {
                                 return 1;
                             }
+                        }
+                        if(a.star && ! b.star) {
+                            return -1;
+                        } else if(! a.star && b.star) {
+                            return 1;
                         }
                         if (a.name < b.name) {
                             return -1;
@@ -2120,6 +2135,7 @@
             event.hourEndForced = false;
             switch (event.status_id) {
                 case 1: //nouveau
+                    elmt.removeClass('terminated');
                     //label en italique
                     elmt_txt.css({'font-style': 'italic'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2199,6 +2215,7 @@
                     }
                     break;
                 case 2: //confirmé
+                    elmt.removeClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2249,6 +2266,7 @@
                     rect.removeClass('stripes');
                     break;
                 case 3: //terminé
+                    elmt.addClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2273,6 +2291,7 @@
                     rect.removeClass('stripes');
                     break;
                 case 4: //annulé
+                    elmt.removeClass('terminated');
                     //label barré
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
@@ -2300,6 +2319,7 @@
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
+                    elmt.removeClass('terminated');
                     //label barré
                     elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
@@ -2409,6 +2429,7 @@
                     $(".chat-container").mattermost("sendMessage", message, function (data) {
                         var mattermostId = data.id;
                         $.getJSON(self.options.controllerUrl + '/linkEventToPost?id=' + id + '&postid=' + mattermostId);
+                        self.events[self.eventsPosition[id]].mattermostid = mattermostId;
                     });
                 } else {
                     //modify post

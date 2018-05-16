@@ -18,6 +18,7 @@
 namespace Administration\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
+use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -28,20 +29,51 @@ use Zend\View\Model\ViewModel;
 class ConfigController extends AbstractEntityManagerAwareController
 {
 
+    private $config;
+
+    public function __construct(EntityManager $entityManager, $config)
+    {
+        parent::__construct($entityManager);
+        $this->config = $config;
+    }
+
     public function indexAction()
     {
         $viewmodel = new ViewModel();
         $this->layout()->title = "Paramètres";
         
         $objectManager = $this->getEntityManager();
-        
+
+        $params = array();
+
+        if(array_key_exists('frequency_tab_colors', $this->config)) {
+            $colors = $this->config['frequency_tab_colors'];
+            if(array('warning', $colors)) {
+                $params['Onglet Radio - Couleur Warning'] = $colors['warning'];
+            }
+            if(array('ok', $colors)) {
+                $params['Onglet Radio - Couleur OK'] = $colors['ok'];
+            }
+        }
+
+        if(array_key_exists('frequency_test_menu', $this->config)) {
+            if($this->config('frequency_test_menu')) {
+                $params['Onglet Radio - Menu test fréquences'] = "Actif";
+            } else {
+                $params['Onglet Radio - Menu test fréquences'] = "Inactif";
+            }
+        } else {
+            $params['Onglet Radio - Menu test fréquences'] = "Inactif";
+        }
+
         $viewmodel->setVariables(array(
             'status' => $objectManager->getRepository('Application\Entity\Status')
                 ->findAll(),
             'impacts' => $objectManager->getRepository('Application\Entity\Impact')
                 ->findAll(),
             'fields' => $objectManager->getRepository('Application\Entity\CustomFieldType')
-                ->findAll()
+                ->findAll(),
+            'params' => $params
         ));
         
         return $viewmodel;
