@@ -29,7 +29,7 @@ before_script:
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 - docker-php-ext-install -j$(nproc) gd
 #install xdebug for codeception
-- pecl install $XDEBUG
+- pecl install xdebug
 - docker-php-ext-enable xdebug
 #configure date.timezone
 - echo "date.timezone=Europe/Paris" > /usr/local/etc/php/conf.d/date_timezone.ini
@@ -72,7 +72,6 @@ test:7.1-mariadb:
   - mariadb:10.2
   variables:
     MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
@@ -86,7 +85,6 @@ test:7.1-mysql:
   - mysql:5.7
   variables:
     MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
   - php vendor/bin/codecept run acceptance
@@ -96,11 +94,11 @@ test:7.1-mysql:
 test:7.2-mariadb:
   image: php:7.2-apache
   stage: test
+  allow_failure: true
   services:
   - mariadb:10.2
   variables:
     MCRYPT: ""
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
@@ -114,7 +112,6 @@ test:docker:
   - mariadb:10.2.14
   variables:
     MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
