@@ -18,8 +18,6 @@
 namespace Application\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
-use Core\NMB2B\EAUPChain;
-use Core\NMB2B\EAUPRSAs;
 use Core\Service\NMB2BService;
 use Doctrine\ORM\EntityManager;
 use Zend\Console\Request as ConsoleRequest;

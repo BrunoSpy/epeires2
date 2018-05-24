@@ -32,7 +32,7 @@ use Application\Entity\Antenna;
 use Core\Entity\User;
 
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
-use DSNA\NMB2BDriver\Models\RegulationListReply;
+use DSNA\NMB2BDriver\Models\Regulation;
 use Zend\Session\Container;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
@@ -1353,12 +1353,12 @@ class EventRepository extends ExtendedRepository
         $addedEvents = 0;
         $zones = array();
         foreach ($eauprsas->getAirspacesWithDesignator($cat->getFilter()) as $airspace) {
-            $designator = (string) EAUPRSAs::getAirspaceDesignator($airspace);
+            $designator = $airspace->getDesignator();
             if (preg_match($cat->getZonesRegex(), $designator)) {
-                $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace);
-                $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
-                $lowerlevel = (string) EAUPRSAs::getAirspaceLowerLimit($airspace);
-                $upperlevel = (string) EAUPRSAs::getAirspaceUpperLimit($airspace);
+                $timeBegin = $airspace->getDateTimeBegin();
+                $timeEnd = $airspace->getDateTimeEnd();
+                $lowerlevel = $airspace->getLowerLimit();
+                $upperlevel = $airspace->getUpperLimit();
 
                 $zone = array($designator, $timeBegin, $timeEnd, $lowerlevel, $upperlevel);
                 $zones[] = $zone;
@@ -1752,7 +1752,7 @@ class EventRepository extends ExtendedRepository
      * @param $user
      * @param \DateTime $day
      */
-    public function addRegulation($regulation, \Application\Entity\ATFCMCategory $category, $organisation, $user, $day, &$messages = null) {
+    public function addRegulation(Regulation $regulation, \Application\Entity\ATFCMCategory $category, $organisation, $user, $day, &$messages = null) {
         //first find if a regulation already exists
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -1764,7 +1764,7 @@ class EventRepository extends ExtendedRepository
         $daystart = $daystart->format("Y-m-d H:i:s");
         $dayend = $dayend->format("Y-m-d H:i:s");
 
-        $internalid = RegulationListReply::getDataId($regulation);
+        $internalid = $regulation->getDataId();
 
         $qb->select(array(
             'e',
@@ -1804,14 +1804,14 @@ class EventRepository extends ExtendedRepository
             //do create a new event
             $this->doAddRegulationEvent(
                 $category,
-                RegulationListReply::getRegulationName($regulation),
-                RegulationListReply::getDataId($regulation),
-                RegulationListReply::getDateTimeStart($regulation),
-                RegulationListReply::getDateTimeEnd($regulation),
-                RegulationListReply::getReason($regulation),
-                RegulationListReply::getDescription($regulation),
-                RegulationListReply::getNormalRate($regulation),
-                RegulationListReply::getRegulationState($regulation),
+                $regulation->getRegulationName(),
+                $regulation->getDataId(),
+                $regulation->getDateTimeStart(),
+                $regulation->getDateTimeEnd(),
+                $regulation->getReason(),
+                $regulation->getDescription(),
+                $regulation->getNormalRate(),
+                $regulation->getRegulationState(),
                 $organisation,
                 $user,
                 $messages);
@@ -1822,30 +1822,30 @@ class EventRepository extends ExtendedRepository
             } else {
                 //update parameters
                 $event = $results[0];
-                $event->setStartdate(RegulationListReply::getDateTimeStart($regulation));
-                $event->setEnddate(RegulationListReply::getDateTimeEnd($regulation));
+                $event->setStartdate($regulation->getDateTimeStart());
+                $event->setEnddate($regulation->getDateTimeEnd());
                 $reason = $event->getCustomFieldValue($category->getReasonField());
                 if(!$reason) {
                     $reason = new CustomFieldValue();
                     $reason->setEvent($event);
                     $reason->setCustomField($category->getReasonField());
                 }
-                $reason->setValue(RegulationListReply::getReason($regulation));
+                $reason->setValue($regulation->getReason());
                 $description = $event->getCustomFieldValue($category->getDescriptionField());
                 if(!$description) {
                     $description = new CustomFieldValue();
                     $description->setEvent($event);
                     $description->setCustomField($category->getDescriptionField());
                 }
-                $description->setValue(RegulationListReply::getDescription($regulation));
+                $description->setValue($regulation->getDescription());
                 $normalRate = $event->getCustomFieldValue($category->getNormalRateField());
                 if(!$normalRate){
                     $normalRate = new CustomFieldValue();
                     $normalRate->setCustomField($category->getNormalRateField());
                     $normalRate->setEvent($event);
                 }
-                $normalRate->setValue(RegulationListReply::getNormalRate($regulation));
-                $newRegulationState = RegulationListReply::getRegulationState($regulation);
+                $normalRate->setValue($regulation->getNormalRate());
+                $newRegulationState = $regulation->getRegulationState();
                 $regulationState = $event->getCustomFieldValue($category->getRegulationStateField());
                 if(!$regulationState) {
                     $regulationState = new CustomFieldValue();
