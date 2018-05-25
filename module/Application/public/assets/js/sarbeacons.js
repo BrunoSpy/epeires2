@@ -570,7 +570,7 @@
     /* Flags */
     var editHasBeenClicked = false;
 
-    $.getJSON("data/testter.geojson")
+    $.getJSON("data/terLF.GeoJson")
         .done(function(data) {
             var lay = L.geoJson(data, {
                 pointToLayer: function(feature, latlng) {
