@@ -66,7 +66,7 @@ test:5.6-mariadb:
   image: php:5.6-apache
   stage: test
   services:
-  - mariadb:latest
+  - mariadb:10.2
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug-2.5.5"
@@ -78,7 +78,7 @@ test:5.6-mariadb:
 test:5.6-mysql:
   image: php:5.6-apache
   services:
-  - mysql:latest
+  - mysql:5.7
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug-2.5.5"
@@ -91,7 +91,7 @@ test:7.0-mariadb:
   image: php:7.0-apache
   stage: test
   services:
-  - mariadb:latest
+  - mariadb:10.2
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -104,7 +104,7 @@ test:7.0-mysql:
   image: php:7.0-apache
   stage: test
   services:
-  - mysql:latest
+  - mysql:5.7
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -117,7 +117,7 @@ test:7.1-mariadb:
   image: php:7.1-apache
   stage: test
   services:
-  - mariadb:latest
+  - mariadb:10.2
   variables:
     MCRYPT: "mcrypt"
     XDEBUG: "xdebug"
@@ -126,17 +126,41 @@ test:7.1-mariadb:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
-#test:7.2:
-#  image: php:7.2-apache
-#  stage: test
-#  allow_failure: true
-#  services:
-#  - mariadb:latest
-#  variables:
-#    MCRYPT: ""
-#    XDEBUG: "xdebug"
-#    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-#  script:
-#  - php vendor/bin/codecept run acceptance
-#  - php vendor/bin/codecept run unit --coverage-text --no-colors
+test:7.1-mysql:
+  image: php:7.1-apache
+  stage: test
+  services:
+  - mysql:5.7
+  variables:
+    MCRYPT: "mcrypt"
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
+test:7.2-mariadb:
+  image: php:7.2-apache
+  stage: test
+  services:
+  - mariadb:10.2
+  variables:
+    MCRYPT: ""
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.2-mysql:
+  image: php:7.2-apache
+  stage: test
+  services:
+  - mysql:5.7
+  variables:
+    MCRYPT: ""
+    XDEBUG: "xdebug"
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
