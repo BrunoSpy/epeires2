@@ -94,7 +94,6 @@ test:7.1-mysql:
 test:7.2-mariadb:
   image: php:7.2-apache
   stage: test
-  allow_failure: true
   services:
   - mariadb:10.2
   variables:
@@ -108,7 +107,6 @@ test:7.2-mariadb:
 test:7.2-mysql:
   image: php:7.2-apache
   stage: test
-  allow_failure: true
   services:
   - mysql:5.7
   variables:
