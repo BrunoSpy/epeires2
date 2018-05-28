@@ -18,7 +18,7 @@ class Version20161222181710 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE categories ADD archived TINYINT(1) NOT NULL, ADD archiveDate DATE NOT NULL');
+        $this->addSql('ALTER TABLE categories ADD archived TINYINT(1) NOT NULL, ADD archiveDate DATE DEFAULT NULL');
     }
 
     /**

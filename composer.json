@@ -69,8 +69,7 @@
     "zendframework/zend-test": "^2.5",
     "phpunit/phpunit": "^5.6",
     "hounddog/doctrine-data-fixture-module": "dev-master",
-    "satooshi/php-coveralls": "dev-master",
-    "codeception/codeception": "^2.2",
+    "codeception/codeception": "^2.4.2",
     "zfcampus/zf-apigility-admin": "~1.0",
     "zendframework/zend-developer-tools": "^1.1"
   },
