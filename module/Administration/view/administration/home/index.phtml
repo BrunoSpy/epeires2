@@ -1,16 +1,3 @@
-<?php
-$branchname = shell_exec("git rev-parse --abbrev-ref HEAD"); // get the one that is always the branch name
-
-$revision = shell_exec("git log -n 1 --pretty=format:'%h' --abbrev-commit");
-
-$commit = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
-
-$tag = shell_exec("git describe --exact-match --tags");
-
-$hostname = getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n');
-
-$hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
-?>
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-sm-12">
@@ -22,7 +9,7 @@ $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, str
     
     			<div class="panel-body">
     				<p>
-    					Nom d'hôte : <em><?php echo $hostname; ?></em>
+    					Nom d'hôte : <em><?php echo $this->hostname; ?></em>
     				</p>
     			</div>
     		</div>
@@ -33,13 +20,18 @@ $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, str
     			</div>
     
     			<div class="panel-body">
+                    <p>
+                        Version : <em><?php echo $this->myversion; ?></em>
+                    </p>
+                    <?php if($this->git) : ?>
     				<p>
-    					Branche : <em><?php echo $branchname; ?></em>
+    					Branche : <em><?php echo $this->git['branchname']; ?></em>
     				</p>
-    				<?php if($hasTag) { echo '<p> Tag : <em>'.$tag.'</em></p>'; }?>
+    				<?php if(array_key_exists('tag', $this->git)) { echo '<p> Tag : <em>'.$this->git['tag'].'</em></p>'; }?>
     				<p>
-    					Révision : <em><?php echo $revision." : ".$commit; ?></em>
+    					Révision : <em><?php echo $this->git['revision']." : ".$this->git['commit']; ?></em>
     				</p>
+                    <?php endif; ?>
     			</div>
     		</div>
     

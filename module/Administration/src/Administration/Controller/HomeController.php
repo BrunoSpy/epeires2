@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Core\Version;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
@@ -36,6 +37,26 @@ class HomeController extends AbstractActionController
     }
 
     public function indexAction() {
+
+        $git = false;
+
+        if(is_dir(ROOT_PATH . '/.git')) {
+            $git = array();
+            $git['branchname'] = shell_exec("git rev-parse --abbrev-ref HEAD"); // get the one that is always the branch name
+
+            $git['revision'] = shell_exec("git log -n 1 --pretty=format:'%h' --abbrev-commit");
+
+            $git['commit'] = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
+
+            $tag = shell_exec("git describe --exact-match --tags");
+
+            $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
+
+            if($hasTag) {
+                $git['tag'] = $tag;
+            }
+        }
+
         $this->doctrinemigrations->setMigrationsTableName($this->config['doctrine']['migrations']['migrations_table']);
         $this->doctrinemigrations->validate();
         $executedMigrations = $this->doctrinemigrations->getMigratedVersions();
@@ -77,7 +98,10 @@ class HomeController extends AbstractActionController
             'phpversionid' => PHP_VERSION_ID,
             'certifvalid' => $certifValidTo,
             'certifassign' => $certifAssignTo,
-            'certifname' => $certifName
+            'certifname' => $certifName,
+            'myversion' => Version::VERSION,
+            'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
+            'git' => $git
         );
     }
 }
