@@ -169,9 +169,7 @@ echo $this->formHidden($this->form->get('category'));
                         \IntlDateFormatter::GREGORIAN,
                         'dd LLL, HH:mm');
                     echo '<div id="form-notes">';
-                    foreach ($this->event->getUpdates() as $update){
-                      if($update->isHidden())
-                        continue;
+                    foreach ($this->event->getVisibleUpdates() as $update){
                       echo "<blockquote>"
                           . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
                           . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"

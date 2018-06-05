@@ -1678,7 +1678,7 @@ class EventsController extends TabsController
         $em = $this->getEntityManager();
         $json = array();
         foreach ($em->getRepository('Application\Entity\Tab')->findAll() as $tab) {
-            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab);
+            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab, $this->zfcUserAuthentication());
             $json[$tab->getId()] = count($events);
         }
         $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());

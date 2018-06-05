@@ -80,14 +80,15 @@
 </div>
 
 <div class="panel panel-info">
+    <?php $visibleUpdates = $this->event->getVisibleUpdates(); ?>
     <div class="panel-heading">
         <h4 class="panel-title">Notes
-        <div class="panel-badge"><span class="badge"><?php echo count($this->event->getUpdates()) ?></span> <span class="glyphicon glyphicon-chevron-<?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'up' : 'down')?>"></span></h4>
+        <div class="panel-badge"><span class="badge"><?php echo count($visibleUpdates) ?></span> <span class="glyphicon glyphicon-chevron-<?php echo (($visibleUpdates && count($visibleUpdates) > 0) ? 'up' : 'down')?>"></span></h4>
     </div>
-    <div class="panel-collapse collapse <?php echo (($this->event->getUpdates() && count($this->event->getUpdates()) > 0) ? 'in' : '')?>">
+    <div class="panel-collapse collapse <?php echo (($visibleUpdates && count($visibleUpdates) > 0) ? 'in' : '')?>">
         <div class="panel-body">
         <div id="updates">
-        <?php echo $this->partial('events/updates.phtml', array('updates' => $this->event->getUpdates())); ?>
+        <?php echo $this->partial('events/updates.phtml', array('updates' => $visibleUpdates)); ?>
         </div>
         <?php if($this->isGranted('events.write')) :?>
         <div class="block-controls">
