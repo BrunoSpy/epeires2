@@ -145,6 +145,13 @@ class Event extends AbstractEvent
         return $this->updates;
     }
 
+    public function getVisibleUpdates()
+    {
+        return $this->updates->filter(function(EventUpdate $update){
+            return $update->isHidden() === false;
+        });
+    }
+
     public function isReadOnly()
     {
         return $this->readonly;
