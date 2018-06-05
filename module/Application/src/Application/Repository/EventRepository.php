@@ -591,7 +591,7 @@ class EventRepository extends ExtendedRepository
      * @param Tab $tab
      * @return array
      */
-    public function getTabEvents(Tab $tab)
+    public function getTabEvents(Tab $tab, $userauth)
     {
         $qbEvents = $this->getQueryEvents();
         $catsid = array();
@@ -604,7 +604,7 @@ class EventRepository extends ExtendedRepository
             ->in('cat.id', '?4'))
             ->setParameter(4, $catsid);
         $query = $qbEvents->getQuery();
-        return $query->getResult();
+        return $this->restrictToReadableEvents($query->getResult(), $userauth);
     }
 
     /**
