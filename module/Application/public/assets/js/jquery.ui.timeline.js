@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.3.1",
+        version: "1.3.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -2081,7 +2081,11 @@
 
                 } else if(lien.hasClass('rightlink')){
                     event.totalWidth -= txt_width;
-                    elmt_txt.css({'left': 'calc(100% - '+txt_width+'px)'});
+                    var boxWidth = 17*3
+                        + (elmt_txt.find('.badge').length * 14)
+                        + 4 //padding
+                        + 2;
+                    elmt_txt.css({'left': 'calc(100% - '+boxWidth+'px)'});
                     elmt.css({'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
                     elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)'});
 
