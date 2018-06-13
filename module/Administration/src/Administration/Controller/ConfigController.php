@@ -57,7 +57,7 @@ class ConfigController extends AbstractEntityManagerAwareController
         }
 
         if(array_key_exists('frequency_test_menu', $this->config)) {
-            if($this->config('frequency_test_menu')) {
+            if($this->config['frequency_test_menu']) {
                 $params['Onglet Radio - Menu test fréquences'] = "Actif";
             } else {
                 $params['Onglet Radio - Menu test fréquences'] = "Inactif";
