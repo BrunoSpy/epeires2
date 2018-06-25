@@ -46,3 +46,11 @@ config/development.config.php
 config/autoload/local.php
 
 tests/_output/*
+
+data/brest
+data/cdg
+data/paris
+data/crnaso
+data/NMB2B
+data/NM_B2B
+data/tempimg
