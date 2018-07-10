@@ -84,11 +84,11 @@ class EventService
                 return $event->getName();
             }
         }
-        
+
         $name = $event->getId();
-        
+
         $category = $event->getCategory();
-        
+
         if ($category instanceof \Application\Entity\FrequencyCategory) {
             $freqid = 0;
             $otherfreqid = 0;
@@ -113,30 +113,29 @@ class EventService
                     }
                 }
             }
-        } else 
-            if ($category instanceof MilCategory) {
-                $namefield = $event->getCustomFieldValue($category->getFieldname());
-                $name = "???"; // TODO $namefield ne peut jamais être vide !!
-                if ($namefield) {
-                    $name = $this->customfieldService->getFormattedValue($namefield->getCustomField(), $namefield->getValue());
-                }
-                $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
-                $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
-                $name .= ' (' . ($plancherfield !== null ? str_pad($plancherfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . '/' . ($plafondfield !== null ? str_pad($plafondfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . ')';
-            } else {
-                $titlefield = $category->getFieldname();
-                if ($titlefield) {
-                    foreach ($event->getCustomFieldsValues() as $fieldvalue) {
-                        if ($fieldvalue->getCustomField()->getId() == $titlefield->getId()) {
-                            $tempname = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
-                            
-                            if ($tempname) {
-                                $name = ($category->getParent() != null ? $category->getShortName() : '') . ' ' . $tempname;
-                            }
+        } else if ($category instanceof MilCategory) {
+            $namefield = $event->getCustomFieldValue($category->getFieldname());
+            $name = "???"; // TODO $namefield ne peut jamais être vide !!
+            if ($namefield) {
+                $name = $this->customfieldService->getFormattedValue($namefield->getCustomField(), $namefield->getValue());
+            }
+            $plancherfield = $event->getCustomFieldValue($category->getLowerLevelField());
+            $plafondfield = $event->getCustomFieldValue($category->getUpperLevelField());
+            $name .= ' (' . ($plancherfield !== null ? str_pad($plancherfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . '/' . ($plafondfield !== null ? str_pad($plafondfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . ')';
+        } else {
+            $titlefield = $category->getFieldname();
+            if ($titlefield) {
+                foreach ($event->getCustomFieldsValues() as $fieldvalue) {
+                    if ($fieldvalue->getCustomField()->getId() == $titlefield->getId()) {
+                        $tempname = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
+
+                        if ($tempname) {
+                            $name = ($category->getParent() != null ? $category->getShortName() : '') . ' ' . $tempname;
                         }
                     }
                 }
             }
+        }
         return $name;
     }
 
@@ -148,7 +147,7 @@ class EventService
     public function getUpdateAuthor(EventUpdate $eventupdate)
     {
         $repo = $this->em->getRepository('Application\Entity\Log');
-        
+
         $logentries = $repo->getLogEntries($eventupdate);
         if (count($logentries) >= 1 && $logentries[count($logentries) - 1]->getAction() == "create") {
             return $logentries[count($logentries) - 1]->getUsername();
@@ -181,11 +180,11 @@ class EventService
     public function getHistory(Event $event)
     {
         $history = array();
-        
+
         $repo = $this->em->getRepository('Application\Entity\Log');
-        
+
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
-        
+
         // history of event
         $logentries = $repo->getLogEntries($event);
         if (count($logentries) >= 1 && $logentries[count($logentries) - 1]->getAction() == "create") {
@@ -244,7 +243,7 @@ class EventService
                                     $historyentry['oldvalue'] = $ref[$key];
                                     $historyentry['newvalue'] = $value;
                                 }
-                            
+
                             $history[$logentry->getLoggedAt()->format(DATE_RFC2822)]['changes'][] = $historyentry;
                             // update ref
                             $ref[$key] = $value;
@@ -253,7 +252,7 @@ class EventService
                 }
             }
         }
-        
+
         // history of customfields
         foreach ($this->em->getRepository('Application\Entity\CustomFieldValue')->findBy(array(
             'event' => $event->getId()
@@ -287,7 +286,7 @@ class EventService
                 }
             }
         }
-        
+
         // updates
         foreach ($event->getUpdates() as $update) {
             if (! array_key_exists($update->getCreatedOn()->format(DATE_RFC2822), $history)) {
