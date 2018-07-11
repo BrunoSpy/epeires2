@@ -78,10 +78,16 @@ class HomeController extends AbstractActionController
 
         if(array_key_exists('nm_b2b', $this->config)) {
             $certifValidTo = new \DateTime();
-            $certif = openssl_x509_parse(file_get_contents(ROOT_PATH . $this->config['nm_b2b']['cert_path']));
-            $certifValidTo->setTimestamp($certif['validTo_time_t']);
-            $certifAssignTo = array_key_exists('OU', $certif['subject']) ? $certif['subject']['OU'][0] : '';
-            $certifName = $certif['subject']['CN'];
+            if(is_readable(ROOT_PATH . $this->config['nm_b2b']['cert_path']) && $fileContent = file_get_contents(ROOT_PATH . $this->config['nm_b2b']['cert_path'])) {
+                $certif = openssl_x509_parse($fileContent);
+                $certifValidTo->setTimestamp($certif['validTo_time_t']);
+                $certifAssignTo = array_key_exists('OU', $certif['subject']) ? $certif['subject']['OU'][0] : '';
+                $certifName = $certif['subject']['CN'];
+            } else {
+                $certifValidTo = false;
+                $certifAssignTo = null;
+                $certifName = null;
+            }
         } else {
             $certifValidTo = null;
             $certifAssignTo = null;

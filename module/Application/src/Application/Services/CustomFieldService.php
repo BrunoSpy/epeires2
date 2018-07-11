@@ -55,7 +55,7 @@ class CustomFieldService
                 break;
             case 'sector':
                 if ($customfield->isMultiple()) {
-                    $sectors = explode("\r", $$fieldvalue);
+                    $sectors = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($sectors as $s) {
                         $sector = $this->em->getRepository('Application\Entity\Sector')->find($s);
@@ -75,7 +75,7 @@ class CustomFieldService
                 break;
             case 'antenna':
                 if ($customfield->isMultiple()) {
-                    $antennas = explode("\r", $$fieldvalue);
+                    $antennas = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($antennas as $a) {
                         $antenna = $this->em->getRepository('Application\Entity\Antenna')->find($a);
@@ -137,9 +137,20 @@ class CustomFieldService
                 $defaultvalue = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
                 if ($defaultvalue && $fieldvalue != null) {
                     $values = explode("\n", $defaultvalue);
-                    if (array_key_exists($fieldvalue, $values)) {
-                        $name = $values[$fieldvalue];
+                    if($customfield->isMultiple()) {
+                        $ids = explode("\r", $fieldvalue);
+                        $name = "";
+                        foreach ($ids as $id) {
+                            if(array_key_exists($id, $values)) {
+                                $name .= $values[$id] . " ";
+                            }
+                        }
+                    } else {
+                        if (array_key_exists($fieldvalue, $values)) {
+                            $name = $values[$fieldvalue];
+                        }
                     }
+                    $name = trim($name);
                 }
                 break;
             case 'stack':

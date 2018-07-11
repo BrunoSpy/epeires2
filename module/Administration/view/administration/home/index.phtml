@@ -80,19 +80,21 @@
                     <h4 class="panel-title">Certificat NM B2B</h4>
                 </div>
                 <div class="panel-body">
-
                     <?php
-                    $temp = clone $this->certifvalid;
-                    if($temp->sub(new DateInterval('P3M')) < new DateTime('now')) {
-                        echo '<div class="alert alert-danger">'
-                             .'<strong>Attention :</strong> le certificat B2B expire dans moins de trois mois !'
-                             .'</div>';
+                    if($this->certifvalid === false) {
+                        echo '<div class="alert alert-danger">Certificat non accessible en lecture.</div>';
+                    } else {
+                        $temp = clone $this->certifvalid;
+                        if($temp->sub(new DateInterval('P3M')) < new DateTime('now')) {
+                            echo '<div class="alert alert-danger">'
+                                . '<strong>Attention :</strong> le certificat B2B expire dans moins de trois mois !'
+                                . '</div>';
+                        }
+                        echo '<p>Nom : ' . $this->certifname . '</p>';
+                        echo '<p>Assigné à : ' . $this->certifassign . '</p>';
+                        echo '<p>Expire le : ' . $this->certifvalid->format('d/m/Y H:i') . '</p>';
                     }
                     ?>
-                    <p>Nom : <?php echo $this->certifname; ?></p>
-                    <p>Assigné à : <?php echo $this->certifassign; ?></p>
-                    <p>Expire le : <?php echo $this->certifvalid->format('d/m/Y H:i');?></p>
-
                 </div>
             </div>
 
