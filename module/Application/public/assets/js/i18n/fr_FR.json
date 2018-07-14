@@ -2,5 +2,8 @@
     "frequencies": {
     	"change_couv_secours": "Passer en couverture secours",
     	"change_couv_normale": "Passer en couverture normale"
+    },
+    "ipo": {
+      "IPO": "IPO"
     }
 }	

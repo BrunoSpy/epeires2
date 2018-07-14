@@ -49,9 +49,7 @@ echo $this->formHidden($this->form->get('category'));
         <li role="presentation" id="actions-title">
             <a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="tasks" class="glyphicon glyphicon-tasks"></span></div> Fiche réflèxe<span class="badge ext">0</span></a>
         </li>
-        <li role="presentation" id="notes-title">
-            <a href="#notes-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="edit" class="glyphicon glyphicon-edit"></span></div> Notes<span class="badge ext">0</span></a>
-        </li>
+
     </ul>
 
     <div class="tab-content">
@@ -133,8 +131,12 @@ echo $this->formHidden($this->form->get('category'));
 
 
         <div role="tabpanel" class="tab-pane fade" id="description-tab">
-            <div>
+            <div class="row">
                 <?php
+                if($this->event) {
+                  echo '<div class="col-sm-8">';
+                }
+
                 echo $this->formSelect($this->form->get('organisation')->setAttribute('class', 'unvisible'));
                 echo "<div id=\"custom_fields\">";
                 if($this->event || $this->model){
@@ -149,6 +151,33 @@ echo $this->formHidden($this->form->get('category'));
                     echo $this->controlGroup($this->form->get('zonefilters'));
                 }
                 echo "</div>";
+                $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
+
+                if($this->event){
+                    echo '</div>';
+                    echo '<div class="col-sm-4 notes">';
+                    echo '<h3>Suivi';
+                    //ajout de notes si droits ok
+                    if($mod){
+                        echo "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span>Ajouter une note</a>";
+                    }
+                    echo '</h3>';
+                    $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
+                        \IntlDateFormatter::FULL,
+                        \IntlDateFormatter::FULL,
+                        'UTC',
+                        \IntlDateFormatter::GREGORIAN,
+                        'dd LLL, HH:mm');
+                    echo '<div id="form-notes">';
+                    foreach ($this->event->getVisibleUpdates() as $update){
+                      echo "<blockquote>"
+                          . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
+                          . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
+                          . "</blockquote>";
+                    }
+                    echo '</div>';
+                    echo '</div>';
+                }
                 ?>
             </div>
         </div>
@@ -156,7 +185,6 @@ echo $this->formHidden($this->form->get('category'));
         <div role="tabpanel" class="tab-pane fade" id="memos-tab">
             <?php
             $countalarm = 0;
-            $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
 
             if($mod) {
                 echo "<a id=\"addalarm\" href=\"#add-alarm\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span> Créer un mémo</a>";
@@ -377,31 +405,6 @@ echo $this->formHidden($this->form->get('category'));
                     echo '<input name="modelid" type="hidden" value="'.$this->model->getId().'" >';
                 }
 
-            }
-            ?>
-        </div>
-
-        <div role="tabpanel" class="tab-pane fade" id="notes-tab">
-            <?php
-            if($this->event){
-                //ajout de notes si droits ok
-                if($mod){
-                    echo "<a data-id=\"".$this->event->getId()."\" id=\"addnote\" href=\"#add-note-modal\" data-toggle=\"modal\" class=\"btn btn-sm btn-primary pull-right\"><span class=\"glyphicon glyphicon-plus\"></span>Ajouter une note</a>";
-                }
-                $formatterNote = \IntlDateFormatter::create(\Locale::getDefault(),
-                    \IntlDateFormatter::FULL,
-                    \IntlDateFormatter::FULL,
-                    'UTC',
-                    \IntlDateFormatter::GREGORIAN,
-                    'dd LLL, HH:mm');
-                echo '<div id="form-notes">';
-                foreach ($this->event->getUpdates() as $update){
-                    echo "<blockquote>"
-                        . "<p><span class=\"note\" data-id=\"".$update->getId()."\">". nl2br($update->getText()) ."</span></p>"
-                        . "<small>".$this->updateAuthor($update)." à ".$formatterNote->format($update->getCreatedOn())."</small>"
-                        . "</blockquote>";
-                }
-                echo '</div>';
             }
             ?>
         </div>

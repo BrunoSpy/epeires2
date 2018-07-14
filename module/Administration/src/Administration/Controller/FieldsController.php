@@ -167,7 +167,8 @@ class FieldsController extends FormController
                 'multiple' => $customfield->isMultiple() ? true : false,
                 'milestone' => $customfield->isMilestone() ? true : false,
                 'defaut' => $customfield->getDefaultValue(),
-                'trace' => $customfield->isTraceable() ? true : false
+                'trace' => $customfield->isTraceable() ? true : false,
+                'hidden' => $customfield->isHidden() ? true : false
             ));
         }
     }

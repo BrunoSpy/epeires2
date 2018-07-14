@@ -20,6 +20,7 @@ namespace Application\Controller;
 use Application\Entity\AlarmCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\Category;
+use Application\Entity\EventUpdate;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
 use Application\Entity\PostItCategory;
@@ -61,9 +62,9 @@ class EventsController extends TabsController
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config)
+                                $config, $mattermost)
     {
-        parent::__construct($entityManager, $config);
+        parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
@@ -72,15 +73,19 @@ class EventsController extends TabsController
     public function indexAction()
     {
         parent::indexAction();
-    
-        $return = array();
-    
+
+        $return = $this->messages;
+
         if ($this->flashMessenger()->hasErrorMessages()) {
-            $return['error'] = $this->flashMessenger()->getErrorMessages();
+            foreach ($this->flashMessenger()->getErrorMessages() as $m) {
+                $return['error'][] = $m;
+            }
         }
-    
+
         if ($this->flashMessenger()->hasSuccessMessages()) {
-            $return['success'] = $this->flashMessenger()->getSuccessMessages();
+            foreach ($this->flashMessenger()->getSuccessMessages() as $m) {
+                $return['success'][] = $m;
+            }
         }
     
         $this->flashMessenger()->clearMessages();
@@ -1673,7 +1678,7 @@ class EventsController extends TabsController
         $em = $this->getEntityManager();
         $json = array();
         foreach ($em->getRepository('Application\Entity\Tab')->findAll() as $tab) {
-            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab);
+            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab, $this->zfcUserAuthentication());
             $json[$tab->getId()] = count($events);
         }
         $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
@@ -1715,7 +1720,9 @@ class EventsController extends TabsController
         $cats = $this->params()->fromQuery('cats', null);
 
         $default = $this->params()->fromQuery('default', null);
-        
+
+        $extendedFormat = $this->params()->fromQuery('ext', false);
+
         $json = array();
         
         $objectManager = $this->getEntityManager();
@@ -1730,7 +1737,7 @@ class EventsController extends TabsController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->getEventJson($event);
+            $json[$event->getId()] = $this->getEventJson($event, $extendedFormat);
         }
         
         if (count($json) === 0) {
@@ -1820,15 +1827,16 @@ class EventsController extends TabsController
         return new JsonModel($events);
     }
 
-    private function getEventJson(Event $event)
+    private function getEventJson(Event $event, $extendedFormat = false)
     {
         $objectManager = $this->getEntityManager();
         $logsRepo = $objectManager->getRepository("Application\Entity\Log");
         $json = array(
             'id' => $event->getId(),
             'name' => $this->eventservice->getName($event),
-            'modifiable' => ($this->eventservice->isModifiable($event) && ! $event->isReadOnly()) ? true : false,
+            'modifiable' => $this->eventservice->isModifiable($event) ? true : false,
             'deleteable' => $this->isGranted('events.delete') ? true : false,
+            'readonly' => $event->isReadOnly() ? true : false,
             'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
             'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
             'punctual' => $event->isPunctual() ? true : false,
@@ -1856,7 +1864,8 @@ class EventsController extends TabsController
             'star' => $event->isStar() ? true : false,
             'scheduled' => $event->isScheduled() ? true : false,
             'recurr' => $event->getRecurrence() ? true : false,
-            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : ''
+            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',
+            'mattermostid' => $event->getMattermostPostId()
         );
         
         $fields = array();
@@ -1870,6 +1879,8 @@ class EventsController extends TabsController
         );
         $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
+            if($value->getCustomField()->isHidden()) //don't display
+                continue;
             if($value->getCustomField()->isTraceable()) {
                 foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
                     $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
@@ -1904,6 +1915,18 @@ class EventsController extends TabsController
 
         $json['milestones'] = $milestones;
 
+        if($extendedFormat) {
+            $eventLogEntries = $logsRepo->getLogEntries($event);
+            $createLog = array_reverse($eventLogEntries)[0];
+            $json['startdate_ini'] = $createLog->getData()['startdate']->format(DATE_RFC2822);
+            $enddateIni = $createLog->getData()['enddate'];
+            if($enddateIni !== null) {
+                $json['enddate_ini'] = $enddateIni->format(DATE_RFC2822);
+            } else {
+                $json['enddate_ini'] = null;
+            }
+        }
+
         $formatter = \IntlDateFormatter::create(
             \Locale::getDefault(),
             \IntlDateFormatter::FULL,
@@ -1913,6 +1936,8 @@ class EventsController extends TabsController
             'dd LLL, HH:mm'
         );
         foreach ($event->getUpdates() as $update) {
+            if($update->isHidden())
+                continue;
             $key = $formatter->format($update->getCreatedOn());
             $tempkey = $formatter->format($update->getCreatedOn());
             $i = 0;
@@ -2204,6 +2229,7 @@ class EventsController extends TabsController
 
     /**
      * Change the status of an event to "Supprimé"
+     * If event has no end date, sets end date = start date + 1h
      * @return JsonModel
      */
     public function deleteeventAction()
@@ -2218,6 +2244,11 @@ class EventsController extends TabsController
                 if ($event) {
                     $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
                     $event->setStatus($deleteStatus);
+                    if(!$event->isPunctual() && $event->getEnddate() == null) {
+                        $enddate = clone $event->getStartdate();
+                        $enddate->add(new \DateInterval('PT1H'));
+                        $event->setEnddate($enddate);
+                    }
                     $this->closeEvent($event);
                     try {
                         $objectManager->persist($event);
@@ -2230,7 +2261,7 @@ class EventsController extends TabsController
                         $messages['error'][] = $e->getMessage();
                     }
                 } else {
-                    $messages['error'][] = "Suppression d'évènement impossible : évènment non trouvé.";
+                    $messages['error'][] = "Suppression d'évènement impossible : évènement non trouvé.";
                 }
             } else {
                 $messages['error'][] = "Suppression d'évènement impossible : ID non valide.";
@@ -2270,7 +2301,7 @@ class EventsController extends TabsController
                     $text
                 ));
                 
-                if (! $this->config['emailfrom'] || ! $this->config['smtp']) {
+                if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
                     $message = new \Zend\Mail\Message();
@@ -2285,6 +2316,12 @@ class EventsController extends TabsController
                     $transport->setOptions($transportOptions);
                     try {
                         $transport->send($message);
+                        $update = new EventUpdate();
+                        $update->setHidden(true);
+                        $update->setEvent($event);
+                        $update->setText("Evènement envoyé par email à " . $event->getOrganisation()->getIpoEmail());
+                        $this->getEntityManager()->persist($update);
+                        $this->getEntityManager()->flush();
                         $messages['success'][] = "Evènement correctement envoyé à " . $event->getOrganisation()->getIpoEmail();
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();
@@ -2520,7 +2557,7 @@ class EventsController extends TabsController
             $note = $em->getRepository('Application\Entity\EventUpdate')->find($id);
             $post = $this->getRequest()->getPost();
             if ($note) {
-                $note->setText($post['note']);
+                $note->setText(nl2br($post['note']));
                 $em->persist($note);
                 $note->getEvent()->setLastModifiedOn();
                 $em->persist($note->getEvent());
@@ -2803,6 +2840,29 @@ class EventsController extends TabsController
                     $em->flush();
                     $messages['success'][] = "Post-It correctement supprimé";
                 } catch(\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            }
+        }
+        return new JsonModel($messages);
+    }
+
+    /**
+     * Add a reference to the Mattermost post
+     */
+    public function linkEventToPostAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $postid = $this->params()->fromQuery('postid', null);
+        $messages = array();
+        if($id && $postid) {
+            $event = $this->getEntityManager()->getRepository(Event::class)->find($id);
+            if($event) {
+                $event->setMattermostPostId($postid);
+                try {
+                    $this->getEntityManager()->persist($event);
+                    $this->getEntityManager()->flush();
+                } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }
             }

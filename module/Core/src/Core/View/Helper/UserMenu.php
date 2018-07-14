@@ -56,7 +56,7 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
                 $html .= "<li><a href=\"" . $urlHelper('application') . "\">Interface OPE</a></li>";
             } else {
                 if ($this->auth->isGranted('ipo.read')) {
-                    $html .= "<li><a href=\"" . $urlHelper('ipo') . "\">Interface IPO</a></li>";
+                    $html .= "<li><a href=\"" . $urlHelper('ipo') . "\">Interface ". $this->view->translate('IPO') ."</a></li>";
                 }
             }
             if ($router->match($request) && $router->match($request)->getMatchedRouteName() == 'administration') {
@@ -68,6 +68,9 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
                         'action' => 'index'
                     )) . "\">Interface administration</a></li>";
                 }
+            }
+            if($this->auth->isGranted('briefing.mod')) {
+                $html .= "<li><a href='#' id='usermenu-mod-briefing'>Modifier texte briefing</a></li>";
             }
             $html .= "<li><a href=\"" . $urlHelper('zfcuser/logout') . "?redirect=" . $urlHelper('application') . "\">Se déconnecter</a></li>";
         } else {

@@ -83,10 +83,6 @@ if($this->radars) {
 ?>
 <?php $this->inlineScript()->captureStart();?>
 
-$("#home").removeClass("dropdown-toggle")
-          .attr('data-toggle', '')
-          .html('<span class="glyphicon glyphicon-home"></span> Évènements');
-
 $("#create-link").remove();
 
 $("#changeview").remove();
@@ -94,5 +90,7 @@ $("#changeview").remove();
 $('#search').remove();
 
 radar('<?php echo $this->url('application'); ?>');
+
+<?php echo $this->notifications($this->messages); ?>
 
 <?php $this->inlineScript()->captureEnd();?>

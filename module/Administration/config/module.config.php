@@ -102,7 +102,8 @@ return array(
             'Administration\Controller\Mil' => 'Administration\Controller\Factory\MilControllerFactory',
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
             'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
-            'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory'
+            'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory',
+            'Administration\Controller\ATFCM' => 'Administration\Controller\Factory\ATFCMControllerFactory'
         )
     ),
     'view_manager' => array(
@@ -172,6 +173,20 @@ return array(
             'admin.radar' => array(
                 'name' => 'Radars',
                 'description' => ''
+            ),
+            'admin.atfcm' => array(
+                'name' => 'ATFCM',
+                'description' => ''
+            )
+        ),
+        'Messagerie instantanée' => array(
+            'chat.access' => array(
+                'name' => 'Actif',
+                'description' => 'Activer le module de messagerie instantanée'
+            ),
+            'chat.write' => array(
+                'name' => 'Envoi',
+                'description' => 'Autoriser l\'envoi de messages.'
             )
         )
     ),
@@ -235,6 +250,12 @@ return array(
                     'controller' => 'Administration\Controller\Tabs',
                     'permissions' => [
                         'admin.tabs'
+                    ]
+                ),
+                array(
+                    'controller' => 'Administration\Controller\ATFCM',
+                    'permissions' => [
+                        'admin.atfcm'
                     ]
                 )
             )

@@ -253,6 +253,10 @@ li .nav-header {
     padding-top: 4px;
 }
 
+.modal-dialog.modal-xlg {
+    width: 90%;
+}
+
 /* ************************** */
 
 a.em {
@@ -267,4 +271,13 @@ a.disabled {
 
 .unvisible{
 	display:none !important;
+}
+
+.table-noborder>tbody>tr>td {
+  border: none;
+  margin-bottom: 0px;
+}
+
+.table-noborder {
+  margin-bottom: 0px;
 }

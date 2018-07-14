@@ -195,9 +195,10 @@ var categories = function(url){
                 tr.find('td:eq(5)').html(data.help);
 				tr.find('td:eq(6)').html(data.trace ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>');
                 tr.find('td:eq(7)').html(data.milestone ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>');
-                tr.find('td:eq(8)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
+                tr.find('td:eq(8)').html(data.hidden ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>');
+                tr.find('td:eq(9)').html('<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a>');
-				tr.find('td:eq(9)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
+				tr.find('td:eq(10)').html('<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+
 						'<a href="#confirm-delete-field" '+
 						'data-href="'+url+'/fields/delete?id='+data.id+
 							' class="delete-field" '+
@@ -216,6 +217,7 @@ var categories = function(url){
                 newhtml.append('<td>'+data.help+'</td>');
 				newhtml.append('<td>'+(data.trace ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>')+'</td>');
                 newhtml.append('<td>'+(data.milestone ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>')+'</td>');
+                newhtml.append('<td>'+(data.hidden ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>')+'</td>');
                 newhtml.append('<td>'+'<a href="'+url+'/fields/fieldup?id='+data.id+'" class="up"><span class="up-caret middle"></span></a> '+
 						'<a href="'+url+'/fields/fielddown?id='+data.id+'" class="down disabled"><span class="caret middle"></span></a></td>');
 				newhtml.append('<td>'+'<a href="#" class="mod-field" data-id="'+data.id+'" data-name="'+data.name+'"><span class="glyphicon glyphicon-pencil"></span></a> '+

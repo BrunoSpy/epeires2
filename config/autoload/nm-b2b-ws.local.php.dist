@@ -5,6 +5,7 @@ return array(
         'cert_password' => 'password',//mandatory
         'wsdl_path' => 'path to wsdl directory',//mandatory
         'airspace_wsdl_filename' => 'filename',//mandatory
+        'flow_wsdl_filename' => 'filename', //mandatory
         'proxy_host' => 'http or https proxy', //optional
         'proxy_port' => 'proxy port' //optional
     ),

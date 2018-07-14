@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Epeires 2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-02-19 10:14+0100\n"
+"PO-Revision-Date: 2018-02-19 10:17+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: translate;$this->translate()\n"
+"X-Poedit-Basepath: ..\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../Core/src/Core/View/Helper/NavBarTop.php:52
+#: ../Application/view/layout/app-layout.phtml:6
+#: ../Core/view/layout/layout.phtml:6
+msgid "Epeires²"
+msgstr "Epeires²"
+
+#: ../Core/src/Core/View/Helper/UserMenu.php:59
+#: ../Administration/view/administration/categories/index.phtml:23
+#: ../Administration/view/administration/centre/index.phtml:58
+#: ../Administration/view/administration/centre/index.phtml:59
+#: ../Administration/view/administration/ipos/index.phtml:8
+#: ../Administration/view/administration/ipos/index.phtml:56
+#: ../Administration/view/layout/adminlayout.phtml:114
+#: ../Administration/view/layout/adminlayout.phtml:115
+msgid "IPO"
+msgstr "RPO"
+
+#: ../Administration/view/layout/adminlayout.phtml:6
+msgid "Epeires² - Administration"
+msgstr "Epeires² - Administration"
+
+#: ../Application/view/application/frequencies/index.phtml:69
+msgid "Antennas"
+msgstr "Antennes"
+
+#: ../Core/view/error/404.phtml:1
+msgid "A 404 error occurred"
+msgstr "Une erreur 404 est survenue"
+
+#: ../Core/view/error/404.phtml:10
+msgid "The requested controller was unable to dispatch the request."
+msgstr "Le contrôleur demandé n'a pas pu dispatcher la requête."
+
+#: ../Core/view/error/404.phtml:13
+msgid "The requested controller could not be mapped to an existing controller class."
+msgstr "Le contrôleur demandé ne correspond pas à une classe existante de contrôleur."
+
+#: ../Core/view/error/404.phtml:16
+msgid "The requested controller was not dispatchable."
+msgstr "Le contrôleur demandé n'est pas dispatchable."
+
+#: ../Core/view/error/404.phtml:19
+msgid "The requested URL could not be matched by routing."
+msgstr "L'URL demandée n'a pas pu trouver de route correspondante."
+
+#: ../Core/view/error/404.phtml:22
+msgid "We cannot determine at this time why a 404 was generated."
+msgstr "Nous ne pouvons pas déterminer pour le moment pourquoi une 404 a été générée."
+
+#: ../Core/view/error/404.phtml:34
+msgid "Controller"
+msgstr "Contrôleur"
+
+#: ../Core/view/error/404.phtml:41
+#, php-format
+msgid "resolves to %s"
+msgstr "résout en %s"
+
+#: ../Core/view/error/404.phtml:53 ../Core/view/error/index.phtml:8
+msgid "Additional information"
+msgstr "Information supplémentaire"
+
+#: ../Core/view/error/404.phtml:56 ../Core/view/error/404.phtml:80
+#: ../Core/view/error/index.phtml:11 ../Core/view/error/index.phtml:35
+msgid "File"
+msgstr "Fichier"
+
+#: ../Core/view/error/404.phtml:60 ../Core/view/error/404.phtml:84
+#: ../Core/view/error/index.phtml:15 ../Core/view/error/index.phtml:39
+msgid "Message"
+msgstr "Message"
+
+#: ../Core/view/error/404.phtml:64 ../Core/view/error/404.phtml:88
+#: ../Core/view/error/index.phtml:19 ../Core/view/error/index.phtml:43
+msgid "Stack trace"
+msgstr "Pile d'exécution"
+
+#: ../Core/view/error/404.phtml:74 ../Core/view/error/index.phtml:29
+msgid "Previous exceptions"
+msgstr "Exceptions précédentes"
+
+#: ../Core/view/error/404.phtml:103 ../Core/view/error/index.phtml:58
+msgid "No Exception available"
+msgstr "Aucune exception disponible"
+
+#: ../Core/view/error/index.phtml:1
+msgid "An error occurred"
+msgstr "Une erreur s'est produite"
+
+#: ../IPO/view/layout/ipolayout.phtml:5
+msgid "Epeires² - IPO"
+msgstr "Epeires² - IPO"

@@ -26,12 +26,13 @@
     }
   ],
   "require": {
-    "php": "^5.6.0 || ^7.0.0 || ^7.1.0 || ^7.2.0",
+    "php": "^5.6 || ^7.0",
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
     "ext-soap": "*",
     "ext-openssl": "*",
+    "ext-curl": "*",
     "zendframework/zend-mvc": "^2.7",
     "zendframework/zend-view": "^2.9",
     "zendframework/zend-log": "^2.9",
@@ -63,15 +64,18 @@
     "zfcampus/zf-apigility": "~1.0",
     "zfcampus/zf-apigility-documentation": "^1.2",
     "zfcampus/zf-apigility-documentation-swagger": "^1.2",
-    "zfcampus/zf-development-mode": "~2.0"
+    "zfcampus/zf-development-mode": "~2.0",
+    "maglnet/magl-markdown": "~1.1",
+    "dgac/mattermostmodule": "dev-master"
   },
   "require-dev":{
     "zendframework/zend-test": "^2.5",
     "phpunit/phpunit": "^5.6",
     "hounddog/doctrine-data-fixture-module": "dev-master",
-    "codeception/codeception": "^2.2",
+    "codeception/codeception": "^2.3",
     "zfcampus/zf-apigility-admin": "~1.0",
-    "zendframework/zend-developer-tools": "^1.1"
+    "zendframework/zend-developer-tools": "^1.1",
+    "sensiolabs/security-checker": "^4.1.0"
   },
   "config": {
     "platform": {

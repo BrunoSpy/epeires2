@@ -26,7 +26,8 @@
  *      leftOffset: left offset in pixels,
  *      rightOffset: right offset in pixels,
  *      eventHeight: height of an event in pixels,
- *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true)
+ *      showOnlyRootCategories: boolean, if true, do not draw subcategories (default : true),
+ *      mattermost: if true, add action to send event to mattermost chat
  * });
  * 
  * @author Jonathan Colson
@@ -41,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.1.3",
+        version: "1.3.2",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -157,7 +158,8 @@
             category: "",
             compact: false,
             view: "",
-            day: ""
+            day: "",
+            mattermost: false
         },
         //Main function
         //Initialize the timeline
@@ -365,166 +367,45 @@
                 }
             }, '.elmt');
 
+            this.element.on('touchstart', function(e){
+                if($(this).attr('id') == 'timeline' )  {
+                    //hide all buttons of events
+                    self.element.find('.elmt .disp').hide();
+                    self.element.find('.elmt .lien.disp').show();
+                }
+            });
+
+            this.element.on('touchstart', '.rect_elmt', function(e){
+                e.stopPropagation();
+                self._beforeEventMove($(this).closest('.elmt'), e.originalEvent.touches[0].clientX, 'touchmove');
+                $(this).closest('.elmt').find('.disp').show();
+                $(this).closest('.elmt').find('.lien.disp').hide();
+            });
+
+            this.element.on('touchstart', '.label_elmt', function(e) {
+                e.stopPropagation();
+            });
+
+            this.element.on('touchend', '.rect_elmt', function(e){
+                self._afterEventMove('touchmove');
+            });
+
             // Déplacement de l'heure de debut
             this.element.on('mousedown', '.move_deb', function (e1) {
-                self._pauseUpdate();
-                self.on_drag = 1;
-                var x_ref = e1.clientX;
-                var x_temp = x_ref;
-
-                var elmt = $(this).closest('.elmt');
-                elmt.addClass('on_drag');
-                elmt.find('.elmt_deb').show();
-
-                var elmt_deb = elmt.find('.elmt_deb span.hour-txt');
-                var rect_elmt = elmt.find('.rect_elmt');
-                var elmt_compl = elmt.find('.complement');
-                var rect_width = rect_elmt.width();
-                var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / (self.intervalle * self._getWidthAvalaible() / 100);
-                var elmt_fin = elmt.find('.elmt_fin');
-
-                var id = elmt.data('ident');
-                var event = self.eventsDisplayed[self.eventsDisplayedPosition[id]];
-                var start = new Date(event.start_date);
-                var temp_deb = new Date();
-
-                self.element.mousemove(function (e2) {
-                    e2.preventDefault();
-                    //désactivaton de tous les liens des boutons
-                    elmt.find('.label_elmt a').addClass('disabled');
-                    //les jalons sont à des positions fausses pendant le déplacement :
-                    //inutile de les afficher
-                    elmt.find('.milestone').hide();
-                    var delt = e2.clientX - x_temp;
-                    var delt2 = e2.clientX - x_ref;
-                    if (delt2 + 40 < rect_width) {
-                        temp_deb.setTime(start.getTime() + delt2 * pix_time);
-                        var txtHour = self._formatNumberLength(temp_deb.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_deb.getMinutes(), 2);
-                        elmt_deb.text(" " + txtHour);
-                        elmt.data('start', temp_deb.getTime());
-                        x_temp = e2.clientX;
-                        elmt.css({'left': '+=' + delt, 'width': '-=' + delt});
-                        rect_elmt.css({'width': '-=' + delt});
-                        elmt_compl.css({'left': '-=' + delt});
-                        if(elmt.find('.lien').hasClass('rightlink')){
-                            elmt_txt.css({'left':'-='+delt});
-                        }
-                    }
-                });
+                self._beforeEventMove($(this).closest('.elmt'), e1.clientX, 'mousemove', 1);
             });
 
             // Déplacement de l'heure de fin
             this.element.on('mousedown', '.move_fin', function (e1) {
-                //pas de mise à jour des évènements pendant le mouvement
-                self._pauseUpdate();
                 //type de mouvement : changement de fin
                 self.on_drag = -2;
-                var x_ref = e1.clientX;
-                var x_temp = x_ref;
-                var elmt = $(this).closest('.elmt');
-                //les jalons sont à des positions fausses pendant le déplacement :
-                //inutile de les afficher
-                elmt.find('.milestone').hide();
-                elmt.addClass('on_drag');
-                elmt.find('.elmt_flecheD').hide();
-                elmt.find('.elmt_fin').show();
-                var rect_elmt = elmt.find('.rect_elmt');
-                elmt.find('.complement').hide();
-                var rect_width = rect_elmt.width();
-                var elmt_fin = elmt.find('.elmt_fin');
-                var elmt_txt = elmt.find('.label_elmt');
-                var pix_time = 30 * 60000 / (self.intervalle * self._getWidthAvalaible() / 100);
-
-                //récupération de l'heure de fin
-                var id = elmt.data('ident');
-                var event = self.eventsDisplayed[self.eventsDisplayedPosition[id]];
-                var enddate = new Date(event.end_date);
-                var d_fin = new Date();
-                elmt.data('end', d_fin.getTime());
-                if (event.end_date !== null
-                    && self._isValidDate(enddate)
-                    && enddate <= self.timelineEnd) {
-                    d_fin = enddate;
-                } else {
-                    d_fin = self.timelineEnd;
-                }
-                //à chaque mouvement, calcul et mise à jour de l'heure
-                self.element.mousemove(function (e2) {
-                    e2.preventDefault();
-                    //désactivaton de tous les liens des boutons
-                    elmt.find('.label_elmt a').addClass('disabled');
-                    var delt = e2.clientX - x_temp;
-                    var delt2 = e2.clientX - x_ref;
-                    if(delt !== 0){
-                        //mouvement effectif
-                        self.on_drag = 2;
-                    }
-                    if (rect_width + delt2 > 40) {
-                        var temp_fin = new Date();
-                        temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
-                        var txtHour = self._formatNumberLength(temp_fin.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_fin.getMinutes(), 2);
-                        elmt_fin.find('span.hour-txt').text(txtHour + " ");
-                        elmt.data('end', temp_fin.getTime());
-                        x_temp = e2.clientX;
-                        elmt.css({'width': '+=' + delt});
-                        rect_elmt.css({'width': '+=' + delt});
-                        if(elmt.find('.lien').hasClass('rightlink')) {
-                            elmt_txt.css({'left':'+='+delt});
-                        }
-                    }
-                });
+                self._beforeEventMove($(this).closest('.elmt'), e1.clientX, 'mousemove', 2);
             });
 
             //on rélache la souris :
             //enregistrement des heure de début ou fin
             this.element.on('mouseup', function () {
-                self.element.unbind('mousemove');
-                self.pauseUpdateView();
-                var elmt = self.element.find('.on_drag');
-                if (elmt[0] !== null) {
-                    elmt.removeClass('on_drag');
-                    var id = elmt.data("ident");
-                    if (self.on_drag === 1) {
-                        var time = new Date();
-                        time.setTime(elmt.data('start'));
-                        $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=startdate&value=' + time.toUTCString(),
-                            function (data) {
-                                displayMessages(data.messages);
-                                if (data['event']) {
-                                    self.addEvents(data.event);
-                                }
-                            }).always(function(){
-                            self.forceUpdateView(false);
-                        });
-                    } else if (self.on_drag === 2) {
-                        var time = new Date();
-                        time.setTime(elmt.data('end'));
-                        $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                            function (data) {
-                                displayMessages(data.messages);
-                                if (data['event']) {
-                                    self.addEvents(data.event);
-                                }
-                            }).always(function(){
-                            self.forceUpdateView(false);
-                        });
-                    } else if (self.on_drag === -2){
-                        //clic simple : heure de fin = heure actuelle
-                        var time = new Date();
-                        $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
-                            function (data) {
-                                displayMessages(data.messages);
-                                if (data['event']) {
-                                    self.addEvents(data.event);
-                                }
-                            }).always(function(){
-                            self.forceUpdateView(false);
-                        });
-                    }
-                }
-                self.on_drag = 0;
-                self._restoreUpdate();
+                self._afterEventMove('mousemove');
             });
             //clic sur les heures de début => passage à confirmé
             this.element.on('click', '.elmt_deb', function(e){
@@ -533,17 +414,33 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 2;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
                     self.forceUpdateView(false);
                 });
+            });
+
+            /**
+             * Modify evt on double click
+             */
+            this.element.on('dblclick', '.rect_elmt', function(e){
+                if($(e.target).hasClass('rect_elmt')){
+                    var id = $(this).closest('.elmt').data('ident');
+                    var event = self.events[self.eventsPosition[id]];
+                    if(event.modifiable && !event.readonly) {
+                        $(this).closest('.elmt').find('.modify-evt').trigger('click');
+                    }
+                }
             });
 
             //clic sur heure de fin => passage à terminé
@@ -553,12 +450,15 @@
                 var me = $(this);
                 var elmt = me.closest('.elmt');
                 var id = elmt.data('ident');
+                var event = self.events[self.eventsPosition[id]];
                 var newstatus = 3;
                 $.post(self.options.controllerUrl+'/changefield?id='+id+'&field=status&value='+newstatus,
                     function(data){
                         displayMessages(data.messages);
                         if(data['event']){
-                            self.addEvents(data.event);
+                            //send update to mattermost if only a post has alredy been sent
+                            var sendToMattermost = (event.mattermostid !== null);
+                            self.addEvents(data.event, sendToMattermost);
                         }
                     }
                 ).always(function(){
@@ -572,20 +472,31 @@
                 var me = $(this);
                 var id = me.data('id');
                 var txt = '<p class="elmt_tooltip actions">'
-                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer IPO</a></p>';
+                    + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
-                if(event.status_id < 4 && event.modifiable){ //modifiable, non annulé et non supprimé
-                    if(event.punctual === false){
-                        if(event.star === true){
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
+                if(self.options.mattermost) {
+                    txt += '<p><a ' +
+                        'href="#" ' +
+                        'data-id="'+id+'" ' +
+                        'data-mattermostid="'+event.mattermostid+'" ' +
+                        'class="send-mattermost"><span class="glyphicon glyphicon-send"></span> '+(event.mattermostid == null ? 'Envoyer sur le chat' : 'Mettre à jour sur le chat')+'</a>';
+                }
+                if(event.status_id < 4){ //non annulé et non supprimé
+                    //ajout de notes et flag important dispo pour tout évènement
+                    if (event.punctual === false) {
+                        if (event.star === true) {
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-non-important"><span class="glyphicon glyphicon-leaf"></span> Non important</a></p>';
                         } else {
-                            txt += '<p><a href="#" data-id="'+id+'" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
+                            txt += '<p><a href="#" data-id="' + id + '" class="evt-important"><span class="glyphicon glyphicon-fire"></span> Important</a></p>';
                         }
                     }
-                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="'+id+'"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
-                    txt += '<p><a href="#" data-id="'+id+'" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler</a></p>';
+                    txt += '<p><a href="#add-note-modal" class="add-note" data-toggle="modal" data-id="' + id + '"><span class="glyphicon glyphicon-comment"></span> Ajouter une note</a></p>';
+                    if(event.modifiable && !event.readonly) {
+                        txt += '<p><a href="#" data-id="' + id + '" class="cancel-evt"><span class="glyphicon glyphicon-remove"></span> Annuler évènement</a></p>';
+
+                    }
                 }
-                if(event.status_id < 5 && event.deleteable) {
+                if(event.status_id < 5 && event.deleteable && !event.readonly) {
                     txt += '<p><a href="#" data-id="'+id+'" class="delete-evt"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></p>';
                 }
                 txt += '</p>';
@@ -611,7 +522,10 @@
 
             this.element.on('click', '.add-note', function(e){
                 e.preventDefault();
-                $("#add-note").data('id', $(this).data('id'));
+                var me = $(this);
+                var id = me.data('id');
+                $("#add-note").data('id', id);
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
 
             this.element.on('click', '.evt-important', function(e){
@@ -623,6 +537,8 @@
                         displayMessages(data.messages);
                         if(data['event']){
                             self._highlightEvent(id, true);
+                            self.sortEvents();
+                            self.forceUpdateView(false);
                         }
                     }
                 );
@@ -638,6 +554,8 @@
                         displayMessages(data.messages);
                         if(data['event']){
                             self._highlightEvent(id, false);
+                            self.sortEvents();
+                            self.forceUpdateView(false);
                         }
                     }
                 );
@@ -690,6 +608,14 @@
                 });
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
+
+            this.element.on('click', '.send-mattermost', function(e){
+                var me = $(this);
+                var id = me.data('id');
+                var event = self.events[self.eventsPosition[id]];
+                self._sendToMattermost(event);
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
         },
         _setOption: function (key, value) {
             if (key === "showCategories") {
@@ -732,12 +658,16 @@
         /**
          * Add or modify multiple events at once
          * @param {type} eventsList
+         * @param sendToMattermost : if true, send events to Mattermost
          * @returns {undefined}
          */
-        addEvents: function (eventsList) {
+        addEvents: function (eventsList, sendToMattermost) {
             var self = this;
             $.each(eventsList, function (key, value) {
                 self.addEvent(value, false);
+                if(typeof sendToMattermost !== "undefined" && sendToMattermost == true) {
+                    self._sendToMattermost(value);
+                }
             });
             //sort events
             this.sortEvents();
@@ -856,18 +786,39 @@
             //comparateur par défaut 
             if (comparator === "default" || (comparator === undefined && this.lastEventComparator === undefined)) {
                 if (this.options.showCategories === true) {
-                    //catégorie racine, puis catégorie, puis nom, puis date de début
+                    //catégorie racine, puis catégorie, puis importants, puis nom, puis date de début
                     this.events.sort(function (a, b) {
-                        var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
-                        var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
-                        if (aPosition < bPosition) {
-                            return -1;
-                        } else if (aPosition > bPosition) {
-                            return 1;
+                        if(self.options.showOnlyRootCategories) {
+                            var aPosition = self.catPositions[a.category_root_id] === undefined ? -1 : self.catPositions[a.category_root_id];
+                            var bPosition = self.catPositions[b.category_root_id] === undefined ? -1 : self.catPositions[b.category_root_id];
+                            if (aPosition < bPosition) {
+                                return -1;
+                            } else if (aPosition > bPosition) {
+                                return 1;
+                            }
+                            //sort important events before sub-cat
+                            if(a.star && ! b.star) {
+                                return -1;
+                            } else if(! a.star && b.star) {
+                                return 1;
+                            }
+                            if (a.category_place < b.category_place) {
+                                return -1;
+                            } else if (a.category_place > b.category_place) {
+                                return 1;
+                            }
+                        } else {
+                            var aPosition = self.catPositions[a.category_id];
+                            var bPosition = self.catPositions[b.category_id];
+                            if (aPosition < bPosition) {
+                                return -1;
+                            } else if (aPosition > bPosition) {
+                                return 1;
+                            }
                         }
-                        if (a.category_place < b.category_place) {
+                        if(a.star && ! b.star) {
                             return -1;
-                        } else if (a.category_place > b.category_place) {
+                        } else if(! a.star && b.star) {
                             return 1;
                         }
                         if (a.name < b.name) {
@@ -1666,6 +1617,7 @@
                 rect.css('background-color', newcolor);
                 compl.css('border-left-color', newcolor);
             }
+            return newcolor;
         },
         /**
          * Hide an event if displayed
@@ -1836,12 +1788,14 @@
             elmt_fin.css({'top': yEnd + 'px'});
 
             //affichage des boutons en fonction des droits
-            if (event.modifiable) {
+            if (event.modifiable && !event.readonly) {
                 elmt_mod.addClass('disp');
             }
             //checklist doit être accessible en lecture
             elmt_check.addClass('disp');
-            elmt_tooltip.addClass('disp');
+            if(event.modifiable) {
+                elmt_tooltip.addClass('disp');
+            }
 
             //calcul des tailles des éléments pour le dessin
             // et le positionnement
@@ -1959,7 +1913,7 @@
                     totalWidth += offset;
                     elmt_deb.css({'left': -(debWidth + 14)+'px'});
                 } else {
-                    if(event.modifiable && event.recurr == false){
+                    if(event.modifiable && event.recurr == false && !event.readonly){
                         move_deb.addClass('disp');
                         move_deb.css({'left': 8 + 'px'});
                     }
@@ -1998,7 +1952,7 @@
                     totalWidth += haut;
                 }
                 //dans tous les cas
-                if(event.modifiable){
+                if(event.modifiable && !event.readonly){
                     move_fin.addClass('disp');
                     move_fin.css({'right': 12 + 'px'});
                 }
@@ -2127,7 +2081,11 @@
 
                 } else if(lien.hasClass('rightlink')){
                     event.totalWidth -= txt_width;
-                    elmt_txt.css({'left': 'calc(100% - '+txt_width+'px)'});
+                    var boxWidth = 17*3
+                        + (elmt_txt.find('.badge').length * 14)
+                        + 4 //padding
+                        + 2;
+                    elmt_txt.css({'left': 'calc(100% - '+boxWidth+'px)'});
                     elmt.css({'width': 'calc('+(event.xend-event.xdeb)+'% + '+event.totalWidth+'px)'});
                     elmt_rect.css({'width': 'calc(100% - '+event.totalWidth+'px)'});
 
@@ -2181,6 +2139,7 @@
             event.hourEndForced = false;
             switch (event.status_id) {
                 case 1: //nouveau
+                    elmt.removeClass('terminated');
                     //label en italique
                     elmt_txt.css({'font-style': 'italic'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2193,19 +2152,29 @@
                     if (now > start) {
                         //afficher heure de début avec warning + enlever lien
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                        elmt_deb.removeClass('disp').show().tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.removeClass('disp').show();
+                        if(event.modifiable && !event.readonly) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                         event.hourBeginForced = true;
                     } else {
                         //affichage sur hover avec (?)
                         elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                        elmt_deb.addClass('disp').tooltip({
-                            title: "Cliquer pour confirmer l'heure de début.",
-                            container: 'body'
-                        });
+                        elmt_deb.addClass('disp');
+                        if(event.modifiable && !event.readonly) {
+                            elmt_deb.tooltip({
+                                title: "Cliquer pour confirmer l'heure de début.",
+                                container: 'body'
+                            });
+                        } else {
+                            elmt_deb.addClass('disabled');
+                        }
                         lien.filter('.leftlink').addClass('disp').show();
                     }
                     //heure de fin cliquable
@@ -2217,19 +2186,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable && !event.readonly) {
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable && !event.readonly){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -2240,6 +2219,7 @@
                     }
                     break;
                 case 2: //confirmé
+                    elmt.removeClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2260,19 +2240,29 @@
                         if (this._isValidDate(end) && now > end) {
                             //afficher heure de fin avec warning
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-warning-sign');
-                            elmt_fin.removeClass('disp').show().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.removeClass('disp').show();
+                            if(event.modifiable && !event.readonly){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').removeClass('disp').hide();
                             event.hourEndForced = true;
                         } else {
                             //affichage sur hover avec (?)
                             elmt_fin.find('span.glyphicon').removeClass().addClass('glyphicon glyphicon-question-sign');
-                            elmt_fin.addClass('disp').hide().tooltip({
-                                title: "Cliquer pour confirmer l'heure de fin.",
-                                container: 'body'
-                            });
+                            elmt_fin.addClass('disp').hide();
+                            if(event.modifiable && !event.readonly){
+                                elmt_fin.tooltip({
+                                    title: "Cliquer pour confirmer l'heure de fin.",
+                                    container: 'body'
+                                });
+                            } else {
+                                elmt_fin.addClass('disabled');
+                            }
                             lien.filter('.rightlink').addClass('disp').show();
                         }
                     }
@@ -2280,6 +2270,7 @@
                     rect.removeClass('stripes');
                     break;
                 case 3: //terminé
+                    elmt.addClass('terminated');
                     //label normal
                     elmt_txt.css({'font-style': 'normal'});
                     if(typeof(textColor) !== 'undefined'){
@@ -2304,8 +2295,8 @@
                     rect.removeClass('stripes');
                     break;
                 case 4: //annulé
+                    elmt.removeClass('terminated');
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').removeClass('dlt dlt-grey');
                     elmt_txt.find('span.elmt_name').css({'text-decoration': 'line-through'});
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
@@ -2325,14 +2316,15 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement annulé ne peut pas être important
                     this._highlightElmt(elmt, false);
                     break;
                 case 5:
+                    elmt.removeClass('terminated');
                     //label barré
-                    elmt_txt.css({'font-style': 'normal', 'color': 'grey'});
                     elmt_txt.find('span.elmt_name').addClass('dlt  dlt-grey');
                     //heure de début et heure de fin : non cliquable, sur demande sans icone
                     elmt_deb.find('span.glyphicon').removeClass().addClass('glyphicon');
@@ -2351,7 +2343,8 @@
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                     //couleur estompée
-                    this._shadeEvent(event, elmt, 0.5);
+                    var newcolor = this._shadeEvent(event, elmt, 0.5);
+                    elmt_txt.css({'font-style': 'normal', 'color': this._shadeHexColor(newcolor, -0.5)});
                     rect.removeClass('stripes');
                     //un évènement supprimé ne peut pas être important
                     this._highlightElmt(elmt, false);
@@ -2393,7 +2386,7 @@
             elmt_txt.append(elmt_b2);
             elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
             //ajout bouton ouverture menu tooltip
-            var elmt_b3= $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
+            var elmt_b3 = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
             elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
             elmt_txt.append(elmt_b3);
             // lien entre le texte et l'événement (si texte écrit en dehors)
@@ -2420,6 +2413,35 @@
             move_deb.css({'height': dy - 8});
             move_fin.css({'height': dy - 8});
             return elmt;
+        },
+        _sendToMattermost: function(event) {
+            if(this.options.mattermost) {
+                var mattermostId = event.mattermostid;
+                var id = event.id;
+                var self = this;
+                var message = "## " + event.name + "\n" +
+                    "* _Début_ : " + moment(event.start_date).utc().format("lll") + "\n";
+                if (event.end_date) {
+                    message += "* _Fin_ : " + moment(event.end_date).utc().format("lll") + "\n";
+                }
+                message += "### Description" + "\n";
+                $.each(event.fields, function (nom, contenu) {
+                    message += "* _" + nom + "_ : " + contenu + "\n";
+                });
+                if (mattermostId == null) {
+                    //new post
+                    $(".chat-container").mattermost("sendMessage", message, function (data) {
+                        var mattermostId = data.id;
+                        $.getJSON(self.options.controllerUrl + '/linkEventToPost?id=' + id + '&postid=' + mattermostId);
+                        self.events[self.eventsPosition[id]].mattermostid = mattermostId;
+                    });
+                } else {
+                    //modify post
+                    $(".chat-container").mattermost("patchMessage", message, mattermostId, function(data){
+                        $(".chat-container").mattermost("sendMessage", "Évènement modifié : ["+event.name+"]("+data.permalink+")");
+                    });
+                }
+            }
         },
         /* *********************** */
         /* ** Utilitary methods ** */
@@ -2627,6 +2649,181 @@
                 }
             });
             return outOfView;
+        },
+        /**
+         *
+         * @param elmt
+         * @param clientX
+         * @param moveEvent
+         * @param startOrEnd start = 1, end = 2
+         * @private
+         */
+        _beforeEventMove: function (elmt, clientX, moveEvent, startOrEnd) {
+            var self = this;
+            self._pauseUpdate();
+
+            var x_ref = clientX;
+            var x_temp = x_ref;
+            elmt.find('.elmt_deb').show();
+
+            var elmt_deb = elmt.find('.elmt_deb span.hour-txt');
+            var elmt_fin = elmt.find('.elmt_fin');
+            var rect_elmt = elmt.find('.rect_elmt');
+            var elmt_compl = elmt.find('.complement');
+            var rect_width = rect_elmt.width();
+            var elmt_txt = elmt.find('.label_elmt');
+            var pix_time = 30 * 60000 / (self.intervalle * self._getWidthAvalaible() / 100);
+            var elmt_fin = elmt.find('.elmt_fin');
+
+            var id = elmt.data('ident');
+            var event = self.eventsDisplayed[self.eventsDisplayedPosition[id]];
+
+
+            if(moveEvent == 'touchmove') {
+                //on détermine si on change la date de fin ou la date de début en fonction de la zone
+                if(clientX < (rect_elmt.offset().left + rect_width/2)) {
+                    //première moitié : start
+                    startOrEnd = 1;
+                } else {
+                    //deuxième moitié : end
+                    startOrEnd = 2;
+                }
+            }
+
+            switch (startOrEnd) {
+                case 1:
+                    var start = new Date(event.start_date);
+                    var temp_deb = new Date();
+                    break;
+                case 2:
+                    var enddate = new Date(event.end_date);
+                    var d_fin = new Date();
+                    elmt.data('end', d_fin.getTime());
+                    if (event.end_date !== null
+                        && self._isValidDate(enddate)
+                        && enddate <= self.timelineEnd) {
+                        d_fin = enddate;
+                    } else {
+                        d_fin = self.timelineEnd;
+                    }
+                    break;
+            }
+
+            elmt.addClass('on_drag');
+
+            self.element.on(moveEvent, function (e2) {
+                e2.preventDefault();
+                //désactivaton de tous les liens des boutons
+                elmt.find('.label_elmt a').addClass('disabled');
+                //les jalons sont à des positions fausses pendant le déplacement :
+                //inutile de les afficher
+                elmt.find('.milestone').hide();
+
+                if(startOrEnd == 2) {
+                    elmt.find('.elmt_flecheD').hide();
+                    elmt.find('.elmt_fin').show();
+                    elmt.find('.complement').hide();
+                }
+
+                var lastClientX = 0;
+                switch (moveEvent) {
+                    case 'mousemove':
+                        lastClientX = e2.clientX;
+                        break;
+                    case 'touchmove':
+                        lastClientX = e2.originalEvent.changedTouches[0].clientX;
+                }
+
+                var delt = lastClientX - x_temp;
+                var delt2 = lastClientX - x_ref;
+                if(delt !== 0) {
+                    self.on_drag = startOrEnd;
+                }
+                switch (startOrEnd) {
+                    case 1:
+                        if (delt2 + 40 < rect_width) {
+                            temp_deb.setTime(start.getTime() + delt2 * pix_time);
+                            var txtHour = self._formatNumberLength(temp_deb.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_deb.getMinutes(), 2);
+                            elmt_deb.text(" " + txtHour);
+                            elmt.data('start', temp_deb.getTime());
+                            x_temp = lastClientX;
+                            elmt.css({'left': '+=' + delt, 'width': '-=' + delt});
+                            rect_elmt.css({'width': '-=' + delt});
+                            elmt_compl.css({'left': '-=' + delt});
+                            if(elmt.find('.lien').hasClass('rightlink')){
+                                elmt_txt.css({'left':'-='+delt});
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (rect_width + delt2 > 40) {
+                            var temp_fin = new Date();
+                            temp_fin.setTime(d_fin.getTime() + delt2 * pix_time);
+                            var txtHour = self._formatNumberLength(temp_fin.getUTCHours(), 2) + ":" + self._formatNumberLength(temp_fin.getMinutes(), 2);
+                            elmt_fin.find('span.hour-txt').text(txtHour + " ");
+                            elmt.data('end', temp_fin.getTime());
+                            x_temp = lastClientX;
+                            elmt.css({'width': '+=' + delt});
+                            rect_elmt.css({'width': '+=' + delt});
+                            if(elmt.find('.lien').hasClass('rightlink')) {
+                                elmt_txt.css({'left':'+='+delt});
+                            }
+                        }
+                        break;
+                }
+
+            });
+        },
+        _afterEventMove: function (moveEvent) {
+            var self = this;
+            self.element.unbind(moveEvent);
+            self.pauseUpdateView();
+            var elmt = self.element.find('.on_drag');
+            if (elmt[0] !== null && elmt.data('ident') !== undefined) {
+                elmt.removeClass('on_drag');
+                var id = elmt.data("ident");
+                var event = self.events[self.eventsPosition[id]];
+                var sendToMattermost = (event.mattermostid !== null);
+                if (self.on_drag === 1) {
+                    var time = new Date();
+                    time.setTime(elmt.data('start'));
+                    $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=startdate&value=' + time.toUTCString(),
+                        function (data) {
+                            displayMessages(data.messages);
+                            if (data['event']) {
+                                self.addEvents(data.event, sendToMattermost);
+                            }
+                        }).always(function(){
+                        self.forceUpdateView(false);
+                    });
+                } else if (self.on_drag === 2) {
+                    var time = new Date();
+                    time.setTime(elmt.data('end'));
+                    $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
+                        function (data) {
+                            displayMessages(data.messages);
+                            if (data['event']) {
+                                self.addEvents(data.event, sendToMattermost);
+                            }
+                        }).always(function(){
+                        self.forceUpdateView(false);
+                    });
+                } else if (self.on_drag === -2){
+                    //clic simple : heure de fin = heure actuelle
+                    var time = new Date();
+                    $.post(self.options.controllerUrl + '/changefield?id=' + id + '&field=enddate&value=' + time.toUTCString(),
+                        function (data) {
+                            displayMessages(data.messages);
+                            if (data['event']) {
+                                self.addEvents(data.event, sendToMattermost);
+                            }
+                        }).always(function(){
+                        self.forceUpdateView(false);
+                    });
+                }
+            }
+            self.on_drag = 0;
+            self._restoreUpdate();
         }
     });
 })(jQuery);

@@ -28,7 +28,8 @@ class TabsControllerFactory implements FactoryInterface {
         $service = $serviceLocator->getServiceLocator();
         return new TabsController(
             $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('config'));
+            $service->get('config'),
+            $service->get('mattermostservice'));
     }
 
 }

@@ -154,7 +154,6 @@ var afis = function(url)
 
     function searchKeyUpHandler() {
         $entree = $(this).val().toLowerCase();
-
         $tUsrbody.find('tr').each(function() {
             $codeAf = $(this).find('td').first().html().toLowerCase();
             ($codeAf.indexOf($entree)!=-1) ? $(this).show() : $(this).hide();
@@ -208,14 +207,18 @@ var afis = function(url)
     function loadAfisForm(id) 
     {
         $fEditAf.load(url + 'afis/form', { id: id }, function() {
-            if(id) $fEditAf.find('input[name=code]').prop('disabled', true);
+            var $code = $fEditAf.find('input[name=code]');
+            $code.prop('autocomplete', 'off');
+            if(id) $code.prop('disabled', true);
+
+            $code.keyup(keyPressedCodeHandler);
             $.material.checkbox();
-            $fEditAf.find('input[name=code]').keyup(keyPressedCodeHandler);
         });
 
         function keyPressedCodeHandler(e) 
         {
-            if ($(this).val().length == 4 && keyIsALetter(e.which)) {
+            $(this).val($(this).val().toUpperCase());
+            if ($(this).val().length == 4 && keyIsValid(e.which)) {
                 var code = $(this).val();
                 noty({
                     text: 'Recherche des informations (horaires et contacts) associées au code donné.',
@@ -228,10 +231,21 @@ var afis = function(url)
                 function accesNotam(data) {
                     if(data.accesNotam == 1) {
                         $.get(url + 'afis/getnotams', {code: code}, getNotam);
+                    } else {
+                        noty({
+                            text: 'Impossible d\'accéder aux NOTAM pour extraire les données associées au code '+code,
+                            type: 'error',
+                            timeout: 4000,
+                        });                        
                     }
                 }
 
                 function getNotam(data) {
+                    noty({
+                        text: data.msg,
+                        type: data.msgType,
+                        timeout: 4000,
+                    }); 
                     var $n = $(data.notams).find('font.NOTAMBulletin');
                     if ($n.length > 0) {
                         $fEditAf.find('input[name=name]').val('');
@@ -340,7 +354,7 @@ var afis = function(url)
         }
     }
 
-    function keyIsALetter(key) {
-        if(key >= 65 && key <= 90) return true;
+    function keyIsValid(key) {
+        if (key == 8 || (key >= 65 && key <= 90))  return true;
     }
 };

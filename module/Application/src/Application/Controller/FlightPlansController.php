@@ -18,25 +18,19 @@
 namespace Application\Controller;
 
 use Application\Entity\Category;
-use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\Common\Collections\Criteria;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use DateTime;
 use DateInterval;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Stdlib\Parameters;
 
 use Application\Services\CustomFieldService;
-use Application\Form\CustomFieldset;
 
-use Application\Entity\FlightPlanCategory;
-use Application\Entity\AlertCategory;
-use Application\Entity\Organisation;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
+use Application\Entity\FlightPlanCategory;
+use Application\Entity\AlertCategory;
 /**
  *
  * @author Loïc Perrin
@@ -44,11 +38,12 @@ use Application\Entity\CustomFieldValue;
 class FlightPlansController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
-
     protected $em, $cf, $repo, $form;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf)
+
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
     {
+        parent::__construct($config, $mattermost);
         $this->em = $em;
         $this->cf = $cf;
     }
@@ -56,6 +51,11 @@ class FlightPlansController extends TabController
     public function indexAction()
     {
         parent::indexAction();
+        if (!$this->authFlightPlans('read')) {
+            echo "Droits d'accès requis.";
+            return false;
+        }
+
         $cats = [];
         foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
@@ -112,12 +112,14 @@ class FlightPlansController extends TabController
         return (is_array($cat)) ? end($cat) : null;
     }
 
-    private function getFp($start, $end, $sar = false)
-    {
-        $allFpEvents = $this->em->getRepository(Event::class)->getFlightPlanEvents($start, $end);
+    private function getFp($start, $end) {
+        $evRepo = $this->em->getRepository(Event::class);
+        $allFpEvents = $evRepo->getFlightPlanEvents($start, $end);
         $fpEvents = [];
+        $fpWAltEvents = [];
         foreach ($allFpEvents as $fpEvent) 
         {
+            $isAnAlert = false;
             $cat = $fpEvent->getCategory();
             $ev = [
                 'id' => $fpEvent->getId(),
@@ -130,11 +132,13 @@ class FlightPlansController extends TabController
                 $namefield = (isset($customfield)) ? $customfield->getName() : null; 
                 $valuefield = $value->getValue();
                 (isset($namefield)) ? $ev[$namefield] = $valuefield : null;
-                if($customfield->getId() == $cat->getAlertfield()->getId()) 
+                // gestion des alertes
+                if ($customfield->getId() == $cat->getAlertfield()->getId())
                 {
-                    if($valuefield > 0) {
+                    if ($valuefield > 0) {
+                        $isAnAlert = true;
                         $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        if($altEv instanceof Event) {
+                        if ($altEv instanceof Event) {
                             $ev['alert'] = [
                                 'id' => $altEv->getId(),
                                 'start_date' => $altEv->getStartDate(),
@@ -150,14 +154,13 @@ class FlightPlansController extends TabController
                     }
                 }
             }
-            if($sar == true && isset($ev['alert'])) $fpEvents[] = $ev;
-            if($sar == false && !isset($ev['alert'])) $fpEvents[] = $ev;            
+            if ($isAnAlert) $fpWAltEvents[] = $ev;
+            else $fpEvents[] = $ev;
         }
-        return $fpEvents;
+        return [$fpEvents, $fpWAltEvents];
     }
 
-    private function getAlertIdFromFp($fp) 
-    {
+    private function getAlertIdFromFp($fp) {
         $alertid = null;
         if (is_a($fp, Event::class)) 
         {
@@ -181,14 +184,13 @@ class FlightPlansController extends TabController
         return $fields;
     }
 
-    public function getAction() 
-    {
+    public function getAction() {
         if (!$this->authFlightPlans('read')) {
             echo self::ACCES_REQUIRED;
             return new JsonModel();
         };
-        //TODO : tester validité date
-        $post = $this->getRequest()->getPost(); 
+
+        $post = $this->getRequest()->getPost();
         if (isset($post['date']) && $post['date'] != '') {
             $start = new DateTime($post['date']); 
             $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
@@ -197,46 +199,49 @@ class FlightPlansController extends TabController
             $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
         }
 
-        $flightplans = (isset($post['sar']) && $post['sar'] == '1') ? $this->getFp($start, $end, true) : $this->getFp($start, $end);
+        $flightplans = $this->getFp($start, $end);
 
-        return 
-            (new ViewModel())
-                ->setTerminal($this->getRequest()->isXmlHttpRequest())
-                ->setVariables([
-                    'fields' => $this->getFields(),
-                    'flightplans' => $flightplans,
-                    'sar' => $post['sar']
-                ]);
-    }   
+        $viewmodel = new ViewModel();
+        $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
+        $viewmodel->setVariables([
+            'fields'            => $this->getFields(),
+            'flightplans'       => $flightplans[0],
+            'flightplansWAlt'   => $flightplans[1]
+        ]);
+        return $viewmodel;
+    }
 
-    public function endAction() 
-    {
+    public function endAction() {
         if (!$this->authFlightPlans('read')) return new JsonModel();
         $post = $this->getRequest()->getPost();
         $msgType = 'error';
         $id = (int) $post['id'];
-        $end_date = $post['end_date'];
+        $endDate = $post['endDate'];
         if($id > 0) 
         {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
-            if (isset($end_date)) $end_date = new \DateTime($end_date);
-            else $end_date = $now;
+            if (isset($endDate)) {
+                $endDate = new \DateTime($endDate);
+                $endDate->setTimezone(new \DateTimeZone("UTC"));
+            } else $endDate = $now;
 
             $event = $this->em->getRepository(Event::class)->find($id);
-            $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
-            $event->setStatus($endstatus);
-            $event->setEnddate($end_date);
-            $this->em->persist($event);
-            try 
-            {
-                $this->em->flush();
-                $msgType = 'success';
-                $msg = "Clôture du plan de vol.";
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
-            }
+            $startDate = $event->getStartdate();
+            if ($startDate <= $endDate) {
+                $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+                $event->setStatus($endstatus);
+                $event->setEnddate($endDate);
+                $this->em->persist($event);
+                try {
+                    $this->em->flush();
+                    $msgType = 'success';
+                    $msg = "Clôture du plan de vol.";
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
+                }
+            } else $msg = "Heure de cloture du vol > heure de début du vol.";
         } else $msg = "Impossible de trouver le vol.";
 
         return new JsonModel([
@@ -245,35 +250,37 @@ class FlightPlansController extends TabController
         ]);
     }
 
-    public function endAlertAction() 
-    {
+    public function endAlertAction() {
         if (!$this->authFlightPlans('read')) return new JsonModel();
         $post = $this->getRequest()->getPost();
         $msgType = 'error';
         $id = (int) $post['id'];
-        $end_date = $post['end_date'];
-        if($id > 0) 
-        {
+        $endDate = $post['endAltDate'];
+        if($id > 0) {
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
 
-            if (isset($end_date)) $end_date = new \DateTime($end_date);
-            else $end_date = $now;
+            if (isset($endDate)) {
+                $endDate = new \DateTime($endDate);
+                $endDate->setTimezone(new \DateTimeZone("UTC"));
+            } else $endDate = $now;
 
             $event = $this->em->getRepository(Event::class)->find($id);
-            $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
-            $event->setStatus($endstatus);
-            $event->setEnddate($end_date);
-            $this->em->persist($event);
-            
-            try 
-            {
-                $this->em->flush();
-                $msgType = 'success';
-                $msg = "Clôture de l'alerte.";
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
-            }
+            $startDate = $event->getStartdate();
+
+            if ($startDate <= $endDate) {
+                $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+                $event->setStatus($endstatus);
+                $event->setEnddate($endDate);
+                $this->em->persist($event);
+                try {
+                    $this->em->flush();
+                    $msgType = 'success';
+                    $msg = "Clôture de l'alerte.";
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
+                }
+            } else $msg = "Heure de fin de l'alerte > heure de début de l'alerte.";
         } else $msg = "Impossible de trouver l'événement alerte.";
 
         return new JsonModel([
@@ -281,12 +288,12 @@ class FlightPlansController extends TabController
             'msg' => $msg
         ]);        
     }
+
     private function authFlightPlans($action) {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('flightplans.'.$action)) ? false : true;
     }
 
-    public function triggerAlertAction() 
-    {
+    public function triggerAlertAction() {
         if (!$this->authFlightPlans('read')) return new JsonModel();
 
         $msgType = 'error';
@@ -374,8 +381,8 @@ class FlightPlansController extends TabController
                         $event->addCustomFieldValue($causefieldvalue);
                         $this->em->persist($causefieldvalue);
                         //on ajoute les valeurs des champs persos
-                        if (isset($post['custom_fields'])) {
-                            foreach ($post['custom_fields'] as $key => $value) {
+                        if (isset($req['custom_fields'])) {
+                            foreach ($req['custom_fields'] as $key => $value) {
                                 // génération des customvalues si un customfield dont le nom est $key est trouvé
                                 $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
                                     'id' => $key

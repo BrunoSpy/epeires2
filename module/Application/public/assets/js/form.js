@@ -176,20 +176,20 @@ var form = function(url, cats){
 		switch (newevt) {
 			case 0:
 				//création d'un nouvel évènement vide ou à partir d'un modèle
-				$('#notes-title').hide();
+				//$('#notes-title').hide();
 				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
 				$("#event input[name='submit']").prop('disabled', true).addClass('disabled');
 				break;
 			case 1:
 				//modification d'un evt
-				$('#notes-title').show();
-				$('#Event .nav-tabs > li').css('width', (100/7)+'%');
+				//$('#notes-title').show();
+				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
 				$('#Event .nav-tabs > li > a').removeClass('disabled');
 				$('#description-title > a').trigger('click');
 				break;
 			case 2:
 				//copie d'un evt ou utilisatio modèle via recherche
-				$('#notes-title').hide();
+				//$('#notes-title').hide();
 				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
 				$('#Event .nav-tabs > li > a').removeClass('disabled');
 				$('#hours-title > a').trigger('click');
@@ -255,12 +255,12 @@ var form = function(url, cats){
 		var count = $('#actions-tab tr').length;
 		$("#actions-title span.badge").html(count);
 	});
-
+/*
 	$('#event').arrive('#notes-tab blockquote', function(){
 		var count =  $('#notes-tab blockquote').length;
 		$('#notes-title span.badge').html(count);
 	});
-
+*/
 	//gestion des tabs
 	$('#event').on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
 		updateIconTabs();
@@ -501,7 +501,8 @@ var form = function(url, cats){
 				//update timeline
 				if(data['events']){
 					$("#timeline").timeline('pauseUpdateView');
-					$('#timeline').timeline('addEvents', data.events);
+					var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
+					$('#timeline').timeline('addEvents', data.events, sendToMattermost);
 					$('#timeline').timeline('forceUpdateView');
 					$('#calendarview').fullCalendar('refetchEvents');
 				}
@@ -1079,6 +1080,42 @@ var form = function(url, cats){
 
 		});
 	});
+
+    $('#event').on('click', '.notes .note', function(){
+        var me = $(this).html();
+        var p = $(this).closest('p');
+        p.empty();
+        var form = $('<div data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></div>');
+        form.append('<textarea name="note" class="form-control">'+me.replace(/<br\s*\/?>/mg,"\n")+'</textarea>');
+        form.append('<a href="#" class="btn btn-xs btn-primary submit-note" type="submit"><span class="glyphicon glyphicon-ok"></span></a>');
+        form.append('<a href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-repeat"></span></a>');
+        p.append(form);
+    });
+
+    $('#event').on('click', '.submit-note', function(e){
+        e.preventDefault();
+        var me = $(this).parent();
+        var content = {'note': $('#event textarea[name="note"]').val()};
+        $.post(me.attr('action'), content, function(data){
+            if(!data['error']){
+                var p = me.closest('p');
+                var span = $('<span class="note" data-id="'+me.data('id')+'">'+me.find('textarea').val()+'</span>');
+                p.empty();
+                p.append(span);
+                $('#timeline').timeline('addEvents',data.events);
+            }
+            displayMessages(data);
+        });
+    });
+
+    $('#event').on('click', '.cancel-note', function(e){
+        e.preventDefault();
+        var form = $(this).closest('div.modify-note');
+        var p = $(this).closest('p');
+        var span = $('<span class="note" data-id="'+form.data('id')+'">'+form.data('cancel')+'</span>');
+        p.empty();
+        p.append(span);
+    });
 
 	$('#recurr').on('show.bs.modal', function() {
         var startdate = $('input[name=startdate]').val();

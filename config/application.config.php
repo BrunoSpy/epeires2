@@ -30,6 +30,8 @@ $modules = array(
         'AssetManager',
         'DOMPDFModule',
         'OpentbsBundle',
+        'MaglMarkdown',
+        'MattermostMessenger',
         'Core',
         'Application',
         'Administration',
@@ -54,7 +56,7 @@ $modules = array(
 
 if ($env == 'development') {
 
-    $modules [] = 'ZendDeveloperTools';
+    //$modules [] = 'ZendDeveloperTools';
     $modules[] = 'DoctrineDataFixtureModule';
 }
 

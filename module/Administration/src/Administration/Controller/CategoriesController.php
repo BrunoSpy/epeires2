@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Application\Entity\ATFCMCategory;
 use Doctrine\ORM\EntityManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -171,7 +172,9 @@ class CategoriesController extends FormController
                     $form->get('type')->setValue('field');
                 } elseif ($category instanceof FlightPlanCategory) {
                     $form->get('type')->setValue('flightplan');
-                }                
+                } elseif ($category instanceof ATFCMCategory) {
+                    $form->get('type')->setValue('atfcm');
+                }
                 $form->get('type')->setAttribute('disabled', true);
                 
                 // select parent
@@ -237,6 +240,8 @@ class CategoriesController extends FormController
                     $category = $this->categoryFactory->createInterrogationPlanCategory();
                 } elseif ($post['type'] == 'field') {
                     $category = $this->categoryFactory->createFieldCategory();
+                } elseif ($post['type'] == 'atfcm') {
+                    $category = $this->categoryFactory->createATFCMCategory();
                 } else {
                     $category = new Category();
                     $fieldname = new CustomField();
@@ -363,6 +368,13 @@ class CategoriesController extends FormController
                 $category->setCodeField(null);
                 $category->setLatField(null);
                 $category->setLongField(null);
+            }
+            if($category instanceof ATFCMCategory) {
+                $category->setReasonField(null);
+                $category->setDescriptionField(null);
+                $category->setInternalId(null);
+                $category->setNormalRateField(null);
+                $category->setRegulationStateField(null);
             }
             $objectManager->persist($category);
             $objectManager->flush();

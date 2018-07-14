@@ -37,14 +37,16 @@ var flightplan = function(url)
     var idEvent = 0;
     var globdate = null;
     var $iDate = $('#i-date');
-    var $tableFp = $('.panel-body table');
+    // var $tableFp = $('.panel-body table');
 
     $('#a-end-fp-ok').click(function()
     {
+        // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
+        var endDate = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-fp').modal('hide');
         $.post(
             url+'flightplans/end', 
-            {id: idEvent, end_date: $('input[name=end-date]').val()}, 
+            {id: idEvent, endDate},
             function (data) {
                 refresh();
                 noty({
@@ -58,10 +60,12 @@ var flightplan = function(url)
 
     $('#a-end-alt-ok').click(function()
     {
+        // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
+        var endAltDate = moment.utc($('input[name=end-alt-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-alt').modal('hide');
         $.post(
             url+'flightplans/endAlert', 
-            {id: idEvent, end_date: $('input[name=end-date]').val()}, 
+            {id: idEvent, endAltDate},
             function (data) {
                 refresh();
                 noty({
@@ -107,57 +111,68 @@ var flightplan = function(url)
 
     refresh(); 
     
-    function refresh() 
-    {
+    function refresh() {
+        // maj du nombre d'événements actif visible sur l'onglet
         headerbar(url);
-        $('.a-trig-alt .a-end-fp .a-end-alt').remove();
-
-        $('.sar').load(url+'flightplans/get', {date: globdate, sar:1}, function() {
-            $('.nosar').load(url+'flightplans/get', {date: globdate, sar:0}, function() 
-            {
-                // on selectionne les boutons de déclenchement qui ne sont pas inactifs (cas d'une alerte clôturée)
-                var $btnAlts = $(".a-trig-alt");
-
-                $btnAlts.click(function() {
-                    // on ne fait rien si le bouton est inactif
-                    if($(this).find('button').not('.disabled')) {
-                        $('.s-trig-alt').html($(this).data('type'));
-                        $('.s-trig-airid').html($(this).data('air-id'));
-                        $('.t-causealt').val($(this).data('cause'));
-                        idEvent = $(this).data('id');
-
-                        if($(this).hasClass('active-alt')) 
-                            $('#mdl-edit-alt').find('p').hide();
-                        else
-                            $('#mdl-edit-alt').find('p').show();
-                    }
-                });
-
-                $('.active-alt').tooltip();
-
-                $('.a-end-fp').click(function() 
-                {
-                    idEvent = $(this).data('id');
-                    $('#s-end-airid').html($(this).data('air-id'));
-                    $('input[name=end-date]')
-                        .timepickerform({
-                            'id':'start', 
-                            'clearable':true, 
-                            'init':true
-                        });    
-                });
-
-                $('.a-end-alt').click(function() {
-                    idEvent = $(this).data('id');
-                    $('input[name=end-date]')
-                        .timepickerform({
-                            'id':'start', 
-                            'clearable':true, 
-                            'init':true
-                        });    
-                });
+        // Inutile ?
+        // $('.a-trig-alt .a-end-fp .a-end-alt').remove();
+        // Conteneur des pln
+        $('#p-show-fp')
+            .load(url + 'flightplans/get', {date: globdate}, loadFpHandler)
+            .on('click', '.a-trig-alt', trigAlertHandler)
+            .on('click', '.a-end-fp', endFpHandler)
+            .on('click', '.a-end-alt', endAltHandler)
+        ;
+        // s'applique apres le chargement en ajax du conteneur
+        function loadFpHandler () {
+            $('.active-alt').tooltip();
+            $('.sortable').stupidtable();
+            $('.sortable').bind('aftertablesort', function(event, data){
+                var th = $(this).find("th");
+                th.find(".arrow").remove();
+                var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+                th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
             });
-        });    
+
+        }
+        // clique sur un des 3 boutons de déclenchement d'alerte
+        function trigAlertHandler() {
+            // on ne fait rien si le bouton est inactif (alerte close)
+            if ($(this).find('button').hasClass('disabled'))
+                return null;
+
+            $('.s-trig-alt').html($(this).data('type'));
+            $('.s-trig-airid').html($(this).data('air-id'));
+            $('.t-causealt').val($(this).data('cause'));
+            idEvent = $(this).data('id');
+
+            if ($(this).hasClass('active-alt'))
+                $('#mdl-edit-alt').find('p').hide();
+            else
+                $('#mdl-edit-alt').find('p').show();
+        }
+
+        function endFpHandler() {
+            idEvent = $(this).data('id');
+            $('#s-end-airid').html($(this).data('air-id'));
+            $('input[name=end-date]')
+                .timepickerform({
+                    'id':'start',
+                    'clearable':true,
+                    'init':true
+                });
+        }
+
+        function endAltHandler() {
+            idEvent = $(this).data('id');
+            $('input[name=end-alt-date]')
+                .timepickerform({
+                    'id':'start',
+                    'clearable':true,
+                    'init':true
+                })
+            ;
+        }
     }
 
     $iDate

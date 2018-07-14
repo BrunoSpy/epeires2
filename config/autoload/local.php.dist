@@ -12,7 +12,10 @@
  */
 
 return array(
-    
+
+    "secret_key" => "<my secret key>",
+    "secret_init" => "<my secret initialisation vector>",
+
     'zfc_rbac' => array(
         'guards' => array(
             //Configure autoconnection according to the example below

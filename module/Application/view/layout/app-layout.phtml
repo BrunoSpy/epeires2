@@ -8,48 +8,70 @@
         <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
 
         <!-- Le styles -->
-        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-                        ->prependStylesheet($this->basePath() . '/assets/css/application.css') 
+        <?php
+        $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                        ->prependStylesheet($this->basePath() . '/assets/css/application.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/core.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/jquery.timepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/timeline.css')
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap-markdown/css/bootstrap-markdown.min.css')
                         ->prependStylesheet($this->basePath() . '/components/fuelux/dist/css/fuelux.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-epeirespalette.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
-                        ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css')
-        				?>
+                        ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css');
+
+        if($this->isGranted('chat.access') && $this->mattermost) {
+            $this->headLink()
+                ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.min.css')
+                ->appendStylesheet($this->basePath() . '/components/lightbox2/dist/css/lightbox.min.css')
+                ->appendStylesheet($this->basePath() . '/assets/css/mattermostchat.css');
+        }
+        echo $this->headLink();
+      ?>
 
         <!-- Scripts -->
         <?php
-        echo $this->headScript()
-			->prependFile($this->basePath() . '/assets/js/application.js')
+        $this->headScript()
+			      ->prependFile($this->basePath() . '/assets/js/application.js')
             ->prependFile($this->basePath() . '/components/html2pdf/html2pdf.bundle.min.js')
-			->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
-                        ->prependFile($this->basePath() . '/assets/js/headerbar.js')
-                        ->prependFile($this->basePath() . '/assets/js/alarm.js')
-                        ->prependFile($this->basePath() . '/assets/js/form.js')
-                        ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
-                        ->prependFile($this->basePath() . '/assets/js/application.js')
+			      ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
+            ->prependFile($this->basePath() . '/assets/js/headerbar.js')
+            ->prependFile($this->basePath() . '/assets/js/alarm.js')
+            ->prependFile($this->basePath() . '/assets/js/form.js')
+            ->prependFile($this->basePath() . '/assets/js/jquery.timepicker.js')
+            ->prependFile($this->basePath() . '/assets/js/application.js')
+            ->prependFile($this->basePath() . '/components/bootstrap-markdown/locale/bootstrap-markdown.fr.js')
+            ->prependFile($this->basePath() . '/components/bootstrap-markdown/js/bootstrap-markdown.js')
+            ->prependFile($this->basePath() . '/components/marked/marked.min.js')
             ->prependFile($this->basePath() . '/components/fullcalendar/dist/locale/fr.js')
-                        ->prependFile($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.js')
-                        ->prependFile($this->basePath() . '/components/fuelux/dist/js/fuelux.min.js')
-                        ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
-                        ->prependFile($this->basePath() . '/components/momentjs/locale/fr.js')
-                        ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
-                        ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
-                        ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
-                        ->prependFile($this->basePath() . '/components/arrive/minified/arrive.min.js')
-                        ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
-                        ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
-                        ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
-                        ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
-                        ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
-                        ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
-                        ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
+            ->prependFile($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.js')
+            ->prependFile($this->basePath() . '/components/fuelux/dist/js/fuelux.min.js')
+            ->prependFile($this->basePath() . '/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js')
+            ->prependFile($this->basePath() . '/components/momentjs/locale/fr.js')
+            ->prependFile($this->basePath() . '/components/momentjs/min/moment.min.js')
+            ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/material.min.js')
+            ->prependFile($this->basePath() . '/components/bootstrap-material-design/dist/js/ripples.min.js')
+            ->prependFile($this->basePath() . '/components/arrive/minified/arrive.min.js')
+            ->prependFile($this->basePath() . '/components/jquery-mousewheel/jquery.mousewheel.min.js')
+            ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
+            ->prependFile($this->basePath() . '/assets/js/noty.topMiddleCenter.js')
+            ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
+            ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
+            ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
+            ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js');
 
+
+        if($this->isGranted('chat.access') && $this->mattermost){
+          $this->headScript()
+              ->appendFile($this->basePath() . '/components/list.js/dist/list.min.js')
+              ->appendFile($this->basePath() . '/components/lightbox2/dist/js/lightbox.min.js')
+              ->appendFile($this->basePath() . '/assets/js/mattermostchat.js');
+        }
+
+        echo $this->headScript();
         ?>
 
     </head>
@@ -63,14 +85,22 @@
 			<a id="create-link" href="#" type="button" class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
     <?php endif;?>
         
-        <div class="content">
-            <?php echo $this->content; ?>
-        </div> <!-- /container -->
-        
-        <?php 
-		if(!$this->zfcuserIdentity()){
-				echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
-		} ?>
+    <div class="content">
+        <?php echo $this->content; ?>
+        <?php
+        if($this->isGranted('chat.access') && $this->mattermost) {
+          echo '<div class="chat-container">';
+          echo $this->mattermostchat();
+          echo '</div>';
+        }
+        ?>
+
+    </div>
+
+    <?php
+    if(!$this->zfcuserIdentity()){
+            echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
+    } ?>
 
     <?php
     echo $this->modalWindow(
@@ -104,8 +134,41 @@
         "modal-lg");
     ?>
 
+    <?php
+    echo $this->modalWindow(
+        "releveWindow",
+        "<h4 class=\"modal-title\">Briefing de relève</h4>",
+        "",
+        null,
+        '<div id="releve-content"></div>',
+        "<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Fermer</button>",
+        "modal-lg"
+    );
+
+    echo $this->modalWindow(
+        "editwindow",
+        '<h4 class="modal-title">Éditer le texte</h4>',
+        "",
+        null,
+        '<div id="edit-content">
+            <div class="row">
+                <div class="col-md-6"><textarea id="editor-briefing"></textarea></div>
+                <div class="col-md-6" id="editor-preview"></div>
+            </div>
+        </div>',
+        null,
+        "modal-xlg"
+    )
+    ?>
+
         <?php $this->inlineScript()->captureStart();?>
-                
+
+      <?php
+      if($this->isGranted('briefing.enable')) {
+        echo "enableBriefing = true;";
+      }
+      ?>
+
         setURL('<?php echo $this->url('application');?>');
 		
 		//init header bar
@@ -121,8 +184,28 @@
         	fallbackLng: 'fr_FR',
         	resGetPath: '<?php echo $this->basePath() . '/assets/js/i18n/__lng__.json'?>'
         });
+        <?php if($this->isGranted('chat.access') && $this->mattermost) {
+            echo "$('.chat-container').mattermost({";
+            echo "baseUrl: '". $this->basePath()."',";
+            echo "userName: '".$this->mattermost['login']."',";
+            echo "teamName: '".$this->mattermost['team_id']."',";
+            if(array_key_exists('defaultchannelid',$this->mattermost)) {
+                echo "channelId: '".$this->mattermost['defaultchannelid']."',";
+            }
+            echo "serverUrl: '".$this->mattermost['server_url']."',";
+            echo "acknowledgement: true,";
+            echo "minimized: true,";
+            if(array_key_exists('monochannel', $this->mattermost)){
+                echo "monochannel: ".$this->mattermost['monochannel'].",";
+            }
+            echo "utc: true";
+            echo "});";
+            echo "var mattermostHostname = '".$this->mattermost['server_url']."';";
+        }
+        ?>
 
-		<?php $this->inlineScript()->captureEnd();?>
+
+    <?php $this->inlineScript()->captureEnd();?>
                         
         <?php echo $this->inlineScript() ?>
     </body>

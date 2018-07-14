@@ -10,12 +10,12 @@ var tab = function(url){
 	$(".mod-tab").on('click', function(){
 		$("#tab-title").html('Modification de <em>'+$(this).data('name')+'</em>');
 		$("#tab-form").load(url+'/tabs/form?id='+$(this).data('id'), function(){
-		    if($('input[name="isDefault"]').is(":checked")){
+		    /*if($('input[name="isDefault"]').is(":checked")){
                 $('input[name="isDefault"]').prop('disabled', true)
                     .parent().tooltip({
                         title: "Supprimer l'onglet principal est interdit."
                     });
-			}
+			}*/
 			$.material.checkbox();
 		});
 	});

@@ -43,7 +43,8 @@ return array(
     'service_manager' => array(
         'factories' => array(
             'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
-            'nmb2b' => 'Core\Factory\NMB2BServiceFactory'
+            'nmb2b' => 'Core\Factory\NMB2BServiceFactory',
+            'mattermostservice' => 'Core\Factory\MattermostServiceFactory',
         ),
         'aliases' => array(
             'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service'

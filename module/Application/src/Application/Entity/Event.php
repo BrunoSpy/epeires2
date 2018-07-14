@@ -114,6 +114,14 @@ class Event extends AbstractEvent
      */
     protected $recurrence;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Gedmo\Versioned
+     * Id of the mattermost post.
+     * Added only when the event has been posted on a channel
+     */
+    protected $mattermostPostId;
+
     public function __construct()
     {
         parent::__construct();
@@ -135,6 +143,13 @@ class Event extends AbstractEvent
     public function getUpdates()
     {
         return $this->updates;
+    }
+
+    public function getVisibleUpdates()
+    {
+        return $this->updates->filter(function(EventUpdate $update){
+            return $update->isHidden() === false;
+        });
     }
 
     public function isReadOnly()
@@ -297,6 +312,15 @@ class Event extends AbstractEvent
         $this->recurrence = $recurrence;
     }
 
+    public function setMattermostPostId($postId)
+    {
+        $this->mattermostPostId = $postId;
+    }
+
+    public function getMattermostPostId()
+    {
+        return $this->mattermostPostId;
+    }
 
     public function createFromPredefinedEvent(\Application\Entity\PredefinedEvent $predefined)
     {

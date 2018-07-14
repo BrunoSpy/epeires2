@@ -31,7 +31,8 @@ class EventsControllerFactory implements FactoryInterface {
             $service->get('EventService'),
             $service->get('CustomFieldService'),
             $service->get('ZfcRbac\Options\ModuleOptions'),
-            $service->get('config'));
+            $service->get('config'),
+            $service->get('mattermostservice'));
     }
 
 }

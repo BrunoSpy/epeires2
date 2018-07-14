@@ -111,8 +111,8 @@
     							href="<?php echo $this->url('administration', array('controller'=>'roles', 'action'=>'index')) ?>">Rôles</a>
     						</li>
     						<li><a
-    							data-title="Utilisateurs > IPO"
-    							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">Liste IPO</a>
+    							data-title="Utilisateurs > <?php echo $this->translate('IPO') ?>"
+    							href="<?php echo $this->url('administration', array('controller'=>'ipos', 'action'=>'index')) ?>">Liste <?php echo $this->translate('IPO'); ?></a>
     						</li>
     						<li><a
     							data-title="Utilisateurs > Op Sup"
@@ -176,6 +176,12 @@
     							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
     						</li>
     						<?php endif;?>
+                            <?php if($this->isGranted('admin.atfcm')) : ?>
+                                <li><a
+                                        data-title="Onglets > ATFCM"
+                                        href="<?php echo $this->url('administration', array('controller'=> 'atfcm', 'action' => 'config'))?>">Onglet Régulations</a>
+                                </li>
+                            <?php endif;?>
     					</ul>
     				</li>
                     <?php endif;?>

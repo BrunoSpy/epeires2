@@ -29,7 +29,8 @@ class AfisControllerFactory implements FactoryInterface {
         return new AfisController(
             $service->get('Doctrine\ORM\EntityManager'),
            	$service->get('CustomFieldService'),
-           	$service->get('config')
+           	$service->get('config'),
+           	$service->get('mattermostservice')
         );
     }
 

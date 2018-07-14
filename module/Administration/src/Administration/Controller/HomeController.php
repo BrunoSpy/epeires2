@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Core\Version;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
@@ -36,6 +37,26 @@ class HomeController extends AbstractActionController
     }
 
     public function indexAction() {
+
+        $git = false;
+
+        if(is_dir(ROOT_PATH . '/.git')) {
+            $git = array();
+            $git['branchname'] = shell_exec("git rev-parse --abbrev-ref HEAD"); // get the one that is always the branch name
+
+            $git['revision'] = shell_exec("git log -n 1 --pretty=format:'%h' --abbrev-commit");
+
+            $git['commit'] = shell_exec("git log -n 1 --pretty=format:'%s (%ci)' --abbrev-commit");
+
+            $tag = shell_exec("git describe --exact-match --tags");
+
+            $hasTag = ! (substr($tag, 0, strlen("fatal")) === "fatal" || substr($tag, 0, strlen("warning")) === "warning" || empty($tag));
+
+            if($hasTag) {
+                $git['tag'] = $tag;
+            }
+        }
+
         $this->doctrinemigrations->setMigrationsTableName($this->config['doctrine']['migrations']['migrations_table']);
         $this->doctrinemigrations->validate();
         $executedMigrations = $this->doctrinemigrations->getMigratedVersions();
@@ -50,8 +71,27 @@ class HomeController extends AbstractActionController
         $extensions['intl'] = extension_loaded('intl');
         $extensions['soap'] = extension_loaded('soap');
         $extensions['openssl'] = extension_loaded('openssl');
+        $extensions['curl'] = extension_loaded('curl');
         if(PHP_VERSION_ID < 70200) {
             $extensions['mcrypt'] = extension_loaded('mcrypt');
+        }
+
+        if(array_key_exists('nm_b2b', $this->config)) {
+            $certifValidTo = new \DateTime();
+            if(is_readable(ROOT_PATH . $this->config['nm_b2b']['cert_path']) && $fileContent = file_get_contents(ROOT_PATH . $this->config['nm_b2b']['cert_path'])) {
+                $certif = openssl_x509_parse($fileContent);
+                $certifValidTo->setTimestamp($certif['validTo_time_t']);
+                $certifAssignTo = array_key_exists('OU', $certif['subject']) ? $certif['subject']['OU'][0] : '';
+                $certifName = $certif['subject']['CN'];
+            } else {
+                $certifValidTo = false;
+                $certifAssignTo = null;
+                $certifName = null;
+            }
+        } else {
+            $certifValidTo = null;
+            $certifAssignTo = null;
+            $certifName = null;
         }
 
         return array(
@@ -61,7 +101,13 @@ class HomeController extends AbstractActionController
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations,
             'extensions' => $extensions,
-            'phpversionid' => PHP_VERSION_ID
+            'phpversionid' => PHP_VERSION_ID,
+            'certifvalid' => $certifValidTo,
+            'certifassign' => $certifAssignTo,
+            'certifname' => $certifName,
+            'myversion' => Version::VERSION,
+            'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
+            'git' => $git
         );
     }
 }
