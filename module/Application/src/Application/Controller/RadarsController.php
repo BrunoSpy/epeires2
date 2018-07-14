@@ -85,7 +85,8 @@ class RadarsController extends TabController
         $form->setHydrator(new DoctrineObject($this->entityManager))->setObject($event);
         
         $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(
-            'defaultradarcategory' => true
+            'defaultradarcategory' => true,
+            'archived' => false
         ));
         if ($categories) {
             $cat = $categories[0];
@@ -93,9 +94,10 @@ class RadarsController extends TabController
             //uniquement les champs ajoutés par conf
             $form->get('custom_fields')->remove($cat->getRadarfield()->getId());
             $form->get('custom_fields')->remove($cat->getStatefield()->getId());
+            return $form;
+        } else {
+            return null;
         }
-               
-        return $form;
     }
     
     public function switchradarAction()
