@@ -18,6 +18,17 @@
     "use strict";
     // récupération de la conf BTIV (local.php)
     var tabconf = $.parseJSON(conf);
+    var centrage_defaut = (!tabconf.ip_centrage_defaut) ? [48.8534100, 2.3488000] : tabconf.ip_centrage_defaut;
+    var fichier_terrain = (!tabconf.ip_fichier_terrain) ? 'data/terLF.GeoJson' : tabconf.ip_fichier_terrain; 
+    var fichier_balise = (!tabconf.ip_fichier_balise) ? 'data/balLF.GeoJson' : tabconf.ip_fichier_balise; 
+    var image_balise = (!tabconf.ip_image_balise) ? 'btn-bal-g.png' : tabconf.ip_image_balise;
+    var image_terrain = (!tabconf.ip_image_terrain) ? 'btn-ter.png' : tabconf.ip_image_terrain;
+    var image_hel = (!tabconf.ip_image_hel) ? 'btn-hel.png' : tabconf.ip_image_hel;
+
+
+    function sanitizeJSON(unsanitized){ 
+        return unsanitized.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\f/g, "\\f").replace(/"/g,"\\\"").replace(/'/g,"\\\'").replace(/\&/g, "\\&"); 
+    }
 
     var Field = function(index, intPlan, field, d, cap) 
     {
@@ -435,6 +446,22 @@
 
     });
 
+    // L.Control.Button = L.Control.extend({
+    //     onAdd: function(map) {
+    //         var container = L.DomUtil.create('div', 'leaflet-div-icon');
+    //         $(container).html('test');
+    //         return container;
+    //     },
+
+    //     onRemove: function(map) {
+    //         // Nothing to do here
+    //     }
+    // });
+
+    // L.control.button = function(opts) {
+    //     return new L.Control.Button(opts);
+    // }
+
     /* nombre de résultats à afficher pour un PI */
     const NB_RESULT_PIO_AFF = tabconf['ip_nb_par_pages'];
     const NB_RESULT_PIO = tabconf['ip_nb_terrains'];
@@ -447,7 +474,7 @@
         MIN_LAT = -90,
         MAX_LAT = 90;
     /* centrage par defaut */
-    const DFLT_LAT_LNG = [48.8534100, 2.3488000],
+    const DFLT_LAT_LNG = centrage_defaut,
         DFLT_ZOOM = 8;
     /* niveau de zoom lors d'un PI */
     const PIO_ZOOM = 9;
@@ -456,7 +483,7 @@
         IMG_PIO = URL_IMG + 'marker-pio.png';
     /* icones */
     const IC_TER_SIZE = 20,
-        IC_BAL_SIZE = 10,
+        IC_BAL_SIZE = 20,
         IC_PIO_SIZE = 20,
         IC_HEL_SIZE = 20,
         IC_SAR_SIZE = 40,
@@ -469,12 +496,12 @@
         }),
 
         icTer = L.icon({
-            iconUrl: URL_IMG + 'btn-ter.png',
+            iconUrl: URL_IMG + image_terrain,
             iconSize: [IC_TER_SIZE, IC_TER_SIZE]
         }),
 
         icBal = L.icon({
-            iconUrl: URL_IMG + 'btn-bal.png',
+            iconUrl: URL_IMG + image_balise,
             iconSize: [IC_BAL_SIZE, IC_BAL_SIZE]
         }),
         icPIO = L.icon({
@@ -483,7 +510,7 @@
         }),
 
         icHel = L.icon({
-            iconUrl: URL_IMG + 'btn-hel.png',
+            iconUrl: URL_IMG + image_hel,
             iconSize: [IC_HEL_SIZE, IC_HEL_SIZE]
         }),
         icSAR = L.icon({
@@ -568,52 +595,7 @@
         $aArch = $('#a-arch'),
         $currentIp = $('#currentip');
     /* Flags */
-    var editHasBeenClicked = false;
-
-    $.getJSON("data/terLF.GeoJson")
-        .done(function(data) {
-            var lay = L.geoJson(data, {
-                pointToLayer: function(feature, latlng) {
-                    var prop = feature.properties;
-                    var icon;
-                    var marker;
-
-                    switch (prop.type) {
-                        case "AD":
-                            icon = icTer;
-                            break;
-                        case "HP":
-                            icon = icHel;
-                            break;
-                    }
-
-                    marker = L.marker(latlng, { icon: icon })
-                        .bindPopup(prop.name);
-
-                    fields.push(feature);
-                    fieldNames.push(prop.code);
-
-                    return marker;
-                }
-            });
-            mapLayers['ter']._layers = lay._layers;
-        })
-        .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des terrains") });
-
-    $.getJSON("data/bal.GeoJson")
-        .done(function(data) {
-            var lay = L.geoJson(data, {
-                pointToLayer: function(feature, latlng) {
-                    beacons.push(feature);
-                    beaconNames.push(feature.properties.code);
-                    var marker = L.marker(latlng, { icon: icBal });
-                    marker.bindPopup(feature.properties.code);
-                    return marker;
-                }
-            });
-            mapLayers['bal']._layers = lay._layers;
-        })
-        .fail(function() { console.log("Erreur lors du chargement du fichier GeoJson des balises") });
+    var editHasBeenClicked = false;    
 
     $aNow.find('.badge').hide();
     $aArch.find('.badge').hide();
@@ -934,7 +916,7 @@
             'iconUrl': icPIO.options.iconUrl,
             'onClick': refreshBtnClickHandler,
             'hideText': true,
-            'maxWidth': 25,
+            'maxWidth': 35,
             'doToggle': false,
             'toggleStatus': false,
             'map': orbit
@@ -1487,4 +1469,64 @@
             })                
         }
     }
+
+    $.getJSON(sanitizeJSON(fichier_terrain))
+        .done(function(data) {
+            var lay = L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var prop = feature.properties;
+                    var icon;
+                    var marker;
+
+                    switch (prop.type) {
+                        case "AD":
+                            icon = icTer;
+                            break;
+                        case "HP":
+                            icon = icHel;
+                            break;
+                    }
+
+                    marker = L.marker(latlng, { icon: icon })
+                        .bindPopup(prop.name);
+
+                    fields.push(feature);
+                    fieldNames.push(prop.code);
+
+                    return marker;
+                }
+            });
+            mapLayers['ter']._layers = lay._layers;
+        })
+        .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            noty({
+                text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des terrains",
+                type: 'error',
+                timeout: 10000,
+            });
+        });
+
+    $.getJSON(sanitizeJSON(fichier_balise))
+        .done(function(data) {
+            var lay = L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    if (beaconNames.indexOf(feature.properties.code) != -1) return false;
+                    beacons.push(feature);
+                    beaconNames.push(feature.properties.code);
+                    var marker = L.marker(latlng, { icon: icBal });
+                    marker.bindPopup(feature.properties.code);
+                    return marker;
+                }
+            });
+            mapLayers['bal']._layers = lay._layers;
+        })
+        .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            noty({
+                text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des balises",
+                type: 'error',
+                timeout: 10000,
+            }); 
+        });
 };

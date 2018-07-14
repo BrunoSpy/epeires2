@@ -27,13 +27,13 @@ body,
 
 .custom-button {
     background-color: white;
-    background-size: 25px 25px;
-    width: 25px;
-    height: 25px;
+    background-size: 30px 30px;
+    width: 34px;
+    height: 34px;
 }
 
 .custom-button-off {
-    opacity: 0.55;
+    opacity: 0.75;
 }
 
 #tabs {
