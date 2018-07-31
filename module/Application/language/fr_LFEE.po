@@ -108,4 +108,4 @@ msgstr "Une erreur s'est produite"
 
 #: ../IPO/view/layout/ipolayout.phtml:5
 msgid "Epeires² - IPO"
-msgstr "Epeires² - IPO"
+msgstr "Epeires² - RPO"

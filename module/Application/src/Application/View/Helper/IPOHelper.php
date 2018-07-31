@@ -62,7 +62,7 @@ class IPOHelper extends AbstractHelper
                 $form = new Form('ipo');
                 $selectIPO = new Select('nameipo');
                 $ipoArray = array();
-                $ipoArray['-1'] = "Choisir IPO";
+                $ipoArray['-1'] = "Choisir ".$this->view->translate('IPO');
                 foreach ($ipos as $ipo) {
                     $ipoArray[$ipo->getId()] = $ipo->getName();
                 }
@@ -80,16 +80,16 @@ class IPOHelper extends AbstractHelper
                 
                 $html .= $formView->openTag($form);
                 $html .= '<div class="form-group">';
-                $html .= '<label>' . '<span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b>';
+                $html .= '<label>' . '<span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b>';
                 $html .= $this->view->formSelect($form->get('nameipo')->setAttribute('class', 'form-control'));
                 $html .= '</div>';
                 $html .= $formView->closeTag();
                 
             } else {
                 if ($currentipo) {
-                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
+                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
                 } else { 
-                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> IPO ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
+                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
                 }
             }
         } else {
