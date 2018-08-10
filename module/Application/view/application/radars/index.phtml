@@ -1,5 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radar.js')?>
-
+<?php if( $this->radars && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
 <div class="main-nav panel-left" id="fiche" data-url="radars/getfiche"></div>
@@ -53,8 +53,13 @@
         </div>
     </div>
 </div>
+<?php else : ?>
+<div class="alert alert-danger">
+  Aucun radar ou aucune catégorie support configurée. Veuillez contacter votre administrateur.
+</div>
+<?php endif; ?>
 <?php
-if($this->radars) {
+if($this->radars && $this->form) {
     $this->form->setAttribute('class', 'form-horizontal');
     $this->form->prepare();
     
