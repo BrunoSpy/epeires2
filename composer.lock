@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65170b68e633c31bb1db194ea1f5ae5a",
+    "content-hash": "2e066899b9faf27c5fa8a4583185acb3",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3598,16 +3598,16 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.8.4",
+            "version": "1.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "736ffa7c2bfa4a60e8a10acb316fa2ac456c5fba"
+                "reference": "3e4edb822c942f37ade0d09579cfbab11e2fee87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/736ffa7c2bfa4a60e8a10acb316fa2ac456c5fba",
-                "reference": "736ffa7c2bfa4a60e8a10acb316fa2ac456c5fba",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/3e4edb822c942f37ade0d09579cfbab11e2fee87",
+                "reference": "3e4edb822c942f37ade0d09579cfbab11e2fee87",
                 "shasum": ""
             },
             "require": {
@@ -3657,7 +3657,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2018-08-01T13:47:49+00:00"
+            "time": "2018-08-10T14:16:32+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -5632,16 +5632,16 @@
         },
         {
             "name": "zf-commons/zfc-user-doctrine-orm",
-            "version": "dev-master",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/ZfcUserDoctrineORM.git",
-                "reference": "a60b8357b3fde596b5bd929406e5ab5d19b18dc3"
+                "reference": "9e8955c034240ad965740dab1c4947f6de4c79f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/ZfcUserDoctrineORM/zipball/a60b8357b3fde596b5bd929406e5ab5d19b18dc3",
-                "reference": "a60b8357b3fde596b5bd929406e5ab5d19b18dc3",
+                "url": "https://api.github.com/repos/ZF-Commons/ZfcUserDoctrineORM/zipball/9e8955c034240ad965740dab1c4947f6de4c79f8",
+                "reference": "9e8955c034240ad965740dab1c4947f6de4c79f8",
                 "shasum": ""
             },
             "require": {
@@ -5679,7 +5679,7 @@
             "keywords": [
                 "zf2"
             ],
-            "time": "2018-06-22T08:06:10+00:00"
+            "time": "2016-07-30T13:59:10+00:00"
         },
         {
             "name": "zfcampus/zf-api-problem",
@@ -9115,7 +9115,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "zf-commons/zfc-user-doctrine-orm": 20,
         "murganikolay/doctrine-migrations-module": 20,
         "dino/dompdf-module": 20,
         "kipperlenny/opentbs-bundle": 20,
