@@ -844,6 +844,7 @@ var form = function(url, cats){
                                     $(this).parents('.form-group').addClass('has-error');
                                 });
                                 $('#event').trigger('change');
+                                $.material.checkbox();
                             }
                         )
                     ).then(function(){
