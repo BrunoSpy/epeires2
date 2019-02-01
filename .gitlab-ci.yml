@@ -21,7 +21,7 @@ before_script:
 - export DISPLAY=:99
 - Xvfb :99 &
 - sleep 3
-- wget -O selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
+- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #install needed php extensions
