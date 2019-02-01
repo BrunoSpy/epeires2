@@ -28,7 +28,7 @@ before_script:
 - export PATH=$PATH:$PWD/geckodriver
 - wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
-- java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
+- java -jar selenium.jar -port 4444 -enablePassThrough false >/dev/null 2>&1 &
 #install needed php extensions
 - docker-php-ext-install -j$(nproc) iconv $MCRYPT soap intl pdo_mysql zip bcmath
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
