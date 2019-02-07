@@ -11,7 +11,7 @@ before_script:
 #install git and unzip for composer, libmcrypt for php-mcrypt
 - apt-get update && apt-get install -qqy git unzip libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
 #ajout xvfb for selenium
-- apt-get install -qqy xvfb wget firefox-esr
+- apt-get install -qqy xvfb wget chromium chromium-driver
 - mkdir -p /usr/share/man/man1 #fix issue with debian-stretch-slim
 - apt-get install -qqy default-jre
 #stop using proxy cache, unless you want composer to crash
@@ -21,11 +21,6 @@ before_script:
 - export DISPLAY=:99
 - Xvfb :99 &
 - sleep 3
-#Install GeckoDriver
-- wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-- mkdir geckodriver
-- tar -xzf geckodriver-v0.24.0-linux64.tar.gz -C geckodriver
-- export PATH=$PATH:$PWD/geckodriver
 - wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &

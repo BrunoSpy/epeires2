@@ -10,5 +10,5 @@ modules:
         - \Helper\Acceptance
         - WebDriver:
             url: "http://127.0.0.1/"
-            browser: firefox
+            browser: chromium
             window_size: 1350x600
