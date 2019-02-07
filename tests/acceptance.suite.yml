@@ -11,4 +11,4 @@ modules:
         - WebDriver:
             url: "http://127.0.0.1/"
             browser: chrome
-            window_size: 1350x600
+            window_size: false
