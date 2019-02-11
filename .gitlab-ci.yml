@@ -182,7 +182,7 @@ test:docker:
   services:
   - mariadb:10.2.14
   variables:
-    MCRYPT: "mcrypt"
+    MCRYPT: ""
     XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
