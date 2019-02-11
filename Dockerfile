@@ -1,4 +1,4 @@
-FROM php:7.3.2-apache-stretch
+FROM php:7.2-apache-stretch
 
 # Install system dependencies for PHP extensions
 RUN apt-get update && apt-get install -qqy \
