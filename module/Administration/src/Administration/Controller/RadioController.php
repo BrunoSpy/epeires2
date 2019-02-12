@@ -283,7 +283,7 @@ class RadioController extends \Application\Controller\FormController
             ->getAllAsArray());
         
         $form->get('backupfrequencies')->setValueOptions($this->objectManager->getRepository('Application\Entity\Frequency')
-            ->getAllAsArray());
+            ->getAllAsArray(array('decommissionned' => false)));
         
         $unsetsectors = $this->objectManager->getRepository('Application\Entity\Sector')->getUnsetSectorsAsArray();
         $form->get('defaultsector')->setValueOptions($unsetsectors);

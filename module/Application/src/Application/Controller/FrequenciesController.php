@@ -337,7 +337,9 @@ class FrequenciesController extends TabController
             $antenna = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
             if($antenna) {
                 foreach ($antenna->getAllFrequencies() as $f) {
-                    $json[$f->getId()] = $f->getName();
+                    if( ! $f->isDecommissionned()) {
+                        $json[$f->getId()] = $f->getName();
+                    }
                 }
             }
         }
@@ -735,6 +737,10 @@ class FrequenciesController extends TabController
         return $antennas;
     }
 
+    /**
+     * Return backup frequencies linked to one frequency
+     * @return JsonModel
+     */
     public function getfrequenciesAction()
     {
         $frequencyid = $this->params()->fromQuery('id', null);
@@ -749,7 +755,9 @@ class FrequenciesController extends TabController
                 if(count($frequency->getBackupfrequencies()) > 0) {
                     $backupfreq = array();
                     foreach ($frequency->getBackupfrequencies() as $f) {
-                        $backupfreq[$f->getId()] = ($f->getDefaultSector() ? $f->getDefaultSector()->getName() : $f->getOtherName()) . " " . $f->getValue();
+                        if(! $f->isDecommissionned()) {
+                            $backupfreq[$f->getId()] = ($f->getDefaultSector() ? $f->getDefaultSector()->getName() : $f->getOtherName()) . " " . $f->getValue();
+                        }
                     }
                     asort($backupfreq);
                     $place = 0;
@@ -769,7 +777,8 @@ class FrequenciesController extends TabController
                         foreach ($group->getSectors() as $sector) {
                             $defaultfreq = $sector->getFrequency();
                             if (!array_key_exists($defaultfreq->getId(), $backupFrequencies) &&
-                                $defaultfreq && $defaultfreq->getId() != $frequencyid) {
+                                $defaultfreq && $defaultfreq->getId() != $frequencyid &&
+                                ! $defaultfreq->isDecommissionned()) {
                                 $preferredFreq[$defaultfreq->getId()] = $sector->getName() . " " . $defaultfreq->getValue();
                             }
                         }
@@ -803,7 +812,8 @@ class FrequenciesController extends TabController
                 foreach ($qb->getQuery()->getResult() as $freq) {
                     if(!array_key_exists($freq->getId(), $preferredFrequencies) &&
                         !array_key_exists($freq->getId(), $backupFrequencies) &&
-                        $freq->getId() != $frequencyid) {
+                        $freq->getId() != $frequencyid &&
+                        !$freq->isDecommissionned()) {
                         $otherfreqs[$freq->getId()] = array(
                             'place' => $place,
                             'data' => ($freq->getDefaultSector() ? $freq->getDefaultSector()->getName() . " " . $freq->getValue() : $freq->getOtherName() . " " . $freq->getValue())
