@@ -65,11 +65,24 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-test:7.2-mariadb:
+test:7.2-mariadb102:
   image: php:7.2-apache
   stage: test
   services:
   - mariadb:10.2
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
+test:7.2-mariadb103:
+  image: php:7.2-apache
+  stage: test
+  services:
+  - mariadb:10.3
   variables:
     MCRYPT: ""
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
@@ -91,11 +104,24 @@ test:7.2-mysql:
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - php vendor/bin/security-checker security:check composer.lock
 
-test:7.3-mariadb:
+test:7.3-mariadb102:
   image: php:7.3-apache
   stage: test
   services:
   - mariadb:10.2
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
+test:7.3-mariadb103:
+  image: php:7.3-apache
+  stage: test
+  services:
+  - mariadb:10.3
   variables:
     MCRYPT: ""
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
