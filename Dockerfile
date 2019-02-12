@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -qqy \
   # gd extension
   libfreetype6-dev \
   libjpeg62-turbo-dev \
-  libpng12-dev \
+  libpng-dev \
   # mcrypt extension
   libmcrypt-dev \
   # SOAP extension
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -qqy \
   git \
   unzip
 
-RUN docker-php-ext-install iconv mcrypt soap intl pdo_mysql \
+RUN docker-php-ext-install iconv soap intl pdo_mysql \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
   && docker-php-ext-install gd
 
