@@ -65,6 +65,19 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
+test:7.2-mariadb101:
+  image: php:7.2-apache
+  stage: test
+  services:
+  - mariadb:10.1
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
 test:7.2-mariadb102:
   image: php:7.2-apache
   stage: test
@@ -91,7 +104,7 @@ test:7.2-mariadb103:
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - php vendor/bin/security-checker security:check composer.lock
 
-test:7.2-mysql:
+test:7.2-mysql57:
   image: php:7.2-apache
   stage: test
   services:
@@ -99,6 +112,19 @@ test:7.2-mysql:
   variables:
     MCRYPT: ""
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
+test:7.3-mariadb101:
+  image: php:7.3-apache
+  stage: test
+  services:
+  - mariadb:10.1
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -130,7 +156,7 @@ test:7.3-mariadb103:
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - php vendor/bin/security-checker security:check composer.lock
 
-test:7.3-mysql:
+test:7.3-mysql57:
   image: php:7.3-apache
   stage: test
   services:
