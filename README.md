@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/BrunoSpy/epeires2.svg?branch=master)](https://travis-ci.org/BrunoSpy/epeires2) [![Coverage Status](https://coveralls.io/repos/github/BrunoSpy/epeires2/badge.svg?branch=master)](https://coveralls.io/github/BrunoSpy/epeires2?branch=master)
+[![pipeline status](https://gitlab.asap.dsna.fr/bruno.spyckerelle/epeires2/badges/master/pipeline.svg)](https://gitlab.asap.dsna.fr/bruno.spyckerelle/epeires2/commits/master)[![coverage report](https://gitlab.asap.dsna.fr/bruno.spyckerelle/epeires2/badges/master/coverage.svg)](https://gitlab.asap.dsna.fr/bruno.spyckerelle/epeires2/commits/master)
+
 
 # Epeires²
 

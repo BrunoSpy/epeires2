@@ -9,9 +9,9 @@ before_script:
 #use proxy cache
 - export http_proxy=http://10.196.32.91:3142
 #install git and unzip for composer, libmcrypt for php-mcrypt
-- apt-get update && apt-get install -qqy git unzip libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
+- apt-get update && apt-get install -qqy git unzip libzip-dev libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
 #ajout xvfb for selenium
-- apt-get install -qqy xvfb wget firefox-esr
+- apt-get install -qqy xvfb wget chromium chromium-driver
 - mkdir -p /usr/share/man/man1 #fix issue with debian-stretch-slim
 - apt-get install -qqy default-jre
 #stop using proxy cache, unless you want composer to crash
@@ -21,7 +21,7 @@ before_script:
 - export DISPLAY=:99
 - Xvfb :99 &
 - sleep 3
-- wget -O selenium.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
+- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #install needed php extensions
@@ -65,32 +65,6 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-test:7.1-mariadb:
-  image: php:7.1-apache
-  stage: test
-  services:
-  - mariadb:10.2
-  variables:
-    MCRYPT: "mcrypt"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.1-mysql:
-  image: php:7.1-apache
-  stage: test
-  services:
-  - mysql:5.7
-  variables:
-    MCRYPT: "mcrypt"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
 test:7.2-mariadb:
   image: php:7.2-apache
   stage: test
@@ -117,13 +91,39 @@ test:7.2-mysql:
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - php vendor/bin/security-checker security:check composer.lock
 
+test:7.3-mariadb:
+  image: php:7.3-apache
+  stage: test
+  services:
+  - mariadb:10.2
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
+test:7.3-mysql:
+  image: php:7.3-apache
+  stage: test
+  services:
+  - mysql:5.7
+  variables:
+    MCRYPT: ""
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/security-checker security:check composer.lock
+
 test:docker:
-  image: php:7.1.17-apache-jessie
+  image: php:7.2-apache-stretch
   stage: test
   services:
   - mariadb:10.2.14
   variables:
-    MCRYPT: "mcrypt"
+    MCRYPT: ""
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance

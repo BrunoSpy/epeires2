@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.2",
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
@@ -49,7 +49,7 @@
     "mrclay/minify": "~2.3",
     "murganikolay/doctrine-migrations-module": "dev-master",
     "dino/dompdf-module": "dev-master",
-    "Kipperlenny/opentbs-bundle": "dev-master",
+    "kipperlenny/opentbs-bundle": "dev-master",
     "rlanvin/php-rrule": "^1.3",
     "zfcampus/zf-apigility": "~1.0",
     "zfcampus/zf-apigility-documentation": "^1.2",
@@ -70,7 +70,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.1"
+      "php": "7.2"
     }
   }
 }
