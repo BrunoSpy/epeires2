@@ -433,8 +433,8 @@
             /**
              * Modify evt on double click
              */
-            this.element.on('dblclick', '.rect_elmt', function(e){
-                if($(e.target).hasClass('rect_elmt')){
+            this.element.on('dblclick', '.rect_elmt, .elmt_name', function(e){
+                if($(e.target).hasClass('rect_elmt') || $(e.target).hasClass('elmt_name')){
                     var id = $(this).closest('.elmt').data('ident');
                     var event = self.events[self.eventsPosition[id]];
                     if(event.modifiable && !event.readonly) {
