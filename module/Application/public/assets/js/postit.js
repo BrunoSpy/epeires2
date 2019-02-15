@@ -109,6 +109,8 @@ var postit = function(url) {
             refreshPostit(url);
             displayMessages(data);
             me.parents('.modal').modal('hide');
+            me.closest('#add-postit').find('input[name="name"]').val('');
+            me.closest('#add-postit').find('textarea').val('');
         });
     });
 
