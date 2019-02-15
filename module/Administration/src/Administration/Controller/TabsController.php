@@ -165,7 +165,7 @@ class TabsController extends FormController
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
         $form->get('categories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getAllAsArray());
+            ->getAllAsArray(array('system'=>false)));
         
         if ($id) {
             $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
