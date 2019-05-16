@@ -162,6 +162,14 @@
                       echo '<span class="label label-danger">Absente</span>';
                   } ?></td>
             </tr>
+            <tr>
+              <td>Extension DOM</td>
+              <td><?php if($this->extensions['dom']) {
+                      echo '<span class="label label-success">Activée</span>';
+                  } else {
+                      echo '<span class="label label-danger">Absente</span>';
+                  } ?></td>
+            </tr>
             <?php if($this->phpversionid < 70200) :?>
               <tr>
                   <td>Extension Mcrypt</td>

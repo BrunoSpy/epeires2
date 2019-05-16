@@ -33,6 +33,7 @@
     "ext-soap": "*",
     "ext-openssl": "*",
     "ext-curl": "*",
+    "ext-dom": "*",
     "zendframework/zend-mvc": "^2.7",
     "zendframework/zend-view": "^2.9",
     "zendframework/zend-log": "^2.9",

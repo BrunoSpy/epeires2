@@ -72,6 +72,7 @@ class HomeController extends AbstractActionController
         $extensions['soap'] = extension_loaded('soap');
         $extensions['openssl'] = extension_loaded('openssl');
         $extensions['curl'] = extension_loaded('curl');
+        $extensions['dom'] = extension_loaded('dom');
         if(PHP_VERSION_ID < 70200) {
             $extensions['mcrypt'] = extension_loaded('mcrypt');
         }
