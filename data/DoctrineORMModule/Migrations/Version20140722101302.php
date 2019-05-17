@@ -23,7 +23,7 @@ class Version20140722101302 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
 
-        $this->addSql("ALTER TABLE categories DROP system");
+        $this->addSql("ALTER TABLE categories DROP `system`");
     }
     
     public function postUp(Schema $schema){

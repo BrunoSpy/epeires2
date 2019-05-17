@@ -1381,6 +1381,9 @@ class EventsController extends TabsController
                 }
             }
         }
+        uasort($tempRootCategories, function ($a, $b) {
+            return ($a->getPlace() < $b->getPlace()) ? -1 : 1;
+        });
         $rootCategories = $this->filterReadableCategories($tempRootCategories);
         /*
         $tab = $em->getRepository('Application\Entity\Tab')->find($tabid);

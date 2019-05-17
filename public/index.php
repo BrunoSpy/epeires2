@@ -15,8 +15,8 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 /**
  * Display all errors when APP_ENV is development.
  */
-if (getenv('APP_ENV') == 'development') {
-    error_reporting(E_ALL);
+if (getenv('APP_ENV') == 'development' || getenv('APP_ENV') == 'debug') {
+    //error_reporting(E_ALL);
     ini_set("display_errors", 1);
 }
 
