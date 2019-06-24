@@ -377,80 +377,12 @@ class AfisController extends TabController
         ]);
     }
 
-    public function saveAction()
-    {
-        if (!$this->authAfis('read')) return new JsonModel();
 
-        $post = $this->getRequest()->getPost();
-        $afis = $this->validateAfis($post);
-
-        $msgType = 'error';
-        if(is_a($afis, Afis::class)) 
-        {     
-            $this->em->persist($afis);    
-            try 
-            {
-                $this->em->flush();
-                $msgType = 'success';
-                $msg = "Terrain AFIS ajouté avec succès.";
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
-            }
-        } else $msg = "Impossible de trouver l'AFIS à modifier ou d'en créer un nouveau.";
-
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]); 
-    }
-
-    public function deleteAction()
-    {
-        if (!$this->authAfis('read')) return new JsonModel();
-
-        $id = intval($this->getRequest()->getPost()['id']);
-
-        $afis = $this->repo->find($id);
-
-        $msgType = 'error';
-        if(is_a($afis, Afis::class)) 
-        {     
-            $this->em->remove($afis);    
-            try 
-            {
-                $this->em->flush();
-                $msgType = 'success';
-                $msg = "Terrain AFIS supprimé avec succès.";
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
-            }
-        } else $msg = "Impossible de trouver l'AFIS à supprimer.";
-
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]); 
-    }
 
     private function authAfis($action) 
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 
-    private function validateAfis($params) 
-    {
-        if (!is_a($params, Parameters::class) && !is_array($params)) return false;
 
-        $id = intval($params['id']);
-        $afis = ($id) ? $this->repo->find($id) : new Afis();
-        $this->form->setData($params);
-
-        if (!$this->form->isValid()) $ret = false;
-        else 
-        { 
-            $hydrator = new DoctrineHydrator($this->em);
-            $ret = $hydrator->hydrate($this->form->getData(), $afis);
-        }
-        return $ret;
-    }
 }

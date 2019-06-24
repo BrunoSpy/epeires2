@@ -16,30 +16,144 @@
  *
  */
 namespace Administration\Controller;
+use Zend\Stdlib\Parameters;
+use Zend\Json\Json;
+use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Form\Annotation\AnnotationBuilder;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
-use Application\Controller\FormController;
-use Doctrine\ORM\EntityManager;
+use Core\Controller\AbstractEntityManagerAwareController;
+
+use Application\Entity\Afis;
+use Application\Entity\Organisation;
+
+use Application\Entity\AfisCategory;
 
 /**
  *
  * @author Loïc Perrin
  *        
  */
-class AfisController extends FormController
+class AfisController extends AbstractEntityManagerAwareController
 {
+    private $em, $repo, $form;
 
-    private $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct($em)
     {
-        $this->entityManager = $entityManager;
+        $this->em = $em;
+        $this->repo = $em->getRepository(Afis::class);
+
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
+        $this->form
+            ->get('organisation')
+            ->setValueOptions(
+                $this->em
+                    ->getRepository(Organisation::class)
+                    ->getAllAsArray()
+                );
     }
 
     public function indexAction()
     {
         $this->layout()->title = "Centres > AFIS";
-        
-        return array();
-    }
     
+        $return = [];
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $return['error'] = $this->flashMessenger()->getErrorMessages();
+        }
+    
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $return['success'] = $this->flashMessenger()->getSuccessMessages();
+        }
+        $this->flashMessenger()->clearMessages();
+
+        $viewmodel = new ViewModel();
+        $viewmodel->setVariables(array(
+            'messages' => $return,
+            'afis' => $this->repo->findAll()
+        ));
+        return $viewmodel;
+    }
+
+    public function formAction()
+    {
+        $id = intval($this->getRequest()->getPost()['id']);
+        $afis = ($id) ? $this->repo->find($id) : new Afis();
+        $this->form->bind($afis);
+
+        return (new ViewModel())
+            ->setTerminal($this->getRequest()->isXmlHttpRequest())
+            ->setVariables([
+                'form' => $this->form
+            ]);
+    }
+
+    public function saveAction()
+    {
+        $post = $this->getRequest()->getPost();
+        $afis = $this->validateAfis($post);
+
+        if(is_a($afis, Afis::class)) 
+        {     
+            $this->em->persist($afis);
+            try 
+            {
+                $this->em->flush();
+                $this->flashMessenger()->addSuccessMessage("Modifications effectuées avec succès.");
+            } 
+            catch (\Exception $e) 
+            {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        } 
+        else 
+        {
+            $this->processFormMessages($form->getMessages());
+        }
+
+        return new JsonModel(); 
+    }
+
+    private function validateAfis($params) 
+    {
+        if (!is_a($params, Parameters::class) && !is_array($params)) return false;
+
+        $id = intval($params['id']);
+        $afis = ($id) ? $this->repo->find($id) : new Afis();
+        $this->form->setData($params);
+        if (!$this->form->isValid()) $ret = false;
+        else 
+        { 
+            $hydrator = new DoctrineHydrator($this->em);
+            $ret = $hydrator->hydrate($this->form->getData(), $afis);
+        }
+        return $ret;
+    }
+
+    public function deleteAction()
+    {
+        $id = intval($this->getRequest()->getPost()['id']);
+
+        $afis = $this->repo->find($id);
+        if (!is_a($afis, Afis::class))
+        {
+            $this->flashMessenger()->addErrorMessage("Impossible de trouver l'AFIS à supprimer.");
+            return new JsonModel();
+        } 
+
+        $this->em->remove($afis);    
+        try 
+        {
+            $this->em->flush();
+            $this->flashMessenger()->addSuccessMessage("Suppression effectuée avec succès.");
+        } 
+        catch (\Exception $e) 
+        {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+        }
+
+        return new JsonModel(); 
+    }
+
 }
