@@ -16,8 +16,7 @@
  *
  */
 namespace Administration\Controller;
-use Zend\Stdlib\Parameters;
-use Zend\Json\Json;
+
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -28,41 +27,31 @@ use Core\Controller\AbstractEntityManagerAwareController;
 use Application\Entity\Afis;
 use Application\Entity\Organisation;
 
-use Application\Entity\AfisCategory;
-
 /**
  *
  * @author Loïc Perrin
- *        
+ *
  */
 class AfisController extends AbstractEntityManagerAwareController
 {
-    private $em, $repo, $form;
+    private $em, $repo, $notamweb;
 
-    public function __construct($em)
+    public function __construct($em, $notamweb)
     {
         $this->em = $em;
         $this->repo = $em->getRepository(Afis::class);
-
-        $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
-        $this->form
-            ->get('organisation')
-            ->setValueOptions(
-                $this->em
-                    ->getRepository(Organisation::class)
-                    ->getAllAsArray()
-                );
+        $this->notamweb = $notamweb;
     }
 
     public function indexAction()
     {
         $this->layout()->title = "Centres > AFIS";
-    
+
         $return = [];
         if ($this->flashMessenger()->hasErrorMessages()) {
             $return['error'] = $this->flashMessenger()->getErrorMessages();
         }
-    
+
         if ($this->flashMessenger()->hasSuccessMessages()) {
             $return['success'] = $this->flashMessenger()->getSuccessMessages();
         }
@@ -80,55 +69,33 @@ class AfisController extends AbstractEntityManagerAwareController
     {
         $id = intval($this->getRequest()->getPost()['id']);
         $afis = ($id) ? $this->repo->find($id) : new Afis();
-        $this->form->bind($afis);
+
+        $form = $this->createForm();
+        $form->bind($afis);
 
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'form' => $this->form
+                'form' => $form
             ]);
     }
 
     public function saveAction()
     {
         $post = $this->getRequest()->getPost();
-        $afis = $this->validateAfis($post);
 
-        if(is_a($afis, Afis::class)) 
-        {     
-            $this->em->persist($afis);
-            try 
-            {
-                $this->em->flush();
-                $this->flashMessenger()->addSuccessMessage("Modifications effectuées avec succès.");
-            } 
-            catch (\Exception $e) 
-            {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
-            }
-        } 
-        else 
+        $form = $this->createForm();
+        $form->setData($post);
+        if ($form->isValid())
         {
-            $this->processFormMessages($form->getMessages());
+            $this->save($form, intval($post['id']));
         }
-
-        return new JsonModel(); 
-    }
-
-    private function validateAfis($params) 
-    {
-        if (!is_a($params, Parameters::class) && !is_array($params)) return false;
-
-        $id = intval($params['id']);
-        $afis = ($id) ? $this->repo->find($id) : new Afis();
-        $this->form->setData($params);
-        if (!$this->form->isValid()) $ret = false;
-        else 
-        { 
-            $hydrator = new DoctrineHydrator($this->em);
-            $ret = $hydrator->hydrate($this->form->getData(), $afis);
+        else
+        {
+            $this->formFail($form);
+            //$this->processFormMessages($form->getMessages());
         }
-        return $ret;
+        return new JsonModel();
     }
 
     public function deleteAction()
@@ -140,20 +107,84 @@ class AfisController extends AbstractEntityManagerAwareController
         {
             $this->flashMessenger()->addErrorMessage("Impossible de trouver l'AFIS à supprimer.");
             return new JsonModel();
-        } 
+        }
 
-        $this->em->remove($afis);    
-        try 
+        $this->em->remove($afis);
+        try
         {
             $this->em->flush();
             $this->flashMessenger()->addSuccessMessage("Suppression effectuée avec succès.");
-        } 
-        catch (\Exception $e) 
+        }
+        catch (\Exception $e)
         {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 
-        return new JsonModel(); 
+        return new JsonModel();
     }
 
+    private function createForm()
+    {
+        $form = (new AnnotationBuilder())->createForm(Afis::class);
+        $form->get('organisation')->setValueOptions(
+            $this->em->getRepository(Organisation::class)->getAllAsArray()
+        );
+        return $form;
+    }
+
+    private function save($form, $id)
+    {
+        $afis = ($id > 0) ? $this->repo->find($id) : new Afis();
+        $afis = (new DoctrineHydrator($this->em))->hydrate($form->getData(), $afis);
+
+        if ($afis->isValid())
+        {
+            $this->em->persist($afis);
+            try
+            {
+                $this->em->flush();
+                $this->flashMessenger()->addSuccessMessage("Modifications effectuées avec succès.");
+            }
+            catch (\Exception $e)
+            {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        else {
+            print_r("WRONG");
+        }
+    }
+
+    private function formFail($form)
+    {
+        $this->flashMessenger()->addErrorMessage("Données du formulaire invalides.");
+        $errorString = "";
+        foreach ($form->getMessages() as $fieldName => $fieldErrors)
+        {
+            foreach ($fieldErrors as $type => $reason)
+            {
+                $errorString .= "<p>";
+                $errorString .= "<strong>".$fieldName."[".$type."]</strong> : ";
+                $errorString .= "<cite>".$reason."</cite>";
+                $errorString .= "</p>";
+            }
+        }
+        $this->flashMessenger()->addErrorMessage($errorString);
+    }
+
+    public function testNotamAction()
+    {
+        return new JsonModel([
+            'accesNotam' => $this->notamweb->testNOTAMWeb()
+        ]);
+    }
+
+    public function getnotamsAction()
+    {
+        $code = $this->params()->fromQuery('code');
+        $content = $this->notamweb->getFromCode($code);
+        return new JsonModel([
+            'notams'   => $content
+        ]);
+    }
 }
