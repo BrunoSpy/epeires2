@@ -13,24 +13,37 @@
     background-color: #ebccd1;
 }
 
-#show-not div,
-.tooltip-inner,
-textarea[name=openedhours] {
-    white-space: pre-wrap;
+#mdl-show-not .modal-dialog {
+    width: 800px;
+}
+
+#mdl-show-not .loading {
+    width: 94%;
+    height: 85%;
+}
+
+#mdl-show-not .btn {
+    margin: 0px 5px 0px 0px;
+}
+
+#show-not {
+    margin: 10px;
+    min-height: 150px;
+}
+
+#show-not hr {
+    margin: 2px;
 }
 
 #show-not div {
-	margin-bottom: -30px;
-}
-
-#show-not a {
-	margin-left: -70px;
+    padding: 5px;
+    margin: 0;
 }
 
 #show-not p {
-	margin-top: -40px;
-	margin-bottom: -20px;
-    margin-left: 40px;
+    margin-left: 5px;
+    border-left: 2px solid #c9302c;
+    padding-left: 10px;
 }
 
 .tooltip-inner {

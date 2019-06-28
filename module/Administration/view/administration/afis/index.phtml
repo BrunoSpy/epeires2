@@ -1,3 +1,4 @@
+<?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/application.css'); ?>
 <?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis_adm.js')?>
@@ -94,10 +95,10 @@ function trAfis($afis, $deleteUrl, $decommissionurl = null)
                     <h4 class="panel-title" id="afis">1. AFIS en service</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table t-adm table-striped sortable">
+                    <table class="table table-striped sortable">
                         <thead>
                             <tr>
-                                <th>id</th>
+                                <th data-sort="int">id</th>
                                 <th data-sort="string">Code OACI</th>
                                 <th data-sort="string">Nom</th>
                                 <th>Organisation</th>
@@ -138,10 +139,10 @@ function trAfis($afis, $deleteUrl, $decommissionurl = null)
                     <h4 class="panel-title" id="oldafis">2. Anciens AFIS</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table t-adm table-striped sortable">
+                    <table class="table table-striped sortable">
                         <thead>
                             <tr>
-                                <th>id</th>
+                                <th data-sort="int">id</th>
                                 <th data-sort="string">Code OACI</th>
                                 <th data-sort="string">Nom</th>
                                 <th>Organisation</th>
@@ -196,17 +197,20 @@ function trAfis($afis, $deleteUrl, $decommissionurl = null)
 <?=$this->modalWindow(  "mdl-show-not",
                         "<h3 id='title-show-not'></h3>",
                         "",
+                        null,
+                        "<div class='loading'></div>".
                         '<div class="list-group" id="show-not">
                           <div>
                             <a data-toggle="collapse" data-parent="#show-not" href="">
-                            </a> <span class="rapid-not-info"></span>
+                            </a> <strong class="rapid-not-info"></strong>
                             <p class="collapse">
 
                             </p>
+                            <hr>
                           </div>
-                          <hr>
-                        </div>');
-                        ?>
+                        </div>',
+                        '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>'
+                    ) ?>
 
 
 <?php $this->inlineScript()->captureStart();?>

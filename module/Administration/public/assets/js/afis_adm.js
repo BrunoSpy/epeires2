@@ -44,6 +44,8 @@ var afis_adm = function(url)
 
     $('.af-tooltips').tooltip();
 
+    $('#refresh-not').click(clickBtnNotamHandler);
+
     function searchKeyUpHandler()
     {
         $entree = $(this).val().toLowerCase();
@@ -191,15 +193,25 @@ var afis_adm = function(url)
 
     function clickBtnNotamHandler(data)
     {
-        var tpl = $('#show-not').find('div').first().hide();
-        $('#show-not').find('div').slice(1).remove();
+        $("#mdl-show-not .loading").show();
+
         var code = $(this).data('code');
-        $("#title-show-not").html("Tous les NOTAM pour " + code);
+        $("#title-show-not").html(code + " / NOTAM");
+        $('#refresh-not').data('code', code);
+
+        $('#show-not').html('');
         $.get(url + '/afis/testNotam', accesNotam);
 
-        function accesNotam(data) {
-            if(data.accesNotam == 1) {
+        function accesNotam(data)
+        {
+            if(data.accesNotam == 1)
+            {
                 $.get(url + '/afis/getnotams', {code: code}, getAllNotam);
+            }
+            else
+            {
+                $("#mdl-show-not .loading").hide();
+                $('#show-not').html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site.</div>');
             }
         }
 
@@ -210,32 +222,33 @@ var afis_adm = function(url)
 
             if (siaNotams.length <= 0)
             {
-                noty({
-                    text: 'Pas de NOTAM.',
-                    type: 'error',
-                    timeout: 4000,
-                });
+                $('#show-not').html('<div class="alert alert-danger">Aucun NOTAM n\'existe pour ce code OACI </div>');
+                $("#mdl-show-not .loading").hide();
                 return false;
             }
 
             // notams.js must be included
             listNotam = CreateNotamListFromSIA(siaNotams);
             $.each(listNotam.getAll(), function(i, not) {
-                var div = tpl.clone();
-                div.find('a')
+                var div = $('<div></div>');
+                var a = $('<a data-toggle="collapse" data-parent="#show-not"></a>')
                     .attr('href', '#not' + i)
                     .html(not.getId())
-
-                div.find('.rapid-not-info')
-                    .html(not.getFirstELine());
-
-                div.find('.collapse')
+                    .appendTo(div);
+                var firstLine = $('<strong></strong>')
+                    .html(not.getFirstELine())
+                    .appendTo(div);
+                var data = $('<p></p>')
+                    .addClass('collapse')
                     .attr('id', 'not' + i)
-                    .html(not.getRaw());
+                    .html(not.getData())
+                    .appendTo(div);
+                $('<hr>').appendTo(div);
 
                 div.show()
                     .appendTo($('#show-not'));
             });
+            $("#mdl-show-not .loading").hide();
         }
     }
 };

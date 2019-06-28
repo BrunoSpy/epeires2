@@ -99,4 +99,10 @@ var Notam = function(raw)
     this.getRaw = function() {
         return this.raw;
     }
+
+    this.getData = function()
+    {
+        return this.getRaw().replace(/\n/g, '<br/>')
+          .replace('<br/>', ''); // suppression du premier saut de ligne
+    }
 }
