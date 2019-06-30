@@ -4,10 +4,10 @@
     <td>
         <div class="togglebutton">
         <label>
-            <input 
+            <input
                    data-id="<?php echo $afis['self']->getId(); ?>"
                    class="btn-switch-af" type="checkbox" <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
-                   
+
                    <?php
                         ($this->isGranted('afis.read')) ? '' : 'disabled="disabled"';
                    ?>
@@ -16,7 +16,7 @@
         </div>
     </td>
     <td>
-        <?php $openedHours = $afis['self']->getOpenedhours(); 
+        <?php $openedHours = $afis['self']->getOpenedhours();
         if ($openedHours) { ?>
             <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
         <?php } ?>
@@ -35,7 +35,7 @@
          class="a-show-not"
          data-code="<?php echo $afis['self']->getCode(); ?>"
          data-toggle="modal">
-        <button class="btn btn-xs btn-warning btn-notam disabled" disabled="disabled">NOTAM</button>
+        <button class="btn btn-xs btn-primary btn-notam">NOTAM</button>
       </a>
     </td>
 

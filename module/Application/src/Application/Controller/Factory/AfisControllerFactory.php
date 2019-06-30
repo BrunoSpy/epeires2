@@ -30,7 +30,8 @@ class AfisControllerFactory implements FactoryInterface {
             $service->get('Doctrine\ORM\EntityManager'),
            	$service->get('CustomFieldService'),
            	$service->get('config'),
-           	$service->get('mattermostservice')
+            $service->get('mattermostservice'),
+            $service->get('notamweb')
         );
     }
 

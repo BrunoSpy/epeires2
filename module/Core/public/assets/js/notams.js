@@ -1,13 +1,3 @@
-
-function CreateNotamListFromSIA(siaNotams)
-{
-    var listNotam = new ListNotam();
-    $.each(siaNotams, function(i) {
-        listNotam.add($(this).text());
-    });
-    return listNotam;
-}
-
 var ListNotam = function()
 {
     this.list = [];
@@ -104,5 +94,64 @@ var Notam = function(raw)
     {
         return this.getRaw().replace(/\n/g, '<br/>')
           .replace('<br/>', ''); // suppression du premier saut de ligne
+    }
+}
+
+function CreateNotamListFromSIA(siaNotams)
+{
+    var listNotam = new ListNotam();
+    $.each(siaNotams, function(i) {
+        listNotam.add($(this).text());
+    });
+    return listNotam;
+}
+
+function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNotam)
+{
+    $element.html('');
+    $loadingDiv.show();
+
+    $.get(urlTestAcces, function(data)
+    {
+        if(data.accesNotam == 1)
+        {
+            $.get(urlGetNotam, {code: code}, getAllNotam);
+        }
+        else
+        {
+            $element.html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site.</div>');
+            $loadingDiv.hide();
+        }
+    });
+
+    function getAllNotam(data)
+    {
+        var siaNotams = $(data.notams).find('font.NOTAMBulletin');
+        if (siaNotams.length <= 0)
+        {
+            $element.html('<div class="alert alert-danger">Aucun NOTAM n\'existe pour ce code OACI </div>');
+            $loadingDiv.hide();
+        }
+
+        listNotam = CreateNotamListFromSIA(siaNotams);
+        $.each(listNotam.getAll(), function(i, not) {
+            var div = $('<div></div>');
+            $('<a data-toggle="collapse" data-parent="#show-not"></a>')
+                .attr('href', '#not' + i)
+                .html(not.getId())
+                .appendTo(div);
+            $('<strong></strong>')
+                .html(not.getFirstELine())
+                .appendTo(div);
+            $('<p></p>')
+                .addClass('collapse')
+                .attr('id', 'not' + i)
+                .html(not.getData())
+                .appendTo(div);
+            $('<hr>').appendTo(div);
+
+            div.show().appendTo($element);
+            $loadingDiv.hide();
+        });
     }
 }

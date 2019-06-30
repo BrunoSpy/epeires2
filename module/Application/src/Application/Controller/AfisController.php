@@ -41,20 +41,16 @@ use Application\Entity\Afis;
  */
 class AfisController extends TabController
 {
-    const ACCES_REQUIRED = "Droits d'accès insuffisants";
-    const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
-    const CURL_TIMEOUT = 3;
+    private $em, $cf, $repo, $form, $notamweb;
 
-    private $em, $cf, $repo, $form;
-
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb)
     {
         parent::__construct($config, $mattermost);
         $this->em = $em;
         $this->cf = $cf;
         $this->repo = $this->em->getRepository(Afis::class);
 
-        $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);
         $this->form
             ->get('organisation')
             ->setValueOptions(
@@ -68,18 +64,20 @@ class AfisController extends TabController
         } else {
             $this->proxy = '';
         }
+
+        $this->notamweb = $notamweb;
     }
 
     private function getAfis($decom = 0)
     {
         $allAfis = [];
-        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis) 
+        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis)
         {
             $allAfis[$afis->getId()]['self'] = $afis;
         }
-        
+
         $results = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-        foreach ($results as $result) 
+        foreach ($results as $result)
         {
             $statefield = $result->getCategory()
                 ->getStatefield()
@@ -88,12 +86,12 @@ class AfisController extends TabController
                 ->getAfisfield()
                 ->getId();
 
-            foreach ($result->getCustomFieldsValues() as $customvalue) 
+            foreach ($result->getCustomFieldsValues() as $customvalue)
             {
-                if ($customvalue->getCustomField()->getId() == $statefield) 
+                if ($customvalue->getCustomField()->getId() == $statefield)
                 {
                     $available = $customvalue->getValue();
-                } 
+                }
                 else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
             }
             if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
@@ -101,119 +99,38 @@ class AfisController extends TabController
         return $allAfis;
     }
 
-    public function indexAction() 
+    public function indexAction()
     {
         parent::indexAction();
         $cats = [];
         foreach ($this->em->getRepository(AfisCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
         }
-        
+
         return (new ViewModel())
             ->setVariables([
                 'cats' => $cats,
+                'afis' => $this->getAfis()
             ]);
     }
 
-    public function testNotamAction() 
+    public function testNotamAccessAction()
     {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => self::URL_NOTAMWEB,
-            CURLOPT_PROXY => $this->proxy,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
-            CURLOPT_RETURNTRANSFER => 1,          
-            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-        ]);
-        session_write_close();
-
-        $output = curl_exec($curl);
-        $res = ($output === false) ? 0 : 1;
-
-        curl_close($curl);
-
         return new JsonModel([
-            'accesNotam' => $res, 
+            'accesNotam' => $this->notamweb->testNOTAMWeb()
         ]);
-
     }
 
-    public function getnotamsAction() 
+    public function getAllNotamFromCodeaction()
     {
         $code = $this->params()->fromQuery('code');
-        $fields = [
-            'AERO_CM_GPS' => '2',
-            'AERO_CM_INFO_COMP' => '1',
-            'AERO_CM_REGLE' => '1',
-            'AERO_Date_DATE' => urlencode((new \DateTime())->format('Y/m/d')),
-            'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
-            'AERO_Duree' => '24',
-            'AERO_Langue' => 'FR',
-            'AERO_Tab_Aero[0]' => $code,
-            'AERO_Tab_Aero[1]' => '',
-            'AERO_Tab_Aero[2]' => '',
-            'AERO_Tab_Aero[3]' => '',
-            'AERO_Tab_Aero[4]' => '',
-            'AERO_Tab_Aero[5]' => '',
-            'AERO_Tab_Aero[6]' => '',
-            'AERO_Tab_Aero[7]' => '',
-            'AERO_Tab_Aero[8]' => '',
-            'AERO_Tab_Aero[9]' => '',
-            'ModeAffichage' => 'COMPLET',
-            'bImpression' => '',
-            'bResultat' => 'true'
-        ];
-
-        $fields_string = '';
-        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-        rtrim($fields_string, '&');
-
-        $msgType = "error";
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => self::URL_NOTAMWEB,
-            CURLOPT_PROXY => $this->proxy,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
-            CURLOPT_POST => $fields,
-            CURLOPT_POSTFIELDS => $fields_string,
-            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-        ]);
-
-        $output = curl_exec($curl);
-
-        if ($output !== false) {
-            $content = preg_replace('/.*<body[^>]*>/msi','',$output);
-            $content = preg_replace('/<\/body>.*/msi','',$content);
-            $content = preg_replace('/<?\/body[^>]*>/msi','',$content);
-            $content = preg_replace('/<img[^>]+\>/i', '', $content);
-            // $content = preg_replace('/[\r|\n]+/msi','',$content);
-            $content = preg_replace('/<--[\S\s]*?-->/msi','',$content);
-            $content = preg_replace('/<noscript[^>]*>[\S\s]*?'.
-                                  '<\/noscript>/msi',
-                                  '',$content);
-            $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
-                                  '',$content);
-            $content = preg_replace('/<script.*\/>/msi','',$content);
-
-            $msgType = "success";
-            $msg = "Données téléchargées depuis les NOTAM du SIA.";
-        } else {
-            $msg = "Pas d'accès aux NOTAM.";
-            $content = "";
-        }
-        curl_close($curl);
-
+        $content = $this->notamweb->getFromCode($code);
         return new JsonModel([
-            'msg'      => $msg,
-            'msgType'  => $msgType,
-            'notams'   => $content 
+            'notams'   => $content
         ]);
     }
 
-    public function getAction() 
+    public function getAction()
     {
         if (!$this->authAfis('read')) {
             echo self::ACCES_REQUIRED;
@@ -227,9 +144,9 @@ class AfisController extends TabController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'admin'    => $admin, 
+                'admin'    => $admin,
                 'afises'   => $this->getAfis($decom)
-            ]);     
+            ]);
     }
 
     public function formAction()
@@ -253,16 +170,16 @@ class AfisController extends TabController
         $post = $this->getRequest()->getPost();
         $state = (boolean) $post['state'];
         $id = intval($post['id']);
-        
+
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
 
-        if ($id) 
+        if ($id)
         {
             $events = $this->em
                 ->getRepository('Application\Entity\Event')
                 ->getCurrentEvents('Application\Entity\AfisCategory');
-            
+
             $afisevents = array();
             foreach ($events as $event) {
                 $afisfield = $event->getCategory()->getAfisfield();
@@ -274,7 +191,7 @@ class AfisController extends TabController
                     }
                 }
             }
-            
+
             if ($state == 0) {
 
                 if (count($afisevents) == 1) {
@@ -309,7 +226,7 @@ class AfisController extends TabController
                     $event->setOrganisation($afis->getOrganisation());
                     $event->setAuthor($this->zfcUserAuthentication()
                         ->getIdentity());
-                    
+
                     $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
                         'defaultafiscategory' => true
                     ));
@@ -348,7 +265,7 @@ class AfisController extends TabController
                                     $customvalue->setEvent($event);
                                     $customvalue->setCustomField($customfield);
                                     $event->addCustomFieldValue($customvalue);
-                                    
+
                                     $customvalue->setValue($value);
                                     $this->em->persist($customvalue);
                                 }
@@ -372,14 +289,12 @@ class AfisController extends TabController
             $msg = "Requête incorrecte, impossible de trouver l'AFIS correspondant.";
         }
         return new JsonModel([
-            'type' => $msgType, 
+            'type' => $msgType,
             'msg' => $msg
         ]);
     }
 
-
-
-    private function authAfis($action) 
+    private function authAfis($action)
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }

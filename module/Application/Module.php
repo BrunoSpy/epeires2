@@ -28,7 +28,7 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 /**
  *
  * @author Bruno Spyckerelle
- *        
+ *
  */
 class Module implements ConsoleUsageProviderInterface
 {
@@ -47,7 +47,7 @@ class Module implements ConsoleUsageProviderInterface
             ->getServiceManager()
             ->get('Zend\Session\SessionManager');
         $session->start();
-        
+
         $container = new Container('initialized');
         if (! isset($container->init)) {
             if(getenv('APP_ENV') !== "development"){
@@ -65,7 +65,7 @@ class Module implements ConsoleUsageProviderInterface
                     $config = $sm->get('config');
                     if (isset($config['session'])) {
                         $session = $config['session'];
-                        
+
                         $sessionConfig = null;
                         if (isset($session['config'])) {
                             $class = isset($session['config']['class']) ? $session['config']['class'] : 'Zend\Session\Config\SessionConfig';
@@ -73,21 +73,21 @@ class Module implements ConsoleUsageProviderInterface
                             $sessionConfig = new $class();
                             $sessionConfig->setOptions($options);
                         }
-                        
+
                         $sessionStorage = null;
                         if (isset($session['storage'])) {
                             $class = $session['storage'];
                             $sessionStorage = new $class();
                         }
-                        
+
                         $sessionSaveHandler = null;
                         if (isset($session['save_handler'])) {
                             // class should be fetched from service manager since it will require constructor arguments
                             $sessionSaveHandler = $sm->get($session['save_handler']);
                         }
-                        
+
                         $sessionManager = new SessionManager($sessionConfig, $sessionStorage, $sessionSaveHandler);
-                        
+
                         if (isset($session['validators'])) {
                             $chain = $sessionManager->getValidatorChain();
                             foreach ($session['validators'] as $validator) {
@@ -103,6 +103,9 @@ class Module implements ConsoleUsageProviderInterface
                     }
                     Container::setDefaultManager($sessionManager);
                     return $sessionManager;
+                },
+                'Core\Service\NOTAMService' => function($sm) {
+                        return new Core\Service\NOTAMService();
                 }
             )
         );
