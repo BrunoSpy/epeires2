@@ -18,9 +18,9 @@
  * @author Loïc Perrin
  */
 
-var afis = function(url) 
+var afis = function(url)
 {
-    var ListNotam = function() 
+    var ListNotam = function()
     {
         this.list = [];
 
@@ -57,7 +57,7 @@ var afis = function(url)
         }
     }
 
-    var Notam = function(raw) 
+    var Notam = function(raw)
     {
         this.raw = raw;
         this.lignes = this.raw.split('\n');
@@ -82,7 +82,7 @@ var afis = function(url)
             var E = this.getE();
             var itel = E.indexOf('TEL ');
             var ifax = E.indexOf('FAX ');
-            if (itel == -1 && ifax == -1) return false;  
+            if (itel == -1 && ifax == -1) return false;
             var str = '';
             str += E.substr(itel, 25);
             str += E.substr(ifax, 25);
@@ -96,11 +96,11 @@ var afis = function(url)
 
         this.getName = function() {
             var A = this.getA();
-            return A.substr(9); 
+            return A.substr(9);
         }
 
         this.isOpenHours = function() {
-            return (this.getE().indexOf('HORAIRE') == -1) ? false : true;  
+            return (this.getE().indexOf('HORAIRE') == -1) ? false : true;
         }
 
         this.getRaw = function() {
@@ -159,8 +159,8 @@ var afis = function(url)
             ($codeAf.indexOf($entree)!=-1) ? $(this).show() : $(this).hide();
         });
     }
-        
-    function clickBtnNotamHandler(data) 
+
+    function clickBtnNotamHandler(data)
     {
         var tpl = $('#show-not').find('div').first().hide();
         $('#show-not').find('div').slice(1).remove();
@@ -174,7 +174,7 @@ var afis = function(url)
             }
         }
 
-        function getNotam(data) 
+        function getNotam(data)
         {
             var $n = $(data.notams).find('font.NOTAMBulletin');
             if ($n.length > 0) {
@@ -191,20 +191,20 @@ var afis = function(url)
                         .attr('id', 'not' + i)
                         .html(not.getRaw());
                     div.show()
-                        .appendTo($('#show-not'));    
+                        .appendTo($('#show-not'));
                 });
-            } 
+            }
             else {
                 noty({
                     text: 'Pas de NOTAM.',
                     type: 'error',
                     timeout: 4000,
-                });  
-            }      
+                });
+            }
         }
     }
-            
-    function loadAfisForm(id) 
+
+    function loadAfisForm(id)
     {
         $fEditAf.load(url + 'afis/form', { id: id }, function() {
             var $code = $fEditAf.find('input[name=code]');
@@ -215,7 +215,7 @@ var afis = function(url)
             $.material.checkbox();
         });
 
-        function keyPressedCodeHandler(e) 
+        function keyPressedCodeHandler(e)
         {
             $(this).val($(this).val().toUpperCase());
             if ($(this).val().length == 4 && keyIsValid(e.which)) {
@@ -236,7 +236,7 @@ var afis = function(url)
                             text: 'Impossible d\'accéder aux NOTAM pour extraire les données associées au code '+code,
                             type: 'error',
                             timeout: 4000,
-                        });                        
+                        });
                     }
                 }
 
@@ -245,7 +245,7 @@ var afis = function(url)
                         text: data.msg,
                         type: data.msgType,
                         timeout: 4000,
-                    }); 
+                    });
                     var $n = $(data.notams).find('font.NOTAMBulletin');
                     if ($n.length > 0) {
                         $fEditAf.find('input[name=name]').val('');
@@ -266,12 +266,12 @@ var afis = function(url)
                                 $fEditAf.find('textarea[name=contacts]').val(contacts);
                         });
                     }
-                } 
+                }
             }
-        }        
+        }
     }
 
-    function refresh() 
+    function refresh()
     {
         $('.btn-switch-af .a-edit-af .a-del-af').remove();
         if ($tUsrbody.length > 0) {
@@ -283,9 +283,9 @@ var afis = function(url)
             $tAdmbodies.eq(1).load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
         }
 
-        function setUsrBtn() 
+        function setUsrBtn()
         {
-            $('.btn-switch-af').change(function() 
+            $('.btn-switch-af').change(function()
             {
                 var boolState = 0;
                 if ($(this).is(':checked')) {
@@ -293,7 +293,7 @@ var afis = function(url)
                 }
 
                 $.post(url + 'afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
-                
+
                 function switched(data) {
                     noty({
                         text: data.msg,
@@ -309,7 +309,7 @@ var afis = function(url)
             setNotamBtn($(this));
         }
 
-        function setAdmBtn() 
+        function setAdmBtn()
         {
             $(this).find('.a-edit-af').unbind('click').click(function() {
                 $("#title-edit-af").html("Modifier un AFIS");
@@ -322,8 +322,8 @@ var afis = function(url)
                 $('#a-del-af-ok').unbind('click').click(function() {
                     $("#mdl-del-af").modal('hide');
                     $.post(
-                        url + 'afis/delete', 
-                        { id: id }, 
+                        url + 'afis/delete',
+                        { id: id },
                         function(data) {
                             refresh();
                             noty({
@@ -331,7 +331,7 @@ var afis = function(url)
                                 type: data.type,
                                 timeout: 4000,
                             });
-                        }, 
+                        },
                         'json'
                     );
                 });
@@ -340,16 +340,16 @@ var afis = function(url)
             setNotamBtn($(this));
         }
 
-        function setNotamBtn($obj) 
-        { 
+        function setNotamBtn($obj)
+        {
             $.get(url + 'afis/testNotam', function(data) {
                 if (data.accesNotam == 1) {
                     $obj.find('.btn-notam')
                         .removeClass('disabled btn-warning')
                         .prop('disabled', false)
                         .addClass('btn-primary');
-                }    
-            });            
+                }
+            });
             $obj.find('.a-show-not').click(clickBtnNotamHandler);
         }
     }

@@ -26,7 +26,7 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 /**
  *
  * @author Bruno Spyckerelle
- *        
+ *
  */
 class Module implements ConsoleUsageProviderInterface
 {
@@ -61,6 +61,18 @@ class Module implements ConsoleUsageProviderInterface
                 )
             )
         );
+    }
+
+    public function getServiceConfig()
+    {
+        return [
+            'factories' => [
+                'Core\Service\NOTAMService' => function($sm)
+                {
+                    return new Core\Service\NOTAMService();
+                }
+            ]
+        ];
     }
 
     public function getConsoleUsage(Console $console)
