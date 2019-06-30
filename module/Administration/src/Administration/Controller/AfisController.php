@@ -172,14 +172,14 @@ class AfisController extends AbstractEntityManagerAwareController
         $this->flashMessenger()->addErrorMessage($errorString);
     }
 
-    public function testNotamAction()
+    public function testNotamAccessAction()
     {
         return new JsonModel([
             'accesNotam' => $this->notamweb->testNOTAMWeb()
         ]);
     }
 
-    public function getnotamsAction()
+    public function getAllNotamFromCodeaction()
     {
         $code = $this->params()->fromQuery('code');
         $content = $this->notamweb->getFromCode($code);

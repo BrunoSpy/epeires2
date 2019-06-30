@@ -28,7 +28,7 @@ var afis_adm = function(url)
         .click(searchClickHandler);
 
     /* Show notam list */
-    $('.a-show-not').click(clickBtnNotamHandler);
+    $('.a-show-not, #refresh-not').click(clickBtnNotamHandler);
 
     /* add AFIS */
     $('#btn-add-af').click(addAfisHandler);
@@ -43,8 +43,6 @@ var afis_adm = function(url)
     $('.a-del-af').click(delAfisHandler);
 
     $('.af-tooltips').tooltip();
-
-    $('#refresh-not').click(clickBtnNotamHandler);
 
     function searchKeyUpHandler()
     {
@@ -102,12 +100,12 @@ var afis_adm = function(url)
                     timeout: 3000,
                 });
 
-                $.get(url + '/afis/testNotam', accesNotam);
+                $.get(url + '/afis/testNotamAccess', accesNotam);
 
                 function accesNotam(data)
                 {
                     if(data.accesNotam == 1) {
-                        $.get(url + '/afis/getnotams', {code: code}, getFormDataFromNotam);
+                        $.get(url + '/afis/getAllNotamFromCode', {code: code}, getFormDataFromNotam);
                     } else {
                         noty({
                             text: 'Impossible d\'accéder aux NOTAM pour extraire les données associées au code '+code,
@@ -193,62 +191,13 @@ var afis_adm = function(url)
 
     function clickBtnNotamHandler(data)
     {
-        $("#mdl-show-not .loading").show();
-
         var code = $(this).data('code');
+
         $("#title-show-not").html(code + " / NOTAM");
         $('#refresh-not').data('code', code);
 
-        $('#show-not').html('');
-        $.get(url + '/afis/testNotam', accesNotam);
+        showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
+            code, url + "/afis/testNotamAccess", url + "/afis/getAllNotamFromCode");
 
-        function accesNotam(data)
-        {
-            if(data.accesNotam == 1)
-            {
-                $.get(url + '/afis/getnotams', {code: code}, getAllNotam);
-            }
-            else
-            {
-                $("#mdl-show-not .loading").hide();
-                $('#show-not').html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site.</div>');
-            }
-        }
-
-        function getAllNotam(data)
-        {
-            var siaNotams = $(data.notams)
-                .find('font.NOTAMBulletin');
-
-            if (siaNotams.length <= 0)
-            {
-                $('#show-not').html('<div class="alert alert-danger">Aucun NOTAM n\'existe pour ce code OACI </div>');
-                $("#mdl-show-not .loading").hide();
-                return false;
-            }
-
-            // notams.js must be included
-            listNotam = CreateNotamListFromSIA(siaNotams);
-            $.each(listNotam.getAll(), function(i, not) {
-                var div = $('<div></div>');
-                var a = $('<a data-toggle="collapse" data-parent="#show-not"></a>')
-                    .attr('href', '#not' + i)
-                    .html(not.getId())
-                    .appendTo(div);
-                var firstLine = $('<strong></strong>')
-                    .html(not.getFirstELine())
-                    .appendTo(div);
-                var data = $('<p></p>')
-                    .addClass('collapse')
-                    .attr('id', 'not' + i)
-                    .html(not.getData())
-                    .appendTo(div);
-                $('<hr>').appendTo(div);
-
-                div.show()
-                    .appendTo($('#show-not'));
-            });
-            $("#mdl-show-not .loading").hide();
-        }
     }
 };
