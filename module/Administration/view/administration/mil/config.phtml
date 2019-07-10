@@ -20,6 +20,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
                                         <th>Filtre d'import</th>
                                         <th data-sort="string">Zones associées</th>
                                         <th>NM B2B</th>
+                                        <th>SIA</th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -33,6 +34,7 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
                                             echo '<td>'.$cat->getFilter().'</td>';
                                             echo '<td>'.$cat->getZonesRegex().'</td>';
                                             echo '<td>'.($cat->isNMB2B()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
+                                            echo '<td>'.($cat->isSia()?"<span class=\"glyphicon glyphicon-ok\"></span>":"<span class=\"glyphicon glyphicon-remove\"></span>").'</td>';
                                             echo '<td><a '
                                                     . 'href="#zone-container" '
                                                     . 'class="mod-mil" '
@@ -57,7 +59,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/zonesmil.js');
                 <div class="panel-body">
                     <p>Cette page permet de configurer les zones militaires affectées aux catégories de type "Zone militaire".</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
-                    <p>La récupération des données via NM B2B nécessite que la connexion soit préalablement configurée par l'administrateur technique.</p>
+                    <p>La récupération des données via NM B2B ou SIA nécessite une configuration préalable par l'administrateur technique.</p>
+                    <p>Une catégorie ne peut pas être récupérée à la fois par NM B2B et par SIA.</p>
                 </div>
             </div>
         </div>

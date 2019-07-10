@@ -169,6 +169,23 @@ class Module implements ConsoleUsageProviderInterface
                 'username',
                 'User Name of the author of created events'
             ),
+            'import-rtba [--delta=] --email orgshortname username' => 'Import RTBA from SIA',
+            array(
+                '--delta',
+                '(optional) Delta to add to the current day (-1=yesterday)'
+            ),
+            array(
+                '--email',
+                '(optional) Send an email to IPO if error during import.'
+            ),
+            array(
+                'orgshortname',
+                'Shortname of the organisation as configured in the database'
+            ),
+            array(
+                'username',
+                'User Name of the author of created events'
+            ),
             'import-regulations [--delta=] [--email] orgshortname username' => 'Import Regulations from NM B2B WS',
             array(
                 '--delta',

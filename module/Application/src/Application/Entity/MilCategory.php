@@ -54,6 +54,14 @@ class MilCategory extends Category
     protected $nmB2B = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Actualiser avec SIA (uniquement possible pour ZTBA) :"})
+     */
+    protected $sia = false;
+
+    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $lastUpdateDate;
@@ -81,6 +89,16 @@ class MilCategory extends Category
     public function isNMB2B()
     {
         return $this->nmB2B;
+    }
+
+    public function setSia($sia)
+    {
+        $this->sia = $sia;
+    }
+
+    public function isSia()
+    {
+        return $this->sia;
     }
 
     public function setLastUpdateDate($update)
