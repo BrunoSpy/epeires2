@@ -105,7 +105,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
             try {
                 $startSeq = microtime(true);
                 echo "Récupération des régulations\n";
-                $regulations = $this->nmb2b->getRegulationsList($day, $end, $cat->getTvs());
+                $regulations = $this->nmb2b->getRegulationsList($day, $end, $cat->getTvs(), $cat->getRegex());
                 $dl = microtime(true) - $startSeq;
                 $totalDL += $dl;
                 echo "Régulations récupérées en ".$dl." secondes\n";
@@ -119,7 +119,11 @@ class ATFCMController extends AbstractEntityManagerAwareController
             }
             foreach ($regulations->getRegulations() as $regulation) {
                 $starttr = microtime(true);
-                $totalEvents += $this->getEntityManager()->getRepository(Event::class)->addRegulation($regulation, $cat, $organisation, $user, $day);
+                $internalId = RegulationListReply::getRegulationName($regulation);
+                if(strlen($cat->getRegex()) == 0 || preg_match($cat->getRegex(), $internalId)) {
+                    $totalEvents += $this->getEntityManager()->getRepository(Event::class)->addRegulation($regulation,
+                        $cat, $organisation, $user, $day);
+                }
                 $tr = microtime(true) - $starttr;
                 $totalTR += $tr;
             }

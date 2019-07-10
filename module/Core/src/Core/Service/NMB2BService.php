@@ -130,9 +130,12 @@ class NMB2BService
      * @param \DateTime $start
      * @param \DateTime $end
      * @param string $regex
+     * @param string $filtre
      * @return null|string
      */
-    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "LF*") {
+    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = "") {
+
+        if(strlen($regex) == 0 && strlen($filtre) == 0) $regex = "LF*";
 
         try {
             return $this->nmb2bClient->flowServices()->queryRegulations($start, $end, $regex);
