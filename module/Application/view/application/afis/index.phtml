@@ -1,5 +1,6 @@
 <?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js'); ?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/notams.js'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js'); ?>
 
 <div class="row col-sm-8 col-sm-offset-2">
@@ -9,7 +10,7 @@
 
      <div id="search-afis" class="form-group form-group-material-blue-500 has-feedback">
         <input class="form-control" placeholder="LFXX" type="text"><span class="glyphicon glyphicon-search form-control-feedback"></span>
-    </div>       
+    </div>
 
      <div class="panel panel-default">
         <div class="panel-body">
@@ -18,14 +19,19 @@
                     <tr>
                         <th data-sort="string">Code OACI</th>
                         <th data-sort="string">Nom</th>
-                        <th>État</th>
+                        <th data-sort="bool">État</th>
                         <th></th>
                         <th></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody id = "list-afis">
-
+                <?php
+                foreach ($this->afis as $af)
+                {
+                    echo $this->afViewHelper()->renderRow($af);
+                }
+                ?>
                 </tbody>
             </table>
         </div>
@@ -33,23 +39,27 @@
     <?php endif; ?>
 </div>
 
-<?=$this->modalWindow(  "mdl-show-not", 
-                        "<h3 id='title-show-not'></h3>", 
-                        "", 
+<?=$this->modalWindow(  "mdl-show-not",
+                        "<h3 id='title-show-not'></h3>",
+                        "",
+                        null,
+                        "<div class='loading'></div>".
                         '<div class="list-group" id="show-not">
                           <div>
                             <a data-toggle="collapse" data-parent="#show-not" href="">
-                            </a>
+                            </a> <strong class="rapid-not-info"></strong>
                             <p class="collapse">
-                              
+
                             </p>
+                            <hr>
                           </div>
-                        </div>'); 
-                        ?>
+                        </div>',
+                        '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>'
+                    ) ?>
 
 <?php $this->inlineScript()->captureStart(); ?>
 
-$("#create-link").remove();		  
+$("#create-link").remove();
 
 $("#changeview").remove();
 

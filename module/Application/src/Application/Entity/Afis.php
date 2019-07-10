@@ -26,7 +26,7 @@ use Application\Entity\Organisation;
  * @ORM\Table(name="afis")
  *
  * @author Loïc Perrin
- *        
+ *
  */
 class Afis extends TemporaryResource
 {
@@ -38,12 +38,13 @@ class Afis extends TemporaryResource
      * @Annotation\Type("Zend\Form\Element\Hidden")
      */
     protected $id;
-    
+
     /**
      * @ORM\Column(type="string", length=4, unique=true, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Required(True)
      * @Annotation\Options({"label":"Code OACI :"})
+     * @Annotation\Required(True)
+     * @Annotation\Validator({"name": "StringLength", "options": {"min": 4, "max": 4}})
      */
     protected $code;
 
@@ -77,7 +78,6 @@ class Afis extends TemporaryResource
      */
     protected $contacts;
 
-
     public function getId()
     {
         return $this->id;
@@ -88,11 +88,6 @@ class Afis extends TemporaryResource
         return $this->name;
     }
 
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
     public function getCode()
     {
         return $this->code;
@@ -100,17 +95,26 @@ class Afis extends TemporaryResource
 
     public function setCode($code)
     {
-        $this->code = $code;
+        if (strlen($code) == 4)
+        {
+            $this->code = $code;
+        }
     }
-    
-    public function setOrganisation(Organisation $organisation)
+
+    public function setName($name)
     {
-        $this->organisation = $organisation;
+        $this->name = $name;
     }
+
 
     public function getOrganisation()
     {
         return $this->organisation;
+    }
+
+    public function setOrganisation(Organisation $organisation)
+    {
+        $this->organisation = $organisation;
     }
 
     public function getOpenedhours()
@@ -133,38 +137,22 @@ class Afis extends TemporaryResource
         $this->contacts = $contacts;
     }
 
-    // public function getState()
-    // {
-    //     return $this->state;
-    // }
-
-    // public function getStrState()
-    // {
-    //     return ($this->getState() == true) ? 'actif' : 'inactif';
-    // }
-
-    // public function setState($state)
-    // {
-    //     $s = self::DEFAULT_STATE;
-    //     if(is_bool($state)) $s = $state;
-    //     $this->state = $s;
-    // }
-    
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
-        $object_vars['organisation'] = ($this->organisation) ? $this->organisation->getId() : null; 
+        $object_vars['organisation'] = ($this->organisation) ? $this->organisation->getId() : null;
         return $object_vars;
     }
-    
-    // public function isValid(){
-    //     $r = false;
-    //     if (    is_int($this->id) and
-    //             is_string($this->name) and
-    //             is_string($this->code) and strlen($this->code) == 4 and 
-    //             is_a($this->organisation, Organisation::class) and
-    //             is_bool($this->state)) $r = true;
-    //     return $r;
-    // }
+
+    public function isValid()
+    {
+        $r = false;
+        if (is_string($this->code) and strlen($this->code) == 4 and
+            is_a($this->organisation, Organisation::class))
+        {
+            $r = true;
+        }
+        return $r;
+    }
 
 }

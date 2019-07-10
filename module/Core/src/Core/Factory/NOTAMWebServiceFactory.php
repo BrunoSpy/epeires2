@@ -15,24 +15,24 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Core\Factory;
 
-use Application\Controller\AfisController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class AfisControllerFactory implements FactoryInterface {
-
+/**
+ *
+ * @author Loïc Perrin
+ *
+ */
+class NOTAMWebServiceFactory implements FactoryInterface
+{
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $service = $serviceLocator->getServiceLocator();
-        return new AfisController(
-            $service->get('Doctrine\ORM\EntityManager'),
-           	$service->get('CustomFieldService'),
-           	$service->get('config'),
-            $service->get('mattermostservice'),
-            $service->get('notamweb')
+        return new \Core\Service\NOTAMWebService(
+            $serviceLocator->get('Doctrine\ORM\EntityManager'),
+            $serviceLocator->get('config')
         );
     }
-
 }
+
