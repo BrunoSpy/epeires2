@@ -206,11 +206,11 @@ class NMB2BService
      * @param string $regex
      * @return null|string
      */
-    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "LF*") {
+    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = "") {
         $client = $this->getFlowSoapClient();
         $now = new \DateTime('now');
 
-        if(strlen($regex) == 0) $regex = "LF*";
+        if(strlen($regex) == 0 && strlen($filtre) == 0) $regex = "LF*";
 
         $params = array(
             'sendTime' => $now->format('Y-m-d H:i:s'),

@@ -90,3 +90,10 @@ table .btn-xs {
 #sectors {
     min-height: 100px;
 }
+
+.atfcm-regex {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -779,6 +779,7 @@ class CategoryEntityFactory
         $em->persist($internalidfield);
 
         $atfcmcategory->setTvs('');
+        $atfcmcategory->setRegex('');
 
         return $atfcmcategory;
     }

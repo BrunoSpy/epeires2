@@ -42,10 +42,17 @@ class ATFCMCategory extends Category
      * @ORM\Column(type="string")
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Options({"label":"TVs (séparés par une virgule) :"})
-     * @Annotation\Attributes({"placeholder":"Par défaut : LF*"})
+     * @Annotation\Attributes({"placeholder":"Par défaut : LF* si le filtre est vide"})
      * TVs to fetch
      */
     protected $tvs;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"Filtre sur l'id, par défaut : aucun"})
+     */
+    protected $regex;
 
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
@@ -142,6 +149,16 @@ class ATFCMCategory extends Category
     public function isNMB2B()
     {
         return $this->nmB2B;
+    }
+
+    public function setRegex($regex)
+    {
+        $this->regex = $regex;
+    }
+
+    public function getRegex()
+    {
+        return $this->regex;
     }
 
     public function getArrayCopy()
