@@ -121,7 +121,7 @@ test:7.0-mysql:
   - php vendor/bin/security-checker security:check composer.lock
 
 test:7.1-mariadb:
-  image: php:7.1-apache
+  image: php:7.1-apache-stretch
   stage: test
   services:
   - mariadb:10.2
@@ -135,7 +135,7 @@ test:7.1-mariadb:
   - php vendor/bin/security-checker security:check composer.lock
 
 test:7.1-mysql:
-  image: php:7.1-apache
+  image: php:7.1-apache-stretch
   stage: test
   services:
   - mysql:5.7
@@ -149,7 +149,7 @@ test:7.1-mysql:
   - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mariadb:
-  image: php:7.2-apache
+  image: php:7.2-apache-stretch
   stage: test
   services:
   - mariadb:10.2
@@ -163,7 +163,7 @@ test:7.2-mariadb:
   - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mysql:
-  image: php:7.2-apache
+  image: php:7.2-apache-stretch
   stage: test
   services:
   - mysql:5.7
