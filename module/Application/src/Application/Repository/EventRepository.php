@@ -1346,19 +1346,20 @@ class EventRepository extends ExtendedRepository
     /*
      * Add events from <code>$eauprsas</code> to the corresponding <code>$cat</code>
      * @param \Core\NMB2B\EAUPRSAs $eauprsas
+     * @param $version NM Version
      * @param \Application\Entity\MilCategory $cat
      */
-    public function addZoneMilEvents(EAUPRSAs $eauprsas, \Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, &$messages = null)
+    public function addZoneMilEvents(EAUPRSAs $eauprsas, $version, \Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, &$messages = null)
     {
         $addedEvents = 0;
         $zones = array();
         foreach ($eauprsas->getAirspacesWithDesignator($cat->getFilter()) as $airspace) {
-            $designator = (string) EAUPRSAs::getAirspaceDesignator($airspace);
+            $designator = (string) EAUPRSAs::getAirspaceDesignator($airspace,$version);
             if (preg_match($cat->getZonesRegex(), $designator)) {
-                $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace);
-                $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace);
-                $lowerlevel = (string) EAUPRSAs::getAirspaceLowerLimit($airspace);
-                $upperlevel = (string) EAUPRSAs::getAirspaceUpperLimit($airspace);
+                $timeBegin = EAUPRSAs::getAirspaceDateTimeBegin($airspace,$version);
+                $timeEnd = EAUPRSAs::getAirspaceDateTimeEnd($airspace, $version);
+                $lowerlevel = (string) EAUPRSAs::getAirspaceLowerLimit($airspace,$version);
+                $upperlevel = (string) EAUPRSAs::getAirspaceUpperLimit($airspace, $version);
 
                 $zone = array($designator, $timeBegin, $timeEnd, $lowerlevel, $upperlevel);
                 $zones[] = $zone;

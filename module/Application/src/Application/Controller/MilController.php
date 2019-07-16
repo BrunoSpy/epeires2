@@ -134,7 +134,7 @@ class MilController extends AbstractEntityManagerAwareController
             try {
                 $startSeq = microtime(true);
                 echo "Téléchargement des zones ".$designator.", séquence ".$lastAUPSequenceNumber."\n";
-                $eauprsas = new EAUPRSAs($this->nmb2b->getEAUPRSA($designator.'*', $day, $lastAUPSequenceNumber));
+                $eauprsas = new EAUPRSAs($this->nmb2b->getEAUPRSA($designator.'*', $day, $lastAUPSequenceNumber), $this->nmb2b->getNMVersionFloat());
                 $dl = microtime(true) - $startSeq;
                 $totalDL += $dl;
                 echo "Téléchargement terminé en ".$dl." secondes"."\n";
@@ -153,7 +153,7 @@ class MilController extends AbstractEntityManagerAwareController
             echo "Création des évènements ".$designator.' séquence '.$lastAUPSequenceNumber." dans Epeires..."."\n";
             $evts = 0;
             foreach ($milcats as $cat) {
-                $evts += $this->getEntityManager()->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $cat, $organisation, $user);
+                $evts += $this->getEntityManager()->getRepository('Application\Entity\Event')->addZoneMilEvents($eauprsas, $this->nmb2b->getNMVersionFloat(), $cat, $organisation, $user);
             }
             $tr = microtime(true) - $startEpeires;
             $totalTR += $tr;

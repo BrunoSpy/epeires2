@@ -40,6 +40,9 @@ class NMB2BService
 
     private $errorEmail = false;
 
+    private $version;
+    private $floatVersion;
+
     public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
@@ -80,6 +83,7 @@ class NMB2BService
         }
         try {
             $client = new \SoapClient($wsdl, $options);
+            $this->extractNMVersion($wsdl);
         } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n";
@@ -113,6 +117,40 @@ class NMB2BService
             return $this->getClient(ROOT_PATH . $this->nmb2b['wsdl_path'] . $this->nmb2b['flow_wsdl_filename']);
         }
         return $this->flowClient;
+    }
+
+    private function extractNMVersion($wsdl)
+    {
+        $data = file_get_contents($wsdl);
+        if($data == false) {
+            throw new \Exception("Unable to load WSDL");
+        }
+        $xml = new \DOMDocument();
+        $xml->loadXML($data);
+
+        $location = $xml->getElementsByTagNameNS("http://schemas.xmlsoap.org/wsdl/soap/", "address");
+        foreach ($location as $l){
+            $loc = $l->getAttribute("location");
+            $url = explode('/', $loc);
+            $this->version = end($url);
+        }
+        $aVersion = explode(".", $this->version);
+        $this->floatVersion = (int) $aVersion[0] + ((int) $aVersion[1])*0.1 + ((int) $aVersion[2])*0.01;
+        error_log($this->floatVersion);
+    }
+
+    /**
+     * x.y.z version of NM Services
+     * @return string
+     */
+    public function getNMVersion()
+    {
+        return $this->version;
+    }
+
+    public function getNMVersionFloat()
+    {
+        return $this->floatVersion;
     }
 
     /**

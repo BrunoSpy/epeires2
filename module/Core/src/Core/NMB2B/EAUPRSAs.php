@@ -27,14 +27,21 @@ class EAUPRSAs
 
     private $xml = null;
 
-    public function __construct($strxml)
+    private $aixmNS;
+
+    public function __construct($strxml, $version)
     {
         if($strxml != null) {
             $this->xml = new \SimpleXMLElement($strxml);
+            if($version >= 23) {
+                $this->aixmNS = 'http://www.aixm.aero/schema/5.1.1';
+            } else {
+                $this->aixmNS = 'http://www.aixm.aero/schema/5.1';
+            }
             // register namespaces
             $this->xml->registerXPathNamespace('adrmsg', "http://www.eurocontrol.int/cfmu/b2b/ADRMessage");
             $this->xml->registerXPathNamespace('gml', "http://www.opengis.net/gml/3.2");
-            $this->xml->registerXPathNamespace('aixm', 'http://www.aixm.aero/schema/5.1');
+            $this->xml->registerXPathNamespace('aixm', $this->aixmNS);
         }
     }
 
@@ -53,6 +60,15 @@ class EAUPRSAs
         }
     }
 
+    public static function getAixmNS($version)
+    {
+        if($version < 23) {
+            return 'http://www.aixm.aero/schema/5.1';
+        } else {
+            return 'http://www.aixm.aero/schema/5.1.1';
+        }
+    }
+
     /**
      * Return ICAO Designator of an Airspace element
      * 
@@ -60,13 +76,13 @@ class EAUPRSAs
      * @return type
      * @throws \UnexpectedValueException
      */
-    public static function getAirspaceDesignator(\SimpleXMLElement $airspace)
+    public static function getAirspaceDesignator(\SimpleXMLElement $airspace, $version)
     {
         if ($airspace->getName() === 'Airspace') {
-            $timeslices = $airspace->children('http://www.aixm.aero/schema/5.1')->timeSlice;
+            $timeslices = $airspace->children(self::getAixmNS($version))->timeSlice;
             foreach ($timeslices as $timeslice) {
-                $airspacetimeslice = $timeslice->children('http://www.aixm.aero/schema/5.1')->AirspaceTimeSlice;
-                foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child) {
+                $airspacetimeslice = $timeslice->children(self::getAixmNS($version))->AirspaceTimeSlice;
+                foreach ($airspacetimeslice->children(self::getAixmNS($version)) as $child) {
                     if ($child->getName() === 'designator') {
                         return $child;
                     }
@@ -84,14 +100,14 @@ class EAUPRSAs
      * @return string
      * @throws \UnexpectedValueException
      */
-    public static function getAirspaceTimeBegin(\SimpleXMLElement $airspace)
+    public static function getAirspaceTimeBegin(\SimpleXMLElement $airspace, $version)
     {
         if ($airspace->getName() === 'Airspace') {
-            $timeslices = $airspace->children('http://www.aixm.aero/schema/5.1')->timeSlice;
+            $timeslices = $airspace->children(self::getAixmNS($version))->timeSlice;
             if (count($timeslices) >= 2) {
                 foreach ($timeslices as $timeslice) {
                     $validtime = $timeslice
-                    ->children('http://www.aixm.aero/schema/5.1')
+                    ->children(self::getAixmNS($version))
                     ->AirspaceTimeSlice
                     ->children('http://www.opengis.net/gml/3.2')
                     ->validTime;
@@ -111,12 +127,13 @@ class EAUPRSAs
 
     /**
      *
-     * @param \SimpleXMLElement $airspace            
+     * @param \SimpleXMLElement $airspace
+     * @param $version
      * @return \DateTime
      */
-    public static function getAirspaceDateTimeBegin(\SimpleXMLElement $airspace)
+    public static function getAirspaceDateTimeBegin(\SimpleXMLElement $airspace, $version)
     {
-        $timeBegin = EAUPRSAs::getAirspaceTimeBegin($airspace);
+        $timeBegin = EAUPRSAs::getAirspaceTimeBegin($airspace, $version);
         return new \DateTime($timeBegin . "+00:00");
     }
 
@@ -126,14 +143,14 @@ class EAUPRSAs
      * @return string
      * @throws \UnexpectedValueException
      */
-    public static function getAirspaceTimeEnd(\SimpleXMLElement $airspace)
+    public static function getAirspaceTimeEnd(\SimpleXMLElement $airspace, $version)
     {
         if ($airspace->getName() === 'Airspace') {
-            $timeslices = $airspace->children('http://www.aixm.aero/schema/5.1')->timeSlice;
+            $timeslices = $airspace->children(self::getAixmNS($version))->timeSlice;
             if (count($timeslices) === 2) {
                 foreach ($timeslices as $timeslice) {
                     $validtime = $timeslice
-                    ->children('http://www.aixm.aero/schema/5.1')
+                    ->children(self::getAixmNS($version))
                     ->AirspaceTimeSlice
                     ->children('http://www.opengis.net/gml/3.2')
                     ->validTime;
@@ -156,35 +173,36 @@ class EAUPRSAs
      * @param \SimpleXMLElement $airspace            
      * @return \DateTime
      */
-    public static function getAirspaceDateTimeEnd(\SimpleXMLElement $airspace)
+    public static function getAirspaceDateTimeEnd(\SimpleXMLElement $airspace, $version)
     {
-        $timeEnd = EAUPRSAs::getAirspaceTimeEnd($airspace);
+        $timeEnd = EAUPRSAs::getAirspaceTimeEnd($airspace, $version);
         return new \DateTime($timeEnd . '+00:00');
     }
 
     /**
      *
-     * @param \SimpleXMLElement $airspace            
+     * @param \SimpleXMLElement $airspace
+     * @param $version
      * @return String
      * @throws \UnexpectedValueException
      */
-    public static function getAirspaceUpperLimit(\SimpleXMLElement $airspace)
+    public static function getAirspaceUpperLimit(\SimpleXMLElement $airspace, $version)
     {
         if ($airspace->getName() === 'Airspace') {
-            $timeslices = $airspace->children('http://www.aixm.aero/schema/5.1')->timeSlice;
+            $timeslices = $airspace->children(self::getAixmNS($version))->timeSlice;
             if (count($timeslices) === 2) {
                 foreach ($timeslices as $timeslice) {
-                    $airspacetimeslice = $timeslice->children('http://www.aixm.aero/schema/5.1')->AirspaceTimeSlice;
-                    foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child) {
+                    $airspacetimeslice = $timeslice->children(self::getAixmNS($version))->AirspaceTimeSlice;
+                    foreach ($airspacetimeslice->children(self::getAixmNS($version)) as $child) {
                         if ($child->getName() === 'activation') {
                             return $child
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->AirspaceActivation
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->levels
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->AirspaceLayer
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->upperLimit;
                         }
                     }
@@ -197,27 +215,28 @@ class EAUPRSAs
 
     /**
      *
-     * @param \SimpleXMLElement $airspace            
+     * @param \SimpleXMLElement $airspace
+     * @param $version
      * @return String
      * @throws \UnexpectedValueException
      */
-    public static function getAirspaceLowerLimit(\SimpleXMLElement $airspace)
+    public static function getAirspaceLowerLimit(\SimpleXMLElement $airspace, $version)
     {
         if ($airspace->getName() === 'Airspace') {
-            $timeslices = $airspace->children('http://www.aixm.aero/schema/5.1')->timeSlice;
+            $timeslices = $airspace->children(self::getAixmNS($version))->timeSlice;
             if (count($timeslices) === 2) {
                 foreach ($timeslices as $timeslice) {
-                    $airspacetimeslice = $timeslice->children('http://www.aixm.aero/schema/5.1')->AirspaceTimeSlice;
-                    foreach ($airspacetimeslice->children('http://www.aixm.aero/schema/5.1') as $child) {
+                    $airspacetimeslice = $timeslice->children(self::getAixmNS($version))->AirspaceTimeSlice;
+                    foreach ($airspacetimeslice->children(self::getAixmNS($version)) as $child) {
                         if ($child->getName() === 'activation') {
                             return $child
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->AirspaceActivation
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->levels
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->AirspaceLayer
-                                    ->children('http://www.aixm.aero/schema/5.1')
+                                    ->children(self::getAixmNS($version))
                                     ->lowerLimit;
                         }
                     }
