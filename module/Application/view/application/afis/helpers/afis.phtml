@@ -6,10 +6,11 @@
         <label>
             <input
                    data-id="<?php echo $afis['self']->getId(); ?>"
-                   class="btn-switch-af" type="checkbox" <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
+                   class="btn-switch-af" type="checkbox" 
+                   
+                   <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
 
-                   <?php
-                        ($this->isGranted('afis.read')) ? '' : 'disabled="disabled"';
+                   <?php echo ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
                    ?>
             />
         </label>

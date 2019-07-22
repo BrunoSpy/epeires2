@@ -233,7 +233,11 @@ return array(
         'Afis' => array(
             'afis.read' => array(
                 'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet Afis'
+                'description' => 'Donne accès en lecture à l\'onglet Afis'
+            ),
+            'afis.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Permet les ouvertures/fermetures'
             ),
         ),
         'Gestion PLN' => array(
