@@ -120,6 +120,7 @@ return array(
             'block' => 'Application\View\Helper\Block',
             'sector' => 'Application\View\Helper\Sector',
             'afViewHelper' => 'Application\View\Helper\AfisHelper',
+            'flightPlanViewHelper' => 'Application\View\Helper\FlightPlanHelper',
         ),
         'factories' => array(
             'eventName' => 'Application\Factories\EventNameFactory',
@@ -140,6 +141,7 @@ return array(
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
             'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
+            'flight-plans/helpers/flight-plan' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
@@ -243,7 +245,11 @@ return array(
         'Gestion PLN' => array(
             'flightplans.read' => array(
                 'name' => 'Lecture',
-                'description' => 'Donne accès à l\'onglet de gestion des plans de vol'
+                'description' => 'Donne accès en lecture à l\'onglet de gestion des plans de vol'
+            ),
+            'flightplans.write' => array(
+                'name' => 'Ecriture',
+                'description' => 'Donne accès en écriture à l\'onglet de gestion des plans de vol'
             ),
         ),
         'SAR Balises' => array(

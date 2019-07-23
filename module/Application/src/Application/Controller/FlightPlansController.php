@@ -38,34 +38,30 @@ use Application\Entity\AlertCategory;
 class FlightPlansController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
-    protected $em, $cf, $repo, $form;
+    protected $em, $cf, $repo, $form, $fp_cats, $alt_cats;
 
-
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
+    private function authFlightPlans($action) 
     {
-        parent::__construct($config, $mattermost);
-        $this->em = $em;
-        $this->cf = $cf;
+        return ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('flightplans.'.$action)) ? true : false;
     }
-    
-    public function indexAction()
-    {
-        parent::indexAction();
-        if (!$this->authFlightPlans('read')) {
-            echo "Droits d'accès requis.";
-            return false;
-        }
 
+    private function getEventCategories($classCategory)
+    {
         $cats = [];
-        foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
+        foreach ($this->em->getRepository($classCategory)->findAll() as $cat) {
             $cats[] = $cat->getId();
         }
+        return $cats;
+    }
 
-        //determine if user has access to at least one category
-        $readablecat = array();
-        foreach ($cats as $cat) {
+    private function canCurrentUserAccessOneCategoryOf($cats)
+    {
+        $readablecat = [];
+        foreach ($cats as $cat) 
+        {
             $category = $this->em->getRepository(Category::class)->find($cat);
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
+            if ($this->zfcUserAuthentication()->hasIdentity()) 
+            {
                 $roles = $this->zfcUserAuthentication()
                     ->getIdentity()
                     ->getRoles();
@@ -75,7 +71,9 @@ class FlightPlansController extends TabController
                         break;
                     }
                 }
-            } else {
+            } 
+            else 
+            {
                 $role = $this->zfcRbacOptions->getGuestRole();
                 $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
                     'name' => $role
@@ -87,7 +85,58 @@ class FlightPlansController extends TabController
                 }
             }
         }
-        $hasAccess = (count($readablecat) > 0);
+        return (count($readablecat) > 0);
+    }
+
+    private function getPendingMessages()
+    {
+        $messages = [];
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $messages['error'] = $this->flashMessenger()->getErrorMessages();
+        }
+
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $messages['success'] = $this->flashMessenger()->getSuccessMessages();
+        }
+        $this->flashMessenger()->clearMessages();
+        return $messages;
+    }
+
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
+    {
+        parent::__construct($config, $mattermost);
+        $this->em = $em;
+        $this->cf = $cf;
+        $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
+        $this->alt_cats = $this->getEventCategories(AlertCategory::class);
+    }
+    
+    public function indexAction()
+    {
+        parent::indexAction();
+        if (!$this->authFlightPlans('read')) 
+        {
+            echo ACCES_REQUIRED;
+            return false;
+        }
+
+        $hasAccess = (
+            $this->canCurrentUserAccessOneCategoryOf($this->fp_cats) &&
+            $this->canCurrentUserAccessOneCategoryOf($this->alt_cats)
+        );
+
+        $post = $this->getRequest()->getPost();
+        $query_date = $this->getRequest()->getQuery('d');
+        $date = ($query_date) ? $query_date : $post['date'];
+        if (isset($date) && $date != '') {
+            $start = new DateTime($date); 
+            $end = (new DateTime($date))->add(new DateInterval('P1D'));
+        } else {
+            $start = (new DateTime())->setTime(0,0,0);
+            $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+        }
+
+        $flightplans = $this->getFp($start, $end);
 
         $alertcats = [];
         foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
@@ -96,9 +145,15 @@ class FlightPlansController extends TabController
         
         return (new ViewModel())
             ->setVariables([
-                'cats' => $cats,
+                'cats' => $this->fp_cats,
+                'messages' => $this->getPendingMessages(),
                 'alertcats' => $alertcats,
-                'hasAccess' => $hasAccess
+                'hasAccess' => $hasAccess,
+                // envoi de la date courante ou choisi au bootstrap calendar : format américain
+                'current_date' => $start->format('m/d/Y'),
+                'fields'            => $this->getFields(),
+                'flightplans'       => $flightplans[0],
+                'flightplansWAlt'   => $flightplans[1]
             ]);
     }
 
@@ -176,7 +231,9 @@ class FlightPlansController extends TabController
     } 
 
     private function getFields() {
-        $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(['category' => $this->getCatId()]);
+        $cf = $this->em->getRepository('Application\Entity\CustomField')
+            ->findBy(['category' => $this->getCatId()], ['place' => 'ASC']);
+            
         $fields = [];
         foreach ($cf as $c) {
            $fields[] = $c->getName();
@@ -199,8 +256,6 @@ class FlightPlansController extends TabController
             $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
         }
 
-        $flightplans = $this->getFp($start, $end);
-
         $viewmodel = new ViewModel();
         $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
         $viewmodel->setVariables([
@@ -211,12 +266,14 @@ class FlightPlansController extends TabController
         return $viewmodel;
     }
 
-    public function endAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
+    public function endAction() 
+    {
+        if (!$this->authFlightPlans('write')) return new JsonModel();
+
         $post = $this->getRequest()->getPost();
-        $msgType = 'error';
         $id = (int) $post['id'];
         $endDate = $post['endDate'];
+
         if($id > 0) 
         {
             $now = new \DateTime('NOW');
@@ -234,26 +291,27 @@ class FlightPlansController extends TabController
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
                 $this->em->persist($event);
+                
                 try {
                     $this->em->flush();
-                    $msgType = 'success';
-                    $msg = "Clôture du plan de vol.";
-                } catch (\Exception $e) {
-                    $msg = $e->getMessage();
+                    $this->flashMessenger()->addSuccessMessage("Clôture du plan de vol.");
                 }
-            } else $msg = "Heure de cloture du vol > heure de début du vol.";
-        } else $msg = "Impossible de trouver le vol.";
+                catch (\Exception $e) {
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                }
+            } 
+            else 
+                $this->flashMessenger()->addErrorMessage("Heure de cloture du vol < heure de début du vol.");
+        } else
+            $this->flashMessenger()->addErrorMessage("Impossible de trouver l'événement vol");
 
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);
+        return new JsonModel();
     }
 
-    public function endAlertAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
+    public function endAlertAction() 
+    {
+        if (!$this->authFlightPlans('write')) return new JsonModel();
         $post = $this->getRequest()->getPost();
-        $msgType = 'error';
         $id = (int) $post['id'];
         $endDate = $post['endAltDate'];
         if($id > 0) {
@@ -268,35 +326,33 @@ class FlightPlansController extends TabController
             $event = $this->em->getRepository(Event::class)->find($id);
             $startDate = $event->getStartdate();
 
-            if ($startDate <= $endDate) {
+            if ($startDate <= $endDate) 
+            {
                 $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
                 $event->setStatus($endstatus);
                 $event->setEnddate($endDate);
                 $this->em->persist($event);
                 try {
                     $this->em->flush();
-                    $msgType = 'success';
-                    $msg = "Clôture de l'alerte.";
+                    $this->flashMessenger()->addSuccessMessage("Clôture de l'alerte.");
                 } catch (\Exception $e) {
-                    $msg = $e->getMessage();
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
-            } else $msg = "Heure de fin de l'alerte > heure de début de l'alerte.";
-        } else $msg = "Impossible de trouver l'événement alerte.";
+            }
+            else 
+                $this->flashMessenger()->addErrorMessage("Heure de cloture de l'alerte < heure de début de l'alerte.");
 
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);        
+        } 
+        else
+            $this->flashMessenger()->addErrorMessage("Impossible de trouver l'événement alerte");
+
+        return new JsonModel();        
     }
 
-    private function authFlightPlans($action) {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('flightplans.'.$action)) ? false : true;
-    }
+    public function triggerAlertAction() 
+    {
+        if (!$this->authFlightPlans('write')) return new JsonModel();
 
-    public function triggerAlertAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
-
-        $msgType = 'error';
         $req = $this->getRequest()->getPost();
         $id = (int) $req['id'];
         $type = $req['type'];
@@ -332,21 +388,22 @@ class FlightPlansController extends TabController
                         $causefield->setValue($cause);  
                         $this->em->persist($typefield);
                         $this->em->persist($causefield);
-                        try {
+                        try 
+                        {
                             $this->em->flush();
-                            $msgType = 'success';
-                            $msg = "Alerte modifiée.";
-                        } catch (\Exception $e) {
-                            $msg = $e->getMessage();
+                            $this->flashMessenger()->addSuccessMessage("Alerte modifiée.");
+                        } 
+                        catch (\Exception $e) 
+                        {
+                            $this->flashMessenger()->addErrorMessage($e->getMessage());
                         }                
-                    } else {
-                        $msg = "Impossible de trouver le champ correspondant au type d'alerte.";
-                    } 
+                    }         
+                    else
+                        $this->flashMessenger()->addErrorMessage("Impossible de trouver le champ correspondant au type d'alerte.");
                 } 
                 // création
                 else 
                 {
-
                     $now = new \DateTime('NOW');
                     $now->setTimezone(new \DateTimeZone("UTC"));
                     // crétation de l'evenement d'alerte
@@ -430,24 +487,22 @@ class FlightPlansController extends TabController
                             //     }
                             // }
                             // $this->em->flush();
-                            $msgType = 'success';
-                            $msg = "Alerte créée.";
+
+                            $this->flashMessenger()->addSuccessMessage("Alerte confirmée.");
                         } catch (\Exception $e) {
-                            $msg = $e->getMessage();
+                            $this->flashMessenger()->addErrorMessage($e->getMessage());
                         }
                     } else {
-                        $msg = "Impossible de créer l'alerte, pas de catégorie alerte créée.";
+                        $this->flashMessenger()->addErrorMessage("Impossible de créer l'alerte, pas de catégorie alerte créée.");
                     }
                 }
             } else {
-                $msg = "Requête incorrecte, impossible de trouver le plan de vol correspondant.";
+                $this->flashMessenger()->addErrorMessage("Requête incorrecte, impossible de trouver le plan de vol correspondant.");
             }
-        } else {
-            $msg = "Requête incorrecte, pas d'identifiant de plan de vol valide.";
-        }
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);
+        } 
+        else
+            $this->flashMessenger()->addErrorMessage("Requête incorrecte, pas d'identifiant de plan de vol valide.");
+
+        return new JsonModel();
     }
 }

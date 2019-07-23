@@ -181,10 +181,13 @@ class AfisController extends TabController
                 ->getCurrentEvents('Application\Entity\AfisCategory');
 
             $afisevents = array();
-            foreach ($events as $event) {
+            foreach ($events as $event) 
+            {
                 $afisfield = $event->getCategory()->getAfisfield();
-                foreach ($event->getCustomFieldsValues() as $value) {
-                    if ($value->getCustomField()->getId() == $afisfield->getId()) {
+                foreach ($event->getCustomFieldsValues() as $value) 
+                {
+                    if ($value->getCustomField()->getId() == $afisfield->getId()) 
+                    {
                         if ($value->getValue() == $id) {
                             $afisevents[] = $event;
                         }
@@ -192,8 +195,8 @@ class AfisController extends TabController
                 }
             }
 
-            if ($state == 0) {
-
+            if ($state == 0) 
+            {
                 if (count($afisevents) == 1) {
                     $event = $afisevents[0];
                     $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
@@ -210,8 +213,9 @@ class AfisController extends TabController
                 } else {
                     $msg = "Impossible de déterminer l'évènement à terminer.";
                 }
-            } else {
-
+            } 
+            else 
+            {
                 if (count($afisevents) > 0) {
                     $msg = "Un évènement est déjà en cours pour cette AFIS, impossible d'en créer un nouveau.";
                 } else {
@@ -298,6 +302,5 @@ class AfisController extends TabController
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
-
 
 }
