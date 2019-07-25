@@ -21,17 +21,18 @@ use Application\Controller\FlightPlansController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class FlightPlansControllerFactory implements FactoryInterface {
-
+class FlightPlansControllerFactory  implements FactoryInterface 
+{
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $service = $serviceLocator->getServiceLocator();
         return new FlightPlansController(
             $service->get('Doctrine\ORM\EntityManager'),
+            $service->get('EventService'),
             $service->get('CustomFieldService'),
+            $service->get('ZfcRbac\Options\ModuleOptions'),
             $service->get('config'),
             $service->get('mattermostservice')
         );
     }
-
 }

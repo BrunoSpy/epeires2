@@ -1,52 +1,11 @@
 <tr>
+
 <?php foreach ($fields as $field) : ?>
 <td>
 <?php
-if ($field == 'Aircraft-Id') $airId = $flightplan[$field];
 if ($field == 'Alerte')
 {
-    $tAlertes = ['INCERFA', 'ALERFA', 'DETRESFA'];
-    $bAlertes = ['info', 'warning', 'danger'];
-    foreach ($tAlertes as $index => $alt)
-    {
-        $act = '';
-        $cause = '';
-        $title = '';
-        $modal = "#mdl-trig-fp";
-        if(isset($flightplan['Type'])) {
-            $modal = "#mdl-edit-alt";
-            $cause = (isset($flightplan['Cause'])) ? $flightplan['Cause'] : '';
-            if($alt == $flightplan['Type']) {
-                $act = 'active-alt';
-                $title = 'title = "'.$cause.'"';
-            }
-        }
-//                    // alerte non-clôturée
-        if(!isset($flightplan['alert']['end_date'])) {
-        ?>
-        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " href="<?php echo $modal; ?>" data-id="<?php echo $flightplan['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>" data-cause="<?php echo $cause;?>" data-toggle="modal">
-            <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?>"><?php echo $alt[0]; ?></button>
-        </a>
-        <?php
-        } else {
-        ?>
-        <a <?php echo $title; ?> class="a-trig-alt <?php echo $act; ?> " data-id="<?php echo $flightplan['id']; ?>" data-air-id="<?php echo $airId; ?>" data-type="<?php echo $alt;?>"  data-cause="<?php echo $cause;?>" >
-            <button class="btn btn-xs btn-<?php echo $bAlertes[$index]; ?> disabled"><?php echo $alt[0]; ?></button>
-        </a>
-        <?php
-        }
-    }
-    if (isset($flightplan['Type'])) {
-        if (!isset($flightplan['alert']['end_date'])) {
-        ?>
-        <a class="a-end-alt" href="#mdl-end-alt" data-id="<?php echo $flightplan['alert']['id']; ?>" data-toggle="modal" href="#"><button class="btn btn-xs btn-primary">FIN ALERTE</button></a>
-        <?php
-        } else {
-        ?>
-        <a class="a-end-alt"><button class="btn btn-xs btn-primary" disabled>CLOS</button></a>
-        <?php
-        }
-    }
+    echo $this->flightPlanViewHelper()->renderAlert($flightplan);
 }
 else
 {
@@ -63,10 +22,23 @@ else
     <?php if (isset($flightplan['end_date'])) : ?>
     <?php echo $flightplan['end_date']->format('H:i'); ?>
     <?php else: ?>
-    <a class="a-end-fp" href="#mdl-end-fp" data-air-id="<?php echo $airId; ?>" data-toggle="modal" data-id="<?php echo $flightplan['id']; ?>" href="#"><button class="btn btn-xs btn-primary">CLORE PLN</button></a>
+    <a class="a-end-fp"
+       href="#mdl-end-fp" 
+       data-air-id="<?php echo $flightplan['Aicraft-Id']; ?>" 
+       data-toggle="modal" 
+       data-id="<?php echo $flightplan['id']; ?>" 
+       href="#">
+        <button class="btn btn-xs btn-primary">
+            CLORE PLN
+        </button>
+    </a>
     <?php endif; ?>
 </td>
 <td id="list-fp">
-    <a class="modify-evt" data-id="<?php echo $flightplan['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+    <a class="modify-evt" 
+       data-id="<?php echo $flightplan['id']; ?>">
+       <span class="glyphicon glyphicon-pencil"></span>
+    </a>
 </td>
+
 </tr>

@@ -26,6 +26,7 @@ use DateTime;
 use DateInterval;
 
 use Application\Services\CustomFieldService;
+use Application\Services\EventService;
 
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
@@ -35,7 +36,7 @@ use Application\Entity\AlertCategory;
  *
  * @author Loïc Perrin
  */
-class FlightPlansController extends TabController
+class FlightPlansController extends EventsController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
     const NO_ID_EVENT = "Aucun événement ne correspond à l'identifiant.";
@@ -48,9 +49,22 @@ class FlightPlansController extends TabController
 
     protected $em, $cf, $repo, $form, $fp_cats, $alt_cats;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
+    public function __construct(
+        EntityManager $em, 
+        EventService $eventService,
+        CustomFieldService $cf, 
+        $zfrcbacOptions,
+        Array $config, 
+        $mattermost)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct(
+            $em, 
+            $eventService,  
+            $cf,
+            $zfrcbacOptions,
+            $config,  
+            $mattermost);
+
         $this->em = $em;
         $this->cf = $cf;
         $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
@@ -71,13 +85,14 @@ class FlightPlansController extends TabController
         }
 
         // récupération des données de la date depuis GET ou POST
-        $post = $this->getRequest()->getPost();
-        $query_date = $this->getRequest()->getQuery('d');
-        $date = ($query_date) ? $query_date : $post['date'];
+        $post_date = $this->params()->fromPost('date', '');
+        $query_date = $this->params()->fromQuery('d', '');
+        $date = ($query_date) ? $query_date : $post_date;
 
         // création d'un intervalle de temps pour la récupération des PLN
-        $dates = $this->getStartAndEndDateTime($date); 
-        $flightplans = $this->getFlightPlansFromTimeInterval($dates['start'], $dates['end']);
+        $date_interval = $this->getStartAndEndDateTime($date); 
+        $flightplans = $this->getFlightPlansFromTimeInterval(
+            $date_interval['start'], $date_interval['end']);
 
         return (new ViewModel())
             ->setVariables([
@@ -88,7 +103,7 @@ class FlightPlansController extends TabController
                 // accès à une catégorie d'événement PLN
                 'hasAccess' => $hasAccess,
                 // envoi de la date courante ou choisi au bootstrap calendar : format américain
-                'current_date' => $dates['start']->format('m/d/Y'),
+                'current_date' => $date_interval['start']->format('m/d/Y'),
                 // champs de la catégorie ordonnés par le champ "place"
                 'fields'            => $this->getFields(),
                 // vols sans alerte
@@ -109,34 +124,37 @@ class FlightPlansController extends TabController
             return new JsonModel();
         }
 
-        $this->endEvent($this->getRequest()->getPost());
+        $eventId = $this->params()->fromPost('id', 0);
+        $endDate = $this->params()->fromPost('endDate', '');
+
+        $this->endEvent($eventId, $endDate);
         return new JsonModel();
     }
 
-    private function endEvent($post)
+    private function endEvent($eventId, $endDate)
     {
-        $id = (int) $post['id'];
-        $endDate = $post['endDate'];
-
-        // vérification précense d'un ID
-        if($id == 0) 
+        // vérification présence d'un ID
+        if($eventId == 0) 
         {
             $this->flashMessenger()->addErrorMessage(self::NO_ID_EVENT);
             return;
         }
 
         // vérification existence de l'événement
-        $event = $this->em->getRepository(Event::class)->find($id);
+        $event = $this->em->getRepository(Event::class)->find($eventId);
         if (!is_a($event, Event::class))
         {
             $this->flashMessenger()->addErrorMessage(self::NO_EVENT);
             return;
         }
+        
+        // statut fin confirmé
+        $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
 
         // paramétrage de la date de cloture du plan de vol
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
-        if (isset($endDate)) 
+        if ($endDate) 
         {
             // TODO verif format $endDate 
             $endDate = new \DateTime($endDate);
@@ -146,20 +164,7 @@ class FlightPlansController extends TabController
         { 
             $endDate = $now;
         }
-        $event->setEnddate($endDate);
-
-        // vérification de l'intervalle de temps de l'événement
-        $startDate = $event->getStartdate();
-        if ($startDate >= $endDate) 
-        {
-            $this->flashMessenger()->addErrorMessage(self::INVALID_TIME_INTERVAL);
-            return;
-        }
-
-        // événement avec statut Fin Confirmé lors de la clôture
-        $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
-        $event->setStatus($endstatus);
-        
+        $event->close($endstatus, $endDate);
         // sauvegarde de l'événement
         $this->em->persist($event);
         try 
@@ -185,7 +190,10 @@ class FlightPlansController extends TabController
             return new JsonModel();
         }
 
-        $this->endEvent($this->getRequest()->getPost());
+        $eventId = $this->params()->fromPost('id', 0);
+        $endDate = $this->params()->fromPost('endDate', '');
+
+        $this->endEvent($eventId, $endDate);
         return new JsonModel();
     }
 
@@ -266,7 +274,7 @@ class FlightPlansController extends TabController
             $arrayAlert = $this->getAlertDataFromEvent($fpEvent);
             if ($arrayAlert['id'])
             {
-                $arrayFlightPlan['ev-alerte'] = $arrayAlert;
+                $arrayFlightPlan['ev-alert'] = $arrayAlert;
                 $flightPlansAlert[] = $arrayFlightPlan;
             }
             else
@@ -277,18 +285,17 @@ class FlightPlansController extends TabController
 
     private function getFlightPlanDataFromEvent($event) 
     {
-        $cat = $event->getCategory();
         $flightPlanArray = [
             'id' => $event->getId(),
             'start_date' => $event->getStartDate(),
             'end_date' => $event->getEndDate()
         ];
-        foreach ($event->getCustomFieldsValues() as $value) 
+        foreach ($event->getCustomFieldsValues() as $customFieldValue) 
         {
-            $customfield = $value->getCustomField(); 
-            $namefield = (isset($customfield)) ? $customfield->getName() : null; 
-            $valuefield = $value->getValue();
-            (isset($namefield)) ? $flightPlanArray[$namefield] = $valuefield : null;
+            $flightPlanArray[$customFieldValue->getCustomField()->getName()] = 
+                $this->cf->getFormattedValue(
+                    $customFieldValue->getCustomField(), 
+                    $customFieldValue->getValue());
         }
         return $flightPlanArray;
     }
@@ -533,8 +540,10 @@ class FlightPlansController extends TabController
                 $roles = $this->zfcUserAuthentication()
                     ->getIdentity()
                     ->getRoles();
-                foreach ($roles as $role) {
-                    if ($category->getReadroles(true)->contains($role)) {
+                foreach ($roles as $role) 
+                {
+                    if ($category->getReadroles(true)->contains($role)) 
+                    {
                         $readablecat[] = $category;
                         break;
                     }
@@ -546,7 +555,8 @@ class FlightPlansController extends TabController
                 $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
                     'name' => $role
                 ));
-                if ($roleentity) {
+                if ($roleentity) 
+                {
                     if ($category->getReadroles(true)->contains($roleentity)) {
                         $readablecat[] = $category;
                     }

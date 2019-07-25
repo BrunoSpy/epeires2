@@ -142,6 +142,7 @@ return array(
             'afis/helper/afadmin' => __DIR__ . '/../view/application/afis/helpers/afis-admin.phtml',
             'afis/helper/afis' => __DIR__ . '/../view/application/afis/helpers/afis.phtml',
             'flight-plans/helpers/flight-plan' => __DIR__ . '/../view/application/flight-plans/helpers/flight-plan.phtml',
+            'flight-plans/helpers/alert' => __DIR__ . '/../view/application/flight-plans/helpers/alert.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
