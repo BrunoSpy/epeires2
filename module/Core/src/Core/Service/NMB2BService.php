@@ -136,7 +136,6 @@ class NMB2BService
         }
         $aVersion = explode(".", $this->version);
         $this->floatVersion = (int) $aVersion[0] + ((int) $aVersion[1])*0.1 + ((int) $aVersion[2])*0.01;
-        error_log($this->floatVersion);
     }
 
     /**
