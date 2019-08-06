@@ -26,6 +26,7 @@ use DateTime;
 use DateInterval;
 
 use Application\Services\CustomFieldService;
+use Application\Services\EventService;
 
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
@@ -35,138 +36,464 @@ use Application\Entity\AlertCategory;
  *
  * @author Loïc Perrin
  */
-class FlightPlansController extends TabController
+class FlightPlansController extends EventsController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
-    protected $em, $cf, $repo, $form;
+    const NO_ID_EVENT = "Aucun événement ne correspond à l'identifiant.";
+    const NO_EVENT = "L'identifiant donné ne correspond à aucun événement.";
+    const INVALID_TIME_INTERVAL = "Heure de cloture < Heure de début.";
+    const END_OK = "Clôture de l'événement.";
+    const NO_ALERT_CAT = "Impossible de créer l'alerte, pas de catégorie alerte créée.";
+    const ALERT_CREATED = "Nouvelle alerte confirmée.";
+    const ALERT_EDITED = "Alerte modifiée.";
 
+    protected $em, $cf, $repo, $form, $fp_cats, $alt_cats;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
+    public function __construct(
+        EntityManager $em, 
+        EventService $eventService,
+        CustomFieldService $cf, 
+        $zfrcbacOptions,
+        Array $config, 
+        $mattermost)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct(
+            $em, 
+            $eventService,  
+            $cf,
+            $zfrcbacOptions,
+            $config,  
+            $mattermost);
+
         $this->em = $em;
         $this->cf = $cf;
+        $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
+        $this->alt_cats = $this->getEventCategories(AlertCategory::class);
     }
     
     public function indexAction()
     {
         parent::indexAction();
-        if (!$this->authFlightPlans('read')) {
-            echo "Droits d'accès requis.";
+
+        // vérification d'accès à l'onglet et d'accès à la catégorie 
+        $hasAccess = ($this->canCurrentUserAccessOneCategoryOf($this->fp_cats)
+            && $this->authFlightPlans('read'));
+        if (!$hasAccess) 
+        {
+            echo ACCES_REQUIRED;
             return false;
         }
 
-        $cats = [];
-        foreach ($this->em->getRepository(FlightPlanCategory::class)->findAll() as $cat) {
-            $cats[] = $cat->getId();
-        }
+        // récupération des données de la date depuis GET ou POST
+        $post_date = $this->params()->fromPost('date', '');
+        $query_date = $this->params()->fromQuery('d', '');
+        $date = ($query_date) ? $query_date : $post_date;
 
-        //determine if user has access to at least one category
-        $readablecat = array();
-        foreach ($cats as $cat) {
-            $category = $this->em->getRepository(Category::class)->find($cat);
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $roles = $this->zfcUserAuthentication()
-                    ->getIdentity()
-                    ->getRoles();
-                foreach ($roles as $role) {
-                    if ($category->getReadroles(true)->contains($role)) {
-                        $readablecat[] = $category;
-                        break;
-                    }
-                }
-            } else {
-                $role = $this->zfcRbacOptions->getGuestRole();
-                $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
-                    'name' => $role
-                ));
-                if ($roleentity) {
-                    if ($category->getReadroles(true)->contains($roleentity)) {
-                        $readablecat[] = $category;
-                    }
-                }
-            }
-        }
-        $hasAccess = (count($readablecat) > 0);
+        // création d'un intervalle de temps pour la récupération des PLN
+        $date_interval = $this->getStartAndEndDateTime($date); 
+        $flightplans = $this->getFlightPlansFromTimeInterval(
+            $date_interval['start'], $date_interval['end']);
 
-        $alertcats = [];
-        foreach ($this->em->getRepository(AlertCategory::class)->findAll() as $cat) {
-            $alertcats[] = $cat->getId();
-        }
-        
         return (new ViewModel())
             ->setVariables([
-                'cats' => $cats,
-                'alertcats' => $alertcats,
-                'hasAccess' => $hasAccess
+                'cats' => $this->fp_cats,
+                // affichage des flashMessages
+                'messages' => $this->getPendingMessages(),
+                'alertcats' => $this->alt_cats,
+                // accès à une catégorie d'événement PLN
+                'hasAccess' => $hasAccess,
+                // envoi de la date courante ou choisi au bootstrap calendar : format américain
+                'current_date' => $date_interval['start']->format('m/d/Y'),
+                // champs de la catégorie ordonnés par le champ "place"
+                'fields'            => $this->getFields(),
+                // vols sans alerte
+                'flightplans'       => $flightplans[0],
+                // vols avec alerte
+                'flightplansWAlt'   => $flightplans[1]
             ]);
     }
 
-    private function getCatId() {
-        $cat = $this->getCat();
-        return (is_a($cat, FlightPlanCategory::class)) ? $cat->getId() : 0;
-    }
-
-    private function getCat() {
-        $cat = $this->em->getRepository(FlightPlanCategory::class)->findAll();
-        return (is_array($cat)) ? end($cat) : null;
-    }
-
-    private function getFp($start, $end) {
-        $evRepo = $this->em->getRepository(Event::class);
-        $allFpEvents = $evRepo->getFlightPlanEvents($start, $end);
-        $fpEvents = [];
-        $fpWAltEvents = [];
-        foreach ($allFpEvents as $fpEvent) 
+    public function endAction() 
+    {
+        // vérification d'accès à l'onglet et d'accès à la catégorie 
+        $hasAccess = ($this->canCurrentUserAccessOneCategoryOf($this->fp_cats)
+            && $this->authFlightPlans('read') && $this->authFlightPlans('write'));
+        if (!$hasAccess) 
         {
-            $isAnAlert = false;
-            $cat = $fpEvent->getCategory();
-            $ev = [
-                'id' => $fpEvent->getId(),
-                'start_date' => $fpEvent->getStartDate(),
-                'end_date' => $fpEvent->getEndDate()
-            ];
-            foreach ($fpEvent->getCustomFieldsValues() as $value) 
+            $this->flashMessenger()->addErrorMessage(ACCES_REQUIRED);
+            return new JsonModel();
+        }
+
+        $eventId = $this->params()->fromPost('id', 0);
+        $endDate = $this->params()->fromPost('endDate', '');
+
+        $this->endEvent($eventId, $endDate);
+        return new JsonModel();
+    }
+
+    private function endEvent($eventId, $endDate)
+    {
+        // vérification présence d'un ID
+        if($eventId == 0) 
+        {
+            $this->flashMessenger()->addErrorMessage(self::NO_ID_EVENT);
+            return;
+        }
+
+        // vérification existence de l'événement
+        $event = $this->em->getRepository(Event::class)->find($eventId);
+        if (!is_a($event, Event::class))
+        {
+            $this->flashMessenger()->addErrorMessage(self::NO_EVENT);
+            return;
+        }
+        
+        // statut fin confirmé
+        $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
+
+        // paramétrage de la date de cloture du plan de vol
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+        if ($endDate) 
+        {
+            // TODO verif format $endDate 
+            $endDate = new \DateTime($endDate);
+            $endDate->setTimezone(new \DateTimeZone("UTC"));
+        } 
+        else
+        { 
+            $endDate = $now;
+        }
+        $event->close($endstatus, $endDate);
+        // sauvegarde de l'événement
+        $this->em->persist($event);
+        try 
+        {
+            $this->em->flush();
+            $this->flashMessenger()->addSuccessMessage(self::END_OK);
+        }
+        catch (\Exception $e) 
+        {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+        }
+    }
+
+    public function endAlertAction() 
+    {
+        // vérification d'accès à l'onglet et d'accès à la catégorie 
+        $hasAccess = ($this->canCurrentUserAccessOneCategoryOf($this->fp_cats) 
+            && $this->canCurrentUserAccessOneCategoryOf($this->alt_cats)
+            && $this->authFlightPlans('read') && $this->authFlightPlans('write'));
+        if (!$hasAccess) 
+        {
+            $this->flashMessenger()->addErrorMessage(self::ACCES_REQUIRED);
+            return new JsonModel();
+        }
+
+        $eventId = $this->params()->fromPost('id', 0);
+        $endDate = $this->params()->fromPost('endDate', '');
+
+        $this->endEvent($eventId, $endDate);
+        return new JsonModel();
+    }
+
+    public function triggerAlertAction() 
+    {
+        // vérification d'accès à l'onglet et d'accès à la catégorie 
+        $hasAccess = ($this->canCurrentUserAccessOneCategoryOf($this->fp_cats) 
+            && $this->canCurrentUserAccessOneCategoryOf($this->alt_cats)
+            && $this->authFlightPlans('read') && $this->authFlightPlans('write'));
+        if (!$hasAccess) 
+        {
+            $this->flashMessenger()->addErrorMessage(self::ACCES_REQUIRED);
+            return new JsonModel();
+        }
+
+        // récupération données POST
+        $post = $this->getRequest()->getPost();
+        $id = (int) $post['id'];
+
+        // vérification identifiant de l'événement
+        if ($id == 0) 
+        {
+            $this->flashMessenger()->addErrorMessage(self::NO_ID_EVENT);
+            return new JsonModel;
+        }
+
+        // vérification existence de l'événement
+        $fp = $this->em->getRepository(Event::class)->find($id);
+        if (!is_a($fp, Event::class))
+        {
+            $this->flashMessenger()->addErrorMessage(self::NO_EVENT);
+            return new JsonModel;
+        }
+
+        $alertid = $this->getAlertIdFromFp($fp);
+        $alertev = ($alertid) ? $this->em->getRepository(Event::class)->find($alertid) : null;
+
+        if ($alertev) 
+        {
+            $this->editAlert($alertev, $post);
+        } 
+        else 
+        {
+            $idAlert = $this->createAlert($post);
+            if ($idAlert != 0)
             {
-                $customfield = $value->getCustomField(); 
-                $namefield = (isset($customfield)) ? $customfield->getName() : null; 
-                $valuefield = $value->getValue();
-                (isset($namefield)) ? $ev[$namefield] = $valuefield : null;
-                // gestion des alertes
-                if ($customfield->getId() == $cat->getAlertfield()->getId())
+                $alertvalue = new CustomFieldValue();
+                $alertvalue->setEvent($fp);
+                $alertvalue->setCustomField($fp->getCategory()->getAlertfield());
+                $alertvalue->setValue($idAlert);
+                $fp->addCustomFieldValue($alertvalue);
+                $this->em->persist($alertvalue);
+                $this->em->persist($fp);
+                try {
+                    $this->em->flush();
+                    $this->flashMessenger()->addSuccessMessage(self::ALERT_CREATED);
+                }
+                catch(\Exception $e)
                 {
-                    if ($valuefield > 0) {
-                        $isAnAlert = true;
-                        $altEv = $this->em->getRepository(Event::class)->findOneBy(['id' => $valuefield]);
-                        if ($altEv instanceof Event) {
-                            $ev['alert'] = [
-                                'id' => $altEv->getId(),
-                                'start_date' => $altEv->getStartDate(),
-                                'end_date' => $altEv->getEndDate()
-                            ];
-                            foreach ($altEv->getCustomFieldsValues() as $altvalue) 
-                            {
-                                $altcustomfield = $altvalue->getCustomField();
-                                $altnamefield = (isset($altcustomfield)) ? $altcustomfield->getName() : null; 
-                                (isset($altnamefield)) ? $ev[$altnamefield] = $altvalue->getValue() : null;
-                            }
-                        }
-                    }
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
             }
-            if ($isAnAlert) $fpWAltEvents[] = $ev;
-            else $fpEvents[] = $ev;
         }
-        return [$fpEvents, $fpWAltEvents];
+        return new JsonModel();
     }
 
-    private function getAlertIdFromFp($fp) {
+    private function getFlightPlansFromTimeInterval($start, $end) 
+    {
+        $flightPlans = [];
+        $flightPlansAlert = [];
+
+        $evRepo = $this->em->getRepository(Event::class);
+        $allFpEvents = $evRepo->getFlightPlanEvents($start, $end);
+
+        foreach ($allFpEvents as $fpEvent) 
+        {
+            $arrayFlightPlan = $this->getFlightPlanDataFromEvent($fpEvent);
+            $arrayAlert = $this->getAlertDataFromEvent($fpEvent);
+            if ($arrayAlert['id'])
+            {
+                $arrayFlightPlan['ev-alert'] = $arrayAlert;
+                $flightPlansAlert[] = $arrayFlightPlan;
+            }
+            else
+                $flightPlans[] = $arrayFlightPlan;
+        }
+        return [$flightPlans, $flightPlansAlert];
+    }
+
+    private function getFlightPlanDataFromEvent($event) 
+    {
+        $flightPlanArray = [
+            'id' => $event->getId(),
+            'start_date' => $event->getStartDate(),
+            'end_date' => $event->getEndDate()
+        ];
+        foreach ($event->getCustomFieldsValues() as $customFieldValue) 
+        {
+            $flightPlanArray[$customFieldValue->getCustomField()->getName()] = 
+                $this->cf->getFormattedValue(
+                    $customFieldValue->getCustomField(), 
+                    $customFieldValue->getValue());
+        }
+        return $flightPlanArray;
+    }
+
+    private function processCustomFieldValues($customFieldArray, $event)
+    {
+        foreach ($alertData['custom_fields'] as $key => $value) 
+        {
+            // génération des customvalues si un customfield dont le nom est $key est trouvé
+            $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(
+                ['id' => $key]);
+            if ($customfield) 
+            {
+                if (is_array($value)) 
+                {
+                    $temp = "";
+                    foreach ($value as $v) 
+                    {
+                        $temp .= (string) $v . "\r";
+                    }
+                    $value = trim($temp);
+                }
+                $customvalue = new CustomFieldValue();
+                $customvalue->setEvent($event);
+                $customvalue->setCustomField($customfield);
+                $event->addCustomFieldValue($customvalue);
+                
+                $customvalue->setValue($value);
+                $this->em->persist($customvalue);
+            }
+        }
+    }
+
+    private function createAlert($alertData)
+    {
+        $now = new \DateTime('NOW');
+        $now->setTimezone(new \DateTimeZone("UTC"));
+
+        // création de l'evenement d'alerte
+        $event = new Event();
+        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
+        $event->setStartdate($now);
+        $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+        $event->setPunctual(false);
+        $event->setOrganisation($this->zfcUserAuthentication()
+            ->getIdentity()
+            ->getOrganisation());
+        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+        
+        // affectation de la catégorie
+        // TODO si plusieurs catégories? 
+        $categories = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
+        if (count($categories) == 0) 
+        {
+            $this->flashMessenger()->addErrorMessage(self::NO_ALERT_CAT);
+        }
+        $cat = $categories[0];
+        $event->setCategory($cat);
+
+        // création d'une valeur de custom field pour le type d'alerte
+        $typefieldvalue = new CustomFieldValue();
+        $typefieldvalue->setCustomField($cat->getTypeField());
+        $typefieldvalue->setValue($alertData['type']);
+        $typefieldvalue->setEvent($event);
+        $event->addCustomFieldValue($typefieldvalue);
+        $this->em->persist($typefieldvalue);
+
+        // création d'une valeur de custom field pour la raison de l'alerte
+        $causefieldvalue = new CustomFieldValue();
+        $causefieldvalue->setCustomField($cat->getCauseField());
+        $causefieldvalue->setValue($alertData['cause']);
+        $causefieldvalue->setEvent($event);
+        $event->addCustomFieldValue($causefieldvalue);
+        $this->em->persist($causefieldvalue);
+
+        //on ajoute les valeurs des champs persos
+        if (isset($alertData['custom_fields'])) 
+            $this->processCustomFieldValues($alertData['customfields'], $event);
+
+        //et on sauve le tout
+        $this->em->persist($event);
+        try 
+        {
+            $this->em->flush();
+            $id = $event->getId();
+;
+            // foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
+            // {
+            //     // echo $customfieldvalue->getId();
+
+            //     echo $customfieldvalue->getCustomField()->getId();
+            //     if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
+            //     {
+                    
+            //         $this->em->persist($customfieldvalue);
+            //     }
+            // }
+            // $this->em->flush();
+
+        } 
+        catch (\Exception $e) 
+        {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $id = 0;
+        }
+        return $id;
+    }
+
+    private function editAlert($event, $alertData)
+    {
+        $cat = $event->getCategory();
+        $typefieldid = $cat->getTypeField()->getId();
+        $causefieldid = $cat->getCauseField()->getId();
+        foreach ($event->getCustomFieldsValues() as $customfieldvalue) 
+        {
+            if ($customfieldvalue->getCustomField()->getId() == $typefieldid)
+            {
+                $typefield = $customfieldvalue;
+            }
+            if ($customfieldvalue->getCustomField()->getId() == $causefieldid)
+            {
+                $causefield = $customfieldvalue;
+            }
+        }
+        if (isset($typefield) && isset($causefield)) 
+        {
+            $typefield->setValue($alertData['type']);
+            $causefield->setValue($alertData['cause']);  
+            $this->em->persist($typefield);
+            $this->em->persist($causefield);
+            try 
+            {
+                $this->em->flush();
+                $this->flashMessenger()->addSuccessMessage(self::ALERT_EDITED);
+            } 
+            catch (\Exception $e) 
+            {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }                
+        }         
+    }
+
+    // gestion des alertes
+    private function getAlertDataFromEvent($event)
+    {
+        $alertArray = [];
+        foreach ($event->getCustomFieldsValues() as $value) 
+        {
+            $customfield = $value->getCustomField();
+            // pas un champ contenant une alerte
+            if ($customfield->getId() != $event->getCategory()->getAlertfield()->getId())
+                continue;
+
+            $valuefield = $value->getValue();
+            // champ d'alerte mais pas d'alerte associée
+            if (!$valuefield) 
+                continue;
+
+            $altEvent = $this->em->getRepository(Event::class)->findOneBy(
+                ['id' => $valuefield]);
+            if (!$altEvent instanceof Event) 
+                continue;
+
+            $alertArray = [
+                'id' => $altEvent->getId(),
+                'start_date' => $altEvent->getStartDate(),
+                'end_date' => $altEvent->getEndDate()
+            ];
+            
+            foreach ($this->getCustomFieldData($altEvent) as $key => $value)
+            {
+                $alertArray[$key] = $value;
+            };
+
+        }
+        return $alertArray;
+    }
+
+    private function getCustomFieldData($event)
+    {
+        $dataArray = [];
+        foreach ($event->getCustomFieldsValues() as $value) 
+        {
+            $customfield = $value->getCustomField();
+            $namefield = (isset($customfield)) ? $customfield->getName() : null; 
+            (isset($namefield)) ? $dataArray[$namefield] = $value->getValue() : null;
+        }
+        return $dataArray;
+    }
+
+    private function getAlertIdFromFp($fp) 
+    {
         $alertid = null;
         if (is_a($fp, Event::class)) 
         {
             foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
             {
-                if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
+                if ($customfieldvalue->getCustomField()->getId() == $fp->getCategory()->getAlertfield()->getId())
                 {
                     $alertid = $customfieldvalue->getValue();        
                 }
@@ -175,8 +502,12 @@ class FlightPlansController extends TabController
         return $alertid;
     } 
 
-    private function getFields() {
-        $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(['category' => $this->getCatId()]);
+    private function getFields() 
+    {
+        $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(
+            ['category' => $this->fp_cats[0]], 
+            ['place' => 'ASC'] );
+            
         $fields = [];
         foreach ($cf as $c) {
            $fields[] = $c->getName();
@@ -184,270 +515,81 @@ class FlightPlansController extends TabController
         return $fields;
     }
 
-    public function getAction() {
-        if (!$this->authFlightPlans('read')) {
-            echo self::ACCES_REQUIRED;
-            return new JsonModel();
-        };
+    private function authFlightPlans($action) 
+    {
+        return ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('flightplans.'.$action)) ? true : false;
+    }
 
-        $post = $this->getRequest()->getPost();
-        if (isset($post['date']) && $post['date'] != '') {
-            $start = new DateTime($post['date']); 
-            $end = (new DateTime($post['date']))->add(new DateInterval('P1D'));
-        } else {
-            $start = (new DateTime())->setTime(0,0,0);
-            $end = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+    private function getEventCategories($classCategory)
+    {
+        $cats = [];
+        foreach ($this->em->getRepository($classCategory)->findAll() as $cat) {
+            $cats[] = $cat->getId();
         }
-
-        $flightplans = $this->getFp($start, $end);
-
-        $viewmodel = new ViewModel();
-        $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
-        $viewmodel->setVariables([
-            'fields'            => $this->getFields(),
-            'flightplans'       => $flightplans[0],
-            'flightplansWAlt'   => $flightplans[1]
-        ]);
-        return $viewmodel;
+        return $cats;
     }
 
-    public function endAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
-        $post = $this->getRequest()->getPost();
-        $msgType = 'error';
-        $id = (int) $post['id'];
-        $endDate = $post['endDate'];
-        if($id > 0) 
+    private function canCurrentUserAccessOneCategoryOf($cats)
+    {
+        $readablecat = [];
+        foreach ($cats as $cat) 
         {
-            $now = new \DateTime('NOW');
-            $now->setTimezone(new \DateTimeZone("UTC"));
-
-            if (isset($endDate)) {
-                $endDate = new \DateTime($endDate);
-                $endDate->setTimezone(new \DateTimeZone("UTC"));
-            } else $endDate = $now;
-
-            $event = $this->em->getRepository(Event::class)->find($id);
-            $startDate = $event->getStartdate();
-            if ($startDate <= $endDate) {
-                $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
-                $event->setStatus($endstatus);
-                $event->setEnddate($endDate);
-                $this->em->persist($event);
-                try {
-                    $this->em->flush();
-                    $msgType = 'success';
-                    $msg = "Clôture du plan de vol.";
-                } catch (\Exception $e) {
-                    $msg = $e->getMessage();
-                }
-            } else $msg = "Heure de cloture du vol > heure de début du vol.";
-        } else $msg = "Impossible de trouver le vol.";
-
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);
-    }
-
-    public function endAlertAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
-        $post = $this->getRequest()->getPost();
-        $msgType = 'error';
-        $id = (int) $post['id'];
-        $endDate = $post['endAltDate'];
-        if($id > 0) {
-            $now = new \DateTime('NOW');
-            $now->setTimezone(new \DateTimeZone("UTC"));
-
-            if (isset($endDate)) {
-                $endDate = new \DateTime($endDate);
-                $endDate->setTimezone(new \DateTimeZone("UTC"));
-            } else $endDate = $now;
-
-            $event = $this->em->getRepository(Event::class)->find($id);
-            $startDate = $event->getStartdate();
-
-            if ($startDate <= $endDate) {
-                $endstatus = $this->em->getRepository('Application\Entity\Status')->find('3');
-                $event->setStatus($endstatus);
-                $event->setEnddate($endDate);
-                $this->em->persist($event);
-                try {
-                    $this->em->flush();
-                    $msgType = 'success';
-                    $msg = "Clôture de l'alerte.";
-                } catch (\Exception $e) {
-                    $msg = $e->getMessage();
-                }
-            } else $msg = "Heure de fin de l'alerte > heure de début de l'alerte.";
-        } else $msg = "Impossible de trouver l'événement alerte.";
-
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);        
-    }
-
-    private function authFlightPlans($action) {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('flightplans.'.$action)) ? false : true;
-    }
-
-    public function triggerAlertAction() {
-        if (!$this->authFlightPlans('read')) return new JsonModel();
-
-        $msgType = 'error';
-        $req = $this->getRequest()->getPost();
-        $id = (int) $req['id'];
-        $type = $req['type'];
-        $cause = $req['cause'];
-        if ($id > 0) 
-        {
-            $fp = $this->em->getRepository(Event::class)->find($id);
-            if($fp) 
+            $category = $this->em->getRepository(Category::class)->find($cat);
+            if ($this->zfcUserAuthentication()->hasIdentity()) 
             {
-                $alertid = $this->getAlertIdFromFp($fp);
-                $alertev = ($alertid) ? $this->em->getRepository(Event::class)->find($alertid) : null;
-                //modification
-                if ($alertev) 
+                $roles = $this->zfcUserAuthentication()
+                    ->getIdentity()
+                    ->getRoles();
+                foreach ($roles as $role) 
                 {
-                    //TODO attention si plusieurs cat
-                    $alertcat = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
-                    $typefieldid = $alertcat[0]->getTypeField()->getId();
-                    $causefieldid = $alertcat[0]->getCauseField()->getId();
-                    foreach ($alertev->getCustomFieldsValues() as $customfieldvalue) 
+                    if ($category->getReadroles(true)->contains($role)) 
                     {
-                        if ($customfieldvalue->getCustomField()->getId() == $typefieldid)
-                        {
-                            $typefield = $customfieldvalue;
-                        }
-                        if ($customfieldvalue->getCustomField()->getId() == $causefieldid)
-                        {
-                            $causefield = $customfieldvalue;
-                        }
-                    }
-                    if (isset($typefield) && isset($causefield)) 
-                    {
-                        $typefield->setValue($type);
-                        $causefield->setValue($cause);  
-                        $this->em->persist($typefield);
-                        $this->em->persist($causefield);
-                        try {
-                            $this->em->flush();
-                            $msgType = 'success';
-                            $msg = "Alerte modifiée.";
-                        } catch (\Exception $e) {
-                            $msg = $e->getMessage();
-                        }                
-                    } else {
-                        $msg = "Impossible de trouver le champ correspondant au type d'alerte.";
-                    } 
-                } 
-                // création
-                else 
-                {
-
-                    $now = new \DateTime('NOW');
-                    $now->setTimezone(new \DateTimeZone("UTC"));
-                    // crétation de l'evenement d'alerte
-                    $event = new Event();
-                    $event->setStatus($this->em->getRepository('Application\Entity\Status')->find('2'));
-                    $event->setStartdate($now);
-                    $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
-                    $event->setPunctual(false);
-                    $event->setOrganisation($this->zfcUserAuthentication()
-                        ->getIdentity()
-                        ->getOrganisation());
-                    $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
-                    
-                    $categories = $this->em->getRepository('Application\Entity\AlertCategory')->findAll();
-
-                    if ($categories) 
-                    {
-                        $event->setCategory($categories[0]);
-
-                        $catalert = $categories[0];
-                        $typefieldvalue = new CustomFieldValue();
-                        $typefieldvalue->setCustomField($catalert->getTypeField());
-                        $typefieldvalue->setValue($type);
-                        $typefieldvalue->setEvent($event);
-                        $event->addCustomFieldValue($typefieldvalue);
-                        $this->em->persist($typefieldvalue);
-
-                        $causefieldvalue = new CustomFieldValue();
-                        $causefieldvalue->setCustomField($catalert->getCauseField());
-                        $causefieldvalue->setValue($cause);
-                        $causefieldvalue->setEvent($event);
-                        $event->addCustomFieldValue($causefieldvalue);
-                        $this->em->persist($causefieldvalue);
-                        //on ajoute les valeurs des champs persos
-                        if (isset($req['custom_fields'])) {
-                            foreach ($req['custom_fields'] as $key => $value) {
-                                // génération des customvalues si un customfield dont le nom est $key est trouvé
-                                $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(array(
-                                    'id' => $key
-                                ));
-                                if ($customfield) {
-                                    if (is_array($value)) {
-                                        $temp = "";
-                                        foreach ($value as $v) {
-                                            $temp .= (string) $v . "\r";
-                                        }
-                                        $value = trim($temp);
-                                    }
-                                    $customvalue = new CustomFieldValue();
-                                    $customvalue->setEvent($event);
-                                    $customvalue->setCustomField($customfield);
-                                    $event->addCustomFieldValue($customvalue);
-                                    
-                                    $customvalue->setValue($value);
-                                    $this->em->persist($customvalue);
-                                }
-                            }
-                        }
-                        //et on sauve le tout
-                        $this->em->persist($event);
-                        try {
-                            $this->em->flush();
-
-                            $alertvalue = new CustomFieldValue();
-                            $alertvalue->setEvent($fp);
-                            $alertvalue->setCustomField($this->getCat()->getAlertfield());
-                            $alertvalue->setValue($event->getId());
-                            $fp->addCustomFieldValue($alertvalue);
-                            $this->em->persist($alertvalue);
-                            $this->em->persist($fp);
-                            $this->em->flush();
-                            // foreach ($fp->getCustomFieldsValues() as $customfieldvalue) 
-                            // {
-                            //     // echo $customfieldvalue->getId();
-
-                            //     echo $customfieldvalue->getCustomField()->getId();
-                            //     if ($customfieldvalue->getCustomField()->getId() == $this->getCat()->getAlertfield()->getId())
-                            //     {
-                                    
-                            //         $this->em->persist($customfieldvalue);
-                            //     }
-                            // }
-                            // $this->em->flush();
-                            $msgType = 'success';
-                            $msg = "Alerte créée.";
-                        } catch (\Exception $e) {
-                            $msg = $e->getMessage();
-                        }
-                    } else {
-                        $msg = "Impossible de créer l'alerte, pas de catégorie alerte créée.";
+                        $readablecat[] = $category;
+                        break;
                     }
                 }
-            } else {
-                $msg = "Requête incorrecte, impossible de trouver le plan de vol correspondant.";
+            } 
+            else 
+            {
+                $role = $this->zfcRbacOptions->getGuestRole();
+                $roleentity = $this->em->getRepository('Core\Entity\Role')->findOneBy(array(
+                    'name' => $role
+                ));
+                if ($roleentity) 
+                {
+                    if ($category->getReadroles(true)->contains($roleentity)) {
+                        $readablecat[] = $category;
+                    }
+                }
             }
-        } else {
-            $msg = "Requête incorrecte, pas d'identifiant de plan de vol valide.";
         }
-        return new JsonModel([
-            'type' => $msgType, 
-            'msg' => $msg
-        ]);
+        return (count($readablecat) > 0);
+    }
+
+    private function getStartAndEndDateTime($date)
+    { 
+        $dates = [];
+        if (isset($date) && $date != '') {
+            $dates['start'] = new DateTime($date); 
+            $dates['end'] = (new DateTime($date))->add(new DateInterval('P1D'));
+        } else {
+            $dates['start'] = (new DateTime())->setTime(0,0,0);
+            $dates['end'] = (new DateTime())->setTime(0,0,0)->add(new DateInterval('P1D'));
+        }
+        return $dates;
+    }
+
+    private function getPendingMessages()
+    {
+        $messages = [];
+        if ($this->flashMessenger()->hasErrorMessages()) {
+            $messages['error'] = $this->flashMessenger()->getErrorMessages();
+        }
+
+        if ($this->flashMessenger()->hasSuccessMessages()) {
+            $messages['success'] = $this->flashMessenger()->getSuccessMessages();
+        }
+        $this->flashMessenger()->clearMessages();
+        return $messages;
     }
 }

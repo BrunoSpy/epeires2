@@ -6,20 +6,28 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css')
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan.css');
 ?>
 
-<?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
-    <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="loading"></div>
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
-                </div>
-                <div id="event">
-                </div>
+<?php 
+if( $this->hasAccess && (
+    $this->isGranted('events.create') || 
+    $this->isGranted('events.write')
+    )
+):
+?>
+
+<div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="loading"></div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
+            </div>
+            <div id="event">
             </div>
         </div>
     </div>
+</div>
+
 <?php endif; ?>
 
 
@@ -40,7 +48,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                         <span class="glyphicon glyphicon-backward"></span>
                     </a>
 
-                    <input id="i-date" type="text" class="date input-small"></input>
+                    <input id="i-date" type="text" class="date input-small" />
 
                     <a href="#" id="a-date-forward">
                         <span class="glyphicon glyphicon-forward"></span>
@@ -50,17 +58,71 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
                     </a>
                 </div>
             </div>
-<!--            <div class="panel-body">-->
-<!--                <table class="table table-striped table-hover sortable sar">-->
-<!---->
-<!--                </table>-->
-<!--            </div>-->
         </div>
-<!--    </div>-->
 
-<!--    <div class="row col-sm-10 col-sm-offset-1">-->
         <div class="panel panel-default">
             <div class="panel-body" id="p-show-fp">
+
+            <h4>Vols en alerte</h4>
+            <?php if (count($flightplansWAlt) == 0) : ?>
+            <div class="alert alert-info">
+                Aucun vol en alerte.
+            </div>
+            <?php else : ?>
+            <table class="table table-striped table-hover sortable">
+                <thead>
+                    <tr>
+                    <?php 
+                    foreach ($fields as $field) {
+                        echo "<th>".$field."</th>"; 
+                    }
+                    ?>
+                        <th>Saisie</th>
+                        <th>Arrivée</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id = "list-fp">
+                <?php foreach ($flightplansWAlt as $fp) : ?>
+                    <?php echo $this->flightPlanViewHelper()->renderFlightPlan($fp, $fields); ?>
+                <?php endforeach; ?>
+                </tbody>
+                <?php
+            //    }
+                ?>
+            </table>
+            <?php endif; ?>
+
+            <hr />
+
+            <h4>Vols sans alerte</h4>
+            <?php if (count($flightplans) == 0) : ?>
+                <div class="alert alert-info">
+                    Aucun vol.
+                </div>
+            <?php else : ?>
+            <table class="table table-striped table-hover sortable">
+                <thead>
+                    <tr>
+                    <?php 
+                    foreach ($fields as $field) {
+                        echo "<th>".$field."</th>"; 
+                    }
+                    ?>
+                        <th>Saisie</th>
+                        <th>Arrivée</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id = "list-fp">
+                <?php 
+                foreach ($flightplans as $fp) {
+                    echo $this->flightPlanViewHelper()->renderFlightPlan($fp, $fields);
+                }
+                ?>
+                </tbody>
+            </table>
+            <?php endif; ?>
 
             </div>
         </div>
@@ -123,16 +185,22 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 <?php $this->inlineScript()->captureStart(); ?>
 
 <?php
-if($this->hasAccess) {
+if ($this->hasAccess && (
+    $this->isGranted('events.create') || 
+    $this->isGranted('events.write')
+    )) 
+{
     echo '$("#create-link")
         .hide()
         .clone(true)
         .show()
         .prependTo(\'.content\')
         .addClass(\'category\');';
-} else {
+} 
+else {
     echo '$("#create-link").hide();';
-} ?>
+}
+?>
 
 $("#changeview").remove();
 
@@ -168,6 +236,8 @@ if($this->cats) {
 //init form
 form('<?php echo $this->url('application');?>', cats);
 
-flightplan('<?php echo $this->url('application'); ?>');
+flightplan('<?php echo $this->url('application'); ?>', '<?php echo $this->current_date; ?>');
+
+<?php echo $this->notifications($this->messages); ?>
 
 <?php $this->inlineScript()->captureEnd(); ?>

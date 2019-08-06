@@ -1,23 +1,80 @@
-var flightplan = function(url) 
+var flightplan = function(url, current_date) 
 {
     "use strict";
-    $("#create-link,.modify-evt").click(function() {
-        if($(this).hasClass('.modify-evt')) $('#form-title').html('Modifier l\'événement');
-        removeAlertField();
-        setClickSubmit();
-    });
 
-    function setClickSubmit() {
-        var $sub = $('input[name="submit"]');
-        if($sub.length > 0) {
-            $sub.click(function(){
-                setTimeout(refresh, 1000);
-            });
-        }   
-        else {
-            setTimeout(setClickSubmit, 200);
-        }
+    // pas retrouvé l'utilité
+    //headerbar(url);
+
+    /*** 
+     * Gestion de la selection de la date d'affichage des PLN
+     */
+    var selectedDate = null;
+    var $iDate = $('#i-date');
+    $iDate
+        // affichage calendrier bootstrap
+        .bootstrapMaterialDatePicker({
+            format: "DD/MM/YYYY",
+            time: false,
+            lang: 'fr',
+            cancelText: "Annuler",
+            weekStart : 1
+        })
+        // action quand la date est modifiée
+        .change(function() {
+            selectedDate = moment($(this).val(), "L").format("MM/DD/YYYY");
+            location.replace(getCurrentDateUrl());
+        })
+        // par défaut valeur du jour courant
+        .val(moment(current_date).format('L'));
+
+    // click sur jour précédent
+    $("#a-date-back").click(function(e) 
+    {
+        e.preventDefault();
+        changeDays(-1)
+    });
+    // click sur jour suivant
+    $("#a-date-forward").click(function(e) 
+    {
+        e.preventDefault();
+        changeDays(1);
+    });
+    // click sur jour courant
+    $("#a-date-today").click(function(e) 
+    {
+        e.preventDefault();
+        location.reload();
+    });
+    function changeDays(amount)
+    {
+        $iDate.val(
+            moment($iDate.val(), "L")
+                .add(amount, 'days')
+                .format("L")
+            )
+            .trigger('change');
+    };
+
+    function getCurrentDateUrl() 
+    {
+        return url + "flightplans/index?d=" + selectedDate;
     }
+
+    /***
+     * Gestion des actions utilisateur
+     */
+
+    // click sur ajouter un PLN ou modifier un PLN
+    $("#create-link, .modify-evt").click(function() 
+    {
+        if($(this).hasClass('modify-evt')) 
+            $('#form-title').html('Modifier le vol');
+
+        // enlever le champ contenant l'id de l'alerte
+        removeAlertField();
+        // Pas retrouvé l'utilité ...
+        //setClickSubmit();
+    });
 
     function removeAlertField() 
     {
@@ -32,12 +89,63 @@ var flightplan = function(url)
             setTimeout(removeAlertField, 200);
         }
     }
-    //TODO voir pour editer en cliquant sur la ligne
-    //$('tr').draggable().click(modFpHandler);
+
+    function setClickSubmit() {
+        var $sub = $('input[name="submit"]');
+        if($sub.length > 0) {
+            $sub.click(function(){
+                setTimeout(refresh, 1000);
+            });
+        }   
+        else {
+            setTimeout(setClickSubmit, 200);
+        }
+    }
+
+    //  
     var idEvent = 0;
-    var globdate = null;
-    var $iDate = $('#i-date');
-    // var $tableFp = $('.panel-body table');
+    $('#p-show-fp')
+        .on('click', '.a-trig-alt', trigAlertHandler)
+        .on('click', '.a-end-fp', endFpHandler)
+        .on('click', '.a-end-alt', endAltHandler)
+
+    function endFpHandler() {
+        idEvent = $(this).data('id');
+        $('#s-end-airid').html($(this).data('air-id'));
+        $('input[name=end-date]')
+            .timepickerform({
+                'id':'start',
+                'clearable':true,
+                'init':true
+            });
+    }
+
+    function trigAlertHandler() {
+        // on ne fait rien si le bouton est inactif (alerte close)
+        if ($(this).find('button').hasClass('disabled'))
+            return null;
+
+        $('.s-trig-alt').html($(this).data('type'));
+        $('.s-trig-airid').html($(this).data('air-id'));
+        $('.t-causealt').val($(this).data('cause'));
+        idEvent = $(this).data('id');
+
+        if ($(this).hasClass('active-alt'))
+            $('#mdl-edit-alt').find('p').hide();
+        else
+            $('#mdl-edit-alt').find('p').show();
+    }
+
+    function endAltHandler() {
+        idEvent = $(this).data('id');
+        $('input[name=end-alt-date]')
+            .timepickerform({
+                'id':'start',
+                'clearable':true,
+                'init':true
+            })
+        ;
+    }
 
     $('#a-end-fp-ok').click(function()
     {
@@ -48,12 +156,7 @@ var flightplan = function(url)
             url+'flightplans/end', 
             {id: idEvent, endDate},
             function (data) {
-                refresh();
-                noty({
-                    text: data.msg,
-                    type: data.type,
-                    timeout: 4000,
-                });
+                $iDate.trigger('change');
             }
         )
     });
@@ -67,12 +170,7 @@ var flightplan = function(url)
             url+'flightplans/endAlert', 
             {id: idEvent, endAltDate},
             function (data) {
-                refresh();
-                noty({
-                    text: data.msg,
-                    type: data.type,
-                    timeout: 4000,
-                });
+                $iDate.trigger('change');
             }
         );
     });   
@@ -83,12 +181,7 @@ var flightplan = function(url)
             url+'flightplans/triggerAlert', 
             {id: idEvent, type: $('#mdl-edit-alt .s-trig-alt').html(), cause: $('#mdl-edit-alt .t-causealt').val()}, 
             function (data) {
-                refresh();
-                noty({
-                    text: data.msg,
-                    type: data.type,
-                    timeout: 4000,
-                });
+                $iDate.trigger('change');
             }
         );      
     });
@@ -99,29 +192,23 @@ var flightplan = function(url)
             url+'flightplans/triggerAlert', 
             {id: idEvent, type: $('#mdl-trig-fp .s-trig-alt').html(), cause: $('#mdl-trig-fp .t-causealt').val()}, 
             function (data) {
-                refresh();
-                noty({
-                    text: data.msg,
-                    type: data.type,
-                    timeout: 4000,
-                });
+                $iDate.trigger('change');
             }
         );      
     }); 
 
-    refresh(); 
+    //refresh(); 
     
     function refresh() {
         // maj du nombre d'événements actif visible sur l'onglet
-        headerbar(url);
         // Inutile ?
         // $('.a-trig-alt .a-end-fp .a-end-alt').remove();
         // Conteneur des pln
-        $('#p-show-fp')
-            .load(url + 'flightplans/get', {date: globdate}, loadFpHandler)
-            .on('click', '.a-trig-alt', trigAlertHandler)
-            .on('click', '.a-end-fp', endFpHandler)
-            .on('click', '.a-end-alt', endAltHandler)
+        
+        
+        
+        
+        
         ;
         // s'applique apres le chargement en ajax du conteneur
         function loadFpHandler () {
@@ -136,84 +223,7 @@ var flightplan = function(url)
 
         }
         // clique sur un des 3 boutons de déclenchement d'alerte
-        function trigAlertHandler() {
-            // on ne fait rien si le bouton est inactif (alerte close)
-            if ($(this).find('button').hasClass('disabled'))
-                return null;
 
-            $('.s-trig-alt').html($(this).data('type'));
-            $('.s-trig-airid').html($(this).data('air-id'));
-            $('.t-causealt').val($(this).data('cause'));
-            idEvent = $(this).data('id');
-
-            if ($(this).hasClass('active-alt'))
-                $('#mdl-edit-alt').find('p').hide();
-            else
-                $('#mdl-edit-alt').find('p').show();
-        }
-
-        function endFpHandler() {
-            idEvent = $(this).data('id');
-            $('#s-end-airid').html($(this).data('air-id'));
-            $('input[name=end-date]')
-                .timepickerform({
-                    'id':'start',
-                    'clearable':true,
-                    'init':true
-                });
-        }
-
-        function endAltHandler() {
-            idEvent = $(this).data('id');
-            $('input[name=end-alt-date]')
-                .timepickerform({
-                    'id':'start',
-                    'clearable':true,
-                    'init':true
-                })
-            ;
-        }
     }
 
-    $iDate
-        .bootstrapMaterialDatePicker({
-            format: "DD/MM/YYYY",
-            time: false,
-            lang: 'fr',
-            cancelText: "Annuler",
-            weekStart : 1
-        })
-        .change(function() {
-            globdate = moment($(this).val(), "DD/MM/YYYY").format("MM/DD/YYYY");
-            refresh();
-        })
-        .val(moment().format('DD/MM/YYYY'));
-
-    $("#a-date-back").click(function(e) {
-        e.preventDefault();
-        $iDate
-            .val(
-                moment($iDate.val(), "DD/MM/YYYY")
-                .subtract(1, 'days')
-                .format("DD/MM/YYYY")
-            )
-            .trigger('change');
-    });
-
-    $("#a-date-forward").click(function(e) {
-        e.preventDefault();
-        $iDate
-            .val(
-                moment($iDate.val(), "DD/MM/YYYY")
-                .add(1, 'days')
-                .format("DD/MM/YYYY")
-            )
-            .trigger('change');
-    });
-
-    $("#a-date-today").click(function(e) {
-        e.preventDefault();
-        location.reload();
-    });
-    
 };
