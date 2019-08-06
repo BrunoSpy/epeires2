@@ -10,7 +10,11 @@ return array(
 					'user'     => 'root',
 					'password' => 'epeires2',
 					'dbname'   => 'epeires2',
-					'charset' => 'utf8'
+					'charset' => 'utf8',
+                    //BUG fix that will be useless with doctrine/orm >= 2.6 (requires PHP >= 7.1)
+                    'driverOptions' => array(
+                        PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
+                    ),
                 )
             )
         ),
