@@ -22,10 +22,10 @@ namespace Application\Controller;
 use Application\Entity\ATFCMCategory;
 use Application\Entity\Event;
 use Core\Controller\AbstractEntityManagerAwareController;
-use Core\NMB2B\RegulationListReply;
 use Core\Service\NMB2BService;
 use Doctrine\ORM\EntityManager;
 use Zend\Console\Request as ConsoleRequest;
+use DSNA\NMB2BDriver\Models\RegulationListReply;
 
 /**
  * Class ATFCMController
@@ -119,7 +119,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
             }
             foreach ($regulations->getRegulations() as $regulation) {
                 $starttr = microtime(true);
-                $internalId = RegulationListReply::getRegulationName($regulation);
+                $internalId = $regulation->getRegulationName();
                 if(strlen($cat->getRegex()) == 0 || preg_match($cat->getRegex(), $internalId)) {
                     $totalEvents += $this->getEntityManager()->getRepository(Event::class)->addRegulation($regulation,
                         $cat, $organisation, $user, $day);
