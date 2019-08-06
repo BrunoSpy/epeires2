@@ -16,7 +16,7 @@
  *
  */
 
-namespace ApplicationFixtures;
+namespace Application\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;

@@ -73,7 +73,7 @@ class FrequencyCategory extends Category
      * True : unavailable
      * False : avalaible
      *
-     * @return type
+     * @return CustomField
      */
     public function getStateField()
     {

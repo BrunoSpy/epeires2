@@ -17,6 +17,8 @@
  */
 namespace Application\Repository;
 
+use Application\Entity\ActionCategory;
+use Application\Entity\AlarmCategory;
 use Application\Entity\ATFCMCategory;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
@@ -337,14 +339,13 @@ class EventRepository extends ExtendedRepository
 
     /**
      * Get all events intersecting [$start, $end] and affected to the user's organisation
-     * 
-     * @param unknown $user            
-     * @param unknown $start
-     *            DateTime
-     * @param unknown $end
-     *            DateTime
-     * @param unknown $exclude
+     *
+     * @param ZfcUserAuthentication $user
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param boolean $exclude
      * @param array $status
+     * @return array|mixed
      */
     public function getAllEvents($user, $start, $end, $exclude = false, $status = null)
     {
@@ -404,6 +405,10 @@ class EventRepository extends ExtendedRepository
         }
     }
 
+    /**
+     * @param ZfcUserAuthentication $user
+     * @return array
+     */
     public function getCurrentImportantEvents($user) {
         $qb = $this->getQueryEvents();
         $qb->andWhere($qb->expr()->eq('e.star', 'true'));
@@ -418,6 +423,9 @@ class EventRepository extends ExtendedRepository
 
     /**
      * Tous les évènements en cours concernant la catégorie <code>$category</code>
+     * @param string $category
+     * @return mixed
+     * @throws \Exception
      */
     public function getCurrentEvents($category)
     {
@@ -509,9 +517,11 @@ class EventRepository extends ExtendedRepository
     /**
      * Tous les évènements de type plan de vol entre deux dates paramétrables.
      *
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array $status
      * @return array
+     * @throws \Exception
      */
     public function getFlightPlanEvents($start=null, $end=null, $status=[1,2,3])
     {
@@ -1183,13 +1193,14 @@ class EventRepository extends ExtendedRepository
 
     /**
      * Crée un nouvel évènement pour un changement de fréquence
-     * 
-     * @param \Application\Repository\Frequency $from            
-     * @param \Application\Repository\Frequency $to            
-     * @param \Application\Repository\Event $parent            
-     * @param type $messages            
+     *
+     * @param \Application\Repository\Frequency $from
+     * @param \Application\Repository\Frequency $to
+     * @param \Application\Repository\Event $parent
+     * @param string $messages
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function addSwitchFrequencyEvent(Frequency $from, Frequency $to, \Core\Entity\User $author, Event $parent = null, &$messages = null)
+    public function addSwitchFrequencyEvent(Frequency $from, Frequency $to, User $author, Event $parent = null, &$messages = null)
     {
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
@@ -1251,17 +1262,16 @@ class EventRepository extends ExtendedRepository
 
     /**
      * Create a new frequency event
-     * 
-     * @param Frequency $frequency            
-     * @param type $cov
-     *            Value for the current antenna field
-     * @param type $freqstatus
-     *            Value for the current frequency state field
-     * @param cause Valeur du champ cause
-     * @param Event $parent            
-     * @param \DateTime $startdate            
-     * @param User $author            
-     * @param type $messages            
+     *
+     * @param Frequency $frequency
+     * @param string $cov Value for the current antenna field
+     * @param string $freqstatus Value for the current frequency state field
+     * @param string $cause Valeur du champ cause
+     * @param Event $parent
+     * @param \DateTime $startdate
+     * @param User $author
+     * @param string $messages
+     * @throws \Doctrine\ORM\ORMException
      */
     public function addChangeFrequencyCovEvent(
         Frequency $frequency,
@@ -1556,10 +1566,14 @@ class EventRepository extends ExtendedRepository
      * Tries to find an event called <code>$designator</code>
      * with same <code>$upperLevel</code> and <code>$lowerLevel</code>
      * and including <code>$timeBegin</code>, <code>$timeEnd</code>,
-     * 
-     * @param type $designator            
-     * @param type $timeBegin            
-     * @param type $timeEnd            
+     *
+     * @param string $designator
+     * @param \DateTime $timeBegin
+     * @param \DateTime $timeEnd
+     * @param string $upperLevel
+     * @param string $lowerLevel
+     * @return array
+     * @throws \Doctrine\ORM\ORMException
      */
     private function findZoneMilEvent($designator, $timeBegin, $timeEnd, $upperLevel, $lowerLevel)
     {

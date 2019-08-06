@@ -17,6 +17,8 @@
  */
 namespace Core\Controller;
 
+use Zend\Stdlib\ResponseInterface as Response;
+
 /**
  *
  * @author Bruno Spyckerelle
@@ -78,7 +80,7 @@ class UserController extends \ZfcUser\Controller\UserController
         $redirect = $this->params()->fromPost('redirect', $this->params()->fromQuery('redirect', false));
     
         $result = $adapter->prepareForAuthentication($this->getRequest());
-    
+
         // Return early if an adapter returned a response
         if ($result instanceof Response) {
             return $result;

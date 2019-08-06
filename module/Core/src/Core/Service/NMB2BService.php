@@ -20,6 +20,7 @@ namespace Core\Service;
 use Doctrine\ORM\EntityManager;
 use DSNA\NMB2BDriver\Exception\WSDLFileUnavailable;
 use DSNA\NMB2BDriver\Models\EAUPChain;
+use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use DSNA\NMB2BDriver\NMB2BClient;
@@ -73,12 +74,14 @@ class NMB2BService
 
     /**
      * Retrieve RSAs for a specific date
-     * 
-     * @param type $designators            
+     *
+     * @param string $designators
      * @param \DateTime $date
      * @param int $sequencenumber
-     * @return type
+     * @return EAUPRSAs
      * @throws WSDLFileUnavailable
+     * @throws RuntimeException
+     * @throws \DSNA\NMB2BDriver\Exception\UnsupportedNMVersion
      */
     public function getEAUPRSA($designators, \DateTime $date, $sequencenumber)
     {
@@ -151,7 +154,7 @@ class NMB2BService
             throw new \RuntimeException('Erreur NM B2B');
             return null;
         }
-        return $client->__getLastResponse();
+        return $this->nmb2bClient->__getLastResponse();
     }
 
     public function activateErrorEmail()

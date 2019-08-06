@@ -1,5 +1,5 @@
 <?php
-namespace ApplicationFixtures;
+namespace Application\Fixtures;
 /*
  * This file is part of Epeires².
  * Epeires² is free software: you can redistribute it and/or modify
@@ -25,8 +25,8 @@ class EventFixture extends AbstractFixture implements DependentFixtureInterface
 {
     public function getDependencies()
     {
-        return array('ApplicationFixtures\CategoryFixture',
-                    'ApplicationFixtures\RecurrenceFixture');
+        return array('Application\Fixtures\CategoryFixture',
+                    'Application\Fixtures\RecurrenceFixture');
     }
 
     public function load(ObjectManager $manager)

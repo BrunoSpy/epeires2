@@ -69,7 +69,7 @@ class RecurrenceExDate
         // les dates sont stockées sans information de timezone, on considère par convention qu'elles sont en UTC
         // mais à la création php les crée en temps local, il faut donc les corriger
         if ($this->date) {
-            $offset = $this->ate->getTimezone()->getOffset($this->startdate);
+            $offset = $this->date->getTimezone()->getOffset($this->date);
             $this->date->setTimezone(new \DateTimeZone("UTC"));
             $this->date->add(new \DateInterval("PT" . $offset . "S"));
         }

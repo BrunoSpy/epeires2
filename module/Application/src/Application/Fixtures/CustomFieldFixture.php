@@ -16,7 +16,7 @@
  *
  */
 
-namespace ApplicationFixtures;
+namespace Application\Fixtures;
 
 
 use Application\Entity\CustomField;
@@ -29,7 +29,7 @@ class CustomFieldFixture extends AbstractFixture implements DependentFixtureInte
 
     public function getDependencies()
     {
-        return array('ApplicationFixtures\CategoryFixture');
+        return array('Application\Fixtures\CategoryFixture');
     }
 
     public function load(ObjectManager $manager) {

@@ -1,5 +1,5 @@
 <?php
-namespace ApplicationFixtures;
+namespace Application\Fixtures;
 /*
  * This file is part of Epeires².
  * Epeires² is free software: you can redistribute it and/or modify

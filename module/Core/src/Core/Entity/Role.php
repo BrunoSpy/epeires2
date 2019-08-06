@@ -232,9 +232,10 @@ class Role implements HierarchicalRoleInterface
     {
         if (is_string($permission)) {
             $permission = new Permission($permission);
-        } else {
-            $this->permissions->add($permission);
         }
+
+        $this->permissions->add($permission);
+
         return $this;
     }
 

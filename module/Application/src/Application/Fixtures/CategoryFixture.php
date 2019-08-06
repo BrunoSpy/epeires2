@@ -16,7 +16,7 @@
  *
  */
 
-namespace ApplicationFixtures;
+namespace Application\Fixtures;
 
 
 use Application\Entity\Category;

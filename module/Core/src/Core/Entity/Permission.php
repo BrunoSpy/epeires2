@@ -49,9 +49,10 @@ class Permission implements PermissionInterface
      */
     protected $roles;
 
-    public function __construct()
+    public function __construct($name = "")
     {
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setName($name);
     }
 
     /**

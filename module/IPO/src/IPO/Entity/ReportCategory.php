@@ -107,7 +107,7 @@ class ReportCategory
         return $this->help;
     }
 
-    public function setHelp()
+    public function setHelp($help)
     {
         $this->help = $help;
     }
