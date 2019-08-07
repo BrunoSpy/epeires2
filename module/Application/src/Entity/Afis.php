@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Application\Entity\TemporaryResource;
+use Core\Entity\TemporaryResource;
 use Application\Entity\Organisation;
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
