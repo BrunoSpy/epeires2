@@ -2294,7 +2294,10 @@ class EventsController extends TabsController
                 foreach ($event->getCustomFieldsValues() as $value) {
                     $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
                 }
-                
+                foreach ($event->getUpdates() as $update){
+                    $content .= $this->eventservice->getUpdateAuthor($update).' le '.$formatter->format($update->getCreatedOn()) . ' : <br />';
+                    $content .= nl2br($update->getText()).'<br />';
+                }
                 $text = new \Zend\Mime\Part($content);
                 $text->type = \Zend\Mime\Mime::TYPE_HTML;
                 $text->charset = 'utf-8';
