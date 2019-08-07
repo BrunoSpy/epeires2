@@ -118,7 +118,10 @@ return array(
         'auth_identity_fields' => array(
             'username',
             'email'
-        )
+        ),
+        'enable_user_state' => true,
+        'default_user_state' => 1,
+        'allowed_login_states' => array(1)
     ),
     'view_manager' => array(
         'display_not_found_reason' => false,

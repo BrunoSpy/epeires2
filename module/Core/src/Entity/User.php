@@ -84,7 +84,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $mattermostUsername = "";
 
-        /**
+    /**
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe Mattermost:"})
@@ -95,8 +95,9 @@ class User implements UserInterface, IdentityInterface
     protected $mattermostPassword;
 
     /**
+     * @ORM\Column(type="integer")
      */
-    protected $state;
+    protected $state = 1;
 
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")

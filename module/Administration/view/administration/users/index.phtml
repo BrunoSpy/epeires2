@@ -24,42 +24,56 @@
                         <tbody>
                         	<?php 
                         	foreach ($this->users as $user){
-                        		echo '<tr>';
-                        		echo '<td>'.$user->getId().'</td>';
-                        		echo '<td>'.$user->getUsername().'</td>';
-                        		echo '<td>'.$user->getEmail().'</td>';
-                        		echo '<td>'.$user->getOrganisation()->getName().'</td>';
-                        		echo '<td>'.($user->getZone() ? $user->getZone()->getName() : "").'</td>';
-                        		echo '<td>';
-                        			foreach($user->getRoles() as $role){
-                        				echo $role->getName()." ";
-                        			}
-                        		echo '</td>';
-                        		echo '<td>';
-                        		echo "<a 
+                        	    if($user->getState() == 1) {
+                                    echo '<tr>';
+                                    echo '<td>' . $user->getId() . '</td>';
+                                    echo '<td>' . $user->getUsername() . '</td>';
+                                    echo '<td>' . $user->getEmail() . '</td>';
+                                    echo '<td>' . $user->getOrganisation()->getName() . '</td>';
+                                    echo '<td>' . ($user->getZone() ? $user->getZone()->getName() : "") . '</td>';
+                                    echo '<td>';
+                                    foreach ($user->getRoles() as $role) {
+                                        echo $role->getName() . " ";
+                                    }
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo "<a 
                         				title=\"Changer mot de passe\"
                         				href=\"#user-container\"
                         				class=\"change-password\"
-                        				data-id=\"".$user->getId()."\" 
-                        				data-name=\"".$user->getUsername()."\"
+                        				data-id=\"" . $user->getId() . "\" 
+                        				data-name=\"" . $user->getUsername() . "\"
                         				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>  ";
-                        		echo "<a 
+                                    echo "<a 
                         				title=\"Modifier\" 
                         				href=\"#user-container\" 
                         				class=\"mod-user\" 
-                        				data-id=\"".$user->getId()."\" 
-                        				data-name=\"".$user->getUsername()."\" 
+                        				data-id=\"" . $user->getId() . "\" 
+                        				data-name=\"" . $user->getUsername() . "\" 
                         				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
-                        		echo "<a 
+                                    echo "<a 
+                        				title=\"Désactiver\" 
+                        				href=\"#confirm-deactivate\" 
+                        				data-href=\"" . $this->url('administration',
+                                            array('controller' => 'users', 'action' => 'deactivateuser'),
+                                            array('query' => array('id' => $user->getId()))) . "\" 
+                        				class=\"deactivate-user\" 
+                        				data-id=\"" . $user->getId() . "\" 
+                        				data-name=\"" . $user->getUsername() . "\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-off\"></span></a>  ";
+                                    echo "<a 
                         				title=\"Supprimer\" 
                         				href=\"#confirm-delete-user\" 
-                        				data-href=\"".$this->url('administration', array('controller'=>'users', 'action'=>'deleteuser'), array('query'=>array('id'=>$user->getId())))."\" 
+                        				data-href=\"" . $this->url('administration',
+                                            array('controller' => 'users', 'action' => 'deleteuser'),
+                                            array('query' => array('id' => $user->getId()))) . "\" 
                         				class=\"delete-user\" 
-                        				data-id=\"".$user->getId()."\" 
-                        				data-name=\"".$user->getUsername()."\" 
+                        				data-id=\"" . $user->getId() . "\" 
+                        				data-name=\"" . $user->getUsername() . "\" 
                         				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span> </a>";
-                        		echo '</td>';
-                        		echo '</tr>';
+                                    echo '</td>';
+                                    echo '</tr>';
+                                }
                         	}
                         	?>
                         </tbody>                    
@@ -67,16 +81,91 @@
 				</div>
 			</div>
 		</div>
+
+        <div class="col-sm-12">
+            <p></p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Utilisateurs désactivés</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped sortable">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th data-sort="string" data-autosort="true">Nom</th>
+                            <th data-sort="string">Email</th>
+                            <th>Organisation</th>
+                            <th>Zone de qualification</th>
+                            <th>Roles</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <?php
+                        foreach ($this->users as $user){
+                            if($user->getState() != 1) {
+                                echo '<tr>';
+                                echo '<td>' . $user->getId() . '</td>';
+                                echo '<td>' . $user->getUsername() . '</td>';
+                                echo '<td>' . $user->getEmail() . '</td>';
+                                echo '<td>' . $user->getOrganisation()->getName() . '</td>';
+                                echo '<td>' . ($user->getZone() ? $user->getZone()->getName() : "") . '</td>';
+                                echo '<td>';
+                                foreach ($user->getRoles() as $role) {
+                                    echo $role->getName() . " ";
+                                }
+                                echo '</td>';
+                                echo '<td>';
+                                echo "<a 
+                        				title=\"Réactiver\" 
+                        				href=\"#confirm-reactivate\" 
+                        				data-href=\"" . $this->url('administration',
+                                            array('controller' => 'users', 'action' => 'reactivateuser'),
+                                            array('query' => array('id' => $user->getId()))) . "\" 
+                        				class=\"reactivate-user\" 
+                        				data-id=\"" . $user->getId() . "\" 
+                        				data-name=\"" . $user->getUsername() . "\" 
+                        				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-refresh\"></span></a>  ";
+                        		echo '</td>';
+                                echo '</tr>';
+                            }
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 	</div>
 </div>
 
 <?php echo $this->modalWindow("user-container", "<h4 id=\"user-title\">Nouvel utilisateur</h4>", "", "<div id=\"user-form\"></div>")?>
 
+<?php echo $this->modalwindow("confirm-deactivate",
+    "<h4>Confirmer la désactivation ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment désactiver l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>
+    <p>Un utilisateur désactivé sera toujours en base de données mais ne pourra plus se connecter.</p>",
+    "<a class=\"btn btn-danger\" id=\"deactivate-user-href\">Confirmer</a>
+	<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
+<?php echo $this->modalwindow("confirm-reactivate",
+    "<h4>Confirmer la réactivation ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment réactiver l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>",
+    "<a class=\"btn btn-danger\" id=\"reactivate-user-href\">Confirmer</a>
+	<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
+
 <?php echo $this->modalwindow("confirm-delete-user",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
-						"<p>Voulez-vous vraiment supprimer l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>",
+						"<p>Voulez-vous vraiment supprimer l'utilisateur <em><span id=\"user-name\"></span></em> ?</p>
+                        <p>ATTENTION : la suppression d'un utilisateur n'est possible que s'il n'a pas encore créé d'évènements.</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-user-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 

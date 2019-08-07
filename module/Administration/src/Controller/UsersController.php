@@ -124,6 +124,32 @@ class UsersController extends FormController
         return new JsonModel();
     }
 
+    public function deactivateuserAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getEntityManager();
+        $user = $objectManager->getRepository('Core\Entity\User')->find($id);
+        if ($user) {
+            $user->setState(0);
+            $objectManager->persist($user);
+            $objectManager->flush();
+        }
+        return new JsonModel();
+    }
+
+    public function reactivateuserAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $objectManager = $this->getEntityManager();
+        $user = $objectManager->getRepository('Core\Entity\User')->find($id);
+        if ($user) {
+            $user->setState(1);
+            $objectManager->persist($user);
+            $objectManager->flush();
+        }
+        return new JsonModel();
+    }
+
     public function deleteuserAction()
     {
         $id = $this->params()->fromQuery('id', null);
