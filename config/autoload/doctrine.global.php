@@ -21,7 +21,7 @@ return array(
             'migrations_directory' => 'data/DoctrineORMModule/Migrations'
         ),
         'fixture' => array(
-            'Application_fixture' => __DIR__ . '/../../module/Application/src/Application/Fixtures'
+            'Application_fixture' => __DIR__ . '/../../module/Application/src/Fixtures'
         )
     )
 );
