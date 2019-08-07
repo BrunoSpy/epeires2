@@ -40,6 +40,8 @@ class MaintenanceController extends AbstractEntityManagerAwareController
 {
     private $config;
 
+    private $categoryfactory;
+
     public function __construct(EntityManager $entityManager, $categoryfactory, $config)
     {
         parent::__construct($entityManager);
