@@ -20,6 +20,7 @@
 $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
+        'Zend\Router',
         'DoctrineModule',
         'DoctrineORMModule',
         'DoctrineMigrationsModule',
@@ -57,7 +58,7 @@ $modules = array(
 if ($env == 'development') {
 
     //$modules [] = 'ZendDeveloperTools';
-    $modules[] = 'DoctrineDataFixtureModule';
+    $modules[] = 'ZF\Doctrine\DataFixture';
 }
 
 return array(

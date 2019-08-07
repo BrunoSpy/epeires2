@@ -4,8 +4,56 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e4f3546d3d997d0160aee2303ecbce4",
+    "content-hash": "3d200b2fd72d2c4c36fa6bd64511fd48",
     "packages": [
+        {
+            "name": "DietLabs/doctrine-migrations-module",
+            "version": "dev-zf3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BrunoSpy/DoctrineMigrationsModule.git",
+                "reference": "b0cd0e94578d85990559bc531e73cb6c2370781a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BrunoSpy/DoctrineMigrationsModule/zipball/b0cd0e94578d85990559bc531e73cb6c2370781a",
+                "reference": "b0cd0e94578d85990559bc531e73cb6c2370781a",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-orm-module": "^2.0",
+                "doctrine/migrations": "^2.0",
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "DoctrineMigrationsModule\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Murga Nikolay",
+                    "email": "work@murga.kiev.ua"
+                }
+            ],
+            "description": "Doctrine migrations module for Zend Framework 2",
+            "homepage": "https://github.com/DietLabs/DoctrineMigrationsModule",
+            "keywords": [
+                "doctrine",
+                "migrations",
+                "module",
+                "zend",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/zf3"
+            },
+            "time": "2019-08-07T10:12:28+00:00"
+        },
         {
             "name": "behat/transliterator",
             "version": "v1.2.0",
@@ -2218,54 +2266,6 @@
                 "markdown"
             ],
             "time": "2018-01-15T00:49:33+00:00"
-        },
-        {
-            "name": "murganikolay/doctrine-migrations-module",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BrunoSpy/DoctrineMigrationsModule.git",
-                "reference": "2cd122be1f49ff34b9db685bc071fc8e2b7fde87"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/DoctrineMigrationsModule/zipball/2cd122be1f49ff34b9db685bc071fc8e2b7fde87",
-                "reference": "2cd122be1f49ff34b9db685bc071fc8e2b7fde87",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/doctrine-module": "~2.0",
-                "doctrine/migrations": "~2.0",
-                "php": ">=5.5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "DoctrineMigrationsModule\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Murga Nikolay",
-                    "email": "work@murga.kiev.ua"
-                }
-            ],
-            "description": "Doctrine migrations module for Zend Framework 2",
-            "homepage": "https://github.com/MurgaNikolay/DoctrineMigrationsModule",
-            "keywords": [
-                "doctrine",
-                "migrations",
-                "module",
-                "zend",
-                "zf2"
-            ],
-            "support": {
-                "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/master"
-            },
-            "time": "2019-08-07T08:26:16+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -6740,6 +6740,72 @@
     ],
     "packages-dev": [
         {
+            "name": "api-skeletons/zf-doctrine-data-fixture",
+            "version": "5.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/API-Skeletons/zf-doctrine-data-fixture.git",
+                "reference": "c961541d6c32f26ab292137613eea19ef3ff0f59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/API-Skeletons/zf-doctrine-data-fixture/zipball/c961541d6c32f26ab292137613eea19ef3ff0f59",
+                "reference": "c961541d6c32f26ab292137613eea19ef3ff0f59",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/data-fixtures": "^1.3.0",
+                "doctrine/doctrine-module": "^1.2.0 || ^2.1.0",
+                "php": "^7.1.0",
+                "zendframework/zend-eventmanager": "^3.0.0",
+                "zendframework/zend-modulemanager": "^2.7.2 || ^3.0.0",
+                "zendframework/zend-servicemanager": "^3.1.0"
+            },
+            "require-dev": {
+                "api-skeletons/coding-standard": "^1.0.0",
+                "doctrine/doctrine-orm-module": "^1.1.0 || ^2.1",
+                "dprevite/lint": "^1.0.0",
+                "phpstan/phpstan-doctrine": "^0.9.1",
+                "phpunit/phpunit": "^5.7.0",
+                "squizlabs/php_codesniffer": "^3.2.0",
+                "zendframework/zend-i18n": "^2.7.0",
+                "zendframework/zend-test": "^3.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "zf": {
+                    "component": "ZF\\Doctrine\\DataFixture",
+                    "config-provider": "ZF\\Doctrine\\DataFixture\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ZF\\Doctrine\\DataFixture\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Shwalbe",
+                    "email": "martin.shwalbe@gmail.com"
+                },
+                {
+                    "name": "Tom Anderson",
+                    "email": "tom.h.anderson@gmail.com"
+                }
+            ],
+            "description": "Doctrine Data Fixture Console Route with Service Manager configured Fixtures",
+            "homepage": "https://apiskeletons.com",
+            "keywords": [
+                "data-fixture",
+                "doctrine"
+            ],
+            "time": "2019-02-02T22:48:33+00:00"
+        },
+        {
             "name": "behat/gherkin",
             "version": "v4.6.0",
             "source": {
@@ -7734,53 +7800,6 @@
                 "unicode"
             ],
             "time": "2017-01-16T07:08:25+00:00"
-        },
-        {
-            "name": "hounddog/doctrine-data-fixture-module",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BrunoSpy/DoctrineDataFixtureModule.git",
-                "reference": "1f085c4bb26bbbad62270ef8f689de844c9fc629"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/DoctrineDataFixtureModule/zipball/1f085c4bb26bbbad62270ef8f689de844c9fc629",
-                "reference": "1f085c4bb26bbbad62270ef8f689de844c9fc629",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/data-fixtures": "^1.1.0",
-                "doctrine/doctrine-orm-module": "^2.0.0",
-                "php": ">=5.5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "DoctrineDataFixtureModule": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Shwalbe",
-                    "email": "martin.shwalbe@gmail.com"
-                }
-            ],
-            "description": "Zend Framework 2 Module that provides Doctrine Data-Fixture functionality",
-            "homepage": "http://www.doctrine-project.org/",
-            "keywords": [
-                "data-fixture",
-                "doctrine",
-                "module",
-                "zf2"
-            ],
-            "support": {
-                "source": "https://github.com/BrunoSpy/DoctrineDataFixtureModule/tree/master"
-            },
-            "time": "2019-08-07T09:27:43+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -10649,6 +10668,77 @@
             "time": "2019-06-18T10:36:49+00:00"
         },
         {
+            "name": "zendframework/zend-log",
+            "version": "2.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-log.git",
+                "reference": "9cec3b092acb39963659c2f32441cccc56b3f430"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-log/zipball/9cec3b092acb39963659c2f32441cccc56b3f430",
+                "reference": "9cec3b092acb39963659c2f32441cccc56b3f430",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7.0",
+                "psr/log": "^1.0",
+                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3",
+                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+            },
+            "provide": {
+                "psr/log-implementation": "1.0.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^5.7.15 || ^6.0.8",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-db": "^2.6",
+                "zendframework/zend-escaper": "^2.5",
+                "zendframework/zend-filter": "^2.5",
+                "zendframework/zend-mail": "^2.6.1",
+                "zendframework/zend-validator": "^2.10.1"
+            },
+            "suggest": {
+                "ext-mongo": "mongo extension to use Mongo writer",
+                "ext-mongodb": "mongodb extension to use MongoDB writer",
+                "zendframework/zend-console": "Zend\\Console component to use the RequestID log processor",
+                "zendframework/zend-db": "Zend\\Db component to use the database log writer",
+                "zendframework/zend-escaper": "Zend\\Escaper component, for use in the XML log formatter",
+                "zendframework/zend-mail": "Zend\\Mail component to use the email log writer",
+                "zendframework/zend-validator": "Zend\\Validator component to block invalid log messages"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.10.x-dev",
+                    "dev-develop": "2.11.x-dev"
+                },
+                "zf": {
+                    "component": "Zend\\Log",
+                    "config-provider": "Zend\\Log\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Zend\\Log\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "component for general purpose logging",
+            "homepage": "https://github.com/zendframework/zend-log",
+            "keywords": [
+                "log",
+                "logging",
+                "zf2"
+            ],
+            "time": "2018-04-09T21:59:51+00:00"
+        },
+        {
             "name": "zendframework/zend-test",
             "version": "3.3.0",
             "source": {
@@ -10718,15 +10808,146 @@
                 "zf"
             ],
             "time": "2019-06-11T19:33:38+00:00"
+        },
+        {
+            "name": "zfcampus/zf-apigility-admin",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zfcampus/zf-apigility-admin.git",
+                "reference": "e0464d8c212f44efe6f6db3289d73789882a39a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zfcampus/zf-apigility-admin/zipball/e0464d8c212f44efe6f6db3289d73789882a39a6",
+                "reference": "e0464d8c212f44efe6f6db3289d73789882a39a6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-code": "^2.6.3 || ^3.2",
+                "zendframework/zend-eventmanager": "^2.6.3 || ^3.0.1",
+                "zendframework/zend-filter": "^2.8",
+                "zendframework/zend-http": "^2.8",
+                "zendframework/zend-hydrator": "^1.1 || ^2.4 || ^3.0",
+                "zendframework/zend-inputfilter": "^2.8.1",
+                "zendframework/zend-modulemanager": "^2.8.2",
+                "zendframework/zend-mvc": "^2.7.15 || ^3.1.1",
+                "zendframework/zend-servicemanager": "^2.7.10 || ^3.3.2",
+                "zendframework/zend-stdlib": "^2.7.7 || ^3.2",
+                "zendframework/zend-validator": "^2.10.2",
+                "zendframework/zend-view": "^2.10",
+                "zfcampus/zf-api-problem": "^1.3",
+                "zfcampus/zf-apigility": "^1.4",
+                "zfcampus/zf-apigility-admin-ui": "^1.3.9",
+                "zfcampus/zf-apigility-provider": "^1.3",
+                "zfcampus/zf-configuration": "1.3.3",
+                "zfcampus/zf-content-negotiation": "^1.4",
+                "zfcampus/zf-content-validation": "^1.4",
+                "zfcampus/zf-hal": "^1.5",
+                "zfcampus/zf-mvc-auth": "^1.5",
+                "zfcampus/zf-oauth2": "^1.5",
+                "zfcampus/zf-rest": "^1.4",
+                "zfcampus/zf-rpc": "^1.4",
+                "zfcampus/zf-versioning": "^1.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.5",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-config": "^2.6 || ^3.2",
+                "zendframework/zend-loader": "^2.6",
+                "zfcampus/zf-deploy": "^1.3"
+            },
+            "bin": [
+                "bin/apigility-upgrade-to-1.5"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8.x-dev",
+                    "dev-develop": "1.9.x-dev"
+                },
+                "zf": {
+                    "module": "ZF\\Apigility\\Admin"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ZF\\Apigility\\Admin\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Apigility Admin module",
+            "homepage": "http://apigility.org/",
+            "keywords": [
+                "api",
+                "apigility",
+                "framework",
+                "zf2"
+            ],
+            "time": "2019-04-04T14:32:43+00:00"
+        },
+        {
+            "name": "zfcampus/zf-apigility-admin-ui",
+            "version": "1.3.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zfcampus/zf-apigility-admin-ui.git",
+                "reference": "4b4435296fa40d7ad2b5d1397a219fb5cbf72140"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zfcampus/zf-apigility-admin-ui/zipball/4b4435296fa40d7ad2b5d1397a219fb5cbf72140",
+                "reference": "4b4435296fa40d7ad2b5d1397a219fb5cbf72140",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-view": "^2.8.1"
+            },
+            "require-dev": {
+                "zendframework/zend-console": "^2.6"
+            },
+            "suggest": {
+                "rwoverdijk/assetmanager": "^1.7, to expose assets under the document root (may not yet be released)",
+                "zfcampus/zf-asset-manager": "^1.0, to expose assets under the document root, until rwoverdijk/assetmanager 1.7 is released"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3-dev",
+                    "dev-develop": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "Module.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Apigility Admin UI module",
+            "homepage": "http://apigility.org/",
+            "keywords": [
+                "api",
+                "apigility",
+                "framework",
+                "zf2"
+            ],
+            "time": "2018-09-10T21:22:02+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "murganikolay/doctrine-migrations-module": 20,
+        "dietlabs/doctrine-migrations-module": 20,
         "dino/dompdf-module": 20,
-        "kipperlenny/opentbs-bundle": 20,
-        "hounddog/doctrine-data-fixture-module": 20
+        "kipperlenny/opentbs-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
