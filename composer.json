@@ -80,11 +80,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Core\\": "module/Core/src/Core/",
-      "Application\\": "module/Application/src/Application/",
-      "IPO\\": "module/IPO/src/IPO/",
-      "Administration\\": "module/Administration/src/Administration/",
-      "API\\": "module/API/src/API"
+      "Core\\": "module/Core/src/",
+      "Application\\": "module/Application/src/",
+      "IPO\\": "module/IPO/src/",
+      "Administration\\": "module/Administration/src/",
+      "API\\": "module/API/src/"
     }
   }
 }

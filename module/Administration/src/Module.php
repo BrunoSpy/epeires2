@@ -15,18 +15,20 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace IPO;
+namespace Administration;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\ModuleManager\ModuleManager;
+use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
  *
  * @author Bruno Spyckerelle
- *        
+ *
  */
-class Module
+class Module implements ConsoleUsageProviderInterface
 {
 
     public function onBootstrap(MvcEvent $e)
@@ -41,23 +43,35 @@ class Module
         $sharedEvents = $moduleManager->getEventManager()->getSharedManager();
         $sharedEvents->attach(__NAMESPACE__, 'dispatch', function ($e) {
             $controller = $e->getTarget();
-            $controller->layout('layout/ipolayout');
+            $controller->layout('layout/adminlayout');
         }, 100);
     }
 
     public function getConfig()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return include __DIR__ . '/../config/module.config.php';
     }
 
-    public function getAutoloaderConfig()
+    public function getServiceConfig()
+    {
+        return [
+            'factories' => [
+                'Core\Service\NOTAMService' => function($sm)
+                {
+                    return new Core\Service\NOTAMService();
+                }
+            ]
+        ];
+    }
+
+    public function getConsoleUsage(Console $console)
     {
         return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
-                )
-            )
+            // Describe available commands
+            'delete-events <orgshortname>' => 'Delete all events in database',
+            'clean-logs' => 'Remove useless logs entries',
+            'initDB' => 'Fresh install database initialisation',
+            'initbtivDB' => 'Create mandatory categories for BTIV module activation'
         );
     }
 }
