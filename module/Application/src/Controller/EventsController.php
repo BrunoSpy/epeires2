@@ -57,17 +57,19 @@ class EventsController extends TabsController
     private $eventservice;
     private $customfieldservice;
     private $zfcRbacOptions;
+    private $translator;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost)
+                                $config, $mattermost, $translator)
     {
         parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
+        $this->translator = $translator;
     }
     
     public function indexAction()
@@ -179,12 +181,12 @@ class EventsController extends TabsController
                 $em->persist($ipo);
                 try {
                     $em->flush();
-                    $messages['success'][] = "IPO en fonction modifié";
+                    $messages['success'][] = $this->translator->translate("IPO")." en fonction modifié";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }
             } else {
-                $messages['error'][] = "Impossible de modifier l'IPO";
+                $messages['error'][] = "Impossible de modifier ".$this->translator->translate("the IPO");
             }
         }
         return new JsonModel($messages);

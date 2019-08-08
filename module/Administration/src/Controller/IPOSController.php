@@ -22,27 +22,15 @@ use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Application\Controller\FormController;
 use Application\Entity\IPO;
 
-class IPOSController extends FormController
+class IPOSController extends AdminTabController
 {
-
-    private $entityManager;
-
-    public function __construct(EntityManager $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
 
     public function indexAction()
     {
-        $this->layout()->title = "Utilisateurs > IPO";
+        parent::indexAction();
+        $this->layout()->title = "Utilisateurs > " . $this->translate('IPO');
         
         $objectManager = $this->getEntityManager();
         
@@ -85,7 +73,7 @@ class IPOSController extends FormController
                 $objectManager->persist($ipo);
                 try {
                     $objectManager->flush();
-                    $this->flashMessenger()->addSuccessMessage('IPO enregistré.');
+                    $this->flashMessenger()->addSuccessMessage($this->translate('IPO').' enregistré.');
                 } catch (\Exception $e) {
                     $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }

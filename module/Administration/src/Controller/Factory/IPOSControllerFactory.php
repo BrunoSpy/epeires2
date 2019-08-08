@@ -25,7 +25,11 @@ class IPOSControllerFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new IPOSController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        $sl = $serviceLocator->getServiceLocator();
+        return new IPOSController(
+            $sl->get('Doctrine\ORM\EntityManager'),
+            $sl->get('config'),
+            $sl->get('translator'));
     }
 
 }

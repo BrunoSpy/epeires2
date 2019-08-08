@@ -89,7 +89,7 @@ class IPOHelper extends AbstractHelper
                 if ($currentipo) {
                     $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><span id="iponame">' . $currentipo->getName() . '</span></p>';
                 } else { 
-                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun IPO configuré</em></p>';
+                    $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun '.$this->view->translate('IPO').' configuré</em></p>';
                 }
             }
         } else {
