@@ -1,4 +1,11 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/users.js')?>
+<?php    $formatter = \IntlDateFormatter::create(\Locale::getDefault(),
+    \IntlDateFormatter::FULL,
+    \IntlDateFormatter::FULL,
+    'UTC',
+    \IntlDateFormatter::GREGORIAN,
+    'dd LLL yyyy, HH:mm');
+?>
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-sm-12">
@@ -17,6 +24,7 @@
                         		<th>Organisation</th>
                         		<th>Zone de qualification</th>
                         		<th>Roles</th>
+                                <th>Dernière connexion</th>
                         		<th><a class="btn btn-xs btn-primary" href="#user-container" data-toggle="modal" id="add-user">Ajouter</a></th>
                         	</tr>
                         </thead>
@@ -36,6 +44,18 @@
                                         echo $role->getName() . " ";
                                     }
                                     echo '</td>';
+                                    if($user->getLoginAttempts() instanceof \Doctrine\ORM\PersistentCollection) {
+                                        $last = $user->getLoginAttempts()->last();
+                                        if($last instanceof \Core\Entity\LoginAttempt) {
+                                            $login = $formatter->format($last->getAttempt());
+                                        } else {
+                                            $login = "Inconnue";
+                                        }
+                                    } else {
+                                        $login = "Inconnue";
+                                    }
+
+                                    echo '<td>'.$login.'</td>';
                                     echo '<td>';
                                     echo "<a 
                         				title=\"Changer mot de passe\"

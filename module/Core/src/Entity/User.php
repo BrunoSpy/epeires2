@@ -134,6 +134,11 @@ class User implements UserInterface, IdentityInterface
      */
     protected $zone;
 
+    /**
+     * @ORM\OneToMany(targetEntity="LoginAttempt", mappedBy="user")
+     */
+    protected $loginattempts;
+
     public function __construct()
     {
         $this->userroles = new ArrayCollection();
@@ -389,6 +394,11 @@ class User implements UserInterface, IdentityInterface
             }
         }
         return false;
+    }
+
+    public function getLoginAttempts()
+    {
+        return $this->loginattempts;
     }
 
     public function getArrayCopy()
