@@ -5,7 +5,7 @@
 var ipos = function(url){
 	
 	$("#add-ipo").on('click', function(){
-		$("#ipo-title").html("Nouvel IPO");
+		$("#ipo-title").html(+i18n.t('ipo.newIPO'));
 		$("#ipo-form").load(url+'/ipos/form');
 	});
 	

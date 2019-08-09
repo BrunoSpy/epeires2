@@ -60,7 +60,7 @@ return array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'cache' => 'array',
                 'paths' => array(
-                    __DIR__ . '/../src/IPO/Entity'
+                    __DIR__ . '/../src/Entity'
                 )
             ),
             'orm_default' => array(

@@ -42,6 +42,10 @@ class ATFCMController extends AbstractEntityManagerAwareController
         $this->nmb2b = $nmb2b;
     }
 
+    /**
+     * Import regulations through NM B2B for the day specified and the day after
+     * @throws \Exception
+     */
     public function importRegulationsAction()
     {
 
@@ -94,6 +98,9 @@ class ATFCMController extends AbstractEntityManagerAwareController
         }
         $day->setTime(0,0);
         $end = clone $day;
+        //get regulations for the next day too
+        //to avoid having to wait for 00h01 to get regulations
+        $end->add(New \DateInterval('P1D'));
         $end->setTime(23,59);
 
         $startImport = microtime(true);

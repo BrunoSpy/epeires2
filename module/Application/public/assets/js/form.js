@@ -590,6 +590,21 @@ var form = function(url, cats){
 		pauseUpdateAlarms();
 	});
 
+	$("#timeline").on("click", ".use-model", function(){
+		var me = $(this);
+		$("#event").html('');
+		$(".category").popover('hide');
+		$("#form-title").html(me.data('name'));
+		$("#create-evt").modal('show');
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
+			initTabs(2);
+			$("#event input[name=startdate]").timepickerform({'id':'start'});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			updateHours();
+		});
+		pauseUpdateAlarms();
+	});
+
 	//click sur modification d'un évènement
 	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #calendarview a.modify-evt, #list-fp a.modify-evt", function(e){
 		e.preventDefault();

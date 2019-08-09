@@ -38,7 +38,7 @@ var users = function(url){
 		$('#user-name').html($(this).data('name'));
 		$("#delete-user-href").data('id', $(this).data('id'));
 	});
-	
+
 	$("#confirm-delete-user").on('click', '#delete-user-href', function(event){
 		event.preventDefault();
 		var me = $(this);
@@ -47,7 +47,37 @@ var users = function(url){
 			location.reload();
 		});
 	});
-	
+
+	$(".deactivate-user").on('click', function(event){
+		$('a#deactivate-user-href').attr('href', $(this).data('href'));
+		$('#user-name').html($(this).data('name'));
+		$("#deactivate-user-href").data('id', $(this).data('id'));
+	});
+
+	$("#confirm-deactivate").on('click', '#deactivate-user-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$("#confirm-deactivate").modal('hide');
+		$.post(me.attr('href'), function(){
+			location.reload();
+		});
+	});
+
+	$(".reactivate-user").on('click', function(event){
+		$('a#reactivate-user-href').attr('href', $(this).data('href'));
+		$('#user-name').html($(this).data('name'));
+		$("#reactivate-user-href").data('id', $(this).data('id'));
+	});
+
+	$("#confirm-reactivate").on('click', '#reactivate-user-href', function(event){
+		event.preventDefault();
+		var me = $(this);
+		$("#confirm-reactivate").modal('hide');
+		$.post(me.attr('href'), function(){
+			location.reload();
+		});
+	});
+
 	$("#user-container").on('change', 'select[name=organisation]', function(){
 		$.getJSON(url+'/users/getqualifzone?id='+$(this).val(), function(data){
 			var select = $("#user-container select[name=zone]");

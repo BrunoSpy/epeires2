@@ -27,7 +27,7 @@ use Application\Entity\FrequencyCategory;
 use Application\Entity\Sector;
 use Application\Entity\Stack;
 use Application\Entity\Tab;
-use Application\Entity\TemporaryResource;
+use Core\Entity\TemporaryResource;
 use Application\Entity\Radar;
 use Application\Entity\Antenna;
 

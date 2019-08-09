@@ -25,7 +25,11 @@ class ATFCMControllerFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new ATFCMController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        $sl = $serviceLocator->getServiceLocator();
+        return new ATFCMController(
+            $sl->get('Doctrine\ORM\EntityManager'),
+            $sl->get('config'),
+            $sl->get('translator'));
     }
 
 }

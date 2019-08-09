@@ -28,20 +28,8 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
  * @author Bruno Spyckerelle
  *        
  */
-class ATFCMController extends \Application\Controller\FormController
+class ATFCMController extends AdminTabController
 {
-
-    private $entityManager;
-
-    public function __construct(EntityManager $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
 
     public function configAction()
     {
@@ -49,7 +37,9 @@ class ATFCMController extends \Application\Controller\FormController
         $this->layout()->title = "Onglets > Régulations";
         
         $objectManager = $this->getEntityManager();
-        
+
+        $this->layout()->lang = $this->getAppConfig()['lang'];
+
         $viewmodel->setVariables(array(
             'cats' => $objectManager->getRepository('Application\Entity\ATFCMCategory')
                 ->findBy(array(), array(

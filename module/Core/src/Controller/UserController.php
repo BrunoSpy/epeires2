@@ -17,6 +17,7 @@
  */
 namespace Core\Controller;
 
+use Core\Entity\LoginAttempt;
 use Zend\Stdlib\ResponseInterface as Response;
 
 /**
@@ -87,12 +88,30 @@ class UserController extends \ZfcUser\Controller\UserController
         }
     
         $auth = $this->zfcUserAuthentication()->getAuthService()->authenticate($adapter);
-    
+
+        $om = $this->serviceLocator->get('Doctrine\ORM\EntityManager');
+        $attempt = new LoginAttempt();
+
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $clientIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $clientIp = $_SERVER['REMOTE_ADDR'];
+        }
+
+        $attempt->setIpAdress($clientIp);
+
         if (!$auth->isValid()) {
             $this->flashMessenger()->addErrorMessage($this->failedLoginMessage);
+            $attempt->setUsername($this->zfcUserAuthentication()->getAuthAdapter()->getEvent()->getRequest()->getPost()->identity);
             $adapter->resetAdapters();
+            $om->persist($attempt);
+            $om->flush();
             return $this->redirect()->toUrl(
                 $this->url()->fromRoute($redirect));
+        } else {
+            $attempt->setUser($this->zfcUserAuthentication()->getIdentity());
+            $om->persist($attempt);
+            $om->flush();
         }
     
         return $this->redirect()->toUrl($this->url()->fromRoute($redirect));

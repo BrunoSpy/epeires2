@@ -57,17 +57,19 @@ class EventsController extends TabsController
     private $eventservice;
     private $customfieldservice;
     private $zfcRbacOptions;
+    private $translator;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost)
+                                $config, $mattermost, $translator)
     {
         parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
+        $this->translator = $translator;
     }
     
     public function indexAction()
@@ -179,12 +181,12 @@ class EventsController extends TabsController
                 $em->persist($ipo);
                 try {
                     $em->flush();
-                    $messages['success'][] = "IPO en fonction modifié";
+                    $messages['success'][] = $this->translator->translate("IPO")." en fonction modifié";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }
             } else {
-                $messages['error'][] = "Impossible de modifier l'IPO";
+                $messages['error'][] = "Impossible de modifier ".$this->translator->translate("the IPO");
             }
         }
         return new JsonModel($messages);
@@ -2056,6 +2058,23 @@ class EventsController extends TabsController
         return new JsonModel($json);
     }
 
+    /**
+     * Return models to display when a category label is hovered
+     */
+    public function getQuickModelsAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $json = array();
+        if($id) {
+            $om = $this->getEntityManager();
+            $cat = $om->getRepository(Category::class)->find($id);
+            if($cat) {
+                return new JsonModel($om->getRepository(PredefinedEvent::class)->getQuickAccessModelsFromCategoryAsArray($cat));
+            }
+        }
+        return new JsonModel($json);
+    }
+
     private function filterReadableCategories($categories)
     {
         $objectManager = $this->getEntityManager();
@@ -2294,7 +2313,10 @@ class EventsController extends TabsController
                 foreach ($event->getCustomFieldsValues() as $value) {
                     $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
                 }
-                
+                foreach ($event->getUpdates() as $update){
+                    $content .= $this->eventservice->getUpdateAuthor($update).' le '.$formatter->format($update->getCreatedOn()) . ' : <br />';
+                    $content .= nl2br($update->getText()).'<br />';
+                }
                 $text = new \Zend\Mime\Part($content);
                 $text->type = \Zend\Mime\Mime::TYPE_HTML;
                 $text->charset = 'utf-8';

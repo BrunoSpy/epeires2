@@ -175,7 +175,7 @@ class Module implements ConsoleUsageProviderInterface
                 'username',
                 'User Name of the author of created events'
             ),
-            'import-regulations [--delta=] [--email] orgshortname username' => 'Import Regulations from NM B2B WS',
+            'import-regulations [--delta=] [--email] orgshortname username' => 'Import Regulations from NM B2B WS for the specidifed day and the day after',
             array(
                 '--delta',
                 '(optional) Delta to add to the current day (-1=yesterday)'

@@ -84,7 +84,7 @@ class User implements UserInterface, IdentityInterface
      */
     protected $mattermostUsername = "";
 
-        /**
+    /**
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Annotation\Type("Zend\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe Mattermost:"})
@@ -95,8 +95,9 @@ class User implements UserInterface, IdentityInterface
     protected $mattermostPassword;
 
     /**
+     * @ORM\Column(type="integer")
      */
-    protected $state;
+    protected $state = 1;
 
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
@@ -132,6 +133,11 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Facultatif"})
      */
     protected $zone;
+
+    /**
+     * @ORM\OneToMany(targetEntity="LoginAttempt", mappedBy="user")
+     */
+    protected $loginattempts;
 
     public function __construct()
     {
@@ -388,6 +394,11 @@ class User implements UserInterface, IdentityInterface
             }
         }
         return false;
+    }
+
+    public function getLoginAttempts()
+    {
+        return $this->loginattempts;
     }
 
     public function getArrayCopy()

@@ -76,6 +76,44 @@ class PredefinedEventRepository extends SortableRepository
         return $res;
     }
 
+    /**
+     * Returns an array with predefined events to be accessed quickly from the timeline (quickaccess = true)
+     * @param Category $category
+     * @param bool $include Include events from children
+     * @return array
+     */
+    public function getQuickAccessModelsFromCategoryAsArray(Category $category, $include = true)
+    {
+        $res = array();
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $category));
+        $criteria->andWhere(Criteria::expr()->isNull('parent'));
+        $criteria->andWhere(Criteria::expr()->eq('quickaccess', true));
+        $criteria->orderBy(array(
+            'place' => 'ASC'
+        ));
+        $list = parent::matching($criteria);
+        foreach ($list as $element) {
+            $res[$element->getId()] = $element->getName();
+        }
+        if($include) {
+            foreach ($category->getChildren() as $cat) {
+                if (!$cat->isArchived()) {
+                    $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
+                    $criteria->andWhere(Criteria::expr()->isNull('parent'));
+                    $criteria->andWhere(Criteria::expr()->eq('quickaccess', true));
+                    $criteria->orderBy(array(
+                        'place' => 'ASC'
+                    ));
+                    $list = parent::matching($criteria);
+                    foreach ($list as $element) {
+                        $res[$element->getId()] = $element->getName();
+                    }
+                }
+            }
+        }
+        return $res;
+    }
+
     public function getChildsAsArray($parentid)
     {
         $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $parentid));

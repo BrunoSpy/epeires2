@@ -27,6 +27,8 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->controlGroup($this->form->get('listable'));
 
 	echo $this->controlGroup($this->form->get('searchable'));
+
+	echo $this->controlGroup($this->form->get('quickaccess'));
 	
 	echo $this->controlGroup($this->form->get('programmed'));
 
@@ -44,8 +46,10 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->formHidden($this->form->get('listable')->setAttribute('value', false));
 
 	echo $this->formHidden($this->form->get('searchable')->setAttribute('value', false));
-	
-	echo $this->formHidden($this->form->get('programmed')->setAttribute('value', false));
+
+	echo $this->formHiddent($this->form->get('quickaccess')->setAttribute('value', false));
+
+    echo $this->formHidden($this->form->get('programmed')->setAttribute('value', false));
     
     echo $this->formHidden($this->form->get('forceroot')->setAttribute('value', false));
 	

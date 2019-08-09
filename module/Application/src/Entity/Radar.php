@@ -18,6 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Core\Entity\TemporaryResource;
 use Zend\Form\Annotation;
 
 /**

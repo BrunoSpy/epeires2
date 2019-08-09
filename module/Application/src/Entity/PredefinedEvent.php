@@ -74,6 +74,13 @@ class PredefinedEvent extends AbstractEvent
      */
     protected $duration = -1;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Accès rapide :"})
+     */
+    protected $quickaccess;
+
     public function __construct()
     {
         parent::__construct();
@@ -87,6 +94,22 @@ class PredefinedEvent extends AbstractEvent
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isQuickaccess()
+    {
+        return $this->quickaccess;
+    }
+
+    /**
+     * @param bool $quick
+     */
+    public function setQuickAccess($quick)
+    {
+        $this->quickaccess = $quick;
     }
 
     public function isListable()
