@@ -2058,6 +2058,23 @@ class EventsController extends TabsController
         return new JsonModel($json);
     }
 
+    /**
+     * Return models to display when a category label is hovered
+     */
+    public function getQuickModelsAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $json = array();
+        if($id) {
+            $om = $this->getEntityManager();
+            $cat = $om->getRepository(Category::class)->find($id);
+            if($cat) {
+                return new JsonModel($om->getRepository(PredefinedEvent::class)->getQuickAccessModelsFromCategoryAsArray($cat));
+            }
+        }
+        return new JsonModel($json);
+    }
+
     private function filterReadableCategories($categories)
     {
         $objectManager = $this->getEntityManager();
