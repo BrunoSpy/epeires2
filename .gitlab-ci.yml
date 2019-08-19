@@ -27,6 +27,11 @@ before_script:
 #download sonar scanner
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
 - unzip ./sonar-scanner.zip
+#install node to allow css analysis
+- curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
+- chmod +x setup_10.x
+- ./setup_10.x
+- apt install nodejs
 #install needed php extensions
 - docker-php-ext-install -j$(nproc) iconv soap intl pdo_mysql zip bcmath
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
