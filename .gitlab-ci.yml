@@ -85,7 +85,6 @@ test:7.2-mariadb101:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mariadb102:
   image: php:7.2-apache-stretch
@@ -97,7 +96,6 @@ test:7.2-mariadb102:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mariadb103:
   image: php:7.2-apache-stretch
@@ -109,7 +107,6 @@ test:7.2-mariadb103:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mariadb104:
   image: php:7.2-apache-stretch
@@ -121,7 +118,6 @@ test:7.2-mariadb104:
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
-    - php vendor/bin/security-checker security:check composer.lock
 
 test:7.2-mysql57:
   image: php:7.2-apache-stretch
@@ -133,7 +129,6 @@ test:7.2-mysql57:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.3-mariadb101:
   image: php:7.3-apache-stretch
@@ -145,7 +140,6 @@ test:7.3-mariadb101:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.3-mariadb102:
   image: php:7.3-apache-stretch
@@ -157,7 +151,6 @@ test:7.3-mariadb102:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.3-mariadb103:
   image: php:7.3-apache-stretch
@@ -169,7 +162,6 @@ test:7.3-mariadb103:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:7.3-mariadb104:
   image: php:7.3-apache-stretch
@@ -181,7 +173,6 @@ test:7.3-mariadb104:
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
-    - php vendor/bin/security-checker security:check composer.lock
 
 test:7.3-mysql57:
   image: php:7.3-apache-stretch
@@ -193,7 +184,6 @@ test:7.3-mysql57:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
 test:docker:
   image: php:7.2-apache-stretch
