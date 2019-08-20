@@ -58,7 +58,7 @@
     "zfcampus/zf-development-mode": "~2.0",
     "maglnet/magl-markdown": "~1.1",
     "dgac/nmb2b-phpclient": "^0.2.0",
-    "dgac/mattermostmodule": "dev-master",
+    "dgac/mattermostmodule": "0.2.*",
     "smalot/pdfparser": "^0.14.0"
   },
   "require-dev":{
