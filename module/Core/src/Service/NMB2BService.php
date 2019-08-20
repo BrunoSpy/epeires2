@@ -108,6 +108,8 @@ class NMB2BService
      *
      * @param \DateTime $date
      * @return EAUPChain
+     * @throws WSDLFileUnavailable
+     * @throws \DSNA\NMB2BDriver\Exception\UnsupportedNMVersion
      */
     public function getEAUPChain(\DateTime $date)
     {
@@ -123,7 +125,6 @@ class NMB2BService
                 error_log($text);
             }
             throw new \RuntimeException('Erreur NM B2B');
-            return null;
         } catch (WSDLFileUnavailable $e) {
             error_log($e->getMessage());
         }
@@ -135,6 +136,8 @@ class NMB2BService
      * @param string $regex
      * @param string $filtre
      * @return null|string
+     * @throws WSDLFileUnavailable
+     * @throws \DSNA\NMB2BDriver\Exception\UnsupportedNMVersion
      */
     public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = "") {
 
@@ -152,7 +155,6 @@ class NMB2BService
                 error_log($text);
             }
             throw new \RuntimeException('Erreur NM B2B');
-            return null;
         }
         return $this->nmb2bClient->__getLastResponse();
     }
