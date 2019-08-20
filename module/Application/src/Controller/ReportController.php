@@ -42,50 +42,6 @@ class ReportController extends AbstractEntityManagerAwareController
         $this->config = $config;
     }
 
-    public function fnebrouillageAction()
-    {
-        $view = $this->params()->fromQuery('view', null);
-        
-        $brouillageid = $this->params()->fromQuery('id', null);
-
-        $brouillage = $this->getEntityManager()->getRepository('Application\Entity\Event')->find($brouillageid);
-        
-        if ($brouillage) {
-            $fields = array();
-            foreach ($brouillage->getCustomFieldsValues() as $values) {
-                $fields[$values->getCustomField()->getId()] = $values->getValue();
-            }
-            $frequency = $this->getEntityManager()->getRepository('Application\Entity\Frequency')->find($fields[$brouillage->getCategory()
-                ->getFrequencyField()
-                ->getId()]);
-            
-            if ($view == 'pdf') {
-                $pdf = new PdfModel();
-                $pdf->setVariable('event', $brouillage);
-                
-                $pdf->setVariables(array(
-                    'frequency' => $frequency,
-                    'fields' => $fields
-                ));
-                
-                // $pdf->setOption('filename', 'fne-brouillage');
-                $pdf->setOption('paperSize', 'a4');
-                
-                return $pdf;
-            } else {
-                $viewmodel = new ViewModel();
-                $viewmodel->setVariable('event', $brouillage);
-                $viewmodel->setVariables(array(
-                    'frequency' => $frequency,
-                    'fields' => $fields
-                ));
-                // disable layout if request by Ajax
-                $viewmodel->setTerminal(true);
-                return $viewmodel;
-            }
-        }
-    }
-
     public function dailyAction()
     {
         $day = $this->params()->fromQuery('day', null);

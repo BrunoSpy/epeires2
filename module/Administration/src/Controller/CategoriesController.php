@@ -327,16 +327,6 @@ class CategoriesController extends FormController
             }
             if ($category instanceof BrouillageCategory) {
                 $category->setFrequencyField(null);
-                $category->setLevelField(null);
-                $category->setRnavField(null);
-                $category->setDistanceField(null);
-                $category->setAzimutField(null);
-                $category->setOriginField(null);
-                $category->setTypeField(null);
-                $category->setCauseBrouillageField(null);
-                $category->setCauseInterferenceField(null);
-                $category->setCommentaireBrouillageField(null);
-                $category->setCommentaireInterferenceField(null);
             }
             if ($category instanceof MilCategory) {
                 $category->setLowerLevelField(null);
