@@ -1,8 +1,13 @@
 var fileupload = function(url) {
 
+    var maxSize = 1048576*8; //fallback to 8Mo
+
     //ajout formulaire fichier
     $(document).on('click', '#addfile', function(){
         $("#file-upload-form").load(url+'file/form');
+        $.getJSON(url+'file/getmaxsize', function(data){
+            maxSize = data;
+        });
     });
 
     /**
@@ -69,14 +74,14 @@ var fileupload = function(url) {
         $("#file-upload-form input[name=url]").prop('disabled', true);
         
         //check fileSize
-        //TODO rendre ça paramétrable
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             //get the file size and file type from file input field
             var fsize = $('#file')[0].files[0].size;
 
-            if (fsize > 1048576*8) //Max  = 8 Mo
+            if (fsize > maxSize) //Max  = PHP Limit
             {
-                showErrors('La taille du fichier dépasse la limite autorisée (8Mo).');
+                var strSize = Math.trunc(maxSize / 1048576);
+                showErrors('La taille du fichier dépasse la limite autorisée ('+strSize+'Mo).');
                 $("#action-buttons button.btn").addClass('disabled').attr('disabled', 'disabled');
             } else {
                 hideErrors();
