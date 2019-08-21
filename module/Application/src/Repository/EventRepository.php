@@ -20,6 +20,7 @@ namespace Application\Repository;
 use Application\Entity\ActionCategory;
 use Application\Entity\AlarmCategory;
 use Application\Entity\ATFCMCategory;
+use Application\Entity\Category;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
@@ -1477,76 +1478,8 @@ class EventRepository extends ExtendedRepository
         $lower->setCustomField($cat->getLowerLevelField());
         $lower->setEvent($event);
         $lower->setValue($lowerLevel);
-        
-        // recherche d'un modèle existant
-        $models = $this->getEntityManager()
-            ->getRepository('Application\Entity\PredefinedEvent')
-            ->findBy(array(
-            'name' => $designator,
-            'organisation' => $organisation,
-            'category' => $cat
-        ));
-        if (count($models) === 1) {
-            $model = $models[0];
-            // ajout des mémos
-            foreach ($model->getChildren() as $child) {
-                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
-                    $alarm = new Event();
-                    $alarm->setCategory($this->getEntityManager()
-                        ->getRepository('Application\Entity\AlarmCategory')
-                        ->findAll()[0]);
-                    $alarm->setAuthor($user);
-                    $alarm->setOrganisation($organisation);
-                    $alarm->setParent($event);
-                    $alarm->setStatus($status);
-                    $alarm->setPunctual(true);
-                    $alarm->setImpact($impact);
-                    $startdate = $timeBegin;
-                    $alarm->setStartdate($startdate);
-                    
-                    $namememo = new CustomFieldValue();
-                    $namefield = $alarm->getCategory()->getNamefield();
-                    $namememo->setCustomField($namefield);
-                    $namememo->setValue($child->getCustomFieldValue($namefield)
-                        ->getValue());
-                    $namememo->setEvent($alarm);
-                    $alarm->addCustomFieldValue($namememo);
-                    $comment = new CustomFieldValue();
-                    $commentfield = $alarm->getCategory()->getTextfield();
-                    $comment->setCustomField($commentfield);
-                    $comment->setValue($child->getCustomFieldValue($commentfield)
-                        ->getValue());
-                    $comment->setEvent($alarm);
-                    $alarm->addCustomFieldValue($comment);
-                    $deltabegin = new CustomFieldValue();
-                    $beginfield = $alarm->getCategory()->getDeltaBeginField();
-                    $deltabegin->setCustomField($beginfield);
-                    $deltabegin->setValue($child->getCustomFieldValue($beginfield)
-                        ->getValue());
-                    $deltabegin->setEvent($alarm);
-                    $alarm->addCustomFieldValue($deltabegin);
-                    $deltaend = new CustomFieldValue();
-                    $endfield = $alarm->getCategory()->getDeltaEndField();
-                    $deltaend->setCustomField($endfield);
-                    $deltaend->setValue($child->getCustomFieldValue($endfield)
-                        ->getValue());
-                    $deltaend->setEvent($alarm);
-                    $alarm->addCustomFieldValue($deltaend);
-                    $event->addChild($alarm);
-                    $this->getEntityManager()->persist($namememo);
-                    $this->getEntityManager()->persist($comment);
-                    $this->getEntityManager()->persist($deltabegin);
-                    $this->getEntityManager()->persist($deltaend);
-                    $this->getEntityManager()->persist($alarm);
-                }
-            }
-            //ajout des fichiers
-            foreach($model->getFiles() as $file) {
-                $file->addEvent($event);
-                $this->getEntityManager()->persist($file);
-            }
-            $event->updateAlarms();
-        }
+
+        $this->importModel($event, $user, $timeBegin, $designator, $organisation, $cat);
         
         try {
             $this->getEntityManager()->persist($name);
@@ -1757,6 +1690,95 @@ class EventRepository extends ExtendedRepository
             $newevent->addFile($file);
         }
         return $newevent;
+    }
+
+    /**
+     * Import data from a model, if one is found
+     * @param Event $event
+     * @param User $user
+     * @param \DateTime $start
+     * @param string $name
+     * @param $organisation
+     * @param Category $category
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function importModel($event, $user, $start, $name, $organisation, $category)
+    {
+        $status = $this->getEntityManager()
+            ->getRepository('Application\Entity\Status')
+            ->find('1');
+        $impact = $this->getEntityManager()
+            ->getRepository('Application\Entity\Impact')
+            ->find('2');
+        // recherche d'un modèle existant
+        $models = $this->getEntityManager()
+            ->getRepository('Application\Entity\PredefinedEvent')
+            ->findBy(array(
+                'name' => $name,
+                'organisation' => $organisation,
+                'category' => $category
+            ));
+        if (count($models) === 1) {
+            $model = $models[0];
+            // ajout des mémos
+            foreach ($model->getChildren() as $child) {
+                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
+                    $alarm = new Event();
+                    $alarm->setCategory($this->getEntityManager()
+                        ->getRepository('Application\Entity\AlarmCategory')
+                        ->findAll()[0]);
+                    $alarm->setAuthor($user);
+                    $alarm->setOrganisation($organisation);
+                    $alarm->setParent($event);
+                    $alarm->setStatus($status);
+                    $alarm->setPunctual(true);
+                    $alarm->setImpact($impact);
+                    $startdate = $start;
+                    $alarm->setStartdate($startdate);
+
+                    $namememo = new CustomFieldValue();
+                    $namefield = $alarm->getCategory()->getNamefield();
+                    $namememo->setCustomField($namefield);
+                    $namememo->setValue($child->getCustomFieldValue($namefield)
+                        ->getValue());
+                    $namememo->setEvent($alarm);
+                    $alarm->addCustomFieldValue($namememo);
+                    $comment = new CustomFieldValue();
+                    $commentfield = $alarm->getCategory()->getTextfield();
+                    $comment->setCustomField($commentfield);
+                    $comment->setValue($child->getCustomFieldValue($commentfield)
+                        ->getValue());
+                    $comment->setEvent($alarm);
+                    $alarm->addCustomFieldValue($comment);
+                    $deltabegin = new CustomFieldValue();
+                    $beginfield = $alarm->getCategory()->getDeltaBeginField();
+                    $deltabegin->setCustomField($beginfield);
+                    $deltabegin->setValue($child->getCustomFieldValue($beginfield)
+                        ->getValue());
+                    $deltabegin->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltabegin);
+                    $deltaend = new CustomFieldValue();
+                    $endfield = $alarm->getCategory()->getDeltaEndField();
+                    $deltaend->setCustomField($endfield);
+                    $deltaend->setValue($child->getCustomFieldValue($endfield)
+                        ->getValue());
+                    $deltaend->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltaend);
+                    $event->addChild($alarm);
+                    $this->getEntityManager()->persist($namememo);
+                    $this->getEntityManager()->persist($comment);
+                    $this->getEntityManager()->persist($deltabegin);
+                    $this->getEntityManager()->persist($deltaend);
+                    $this->getEntityManager()->persist($alarm);
+                }
+            }
+            //ajout des fichiers
+            foreach($model->getFiles() as $file) {
+                $file->addEvent($event);
+                $this->getEntityManager()->persist($file);
+            }
+            $event->updateAlarms();
+        }
     }
 
     /**
@@ -1991,6 +2013,7 @@ class EventRepository extends ExtendedRepository
         $regulationStateValue->setEvent($event);
         $regulationStateValue->setValue($regulationState);
         try {
+            $this->importModel($event, $user, $timeBegin, $regulname, $organisation, $cat);
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);

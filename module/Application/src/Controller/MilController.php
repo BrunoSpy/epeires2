@@ -164,7 +164,7 @@ class MilController extends AbstractEntityManagerAwareController
         echo 'Traitement : '.$totalTR.' secondes'."\n";
         echo "Nombre d'évènements créés : ".$totalEvents."\n";
     }
-
+/* WIP import des ZTBA
     public function importSIAAction()
     {
         $request = $this->getRequest();
@@ -208,4 +208,5 @@ class MilController extends AbstractEntityManagerAwareController
         }
 
     }
+*/
 }
