@@ -246,7 +246,6 @@ var antenna = function(url, frequencyTestMenu){
         $.post($("#form-brouillage form").attr('action'), $("#form-brouillage form").serialize(), function(data){
             if(!data.messages['error']){
                 $("#fne-brouillage").modal('hide');
-                window.open(url+'report/fnebrouillage?view=pdf&id='+data.eventid);
             }
             displayMessages(data);
         });

@@ -48,7 +48,7 @@ ul.sector-list .tooltip {
 }
 
 li.title {
-	font-family: RobotoDraft;
+	font-family: RobotoDraft, serif;
 	font-weight: 600;
 	color: #AAA;
 	padding: 2px 0px;
