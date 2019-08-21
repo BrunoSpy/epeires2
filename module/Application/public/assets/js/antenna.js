@@ -540,7 +540,10 @@ var antenna = function(url, frequencyTestMenu){
             } else {
                 sector.closest('.sector').find('.backupantenna-color.antenna-climax-color').empty().data('antennaid','');
             }
-
+            //if no backup -> add wide class
+            if(!value['backup'] && !value['backupclimax']) {
+                sector.closest('.sector').find('.mainantenna-color').addClass('mainantenna-wide');
+            }
             sector.each(function(i, item){
                 if(!value['mainclimax'] && !value['backupclimax'] && $(this).closest('.sector').find('.antennas').length > 1){
                     $(this).closest('.sector').find('.antennas:last-child').remove();
