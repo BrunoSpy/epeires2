@@ -77,6 +77,11 @@ li.title {
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
 }
 
+.antenna-color > li > a {
+	display: inline-flex;
+	width: 100ù;
+}
+
 .sector-name {
 	text-align: center;
 	font-weight: bold;
@@ -130,8 +135,6 @@ ul.antennas {
 }
 
 ul.antennas>div>li>a:after {
-	display: block;
-	float: right;
 	width: 0;
 	height: 0;
 	margin-top: 5px;
@@ -141,6 +144,7 @@ ul.antennas>div>li>a:after {
 	border-style: solid;
 	border-width: 5px 0 5px 5px;
 	content: " ";
+	margin-left: auto;
 }
 
 .sector-color {
