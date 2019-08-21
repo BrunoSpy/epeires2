@@ -12,7 +12,7 @@ var newPostIt = function(id, date, name, content) {
         hour: "numeric", minute: "numeric"};
     var dateString = new Intl.DateTimeFormat('fr-FR', options).format(new Date(date));
     var li = $('<li data-id="'+id+'" id="postit-'+id+'"><div class="'+bg+' '+rotation+'">'
-                +'<div class="postit-handle"><small>'+dateString+'</small><h5>'+name+'</h5></div>'
+                +'<div class="postit-handle"><small>'+dateString+'</small><h5 title="'+name+'">'+name+'</h5></div>'
                 +'<p class="postit-content">'+content+'</p>'
                 +'<div class="buttons"><a href="#" class="btn btn-xs btn-outline postit-mod">Modifier</a><a href="#" class="btn btn-xs postit-delete">Supprimer</a></div></div></li>');
     return li;
