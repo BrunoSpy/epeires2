@@ -59,7 +59,7 @@
     "maglnet/magl-markdown": "~1.1",
     "dgac/nmb2b-phpclient": "^0.2.0",
     "dgac/mattermostmodule": "0.2.*",
-    "smalot/pdfparser": "^0.14.0"
+    "beberlei/doctrineextensions": "^1.2"
   },
   "require-dev":{
     "zendframework/zend-test": "^2.3",

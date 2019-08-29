@@ -73,7 +73,8 @@ return array(
     'controllers' => array(
         'factories' => array(
             'IPO\Controller\Index' => 'IPO\Controller\Factory\IndexControllerFactory',
-            'IPO\Controller\Report' => 'IPO\Controller\Factory\ReportControllerFactory'
+            'IPO\Controller\Report' => 'IPO\Controller\Factory\ReportControllerFactory',
+            'IPO\Controller\Search' => 'IPO\Controller\Factory\SearchControllerFactory'
         )
     ),
     'view_manager' => array(

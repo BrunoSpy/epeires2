@@ -344,4 +344,128 @@ class EventService
         ));
         return $history;
     }
+
+    public function getJSON(Event $event, $extendedFormat = false) {
+        $objectManager = $this->em;
+        $logsRepo = $objectManager->getRepository("Application\Entity\Log");
+        $json = array(
+            'id' => $event->getId(),
+            'name' => $this->getName($event),
+            'modifiable' => $this->isModifiable($event) ? true : false,
+            'deleteable' => $this->getRbac()->isGranted('events.delete') ? true : false,
+            'readonly' => $event->isReadOnly() ? true : false,
+            'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
+            'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
+            'punctual' => $event->isPunctual() ? true : false,
+            'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()
+                ->getParent()
+                ->getName() : $event->getCategory()->getName()),
+            'category_root_id' => ($event->getCategory()->getParent() ? $event->getCategory()
+                ->getParent()
+                ->getId() : $event->getCategory()->getId()),
+            'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()
+                ->getParent()
+                ->getShortName() : $event->getCategory()->getShortName()),
+            'category' => $event->getCategory()->getName(),
+            'category_id' => $event->getCategory()->getId(),
+            'category_short' => $event->getCategory()->getShortName(),
+            'category_compact' => $event->getCategory()->isCompactMode() ? true : false,
+            'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : - 1),
+            'status_name' => $event->getStatus()->getName(),
+            'status_id' => $event->getStatus()->getId(),
+            'impact_value' => $event->getImpact()->getValue(),
+            'impact_name' => $event->getImpact()->getName(),
+            'impact_style' => $event->getImpact()->getStyle(),
+            'files' => count($event->getFiles()),
+            'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
+            'star' => $event->isStar() ? true : false,
+            'scheduled' => $event->isScheduled() ? true : false,
+            'recurr' => $event->getRecurrence() ? true : false,
+            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',
+            'mattermostid' => $event->getMattermostPostId()
+        );
+
+        $fields = array();
+        $formatterSimple = \IntlDateFormatter::create(
+            'fr_FR',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL HH:mm'
+        );
+        $milestones = array();
+        foreach ($event->getCustomFieldsValues() as $value) {
+            if($value->getCustomField()->isHidden()) //don't display
+                continue;
+            if($value->getCustomField()->isTraceable()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                    $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
+                    $i = 0;
+                    while(array_key_exists($name, $fields)) {
+                        $i++;
+                        $name = $formatterSimple->format($log->getLoggedAt()) . '-' . $i . ' ' . $value->getCustomField()->getName();
+                    }
+                    $formattedvalue = $this->customfieldService->getFormattedValue(
+                        $value->getCustomField(),
+                        $log->getData()["value"]
+                    );
+                    $fields[$name] = $formattedvalue;
+                }
+            } else {
+                $formattedvalue = $this->customfieldService->getFormattedValue($value->getCustomField(), $value->getValue());
+                if ($formattedvalue != null) {
+                    $fields[$value->getCustomField()->getName()] = $formattedvalue;
+                }
+            }
+            $i = 0;
+            if($value->getCustomField()->isMilestone()) {
+                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                    //store only changes -> skip firt log
+                    if($i > 0) {
+                        $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
+                    }
+                    $i++;
+                }
+            }
+        }
+
+        $json['milestones'] = $milestones;
+
+        if($extendedFormat) {
+            $eventLogEntries = $logsRepo->getLogEntries($event);
+            $createLog = array_reverse($eventLogEntries)[0];
+            $json['startdate_ini'] = $createLog->getData()['startdate']->format(DATE_RFC2822);
+            $enddateIni = $createLog->getData()['enddate'];
+            if($enddateIni !== null) {
+                $json['enddate_ini'] = $enddateIni->format(DATE_RFC2822);
+            } else {
+                $json['enddate_ini'] = null;
+            }
+        }
+
+        $formatter = \IntlDateFormatter::create(
+            \Locale::getDefault(),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'UTC',
+            \IntlDateFormatter::GREGORIAN,
+            'dd LLL, HH:mm'
+        );
+        foreach ($event->getUpdates() as $update) {
+            if($update->isHidden())
+                continue;
+            $key = $formatter->format($update->getCreatedOn());
+            $tempkey = $formatter->format($update->getCreatedOn());
+            $i = 0;
+            while (array_key_exists($tempkey, $fields)) {
+                $i ++;
+                $tempkey = $key . '-' . $i;
+            }
+            $fields[$tempkey] = nl2br($update->getText());
+        }
+        $json['fields'] = $fields;
+
+        return $json;
+    }
 }
