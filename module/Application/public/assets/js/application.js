@@ -932,6 +932,13 @@ $(document).ready(function(){
         $('#releveWindow').modal('show');
     });
 
+    $("#releve-content").on('click','a', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('ok');
+        window.open(this.href, '_blank');
+    });
+
     $("#editwindow").on('shown.bs.modal', function(e){
         if(enableBriefing) {
             $("#editor-briefing").markdown({
