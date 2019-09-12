@@ -32,7 +32,8 @@ class FlightPlansControllerFactory  implements FactoryInterface
             $service->get('CustomFieldService'),
             $service->get('ZfcRbac\Options\ModuleOptions'),
             $service->get('config'),
-            $service->get('mattermostservice')
+            $service->get('mattermostservice'),
+            $service->get('translator')
         );
     }
 }

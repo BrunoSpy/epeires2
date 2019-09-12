@@ -61,7 +61,7 @@ if( $this->hasAccess && (
         </div>
 
         <div class="panel panel-default">
-            <div class="panel-body" id="p-show-fp">
+            <div class="panel-body" id="pan-show-fp">
 
             <h4>Vols en alerte</h4>
             <?php if (count($flightplansWAlt) == 0) : ?>
@@ -74,7 +74,7 @@ if( $this->hasAccess && (
                     <tr>
                     <?php 
                     foreach ($fields as $field) {
-                        echo "<th>".$field."</th>"; 
+                        echo "<th data-sort='string'>".$field."</th>"; 
                     }
                     ?>
                         <th>Saisie</th>
@@ -106,7 +106,7 @@ if( $this->hasAccess && (
                     <tr>
                     <?php 
                     foreach ($fields as $field) {
-                        echo "<th>".$field."</th>"; 
+                        echo "<th data-sort='string'>".$field."</th>"; 
                     }
                     ?>
                         <th>Saisie</th>
@@ -185,38 +185,41 @@ if( $this->hasAccess && (
 <?php $this->inlineScript()->captureStart(); ?>
 
 <?php
+
 if ($this->hasAccess && (
     $this->isGranted('events.create') || 
     $this->isGranted('events.write')
     )) 
 {
-    echo '$("#create-link")
-        .hide()
-        .clone(true)
-        .show()
-        .prependTo(\'.content\')
-        .addClass(\'category\');';
+//    echo '$("#create-link")
+//        .hide()
+//        .clone(true)
+//        .show()
+//        .prependTo(\'.content\')
+//        .addClass(\'category\');';
 } 
-else {
+else 
+{
     echo '$("#create-link").hide();';
 }
+
 ?>
 
 $("#changeview").remove();
 
 $('#search').remove();
 
-$(".sortable").stupidtable();
+//$(".sortable").stupidtable();
 
-$(".sortable").bind('aftertablesort', function(event, data){
-    var th = $(this).find("th");
-    th.find(".arrow").remove();
-    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-});
-
-//sort the table by name
-$("table th:first").trigger('click');
+//$(".sortable").bind('aftertablesort', function(event, data){
+//    var th = $(this).find("th");
+//    th.find(".arrow").remove();
+//    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
+//    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
+//});
+//
+////sort the table by name
+//$("table th:first").trigger('click');
 <?php
 if($this->cats) {
     $catsString = "";
