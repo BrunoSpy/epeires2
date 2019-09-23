@@ -138,7 +138,7 @@ function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNot
             var div = $('<div></div>');
             $('<a data-toggle="collapse" data-parent="#show-not"></a>')
                 .attr('href', '#not' + i)
-                .html(not.getId())
+                .html(not.getId()+" ")
                 .appendTo(div);
             $('<strong></strong>')
                 .html(not.getFirstELine())

@@ -20,7 +20,7 @@ namespace Core\Service;
 class NOTAMWebService
 {
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
-    const CURL_TIMEOUT = 3;
+    const CURL_TIMEOUT = 5;
 
     private $em, $config;
     public function __construct($em, $config)
@@ -59,6 +59,8 @@ class NOTAMWebService
             'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
             'AERO_Duree' => '24',
             'AERO_Langue' => 'FR',
+            'AERO_Rayon' => '10',
+            'AERO_Plafond' => '30',
             'AERO_Tab_Aero[0]' => $code,
             'AERO_Tab_Aero[1]' => '',
             'AERO_Tab_Aero[2]' => '',
@@ -69,6 +71,8 @@ class NOTAMWebService
             'AERO_Tab_Aero[7]' => '',
             'AERO_Tab_Aero[8]' => '',
             'AERO_Tab_Aero[9]' => '',
+            'AERO_Tab_Aero[10]' => '',
+            'AERO_Tab_Aero[11]' => '',
             'ModeAffichage' => 'COMPLET',
             'bImpression' => '',
             'bResultat' => 'true'
@@ -78,7 +82,6 @@ class NOTAMWebService
         foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
         rtrim($fields_string, '&');
 
-        $msgType = "error";
         $curl = curl_init();
 
         curl_setopt_array($curl, [
