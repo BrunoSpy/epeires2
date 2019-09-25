@@ -54,7 +54,7 @@ class AfisController extends TabController
         $this->cf = $cf;
         $this->repo = $this->em->getRepository(Afis::class);
 
-        $this->form = (new AnnotationBuilder())->createForm(Afis::class);    
+        $this->form = (new AnnotationBuilder())->createForm(Afis::class);
         $this->form
             ->get('organisation')
             ->setValueOptions(
@@ -73,13 +73,13 @@ class AfisController extends TabController
     private function getAfis($decom = 0)
     {
         $allAfis = [];
-        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis) 
+        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis)
         {
             $allAfis[$afis->getId()]['self'] = $afis;
         }
-        
+
         $results = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-        foreach ($results as $result) 
+        foreach ($results as $result)
         {
             $statefield = $result->getCategory()
                 ->getStatefield()
@@ -88,12 +88,12 @@ class AfisController extends TabController
                 ->getAfisfield()
                 ->getId();
 
-            foreach ($result->getCustomFieldsValues() as $customvalue) 
+            foreach ($result->getCustomFieldsValues() as $customvalue)
             {
-                if ($customvalue->getCustomField()->getId() == $statefield) 
+                if ($customvalue->getCustomField()->getId() == $statefield)
                 {
                     $available = $customvalue->getValue();
-                } 
+                }
                 else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
             }
             if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
@@ -101,21 +101,21 @@ class AfisController extends TabController
         return $allAfis;
     }
 
-    public function indexAction() 
+    public function indexAction()
     {
         parent::indexAction();
         $cats = [];
         foreach ($this->em->getRepository(AfisCategory::class)->findAll() as $cat) {
             $cats[] = $cat->getId();
         }
-        
+
         return (new ViewModel())
             ->setVariables([
                 'cats' => $cats,
             ]);
     }
 
-    public function testNotamAction() 
+    public function testNotamAction()
     {
         $curl = curl_init();
 
@@ -123,7 +123,7 @@ class AfisController extends TabController
             CURLOPT_URL => self::URL_NOTAMWEB,
             CURLOPT_PROXY => $this->proxy,
             CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
-            CURLOPT_RETURNTRANSFER => 1,          
+            CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
         session_write_close();
@@ -134,12 +134,12 @@ class AfisController extends TabController
         curl_close($curl);
 
         return new JsonModel([
-            'accesNotam' => $res, 
+            'accesNotam' => $res,
         ]);
 
     }
 
-    public function getnotamsAction() 
+    public function getnotamsAction()
     {
         $code = $this->params()->fromQuery('code');
         $fields = [
@@ -150,6 +150,8 @@ class AfisController extends TabController
             'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
             'AERO_Duree' => '24',
             'AERO_Langue' => 'FR',
+            'AERO_Rayon' => '10',
+            'AERO_Plafond' => '30',
             'AERO_Tab_Aero[0]' => $code,
             'AERO_Tab_Aero[1]' => '',
             'AERO_Tab_Aero[2]' => '',
@@ -160,6 +162,8 @@ class AfisController extends TabController
             'AERO_Tab_Aero[7]' => '',
             'AERO_Tab_Aero[8]' => '',
             'AERO_Tab_Aero[9]' => '',
+            'AERO_Tab_Aero[10]' => '',
+            'AERO_Tab_Aero[11]' => '',
             'ModeAffichage' => 'COMPLET',
             'bImpression' => '',
             'bResultat' => 'true'
@@ -209,11 +213,11 @@ class AfisController extends TabController
         return new JsonModel([
             'msg'      => $msg,
             'msgType'  => $msgType,
-            'notams'   => $content 
+            'notams'   => $content
         ]);
     }
 
-    public function getAction() 
+    public function getAction()
     {
         if (!$this->authAfis('read')) {
             echo self::ACCES_REQUIRED;
@@ -227,9 +231,9 @@ class AfisController extends TabController
         return (new ViewModel())
             ->setTerminal($this->getRequest()->isXmlHttpRequest())
             ->setVariables([
-                'admin'    => $admin, 
+                'admin'    => $admin,
                 'afises'   => $this->getAfis($decom)
-            ]);     
+            ]);
     }
 
     public function formAction()
@@ -253,16 +257,16 @@ class AfisController extends TabController
         $post = $this->getRequest()->getPost();
         $state = (boolean) $post['state'];
         $id = intval($post['id']);
-        
+
         $now = new \DateTime('NOW');
         $now->setTimezone(new \DateTimeZone("UTC"));
 
-        if ($id) 
+        if ($id)
         {
             $events = $this->em
                 ->getRepository('Application\Entity\Event')
                 ->getCurrentEvents('Application\Entity\AfisCategory');
-            
+
             $afisevents = array();
             foreach ($events as $event) {
                 $afisfield = $event->getCategory()->getAfisfield();
@@ -274,7 +278,7 @@ class AfisController extends TabController
                     }
                 }
             }
-            
+
             if ($state == 0) {
 
                 if (count($afisevents) == 1) {
@@ -309,7 +313,7 @@ class AfisController extends TabController
                     $event->setOrganisation($afis->getOrganisation());
                     $event->setAuthor($this->zfcUserAuthentication()
                         ->getIdentity());
-                    
+
                     $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
                         'defaultafiscategory' => true
                     ));
@@ -348,7 +352,7 @@ class AfisController extends TabController
                                     $customvalue->setEvent($event);
                                     $customvalue->setCustomField($customfield);
                                     $event->addCustomFieldValue($customvalue);
-                                    
+
                                     $customvalue->setValue($value);
                                     $this->em->persist($customvalue);
                                 }
@@ -372,7 +376,7 @@ class AfisController extends TabController
             $msg = "Requête incorrecte, impossible de trouver l'AFIS correspondant.";
         }
         return new JsonModel([
-            'type' => $msgType, 
+            'type' => $msgType,
             'msg' => $msg
         ]);
     }
@@ -385,10 +389,10 @@ class AfisController extends TabController
         $afis = $this->validateAfis($post);
 
         $msgType = 'error';
-        if(is_a($afis, Afis::class)) 
-        {     
-            $this->em->persist($afis);    
-            try 
+        if(is_a($afis, Afis::class))
+        {
+            $this->em->persist($afis);
+            try
             {
                 $this->em->flush();
                 $msgType = 'success';
@@ -399,9 +403,9 @@ class AfisController extends TabController
         } else $msg = "Impossible de trouver l'AFIS à modifier ou d'en créer un nouveau.";
 
         return new JsonModel([
-            'type' => $msgType, 
+            'type' => $msgType,
             'msg' => $msg
-        ]); 
+        ]);
     }
 
     public function deleteAction()
@@ -413,10 +417,10 @@ class AfisController extends TabController
         $afis = $this->repo->find($id);
 
         $msgType = 'error';
-        if(is_a($afis, Afis::class)) 
-        {     
-            $this->em->remove($afis);    
-            try 
+        if(is_a($afis, Afis::class))
+        {
+            $this->em->remove($afis);
+            try
             {
                 $this->em->flush();
                 $msgType = 'success';
@@ -427,17 +431,17 @@ class AfisController extends TabController
         } else $msg = "Impossible de trouver l'AFIS à supprimer.";
 
         return new JsonModel([
-            'type' => $msgType, 
+            'type' => $msgType,
             'msg' => $msg
-        ]); 
+        ]);
     }
 
-    private function authAfis($action) 
+    private function authAfis($action)
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 
-    private function validateAfis($params) 
+    private function validateAfis($params)
     {
         if (!is_a($params, Parameters::class) && !is_array($params)) return false;
 
@@ -446,8 +450,8 @@ class AfisController extends TabController
         $this->form->setData($params);
 
         if (!$this->form->isValid()) $ret = false;
-        else 
-        { 
+        else
+        {
             $hydrator = new DoctrineHydrator($this->em);
             $ret = $hydrator->hydrate($this->form->getData(), $afis);
         }
