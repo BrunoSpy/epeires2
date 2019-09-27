@@ -21,23 +21,97 @@ else
 <td>
     <?php if (isset($flightplan['end_date'])) : ?>
     <?php echo $flightplan['end_date']->format('H:i'); ?>
-    <?php else: ?>
-    <a class="a-end-fp"
-       href="#mdl-end-fp" 
-       data-air-id="<?php echo $flightplan['Aicraft-Id']; ?>" 
-       data-toggle="modal" 
-       data-id="<?php echo $flightplan['id']; ?>" 
-       href="#">
-        <button class="btn btn-xs btn-primary">
-            CLORE PLN
-        </button>
-    </a>
+
     <?php endif; ?>
 </td>
 <td id="list-fp">
-    <a class="modify-evt" 
-       data-id="<?php echo $flightplan['id']; ?>">
-       <span class="glyphicon glyphicon-pencil"></span>
+
+    <?php
+    $popOver = "";
+    $popOver.= "<ul class='fp-tasks'>";
+    $popOver.= "
+        <li>
+            <a class='modify-evt' href='#'data-id='".$flightplan['id']."'>
+                Modifier les données
+            </a>
+        </li>
+        <li>
+            <a class='a-hist-fp' href='#mdl-hist-fp' data-toggle='modal'
+                data-id='".$flightplan['id']."'>
+                Historique
+            </a>
+        </li>";
+
+    if (isset($flightplan['end_date'])) {
+        $popOver .= "
+        <li>
+            <a class='a-reopen-fp' href='#mdl-reopen-fp' data-toggle='modal'
+                data-id='".$flightplan['id']."'>
+                Annuler la clôture du vol
+            </a>
+        </li>";
+    }
+    else {
+        $popOver .= "
+        <li>
+            <a class='a-end-fp' href='#mdl-end-fp' data-toggle='modal'
+                data-id='".$flightplan['id']."'>
+                Clôturer le vol
+            </a>
+        </li>";
+    }
+
+    if (isset($flightplan['ev-alert'])) {
+        $popOver .= "
+        <li>
+            <a class='a-edit-alt' href='#mdl-edit-alt' data-toggle='modal'
+                data-id='".$flightplan['id']."'>
+                Modifier l'alerte
+            </a>
+        </li>";
+        if (!isset($flightplan['ev-alert']['end_date'])){
+        $popOver .= "
+        <li>
+            <a class='a-end-alt' href='#mdl-end-alt' data-toggle='modal'
+                data-id='".$flightplan['ev-alert']['id']."'>
+                Clôturer l'alerte
+            </a>
+        </li>";
+        }else{
+        $popOver .= "
+        <li>
+            <a class='a-reopen-alt' href='#mdl-reopen-alt' data-toggle='modal'
+                data-id='".$flightplan['ev-alert']['id']."'>
+                Annuler la clôture de l'alerte
+            </a>
+        </li>";
+        }
+    }
+    else {
+        $popOver .= "
+        <li>
+            <a class='a-trig-alt' href='#mdl-trig-fp' data-toggle='modal'
+                data-id='".$flightplan['id']."'>
+                Déclencher l'alerte
+            </a>
+        </li>";
+    }
+
+    $popOver .= "</ul>";
+    ?>
+
+    <?php $notes = '' ?>
+    <?php foreach ($flightplan['notes'] as $key => $value) : ?>
+    <?php $notes .= $value->getCreatedon()->format('H:i').','.$value->getText().';'; ?>
+    <?php endforeach; ?>
+    <a class="show-evt-notes" data-id="<?php echo $flightplan['id']; ?>" data-tooltip="<?php echo $notes; ?>">
+            <span class="glyphicon glyphicon-comment"></span>
+    </a>
+
+    <a class="display-fp-tasks" data-toggle="popover" title="Actions sur <?php echo $flightplan['Aircraft-Id']; ?>"
+        data-content="<?php echo $popOver; ?>"
+        data-id="<?php echo $flightplan['id']; ?>">
+        <span class="glyphicon glyphicon-tasks"></span>
     </a>
 </td>
 

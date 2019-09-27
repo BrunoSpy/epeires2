@@ -1,27 +1,28 @@
-var flightplan = function(url, current_date) 
+var flightplan = function(url, current_date)
 {
     "use strict";
     var selectedDate = null;
     var $iDate = $('#i-date');
+    var $popTasks = $('.display-fp-tasks');
     var idEvent = 0;
     // pas retrouvé l'utilité
     // headerbar(url);
 
-    // modification/création d'evenement PLN
-    $("#create-link, .modify-evt").click(editFpHandler);
+    // création d'evenement PLN
+    $("#create-link").click(editFpHandler);
 
     // gestion des boutons d'actions sur PLN
     $('#pan-show-fp')
         .on('click', '.a-trig-alt', trigAlertHandler)
-        .on('click', '.a-end-fp', endFpHandler)
         .on('click', '.a-end-alt', endAltHandler)
-    
+
     // gestion des actions de confirmation
     $('#a-end-fp-ok').click(endFpConfirmationHandler);
+    $('#a-reopen-fp-ok').click(reopenFpConfirmationHandler);
     $('#a-end-alt-ok').click(endAltConfirmationHandler);
     $('#a-edit-alt-ok').click(editAltConfirmationHandler);
     $('#a-trig-alt-ok').click(trigAltConfirmationHandler);
-    
+
     // gestion de la selection de la date d'affichage des PLN
     // click sur jour précédent
     $("#a-date-back").click({amount: -1}, changeDaysHandler);
@@ -29,10 +30,43 @@ var flightplan = function(url, current_date)
     $("#a-date-forward").click({amount: +1}, changeDaysHandler);
     // click sur jour courant
     $("#a-date-today").click(function(e) { location.replace(url + 'flightplans') });
-    
-    
+
+
     // gestion des <table>
     $('.active-alt').tooltip();
+
+    // gestion des tooltips de notes
+    $.each($('.show-evt-notes'), function () {
+        var text = '<table class="notes-display"><tbody>';
+        $.each($(this).data('tooltip').split(';'), function(i, note) {
+            if (!note) return false;
+            text += "<tr>";
+            text += "<td>" + note.split(',')[0] + "</td><td> :&nbsp;</td><td>" + note.split(',')[1] + "</td>";
+            text += "</tr>";
+        });
+        text += "</tbody></table>";
+
+        $(this).tooltip({
+            title: '<span class="elmt_tooltip">'+text+'</span>',
+            html: 'true',
+            placement:'auto',
+            template: '<div class="tooltip tooltip-fp" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+        });
+    });
+
+
+    $popTasks
+    .popover({
+        placement: "top",
+        html: true,
+        template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title popover-fp-title"></h3><div class="popover-content"></div></div>'
+    })
+    .on('shown.bs.popover', function() {
+        $('.modify-evt').click(editFpHandler);
+        $('.a-end-fp').click(endFpHandler);
+         $('.a-reopen-fp').click(reopenFpHandler);
+    })
+
     $('.sortable')
     .sortable()
     .stupidtable()
@@ -47,20 +81,20 @@ var flightplan = function(url, current_date)
 
     $iDate
         // affichage calendrier bootstrap
-        .bootstrapMaterialDatePicker({
-            format: "DD/MM/YYYY",
-            time: false,
-            lang: 'fr',
-            cancelText: "Annuler",
-            weekStart : 1
-        })
-        .change(function() {
-            selectedDate = moment($(this).val(), "L").format("MM/DD/YYYY");
-            location.replace(getCurrentDateUrl());
-        })
-        // par défaut valeur du jour courant
-        .val(moment(current_date).format('L'));
-    
+    .bootstrapMaterialDatePicker({
+        format: "DD/MM/YYYY",
+        time: false,
+        lang: 'fr',
+        cancelText: "Annuler",
+        weekStart : 1
+    })
+    .change(function() {
+        selectedDate = moment($(this).val(), "L").format("MM/DD/YYYY");
+        location.replace(getCurrentDateUrl());
+    })
+    // par défaut valeur du jour courant
+    .val(moment(current_date).format('L'));
+
 
     function changeDaysHandler(event)
     {
@@ -73,23 +107,24 @@ var flightplan = function(url, current_date)
             .trigger('change');
     }
 
-    function getCurrentDateUrl() 
+    function getCurrentDateUrl()
     {
         return url + "flightplans/index?d=" + selectedDate;
     }
 
     function editFpHandler()
     {
-        if($(this).hasClass('modify-evt')) 
-        $('#form-title').html('Modifier le vol');
-        
+        hidePopovers();
+        if($(this).hasClass('modify-evt'))
+            $('#form-title').html('Modifier le vol');
+
         // enlever le champ contenant l'id de l'alerte
         removeAlertField();
         // reload après modification ajax
         setClickSubmit();
-        
+
         // boucle tant que le champ d'alerte n'existe pas
-        function removeAlertField() 
+        function removeAlertField()
         {
             var $alertfield = $("#custom_fields>div.form-group>label")
             .filter(function(){
@@ -103,22 +138,23 @@ var flightplan = function(url, current_date)
             }
         }
         // boucle tant que le bouton de submit n'existe pas
-        function setClickSubmit() 
+        function setClickSubmit()
         {
             var $sub = $('input[name="submit"]');
             if($sub.length > 0) {
                 $sub.click(function(){
                     setTimeout(function() { location.reload() }, 500);
                 });
-            }   
+            }
             else {
                 setTimeout(setClickSubmit, 200);
             }
         }
-    };
-    
-    function endFpHandler() 
+    }
+
+    function endFpHandler()
     {
+        hidePopovers();
         idEvent = $(this).data('id');
         $('#s-end-airid').html($(this).data('air-id'));
         $('input[name=end-date]')
@@ -128,61 +164,84 @@ var flightplan = function(url, current_date)
             'init':true
         });
     }
+
     function endFpConfirmationHandler()
     {
         // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
         var endDate = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-fp').modal('hide');
         $.post(
-            url+'flightplans/end', 
-            {id: idEvent, endDate},
+            url+'flightplans/end',
+            {id: idEvent, endDate, note: $('textarea[name=note-end-fp]').val()},
             function (data) {
                 $iDate.trigger('change');
             }
             )
-        }
-        
-    function trigAlertHandler() 
+    }
+
+    function reopenFpHandler()
+    {
+        hidePopovers();
+        idEvent = $(this).data('id');
+    }
+
+    function reopenFpConfirmationHandler()
+    {
+        $('#mdl-reopen-fp').modal('hide');
+        $.post(
+            url+'flightplans/reopen',
+            {id: idEvent, note: $('textarea[name=note-reopen-fp]').val()},
+            function (data) {
+                $iDate.trigger('change');
+            }
+        );
+    }
+    function trigAlertHandler()
     {
         // on ne fait rien si le bouton est inactif (alerte close)
         if ($(this).find('button').hasClass('disabled'))
         return null;
-        
-        $('.s-trig-alt').html($(this).data('type'));
+
+        $('select[name="type-alerte"]').html($(this).data('type'));
         $('.s-trig-airid').html($(this).data('air-id'));
         $('.t-causealt').val($(this).data('cause'));
         idEvent = $(this).data('id');
-        
+
         if ($(this).hasClass('active-alt'))
-        $('#mdl-edit-alt').find('p').hide();
+            $('#mdl-edit-alt').find('p').hide();
         else
-        $('#mdl-edit-alt').find('p').show();
+            $('#mdl-edit-alt').find('p').show();
     }
+
     function trigAltConfirmationHandler()
     {
         $('#mdl-trig-fp').modal('hide');
         $.post(
-            url+'flightplans/triggerAlert', 
-            {id: idEvent, type: $('#mdl-trig-fp .s-trig-alt').html(), cause: $('#mdl-trig-fp .t-causealt').val()}, 
+            url+'flightplans/triggerAlert',
+            {
+                id: idEvent,
+                type: $('#mdl-trig-fp select[name="type-alt"]').val(),
+                cause: $('#mdl-trig-fp textarea').val()
+            },
             function (data) {
-                $iDate.trigger('change');
+                 $iDate.trigger('change');
             }
-        );      
+        );
     }
 
     function editAltConfirmationHandler()
     {
         $('#mdl-edit-alt').modal('hide');
         $.post(
-            url+'flightplans/triggerAlert', 
-            {id: idEvent, type: $('#mdl-edit-alt .s-trig-alt').html(), cause: $('#mdl-edit-alt .t-causealt').val()}, 
+            url+'flightplans/triggerAlert',
+            {id: idEvent, type: $('#mdl-edit-alt .s-trig-alt').html(), cause: $('#mdl-edit-alt .t-causealt').val()},
             function (data) {
                 $iDate.trigger('change');
             }
-        );      
+        );
     }
 
-    function endAltHandler() 
+    function endAltHandler()
     {
         idEvent = $(this).data('id');
         $('input[name=end-alt-date]')
@@ -192,17 +251,22 @@ var flightplan = function(url, current_date)
                 'init':true
             })
     }
+
     function endAltConfirmationHandler()
     {
         // date en UTC et contenu dans un string au format YYYY-MM-DDTHH:MM:SS+00:00
         var endAltDate = moment.utc($('input[name=end-alt-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-alt').modal('hide');
         $.post(
-            url+'flightplans/endAlert', 
+            url+'flightplans/endAlert',
             {id: idEvent, endAltDate},
             function (data) {
                 $iDate.trigger('change');
             }
         );
-    }  
+    }
+
+    function hidePopovers() {
+        $popTasks.popover('hide');
+    }
 };

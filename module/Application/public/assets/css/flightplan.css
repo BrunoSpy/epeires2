@@ -2,8 +2,8 @@
 	text-decoration: none;
 }
 
-.a-trig-alt button, 
-.a-end-alt button, 
+.a-trig-alt button,
+.a-end-alt button,
 .a-end-fp button{
     padding:0;
     margin:0;
@@ -23,7 +23,27 @@
     opacity:0.35;
 }
 
-
 .active-alt button {
     opacity:1;
+}
+
+.tooltip-fp .tooltip-inner {
+    white-space: pre-line;
+}
+.notes-display td{
+    padding: 5px;
+}
+.display-fp-tasks{
+    cursor: pointer;
+}
+.fp-tasks {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.fp-tasks li {
+    margin: 1em;
+}
+.popover-fp-title {
+    color: #333333;
 }
