@@ -25,22 +25,11 @@ foreach ($typeAlertes as $typeAlerte => $classButton)
         }
     }
     ?>
-    <a <?php echo $title; ?>
-        class="a-trig-alt <?php echo $act; ?>"
-        href="<?php echo $modal; ?>"
-        data-id="<?php echo $flightplan['id']; ?>"
-        data-air-id="<?php echo $flightplan['Aircraft-Id']; ?>"
-        data-type="<?php echo $typeAlerte;?>"
-        data-cause="<?php echo $cause;?>"
-        <?php echo (!isset($flightplan['ev-alert']['end_date'])) ? 'data-toggle="modal"' : ''; ?>
-        >
-
-        <button class="
+    <span <?php echo $title; ?>
+        class="
             btn btn-xs btn-<?php echo $classButton; ?>
-            <?php echo (isset($flightplan['ev-alert']['end_date'])) ? 'disabled' : ''; ?>
             ">
             <?php echo $typeAlerte[0]; ?>
-        </button>
-    </a>
+    </span>
 <?php
 }

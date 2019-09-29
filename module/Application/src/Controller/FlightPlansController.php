@@ -27,9 +27,10 @@ use Doctrine\ORM\EntityManager;
 use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
-
 use Application\Entity\Event;
+use Application\Entity\EventUpdate;
 use Application\Entity\CustomFieldValue;
+
 use Application\Entity\FlightPlanCategory;
 use Application\Entity\AlertCategory;
 
@@ -52,12 +53,14 @@ class FlightPlansController extends EventsController
     const DATE_FORMAT_INVALID = "Format de date non valide.";
     const CANT_CLOSE = "Impossible de clôre l'événement.";
 
-    protected $em, $cf, $repo, $form, $fp_cats, $alt_cats;
+    protected $em, $cfService, $evService,
+        $repo, $form,
+        $fp_cats, $alt_cats;
 
     public function __construct(
         EntityManager $em,
-        EventService $eventService,
-        CustomFieldService $cf,
+        EventService $evService,
+        CustomFieldService $cfService,
         $zfrcbacOptions,
         Array $config,
         $mattermost,
@@ -65,8 +68,8 @@ class FlightPlansController extends EventsController
     {
         parent::__construct(
             $em,
-            $eventService,
-            $cf,
+            $evService,
+            $cfService,
             $zfrcbacOptions,
             $config,
             $mattermost,
@@ -74,7 +77,8 @@ class FlightPlansController extends EventsController
         );
 
         $this->em = $em;
-        $this->cf = $cf;
+        $this->cfService = $cfService;
+        $this->evService = $evService;
         $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
         $this->alt_cats = $this->getEventCategories(AlertCategory::class);
     }
@@ -173,20 +177,15 @@ class FlightPlansController extends EventsController
         $eventId = $this->params()->fromPost('id', 0);
         $event = $this->verifEvent($eventId);
         if (!$event)
-        {
             return new JsonModel();
-        }
 
-        $note = $this->params()->fromPost('note', '');
-        $eventupdate = new \Application\Entity\EventUpdate();
-        $eventupdate->setText($note);
-        $eventupdate->setEvent($event);
+        if (!$this->addEventNote($event, $this->params()->fromPost('note', '')))
+            return new JsonModel();
+
         $openStatus = $this->em->getRepository('Application\Entity\Status')->find('1');
-
         $event->setLastModifiedOn();
         $event->setStatus($openStatus);
         $event->setEnddate(null);
-        $this->em->persist($eventupdate);
         $this->em->persist($event);
         try
         {
@@ -197,7 +196,25 @@ class FlightPlansController extends EventsController
         {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
-        // return new JsonModel();
+        return new JsonModel();
+    }
+
+    public function histAction()
+    {
+        $event = $this->verifEvent($this->params()->fromPost('id', 0));
+        if (!$event) return new JsonModel();
+        // echo $this->partial('events/gethistory.phtml', array('history'=> $this->evService->getHistory($event)));
+        // return new JsonModel([
+        //     'history'=> $this->evService->getHistory($event)
+        // ]);
+
+        $view = new ViewModel();
+        $view->setTerminal(true);
+        $view->setVariables(
+        [
+            'history'=> $this->evService->getHistory($event)
+        ]);
+        return $view;
     }
 
     public function endAlertAction()
@@ -280,7 +297,7 @@ class FlightPlansController extends EventsController
                 }
             }
         }
-        // return new JsonModel();
+         return new JsonModel();
     }
 
     // gestion des PLN
@@ -358,7 +375,6 @@ class FlightPlansController extends EventsController
         foreach ($evRepo->getFlightPlanEvents($start, $end) as $fpEvent)
         {
             $arrayFlightPlan = $this->getFlightPlanDataFromEvent($fpEvent);
-            $arrayFlightPlan['notes'] = $fpEvent->getUpdates();
             $arrayAlert = $this->getAlertDataFromEvent($fpEvent);
             if ($arrayAlert['id'])
             {
@@ -377,12 +393,13 @@ class FlightPlansController extends EventsController
             'id' => $event->getId(),
             'start_date' => $event->getStartDate(),
             'end_date' => $event->getEndDate(),
-            'status' => $event->getStatus()
+            'status' => $event->getStatus(),
+            'notes' => $event->getUpdates()
         ];
         foreach ($event->getCustomFieldsValues() as $customFieldValue)
         {
             $flightPlanArray[$customFieldValue->getCustomField()->getName()] =
-                $this->cf->getFormattedValue(
+                $this->cfService->getFormattedValue(
                     $customFieldValue->getCustomField(),
                     $customFieldValue->getValue());
         }
@@ -391,7 +408,7 @@ class FlightPlansController extends EventsController
 
     private function processCustomFieldValues($customFieldArray, $event)
     {
-        foreach ($alertData['custom_fields'] as $key => $value)
+        foreach ($customFieldArray as $key => $value)
         {
             // génération des customvalues si un customfield dont le nom est $key est trouvé
             $customfield = $this->em->getRepository('Application\Entity\CustomField')->findOneBy(
@@ -418,14 +435,35 @@ class FlightPlansController extends EventsController
         }
     }
 
-    private function createCFValue($event, $customField, $value)
+    private function createCFServiceValue($event, $customField, $value)
     {
-        $cfValue = new CustomFieldValue();
-        $cfValue->setCustomField($customField);
-        $cfValue->setValue($value);
-        $cfValue->setEvent($event);
-        $event->addCustomFieldValue($cfValue);
-        return $cfValue;
+        $cfServiceValue = new CustomFieldValue();
+        $cfServiceValue->setCustomField($customField);
+        $cfServiceValue->setValue($value);
+        $cfServiceValue->setEvent($event);
+        $event->addCustomFieldValue($cfServiceValue);
+        return $cfServiceValue;
+    }
+
+    private function addEventNote($event, $note)
+    {
+        // suppression des separateurs utilisés par le script js
+        $note = str_replace('|', null, $note);
+        $note = str_replace('$', null, $note);
+        $eventupdate = new EventUpdate();
+        $eventupdate->setText($note);
+        $eventupdate->setEvent($event);
+        $this->em->persist($eventupdate);
+        try
+        {
+            $this->em->flush();
+            return true;
+        }
+        catch (\Exception $e)
+        {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            return false;
+        }
     }
 
     private function createAlert($alertData)
@@ -456,9 +494,9 @@ class FlightPlansController extends EventsController
         $cat = $categories[0];
         $event->setCategory($cat);
 
-        $typefieldvalue = $this->createCFValue($event, $cat->getTypeField(), $alertData['type']);
+        $typefieldvalue = $this->createCFServiceValue($event, $cat->getTypeField(), $alertData['type']);
         $this->em->persist($typefieldvalue);
-        $causefieldvalue = $this->createCFValue($event, $cat->getCauseField(), $alertData['cause']);
+        $causefieldvalue = $this->createCFServiceValue($event, $cat->getCauseField(), $alertData['cause']);
         $this->em->persist($causefieldvalue);
 
         // ajout des valeurs des champs persos
@@ -536,7 +574,8 @@ class FlightPlansController extends EventsController
             $alertArray = [
                 'id' => $altEvent->getId(),
                 'start_date' => $altEvent->getStartDate(),
-                'end_date' => $altEvent->getEndDate()
+                'end_date' => $altEvent->getEndDate(),
+                'notes' => $altEvent->getUpdates()
             ];
 
             foreach ($this->getCustomFieldData($altEvent) as $key => $value)
@@ -575,15 +614,18 @@ class FlightPlansController extends EventsController
         return $alertid;
     }
 
+    // on exclut le champ alerte
     private function getFields()
     {
-        $cf = $this->em->getRepository('Application\Entity\CustomField')->findBy(
+        $cfService = $this->em->getRepository('Application\Entity\CustomField')->findBy(
             ['category' => $this->fp_cats[0]],
             ['place' => 'ASC'] );
 
         $fields = [];
-        foreach ($cf as $c) {
-           $fields[] = $c->getName();
+        foreach ($cfService as $c) {
+            $name = $c->getName();
+            if ($name == "Alerte") continue;
+            $fields[] = $name;
         }
         return $fields;
     }

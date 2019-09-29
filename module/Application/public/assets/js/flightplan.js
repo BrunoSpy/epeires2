@@ -30,7 +30,8 @@ var flightplan = function(url, current_date)
     $("#a-date-forward").click({amount: +1}, changeDaysHandler);
     // click sur jour courant
     $("#a-date-today").click(function(e) { location.replace(url + 'flightplans') });
-
+    // affichage des notam
+    $('.a-show-not, #refresh-not').click(clickBtnNotamHandler)
 
     // gestion des <table>
     $('.active-alt').tooltip();
@@ -38,10 +39,10 @@ var flightplan = function(url, current_date)
     // gestion des tooltips de notes
     $.each($('.show-evt-notes'), function () {
         var text = '<table class="notes-display"><tbody>';
-        $.each($(this).data('tooltip').split(';'), function(i, note) {
+        $.each($(this).data('tooltip').split('$'), function(i, note) {
             if (!note) return false;
             text += "<tr>";
-            text += "<td>" + note.split(',')[0] + "</td><td> :&nbsp;</td><td>" + note.split(',')[1] + "</td>";
+            text += "<td>" + note.split('|')[0] + "</td><td> :&nbsp;</td><td>" + note.split('|')[1] + "</td>";
             text += "</tr>";
         });
         text += "</tbody></table>";
@@ -64,7 +65,8 @@ var flightplan = function(url, current_date)
     .on('shown.bs.popover', function() {
         $('.modify-evt').click(editFpHandler);
         $('.a-end-fp').click(endFpHandler);
-         $('.a-reopen-fp').click(reopenFpHandler);
+        $('.a-reopen-fp').click(reopenFpHandler);
+        $('.a-hist-fp').click(histFpHandler)
     })
 
     $('.sortable')
@@ -191,11 +193,18 @@ var flightplan = function(url, current_date)
         $.post(
             url+'flightplans/reopen',
             {id: idEvent, note: $('textarea[name=note-reopen-fp]').val()},
-            function (data) {
+            function () {
                 $iDate.trigger('change');
             }
         );
     }
+
+    function histFpHandler() {
+        hidePopovers();
+        idEvent = $(this).data('id');
+        $('#p-hist-fp').load(url + 'flightplans/hist', { id: idEvent }, function() {});
+    }
+
     function trigAlertHandler()
     {
         // on ne fait rien si le bouton est inactif (alerte close)
@@ -264,6 +273,17 @@ var flightplan = function(url, current_date)
                 $iDate.trigger('change');
             }
         );
+    }
+
+    function clickBtnNotamHandler()
+    {
+        var code = $(this).data('code');
+
+        $("#title-show-not").html(code + " / NOTAM");
+        $('#refresh-not').data('code', code);
+
+        showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
+            code, url + "afis/testNotamAccess", url + "afis/getAllNotamFromCode");
     }
 
     function hidePopovers() {

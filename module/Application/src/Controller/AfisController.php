@@ -68,36 +68,6 @@ class AfisController extends TabController
         $this->notamweb = $notamweb;
     }
 
-    private function getAfis($decom = 0)
-    {
-        $allAfis = [];
-        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis)
-        {
-            $allAfis[$afis->getId()]['self'] = $afis;
-        }
-
-        $results = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
-        foreach ($results as $result)
-        {
-            $statefield = $result->getCategory()
-                ->getStatefield()
-                ->getId();
-            $afisfield = $result->getCategory()
-                ->getAfisfield()
-                ->getId();
-
-            foreach ($result->getCustomFieldsValues() as $customvalue)
-            {
-                if ($customvalue->getCustomField()->getId() == $statefield)
-                {
-                    $available = $customvalue->getValue();
-                }
-                else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
-            }
-            if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
-        }
-        return $allAfis;
-    }
 
     public function indexAction()
     {
@@ -123,7 +93,7 @@ class AfisController extends TabController
 
     public function getAllNotamFromCodeaction()
     {
-        $code = $this->params()->fromQuery('code');
+        $code = strtoupper($this->params()->fromQuery('code'));
         $content = $this->notamweb->getFromCode($code);
         return new JsonModel([
             'notams'   => $content
@@ -181,12 +151,12 @@ class AfisController extends TabController
                 ->getCurrentEvents('Application\Entity\AfisCategory');
 
             $afisevents = array();
-            foreach ($events as $event) 
+            foreach ($events as $event)
             {
                 $afisfield = $event->getCategory()->getAfisfield();
-                foreach ($event->getCustomFieldsValues() as $value) 
+                foreach ($event->getCustomFieldsValues() as $value)
                 {
-                    if ($value->getCustomField()->getId() == $afisfield->getId()) 
+                    if ($value->getCustomField()->getId() == $afisfield->getId())
                     {
                         if ($value->getValue() == $id) {
                             $afisevents[] = $event;
@@ -195,7 +165,7 @@ class AfisController extends TabController
                 }
             }
 
-            if ($state == 0) 
+            if ($state == 0)
             {
                 if (count($afisevents) == 1) {
                     $event = $afisevents[0];
@@ -213,8 +183,8 @@ class AfisController extends TabController
                 } else {
                     $msg = "Impossible de déterminer l'évènement à terminer.";
                 }
-            } 
-            else 
+            }
+            else
             {
                 if (count($afisevents) > 0) {
                     $msg = "Un évènement est déjà en cours pour cette AFIS, impossible d'en créer un nouveau.";
@@ -298,9 +268,39 @@ class AfisController extends TabController
         ]);
     }
 
+    private function getAfis($decom = 0)
+    {
+        $allAfis = [];
+        foreach ($this->repo->findBy(['decommissionned' => $decom]) as $afis)
+        {
+            $allAfis[$afis->getId()]['self'] = $afis;
+        }
+
+        $results = $this->em->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\AfisCategory');
+        foreach ($results as $result)
+        {
+            $statefield = $result->getCategory()
+                ->getStatefield()
+                ->getId();
+            $afisfield = $result->getCategory()
+                ->getAfisfield()
+                ->getId();
+
+            foreach ($result->getCustomFieldsValues() as $customvalue)
+            {
+                if ($customvalue->getCustomField()->getId() == $statefield)
+                {
+                    $available = $customvalue->getValue();
+                }
+                else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
+            }
+            if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
+        }
+        return $allAfis;
+    }
+
     private function authAfis($action)
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
-
 }

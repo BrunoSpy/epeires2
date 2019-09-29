@@ -1,8 +1,10 @@
 <?php
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/headerbar.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/notams.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/flightplan.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan.css');
 ?>
 
@@ -131,9 +133,17 @@ if( $this->hasAccess && (
      <?php endif; ?>
      <?php endif; ?>
 </div>
+<?=$this->modalWindow(  "mdl-hist-fp",
+                        "<h3 id='title-hist-fp'>Historique</h3>",
+                        "",
+                        null,
+                        "<div id='p-hist-fp'></div>",
+                        "<a class='btn btn-primary' href='#' data-dismiss='modal' aria-hidden='true'>Fermer</a>",
+                        "",
+                        ""); ?>
 
 <?=$this->modalWindow(  "mdl-edit-fp",
-                        "<h4 id='title-edit-fp'></h4>",
+                        "<h3 id='title-edit-fp'></h3>",
                         "",
                         "<div id='f-edit-fp'></div>",
                         "",
@@ -158,7 +168,8 @@ if( $this->hasAccess && (
                             <option value='ALERFA'>ALERFA</option>
                             <option value='DETRESFA'>DETRESFA</option>
                         </select></p>
-                        <p><textarea placeholder=\"Commentaire sur la phase d'alerte\" class=\"form-control t-causealt\"'></textarea> </p>",
+                        <p><textarea placeholder=\"Commentaire sur la phase d'alerte\" class=\"form-control t-causealt\"'></textarea> </p>
+                        <p><textarea name='note-trig-alt' placeholder=\"Commentaire\" class=\"form-control\"'></textarea></p>",
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
@@ -166,8 +177,12 @@ if( $this->hasAccess && (
                         "<h3>Modification d'une phase d'alerte</h3>",
                         "",
                         null,
-                        "<p>Voulez-vous vraiment modifier la phase d'alerte en <strong><span class ='s-trig-alt'></span></strong> pour le vol <strong><span class ='s-trig-airid'></span></strong>?</p>
-                        <textarea class=\"form-control t-causealt\"></textarea>" ,
+                        "<p><select class='form-control' name='type-alt'>
+                            <option value='INCERFA'>INCERFA</option>
+                            <option value='ALERFA'>ALERFA</option>
+                            <option value='DETRESFA'>DETRESFA</option>
+                        </select></p>
+                        <p><textarea class=\"form-control t-causealt\"></textarea></p><p><textarea name='note-edit-alt' placeholder=\"Commentaire\" class=\"form-control\"'></textarea></p>" ,
                         "<a class='btn btn-danger' id='a-edit-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
@@ -196,6 +211,25 @@ if( $this->hasAccess && (
                         "<input type='datetime' name='end-alt-date'>",
                         "<a class='btn btn-danger' id='a-end-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
+
+<?=$this->modalWindow(  "mdl-show-not",
+                        "<h3 id='title-show-not'></h3>",
+                        "",
+                        null,
+                        "<div class='loading'></div>".
+                        '<div class="list-group" id="show-not">
+                          <div>
+                            <a data-toggle="collapse" data-parent="#show-not" href="">
+                            </a> <strong class="rapid-not-info"></strong>
+                            <p class="collapse">
+
+                            </p>
+                            <hr>
+                          </div>
+                        </div>',
+                        '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>',
+                        'modal-lg'
+                    ) ?>
 
 <?php $this->inlineScript()->captureStart(); ?>
 
