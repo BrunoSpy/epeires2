@@ -12,9 +12,9 @@ var flightplan = function(url, current_date)
     $("#create-link").click(editFpHandler);
 
     // gestion des boutons d'actions sur PLN
-    $('#pan-show-fp')
-        .on('click', '.a-trig-alt', trigAlertHandler)
-        .on('click', '.a-end-alt', endAltHandler)
+   // $('#pan-show-fp')
+   //     .on('click', '.a-trig-alt', trigAlertHandler)
+   //     .on('click', '.a-end-alt', endAltHandler)
 
     // gestion des actions de confirmation
     $('#a-end-fp-ok').click(endFpConfirmationHandler);
@@ -66,7 +66,9 @@ var flightplan = function(url, current_date)
         $('.modify-evt').click(editFpHandler);
         $('.a-end-fp').click(endFpHandler);
         $('.a-reopen-fp').click(reopenFpHandler);
-        $('.a-hist-fp').click(histFpHandler)
+        $('.a-hist-fp').click(histFpHandler);
+        $('.a-trig-alt').click(trigAlertHandler);
+        $('.a-edit-alt').click(editAlertHandler);
     })
 
     $('.sortable')
@@ -207,6 +209,11 @@ var flightplan = function(url, current_date)
 
     function trigAlertHandler()
     {
+        hidePopovers();
+        idEvent = $(this).data('id');
+        $('#f-trig-alt').load(url + 'flightplans/formAlt', { id: idEvent }, function() {});
+
+        return;
         // on ne fait rien si le bouton est inactif (alerte close)
         if ($(this).find('button').hasClass('disabled'))
         return null;
@@ -229,13 +236,21 @@ var flightplan = function(url, current_date)
             url+'flightplans/triggerAlert',
             {
                 id: idEvent,
-                type: $('#mdl-trig-fp select[name="type-alt"]').val(),
-                cause: $('#mdl-trig-fp textarea').val()
+                type: $('#mdl-trig-fp select[name="alt-type"]').val(),
+                cause: $('#mdl-trig-fp textarea[name="cause"]').val(),
+                note: $('#mdl-trig-fp textarea[name="alt-note"]').val(),
             },
             function (data) {
                  $iDate.trigger('change');
             }
         );
+    }
+
+    function editAlertHandler()
+    {
+        hidePopovers();
+        idEvent = $(this).data('id');
+        $('#f-edit-alt').load(url + 'flightplans/formAlt', { id: idEvent }, function() {});
     }
 
     function editAltConfirmationHandler()

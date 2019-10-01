@@ -162,14 +162,7 @@ if( $this->hasAccess && (
                         "<h3>Déclenchement d'une phase d'alerte</h3>",
                         "",
                         null,
-                        "<p>Confirmer le déclenchement d'une phase d'alerte de type <strong><span class ='s-trig-alt'></span></strong> pour le vol <strong><span class ='s-trig-airid'></span></strong>?</p>
-                        <p><select class='form-control' name='type-alt'>
-                            <option value='INCERFA'>INCERFA</option>
-                            <option value='ALERFA'>ALERFA</option>
-                            <option value='DETRESFA'>DETRESFA</option>
-                        </select></p>
-                        <p><textarea placeholder=\"Commentaire sur la phase d'alerte\" class=\"form-control t-causealt\"'></textarea> </p>
-                        <p><textarea name='note-trig-alt' placeholder=\"Commentaire\" class=\"form-control\"'></textarea></p>",
+                        "<div class='panel-body' id='f-trig-alt'></div>",
                         "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
@@ -177,12 +170,7 @@ if( $this->hasAccess && (
                         "<h3>Modification d'une phase d'alerte</h3>",
                         "",
                         null,
-                        "<p><select class='form-control' name='type-alt'>
-                            <option value='INCERFA'>INCERFA</option>
-                            <option value='ALERFA'>ALERFA</option>
-                            <option value='DETRESFA'>DETRESFA</option>
-                        </select></p>
-                        <p><textarea class=\"form-control t-causealt\"></textarea></p><p><textarea name='note-edit-alt' placeholder=\"Commentaire\" class=\"form-control\"'></textarea></p>" ,
+                        "<div class='panel-body' id='f-edit-alt'></div>",
                         "<a class='btn btn-danger' id='a-edit-alt-ok'>Confirmer</a>
                         <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 

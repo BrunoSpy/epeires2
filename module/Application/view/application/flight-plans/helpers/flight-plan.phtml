@@ -102,7 +102,7 @@ $typeAlertes =
 
         $popOver .= "</ul>";
 
-        if (count($flightplan['ev-alert']['notes']) > 0) {
+        if (isset($flightplan['ev-alert']) && count($flightplan['ev-alert']['notes']) > 0) {
             $notes = '';
             foreach ($flightplan['ev-alert']['notes'] as $key => $value) {
                 $notes .= $value->getCreatedon()->format('H:i') . '|' . $value->getText() . '$';
