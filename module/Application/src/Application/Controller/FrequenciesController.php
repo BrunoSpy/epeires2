@@ -589,7 +589,9 @@ class FrequenciesController extends TabController
                     $frequencies[$frequencyid]['otherfreqname'] = $otherfreq->getName();
                     $frequencies[$frequencyid]['otherfreqid'] = $otherfreq->getId();
                     $frequencies[$frequencyid]['main'] = $otherfreq->getMainantenna()->getId();
-                    $frequencies[$frequencyid]['backup'] = $otherfreq->getBackupantenna()->getId();
+                    if($otherfreq->getBackupAntenna()) {
+                        $frequencies[$frequencyid]['backup'] = $otherfreq->getBackupantenna()->getId();
+                    }
                     if ($otherfreq->getMainantennaclimax()) {
                         $frequencies[$frequencyid]['mainclimax'] = $otherfreq->getMainantennaclimax()->getId();
                     } else {
