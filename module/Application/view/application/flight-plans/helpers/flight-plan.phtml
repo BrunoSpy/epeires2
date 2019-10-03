@@ -108,8 +108,10 @@ $typeAlertes =
                 $notes .= $value->getCreatedon()->format('H:i') . '|' . $value->getText() . '$';
             }
             ?>
-            <a class="show-evt-notes" data-id="<?php echo $flightplan['ev-alert']['id']; ?>" data-tooltip="<?php echo $notes; ?>">
-                <span class="glyphicon glyphicon-comment"></span>
+            <a class="show-evt-notes" data-id="<?php echo $flightplan['ev-alert']['id']; ?>"
+                data-title="Notes sur l'alerte" data-cause="<?php echo $flightplan['ev-alert']['Cause']; ?>"
+                data-tooltip="<?php echo $notes; ?>">
+                <span class="alt-icon glyphicon glyphicon-exclamation-sign"></span>
             </a>
             <?php
         }
@@ -120,8 +122,9 @@ $typeAlertes =
                 $notes .= $value->getCreatedon()->format('H:i') . '|' . $value->getText() . '$';
             }
             ?>
-            <a class="show-evt-notes" data-id="<?php echo $flightplan['id']; ?>" data-tooltip="<?php echo $notes; ?>">
-                <span class="glyphicon glyphicon-comment"></span>
+            <a class="show-evt-notes" data-id="<?php echo $flightplan['id']; ?>"
+                data-title="Notes sur le vol" data-tooltip="<?php echo $notes; ?>">
+                <span class="glyphicon glyphicon-plane"></span>
             </a>
             <?php
         }

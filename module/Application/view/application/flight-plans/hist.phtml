@@ -1,3 +1,9 @@
+<h3>Alerte</h3>
 <?php
-echo $this->partial('events/gethistory.phtml', array('history'=> $this->history));
+echo $this->partial('events/gethistory.phtml', array('history'=> $this->altHistory));
+?>
+
+<h3>Plan de vol</h3>
+<?php
+echo $this->partial('events/gethistory.phtml', array('history'=> $this->fpHistory));
 ?>

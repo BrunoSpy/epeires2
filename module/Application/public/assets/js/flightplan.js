@@ -38,7 +38,17 @@ var flightplan = function(url, current_date)
 
     // gestion des tooltips de notes
     $.each($('.show-evt-notes'), function () {
-        var text = '<table class="notes-display"><tbody>';
+        var data = $(this).data();
+        // text += ("cause" in $(this).data) ? $(this).data('cause') : '';
+        if (!data.tooltip) return false;
+
+        var text = '';
+        var title = (data.title) ? data.title : null;
+        var cause = (data.cause) ? data.cause : null;
+        text += (title) ? '<h5>' + title + '</h5><hr />' : '';
+        text += (cause) ? '<p>Cause : <strong>' + cause + '</strong></p>' : '';
+
+        text += '<table class="notes-display"><tbody>';
         $.each($(this).data('tooltip').split('$'), function(i, note) {
             if (!note) return false;
             text += "<tr>";
@@ -236,12 +246,12 @@ var flightplan = function(url, current_date)
             url+'flightplans/triggerAlert',
             {
                 id: idEvent,
-                type: $('#mdl-trig-fp select[name="alt-type"]').val(),
-                cause: $('#mdl-trig-fp textarea[name="cause"]').val(),
-                note: $('#mdl-trig-fp textarea[name="alt-note"]').val(),
+                altType: $('#mdl-trig-fp select[name="alt-type"]').val(),
+                altCause: $('#mdl-trig-fp textarea[name="alt-cause"]').val(),
+                altNote: $('#mdl-trig-fp textarea[name="alt-note"]').val(),
             },
             function (data) {
-                 $iDate.trigger('change');
+                $iDate.trigger('change');
             }
         );
     }
@@ -257,8 +267,12 @@ var flightplan = function(url, current_date)
     {
         $('#mdl-edit-alt').modal('hide');
         $.post(
-            url+'flightplans/triggerAlert',
-            {id: idEvent, type: $('#mdl-edit-alt .s-trig-alt').html(), cause: $('#mdl-edit-alt .t-causealt').val()},
+            url+'flightplans/triggerAlert', {
+            id: idEvent,
+                altType: $('#mdl-edit-alt select[name="alt-type"]').val(),
+                altCause: $('#mdl-edit-alt textarea[name="alt-cause"]').val(),
+                altNote: $('#mdl-edit-alt textarea[name="alt-note"]').val(),
+            },
             function (data) {
                 $iDate.trigger('change');
             }

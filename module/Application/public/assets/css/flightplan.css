@@ -30,6 +30,9 @@
 .tooltip-fp .tooltip-inner {
     white-space: pre-line;
 }
+.tooltip-fp hr {
+    margin: 0 0 7px 0;
+}
 .notes-display td{
     padding: 5px;
 }
@@ -46,4 +49,8 @@
 }
 .popover-fp-title {
     color: #333333;
+}
+
+.show-evt-notes span.alt-icon {
+    color : red;
 }

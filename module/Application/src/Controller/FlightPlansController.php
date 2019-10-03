@@ -157,19 +157,15 @@ class FlightPlansController extends EventsController
             return;
         }
 
-        $note = $this->params()->fromPost('note', '');
-        $eventupdate = new \Application\Entity\EventUpdate();
-        $eventupdate->setText($note);
-        $eventupdate->setEvent($event);
+        $this->addEventNote($event, $this->params()->fromPost('fpNote', ''));
         $event->setLastModifiedOn();
-        $this->em->persist($eventupdate);
+
         $this->em->persist($event);
         try {
             $this->em->flush();
         } catch (\Exception $ex) {
             $this->flashMessenger()->addErrorMessage($ex->getMessage());
         }
-
         return new JsonModel();
     }
 
@@ -189,8 +185,7 @@ class FlightPlansController extends EventsController
         if (!$event)
             return new JsonModel();
 
-        if (!$this->addEventNote($event, $this->params()->fromPost('note', '')))
-            return new JsonModel();
+        $this->addEventNote($event, $this->params()->fromPost('fpNote', ''));
 
         $openStatus = $this->em->getRepository('Application\Entity\Status')->find('1');
         $event->setLastModifiedOn();
@@ -211,14 +206,21 @@ class FlightPlansController extends EventsController
 
     public function histAction()
     {
-        $event = $this->verifEvent($this->params()->fromPost('id', 0));
-        if (!$event) return new JsonModel();
+        $fpEvent = $this->verifEvent($this->params()->fromPost('id', 0));
+        if (!$fpEvent) return new JsonModel();
+
+        $alertId = $this->getAlertIdFromFp($fpEvent);
+        $altEvent = ($alertId) ? $this->em->getRepository(Event::class)->find($alertId) : null;
+
+        $fpHistory = $this->evService->getHistory($fpEvent);
+        $altHistory = $this->evService->getHistory($altEvent);
 
         $view = new ViewModel();
         $view->setTerminal(true);
         $view->setVariables(
         [
-            'history'=> $this->evService->getHistory($event)
+            'fpHistory'=> $fpHistory,
+            'altHistory'=> $altHistory
         ]);
         return $view;
     }
@@ -231,14 +233,12 @@ class FlightPlansController extends EventsController
         $form = new AlertForm('alert-form', ['alt-type' => self::ALERT_TYPES]);
 
         $alertId = $this->getAlertIdFromFp($fpEvent);
-        
-        if ($alertId)
         // edit
+        if ($alertId)
         {
             $alertData = $this->getAlertDataFromEvent($fpEvent);
             $form->get('alt-type')->setValue($alertData['Type']);
-            $form->get('cause')->setValue($alertData['cause']);
-
+            $form->get('alt-cause')->setValue($alertData['Cause']);
         }
 
         $view = new ViewModel();
@@ -264,8 +264,10 @@ class FlightPlansController extends EventsController
 
         $eventId = $this->params()->fromPost('id', 0);
         $endDate = $this->params()->fromPost('endAltDate', '');
+        $altEvent = $this->endEvent($eventId, $endDate);
 
-        $this->endEvent($eventId, $endDate);
+        $this->addEventNote($altEvent, $this->params()->fromPost('altNote', ''));
+
         return new JsonModel();
     }
 
@@ -283,41 +285,52 @@ class FlightPlansController extends EventsController
 
         // récupération données POST
         $post = $this->getRequest()->getPost();
-        $fp = $this->verifEvent((int) $post['id']);
+        $alertNote = $post['altNote'];
+        $alertData = [
+            'altType' => $post['altType'],
+            'altCause' => $post['altCause'],
+        ];
 
-        $alertid = $this->getAlertIdFromFp($fp);
+        $fpEvent = $this->verifEvent((int) $post['id']);
+        $alertid = $this->getAlertIdFromFp($fpEvent);
         $alertev = ($alertid) ? $this->em->getRepository(Event::class)->find($alertid) : null;
 
         if ($alertev)
         {
-            $this->editAlert($alertev, $post);
-            $this->addEventNote($alertev, $post['alt-note']);
+            $this->editAlert($alertev, $alertData);
+            $this->addEventNote($alertev, $alertNote);
         }
         else
         {
-            $newAlertEvent = $this->createAlert($post);
+            $newAlertEvent = $this->createAlert($alertData);
             if (!$newAlertEvent) return new JsonModel();
 
-            $this->addEventNote($newAlertEvent, $post['alt-note']);
-
-            $alertvalue = new CustomFieldValue();
-            $alertvalue->setEvent($fp);
-            $alertvalue->setCustomField($fp->getCategory()->getAlertfield());
-            $alertvalue->setValue($idAlert);
-            $fp->addCustomFieldValue($alertvalue);
-            $this->em->persist($alertvalue);
-            $this->em->persist($fp);
-            try
-            {
-                $this->em->flush();
-                $this->flashMessenger()->addSuccessMessage(self::ALERT_CREATED);
-            }
-            catch(\Exception $e)
-            {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
-            }
+            if (!$this->setAlertOnFlightPlan($fpEvent, $newAlertEvent)) return new JsonModel;
+            $this->addEventNote($newAlertEvent, $alertNote);
         }
         return new JsonModel();
+    }
+
+    private function setAlertOnFlightPlan(Event $fpEvent, Event $newAlertEvent): bool
+    {
+        $alertvalue = new CustomFieldValue();
+        $alertvalue->setEvent($fpEvent);
+        $alertvalue->setCustomField($fpEvent->getCategory()->getAlertfield());
+        $alertvalue->setValue($newAlertEvent->getId());
+        $fpEvent->addCustomFieldValue($alertvalue);
+        $this->em->persist($alertvalue);
+        $this->em->persist($fpEvent);
+        try
+        {
+            $this->em->flush();
+            $this->flashMessenger()->addSuccessMessage(self::ALERT_CREATED);
+            return true;
+        }
+        catch(\Exception $e)
+        {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            return false;
+        }
     }
 
     // gestion des PLN
@@ -467,6 +480,7 @@ class FlightPlansController extends EventsController
 
     private function addEventNote($event, $note)
     {
+        if (!$note) return;
         // suppression des separateurs utilisés par le script js
         $note = str_replace('|', null, $note);
         $note = str_replace('$', null, $note);
@@ -514,9 +528,9 @@ class FlightPlansController extends EventsController
         $cat = $categories[0];
         $event->setCategory($cat);
 
-        $typefieldvalue = $this->createCFServiceValue($event, $cat->getTypeField(), $alertData['type']);
+        $typefieldvalue = $this->createCFServiceValue($event, $cat->getTypeField(), $alertData['altType']);
         $this->em->persist($typefieldvalue);
-        $causefieldvalue = $this->createCFServiceValue($event, $cat->getCauseField(), $alertData['cause']);
+        $causefieldvalue = $this->createCFServiceValue($event, $cat->getCauseField(), $alertData['altCause']);
         $this->em->persist($causefieldvalue);
 
         // ajout des valeurs des champs persos
@@ -554,8 +568,8 @@ class FlightPlansController extends EventsController
         }
         if (isset($typefield) && isset($causefield))
         {
-            $typefield->setValue($alertData['type']);
-            $causefield->setValue($alertData['cause']);
+            $typefield->setValue($alertData['altType']);
+            $causefield->setValue($alertData['altCause']);
             $this->em->persist($typefield);
             $this->em->persist($causefield);
             try
@@ -726,7 +740,7 @@ class FlightPlansController extends EventsController
         $this->flashMessenger()->clearMessages();
         return $messages;
     }
-    
+
     private function showErrorMsg($msg)
     {
         return "<div class='alert alert-danger'>".$msg."</div>";

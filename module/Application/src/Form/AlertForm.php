@@ -34,7 +34,7 @@ class AlertForm extends Form
         parent::__construct($name, $options);
 
         $altType = new Element\Select('alt-type');
-        $altType 
+        $altType
             ->setLabel("Type d'alerte ")
             ->setAttributes([
                 'id' => 'alt-type',
@@ -47,18 +47,18 @@ class AlertForm extends Form
         }
         $altType->setValueOptions($alt_array);
 
-        $cause = new Element\Textarea('cause');
-        $cause->setLabel('Cause');
-        $cause->setAttribute('placeholder', "Raisons du déclenchement");
-        $cause->setAttribute('rows', 4);
+        $altCause = new Element\Textarea('alt-cause');
+        $altCause->setLabel('Cause');
+        $altCause->setAttribute('placeholder', "Raisons du déclenchement");
+        $altCause->setAttribute('rows', 4);
 
         $altNote = new Element\Textarea('alt-note');
         $altNote->setLabel('Note');
         $altNote->setAttribute('placeholder', "Commentaires");
         $altNote->setAttribute('rows', 4);
-        
+
         $this->add($altType);
-        $this->add($cause);
+        $this->add($altCause);
         $this->add($altNote);
     }
 }
