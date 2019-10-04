@@ -58,13 +58,6 @@ class AfisController extends TabController
                     ->getRepository(Organisation::class)
                     ->getAllAsArray()
                 );
-
-        if (isset($this->config['btiv']['af_proxynotam'])) {
-            $this->proxy = $this->config['btiv']['af_proxynotam'];
-        } else {
-            $this->proxy = '';
-        }
-
         $this->notamweb = $notamweb;
     }
 

@@ -1,6 +1,8 @@
+<?php if ($this->altHistory) : ?>
 <h3>Alerte</h3>
 <?php
 echo $this->partial('events/gethistory.phtml', array('history'=> $this->altHistory));
+endif;
 ?>
 
 <h3>Plan de vol</h3>

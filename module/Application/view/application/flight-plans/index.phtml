@@ -65,54 +65,50 @@ if( $this->hasAccess && (
         <div class="panel panel-default">
             <div class="panel-body" id="pan-show-fp">
 
-            <h4>Vols en alerte</h4>
-            <?php if (count($flightplansWAlt) == 0) : ?>
+            <?php if (count($flightplansWAlt) == 0 && count($flightplansWAlt) == 0) : ?>
             <div class="alert alert-info">
-                Aucun vol en alerte.
+                Aucun vol.
             </div>
             <?php else : ?>
+
+            <?php if (count($flightplansWAlt) > 0) : ?>
+            <h4>Vols en alerte</h4>
             <table class="table table-striped table-hover sortable">
                 <thead>
                     <tr>
-                    <?php
-                    foreach ($fields as $field) {
-                        echo "<th data-sort='string'>".$field."</th>";
-                    }
-                    ?>
-                        <th>Saisie</th>
-                        <th>Clôture</th>
+                        <th></th>
+                        <?php
+                        foreach ($fields as $field) {
+                            echo "<th data-sort='string'>".$field."</th>";
+                        }
+                        ?>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody id = "list-fp">
-                <?php foreach ($flightplansWAlt as $fp) : ?>
-                    <?php echo $this->flightPlanViewHelper()->renderFlightPlan($fp, $fields); ?>
-                <?php endforeach; ?>
-                </tbody>
                 <?php
-            //    }
+                foreach ($flightplansWAlt as $fp) {
+                    echo $this->flightPlanViewHelper()->renderFlightPlan($fp, $fields);
+                }
                 ?>
+                </tbody>
             </table>
             <?php endif; ?>
 
             <hr />
-
+            <?php if (count($flightplansWAlt) > 0) : ?>
             <h4>Vols sans alerte</h4>
-            <?php if (count($flightplans) == 0) : ?>
-                <div class="alert alert-info">
-                    Aucun vol.
-                </div>
-            <?php else : ?>
+            <?php endif; ?>
+            <?php if (count($flightplans) > 0) : ?>
             <table class="table table-striped table-hover sortable">
                 <thead>
                     <tr>
+
                     <?php
                     foreach ($fields as $field) {
                         echo "<th data-sort='string'>".$field."</th>";
                     }
                     ?>
-                        <th>Saisie</th>
-                        <th>Clotûre</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -125,6 +121,7 @@ if( $this->hasAccess && (
                 </tbody>
             </table>
             <?php endif; ?>
+            <?php endif; ?>
 
             </div>
         </div>
@@ -133,107 +130,187 @@ if( $this->hasAccess && (
      <?php endif; ?>
      <?php endif; ?>
 </div>
-<?=$this->modalWindow(  "mdl-hist-fp",
-                        "<h1 id='title-hist-fp'>Historique</h1>",
-                        "",
-                        null,
-                        "<div id='p-hist-fp'></div>",
-                        "<a class='btn btn-primary' href='#' data-dismiss='modal' aria-hidden='true'>Fermer</a>",
-                        "",
-                        ""); ?>
-
-<?=$this->modalWindow(  "mdl-edit-fp",
-                        "<h3 id='title-edit-fp'></h3>",
-                        "",
-                        "<div id='f-edit-fp'></div>",
-                        "",
-                        "",
-                        "modal-lg"); ?>
-
-<?=$this->modalwindow(  "mdl-del-fp",
-                        "<h3>Confirmer la suppression</h3>",
-                        "",
-                        null,
-                        "<p>Voulez-vous vraiment supprimer le vol <strong><span id ='s-del-fp-airid'></span></strong> ?</p>",
-                        "<a class='btn btn-danger' id='a-del-fp-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalwindow(  "mdl-trig-fp",
-                        "<h3>Déclenchement d'une phase d'alerte</h3>",
-                        "",
-                        null,
-                        "<div class='panel-body' id='f-trig-alt'></div>",
-                        "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalwindow(  "mdl-edit-alt",
-                        "<h3>Modification d'une phase d'alerte</h3>",
-                        "",
-                        null,
-                        "<div class='panel-body' id='f-edit-alt'></div>",
-                        "<a class='btn btn-danger' id='a-edit-alt-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalwindow(  "mdl-end-fp",
-                        "<h3>Cloture d'un plan de vol</h3>",
-                        "",
-                        null,
-                        "<p><input type='datetime' name='end-date'></p>
-                        <textarea name='note-end-fp' placeholder=\"Commentaire sur la cloture\" class=\"form-control t-causealt\"'></textarea>",
-                        "<a class='btn btn-danger' id='a-end-fp-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalwindow(  "mdl-reopen-fp",
-                        "<h3>Annulation de la clôture d'un plan de vol</h3>",
-                        "",
-                        null,
-                        "Confirmer la réouverture du plan de vol ?
-                        <textarea name='note-reopen-fp' placeholder='Commentaire' class='form-control'></textarea>",
-                        "<a class='btn btn-danger' id='a-reopen-fp-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalwindow(  "mdl-end-alt",
-                        "<h3>Clôture de l'alerte</h3>",
-                        "",
-                        null,
-                        "<input type='datetime' name='end-alt-date'>",
-                        "<a class='btn btn-danger' id='a-end-alt-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
-
-<?=$this->modalWindow(  "mdl-show-not",
-                        "<h3 id='title-show-not'></h3>",
-                        "",
-                        null,
-                        "<div class='loading'></div>".
-                        '<div class="list-group" id="show-not">
-                          <div>
-                            <a data-toggle="collapse" data-parent="#show-not" href="">
-                            </a> <strong class="rapid-not-info"></strong>
-                            <p class="collapse">
-
-                            </p>
-                            <hr>
-                          </div>
-                        </div>',
-                        '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>',
-                        'modal-lg'
-                    ) ?>
-
-<?php $this->inlineScript()->captureStart(); ?>
 
 <?php
+echo $this->modalWindow(
+    "mdl-hist-fp",
+    "<h1 id='title-hist-fp'>Historique</h1>",
+    "",
+    null,
+    "<div id='p-hist-fp'></div>",
+    "<a class='btn btn-primary' href='#' data-dismiss='modal' aria-hidden='true'>Fermer</a>",
+    "",
+    ""
+);
 
-if ($this->hasAccess && (
+echo $this->modalWindow(
+    "mdl-edit-fp",
+    "<h3 id='title-edit-fp'></h3>",
+    "",
+    "<div id='f-edit-fp'></div>",
+    "",
+    "",
+    "modal-lg"
+);
+
+echo $this->modalwindow(
+    "mdl-del-fp",
+    "<h3>Confirmer la suppression</h3>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment supprimer le vol <strong><span id ='s-del-fp-airid'></span></strong> ?</p>",
+    "<a class='btn btn-danger' id='a-del-fp-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-trig-fp",
+    "<h3>Déclenchement d'une phase d'alerte</h3>",
+    "",
+    null,
+    "<div class='panel-body' id='f-trig-alt'></div>",
+    "<a class='btn btn-danger' id='a-trig-alt-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-edit-alt",
+    "<h3>Modification d'une phase d'alerte</h3>",
+    "",
+    null,
+    "<div class='panel-body' id='f-edit-alt'></div>",
+    "<a class='btn btn-danger' id='a-edit-alt-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-end-fp",
+    "<h3>Cloture d'un plan de vol</h3>",
+    "",
+    null,
+    "<p><input type='datetime' name='end-date'></p>
+    <textarea name='note-end-fp' placeholder=\"Commentaire sur la cloture\" class=\"form-control t-causealt\"'></textarea>",
+    "<a class='btn btn-danger' id='a-end-fp-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-reopen-fp",
+    "<h3>Annulation de la clôture du plan de vol</h3>",
+    "",
+    null,
+    "Confirmer la réouverture du plan de vol ?
+    <textarea name='note-reopen-fp' placeholder='Commentaire' class='form-control'></textarea>",
+    "<a class='btn btn-danger' id='a-reopen-fp-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-end-alt",
+    "<h3>Clôture de l'alerte</h3>",
+    "",
+    null,
+    "<p><input type='datetime' name='end-alt-date'></p>
+    <textarea name='note-end-alt' placeholder=\"Commentaire sur la cloture\" class=\"form-control t-causealt\"'></textarea>",
+    "<a class='btn btn-danger' id='a-end-alt-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalwindow(
+    "mdl-reopen-alt",
+    "<h3>Annulation de la clôture de l'alerte</h3>",
+    "",
+    null,
+    "Confirmer la réouverture de l'alerte ?
+    <textarea name='note-reopen-alt' placeholder='Commentaire' class='form-control'></textarea>",
+    "<a class='btn btn-danger' id='a-reopen-alt-ok'>Confirmer</a>
+    <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>");
+
+echo $this->modalWindow(
+    "mdl-show-not",
+    "<h3 id='title-show-not'></h3>",
+    "",
+    null,
+    "<div class='loading'></div>".
+    '<div class="list-group" id="show-not">
+        <div>
+        <a data-toggle="collapse" data-parent="#show-not" href="">
+        </a> <strong class="rapid-not-info"></strong>
+        <p class="collapse">
+
+        </p>
+        <hr>
+        </div>
+    </div>',
+    '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>',
+    'modal-lg'
+);
+
+echo $this->modalwindow(
+    "confirm-delete-file",
+    "<h4>Confirmer la suppression du fichier ?</h4>",
+    "",
+    null,
+    "<p>Voulez-vous vraiment supprimer le fichier <em><span id=\"file_name\"></span></em> ?</p>",
+    "<button class=\"btn btn-danger\" id=\"delete-file-href\">Confirmer</button>
+    <button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>");
+;
+
+echo $this->modalwindow(
+    "add-file",
+    "<h4>Ajout d'un fichier</h4>",
+    "",
+    "<div id=\"file-upload-form\"></div>"
+    );
+
+echo $this->modalwindow("add-alarm",
+	"<h3 id=\"alarm-title\">Ajout d'un mémo</h3>",
+	"",
+	"<div id=\"alarm-form\"></div>");
+
+echo $this->modalwindow(
+    'add-note-modal',
+    "<h4>Ajout d'une note</h4>",
+    "",
+    "<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
+    . "<div class=\"modal-body\">"
+        . "<div class=\"form-group\">"
+            . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+            . "<div class=\"col-sm-10\">"
+                . "<textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea>"
+            . "</div>"
+        . "</div>"
+    . "</div>"
+    . "<div class=\"modal-footer\">"
+        . "<input type=\"submit\" class=\"btn btn-sm btn-primary\" value=\"Ajouter la note\"></input>"
+    . "</div>"
+    . "</form>");
+
+echo $this->modalwindow('add-postit-modal',
+    "<h4>Ajout d'un postit</h4>",
+    "",
+    "<form id=\"add-postit\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addpostit'))?>\">"
+    . "<div class=\"modal-body\">"
+    . "<div class=\"form-group\">"
+    . "<label class=\"control-label col-sm-2\">Titre : </label>"
+    . "<div class=\"col-sm-10\">"
+    . "<input type='text' class=\"form-control\" name=\"name\" placeholder=\"Titre.\"></input>"
+    . "</div>"
+    . "</div>"
+    . "<div class=\"form-group\">"
+    . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+    . "<div class=\"col-sm-10\">"
+    . "<textarea class=\"form-control\" name=\"content\" placeholder=\"Contenu.\"></textarea>"
+    . "</div>"
+    . "</div>"
+    . "</div>"
+    . "<div class=\"modal-footer\">"
+    . "<input type=\"submit\" class=\"btn btn-sm btn-primary\" value=\"Enregistrer\"></input>"
+    . "</div>"
+    . "</form>");
+
+$this->inlineScript()->captureStart();
+
+if ($this->hasAccess && $this->isGranted('flightplans.write') && (
     $this->isGranted('events.create') ||
     $this->isGranted('events.write')
     ))
 {
-//    echo '$("#create-link")
-//        .hide()
-//        .clone(true)
-//        .show()
-//        .prependTo(\'.content\')
-//        .addClass(\'category\');';
+
 }
 else
 {
@@ -243,20 +320,8 @@ else
 ?>
 
 $("#changeview").remove();
-
 $('#search').remove();
 
-//$(".sortable").stupidtable();
-
-//$(".sortable").bind('aftertablesort', function(event, data){
-//    var th = $(this).find("th");
-//    th.find(".arrow").remove();
-//    var arrow = data.direction === "asc" ? "<span class=\"glyphicon glyphicon-arrow-down\"></span>" : "<span class=\"glyphicon glyphicon-arrow-up\"></span>";
-//    th.eq(data.column).append('<span class="arrow"> ' + arrow +'</span>');
-//});
-//
-////sort the table by name
-//$("table th:first").trigger('click');
 <?php
 if($this->cats) {
     $catsString = "";

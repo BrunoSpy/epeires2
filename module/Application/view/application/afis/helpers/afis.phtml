@@ -2,12 +2,14 @@
     <td><?php echo $afis['self']->getCode(); ?></td>
     <td><?php echo $afis['self']->getName(); ?></td>
     <td>
+
+        <?php if ($this->isGranted('afis.read')) : ?>
         <div class="togglebutton">
         <label>
             <input
                    data-id="<?php echo $afis['self']->getId(); ?>"
-                   class="btn-switch-af" type="checkbox" 
-                   
+                   class="btn-switch-af" type="checkbox"
+
                    <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
 
                    <?php echo ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
@@ -15,6 +17,7 @@
             />
         </label>
         </div>
+        <?php endif; ?>
     </td>
     <td>
         <?php $openedHours = $afis['self']->getOpenedhours();

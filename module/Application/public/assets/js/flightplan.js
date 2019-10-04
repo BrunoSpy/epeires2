@@ -22,6 +22,11 @@ var flightplan = function(url, current_date)
     $('#a-end-alt-ok').click(endAltConfirmationHandler);
     $('#a-edit-alt-ok').click(editAltConfirmationHandler);
     $('#a-trig-alt-ok').click(trigAltConfirmationHandler);
+    $('#a-reopen-alt-ok').click(reopenAltConfirmationHandler);
+    // TODO
+    $('.display-fp-tasks').click(function() {
+        // hidePopovers();
+    })
 
     // gestion de la selection de la date d'affichage des PLN
     // click sur jour précédent
@@ -45,8 +50,13 @@ var flightplan = function(url, current_date)
         var text = '';
         var title = (data.title) ? data.title : null;
         var cause = (data.cause) ? data.cause : null;
-        text += (title) ? '<h5>' + title + '</h5><hr />' : '';
+        var start = (data.start) ? data.start : null;
+        var end = (data.end) ? data.end : null;
+        text += (title) ? '<h4>' + title + '</h4>' : '';
+        text += (start) ? '<p>Début : <strong>' + start + '</strong></p>' : '';
+        text += (end) ? '<p>Fin : <strong>' + end + '</strong></p>' : '';
         text += (cause) ? '<p>Cause : <strong>' + cause + '</strong></p>' : '';
+        text += '<hr /><h4>Notes</h4>';
 
         text += '<table class="notes-display"><tbody>';
         $.each($(this).data('tooltip').split('$'), function(i, note) {
@@ -68,7 +78,7 @@ var flightplan = function(url, current_date)
 
     $popTasks
     .popover({
-        placement: "top",
+        placement: "left",
         html: true,
         template: '<div class="popover label_elmt" role="tooltip"><div class="arrow"></div><h3 class="popover-title popover-fp-title"></h3><div class="popover-content"></div></div>'
     })
@@ -79,6 +89,8 @@ var flightplan = function(url, current_date)
         $('.a-hist-fp').click(histFpHandler);
         $('.a-trig-alt').click(trigAlertHandler);
         $('.a-edit-alt').click(editAlertHandler);
+        $('.a-end-alt').click(endAltHandler);
+        $('.a-reopen-alt').click(reopenAltHandler);
     })
 
     $('.sortable')
@@ -186,7 +198,7 @@ var flightplan = function(url, current_date)
         $('#mdl-end-fp').modal('hide');
         $.post(
             url+'flightplans/end',
-            {id: idEvent, endDate, note: $('textarea[name=note-end-fp]').val()},
+            {id: idEvent, endDate, fpNote: $('textarea[name=note-end-fp]').val()},
             function (data) {
                 $iDate.trigger('change');
             }
@@ -204,7 +216,25 @@ var flightplan = function(url, current_date)
         $('#mdl-reopen-fp').modal('hide');
         $.post(
             url+'flightplans/reopen',
-            {id: idEvent, note: $('textarea[name=note-reopen-fp]').val()},
+            {id: idEvent, fpNote: $('textarea[name=note-reopen-fp]').val()},
+            function () {
+                $iDate.trigger('change');
+            }
+        );
+    }
+
+    function reopenAltHandler()
+    {
+        hidePopovers();
+        idEvent = $(this).data('id');
+    }
+
+    function reopenAltConfirmationHandler()
+    {
+        $('#mdl-reopen-alt').modal('hide');
+        $.post(
+            url+'flightplans/reopenalt',
+            {id: idEvent, altNote: $('textarea[name=note-reopen-alt]').val()},
             function () {
                 $iDate.trigger('change');
             }
@@ -297,7 +327,11 @@ var flightplan = function(url, current_date)
         $('#mdl-end-alt').modal('hide');
         $.post(
             url+'flightplans/endAlert',
-            {id: idEvent, endAltDate},
+            {
+                id: idEvent,
+                altNote: $('#mdl-end-alt textarea[name="note-end-alt"]').val(),
+                endAltDate
+            },
             function (data) {
                 $iDate.trigger('change');
             }

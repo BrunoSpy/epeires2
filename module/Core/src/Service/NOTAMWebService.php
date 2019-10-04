@@ -22,11 +22,25 @@ class NOTAMWebService
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
     const CURL_TIMEOUT = 5;
 
-    private $em, $config;
+    private $em, $config, $timeout, $proxy;
+
     public function __construct($em, $config)
     {
         $this->em = $em;
         $this->config = $config;
+
+        if (isset($this->config['btiv']['af_notam_max_loading_seconds'])) {
+            $this->timeout = $this->config['btiv']['af_notam_max_loading_seconds'];
+        }
+        else {
+            $this->timeout = self::CURL_TIMEOUT;
+        }
+
+        if (isset($this->config['btiv']['af_proxynotam'])) {
+            $this->proxy = $this->config['btiv']['af_proxynotam'];
+        } else {
+            $this->proxy = '';
+        }
     }
 
     public function testNOTAMWeb()
@@ -36,7 +50,7 @@ class NOTAMWebService
         curl_setopt_array($curl, [
             CURLOPT_URL => self::URL_NOTAMWEB,
             CURLOPT_PROXY => $this->proxy,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
+            CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
@@ -94,8 +108,8 @@ class NOTAMWebService
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
 
+        $content = "";
         $output = curl_exec($curl);
-
         if ($output !== false) {
             $content = preg_replace('/.*<body[^>]*>/msi','',$output);
             $content = preg_replace('/<\/body>.*/msi','',$content);
@@ -109,13 +123,8 @@ class NOTAMWebService
             $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
                                   '',$content);
             $content = preg_replace('/<script.*\/>/msi','',$content);
-
-            $msgType = "success";
-            $msg = "Données téléchargées depuis les NOTAM du SIA.";
-        } else {
-            $msg = "Pas d'accès aux NOTAM.";
-            $content = "";
         }
+
         curl_close($curl);
         return $content;
     }
