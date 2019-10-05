@@ -51,7 +51,11 @@
     padding-left: 10px;
 }
 
-.tooltip-inner {
+.tooltip-af .tooltip-inner {
+    white-space: pre-line;
+}
+
+.tooltip-af .tooltip-inner {
     text-align: left;
     max-width: 500px;
     padding: 10px;

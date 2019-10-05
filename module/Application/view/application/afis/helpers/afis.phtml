@@ -22,14 +22,18 @@
     <td>
         <?php $openedHours = $afis['self']->getOpenedhours();
         if ($openedHours) { ?>
-            <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
+            <a href="#"class="af-tooltip" data-tooltip="<?php echo $openedHours; ?>">
+                <span class="glyphicon glyphicon-time" ></span>
+            </a>
         <?php } ?>
     </td>
 
     <td>
         <?php $contacts = $afis['self']->getContacts();
         if ($contacts) { ?>
-            <span class="glyphicon glyphicon-phone-alt" title="<?php echo $contacts; ?>"></span>
+            <a href="#"class="af-tooltip" data-tooltip="<?php echo $contacts; ?>">
+                <span class="glyphicon glyphicon-phone-alt" ></span>
+            </a>
         <?php } ?>
     </td>
 

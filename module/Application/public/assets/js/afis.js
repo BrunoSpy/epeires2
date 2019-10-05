@@ -28,6 +28,15 @@ var afis = function(url)
 
     $('.a-show-not, #refresh-not').click(clickBtnNotamHandler);
 
+    $.each($('.af-tooltip'), function() {
+        $(this).tooltip({
+            title: '<span class="elmt_tooltip">'+ $(this).data('tooltip') +'</span>',
+            html: 'true',
+            placement:'auto',
+            template: '<div class="tooltip tooltip-af" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+        });
+    });
+
     function switchAfisHandler(data)
     {
         var boolState = 0;
@@ -45,8 +54,7 @@ var afis = function(url)
             });
             headerbar(url);
         }
-
-        $('span.glyphicon').tooltip();
+        // $('span.glyphicon').tooltip();
         $.material.togglebutton();
     }
 
@@ -71,94 +79,5 @@ var afis = function(url)
 
         showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
             code, url + "afis/testNotamAccess", url + "afis/getAllNotamFromCode");
-    }
-
-
-
-       function refresh()
-    {
-        $('.btn-switch-af .a-edit-af .a-del-af').remove();
-        if ($tUsrbody.length > 0) {
-            $tUsrbody.load(url + 'afis/get', { decomissionned: 0, admin: 0 }, setUsrBtn);
-        }
-
-        if ($tAdmbodies.length > 0) {
-            $tAdmbodies.eq(0).load(url + 'afis/get', { decomissionned: 0, admin: 1 }, setAdmBtn);
-            $tAdmbodies.eq(1).load(url + 'afis/get', { decomissionned: 1, admin: 1 }, setAdmBtn);
-        }
-
-        function setUsrBtn()
-        {
-            $('.btn-switch-af').change(function()
-            {
-                var boolState = 0;
-                if ($(this).is(':checked')) {
-                    boolState = 1;
-                }
-
-                $.post(url + 'afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
-
-                function switched(data) {
-                    noty({
-                        text: data.msg,
-                        type: data.type,
-                        timeout: 4000,
-                    });
-                    headerbar(url);
-                }
-            });
-
-            $tUsrbody.find('span.glyphicon').tooltip();
-            $.material.togglebutton();
-            setNotamBtn($(this));
-        }
-
-        function setAdmBtn()
-        {
-            $(this).find('.a-edit-af').unbind('click').click(function() {
-                $("#title-edit-af").html("Modifier un AFIS");
-                loadAfisForm($(this).data('id'));
-            });
-
-            $(this).find('.a-del-af').unbind('click').click(function() {
-                var id = $(this).data('id');
-                $('#s-del-af-name').html($(this).data('name'));
-                $('#a-del-af-ok').unbind('click').click(function() {
-                    $("#mdl-del-af").modal('hide');
-                    $.post(
-                        url + 'afis/delete',
-                        { id: id },
-                        function(data) {
-                            refresh();
-                            noty({
-                                text: data.msg,
-                                type: data.type,
-                                timeout: 4000,
-                            });
-                        },
-                        'json'
-                    );
-                });
-            });
-            $tAdmbodies.find('span.glyphicon').tooltip();
-            setNotamBtn($(this));
-        }
-
-        function setNotamBtn($obj)
-        {
-            $.get(url + 'afis/testNotam', function(data) {
-                if (data.accesNotam == 1) {
-                    $obj.find('.btn-notam')
-                        .removeClass('disabled btn-warning')
-                        .prop('disabled', false)
-                        .addClass('btn-primary');
-                }
-            });
-            $obj.find('.a-show-not').click(clickBtnNotamHandler);
-        }
-    }
-
-    function keyIsValid(key) {
-        if (key == 8 || (key >= 65 && key <= 90))  return true;
     }
 };

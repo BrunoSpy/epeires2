@@ -104,7 +104,13 @@ class FlightPlansController extends EventsController
         if (!$hasAccess)
         {
             echo $this->showErrorMsg(self::ACCES_REQUIRED);
-            return false;
+            return (new ViewModel())
+                ->setVariables([
+                    'cats' => $this->fp_cats,
+                    'messages' => $this->getPendingMessages(),
+                    'alertcats' => $this->alt_cats,
+                    'hasAccess' => $hasAccess,
+                ]);
         }
 
         // récupération des données de la date depuis GET ou POST
@@ -115,7 +121,7 @@ class FlightPlansController extends EventsController
         // création d'un intervalle de temps pour la récupération des PLN
         $date_interval = $this->getStartAndEndDateTime($date);
         $flightplans = $this->getFlightPlansFromTimeInterval(
-            $date_interval['start'], $date_interval['end']);
+        $date_interval['start'], $date_interval['end']);
 
         return (new ViewModel())
             ->setVariables([
@@ -348,6 +354,17 @@ class FlightPlansController extends EventsController
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
         return new JsonModel();
+    }
+
+    public function filterFpAction()
+    {
+        $cookie = new Zend_Http_Cookie('cookiename',
+        'cookievalue',
+         time() + 7200 //expires after 2 hrs
+       );
+        echo $cookie->__toString();
+        echo $cookie->getName(); //cookie name
+        echo $cookie->getValue(); //cookie value
     }
 
     // gestion des PLN

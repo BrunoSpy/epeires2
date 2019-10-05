@@ -9,7 +9,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/flightplan
 ?>
 
 <?php
-if( $this->hasAccess && (
+if( $this->hasAccess && $this->isGranted('flightplans.read') && (
     $this->isGranted('events.create') ||
     $this->isGranted('events.write')
     )
@@ -30,9 +30,6 @@ if( $this->hasAccess && (
     </div>
 </div>
 
-<?php endif; ?>
-
-
 <div class="container-fluid">
     <?php if(count($alertcats) == 0): ?>
     <p class="text-warning">Aucune catégorie d'événement 'Alerte' n'existe, impossible de continuer.</p>
@@ -45,19 +42,27 @@ if( $this->hasAccess && (
     <div class="row col-sm-10 col-sm-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div>
-                    <a href="#" id="a-date-back">
-                        <span class="glyphicon glyphicon-backward"></span>
-                    </a>
+                <div class='row'>
+                    <div class='col-md-6'>
+                        <a href="#" id="a-date-back">
+                            <span class="glyphicon glyphicon-backward"></span>
+                        </a>
 
-                    <input id="i-date" type="text" class="date input-small" />
+                        <input id="i-date" type="text" class="date input-small" />
 
-                    <a href="#" id="a-date-forward">
-                        <span class="glyphicon glyphicon-forward"></span>
-                    </a>
-                    <a href="#" id="a-date-today">
-                        <span class="glyphicon glyphicon-refresh"></span>
-                    </a>
+                        <a href="#" id="a-date-forward">
+                            <span class="glyphicon glyphicon-forward"></span>
+                        </a>
+                        <a href="#" id="a-date-today">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </a>
+                    </div>
+                    <div class='col-md-6'>
+                    <span id='fp-filters'>
+                        <input class="form-check-input" type='checkbox' name='hide-ended-fp' />
+                        <span class="checkbox-material"></span> Cacher les vols clos
+                        <input class="form-check-input" type='checkbox' name='hide-ended-alt' /> Cacher les alertes closes
+                    </span>
                 </div>
             </div>
         </div>
@@ -65,7 +70,7 @@ if( $this->hasAccess && (
         <div class="panel panel-default">
             <div class="panel-body" id="pan-show-fp">
 
-            <?php if (count($flightplansWAlt) == 0 && count($flightplansWAlt) == 0) : ?>
+            <?php if (count($flightplans) == 0 && count($flightplansWAlt) == 0) : ?>
             <div class="alert alert-info">
                 Aucun vol.
             </div>
@@ -130,6 +135,7 @@ if( $this->hasAccess && (
      <?php endif; ?>
      <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <?php
 echo $this->modalWindow(

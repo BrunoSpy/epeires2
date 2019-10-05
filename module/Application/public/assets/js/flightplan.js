@@ -11,11 +11,6 @@ var flightplan = function(url, current_date)
     // création d'evenement PLN
     $("#create-link").click(editFpHandler);
 
-    // gestion des boutons d'actions sur PLN
-   // $('#pan-show-fp')
-   //     .on('click', '.a-trig-alt', trigAlertHandler)
-   //     .on('click', '.a-end-alt', endAltHandler)
-
     // gestion des actions de confirmation
     $('#a-end-fp-ok').click(endFpConfirmationHandler);
     $('#a-reopen-fp-ok').click(reopenFpConfirmationHandler);
@@ -38,9 +33,21 @@ var flightplan = function(url, current_date)
     // affichage des notam
     $('.a-show-not, #refresh-not').click(clickBtnNotamHandler)
 
-    // gestion des <table>
-    $('.active-alt').tooltip();
+    $('input[name=hide-ended-fp]').click(function() {
+        if($(this).prop("checked"))
+            $('.fp-closed').hide();
+        else
+            $('.fp-closed').show();
+    })
 
+    $('input[name=hide-ended-alt]').click(function() {
+        if($(this).prop("checked"))
+            $('.alt-closed').hide();
+        else
+            $('.alt-closed').show();
+    })
+
+    $.material.checkbox();
     // gestion des tooltips de notes
     $.each($('.show-evt-notes'), function () {
         var data = $(this).data();
