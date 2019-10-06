@@ -113,13 +113,13 @@ function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNot
 
     $.get(urlTestAcces, function(data)
     {
-        if(data.accesNotam == 1)
+        if(data.notamAccess == 1)
         {
             $.get(urlGetNotam, {code: code}, getAllNotam);
         }
         else
         {
-            $element.html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site.</div>');
+            $element.html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site notamweb. <br />Url utilisée : <b>' + data.notamUrl + '</b><br />Proxy utilisé : <b>' + data.notamProxy + '</b><br /><hr />Le paramètre <b>af_notam_max_loading_seconds</b> permet d\'augmenter la durée avant l\'échec de la récupération. Augmenter la valeur du paramètre dans la configuration peut améliorer un comportement erratique.</div>');
             $loadingDiv.hide();
         }
     });

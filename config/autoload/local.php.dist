@@ -68,6 +68,9 @@ return array(
     'btiv' => array(
         // secondes avant l'echec de la recuperation des Notam. Augmenter si connexion internet lente.
         'af_notam_max_loading_seconds' => 5,
+        // rayon de récupération des NOTAM : site du SIA (30), comportement d'avant la mise à jour SIA : 
+        'af_rayon' => 0,
+        'af_plafond' => 30,
         // proxy pour récupérer notam sur le site du SIA http://proxy...
         'af_proxynotam' => '',
         // paramétrage du serveur de carte, ici mapbox

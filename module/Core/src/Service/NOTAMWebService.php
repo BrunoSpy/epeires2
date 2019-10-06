@@ -21,8 +21,13 @@ class NOTAMWebService
 {
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
     const CURL_TIMEOUT = 5;
+    const AERO_Rayon = 0;
+    const AERO_Plafond = 30;
 
-    private $em, $config, $timeout, $proxy;
+    private 
+        $em, $config, 
+        $timeout, $proxy, 
+        $aero_rayon, $aero_plafond;
 
     public function __construct($em, $config)
     {
@@ -40,6 +45,18 @@ class NOTAMWebService
             $this->proxy = $this->config['btiv']['af_proxynotam'];
         } else {
             $this->proxy = '';
+        }
+
+        if (isset($this->config['btiv']['af_rayon'])) {
+            $this->aero_rayon = $this->config['btiv']['af_rayon'];
+        } else {
+            $this->aero_rayon = self::AERO_Rayon;
+        }
+
+        if (isset($this->config['btiv']['af_plafond'])) {
+            $this->aero_plafond = $this->config['btiv']['af_plafond'];
+        } else {
+            $this->aero_plafond = self::AERO_Plafond;
         }
     }
 
@@ -73,8 +90,8 @@ class NOTAMWebService
             'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
             'AERO_Duree' => '24',
             'AERO_Langue' => 'FR',
-            'AERO_Rayon' => '10',
-            'AERO_Plafond' => '30',
+            'AERO_Rayon' => $this->aero_rayon,
+            'AERO_Plafond' => $this->aero_plafond,
             'AERO_Tab_Aero[0]' => $code,
             'AERO_Tab_Aero[1]' => '',
             'AERO_Tab_Aero[2]' => '',
@@ -127,5 +144,15 @@ class NOTAMWebService
 
         curl_close($curl);
         return $content;
+    }
+
+    public function getNotamWebProxy()
+    {
+        return $this->proxy;
+    }
+
+    public function getNotamWebUrl()
+    {
+        return self::URL_NOTAMWEB;
     }
 }

@@ -1,52 +1,30 @@
-.a-trig-alt:hover {
-	text-decoration: none;
-}
-
-.a-trig-alt button,
-.a-end-alt button,
-.a-end-fp button{
-    padding:0;
-    margin:0;
-    margin-left:2px;
-    border:1px;
-}
-
-.a-trig-alt button.disabled {
-	opacity: 0.05
-}
-
-.active-alt button.disabled {
-	opacity:0.25;
-}
-
-.a-trig-alt button {
-    opacity:0.35;
-}
-
-.active-alt button {
-    opacity:1;
+.tooltip-fp td {
+    text-align: left;
+    padding: 5px;
 }
 
 .tooltip-fp .tooltip-inner {
     white-space: pre-line;
 }
+
 .tooltip-fp hr {
-    margin: 0 0 7px 0;
+    margin: 7px 0 7px 0;
 }
-.notes-display td{
-    padding: 5px;
-}
+
 .display-fp-tasks{
     cursor: pointer;
 }
+
 .fp-tasks {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
+
 .fp-tasks li {
     margin: 1em;
 }
+
 .popover-fp-title {
     color: #333333;
 }
@@ -54,6 +32,7 @@
 .show-evt-notes span.alt-icon {
     color: #dc3545 !important;
 }
+
 .table-striped > tbody > tr.fp-closed {
     background: linear-gradient(45deg, rgb(243,243,243) 25%,
     rgb(234, 234, 234) 25%, rgb(234, 234, 234) 50%,
@@ -62,11 +41,14 @@
     background-size: 30px 30px;
 }
 
-
 #pan-show-fp td.bg-info { border-left :10px solid #17a2b8; }
 #pan-show-fp td.bg-warning { border-left :10px solid #ffc107; }
 #pan-show-fp td.bg-danger{ border-left :10px solid #dc3545; }
 
 #pan-show-fp td.alt-closed {
     border-left: 0px;
+}
+
+.fp-filter + .fp-filter {
+    margin-top: 10px;
 }

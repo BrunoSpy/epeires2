@@ -80,7 +80,9 @@ class AfisController extends TabController
     public function testNotamAccessAction()
     {
         return new JsonModel([
-            'accesNotam' => $this->notamweb->testNOTAMWeb()
+            'notamAccess' => $this->notamweb->testNOTAMWeb(),
+            'notamUrl' => $this->notamweb->getNotamWebUrl(),
+            'notamProxy' => $this->notamweb->getNotamWebProxy(),
         ]);
     }
 

@@ -33,19 +33,33 @@ var flightplan = function(url, current_date)
     // affichage des notam
     $('.a-show-not, #refresh-not').click(clickBtnNotamHandler)
 
-    $('input[name=hide-ended-fp]').click(function() {
+    if($('input[name=hide-ended-fp]').prop('checked') == true)
+    {
+        $('.fp-closed').hide();
+    }
+    
+    if($('input[name=hide-ended-alt]').prop('checked') == true)
+    {
+        $('.alt-closed').css('opacity', 0);
+    }
+    
+    $('input[name=hide-ended-fp]').change(function() {
         if($(this).prop("checked"))
             $('.fp-closed').hide();
         else
             $('.fp-closed').show();
+        $.post(url + 'flightplans/toggleFilter', {filter: 'fp', value: $(this).prop("checked")});
     })
 
     $('input[name=hide-ended-alt]').click(function() {
         if($(this).prop("checked"))
-            $('.alt-closed').hide();
+            $('.alt-closed').css('opacity', 0);
         else
-            $('.alt-closed').show();
+            $('.alt-closed').css('opacity', 1);
+
+        $.post(url + 'flightplans/toggleFilter', {filter: 'alt', value: $(this).prop("checked")});
     })
+    console.log($('input[name=hide-ended-fp]').prop('checked'))
 
     $.material.checkbox();
     // gestion des tooltips de notes
@@ -60,10 +74,11 @@ var flightplan = function(url, current_date)
         var start = (data.start) ? data.start : null;
         var end = (data.end) ? data.end : null;
         text += (title) ? '<h4>' + title + '</h4>' : '';
-        text += (start) ? '<p>Début : <strong>' + start + '</strong></p>' : '';
-        text += (end) ? '<p>Fin : <strong>' + end + '</strong></p>' : '';
-        text += (cause) ? '<p>Cause : <strong>' + cause + '</strong></p>' : '';
-        text += '<hr /><h4>Notes</h4>';
+        text += '<table>'
+        text += (start) ? '<tr><td>Début</td><td> :&nbsp;</td><td><strong>' + start + '</strong></td></tr>' : '';
+        text += (end) ? '<tr><td>Fin</td><td> :&nbsp;</td><td><strong>' + end + '</strong></td></tr>' : '';
+        text += (cause) ? '<tr><td>Cause</td><td> :&nbsp;</td><td><strong>' + cause + '</strong></td></tr>' : '';
+        text += '</table><hr /><h4>Notes</h4>';
 
         text += '<table class="notes-display"><tbody>';
         $.each($(this).data('tooltip').split('$'), function(i, note) {

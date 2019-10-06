@@ -21,7 +21,7 @@ use DateTime;
 use DateInterval;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
-
+use Zend\Session\Container;
 use Doctrine\ORM\EntityManager;
 
 use Application\Entity\Category;
@@ -123,6 +123,7 @@ class FlightPlansController extends EventsController
         $flightplans = $this->getFlightPlansFromTimeInterval(
         $date_interval['start'], $date_interval['end']);
 
+
         return (new ViewModel())
             ->setVariables([
                 'cats' => $this->fp_cats,
@@ -138,7 +139,8 @@ class FlightPlansController extends EventsController
                 // vols sans alerte
                 'flightplans'       => $flightplans[0],
                 // vols avec alerte
-                'flightplansWAlt'   => $flightplans[1]
+                'flightplansWAlt'   => $flightplans[1],
+                'filters' => $this->getFpFilters()
             ]);
     }
 
@@ -152,20 +154,20 @@ class FlightPlansController extends EventsController
             $this->flashMessenger()->addErrorMessage(ACCES_REQUIRED);
             return new JsonModel();
         }
-
+        
         $eventId = $this->params()->fromPost('id', 0);
         $endDate = $this->params()->fromPost('endDate', '');
         $event = $this->endEvent($eventId, $endDate);
-
+        
         if (!$event)
         {
             $this->flashMessenger()->addErrorMessage(self::CANT_CLOSE);
             return;
         }
-
+        
         $this->addEventNote($event, $this->params()->fromPost('fpNote', ''));
         $event->setLastModifiedOn();
-
+        
         $this->em->persist($event);
         try
         {
@@ -355,16 +357,26 @@ class FlightPlansController extends EventsController
         }
         return new JsonModel();
     }
-
-    public function filterFpAction()
+    
+    public function toggleFilterAction()
     {
-        $cookie = new Zend_Http_Cookie('cookiename',
-        'cookievalue',
-         time() + 7200 //expires after 2 hrs
-       );
-        echo $cookie->__toString();
-        echo $cookie->getName(); //cookie name
-        echo $cookie->getValue(); //cookie value
+        // vérification d'accès à l'onglet et d'accès à la catégorie
+        $hasAccess = ($this->canCurrentUserAccessOneCategoryOf($this->fp_cats)
+            && $this->authFlightPlans('read'));
+        if (!$hasAccess)
+        {
+            $this->flashMessenger()->addErrorMessage(ACCES_REQUIRED);
+            return new JsonModel();
+        }
+
+        $filter = $this->params()->fromPost('filter', '');
+        if ($filter == '') return new JsonModel();
+
+        $checkedValue = $this->params()->fromPost('value', false);
+
+        $filterSession = new Container($filter);
+        $filterSession->checked = $checkedValue;
+        return new JsonModel();
     }
 
     // gestion des PLN
@@ -801,5 +813,15 @@ class FlightPlansController extends EventsController
     private function showErrorMsg(string $msg) : string
     {
         return "<div class='alert alert-danger'>".$msg."</div>";
+    }
+
+    private function getFpFilters() : array 
+    {
+        $fpFilter = new Container('fp');
+        $altFilter = new Container('alt');
+        return [
+            'fp' => (isset($fpFilter->checked)) ? $fpFilter->checked : false,
+            'alt' => (isset($altFilter->checked)) ? $altFilter->checked : false,
+        ];
     }
 }

@@ -123,7 +123,9 @@ $typeAlertes =
         if (isset($flightplan['ev-alert']) && count($flightplan['ev-alert']['notes']) > 0) {
             $notes = '';
             foreach ($flightplan['ev-alert']['notes'] as $key => $value) {
-                $notes .= $value->getCreatedon()->format('H:i') . '|' . $value->getText() . '$';
+                $note = str_replace('$', null, $value->getText());
+                $note = str_replace('|', null, $note);
+                $notes .= $value->getCreatedon()->format('H:i') . '|' . $note . '$';
             }
             $endDate = $flightplan['ev-alert']['end_date'];
             ?>
@@ -140,7 +142,9 @@ $typeAlertes =
         if (count($flightplan['notes']) > 0) {
             $notes = '';
             foreach ($flightplan['notes'] as $key => $value) {
-                $notes .= $value->getCreatedon()->format('H:i') . '|' . $value->getText() . '$';
+                $note = str_replace('$', null, $value->getText());
+                $note = str_replace('|', null, $note);
+                $notes .= $value->getCreatedon()->format('H:i') . '|' . $note . '$';
             }
             $endDate = $flightplan['end_date'];
             ?>
