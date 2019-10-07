@@ -43,7 +43,7 @@ if( $this->hasAccess && $this->isGranted('flightplans.read') && (
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class='row'>
-                    <div class='col-md-5'>
+                    <div class='col-md-4'>
                         <a href="#" id="a-date-back">
                             <span class="glyphicon glyphicon-backward"></span>
                         </a>
@@ -57,14 +57,14 @@ if( $this->hasAccess && $this->isGranted('flightplans.read') && (
                             <span class="glyphicon glyphicon-refresh"></span>
                         </a>
                     </div>
-                    <div class="checkbox col-md-2 fp-filter">
+                    <div class="checkbox col-md-4 fp-filter">
                         <label>
                             <input class="form-control" type='checkbox' name='hide-ended-fp' />
                             <span class="checkbox-material"></span>
                             Cacher les vols clos
                         </label>
                     </div>
-                    <div class="checkbox col-md-2 fp-filter">
+                    <div class="checkbox col-md-4 fp-filter">
                         <label>
                             <input class="form-control" type='checkbox' name='hide-ended-alt' />
                             <span class="checkbox-material"></span>
@@ -329,7 +329,6 @@ else
 }
 
 ?>
-
 $("#changeview").remove();
 $('#search').remove();
 $('input[name=hide-ended-fp]').prop('checked', <?php echo $this->filters['fp'] ?>)

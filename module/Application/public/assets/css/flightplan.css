@@ -49,6 +49,10 @@
     border-left: 0px;
 }
 
+.fp-filter {
+    margin: 0;
+}
+
 .fp-filter + .fp-filter {
-    margin-top: 10px;
+    margin: 0;
 }

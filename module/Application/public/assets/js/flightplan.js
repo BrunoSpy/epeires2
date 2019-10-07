@@ -37,12 +37,12 @@ var flightplan = function(url, current_date)
     {
         $('.fp-closed').hide();
     }
-    
+
     if($('input[name=hide-ended-alt]').prop('checked') == true)
     {
         $('.alt-closed').css('opacity', 0);
     }
-    
+
     $('input[name=hide-ended-fp]').change(function() {
         if($(this).prop("checked"))
             $('.fp-closed').hide();
@@ -59,7 +59,6 @@ var flightplan = function(url, current_date)
 
         $.post(url + 'flightplans/toggleFilter', {filter: 'alt', value: $(this).prop("checked")});
     })
-    console.log($('input[name=hide-ended-fp]').prop('checked'))
 
     $.material.checkbox();
     // gestion des tooltips de notes
