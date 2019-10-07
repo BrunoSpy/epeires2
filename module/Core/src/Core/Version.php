@@ -24,5 +24,5 @@ namespace Core;
  */
 final class Version
 {
-    const VERSION = "2.3.13";
+    const VERSION = "2.3.14";
 }
