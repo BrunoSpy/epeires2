@@ -43,9 +43,13 @@ class AfisController extends TabController
 {
     const ACCES_REQUIRED = "Droits d'accès insuffisants";
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
-    const CURL_TIMEOUT = 3;
+    const CURL_TIMEOUT = 5;
+    const AERO_Rayon = 0;
+    const AERO_Plafond = 30;
 
-    private $em, $cf, $repo, $form;
+    private $em, $cf, $repo, $form,
+        $timeout, $proxy,
+        $aero_rayon, $aero_plafond;
 
     public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost)
     {
@@ -63,11 +67,31 @@ class AfisController extends TabController
                     ->getAllAsArray()
                 );
 
+        if (isset($this->config['btiv']['af_notam_max_loading_seconds'])) {
+            $this->timeout = $this->config['btiv']['af_notam_max_loading_seconds'];
+        }
+        else {
+            $this->timeout = self::CURL_TIMEOUT;
+        }
+
         if (isset($this->config['btiv']['af_proxynotam'])) {
             $this->proxy = $this->config['btiv']['af_proxynotam'];
         } else {
             $this->proxy = '';
         }
+
+        if (isset($this->config['btiv']['af_rayon'])) {
+            $this->aero_rayon = $this->config['btiv']['af_rayon'];
+        } else {
+            $this->aero_rayon = self::AERO_Rayon;
+        }
+
+        if (isset($this->config['btiv']['af_plafond'])) {
+            $this->aero_plafond = $this->config['btiv']['af_plafond'];
+        } else {
+            $this->aero_plafond = self::AERO_Plafond;
+        }
+
     }
 
     private function getAfis($decom = 0)
@@ -150,8 +174,8 @@ class AfisController extends TabController
             'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
             'AERO_Duree' => '24',
             'AERO_Langue' => 'FR',
-            'AERO_Rayon' => '10',
-            'AERO_Plafond' => '30',
+            'AERO_Rayon' => $this->aero_rayon,
+            'AERO_Plafond' => $this->aero_plafond,
             'AERO_Tab_Aero[0]' => $code,
             'AERO_Tab_Aero[1]' => '',
             'AERO_Tab_Aero[2]' => '',
