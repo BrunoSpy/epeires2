@@ -20,6 +20,7 @@ namespace Application\Repository;
 use Application\Entity\ActionCategory;
 use Application\Entity\AlarmCategory;
 use Application\Entity\ATFCMCategory;
+use Application\Entity\Category;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
@@ -1477,76 +1478,8 @@ class EventRepository extends ExtendedRepository
         $lower->setCustomField($cat->getLowerLevelField());
         $lower->setEvent($event);
         $lower->setValue($lowerLevel);
-        
-        // recherche d'un modèle existant
-        $models = $this->getEntityManager()
-            ->getRepository('Application\Entity\PredefinedEvent')
-            ->findBy(array(
-            'name' => $designator,
-            'organisation' => $organisation,
-            'category' => $cat
-        ));
-        if (count($models) === 1) {
-            $model = $models[0];
-            // ajout des mémos
-            foreach ($model->getChildren() as $child) {
-                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
-                    $alarm = new Event();
-                    $alarm->setCategory($this->getEntityManager()
-                        ->getRepository('Application\Entity\AlarmCategory')
-                        ->findAll()[0]);
-                    $alarm->setAuthor($user);
-                    $alarm->setOrganisation($organisation);
-                    $alarm->setParent($event);
-                    $alarm->setStatus($status);
-                    $alarm->setPunctual(true);
-                    $alarm->setImpact($impact);
-                    $startdate = $timeBegin;
-                    $alarm->setStartdate($startdate);
-                    
-                    $namememo = new CustomFieldValue();
-                    $namefield = $alarm->getCategory()->getNamefield();
-                    $namememo->setCustomField($namefield);
-                    $namememo->setValue($child->getCustomFieldValue($namefield)
-                        ->getValue());
-                    $namememo->setEvent($alarm);
-                    $alarm->addCustomFieldValue($namememo);
-                    $comment = new CustomFieldValue();
-                    $commentfield = $alarm->getCategory()->getTextfield();
-                    $comment->setCustomField($commentfield);
-                    $comment->setValue($child->getCustomFieldValue($commentfield)
-                        ->getValue());
-                    $comment->setEvent($alarm);
-                    $alarm->addCustomFieldValue($comment);
-                    $deltabegin = new CustomFieldValue();
-                    $beginfield = $alarm->getCategory()->getDeltaBeginField();
-                    $deltabegin->setCustomField($beginfield);
-                    $deltabegin->setValue($child->getCustomFieldValue($beginfield)
-                        ->getValue());
-                    $deltabegin->setEvent($alarm);
-                    $alarm->addCustomFieldValue($deltabegin);
-                    $deltaend = new CustomFieldValue();
-                    $endfield = $alarm->getCategory()->getDeltaEndField();
-                    $deltaend->setCustomField($endfield);
-                    $deltaend->setValue($child->getCustomFieldValue($endfield)
-                        ->getValue());
-                    $deltaend->setEvent($alarm);
-                    $alarm->addCustomFieldValue($deltaend);
-                    $event->addChild($alarm);
-                    $this->getEntityManager()->persist($namememo);
-                    $this->getEntityManager()->persist($comment);
-                    $this->getEntityManager()->persist($deltabegin);
-                    $this->getEntityManager()->persist($deltaend);
-                    $this->getEntityManager()->persist($alarm);
-                }
-            }
-            //ajout des fichiers
-            foreach($model->getFiles() as $file) {
-                $file->addEvent($event);
-                $this->getEntityManager()->persist($file);
-            }
-            $event->updateAlarms();
-        }
+
+        $this->importModel($event, $user, $timeBegin, $designator, $organisation, $cat);
         
         try {
             $this->getEntityManager()->persist($name);
@@ -1757,6 +1690,95 @@ class EventRepository extends ExtendedRepository
             $newevent->addFile($file);
         }
         return $newevent;
+    }
+
+    /**
+     * Import data from a model, if one is found
+     * @param Event $event
+     * @param User $user
+     * @param \DateTime $start
+     * @param string $name
+     * @param $organisation
+     * @param Category $category
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function importModel($event, $user, $start, $name, $organisation, $category)
+    {
+        $status = $this->getEntityManager()
+            ->getRepository('Application\Entity\Status')
+            ->find('1');
+        $impact = $this->getEntityManager()
+            ->getRepository('Application\Entity\Impact')
+            ->find('2');
+        // recherche d'un modèle existant
+        $models = $this->getEntityManager()
+            ->getRepository('Application\Entity\PredefinedEvent')
+            ->findBy(array(
+                'name' => $name,
+                'organisation' => $organisation,
+                'category' => $category
+            ));
+        if (count($models) === 1) {
+            $model = $models[0];
+            // ajout des mémos
+            foreach ($model->getChildren() as $child) {
+                if ($child->getCategory() instanceof \Application\Entity\AlarmCategory) {
+                    $alarm = new Event();
+                    $alarm->setCategory($this->getEntityManager()
+                        ->getRepository('Application\Entity\AlarmCategory')
+                        ->findAll()[0]);
+                    $alarm->setAuthor($user);
+                    $alarm->setOrganisation($organisation);
+                    $alarm->setParent($event);
+                    $alarm->setStatus($status);
+                    $alarm->setPunctual(true);
+                    $alarm->setImpact($impact);
+                    $startdate = $start;
+                    $alarm->setStartdate($startdate);
+
+                    $namememo = new CustomFieldValue();
+                    $namefield = $alarm->getCategory()->getNamefield();
+                    $namememo->setCustomField($namefield);
+                    $namememo->setValue($child->getCustomFieldValue($namefield)
+                        ->getValue());
+                    $namememo->setEvent($alarm);
+                    $alarm->addCustomFieldValue($namememo);
+                    $comment = new CustomFieldValue();
+                    $commentfield = $alarm->getCategory()->getTextfield();
+                    $comment->setCustomField($commentfield);
+                    $comment->setValue($child->getCustomFieldValue($commentfield)
+                        ->getValue());
+                    $comment->setEvent($alarm);
+                    $alarm->addCustomFieldValue($comment);
+                    $deltabegin = new CustomFieldValue();
+                    $beginfield = $alarm->getCategory()->getDeltaBeginField();
+                    $deltabegin->setCustomField($beginfield);
+                    $deltabegin->setValue($child->getCustomFieldValue($beginfield)
+                        ->getValue());
+                    $deltabegin->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltabegin);
+                    $deltaend = new CustomFieldValue();
+                    $endfield = $alarm->getCategory()->getDeltaEndField();
+                    $deltaend->setCustomField($endfield);
+                    $deltaend->setValue($child->getCustomFieldValue($endfield)
+                        ->getValue());
+                    $deltaend->setEvent($alarm);
+                    $alarm->addCustomFieldValue($deltaend);
+                    $event->addChild($alarm);
+                    $this->getEntityManager()->persist($namememo);
+                    $this->getEntityManager()->persist($comment);
+                    $this->getEntityManager()->persist($deltabegin);
+                    $this->getEntityManager()->persist($deltaend);
+                    $this->getEntityManager()->persist($alarm);
+                }
+            }
+            //ajout des fichiers
+            foreach($model->getFiles() as $file) {
+                $file->addEvent($event);
+                $this->getEntityManager()->persist($file);
+            }
+            $event->updateAlarms();
+        }
     }
 
     /**
@@ -1991,6 +2013,7 @@ class EventRepository extends ExtendedRepository
         $regulationStateValue->setEvent($event);
         $regulationStateValue->setValue($regulationState);
         try {
+            $this->importModel($event, $user, $timeBegin, $regulname, $organisation, $cat);
             $this->getEntityManager()->persist($name);
             $this->getEntityManager()->persist($descriptionvalue);
             $this->getEntityManager()->persist($reasonvalue);
@@ -2005,6 +2028,194 @@ class EventRepository extends ExtendedRepository
                 $messages['error'][] = $e->getMessage();
             }
         }
+    }
+
+
+    /**
+     * Find events matching a string and intersecting [$startdate, $enddate].
+     * If $categories is null, search in all categories including archived ones.
+     * @param $user
+     * @param \DateTime $startdate
+     * @param \DateTime $enddate
+     * @param $search
+     * @param null $categories
+     * @return array
+     */
+    public function searchEvents($user, \DateTime $startdate, \DateTime $enddate, $search, $categories = null, $onlytitle = false){
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select(array(
+            'e', 'c', 'v', 't', 'cf'
+        ))
+            ->from('Application\Entity\Event', 'e')
+            ->leftJoin('e.category', 'c')
+            ->leftJoin('e.custom_fields_values', 'v')
+            ->leftJoin('v.customfield', 'cf')
+            ->leftJoin('cf.type', 't')
+            ->andWhere($qb->expr()
+                ->isNull('e.parent'));
+        if($onlytitle) {
+            error_log('only title');
+            $qb->andWhere($qb->expr()->eq('c.fieldname', 'cf.id'));
+        }
+        if($startdate !== null) {
+            $qb->andWhere($qb->expr() // display only root events
+            ->orX(
+            // sans date de fin et non ponctuel
+                $qb->expr()
+                    ->andX($qb->expr()
+                        ->isNull('e.enddate'), $qb->expr()
+                        ->eq('e.punctual', 'false'), $qb->expr()
+                        ->lte('e.startdate', '?2')),
+                // non ponctuel, avec date de fin
+                $qb->expr()
+                    ->andX($qb->expr()
+                        ->isNotNull('e.enddate'), $qb->expr()
+                        ->eq('e.punctual', 'false'), $qb->expr()
+                        ->lte('e.startdate', '?2'), $qb->expr()
+                        ->gte('e.enddate', '?1')),
+                // ponctuel
+                $qb->expr()
+                    ->andX($qb->expr()
+                        ->eq('e.punctual', 'true'), $qb->expr()
+                        ->gte('e.startdate', '?1'), $qb->expr()
+                        ->lte('e.startdate', '?2'))));
+        }
+        if ($user !== null && $user->hasIdentity()) {
+            $org = $user->getIdentity()->getOrganisation();
+
+            $qb->andWhere($qb->expr()
+                ->eq('e.organisation', $org->getId()));
+
+            $parameters[1] = $startdate->format("Y-m-d H:i:s");
+            $parameters[2] = $enddate->format("Y-m-d H:i:s");
+
+        }
+        if($categories && is_array($categories)) {
+            $qb->andWhere($qb->expr()->in('c.id', '?3'));
+            $parameters[3] = $categories;
+        }
+
+        //full text search on raw custom fields values
+        $customfields = $qb->expr()->orX();
+        $customfields->add('MATCH (v.value) AGAINST (?4) > 0');
+        $parameters[4] = $search;
+
+        //search specific custom fields : sectors, radars, stacks, antennas
+        $qbc = $this->getEntityManager()->createQueryBuilder();
+        $qbc->select(array('s'))
+            ->from('Application\Entity\Sector', 's')
+            ->andWhere($qb->expr()
+                ->like('s.name', $qb->expr()
+                    ->literal($search . '%')));
+        $sectors = $qbc->getQuery()->getResult();
+
+        foreach ($sectors as $sector) {
+            $customfields->add($qb->expr()
+                ->andX($qb->expr()
+                    ->eq('t.type', '?5'), $qb->expr()
+                    ->eq('v.value', $sector->getId())));
+            $parameters[5] = 'sector';
+        }
+
+        $qbc = $this->getEntityManager()->createQueryBuilder();
+        $qbc->select(array(
+            'a'
+        ))
+            ->from('Application\Entity\Antenna', 'a')
+            ->andWhere($qbc->expr()
+                ->like('a.name', $qb->expr()
+                    ->literal($search . '%')))
+            ->orWhere($qbc->expr()
+                ->like('a.shortname', $qb->expr()
+                    ->literal($search . '%')));
+        $query = $qbc->getQuery();
+        $antennas = $query->getResult();
+
+        foreach ($antennas as $antenna) {
+            $customfields->add($qb->expr()
+                ->andX($qb->expr()
+                    ->eq('t.type', '?6'), $qb->expr()
+                    ->eq('v.value', $antenna->getId())));
+            $parameters[6] = 'antenna';
+        }
+
+        $qbc = $this->getEntityManager()->createQueryBuilder();
+        $qbc->select(array(
+            'r'
+        ))
+            ->from('Application\Entity\Radar', 'r')
+            ->andWhere($qbc->expr()
+                ->like('r.name', $qbc->expr()
+                    ->literal($search . '%')))
+            ->orWhere($qbc->expr()
+                ->like('r.shortname', $qbc->expr()
+                    ->literal($search . '%')));
+        $query = $qbc->getQuery();
+        $radars = $query->getResult();
+
+        foreach ($radars as $radar) {
+            $customfields->add($qb->expr()
+                ->andX($qb->expr()
+                    ->eq('t.type', '?7'), $qb->expr()
+                    ->eq('v.value', $radar->getId())));
+            $parameters[7] = 'radar';
+        }
+
+        $qbc = $this->getEntityManager()->createQueryBuilder();
+        $qbc->select(array(
+            'f'
+        ))
+            ->from('Application\Entity\Frequency', 'f')
+            ->andWhere($qbc->expr()
+                ->like('f.value', $qbc->expr()
+                    ->literal($search . '%')))
+            ->orWhere($qbc->expr()
+                ->like('f.othername', $qbc->expr()
+                    ->literal($search . '%')));
+        $query = $qbc->getQuery();
+        $frequencies = $query->getResult();
+
+        foreach ($frequencies as $frequency) {
+            $customfields->add($qb->expr()
+                ->andX($qb->expr()
+                    ->eq('t.type', '?8'), $qb->expr()
+                    ->eq('v.value', $frequency->getId())));
+            $parameters[8] = 'frequency';
+        }
+
+        $qbc = $this->getEntityManager()->createQueryBuilder();
+        $qbc->select(array(
+            'st'
+        ))
+            ->from('Application\Entity\Stack', 'st')
+            ->andWhere($qbc->expr()
+                ->like('st.name', $qbc->expr()
+                    ->literal($search . '%')));
+        $query = $qbc->getQuery();
+        $stacks = $query->getResult();
+
+        foreach ($stacks as $stack) {
+            $customfields->add($qb->expr()
+                ->andX($qb->expr()
+                    ->eq('t.type', '?9'), $qb->expr()
+                    ->eq('v.value', $stack->getId())));
+            $parameters[9] = 'stack';
+        }
+
+        $qb->andWhere($customfields);
+
+        $qb->setParameters($parameters);
+
+        $results = $qb->getQuery()->getResult();
+
+        $ids = array();
+        foreach ($results as $r) {
+            $ids[] = $r->getId();
+        }
+
+        $this->getEntityManager()->clear();
+
+        return $this->getEntityManager()->getRepository(Event::class)->findById($ids);
     }
 
 }

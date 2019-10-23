@@ -12,7 +12,7 @@
  */
 
 return array(
-    
+
     'zfc_rbac' => array(
         'guards' => array(
             //Configure autoconnection according to the example below
@@ -62,12 +62,17 @@ return array(
         ),
     ),
 
-    'btiv' => [
-        // proxy pour récupérer notam sur le site du SIA
-        'af_proxynotam' => 'http://proxy.???',
+    'btiv' => array(
+        // secondes avant l'echec de la recuperation des Notam. Augmenter si connexion internet lente.
+        'af_notam_max_loading_seconds' => 5,
+        // rayon de récupération des NOTAM : site du SIA (30), comportement d'avant la mise à jour SIA : 0
+        'af_rayon' => 0,
+        'af_plafond' => 30,
+        // proxy pour récupérer notam sur le site du SIA http://proxy...
+        'af_proxynotam' => '',
         // paramétrage du serveur de carte, ici mapbox
         'ip_map' => [
-            'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", 
+            'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
             'attribution' => 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>',
             'maxZoom' => 18,
             'id' => "oziatek.ppg7d633",
@@ -85,12 +90,24 @@ return array(
             'receveur2@?.?'
             // etc.
         ],
-        // sujet des messages envoyés pour les plans d'interrogation 
+        // sujet des messages envoyés pour les plans d'interrogation
         'ip_email_subject' => 'titre des email',
         // texte des messages envoyés pour les plans d'interrogation
         'ip_email_text' => 'corps des email',
         // repertoire de sauvegarde des pdf des plans d'interrogation
         // pas de / à la fin
-        'ip_dir' => 'data/plans'
-    ],
+        'ip_dir' => 'data/plans',
+        // données par défaut des terrains
+        'ip_fichier_terrain' => 'data/terLF.GeoJson',
+        // données par défaut des balises
+        'ip_fichier_balise' => 'data/balLF.GeoJson',
+        // centrage de la carte par defaut
+        'ip_centrage_defaut' => [48.8534100, 2.3488000],
+        // icone des balise
+        'ip_image_balise' => 'btn-bal-g.png',
+        // icone des terrains
+        'ip_image_terrain' => 'btn-ter.png',
+        // icone des heliports
+        'ip_image_hel' => 'btn-hel.png'
+    ),
 );

@@ -41,7 +41,36 @@
     <body data-spy="scroll" data-target="#sidebar">
     
     <?php echo $this->navbartop("blue", ' : '.$this->translate('IPO'), 'ipo', null); ?>
-	
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-lower navbar-material-blue-500 shadow-z-2">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed"
+                        data-toggle="collapse" data-target="#navbar-collapse"
+                        aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span> <span
+                            class="icon-bar"></span> <span class="icon-bar"></span> <span
+                            class="icon-bar"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <p class="navbar-text pull-right"><strong><?php echo $this->title; ?></strong></p>
+                <ul class="nav navbar-nav">
+                    <li><a href="<?php echo $this->url('ipo'); ?>">Rapports</a>
+                    </li>
+                    <li><a
+                                href="<?php echo $this->url('ipo', array('controller'=>'search', 'action'=>'index')) ?>"
+                                data-original-title="Recherche et export des données"
+                                data-placement="bottom" data-toggle="tooltip">Recherche</a>
+                    </li>
+
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
 	<div class="content">
 	
         <?php echo $this->content; ?>
@@ -52,7 +81,11 @@
 	if(!$this->zfcuserIdentity()){
 			echo $this->modalWindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('ipo'))));
 	} ?>
-        
+
+    <?php $this->inlineScript()->captureStart(); ?>
+    setURL('<?php echo $this->url('ipo');?>');
+    <?php $this->inlineScript()->captureEnd(); ?>
+
     <?php echo $this->inlineScript() ?>
     </body>
 </html>

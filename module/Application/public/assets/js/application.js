@@ -401,6 +401,13 @@ $(document).ready(function(){
         }        
     });
 
+    $(document).on('click', "#fiche #clearActions", function(e) {
+        e.preventDefault();
+        $("#list-actions a.fiche.active").each(function(index){
+            $(this).trigger('click');
+        });
+    });
+
     $(document).on('click', '#updates .note', function(){
         var me = $(this).html();
         var p = $(this).closest('p');
@@ -930,6 +937,12 @@ $(document).ready(function(){
             $("#briefing-content table").addClass("table");
         });
         $('#releveWindow').modal('show');
+    });
+
+    $("#releve-content").on('click','a', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(this.href, '_blank');
     });
 
     $("#editwindow").on('shown.bs.modal', function(e){

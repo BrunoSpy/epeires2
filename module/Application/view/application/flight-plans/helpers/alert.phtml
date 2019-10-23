@@ -1,6 +1,6 @@
 <?php
 
-$typeAlertes = 
+$typeAlertes =
 [
     'INCERFA' => 'info',
     'ALERFA' => 'warning',
@@ -14,54 +14,22 @@ foreach ($typeAlertes as $typeAlerte => $classButton)
     $title = '';
     $modal = "#mdl-trig-fp";
 
-    if (isset($flightplan['ev-alert'])) 
+    if (isset($flightplan['ev-alert']))
     {
         $modal = "#mdl-edit-alt";
         $cause = (isset($flightplan['ev-alert']['Cause'])) ? $flightplan['ev-alert']['Cause'] : '';
-        if($typeAlerte == $flightplan['ev-alert']['Type']) 
+        if($typeAlerte == $flightplan['ev-alert']['Type'])
         {
             $act = 'active-alt';
             $title = 'title = "'.$cause.'"';
         }
     }
     ?>
-    <a <?php echo $title; ?> 
-        class="a-trig-alt <?php echo $act; ?>" 
-        href="<?php echo $modal; ?>" 
-        data-id="<?php echo $flightplan['id']; ?>" 
-        data-air-id="<?php echo $flightplan['Aircraft-Id']; ?>" 
-        data-type="<?php echo $typeAlerte;?>" 
-        data-cause="<?php echo $cause;?>" 
-        <?php echo (!isset($flightplan['ev-alert']['end_date'])) ? 'data-toggle="modal"' : ''; ?>
-        >
-
-        <button class="
+    <span <?php echo $title; ?>
+        class="
             btn btn-xs btn-<?php echo $classButton; ?>
-            <?php echo (isset($flightplan['ev-alert']['end_date'])) ? 'disabled' : ''; ?>
             ">
             <?php echo $typeAlerte[0]; ?>
-        </button>
-    </a>
+    </span>
 <?php
-}
-
-if (isset($flightplan['ev-alert'])) 
-{
-    if (!isset($flightplan['ev-alert']['end_date'])) : ?>
-    <a  class="a-end-alt" 
-        href="#mdl-end-alt" 
-        data-id="<?php echo $flightplan['ev-alert']['id']; ?>" 
-        data-toggle="modal" 
-        href="#">
-        <button class="btn btn-xs btn-primary">
-            FIN ALERTE
-        </button>
-    </a>
-    <?php else : ?>
-    <a  class="a-end-alt">
-        <button class="btn btn-xs btn-primary">
-            CLOS
-        </button>
-    </a>
-    <?php endif;
 }

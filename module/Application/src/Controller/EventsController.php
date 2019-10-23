@@ -296,7 +296,7 @@ class EventsController extends TabsController
                 
                 $em->clear();
                 foreach ($eventsid as $id) {
-                    $results['events'][$id] = $this->getEventJson($em->getRepository('Application\Entity\Event')
+                    $results['events'][$id] = $this->eventservice->getJSON($em->getRepository('Application\Entity\Event')
                         ->find($id));
                 }
                 foreach ($modelsid as $id) {
@@ -1057,10 +1057,10 @@ class EventsController extends TabsController
             $json['messages'] = $messages;
             $jsonevents = array();
             foreach ($events as $e) {
-                $jsonevents[$e->getId()] = $this->getEventJson($e);
+                $jsonevents[$e->getId()] = $this->eventservice->getJSON($e);
             }
             foreach ($sendEvents as $e) {
-                $jsonevents[$e->getId()] = $this->getEventJson($e);
+                $jsonevents[$e->getId()] = $this->eventservice->getJSON($e);
             }
             if (count($jsonevents) > 0) {
                 $json['events'] = $jsonevents;
@@ -1742,7 +1742,7 @@ class EventsController extends TabsController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->getEventJson($event, $extendedFormat);
+            $json[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
         }
         
         if (count($json) === 0) {
@@ -1793,7 +1793,7 @@ class EventsController extends TabsController
             true,
             $cats
         ) as $event) {
-            $e = $this->getEventJson($event);
+            $e = $this->eventservice->getJSON($event);
             $e['title'] = $this->eventservice->getName($event);
             $e['start'] = $event->getStartdate()->format(DATE_ISO8601);
             if($event->isPunctual()) {
@@ -1830,131 +1830,6 @@ class EventsController extends TabsController
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
 
         return new JsonModel($events);
-    }
-
-    private function getEventJson(Event $event, $extendedFormat = false)
-    {
-        $objectManager = $this->getEntityManager();
-        $logsRepo = $objectManager->getRepository("Application\Entity\Log");
-        $json = array(
-            'id' => $event->getId(),
-            'name' => $this->eventservice->getName($event),
-            'modifiable' => $this->eventservice->isModifiable($event) ? true : false,
-            'deleteable' => $this->isGranted('events.delete') ? true : false,
-            'readonly' => $event->isReadOnly() ? true : false,
-            'start_date' => ($event->getStartdate() ? $event->getStartdate()->format(DATE_RFC2822) : null),
-            'end_date' => ($event->getEnddate() ? $event->getEnddate()->format(DATE_RFC2822) : null),
-            'punctual' => $event->isPunctual() ? true : false,
-            'category_root' => ($event->getCategory()->getParent() ? $event->getCategory()
-                ->getParent()
-                ->getName() : $event->getCategory()->getName()),
-            'category_root_id' => ($event->getCategory()->getParent() ? $event->getCategory()
-                ->getParent()
-                ->getId() : $event->getCategory()->getId()),
-            'category_root_short' => ($event->getCategory()->getParent() ? $event->getCategory()
-                ->getParent()
-                ->getShortName() : $event->getCategory()->getShortName()),
-            'category' => $event->getCategory()->getName(),
-            'category_id' => $event->getCategory()->getId(),
-            'category_short' => $event->getCategory()->getShortName(),
-            'category_compact' => $event->getCategory()->isCompactMode() ? true : false,
-            'category_place' => ($event->getCategory()->getParent() ? $event->getCategory()->getPlace() : - 1),
-            'status_name' => $event->getStatus()->getName(),
-            'status_id' => $event->getStatus()->getId(),
-            'impact_value' => $event->getImpact()->getValue(),
-            'impact_name' => $event->getImpact()->getName(),
-            'impact_style' => $event->getImpact()->getStyle(),
-            'files' => count($event->getFiles()),
-            'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
-            'star' => $event->isStar() ? true : false,
-            'scheduled' => $event->isScheduled() ? true : false,
-            'recurr' => $event->getRecurrence() ? true : false,
-            'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',
-            'mattermostid' => $event->getMattermostPostId()
-        );
-        
-        $fields = array();
-        $formatterSimple = \IntlDateFormatter::create(
-            'fr_FR',
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd LLL HH:mm'
-        );
-        $milestones = array();
-        foreach ($event->getCustomFieldsValues() as $value) {
-            if($value->getCustomField()->isHidden()) //don't display
-                continue;
-            if($value->getCustomField()->isTraceable()) {
-                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
-                    $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
-                    $i = 0;
-                    while(array_key_exists($name, $fields)) {
-                        $i++;
-                        $name = $formatterSimple->format($log->getLoggedAt()) . '-' . $i . ' ' . $value->getCustomField()->getName();
-                    }
-                    $formattedvalue = $this->customfieldservice->getFormattedValue(
-                        $value->getCustomField(),
-                        $log->getData()["value"]
-                    );
-                    $fields[$name] = $formattedvalue;
-                }
-            } else {
-                $formattedvalue = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-                if ($formattedvalue != null) {
-                    $fields[$value->getCustomField()->getName()] = $formattedvalue;
-                }
-            }
-            $i = 0;
-            if($value->getCustomField()->isMilestone()) {
-                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
-                   //store only changes -> skip firt log
-                    if($i > 0) {
-                        $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
-                    }
-                    $i++;
-                }
-            }
-        }
-
-        $json['milestones'] = $milestones;
-
-        if($extendedFormat) {
-            $eventLogEntries = $logsRepo->getLogEntries($event);
-            $createLog = array_reverse($eventLogEntries)[0];
-            $json['startdate_ini'] = $createLog->getData()['startdate']->format(DATE_RFC2822);
-            $enddateIni = $createLog->getData()['enddate'];
-            if($enddateIni !== null) {
-                $json['enddate_ini'] = $enddateIni->format(DATE_RFC2822);
-            } else {
-                $json['enddate_ini'] = null;
-            }
-        }
-
-        $formatter = \IntlDateFormatter::create(
-            \Locale::getDefault(),
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
-            'UTC',
-            \IntlDateFormatter::GREGORIAN,
-            'dd LLL, HH:mm'
-        );
-        foreach ($event->getUpdates() as $update) {
-            if($update->isHidden())
-                continue;
-            $key = $formatter->format($update->getCreatedOn());
-            $tempkey = $formatter->format($update->getCreatedOn());
-            $i = 0;
-            while (array_key_exists($tempkey, $fields)) {
-                $i ++;
-                $tempkey = $key . '-' . $i;
-            }
-            $fields[$tempkey] = nl2br($update->getText());
-        }
-        $json['fields'] = $fields;
-        
-        return $json;
     }
 
     private function getModelJson(PredefinedEvent $model)
@@ -2243,7 +2118,7 @@ class EventsController extends TabsController
         }
         $json = array();
         $json['event'] = array(
-            $event->getId() => $this->getEventJson($event)
+            $event->getId() => $this->eventservice->getJSON($event)
         );
         $json['messages'] = $messages;
         return new JsonModel($json);
@@ -2277,7 +2152,7 @@ class EventsController extends TabsController
                         $objectManager->flush();
                         $messages['success'][] = "Évènement correctement supprimé";
                         $json['event'] = array(
-                            $event->getId() => $this->getEventJson($event)
+                            $event->getId() => $this->eventservice->getJSON($event)
                         );
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();
@@ -2556,7 +2431,7 @@ class EventsController extends TabsController
                     $em->flush();
                     $messages['success'][] = "Note correctement ajoutée.";
                     $messages['events'] = array(
-                        $event->getId() => $this->getEventJson($event)
+                        $event->getId() => $this->eventservice->getJSON($event)
                     );
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
@@ -2590,7 +2465,7 @@ class EventsController extends TabsController
                     $em->flush();
                     $messages['success'][] = "Note correctement mise à jour.";
                     $messages['events'] = array(
-                        $note->getEvent()->getId() => $this->getEventJson($note->getEvent())
+                        $note->getEvent()->getId() => $this->eventservice->getJSON($note->getEvent())
                     );
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();

@@ -1,0 +1,191 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/components/select2/dist/js/select2.full.min.js');
+$this->headScript()->appendFile($this->basePath() . '/components/select2/dist/js/i18n/fr.js');
+$this->headLink()->appendStylesheet($this->basePath() . '/components/select2/dist/css/select2.min.css');
+
+$formatter = \IntlDateFormatter::create(
+\Locale::getDefault(),
+\IntlDateFormatter::FULL,
+\IntlDateFormatter::FULL,
+'UTC',
+\IntlDateFormatter::GREGORIAN, 'dd/MM/YYYY' );
+?>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <p></p>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline" id="searchForm" action="<?php $this->url('ipo', array('controller' => 'search')) ?>">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="startdate" class="control-label">Date de début : </label>
+                                    <input name="startdate" type="text" class="form-control" style="width: 80px" id="startdate" placeholder="Date de début">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="enddate">Date de fin : </label>
+                                    <input name="enddate" type="text" class="form-control" style="width: 80px" id="enddate" placeholder="Date de fin">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="input-group" style="width: 100%">
+                                    <label class="sr-only">Recherche</label>
+                                    <input name="search" type="text" id="search" class="form-control" placeholder="Recherche">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" class="btn btn-default" style="margin-bottom: 0px; margin-top: 0px">Chercher</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12"><p class="small" style="margin-bottom: 0px; margin-top: 10px;"><a href="#" data-toggle="collapse" data-target="#other-criteria">Autres critères </a></p></div>
+                            <div class="collapse col-sm-12" id="other-criteria">
+                                <label for="categories">Catégories : </label>
+                                <select multiple="multiple" id="categories" name="categories[]">
+                                    <?php
+                                    foreach ($this->rootcat as $id => $r) {
+                                        echo '<optgroup label="'.$r.'">';
+                                        echo '<option value="'.$id.'">'.$r.' (racine uniquement)</option>';
+
+                                        foreach ($this->childrencat[$id] as $cid => $cr) {
+                                            echo '<option value="'.$cid.'">'.$r.' > '.$cr.'</option>';
+                                        }
+                                        echo '</optgroup>';
+                                    }
+                                    ?>
+                                </select>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="onlytitle"> Titres uniquement
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Résultats<span class="pull-right"><a href="#exportCSV" id="exportCSV"><span class="label">CSV</span></a> <a href="#exportJSON" id="exportJSON"><span class="label">JSON</span></a></span></h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped" id="tableResults">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Nom</th>
+                                <th>Début</th>
+                                <th>Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($this->results as $event) {
+                            echo '<tr id="event_'.$event->getId().'">';
+                            echo '<td>'.$event->getCategory()->getName().'</td>';
+                            $title = '<span class="elmt_tooltip"><table class="table"><tbody>';
+                            foreach ( $event->getCustomFieldsValues () as $value ) {
+                                if($value->getCustomField()->isHidden())
+                                    continue;
+                                $formattedvalue = $this->customfieldvalue ($value);
+                                if ($formattedvalue != '') {
+                                    $title .= '<tr><td>'.$value->getCustomField ()->getName () . '</td><td> :&nbsp;</td><td>'. $formattedvalue.'</td>';
+                                }
+                            }
+                            $title .= "</tbody></table></span>";
+                            echo '<td data-toggle="tooltip" title="'.htmlentities($title, ENT_QUOTES).'" data-html="true" data-container="body"'
+                                .' data-template="<div class=&quot;tooltip tooltip-actions&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-arrow&quot;></div><div class=&quot;tooltip-inner&quot;></div></div>">'
+                                .$this->eventname($event)
+                                ."</td>";
+                            echo "<td>".$formatter->format($event->getStartdate())."</td>";
+                            echo "<td>";
+                            if($event->getEnddate() !== null){
+                                echo $formatter->format($event->getEnddate());
+                            } else {
+                                echo "--";
+                            }
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php $this->inlineScript()->captureStart();?>
+$(document).ready(function(){
+
+$("#categories").select2({
+    width: '70%',
+    language: 'fr',
+    templateResult: function(item) {
+        if(typeof item.children != 'undefined') {
+            var s = $(item.element).find('option').length - $(item.element).find('option:selected').length;
+            // My optgroup element
+            var el = $('<span class="my_select2_optgroup'+(s ? '' : ' my_select2_optgroup_selected')+'">'+item.text+'</span>');
+
+            // Click event
+            el.click(function() {
+                // Select all optgroup child if there aren't, else deselect all
+                $('#categories').find('optgroup[label="' + $(this).text() + '"] option').prop(
+                'selected',
+                $(item.element).find('option').length - $(item.element).find('option:selected').length
+                );
+                // Trigger change event + close dropdown
+                $('#categories').change();
+                $('#categories').select2('close');
+            });
+
+            // Hover events to properly manage display
+            el.mouseover(function() {
+                $('li.select2-results__option--highlighted').removeClass('select2-results__option--highlighted');
+            });
+            el.hover(function() {el.addClass('my_select2_optgroup_hovered');},
+                    function() {el.removeClass('my_select2_optgroup_hovered');});
+
+            return el;
+        }
+        return item.text;
+    }
+});
+
+$("#startdate").bootstrapMaterialDatePicker({
+    format : 'DD-MM-YYYY',
+    time: false,
+    lang: 'fr',
+    cancelText: "Annuler",
+    weekStart : 1,
+    switchOnClick: true
+}).on('change', function(e, date){
+$('#enddate').bootstrapMaterialDatePicker('setMinDate', date);
+});
+
+$("#enddate").bootstrapMaterialDatePicker({
+    format : 'DD-MM-YYYY',
+    time: false,
+    lang: 'fr',
+    cancelText: "Annuler",
+    weekStart : 1,
+    switchOnClick: true
+});
+
+$("#exportCSV").on('click', function(e){
+    window.open(window.location.href.split("#")[0]+"&format=csv");
+});
+
+$("#exportJSON").on('click', function(e){
+    window.open(window.location.href.split("#")[0]+"&format=json");
+});
+
+});
+<?php $this->inlineScript()->captureEnd();?>

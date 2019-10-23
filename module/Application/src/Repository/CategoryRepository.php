@@ -29,9 +29,8 @@ class CategoryRepository extends ExtendedRepository
 
     /**
      * @param null $id Exclude specific id from results
-     * @param null $timeline If true, returns only categories to be displayed on main timeline
      * @param true $system If false, exclude system categories
-     * @param null $archived If true, include archived categories
+     * @param null $archived If true, return archived categories
      * @return array
      */
 
@@ -67,10 +66,23 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
+    public function getAllRootsAsArray($system = false)
+    {
+        $criteria = Criteria::create()->where(Criteria::expr()->isNull('parent'));
+        $criteria->andWhere(Criteria::expr()->eq('system', false));
+        $criteria->orderBy(array(
+            'place' => Criteria::ASC
+        ));
+        $result = array();
+        foreach (parent::matching($criteria) as $element) {
+            $result[$element->getId()] = $element->getName();
+        }
+        return $result;
+    }
     
     /**
      * @param null $parentId If null, returns root categories
-     * @param null $archived If true, include archived categories
+     * @param null $archived If true, return archived categories
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getChilds($parentId = null, $archived = null)
@@ -93,10 +105,23 @@ class CategoryRepository extends ExtendedRepository
         return $list;
     }
 
-    public function getChildsAsArray($parentId = null)
+    public function getAllChildsAsArray($parentId)
+    {
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', parent::find($parentId)));
+        $criteria->orderBy(array(
+            'place' => Criteria::ASC
+        ));
+        $result = array();
+        foreach (parent::matching($criteria) as $element) {
+            $result[$element->getId()] = $element->getName();
+        }
+        return $result;
+    }
+
+    public function getChildsAsArray($parentId = null, $archived = null)
     {
         $res = array();
-        foreach ($this->getChilds($parentId) as $element) {
+        foreach ($this->getChilds($parentId, $archived) as $element) {
             $res[$element->getId()] = $element->getName();
         }
         return $res;

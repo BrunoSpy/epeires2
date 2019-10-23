@@ -20,13 +20,44 @@ namespace Core\Service;
 class NOTAMWebService
 {
     const URL_NOTAMWEB = "http://notamweb.aviation-civile.gouv.fr/Script/IHM/Bul_Aerodrome.php?AERO_Langue=FR";
-    const CURL_TIMEOUT = 3;
+    const CURL_TIMEOUT = 5;
+    const AERO_Rayon = 0;
+    const AERO_Plafond = 30;
 
-    private $em, $config;
+    private 
+        $em, $config, 
+        $timeout, $proxy, 
+        $aero_rayon, $aero_plafond;
+
     public function __construct($em, $config)
     {
         $this->em = $em;
         $this->config = $config;
+
+        if (isset($this->config['btiv']['af_notam_max_loading_seconds'])) {
+            $this->timeout = $this->config['btiv']['af_notam_max_loading_seconds'];
+        }
+        else {
+            $this->timeout = self::CURL_TIMEOUT;
+        }
+
+        if (isset($this->config['btiv']['af_proxynotam'])) {
+            $this->proxy = $this->config['btiv']['af_proxynotam'];
+        } else {
+            $this->proxy = '';
+        }
+
+        if (isset($this->config['btiv']['af_rayon'])) {
+            $this->aero_rayon = $this->config['btiv']['af_rayon'];
+        } else {
+            $this->aero_rayon = self::AERO_Rayon;
+        }
+
+        if (isset($this->config['btiv']['af_plafond'])) {
+            $this->aero_plafond = $this->config['btiv']['af_plafond'];
+        } else {
+            $this->aero_plafond = self::AERO_Plafond;
+        }
     }
 
     public function testNOTAMWeb()
@@ -36,7 +67,7 @@ class NOTAMWebService
         curl_setopt_array($curl, [
             CURLOPT_URL => self::URL_NOTAMWEB,
             CURLOPT_PROXY => $this->proxy,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
+            CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
@@ -59,6 +90,8 @@ class NOTAMWebService
             'AERO_Date_HEURE' => urlencode((new \DateTime())->format('H:i')),
             'AERO_Duree' => '24',
             'AERO_Langue' => 'FR',
+            'AERO_Rayon' => $this->aero_rayon,
+            'AERO_Plafond' => $this->aero_plafond,
             'AERO_Tab_Aero[0]' => $code,
             'AERO_Tab_Aero[1]' => '',
             'AERO_Tab_Aero[2]' => '',
@@ -69,6 +102,8 @@ class NOTAMWebService
             'AERO_Tab_Aero[7]' => '',
             'AERO_Tab_Aero[8]' => '',
             'AERO_Tab_Aero[9]' => '',
+            'AERO_Tab_Aero[10]' => '',
+            'AERO_Tab_Aero[11]' => '',
             'ModeAffichage' => 'COMPLET',
             'bImpression' => '',
             'bResultat' => 'true'
@@ -78,7 +113,6 @@ class NOTAMWebService
         foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
         rtrim($fields_string, '&');
 
-        $msgType = "error";
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -91,8 +125,8 @@ class NOTAMWebService
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
         ]);
 
+        $content = "";
         $output = curl_exec($curl);
-
         if ($output !== false) {
             $content = preg_replace('/.*<body[^>]*>/msi','',$output);
             $content = preg_replace('/<\/body>.*/msi','',$content);
@@ -106,14 +140,19 @@ class NOTAMWebService
             $content = preg_replace('/<script[^>]*>[\S\s]*?<\/script>/msi',
                                   '',$content);
             $content = preg_replace('/<script.*\/>/msi','',$content);
-
-            $msgType = "success";
-            $msg = "Données téléchargées depuis les NOTAM du SIA.";
-        } else {
-            $msg = "Pas d'accès aux NOTAM.";
-            $content = "";
         }
+
         curl_close($curl);
         return $content;
+    }
+
+    public function getNotamWebProxy()
+    {
+        return $this->proxy;
+    }
+
+    public function getNotamWebUrl()
+    {
+        return self::URL_NOTAMWEB;
     }
 }

@@ -15,26 +15,22 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace IPO\Controller;
+namespace IPO\Controller\Factory;
 
-use Core\Controller\AbstractEntityManagerAwareController;
+use IPO\Controller\SearchController;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-/**
- *
- * @author Bruno Spyckerelle
- *        
- */
-class IndexController extends AbstractEntityManagerAwareController
-{
+class SearchControllerFactory implements FactoryInterface {
 
-    public function indexAction()
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $reports = $this->getEntityManager()->getRepository('IPO\Entity\Report')->findBy(array(), array(
-            'created_on' => 'ASC'
-        ), 10, 0);
-        
-        return array(
-            'reports' => $reports
+        $service = $serviceLocator->getServiceLocator();
+        return new SearchController(
+            $service->get('Doctrine\ORM\EntityManager'),
+            $service->get('EventService'),
+            $service->get('CustomFieldService')
         );
     }
+
 }

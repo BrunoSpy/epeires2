@@ -38,6 +38,9 @@ ul.sector {
 }
 
 ul.sector-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 	list-style: none;
 	padding-left: 5px;
 	padding-right: 0px;
@@ -75,6 +78,11 @@ li.title {
 .sector-freq>a, .antenna-color>li>a {
 	color: white;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+}
+
+.antenna-color > li > a {
+	display: inline-flex;
+	width: 100%;
 }
 
 .sector-name {
@@ -130,8 +138,6 @@ ul.antennas {
 }
 
 ul.antennas>div>li>a:after {
-	display: block;
-	float: right;
 	width: 0;
 	height: 0;
 	margin-top: 5px;
@@ -141,6 +147,7 @@ ul.antennas>div>li>a:after {
 	border-style: solid;
 	border-width: 5px 0 5px 5px;
 	content: " ";
+	margin-left: auto;
 }
 
 .sector-color {
