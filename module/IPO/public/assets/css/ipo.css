@@ -3,7 +3,8 @@
 */
 
 body {
-	padding-top: 54px;
+	padding-top: 100px;
+    position: relative;
 }
 
 tr.child {
@@ -105,4 +106,21 @@ tr.child {
 
 .tooltip.tooltip-actions .table {
     margin-bottom: 3px;
+}
+
+/* Selectable optgroup */
+.my_select2_optgroup_selected {
+    background-color: #ddd;
+}
+.my_select2_optgroup_hovered {
+    color: #FFF;
+    background-color: #5897fb !important;
+    cursor: pointer;
+}
+strong.select2-results__group {
+    padding: 0 !important;
+}
+.my_select2_optgroup {
+    display: block;
+    padding: 6px;
 }

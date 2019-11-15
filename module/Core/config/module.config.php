@@ -31,7 +31,7 @@ return array(
             // overriding zfc-user-doctrine-orm's config
             'zfcuser_entity' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'paths' => __DIR__ . '/../src/Core/Entity'
+                'paths' => __DIR__ . '/../src/Entity'
             ),
             'orm_default' => array(
                 'drivers' => array(
@@ -45,6 +45,7 @@ return array(
             'doctrine.loggable' => 'Core\Factory\LoggableListenerFactory',
             'nmb2b' => 'Core\Factory\NMB2BServiceFactory',
             'mattermostservice' => 'Core\Factory\MattermostServiceFactory',
+            'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
         ),
         'aliases' => array(
             'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service'
@@ -117,7 +118,10 @@ return array(
         'auth_identity_fields' => array(
             'username',
             'email'
-        )
+        ),
+        'enable_user_state' => true,
+        'default_user_state' => 1,
+        'allowed_login_states' => array(1)
     ),
     'view_manager' => array(
         'display_not_found_reason' => false,

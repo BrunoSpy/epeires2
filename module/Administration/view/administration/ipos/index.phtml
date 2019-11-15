@@ -53,13 +53,13 @@
 </div>
 </div>
 </div>
-<?php echo $this->modalWindow("ipo-container", "<h4 id=\"ipo-title\">Nouvel ".$this->translate('IPO')."</h4>", "", "<div id=\"ipo-form\"></div>")?>
+<?php echo $this->modalWindow("ipo-container", "<h4 id=\"ipo-title\">".$this->translate('New IPO')."</h4>", "", "<div id=\"ipo-form\"></div>")?>
 
 <?php echo $this->modalwindow("confirm-delete-ipo",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null, 
-						"<p>Voulez-vous vraiment supprimer l'IPO <em><span id=\"ipo-name\"></span></em> ?</p>",
+						"<p>Voulez-vous vraiment supprimer ".$this->translate("the IPO")." <em><span id=\"ipo-name\"></span></em> ?</p>",
 						"<a class=\"btn btn-danger\" id=\"delete-ipo-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>	
 

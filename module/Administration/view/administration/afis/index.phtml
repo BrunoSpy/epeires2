@@ -1,59 +1,178 @@
+<?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/application.css'); ?>
 <?php $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/afis.css'); ?>
 <?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/afis_adm.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/notams.js')?>
+
+<?php
+function trAfis($afis, $deleteUrl, $decommissionurl = null)
+{
+    echo '<tr>';
+    echo '<td>'.$afis->getId().'</td>';
+    echo '<td>'.$afis->getCode().'</td>';
+    echo '<td>'.$afis->getName().'</td>';
+    echo '<td>'.$afis->getOrganisation()->getName().'</td>';
+
+    echo '<td>';
+    if ($afis->getOpenedHours())
+    {
+        echo '<span href="#" class="af-tooltips glyphicon glyphicon-time"
+                    data-toggle="tooltip" data-placement="bottom"
+                    data-original-title="'.$afis->getOpenedHours().'">
+            </span>';
+    }
+    echo '</td>';
+    echo '<td>';
+    if ($afis->getContacts())
+    {
+        echo '<span href="#" class="af-tooltips glyphicon glyphicon-phone"
+                    data-toggle="tooltip" data-placement="bottom"
+                    data-original-title="'.$afis->getContacts().'">
+            </span>';
+    }
+    echo '</td>';
+
+    echo '<td>';
+    echo '<a href="#mdl-show-not"
+                    data-code="'.$afis->getCode().'" data-toggle="modal"
+                    class="a-show-not btn btn-xs btn-primary">
+                NOTAM
+         </a>';
+    echo '</td>';
+
+    echo '<td>';
+    echo "<a
+            title=\"Modifier\"
+            href=\"#mdl-edit-af\"
+            class=\"a-edit-af\"
+            data-id=\"".$afis->getId()."\"
+            data-name=\"".$afis->getName()."\"
+            data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
+
+    if($decommissionurl) {
+        echo "<a
+            title=\"Archiver\"
+            href=\"#confirm-decommission-radar\"
+            data-href=\"" . $decommissionurl . "\"
+            class=\"decommission-radar\"
+            data-id=\"" . $afis->getId() . "\"
+            data-name=\"" . $afis->getName() . "\"
+            data-toggle=\"modal\"><span class=\"glyphicon glyphicon-hdd\"></span></a>  ";
+    }
+    echo "<a
+            title=\"Supprimer\"
+            href=\"#mdl-del-af\"
+            data-href=\"".$deleteUrl."\"
+            class=\"a-del-af\"
+            data-id=\"".$afis->getId()."\"
+            data-name=\"".$afis->getName()."\"
+            data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span></a>";
+    echo '</td>';
+    echo '</tr>';
+}
+?>
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-                        
-            <p></p>
+        <div class="col-md-2" id="sidebar">
+			<ul class="nav sidenav">
+				<li>
+					<a href="#afis">1. AFIS en service</a>
+				</li>
+				<li>
+					<a href="#oldafis">2. Anciens AFIS</a>
+				</li>
+			</ul>
+		</div>
+
+        <div class="col-md-10">
+
+            <h2>Gestion des AFIS</h2>
+			<p></p>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title" id="afis">1. AFIS en service</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table t-adm table-striped sortable">
+                    <table class="table table-striped sortable">
                         <thead>
                             <tr>
-                                <th>id</th>
+                                <th data-sort="int">id</th>
                                 <th data-sort="string">Code OACI</th>
                                 <th data-sort="string">Nom</th>
                                 <th>Organisation</th>
-                                <th>En service</th>
-                                <th></th>
-                                <th></th>
+                                <th>Horaires</th>
+                                <th>Contacts</th>
                                 <th></th>
                                 <th><a class="btn btn-xs btn-primary" href="#mdl-edit-af" data-toggle="modal" id="btn-add-af">Ajouter</a></th>
                             </tr>
                         </thead>
                         <tbody>
-
+                        	<?php
+                            foreach ($this->afis as $af)
+                            {
+                                if (!$af->isDecommissionned())
+                                {
+                                    trAfis(
+                                        $af,
+                                        $this->url('administration', [
+                                            'controller' => 'afis',
+                                            'action' => 'delete',
+                                            [
+                                                'query' => [
+                                                    'id' => $af->getId()
+                                                ]
+                                            ]
+                                        ])
+                                    );
+                        		}
+                        	}
+                        	?>
                         </tbody>
                     </table>
                 </div>
             </div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title" id="oldafis">2. Anciens AFIS</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table t-adm table-striped sortable">
+                    <table class="table table-striped sortable">
                         <thead>
                             <tr>
-                                <th>id</th>
-                                <th data-sort="string">OACI</th>
+                                <th data-sort="int">id</th>
+                                <th data-sort="string">Code OACI</th>
                                 <th data-sort="string">Nom</th>
                                 <th>Organisation</th>
-                                <th>En service</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th>Horaires</th>
+                                <th>Contacts</th>
                                 <th></th>
                             </tr>
                         </thead>
-                        
-                        <tbody>
 
+                        <tbody>
+                        	<?php
+                            foreach ($this->afis as $af)
+                            {
+                                if ($af->isDecommissionned())
+                                {
+                                    trAfis(
+                                        $af,
+                                        $this->url('administration', [
+                                            'controller' => 'afis',
+                                            'action' => 'delete',
+                                            [
+                                                'query' => [
+                                                    'id' => $af->getId()
+                                                ]
+                                            ]
+                                        ])
+                                    );
+                        		}
+                        	}
+                        	?>
                         </tbody>
                     </table>
                 </div>
@@ -62,32 +181,36 @@
     </div>
 </div>
 
-<?=$this->modalWindow(  "mdl-edit-af", 
-                        "<h3 id='title-edit-af'></h3>", 
-                        "", 
+<?=$this->modalWindow(  "mdl-edit-af",
+                        "<h3 id='title-edit-af'></h3>",
+                        "",
                         "<div id='f-edit-af'></div>")?>
 
 <?=$this->modalwindow(  "mdl-del-af",
                         "<h3>Confirmer la suppression ?</h3>",
-                        "", 
-                        null, 
+                        "",
+                        null,
                         "<p>Voulez-vous vraiment supprimer l'AFIS <em><span id ='s-del-af-name'></span></em> ?</p>",
                         "<a class='btn btn-danger' id='a-del-af-ok'>Confirmer</a>
-                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>	
+                        <a class='btn' href='#' data-dismiss='modal' aria-hidden='true'>Annuler</a>") ?>
 
-<?=$this->modalWindow(  "mdl-show-not", 
-                        "<h3 id='title-show-not'></h3>", 
-                        "", 
+<?=$this->modalWindow(  "mdl-show-not",
+                        "<h3 id='title-show-not'></h3>",
+                        "",
+                        null,
+                        "<div class='loading'></div>".
                         '<div class="list-group" id="show-not">
                           <div>
                             <a data-toggle="collapse" data-parent="#show-not" href="">
-                            </a>
+                            </a> <strong class="rapid-not-info"></strong>
                             <p class="collapse">
-                              
+
                             </p>
+                            <hr>
                           </div>
-                        </div>'); 
-                        ?>
+                        </div>',
+                        '<div><a id="refresh-not" class="btn btn-primary" href="#" aria-hidden="true">RAFRAICHIR</a><a class="btn btn-primary" href="#" data-dismiss="modal" aria-hidden="true">FERMER</a></div>'
+                    ) ?>
 
 
 <?php $this->inlineScript()->captureStart();?>
@@ -96,7 +219,7 @@ $('.sidenav').affix();
 
 $('body').scrollspy({target:'#sidebar', offset:120});
 
-afis('<?php echo $this->url('application')?>');
+afis_adm('<?php echo $this->url('administration')?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

@@ -1,0 +1,28 @@
+version: '3'
+
+volumes:
+  mysql-data: {}
+  epeires2-cache-data: {}
+
+services:
+  db:
+    image: mariadb:10.2.14
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_DATABASE=epeires2
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  epeires2:
+    build: ../
+    volumes:
+      - ../module:/epeires2/module
+      - ../config:/epeires2/config
+      - epeires2-cache-data:/epeires2/data/DoctrineORMModule/Proxy
+      - ./doctrine.docker.php:/epeires2/config/autoload/doctrine.local.php
+      - ./local.php:/epeires2/config/autoload/local.php
+      - ./users.htpasswd:/epeires2/data/users.htpasswd
+    depends_on:
+      - db
+    ports:
+      - 3000:80

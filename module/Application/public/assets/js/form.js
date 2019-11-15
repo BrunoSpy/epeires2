@@ -499,11 +499,17 @@ var form = function(url, cats){
 				//close form
 				$("#create-link").trigger("click");
 				//update timeline
-				if(data['events']){
-					$("#timeline").timeline('pauseUpdateView');
+				if(data['events'])
+				{
+					if ($("#timeline").length > 0) {
+						$("#timeline").timeline('pauseUpdateView');
+					}
 					var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
-					$('#timeline').timeline('addEvents', data.events, sendToMattermost);
-					$('#timeline').timeline('forceUpdateView');
+					
+					if ($("#timeline").length > 0) {
+						$('#timeline').timeline('addEvents', data.events, sendToMattermost);
+						$('#timeline').timeline('forceUpdateView');
+					}
 					$('#calendarview').fullCalendar('refetchEvents');
 				}
 				displayMessages(data.messages);
@@ -587,6 +593,21 @@ var form = function(url, cats){
 			updateHours();
 		});
 		$("#search-results").offset({top:0});
+		pauseUpdateAlarms();
+	});
+
+	$("#timeline").on("click", ".use-model", function(){
+		var me = $(this);
+		$("#event").html('');
+		$(".category").popover('hide');
+		$("#form-title").html(me.data('name'));
+		$("#create-evt").modal('show');
+		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
+			initTabs(2);
+			$("#event input[name=startdate]").timepickerform({'id':'start'});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			updateHours();
+		});
 		pauseUpdateAlarms();
 	});
 

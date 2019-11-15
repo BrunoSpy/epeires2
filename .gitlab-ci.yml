@@ -24,15 +24,25 @@ before_script:
 - wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
+#download sonar scanner
+- wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+- unzip ./sonar-scanner.zip
+#install node to allow css analysis
+- curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
+- chmod +x setup_10.x
+- ./setup_10.x
+- apt-get install -qqy nodejs
 #install needed php extensions
-- docker-php-ext-install -j$(nproc) iconv $MCRYPT soap intl pdo_mysql zip bcmath
+- docker-php-ext-install -j$(nproc) iconv soap intl pdo_mysql zip bcmath
 - docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 - docker-php-ext-install -j$(nproc) gd
 #install xdebug for codeception
-- pecl install $XDEBUG
+- pecl install xdebug
 - docker-php-ext-enable xdebug
 #configure date.timezone
 - echo "date.timezone=Europe/Paris" > /usr/local/etc/php/conf.d/date_timezone.ini
+#configure error reports
+- echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING" > /usr/local/etc/php/conf.d/errors.ini
 #download composer
 - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 #parallelize downloads
@@ -65,116 +75,115 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-test:5.6-mariadb:
-  image: php:5.6-apache
+test:7.2-mariadb101:
+  image: php:7.2-apache-stretch
   stage: test
   services:
-  - mariadb:10.2
+  - mariadb:10.1
   variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug-2.5.5"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
-test:5.6-mysql:
-  image: php:5.6-apache
-  services:
-  - mysql:5.7
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug-2.5.5"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.0-mariadb:
-  image: php:7.0-apache
-  stage: test
-  services:
-  - mariadb:10.2
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.0-mysql:
-  image: php:7.0-apache
-  stage: test
-  services:
-  - mysql:5.7
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.1-mariadb:
-  image: php:7.1-apache-stretch
-  stage: test
-  services:
-  - mariadb:10.2
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.1-mysql:
-  image: php:7.1-apache-stretch
-  stage: test
-  services:
-  - mysql:5.7
-  variables:
-    MCRYPT: "mcrypt"
-    XDEBUG: "xdebug"
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
-
-test:7.2-mariadb:
+test:7.2-mariadb102:
   image: php:7.2-apache-stretch
   stage: test
   services:
   - mariadb:10.2
   variables:
-    MCRYPT: ""
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
 
-test:7.2-mysql:
+test:7.2-mariadb103:
+  image: php:7.2-apache-stretch
+  stage: test
+  services:
+  - mariadb:10.3
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.2-mariadb104:
+  image: php:7.2-apache-stretch
+  stage: test
+  services:
+    - mariadb:10.4
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.2-mysql57:
   image: php:7.2-apache-stretch
   stage: test
   services:
   - mysql:5.7
   variables:
-    MCRYPT: ""
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
+
+test:7.3-mariadb101:
+  image: php:7.3-apache-stretch
+  stage: test
+  services:
+  - mariadb:10.1
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.3-mariadb102:
+  image: php:7.3-apache-stretch
+  stage: test
+  services:
+  - mariadb:10.2
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.3-mariadb103:
+  image: php:7.3-apache-stretch
+  stage: test
+  services:
+  - mariadb:10.3
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.3-mariadb104:
+  image: php:7.3-apache-stretch
+  stage: test
+  services:
+    - mariadb:10.4
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.3-mysql57:
+  image: php:7.3-apache-stretch
+  stage: test
+  services:
+  - mysql:5.7
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:docker:
   image: php:7.2-apache-stretch
@@ -182,14 +191,12 @@ test:docker:
   services:
   - mariadb:10.2.14
   variables:
-    MCRYPT: ""
-    XDEBUG: "xdebug"
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
+  - ./sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - php vendor/bin/security-checker security:check composer.lock
-
 
 docker_images:
   before_script:

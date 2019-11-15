@@ -148,7 +148,7 @@
         options: {
             eventUrl: "",
             categoriesUrl: "",
-            controllerEvent: "",
+            controllerUrl: "",
             topOffset: 0,
             leftOffset: 95,
             rightOffset: 40,
@@ -615,6 +615,15 @@
                 var event = self.events[self.eventsPosition[id]];
                 self._sendToMattermost(event);
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+
+            $(document).on('click', function (e) {
+                self.element.find('.category').each(function () {
+                    // hide any open popovers when the anywhere else in the body is clicked
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                        $(this).popover('hide');
+                    }
+                });
             });
         },
         _setOption: function (key, value) {
@@ -1500,6 +1509,7 @@
                 cat.animate({'top': y + 'px', 'height': trueHeight + 'px'});
                 y += trueHeight + this.params.catSpace;
             }
+            this._addModelToCategories();
             return y;
         },
         _hideCategories: function () {
@@ -1528,6 +1538,36 @@
                     pos++;
                 });
                 self.sortCategories();
+            });
+        },
+        /**
+         * Add popover with shortcuts to models to each category label
+         * @private
+         */
+        _addModelToCategories: function() {
+            var self = this;
+            var url = this.options.controllerUrl;
+            $.each(self.categories, function(key, value){
+                var catid = value.id;
+                $.getJSON(url + '/getQuickModels?id='+catid, function(data){
+                    var txt = '';
+                    $.each(data, function(key, value){
+                        txt += '<p><a class="btn btn-sm use-model" data-id="'+key+'" data-name="'+value+'" title="'+value+'"><span class="pull-left title">'+value+'</span> <span class="pull-right glyphicon glyphicon-share-alt"></span></a></p>';
+                    });
+                    $("#category"+catid).popover({
+                        trigger: 'focus',
+                        container: '#timeline',
+                        content: txt,
+                        placement:'auto left',
+                        html: 'true',
+                        viewport: '#timeline',
+                        template: '<div class="popover quickaccess" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    });
+                    $("#category"+catid).on('mouseenter', function(e){
+                        $('.category:not("#category'+catid+'")').popover('hide');
+                        $(this).popover('show');
+                    });
+                });
             });
         },
         /**

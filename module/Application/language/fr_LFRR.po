@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Epeires 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-19 10:14+0100\n"
-"PO-Revision-Date: 2018-02-19 10:17+0100\n"
+"POT-Creation-Date: 2019-08-08 10:21+0200\n"
+"PO-Revision-Date: 2019-08-08 10:21+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -12,27 +12,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: translate;$this->translate()\n"
 "X-Poedit-Basepath: ..\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.2.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../Core/src/Core/View/Helper/NavBarTop.php:52
+#: ../Administration/src/Controller/IPOSController.php:33
+#: ../Administration/src/Controller/IPOSController.php:76
+#: ../Application/src/Controller/EventsController.php:184
+#: ../Application/src/View/Helper/IPOHelper.php:65
+#: ../Application/src/View/Helper/IPOHelper.php:83
+#: ../Application/src/View/Helper/IPOHelper.php:90
+#: ../Application/src/View/Helper/IPOHelper.php:92
+#: ../Core/src/View/Helper/UserMenu.php:59
+#: ../Administration/view/administration/categories/index.phtml:23
+#: ../Administration/view/administration/centre/index.phtml:58
+#: ../Administration/view/administration/centre/index.phtml:59
+#: ../Administration/view/administration/ipos/index.phtml:8
+#: ../Administration/view/layout/adminlayout.phtml:114
+#: ../Administration/view/layout/adminlayout.phtml:115
+#: ../IPO/view/layout/ipolayout.phtml:43
+msgid "IPO"
+msgstr "IPO"
+
+#: ../Application/src/Controller/EventsController.php:189
+#: ../Administration/view/administration/ipos/index.phtml:62
+msgid "the IPO"
+msgstr "l'IPO"
+
+#: ../Core/src/View/Helper/NavBarTop.php:52
 #: ../Application/view/layout/app-layout.phtml:6
 #: ../Core/view/layout/layout.phtml:6
 msgid "Epeires²"
 msgstr "Epeires²"
 
-#: ../Core/src/Core/View/Helper/UserMenu.php:59
-#: ../Administration/view/administration/categories/index.phtml:23
-#: ../Administration/view/administration/centre/index.phtml:58
-#: ../Administration/view/administration/centre/index.phtml:59
-#: ../Administration/view/administration/ipos/index.phtml:8
 #: ../Administration/view/administration/ipos/index.phtml:56
-#: ../Administration/view/layout/adminlayout.phtml:114
-#: ../Administration/view/layout/adminlayout.phtml:115
-msgid "IPO"
-msgstr "IPO"
+msgid "New IPO"
+msgstr "Nouvel IPO"
 
 #: ../Administration/view/layout/adminlayout.phtml:6
 msgid "Epeires² - Administration"
