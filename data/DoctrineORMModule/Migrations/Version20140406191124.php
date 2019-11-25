@@ -2,12 +2,12 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 class Version20140406191124 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
@@ -17,7 +17,7 @@ class Version20140406191124 extends AbstractMigration
         $this->addSql("ALTER TABLE AntennaCategory ADD defaultantennacategory TINYINT(1) NOT NULL");
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
@@ -27,7 +27,7 @@ class Version20140406191124 extends AbstractMigration
         $this->addSql("ALTER TABLE RadarCategory DROP defaultradarcategory");
     }
     
-    public function postUp(Schema $schema) {
+    public function postUp(Schema $schema) :void {
         //initialize datas with default = first row
         
         $stmt = $this->connection->executeQuery("SELECT id FROM FrequencyCategory WHERE 1 LIMIT 1");

@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -11,11 +11,11 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20140930155730 extends AbstractMigration {
 
-    public function up(Schema $schema) {
+    public function up(Schema $schema) : void {
         $this->connection->update('customfieldtypes', array('name' => 'Oui/Non'), array('type' => 'boolean'));
     }
 
-    public function down(Schema $schema) {
+    public function down(Schema $schema) : void {
         $this->connection->update('customfieldtypes', array('name' => 'Vrai/Faux'), array('type' => 'boolean'));
     }
 

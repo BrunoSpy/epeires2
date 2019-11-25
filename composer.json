@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-    "php": "^7.2",
+    "php": "^7.3",
     "ext-gd": "*",
     "ext-iconv": "*",
     "ext-intl": "*",
@@ -35,7 +35,7 @@
     "doctrine/doctrine-orm-module": "^2.1",
     "murganikolay/doctrine-migrations-module": "dev-zf3",
     "gedmo/doctrine-extensions": "^2.4",
-    "zf-commons/zfc-user": "^3.0",
+    "zf-commons/zfc-user": "3.x-dev",
     "zf-commons/zfc-user-doctrine-orm": "^2.0",
     "zf-commons/zfc-rbac": "^2.6",
     "rwoverdijk/assetmanager": "^1.8",
@@ -52,7 +52,7 @@
   },
   "require-dev":{
     "zendframework/zend-test": "^3.3",
-    "phpunit/phpunit": ">=5.6",
+    "phpunit/phpunit": "^8.4",
     "codeception/codeception": "^3.0",
     "sensiolabs/security-checker": "^5.0.0",
     "phpstan/phpstan": "^0.11.0",
@@ -65,7 +65,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.2"
+      "php": "7.3"
     }
   },
   "autoload": {
