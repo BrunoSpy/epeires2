@@ -41,6 +41,7 @@ use Application\Entity\Afis;
  */
 class AfisController extends TabController
 {
+
     private $em, $cf, $repo, $form, $notamweb;
 
     public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb)
@@ -58,6 +59,7 @@ class AfisController extends TabController
                     ->getRepository(Organisation::class)
                     ->getAllAsArray()
                 );
+
         $this->notamweb = $notamweb;
     }
 
@@ -77,6 +79,7 @@ class AfisController extends TabController
             ]);
     }
 
+
     public function testNotamAccessAction()
     {
         return new JsonModel([
@@ -85,6 +88,7 @@ class AfisController extends TabController
             'notamProxy' => $this->notamweb->getNotamWebProxy(),
         ]);
     }
+
 
     public function getAllNotamFromCodeaction()
     {
@@ -289,6 +293,7 @@ class AfisController extends TabController
                 }
                 else if ($customvalue->getCustomField()->getId() == $afisfield) $afisid = $customvalue->getValue();
             }
+
             if (array_key_exists($afisid, $allAfis)) $allAfis[$afisid]['state'] = $available;
         }
         return $allAfis;
@@ -298,4 +303,5 @@ class AfisController extends TabController
     {
         return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
+
 }
