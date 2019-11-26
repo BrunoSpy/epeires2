@@ -28,8 +28,8 @@ class SearchControllerFactory implements FactoryInterface {
         $service = $serviceLocator->getServiceLocator();
         return new SearchController(
             $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService')
+            $service->get('eventservice'),
+            $service->get('customfieldservice')
         );
     }
 

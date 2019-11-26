@@ -28,8 +28,8 @@ class FrequenciesControllerFactory implements FactoryInterface {
         $service = $serviceLocator->getServiceLocator();
         return new FrequenciesController(
             $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService'),
+            $service->get('eventservice'),
+            $service->get('customfieldservice'),
             $service->get('config'),
             $service->get('mattermostservice'));
     }

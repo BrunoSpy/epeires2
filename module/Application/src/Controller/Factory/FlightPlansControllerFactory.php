@@ -28,8 +28,8 @@ class FlightPlansControllerFactory  implements FactoryInterface
         $service = $serviceLocator->getServiceLocator();
         return new FlightPlansController(
             $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService'),
+            $service->get('eventservice'),
+            $service->get('customfieldservice'),
             $service->get('ZfcRbac\Options\ModuleOptions'),
             $service->get('config'),
             $service->get('mattermostservice'),

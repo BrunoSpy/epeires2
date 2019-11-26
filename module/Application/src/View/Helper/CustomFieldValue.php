@@ -33,9 +33,9 @@ class CustomFieldValue extends AbstractHelper implements ServiceManagerAwareInte
     public function __invoke($customfieldvalue, $value = null)
     {
         if($value !== null) {
-            return $this->servicemanager->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $value);
+            return $this->servicemanager->get('customfieldservice')->getFormattedValue($customfieldvalue->getCustomField(), $value);
         } else {
-            return $this->servicemanager->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $customfieldvalue->getValue());
+            return $this->servicemanager->get('customfieldservice')->getFormattedValue($customfieldvalue->getCustomField(), $customfieldvalue->getValue());
         }
     }
 

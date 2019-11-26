@@ -17,8 +17,8 @@
  */
 namespace Core\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,12 +28,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class UserMenuFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $usermenu = new \Core\View\Helper\UserMenu();
-        $usermenu->setAuthService($serviceLocator->getServiceLocator()
+        $usermenu->setAuthService($container
             ->get('ZfcRbac\Service\AuthorizationService'));
-        $usermenu->setServiceManager($serviceLocator->getServiceLocator());
+        $usermenu->setServiceManager($container);
         return $usermenu;
     }
 }

@@ -28,7 +28,7 @@ class FieldsControllerFactory implements FactoryInterface {
         $service = $serviceLocator->getServiceLocator();
         return new FieldsController(
             $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('CustomFieldService')
+            $service->get('customfieldservice')
             );
     }
 

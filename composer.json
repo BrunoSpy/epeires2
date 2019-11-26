@@ -26,7 +26,6 @@
     "ext-openssl": "*",
     "ext-curl": "*",
     "ext-dom": "*",
-    "zendframework/zend-component-installer": "^2.1",
     "zendframework/zend-mvc": "^3.1",
     "zendframework/zend-mvc-console": "^1.2",
     "zendframework/zend-mvc-plugin-flashmessenger": "^1.1",
@@ -48,7 +47,9 @@
     "smalot/pdfparser": "^0.14.0",
     "zfcampus/zf-apigility": "^1.4",
     "zfcampus/zf-development-mode": "^3.2",
-    "zfcampus/zf-apigility-documentation-swagger": "^1.3"
+    "zfcampus/zf-apigility-documentation-swagger": "^1.3",
+    "zendframework/zend-inputfilter": "^2.10",
+    "zendframework/zend-mvc-i18n": "^1.1"
   },
   "require-dev":{
     "zendframework/zend-test": "^3.3",
@@ -61,7 +62,8 @@
     "api-skeletons/zf-doctrine-data-fixture": "^5.0",
     "zfcampus/zf-apigility-admin": "^1.8",
     "zendframework/zend-log": "^2.10",
-    "zendframework/zend-router": "^3.3"
+    "zendframework/zend-router": "^3.3",
+    "zendframework/zend-component-installer": "^2.1"
   },
   "config": {
     "platform": {

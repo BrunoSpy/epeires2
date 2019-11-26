@@ -18,22 +18,21 @@
 namespace Application\Controller\Factory;
 
 use Application\Controller\EventsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class EventsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new EventsController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService'),
-            $service->get('ZfcRbac\Options\ModuleOptions'),
-            $service->get('config'),
-            $service->get('mattermostservice'),
-            $service->get('translator')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('eventservice'),
+            $container->get('customfieldservice'),
+            $container->get('ZfcRbac\Options\ModuleOptions'),
+            $container->get('config'),
+            $container->get('mattermostservice'),
+            $container->get('translator')
         );
     }
 

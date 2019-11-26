@@ -18,14 +18,13 @@
 namespace Core\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
+class UserMenu extends AbstractHelper
 {
 
     private $auth;

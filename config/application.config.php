@@ -20,7 +20,23 @@
 $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
+        'Zend\Mvc\I18n',
+        'ZF\Doctrine\DataFixture',
+        'Zend\Mvc\Plugin\FlashMessenger',
+        'Zend\Mvc\Plugin\Prg',
+        'Zend\Db',
+        'Zend\Log',
+        'Zend\Session',
+        'Zend\Cache',
+        'Zend\Paginator',
+        'Zend\Form',
+        'Zend\InputFilter',
+        'Zend\Filter',
+        'Zend\Hydrator',
+        'Zend\I18n',
+        'Zend\Mvc\Console',
         'Zend\Router',
+        'Zend\Validator',
         'DoctrineModule',
         'DoctrineORMModule',
         'DoctrineMigrationsModule',

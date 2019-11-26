@@ -18,8 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace Core\Factory;
 
 use Core\Service\MattermostService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -29,11 +29,11 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class MattermostServiceFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new MattermostService(
-            $serviceLocator->get('config'),
-            $serviceLocator->get('zfcuser_auth_service'));
+            $container->get('config'),
+            $container->get('zfcuser_auth_service'));
     }
 }
 

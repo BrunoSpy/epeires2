@@ -43,9 +43,7 @@ class Module implements ConsoleUsageProviderInterface
 
     public function bootstrapSession($e)
     {
-        $session = $e->getApplication()
-            ->getServiceManager()
-            ->get('Zend\Session\SessionManager');
+        $session = new SessionManager();
         $session->start();
 
         $container = new Container('initialized');

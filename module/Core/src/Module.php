@@ -32,11 +32,17 @@ class Module implements ConfigProviderInterface
 
     public function onBootstrap(EventInterface $e)
     {
-        $t = $e->getTarget();
-        
-        $t->getEventManager()->attach($t->getServiceManager()
-            ->get('ZfcRbac\View\Strategy\UnauthorizedStrategy'));
-        
+
+        $app = $e->getApplication();
+        $sm = $app->getServiceManager();
+
+        $e->getTarget()->getEventManager()->attach(
+            $e::EVENT_DISPATCH_ERROR,
+            function($e) use ($sm) {
+                return $sm->get('ZfcRbac\View\Strategy\UnauthorizedStrategy')->onError($e);
+            }
+        );
+
         $events = $e->getApplication()->getEventManager()->getSharedManager();
         $events->attach('ZfcUser\Form\Login','init', function($e) {
             $form = $e->getTarget();
@@ -57,13 +63,13 @@ class Module implements ConfigProviderInterface
             'factories' => array(
                 'coreuser' => function ($controllerManager) {
                     /* @var ControllerManager $controllerManager*/
-                    $serviceManager = $controllerManager->getServiceLocator();
+                    //$serviceManager = $controllerManager->getServiceLocator();
                     
                     /* @var RedirectCallback $redirectCallback */
-                    $redirectCallback = $serviceManager->get('zfcuser_redirect_callback');
+                    //$redirectCallback = $serviceManager->get('zfcuser_redirect_callback');
                     
                     /* @var UserController $controller */
-                    $controller = new UserController($redirectCallback);
+                    $controller = new UserController();
                     
                     return $controller;
                 }

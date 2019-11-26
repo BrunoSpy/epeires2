@@ -31,7 +31,7 @@ class CustomFieldMultipleAllowed extends AbstractHelper implements ServiceManage
 
     public function __invoke($customfield)
     {
-        return $this->servicemanager->get('CustomFieldService')->isMultipleAllowed($customfield);
+        return $this->servicemanager->get('customfieldservice')->isMultipleAllowed($customfield);
     }
 
     public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
