@@ -2,30 +2,38 @@
     <td><?php echo $afis['self']->getCode(); ?></td>
     <td><?php echo $afis['self']->getName(); ?></td>
     <td>
+
+        <?php if ($this->isGranted('afis.read')) : ?>
         <div class="togglebutton">
         <label>
-            <input 
+            <input
                    data-id="<?php echo $afis['self']->getId(); ?>"
-                   class="btn-switch-af" type="checkbox" <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
-                   
-                   <?php
-                        ($this->isGranted('afis.read')) ? '' : 'disabled="disabled"';
+                   class="btn-switch-af" type="checkbox"
+
+                   <?php echo (isset($afis['state'])) ? 'checked="checked"' : ''; ?>
+
+                   <?php echo ($this->isGranted('afis.write')) ? '' : 'disabled="disabled"';
                    ?>
             />
         </label>
         </div>
+        <?php endif; ?>
     </td>
     <td>
-        <?php $openedHours = $afis['self']->getOpenedhours(); 
+        <?php $openedHours = $afis['self']->getOpenedhours();
         if ($openedHours) { ?>
-            <span class="glyphicon glyphicon-time" title="<?php echo $openedHours; ?>"></span>
+            <a href="#"class="af-tooltip" data-tooltip="<?php echo $openedHours; ?>">
+                <span class="glyphicon glyphicon-time" ></span>
+            </a>
         <?php } ?>
     </td>
 
     <td>
         <?php $contacts = $afis['self']->getContacts();
         if ($contacts) { ?>
-            <span class="glyphicon glyphicon-phone-alt" title="<?php echo $contacts; ?>"></span>
+            <a href="#"class="af-tooltip" data-tooltip="<?php echo $contacts; ?>">
+                <span class="glyphicon glyphicon-phone-alt" ></span>
+            </a>
         <?php } ?>
     </td>
 
@@ -35,7 +43,7 @@
          class="a-show-not"
          data-code="<?php echo $afis['self']->getCode(); ?>"
          data-toggle="modal">
-        <button class="btn btn-xs btn-warning btn-notam disabled" disabled="disabled">NOTAM</button>
+        <button class="btn btn-xs btn-primary btn-notam">NOTAM</button>
       </a>
     </td>
 

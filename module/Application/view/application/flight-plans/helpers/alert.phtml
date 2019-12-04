@@ -1,0 +1,35 @@
+<?php
+
+$typeAlertes =
+[
+    'INCERFA' => 'info',
+    'ALERFA' => 'warning',
+    'DETRESFA' => 'danger'
+];
+
+foreach ($typeAlertes as $typeAlerte => $classButton)
+{
+    $act = '';
+    $cause = '';
+    $title = '';
+    $modal = "#mdl-trig-fp";
+
+    if (isset($flightplan['ev-alert']))
+    {
+        $modal = "#mdl-edit-alt";
+        $cause = (isset($flightplan['ev-alert']['Cause'])) ? $flightplan['ev-alert']['Cause'] : '';
+        if($typeAlerte == $flightplan['ev-alert']['Type'])
+        {
+            $act = 'active-alt';
+            $title = 'title = "'.$cause.'"';
+        }
+    }
+    ?>
+    <span <?php echo $title; ?>
+        class="
+            btn btn-xs btn-<?php echo $classButton; ?>
+            ">
+            <?php echo $typeAlerte[0]; ?>
+    </span>
+<?php
+}

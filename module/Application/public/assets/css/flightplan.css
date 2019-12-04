@@ -1,29 +1,58 @@
-.a-trig-alt:hover {
-	text-decoration: none;
+.tooltip-fp td {
+    text-align: left;
+    padding: 5px;
 }
 
-.a-trig-alt button, 
-.a-end-alt button, 
-.a-end-fp button{
-    padding:0;
-    margin:0;
-    margin-left:2px;
-    border:1px;
+.tooltip-fp .tooltip-inner {
+    white-space: pre-line;
 }
 
-.a-trig-alt button.disabled {
-	opacity: 0.05
+.tooltip-fp hr {
+    margin: 7px 0 7px 0;
 }
 
-.active-alt button.disabled {
-	opacity:0.25;
+.display-fp-tasks{
+    cursor: pointer;
 }
 
-.a-trig-alt button {
-    opacity:0.35;
+.fp-tasks {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
+.fp-tasks li {
+    margin: 1em;
+}
 
-.active-alt button {
-    opacity:1;
+.popover-fp-title {
+    color: #333333;
+}
+
+.show-evt-notes span.alt-icon {
+    color: #dc3545 !important;
+}
+
+.table-striped > tbody > tr.fp-closed {
+    background: linear-gradient(45deg, rgb(243,243,243) 25%,
+    rgb(234, 234, 234) 25%, rgb(234, 234, 234) 50%,
+        rgb(243,243,243) 50%, rgb(243,243,243) 75%,
+        rgb(234, 234, 234) 75%);
+    background-size: 30px 30px;
+}
+
+#pan-show-fp td.bg-info { border-left :10px solid #17a2b8; }
+#pan-show-fp td.bg-warning { border-left :10px solid #ffc107; }
+#pan-show-fp td.bg-danger{ border-left :10px solid #dc3545; }
+
+#pan-show-fp td.alt-closed {
+    border-left: 0px;
+}
+
+.fp-filter {
+    margin: 0;
+}
+
+.fp-filter + .fp-filter {
+    margin: 0;
 }

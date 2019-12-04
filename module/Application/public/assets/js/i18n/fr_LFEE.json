@@ -4,6 +4,7 @@
     	"change_couv_normale": "Passer en couverture normale"
     },
     "ipo": {
-      "IPO": "RPO"
+      "IPO": "RPO",
+      "newIPO": "Nouveau RPO"
     }
 }	
