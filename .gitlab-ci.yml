@@ -54,7 +54,7 @@ before_script:
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
 - php public/index.php initDB
-- php public/index.php data-fixture:import --no-interaction --append
+- php public/index.php data-fixture:import --no-interaction
 - chmod a+rwx -Rf ./data
 #launch server
 - cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
