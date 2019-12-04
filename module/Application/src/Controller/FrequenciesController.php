@@ -82,8 +82,7 @@ class FrequenciesController extends TabController
             ->eq('s.display', true))
             ->orderBy('s.position', 'ASC');
         
-        $session = new Container('zone');
-        $zonesession = $session->zoneshortname;
+        $zonesession = $this->sessionContainer->zoneshortname;
         
         if ($zonesession != null) {
             if ($zonesession != '0') {

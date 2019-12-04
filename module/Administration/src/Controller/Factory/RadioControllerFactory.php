@@ -18,14 +18,14 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\RadioController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class RadioControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new RadioController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new RadioController($container->get('Doctrine\ORM\EntityManager'));
     }
 
 }

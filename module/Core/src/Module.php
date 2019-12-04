@@ -61,15 +61,15 @@ class Module implements ConfigProviderInterface
     {
         return array(
             'factories' => array(
-                'coreuser' => function ($controllerManager) {
-                    /* @var ControllerManager $controllerManager*/
-                    //$serviceManager = $controllerManager->getServiceLocator();
+                'coreuser' => function ($container) {
+
                     
                     /* @var RedirectCallback $redirectCallback */
-                    //$redirectCallback = $serviceManager->get('zfcuser_redirect_callback');
-                    
+                    $redirectCallback = $container->get('zfcuser_redirect_callback');
+
                     /* @var UserController $controller */
-                    $controller = new UserController();
+                    $controller = new UserController($redirectCallback);
+                    $controller->setServiceLocator($container);
                     
                     return $controller;
                 }

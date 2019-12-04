@@ -17,15 +17,15 @@
  */
 namespace Application\View\Helper;
 
+use Interop\Container\ContainerInterface;
 use Zend\Form\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class CustomFieldValue extends AbstractHelper implements ServiceManagerAwareInterface
+class CustomFieldValue extends AbstractHelper
 {
 
     private $servicemanager;
@@ -39,8 +39,8 @@ class CustomFieldValue extends AbstractHelper implements ServiceManagerAwareInte
         }
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
+    public function setServiceManager(ContainerInterface $container)
     {
-        $this->servicemanager = $serviceLocator;
+        $this->servicemanager = $container;
     }
 }

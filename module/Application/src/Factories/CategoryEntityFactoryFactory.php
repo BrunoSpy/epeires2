@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,8 +28,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class CategoryEntityFactoryFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new CategoryEntityFactory($serviceLocator->get('Doctrine\ORM\EntityManager'));
+        return new CategoryEntityFactory($container->get('Doctrine\ORM\EntityManager'));
     }
 }

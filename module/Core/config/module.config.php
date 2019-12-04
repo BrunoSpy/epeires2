@@ -16,6 +16,7 @@
  *
  */
 use ZfcRbac\Guard\GuardInterface;
+use Zend\Session;
 
 return array(
     'doctrine' => array(
@@ -146,19 +147,6 @@ return array(
             'userMenu' => 'Core\Factory\UserMenuFactory',
             'navbartop' => 'Core\Factory\NavBarTopFactory',
             'navbar' => 'Core\Factory\NavBarFactory',
-        )
-    ),
-    'session' => array(
-        'config' => array(
-            'class' => 'Zend\Session\Config\SessionConfig',
-            'options' => array(
-                'name' => 'epeires2'
-            )
-        ),
-        'storage' => 'Zend\Session\Storage\SessionArrayStorage',
-        'validators' => array(
-            'Zend\Session\Validator\RemoteAddr',
-            'Zend\Session\Validator\HttpUserAgent'
         )
     ),
     /**

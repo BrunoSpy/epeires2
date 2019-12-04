@@ -18,18 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\CategoriesController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class CategoriesControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
 
-        $service = $serviceLocator->getServiceLocator();
         return new CategoriesController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('categoryfactory'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('categoryfactory'));
     }
 
 }

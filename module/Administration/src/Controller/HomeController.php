@@ -97,8 +97,8 @@ class HomeController extends AbstractActionController
 
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
-            'version' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getCurrentVersion()),
-            'latestversion' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getLatestVersion()),
+            'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
+            'latestversion' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getLatestVersion()),
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations,
             'extensions' => $extensions,

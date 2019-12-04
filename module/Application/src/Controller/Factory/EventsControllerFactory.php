@@ -32,7 +32,8 @@ class EventsControllerFactory implements FactoryInterface {
             $container->get('ZfcRbac\Options\ModuleOptions'),
             $container->get('config'),
             $container->get('mattermostservice'),
-            $container->get('translator')
+            $container->get('translator'),
+            $container->get('timelineZone')
         );
     }
 

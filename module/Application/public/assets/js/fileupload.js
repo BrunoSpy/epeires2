@@ -49,8 +49,8 @@ var fileupload = function(url) {
     }
 
     function getProgress() {
-        $.getJSON(url + 'file/sessionprogress?id=' + $('#progress_key').val(), function(data) {
-            //console.log(data);
+        /*$.getJSON(url + 'file/sessionprogress?id=' + $('#progress_key').val(), function(data) {
+            console.log(data);
             if (data.status && !data.status.done) {
                 var value = Math.floor((data.status.current / data.status.total) * 100);
                 showProgress(value, 'Uploading...');
@@ -58,7 +58,7 @@ var fileupload = function(url) {
                 showProgress(100, 'Complete!');
                 clearInterval(progressInterval);
             }
-        });
+        });*/
     }
 
     function startProgress() {
@@ -111,22 +111,20 @@ var fileupload = function(url) {
             return;
         }
 
-        //$.fn.ajaxSubmit.debug = true;
+        $.fn.ajaxSubmit.debug = true;
         $(this).ajaxSubmit({
             target: '#output',
-            beforeSend: function(jqXHR, settings) {
-                $('#output').empty();
-                showProgress(0, 'Téléchargement...');
-                jqxhrequest = jqXHR;
-            },
-            uploadProgress: function(event, position, total, percentComplete) {
-                showProgress(percentComplete, (percentComplete < 100 ? 'Téléchargement...' : 'Envoi terminé !'));
+            beforeSubmit: function(arr, $form, options) {
+                arr.push({name:"isAjax", value:"1"})
             },
             success: function(response, statusText, xhr, $form) {
+                clearInterval(progressInterval);
+                showProgress(100, 'Complete!');
                 if (response.status) {
                     if (response.formMessages['error']) {
                         //something went wrong
                         //do nothing
+                        console.log(response);
                     } else {
                         //everything ok
                         //close modal and add file to event
@@ -142,7 +140,7 @@ var fileupload = function(url) {
                 console.log(a, b, c);
             }
         });
- //       startProgress();
+        startProgress();
     });
 
-}
+};

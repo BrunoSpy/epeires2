@@ -17,19 +17,18 @@
  */
 namespace IPO\Controller\Factory;
 
+use Interop\Container\ContainerInterface;
 use IPO\Controller\ReportController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class ReportControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new ReportController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('eventservice'),
-            $service->get('customfieldservice')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('eventservice'),
+            $container->get('customfieldservice')
         );
     }
 

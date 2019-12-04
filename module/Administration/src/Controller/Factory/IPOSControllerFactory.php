@@ -18,18 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\IPOSController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class IPOSControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $sl = $serviceLocator->getServiceLocator();
         return new IPOSController(
-            $sl->get('Doctrine\ORM\EntityManager'),
-            $sl->get('config'),
-            $sl->get('translator'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config'),
+            $container->get('translator'));
     }
 
 }
