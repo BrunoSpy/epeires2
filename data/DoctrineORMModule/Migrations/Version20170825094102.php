@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -13,7 +13,7 @@ class Version20170825094102 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -28,7 +28,7 @@ class Version20170825094102 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -36,7 +36,7 @@ class Version20170825094102 extends AbstractMigration
         $this->addSql('DROP TABLE PostItCategory');
     }
     
-    public function postUp(Schema $schema)
+    public function postUp(Schema $schema) : void
     {
         $stmt = $this->connection->executeQuery("SELECT id FROM customfieldtypes WHERE type = ?", array('string'));
         $stringid = $stmt->fetch()['id'];

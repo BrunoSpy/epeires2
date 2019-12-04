@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,10 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class IPOFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $ipoHelper = new \Application\View\Helper\IPOHelper();
-        $ipoHelper->setServiceManager($serviceLocator->getServiceLocator());
+        $ipoHelper->setServiceManager($container);
         return $ipoHelper;
     }
 }

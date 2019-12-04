@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -10,7 +10,7 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20140722101302 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
@@ -18,7 +18,7 @@ class Version20140722101302 extends AbstractMigration
         $this->addSql("ALTER TABLE categories ADD `system` TINYINT(1) NOT NULL");
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
@@ -26,7 +26,7 @@ class Version20140722101302 extends AbstractMigration
         $this->addSql("ALTER TABLE categories DROP `system`");
     }
     
-    public function postUp(Schema $schema){
+    public function postUp(Schema $schema) : void {
         $stmt = $this->connection->executeQuery("SELECT id FROM categories WHERE name = ?", array('Action'));
         $catid = $stmt->fetch()['id'];
         $this->connection->update('categories', array('system' => true), array('id' => $catid));

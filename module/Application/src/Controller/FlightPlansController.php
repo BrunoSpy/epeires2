@@ -66,6 +66,8 @@ class FlightPlansController extends EventsController
         $fp_cats, $alt_cats,
         $zfrcbacOptions;
 
+    private $sessionManager;
+
     public function __construct(
         EntityManager $em,
         EventService $evService,
@@ -73,7 +75,8 @@ class FlightPlansController extends EventsController
         $zfrcbacOptions,
         Array $config,
         $mattermost,
-        $translator)
+        $translator,
+        $sessionManager)
     {
         parent::__construct(
             $em,
@@ -91,6 +94,7 @@ class FlightPlansController extends EventsController
         $this->zfrcbacOptions = $zfrcbacOptions;
         $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
         $this->alt_cats = $this->getEventCategories(AlertCategory::class);
+        $this->sessionManager = $sessionManager;
     }
 
     // vues
@@ -374,7 +378,7 @@ class FlightPlansController extends EventsController
 
         $checkedValue = $this->params()->fromPost('value', false);
 
-        $filterSession = new Container($filter);
+        $filterSession = new Container($filter, $this->sessionManager);
         $filterSession->checked = $checkedValue;
         return new JsonModel();
     }
@@ -817,8 +821,8 @@ class FlightPlansController extends EventsController
 
     private function getFpFilters() : array 
     {
-        $fpFilter = new Container('fp');
-        $altFilter = new Container('alt');
+        $fpFilter = new Container('fp', $this->sessionManager);
+        $altFilter = new Container('alt', $this->sessionManager);
         return [
             'fp' => (isset($fpFilter->checked)) ? $fpFilter->checked : false,
             'alt' => (isset($altFilter->checked)) ? $altFilter->checked : false,

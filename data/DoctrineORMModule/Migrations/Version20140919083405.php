@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -11,7 +11,7 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20140919083405 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $stmt = $this->connection->executeQuery("SELECT `namefield_id` FROM `AlarmCategory` WHERE 1");
         $results = $stmt->fetchAll();
@@ -21,7 +21,7 @@ class Version20140919083405 extends AbstractMigration
         
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         $stmt = $this->connection->executeQuery("SELECT `namefield_id` FROM `AlarmCategory` WHERE 1");
         $results = $stmt->fetchAll();

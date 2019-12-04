@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -10,7 +10,7 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20141008152347 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $stmt = $this->connection->executeQuery("SELECT `id` FROM `permissions` WHERE `name`='admin.access'");
         $results = $stmt->fetchAll();
@@ -44,7 +44,7 @@ class Version20141008152347 extends AbstractMigration
         
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         //useless
 

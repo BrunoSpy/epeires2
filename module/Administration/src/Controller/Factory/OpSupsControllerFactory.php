@@ -18,14 +18,14 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\OpSupsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class OpSupsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new OpSupsController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new OpSupsController($container->get('Doctrine\ORM\EntityManager'));
     }
 
 }

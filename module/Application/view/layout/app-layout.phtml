@@ -98,12 +98,12 @@
     </div>
 
     <?php
-    if(!$this->zfcuserIdentity()){
-            echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
+    if(!$this->zfcUserIdentity()){
+            echo $this->modalwindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
     } ?>
 
     <?php
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "opsupwindow",
         null,
         "",
@@ -135,7 +135,7 @@
     ?>
 
     <?php
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "releveWindow",
         "<h4 class=\"modal-title\">Briefing de relève</h4>",
         "",
@@ -145,7 +145,7 @@
         "modal-lg"
     );
 
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "editwindow",
         '<h4 class="modal-title">Éditer le texte</h4>',
         "",

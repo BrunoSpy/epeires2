@@ -11,6 +11,8 @@
  * file.
  */
 
+use Zend\Session;
+
 return array(
     'translator' => array(
         'locale' => 'fr_FR',
@@ -23,4 +25,17 @@ return array(
         'ok' => 'green',
         'planned' => 'blue',
     ),
+    'session_manager' => array(
+        'validators' => array(
+            Session\Validator\RemoteAddr::class,
+            Session\Validator\HttpUserAgent::class
+        )
+    ),
+    'session_config' => array(
+        'cookie_lifetime' => 60*60*24*30,
+        'gc_maxlifetime' => 60*60*24*30
+    ),
+    'session_storage' => [
+        'type' => Session\Storage\SessionArrayStorage::class
+    ],
 );

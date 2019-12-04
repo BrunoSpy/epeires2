@@ -40,7 +40,7 @@ class AutoConnectGuard extends AbstractGuard
      *
      * @param array $ipAddresses            
      */
-    public function __construct(array $users)
+    public function __construct(?array $users)
     {
         $this->users = $users;
     }
@@ -69,7 +69,7 @@ class AutoConnectGuard extends AbstractGuard
             $clientIp = $_SERVER['REMOTE_ADDR'];
         }
         
-        if (array_key_exists($clientIp, $this->users)) {
+        if ($this->users && array_key_exists($clientIp, $this->users)) {
             $user = $this->users[$clientIp];
             
             if ($this->auth->hasIdentity()) {

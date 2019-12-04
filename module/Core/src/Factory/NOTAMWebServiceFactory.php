@@ -17,8 +17,8 @@
  */
 namespace Core\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -27,11 +27,11 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class NOTAMWebServiceFactory implements FactoryInterface
 {
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new \Core\Service\NOTAMWebService(
-            $serviceLocator->get('Doctrine\ORM\EntityManager'),
-            $serviceLocator->get('config')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config')
         );
     }
 }

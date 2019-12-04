@@ -26,7 +26,7 @@ final class Version20190807135104 extends AbstractMigration
         $this->addSql('ALTER TABLE users DROP state');
     }
 
-    public function postUp(Schema $schema)
+    public function postUp(Schema $schema) : void
     {
         $stmt = $this->connection->executeQuery("UPDATE users SET `state` = 1");
     }

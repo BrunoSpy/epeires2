@@ -18,18 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\AfisController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class AfisControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
 
-        $service = $serviceLocator->getServiceLocator();
         return new AfisController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('notamweb')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('notamweb')
         );
     }
 

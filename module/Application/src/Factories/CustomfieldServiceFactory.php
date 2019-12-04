@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,10 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class CustomfieldServiceFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $customfield = new \Application\Services\CustomFieldService();
-        $customfield->setEntityManager($serviceLocator->get('Doctrine\ORM\EntityManager'));
+        $customfield->setEntityManager($container->get('Doctrine\ORM\EntityManager'));
         return $customfield;
     }
 }

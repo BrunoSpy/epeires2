@@ -18,20 +18,19 @@
 namespace Application\Controller\Factory;
 
 use Application\Controller\FrequenciesController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class FrequenciesControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new FrequenciesController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService'),
-            $service->get('config'),
-            $service->get('mattermostservice'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('eventservice'),
+            $container->get('customfieldservice'),
+            $container->get('config'),
+            $container->get('mattermostservice'));
     }
 
 }

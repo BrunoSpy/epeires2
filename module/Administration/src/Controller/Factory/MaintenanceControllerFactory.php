@@ -18,17 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\MaintenanceController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class MaintenanceControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new MaintenanceController(
-            $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
-            $serviceLocator->getServiceLocator()->get('categoryfactory'),
-            $serviceLocator->getServiceLocator()->get('config'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('categoryfactory'),
+            $container->get('config'));
     }
 
 }

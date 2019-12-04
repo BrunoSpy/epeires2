@@ -20,15 +20,32 @@
 $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
+        'Zend\Mvc\I18n',
+        'ZF\Doctrine\DataFixture',
+        'Zend\Mvc\Plugin\FlashMessenger',
+        'Zend\Mvc\Plugin\Prg',
+        'Zend\Db',
+        'Zend\Log',
+        'Zend\Session',
+        'Zend\Cache',
+        'Zend\Paginator',
+        'Zend\Form',
+        'Zend\InputFilter',
+        'Zend\Filter',
+        'Zend\Hydrator',
+        'Zend\I18n',
+        'Zend\Mvc\Console',
+        'Zend\Router',
+        'Zend\Validator',
         'DoctrineModule',
         'DoctrineORMModule',
         'DoctrineMigrationsModule',
-        'ZfcBase',
+//        'ZfcBase',
         'ZfcRbac',
         'ZfcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
-        'DOMPDFModule',
+        'DompdfModule',
         'OpentbsBundle',
         'MaglMarkdown',
         'MattermostMessenger',
@@ -47,7 +64,7 @@ $modules = array(
         'ZF\\Rest',
         'ZF\\Rpc',
         'ZF\\Versioning',
-        'ZF\\DevelopmentMode',
+//        'ZF\\DevelopmentMode',
         'ZF\\Apigility\\Documentation',
         'ZF\\Apigility\\Documentation\Swagger',
         'ZF\\Configuration',
@@ -57,7 +74,7 @@ $modules = array(
 if ($env == 'development') {
 
     //$modules [] = 'ZendDeveloperTools';
-    $modules[] = 'DoctrineDataFixtureModule';
+    $modules[] = 'ZF\Doctrine\DataFixture';
 }
 
 return array(

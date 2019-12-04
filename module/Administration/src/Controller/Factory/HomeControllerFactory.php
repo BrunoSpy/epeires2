@@ -18,17 +18,16 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\HomeController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class HomeControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new HomeController(
-            $service->get('doctrine.migrations.configuration'),
-            $service->get('config'));
+            $container->get('doctrine.migrations.configuration'),
+            $container->get('config'));
     }
 
 }

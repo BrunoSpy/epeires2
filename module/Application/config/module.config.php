@@ -101,7 +101,7 @@ return array(
             'Application\Controller\Frequencies' => 'Application\Controller\Factory\FrequenciesControllerFactory',
             'Application\Controller\Tabs' => 'Application\Controller\Factory\TabsControllerFactory',
             'Application\Controller\Alarm' => 'Application\Controller\Factory\AlarmControllerFactory',
-            'Application\Controller\OpSups' => 'Application\Controller\Factory\OpSupsControllerFactory',
+            'Application\Controller\Opsups' => 'Application\Controller\Factory\OpSupsControllerFactory',
             'Application\Controller\Mil' => 'Application\Controller\Factory\MilControllerFactory',
             'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
             'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
@@ -181,7 +181,9 @@ return array(
             )
         )
     ),
-    
+    'session_containers' => [
+        'timelineZone'
+    ],
     'permissions' => array(
         'Evènements' => array(
             'events.create' => array(
