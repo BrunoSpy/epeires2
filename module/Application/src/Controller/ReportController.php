@@ -20,7 +20,7 @@ namespace Application\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
 use Doctrine\ORM\EntityManager;
-use DOMPDFModule\View\Model\PdfModel;
+use DompdfModule\View\Model\PdfModel;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
 use Doctrine\Common\Collections\Criteria;

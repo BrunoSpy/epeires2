@@ -22,7 +22,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Form\Annotation\AnnotationBuilder;
 
 use Doctrine\ORM\EntityManager;
-use DOMPDFModule\View\Model\PdfModel;
+use DompdfModule\View\Model\PdfModel;
 
 use Zend\Form\Element;
 use Zend\Form\Form;
