@@ -27,7 +27,7 @@ class ReportControllerFactory implements FactoryInterface {
     {
         return new ReportController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('viewpdfrenderer'),
+            $container->get('ViewPdfRenderer'),
             $container->get('config')
         );
     }

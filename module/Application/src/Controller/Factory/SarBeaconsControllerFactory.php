@@ -27,7 +27,7 @@ class SarBeaconsControllerFactory implements FactoryInterface {
     {
         return new SarBeaconsController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('viewpdfrenderer'),
+            $container->get('ViewPdfRenderer'),
             $container->get('config'),
             $container->get('mattermostservice')
     	);
