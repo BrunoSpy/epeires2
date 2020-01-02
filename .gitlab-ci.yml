@@ -34,7 +34,7 @@ before_script:
 - apt-get install -qqy nodejs
 #install needed php extensions
 - docker-php-ext-install -j$(nproc) iconv soap intl pdo_mysql zip bcmath
-- docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+- docker-php-ext-configure gd $GDOPTIONS
 - docker-php-ext-install -j$(nproc) gd
 #install xdebug for codeception
 - pecl install xdebug
@@ -82,6 +82,7 @@ test:7.2-mariadb101:
   - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -93,6 +94,7 @@ test:7.2-mariadb102:
   - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -104,6 +106,7 @@ test:7.2-mariadb103:
   - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -115,6 +118,7 @@ test:7.2-mariadb104:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -126,6 +130,7 @@ test:7.2-mysql57:
   - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -137,6 +142,7 @@ test:7.3-mariadb101:
   - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -148,6 +154,7 @@ test:7.3-mariadb102:
   - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -159,6 +166,7 @@ test:7.3-mariadb103:
   - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -170,6 +178,7 @@ test:7.3-mariadb104:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -181,6 +190,7 @@ test:7.3-mysql57:
   - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -192,6 +202,7 @@ test:7.4-mariadb101:
     - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -203,6 +214,7 @@ test:7.4-mariadb102:
     - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -214,6 +226,7 @@ test:7.4-mariadb103:
     - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -225,6 +238,7 @@ test:7.4-mariadb104:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
@@ -236,6 +250,7 @@ test:7.4-mysql57:
     - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
