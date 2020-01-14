@@ -2,6 +2,7 @@ stages:
   - test
   - build_image
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
   - vendor/
 
