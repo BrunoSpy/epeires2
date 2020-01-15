@@ -46,6 +46,7 @@ test:7.2-mariadb101:
   artifacts:
     paths:
       - builds/bruno.spyckerelle/epeires2/tests/_output/
+    when: on_failure
   services:
   - mariadb:10.1
   - selenium/standalone-chrome
