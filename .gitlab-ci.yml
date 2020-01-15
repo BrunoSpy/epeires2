@@ -7,12 +7,6 @@ cache:
   - vendor/
 
 before_script:
-# Setup Selenium
-- export DISPLAY=:99
-- Xvfb :99 &
-- sleep 3
-# WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
-- java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #download sonar scanner
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
 - unzip ./sonar-scanner.zip
@@ -35,7 +29,7 @@ before_script:
 - a2enmod rewrite
 - service apache2 restart
   # Make sure Webdriver is running
-- curl http://localhost:4444/wd/hub/status
+- curl http://selenium__standalone-firefox:4444/wd/hub/status
   #Make sure webserver is running
 - curl http://localhost/events/testAuthentication
 - apache2ctl -S
@@ -51,6 +45,7 @@ test:7.2-mariadb101:
   stage: test
   services:
   - mariadb:10.1
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
