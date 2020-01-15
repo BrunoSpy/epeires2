@@ -6,10 +6,6 @@ cache:
   paths:
   - vendor/
 
-artifacts:
-  paths:
-    - builds/bruno.spyckerelle/epeires2/tests/_output/
-
 before_script:
 #download sonar scanner
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
@@ -47,6 +43,9 @@ variables:
 test:7.2-mariadb101:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
+  artifacts:
+    paths:
+      - builds/bruno.spyckerelle/epeires2/tests/_output/
   services:
   - mariadb:10.1
   - selenium/standalone-chrome
