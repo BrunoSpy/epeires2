@@ -57,6 +57,7 @@ test:7.2-mariadb102:
   stage: test
   services:
   - mariadb:10.2
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -68,6 +69,7 @@ test:7.2-mariadb103:
   stage: test
   services:
   - mariadb:10.3
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -79,6 +81,7 @@ test:7.2-mariadb104:
   stage: test
   services:
     - mariadb:10.4
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -90,6 +93,7 @@ test:7.2-mysql57:
   stage: test
   services:
   - mysql:5.7
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
@@ -101,6 +105,7 @@ test:7.3-mariadb101:
   stage: test
   services:
   - mariadb:10.1
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -112,6 +117,7 @@ test:7.3-mariadb102:
   stage: test
   services:
   - mariadb:10.2
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -123,6 +129,7 @@ test:7.3-mariadb103:
   stage: test
   services:
   - mariadb:10.3
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -134,6 +141,7 @@ test:7.3-mariadb104:
   stage: test
   services:
     - mariadb:10.4
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -145,6 +153,7 @@ test:7.3-mysql57:
   stage: test
   services:
   - mysql:5.7
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
@@ -156,6 +165,7 @@ test:7.4-mariadb101:
   stage: test
   services:
     - mariadb:10.1
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -167,6 +177,7 @@ test:7.4-mariadb102:
   stage: test
   services:
     - mariadb:10.2
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -178,6 +189,7 @@ test:7.4-mariadb103:
   stage: test
   services:
     - mariadb:10.3
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -189,6 +201,7 @@ test:7.4-mariadb104:
   stage: test
   services:
     - mariadb:10.4
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -200,6 +213,7 @@ test:7.4-mysql57:
   stage: test
   services:
     - mysql:5.7
+    - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
@@ -211,6 +225,7 @@ test:docker:
   stage: test
   services:
   - mariadb:10.2.14
+  - selenium/standalone-firefox
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
