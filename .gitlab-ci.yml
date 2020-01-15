@@ -31,7 +31,8 @@ before_script:
   # Make sure Webdriver is running
 - curl http://selenium__standalone-chrome:4444/wd/hub/status
   #Make sure webserver is running
-- curl http://localhost/events/testAuthentication
+- curl -v http://localhost/events/testAuthentication
+- curl -v http://localhost
 - apache2ctl -S
 
 variables:
