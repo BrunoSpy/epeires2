@@ -10,7 +10,6 @@ class HomePageCest
         $I->wantTo('Check that the home page renders as it should');
         $I->amGoingTo("Load the home page");
         $I->amOnPage('/');
-        $I->waitForElementVisible("#navbar-first-collapse");
     }
 
     public function _after(AcceptanceTester $I)

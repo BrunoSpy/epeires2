@@ -9,8 +9,7 @@ modules:
     enabled:
         - \Helper\Acceptance
         - WebDriver:
-            url: "http://epeires2"
-            host: "selenium__standalone-chrome"
+            url: "http://127.0.0.1/"
             browser: chrome
             window_size: 1024x900
             capabilities:

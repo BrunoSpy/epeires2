@@ -20,7 +20,7 @@ class LoginCest
     public function tryToTest(AcceptanceTester $I)
     {
         $I->seeInCurrentUrl('/');
-        $I->waitForElementVisible("#navbar-first-collapse");
+        $I->seeElement("#navbar-first-collapse");
         $I->click('Non connecté');
         $I->click('#openloginwindow');
         $I->waitForElementVisible('#loginwindow');
