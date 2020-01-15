@@ -12,6 +12,7 @@ before_script:
 - Xvfb :99 &
 - sleep 3
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
+- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1
 #download sonar scanner
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
