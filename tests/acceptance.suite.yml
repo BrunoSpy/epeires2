@@ -9,8 +9,9 @@ modules:
     enabled:
         - \Helper\Acceptance
         - WebDriver:
-            url: "http://selenium__standalone-firefox/"
-            browser: chrome
+            url: "http://127.0.0.1/"
+            host: "http://selenium__standalone-firefox/"
+            browser: firefox
             window_size: 1024x900
             capabilities:
                 acceptInsecureCerts: true
