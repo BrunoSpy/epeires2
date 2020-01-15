@@ -24,15 +24,15 @@ before_script:
 #launch server
 - cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
 - sed -e "s?%BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-enabled/vhost.conf
-- echo ServerName localhost >> /etc/apache2/apache2.conf
+- echo ServerName epeires2 >> /etc/apache2/apache2.conf
 - rm /etc/apache2/sites-enabled/000-default.conf
 - a2enmod rewrite
 - service apache2 restart
   # Make sure Webdriver is running
 - curl http://selenium__standalone-chrome:4444/wd/hub/status
   #Make sure webserver is running
-- curl -v http://localhost/events/testAuthentication
-- curl -v http://localhost
+- curl -v http://epeires2/events/testAuthentication
+- curl -v http://epeires2
 - apache2ctl -S
 
 variables:
