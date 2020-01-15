@@ -45,7 +45,7 @@ test:7.2-mariadb101:
   stage: test
   artifacts:
     paths:
-      - builds/bruno.spyckerelle/epeires2/tests/_output/
+      - epeires2/tests/_output/ApplicationTest.LoginCest.tryToTest.fail.png
     when: on_failure
   services:
   - mariadb:10.1
