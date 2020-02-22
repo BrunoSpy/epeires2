@@ -78,8 +78,9 @@ class PredefinedEvent extends AbstractEvent
      * @ORM\Column(type="boolean")
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Accès rapide :"})
+     * @Annotation\Required(false)
      */
-    protected $quickaccess;
+    protected $quickaccess = false;
 
     public function __construct()
     {

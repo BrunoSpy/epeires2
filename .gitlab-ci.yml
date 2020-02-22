@@ -2,49 +2,21 @@ stages:
   - test
   - build_image
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
   - vendor/
 
 before_script:
-#use proxy cache
-- export http_proxy=http://10.196.32.91:3142
-#install git and unzip for composer, libmcrypt for php-mcrypt
-- apt-get update && apt-get install -qqy git unzip libzip-dev libmcrypt-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxml2-dev libicu-dev icu-devtools zlib1g-dev libssl-dev
-#ajout xvfb for selenium
-- apt-get install -qqy xvfb wget chromium chromium-driver
-- mkdir -p /usr/share/man/man1 #fix issue with debian-stretch-slim
-- apt-get install -qqy default-jre
-#stop using proxy cache, unless you want composer to crash
-- export http_proxy=""
-- export https_proxy=""
 # Setup Selenium
 - export DISPLAY=:99
 - Xvfb :99 &
 - sleep 3
-- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
+- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
 - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
 #download sonar scanner
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
 - unzip ./sonar-scanner.zip
-#install node to allow css analysis
-- curl -sL https://deb.nodesource.com/setup_10.x > setup_10.x
-- chmod +x setup_10.x
-- ./setup_10.x
-- apt-get install -qqy nodejs
-#install needed php extensions
-- docker-php-ext-install -j$(nproc) iconv soap intl pdo_mysql zip bcmath
-- docker-php-ext-configure gd $GDOPTIONS
-- docker-php-ext-install -j$(nproc) gd
-#install xdebug for codeception
-- pecl install xdebug
-- docker-php-ext-enable xdebug
-#configure date.timezone
-- echo "date.timezone=Europe/Paris" > /usr/local/etc/php/conf.d/date_timezone.ini
-#configure error reports
-- echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING" > /usr/local/etc/php/conf.d/errors.ini
-#download composer
-- curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 #parallelize downloads
 - composer global require --optimize-autoloader "hirak/prestissimo"
 - composer install --no-interaction --prefer-dist
@@ -76,187 +48,172 @@ variables:
   TIMEZONE: "Europe/Paris"
 
 test:7.2-mariadb101:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
   - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.2-mariadb102:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
   - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.2-mariadb103:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
   - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.2-mariadb104:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.2-mysql57:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
   - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mariadb101:
-  image: php:7.3-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
   - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mariadb102:
-  image: php:7.3-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
   - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mariadb103:
-  image: php:7.3-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
   - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mariadb104:
-  image: php:7.3-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mysql57:
-  image: php:7.3-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
   - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-    GDOPTIONS: "--with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/"
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb101:
-  image: php:7.4-apache-buster
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
     - mariadb:10.1
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb102:
-  image: php:7.4-apache-buster
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
     - mariadb:10.2
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb103:
-  image: php:7.4-apache-buster
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
     - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb104:
-  image: php:7.4-apache-buster
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
     - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql57:
-  image: php:7.4-apache-buster
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
     - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-    GDOPTIONS: "--with-freetype=/usr/include/ --with-jpeg=/usr/include/"
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:docker:
-  image: php:7.2-apache-stretch
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
   stage: test
   services:
   - mariadb:10.2.14
