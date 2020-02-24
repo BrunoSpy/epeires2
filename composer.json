@@ -57,7 +57,7 @@
     "zfcampus/zf-apigility-documentation-swagger": "^1.2",
     "zfcampus/zf-development-mode": "~2.0",
     "maglnet/magl-markdown": "~1.1",
-    "dgac/nmb2b-phpclient": "^0.2.0",
+    "dgac/nmb2b-phpclient": "^0.2.6",
     "dgac/mattermostmodule": "0.2.*",
     "beberlei/doctrineextensions": "^1.2"
   },

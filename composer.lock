@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "778ddcdf717efabdda9d43aef10f64f8",
+    "content-hash": "a053f63ac2a864224cd8962259e0b4d9",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -242,16 +242,16 @@
         },
         {
             "name": "dgac/nmb2b-phpclient",
-            "version": "v0.2.4",
+            "version": "v0.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/nmb2b-phpclient.git",
-                "reference": "56dea020c71034e73ad96a5daa0d0249bbc85565"
+                "reference": "12973ed4a6451027096392fb97a8803a329c0539"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/56dea020c71034e73ad96a5daa0d0249bbc85565",
-                "reference": "56dea020c71034e73ad96a5daa0d0249bbc85565",
+                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/12973ed4a6451027096392fb97a8803a329c0539",
+                "reference": "12973ed4a6451027096392fb97a8803a329c0539",
                 "shasum": ""
             },
             "require": {
@@ -278,7 +278,7 @@
                 }
             ],
             "description": "PHP Client for NM B2B Web services",
-            "time": "2020-01-02T10:20:09+00:00"
+            "time": "2020-02-24T09:09:22+00:00"
         },
         {
             "name": "dino/dompdf-module",
@@ -3703,6 +3703,7 @@
                 "crypt",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-crypt",
             "time": "2016-02-03T23:46:30+00:00"
         },
         {
@@ -5410,6 +5411,7 @@
                 "text",
                 "zf"
             ],
+            "abandoned": "laminas/laminas-text",
             "time": "2019-10-16T20:36:27+00:00"
         },
         {
@@ -6183,6 +6185,7 @@
                 "framework",
                 "zf"
             ],
+            "abandoned": "laminas-api-tools/api-tools-provider",
             "time": "2018-05-08T13:32:13+00:00"
         },
         {
@@ -7312,6 +7315,7 @@
                 "selenium",
                 "webdriver"
             ],
+            "abandoned": "php-webdriver/webdriver",
             "time": "2019-06-13T08:02:18+00:00"
         },
         {
