@@ -43,6 +43,8 @@ class NMB2BService
     private $version;
     private $floatVersion;
 
+    private $verbose = false;
+
     public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
@@ -179,17 +181,13 @@ class NMB2BService
         }
         try {
             $client->retrieveEAUPRSAs($params);
+            if($this->verbose){
+                print_r($this->getRawRequestResponse($client));
+            }
         } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
-            $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->getRawRequestResponse($client);
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
@@ -215,17 +213,13 @@ class NMB2BService
         );
         try {
             $client->retrieveEAUPChain($params);
+            if($this->verbose){
+                print_r($this->getRawRequestResponse($client));
+            }
         } catch(\SoapFault $e){
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
-            $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->getRawRequestResponse($client);
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
@@ -268,17 +262,13 @@ class NMB2BService
 
         try {
             $client->queryRegulations($params);
+            if($this->verbose) {
+                print_r($this->getRawRequestResponse($client));
+            }
         } catch (\SoapFault $e) {
             $text = "Message d'erreur : \n";
             $text .= $e->getMessage()."\n\n";
-            $text .= "Last Request Header\n";
-            $text .= $client->__getLastRequestHeaders()."\n\n";
-            $text .= "Last Request\n";
-            $text .= $client->__getLastRequest()."\n\n";
-            $text .= "Last Response Header\n";
-            $text .= $client->__getLastResponseHeaders()."\n\n";
-            $text .= "Last Response\n";
-            $text .= $client->__getLastResponse()."\n";
+            $text .= $this->getRawRequestResponse($client);
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
@@ -328,6 +318,25 @@ class NMB2BService
             $transport->setOptions($transportOptions);
             $transport->send($message);
         }
+    }
+
+    public function setVerbose($verbose)
+    {
+        $this->verbose = $verbose;
+    }
+
+    private function getRawRequestResponse($client)
+    {
+        $text = "Last Request Header\n";
+        $text .= $client->__getLastRequestHeaders()."\n\n";
+        $text .= "Last Request\n";
+        $text .= $client->__getLastRequest()."\n\n";
+        $text .= "Last Response Header\n";
+        $text .= $client->__getLastResponseHeaders()."\n\n";
+        $text .= "Last Response\n";
+        $text .= $client->__getLastResponse()."\n";
+
+        return $text;
     }
 }
 

@@ -63,6 +63,11 @@ class ATFCMController extends AbstractEntityManagerAwareController
             $this->nmb2b->deActivateErrorEmail();
         }
 
+        $verbose = $request->getParam('verbose');
+        if($verbose) {
+            $this->nmb2b->setVerbose(true);
+        }
+
         $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
             'shortname' => $org
         ));

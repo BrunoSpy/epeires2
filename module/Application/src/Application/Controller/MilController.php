@@ -68,6 +68,11 @@ class MilController extends AbstractEntityManagerAwareController
             $this->nmb2b->deActivateErrorEmail();
         }
 
+        $verbose = $request->getParam('verbose');
+        if($verbose) {
+            $this->nmb2b->setVerbose(true);
+        }
+
         $username = $request->getParam('username');
         
         $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
