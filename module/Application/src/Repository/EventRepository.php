@@ -1836,9 +1836,6 @@ class EventRepository extends ExtendedRepository
 
         $results = $tempresults;
 
-        //test
-        $regulation->getInitialConstraints();
-
         if(count($results) == 0) {
             //do create a new event
             $this->doAddRegulationEvent(
