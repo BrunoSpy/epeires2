@@ -198,5 +198,12 @@ class NMB2BService
             $transport->send($message);
         }
     }
+
+    public function setVerbose(bool $verbose)
+    {
+        if($this->nmb2bClient) {
+            $this->nmb2bClient->setVerbose($verbose);
+        }
+    }
 }
 

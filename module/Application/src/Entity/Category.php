@@ -123,12 +123,12 @@ class Category
 
     /**
      * Bidirectional - inverse side
-     * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="CustomField", mappedBy="category", cascade={"remove"}, orphanRemoval=true)
      */
     protected $customfields;
 
     /**
-     * @ORM\OneToOne(targetEntity="CustomField")
+     * @ORM\OneToOne(targetEntity="CustomField", cascade={"remove"})
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Champ titre", "empty_option":"Choisir le champ titre"})

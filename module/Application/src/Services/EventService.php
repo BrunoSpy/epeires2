@@ -396,6 +396,8 @@ class EventService
         );
         $milestones = array();
         foreach ($event->getCustomFieldsValues() as $value) {
+            if(!$value->getCustomField())
+                continue;
             if($value->getCustomField()->isHidden()) //don't display
                 continue;
             if($value->getCustomField()->isTraceable()) {

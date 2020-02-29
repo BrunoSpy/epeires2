@@ -1846,7 +1846,7 @@ class EventRepository extends ExtendedRepository
                 $regulation->getDateTimeEnd(),
                 $regulation->getReason(),
                 $regulation->getDescription(),
-                $regulation->getNormalRate(),
+                $regulation->getNormalRates(),
                 $regulation->getRegulationState(),
                 $organisation,
                 $user,
@@ -1880,7 +1880,7 @@ class EventRepository extends ExtendedRepository
                     $normalRate->setCustomField($category->getNormalRateField());
                     $normalRate->setEvent($event);
                 }
-                $normalRate->setValue($regulation->getNormalRate());
+                $normalRate->setValue($regulation->getNormalRates());
                 $newRegulationState = $regulation->getRegulationState();
                 $regulationState = $event->getCustomFieldValue($category->getRegulationStateField());
                 if(!$regulationState) {
