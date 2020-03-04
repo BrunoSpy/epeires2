@@ -18,11 +18,11 @@
 namespace Application\Controller;
 
 use MattermostMessenger\Service\MattermostService;
-use Zend\Form\Element\Select;
-use Zend\Form\Form;
-use Zend\Session\Container;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Form;
+use Laminas\Session\Container;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Sets all variables needed to a controller

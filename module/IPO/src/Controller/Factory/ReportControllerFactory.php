@@ -19,7 +19,7 @@ namespace IPO\Controller\Factory;
 
 use Interop\Container\ContainerInterface;
 use IPO\Controller\ReportController;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class ReportControllerFactory implements FactoryInterface {
 

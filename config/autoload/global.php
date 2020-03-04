@@ -11,7 +11,7 @@
  * file.
  */
 
-use Zend\Session;
+use Laminas\Session;
 
 return array(
     'translator' => array(

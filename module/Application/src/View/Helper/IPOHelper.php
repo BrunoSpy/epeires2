@@ -17,9 +17,9 @@
  */
 namespace Application\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
-use Zend\Form\Form;
-use Zend\Form\Element\Select;
+use Laminas\Form\View\Helper\AbstractHelper;
+use Laminas\Form\Form;
+use Laminas\Form\Element\Select;
 
 /**
  *

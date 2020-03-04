@@ -19,7 +19,7 @@ namespace Administration\Controller\Factory;
 
 use Administration\Controller\CategoriesController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class CategoriesControllerFactory implements FactoryInterface {
 

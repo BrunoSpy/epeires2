@@ -21,7 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Core\Entity\TemporaryResource;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
@@ -42,7 +42,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -50,7 +50,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="mainfrequencies")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Antenne principale :", "empty_option":"Choisir l'antenne principale"})
      */
@@ -58,7 +58,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="backupfrequencies")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Antenne secours :", "empty_option":"Choisir l'antenne secours"})
      */
@@ -66,7 +66,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="mainfrequenciesclimax")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Antenne principale climax :", "empty_option":"Choisir l'antenne"})
      */
@@ -74,7 +74,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Antenna", inversedBy="backupfrequenciesclimax")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Antenne secours climax :", "empty_option":"Choisir l'antenne"})
      */
@@ -82,7 +82,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\OneToOne(targetEntity="Sector", inversedBy="frequency")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Secteur par défaut :", "empty_option":"Choisir le secteur"})
      */
@@ -90,7 +90,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=3)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Valeur :"})
      */
@@ -98,7 +98,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -106,7 +106,7 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\ManyToMany(targetEntity="Frequency")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Fréquences préconisées", "empty_option":"Choisir les fréquences préconisées"})
@@ -115,7 +115,7 @@ class Frequency extends TemporaryResource
     
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Commentaire :"})
      */

@@ -17,8 +17,8 @@
  */
 namespace Core\Guard;
 
-use \Zend\Http\Request as HttpRequest;
-use \Zend\Mvc\MvcEvent;
+use \Laminas\Http\Request as HttpRequest;
+use \Laminas\Mvc\MvcEvent;
 use \ZfcRbac\Guard\AbstractGuard;
 
 /**
@@ -45,7 +45,7 @@ class AutoConnectGuard extends AbstractGuard
         $this->users = $users;
     }
 
-    public function setAuthService(\Zend\Authentication\AuthenticationService $auth)
+    public function setAuthService(\Laminas\Authentication\AuthenticationService $auth)
     {
         $this->auth = $auth;
     }

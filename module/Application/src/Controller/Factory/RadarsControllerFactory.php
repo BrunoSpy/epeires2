@@ -19,7 +19,7 @@ namespace Application\Controller\Factory;
 
 use Application\Controller\RadarsController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class RadarsControllerFactory implements FactoryInterface {
 

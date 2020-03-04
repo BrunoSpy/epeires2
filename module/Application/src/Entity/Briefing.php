@@ -19,7 +19,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -41,7 +41,7 @@ class Briefing
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -54,7 +54,7 @@ class Briefing
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\DateTime")
+     * @Annotation\Type("Laminas\Form\Element\DateTime")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Fin", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})

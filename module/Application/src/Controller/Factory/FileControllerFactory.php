@@ -19,7 +19,7 @@ namespace Application\Controller\Factory;
 
 use Application\Controller\FileController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class FileControllerFactory implements FactoryInterface {
 

@@ -18,7 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\QualificationZoneRepository")
@@ -39,7 +39,7 @@ class QualificationZone
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -47,7 +47,7 @@ class QualificationZone
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})
      */
@@ -55,7 +55,7 @@ class QualificationZone
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation", inversedBy="zones")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */

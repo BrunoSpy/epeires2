@@ -21,7 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Core\Entity\TemporaryResource;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="sectors")
@@ -49,7 +49,7 @@ class Sector extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -57,7 +57,7 @@ class Sector extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="QualificationZone", inversedBy="sectors")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Choisir la zone de qualification"})
      */

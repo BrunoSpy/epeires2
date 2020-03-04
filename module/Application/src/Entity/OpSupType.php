@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
@@ -37,13 +37,13 @@ class OpSupType
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -51,7 +51,7 @@ class OpSupType
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})
      */
@@ -60,7 +60,7 @@ class OpSupType
     /**
      * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="opsuptypes")
      * @ORM\JoinTable(name="roles_opsuptypes")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Affiché pour :"})

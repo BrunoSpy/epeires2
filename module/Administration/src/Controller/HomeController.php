@@ -18,7 +18,7 @@
 namespace Administration\Controller;
 
 use Core\Version;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  *

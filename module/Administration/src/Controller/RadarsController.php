@@ -18,10 +18,10 @@
 namespace Administration\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
-use Zend\Json\Json;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Json\Json;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Radar;
 
@@ -272,11 +272,11 @@ class RadarsController extends AbstractEntityManagerAwareController
                         }
                     }
                 }
-                $form = new \Zend\Form\Form("model");
-                $hidden = new \Zend\Form\Element\Hidden("id");
+                $form = new \Laminas\Form\Form("model");
+                $hidden = new \Laminas\Form\Element\Hidden("id");
                 $hidden->setValue($id);
                 $form->add($hidden);
-                $select = new \Zend\Form\Element\Select("models");
+                $select = new \Laminas\Form\Element\Select("models");
                 $optionsModels = array();
                 foreach ($models as $model) {
                     $optionsModels[$model->getId()] = $model->getName();

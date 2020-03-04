@@ -18,9 +18,9 @@
 namespace Application\Controller;
 
 use Doctrine\ORM\EntityManager;
-//use Zend\ProgressBar;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+//use Laminas\ProgressBar;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Application\Form\FileUpload;
 
 /**

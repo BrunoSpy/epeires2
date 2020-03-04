@@ -19,7 +19,7 @@ namespace Administration\Controller\Factory;
 
 use Administration\Controller\CentreController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class CentreControllerFactory implements FactoryInterface {
 

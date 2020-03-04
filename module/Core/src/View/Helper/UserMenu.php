@@ -17,7 +17,7 @@
  */
 namespace Core\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  *
@@ -86,7 +86,7 @@ class UserMenu extends AbstractHelper
         $this->auth = $auth;
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
+    public function setServiceManager(\Laminas\ServiceManager\ServiceManager $serviceLocator)
     {
         $this->servicemanager = $serviceLocator;
     }

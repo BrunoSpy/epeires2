@@ -24,7 +24,7 @@ use Application\Entity\Event;
 use Core\Controller\AbstractEntityManagerAwareController;
 use Core\Service\NMB2BService;
 use Doctrine\ORM\EntityManager;
-use Zend\Console\Request as ConsoleRequest;
+use Laminas\Console\Request as ConsoleRequest;
 use DSNA\NMB2BDriver\Models\RegulationListReply;
 
 /**

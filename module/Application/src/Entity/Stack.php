@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Core\Entity\TemporaryResource;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -41,7 +41,7 @@ class Stack extends TemporaryResource
     /**
      * @ORM\ManyToOne(targetEntity="QualificationZone")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Choisir la zone"})
      */
@@ -49,7 +49,7 @@ class Stack extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */

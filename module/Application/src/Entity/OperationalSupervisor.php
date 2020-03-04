@@ -18,7 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
@@ -36,13 +36,13 @@ class OperationalSupervisor
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -50,7 +50,7 @@ class OperationalSupervisor
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -58,7 +58,7 @@ class OperationalSupervisor
 
     /**
      * @ORM\ManyToOne(targetEntity="OpSupType", inversedBy="opsups")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Type :", "empty_option":"Choisir le type"})
      */
@@ -66,7 +66,7 @@ class OperationalSupervisor
 
     /**
      * @ORM\ManyToOne(targetEntity="QualificationZone")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Choisir la zone de qualification"})
      */
@@ -80,7 +80,7 @@ class OperationalSupervisor
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Archivé :"})
      * @Annotation\Attributes({"title":"En cochant cette option, tous les évènements liés ne seront plus modifiables."})
      */

@@ -17,9 +17,9 @@
  */
 namespace Application\Form;
 
-use Zend\InputFilter;
-use Zend\Form\Form;
-use Zend\Form\Element;
+use Laminas\InputFilter;
+use Laminas\Form\Form;
+use Laminas\Form\Element;
 
 /**
  * Description of FileUpload

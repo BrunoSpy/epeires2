@@ -19,7 +19,7 @@ namespace Administration\Controller\Factory;
 
 use Administration\Controller\RolesController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class RolesControllerFactory implements FactoryInterface {
 

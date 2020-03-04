@@ -18,7 +18,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -58,13 +58,13 @@ class Category
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="childs")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Catégorie parente", "empty_option":"Choisir la catégorie parente"})
      * @Gedmo\SortableGroup
@@ -77,7 +77,7 @@ class Category
     protected $childs;
 
     /**
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court"})
      * @ORM\Column(type="string")
@@ -85,7 +85,7 @@ class Category
     protected $shortname;
 
     /**
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Couleur"})
      * @ORM\Column(type="string")
@@ -95,14 +95,14 @@ class Category
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Mode compact"})
      */
     protected $compactmode;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Mode confirmé"})
      * @Annotation\Attributes({"id":"timelineconfirmed","title":"Valable uniquement pour l'onglet principal", "data-toggle":"tooltip"})
      */
@@ -110,7 +110,7 @@ class Category
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom complet"})
      */
@@ -129,7 +129,7 @@ class Category
 
     /**
      * @ORM\OneToOne(targetEntity="CustomField", cascade={"remove"})
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Champ titre", "empty_option":"Choisir le champ titre"})
      */
@@ -138,7 +138,7 @@ class Category
     /**
      * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readcategories")
      * @ORM\JoinTable(name="roles_categories_read")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Affichée pour"})
@@ -164,7 +164,7 @@ class Category
     /**
      * Exclude category from IPO report
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Exclure IPO"})
      */
     protected $exclude = false;

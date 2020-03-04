@@ -18,7 +18,7 @@
  */
 namespace IPO\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -40,13 +40,13 @@ class Report
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -54,7 +54,7 @@ class Report
 
     /**
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Numéro de la semaine :"})
      * @Annotation\Attributes({"data-rule-number":"true", "data-rule-min":"1", "data-rule-max":"53"})
@@ -63,7 +63,7 @@ class Report
 
     /**
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Année :"})
      * @Annotation\Attributes({"data-rule-number":"true", "data-rule-min":"2000"})

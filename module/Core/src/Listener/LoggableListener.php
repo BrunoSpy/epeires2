@@ -1,8 +1,8 @@
 <?php
 namespace Core\Listener;
 
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManagerAwareInterface;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Loggable listener

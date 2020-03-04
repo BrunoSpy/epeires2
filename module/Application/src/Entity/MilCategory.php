@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,7 +31,7 @@ class MilCategory extends Category
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Zones associées :"})
      * Displayed zones, must be included in <$filter>*
      */
@@ -39,7 +39,7 @@ class MilCategory extends Category
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Filtre d'import :"})
      * Filter applied at import
      */
@@ -48,7 +48,7 @@ class MilCategory extends Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
      */
     protected $nmB2B = false;
@@ -56,7 +56,7 @@ class MilCategory extends Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Actualiser avec SIA (uniquement possible pour ZTBA) :"})
      */
     protected $sia = false;

@@ -18,7 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -39,7 +39,7 @@ class Organisation
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -47,7 +47,7 @@ class Organisation
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})
      */
@@ -55,14 +55,14 @@ class Organisation
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Nom complet :"})
      */
     protected $longname;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Type("Laminas\Form\Element\Textarea")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Adresse :"})
      */
@@ -70,14 +70,14 @@ class Organisation
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Numéro tel IPO"})
      */
     protected $iponumber;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Email IPO"})
      */
     protected $ipoemail;

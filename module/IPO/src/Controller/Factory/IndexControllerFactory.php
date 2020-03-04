@@ -19,7 +19,7 @@ namespace IPO\Controller\Factory;
 
 use Interop\Container\ContainerInterface;
 use IPO\Controller\IndexController;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class IndexControllerFactory implements FactoryInterface {
 

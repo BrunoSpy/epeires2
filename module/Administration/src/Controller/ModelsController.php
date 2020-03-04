@@ -20,13 +20,13 @@ namespace Administration\Controller;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\PredefinedEvent;
 use Application\Entity\CustomFieldValue;
 use Application\Form\CustomFieldset;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 
@@ -312,7 +312,7 @@ class ModelsController extends FormController
             
             // remove required inputfilter on custom fields (default to true for select elements...)
             foreach ($form->getInputFilter()->getInputs() as $input) {
-                if ($input instanceof \Zend\InputFilter\InputFilter) {
+                if ($input instanceof \Laminas\InputFilter\InputFilter) {
                     foreach ($input->getInputs() as $i) {
                         $i->setRequired(false);
                         $i->setAllowEmpty(true); //FIX bug form non valide si un champ ne contient que des espaces...
@@ -827,7 +827,7 @@ class ModelsController extends FormController
             }
         }
         $json['messages'] = $messages;
-        return new \Zend\View\Model\JsonModel($json);
+        return new \Laminas\View\Model\JsonModel($json);
     }
 
     public function formalarmAction()

@@ -19,7 +19,7 @@ namespace Administration\Controller\Factory;
 
 use Administration\Controller\OpSupsController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class OpSupsControllerFactory implements FactoryInterface {
 

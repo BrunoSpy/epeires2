@@ -252,10 +252,10 @@ class CustomFieldService
         switch ($customfieldtype->getType()) 
         {
             case 'string':
-                $type = 'Zend\Form\Element\Text';
+                $type = 'Laminas\Form\Element\Text';
                 break;
             case 'text':
-                $type = 'Zend\Form\Element\Textarea';
+                $type = 'Laminas\Form\Element\Textarea';
                 break;
             case 'frequency':
             case 'sector':
@@ -264,10 +264,10 @@ class CustomFieldService
             case 'stack':
             case 'radar':
             case 'afis':
-                $type = 'Zend\Form\Element\Select';
+                $type = 'Laminas\Form\Element\Select';
                 break;
             case 'boolean':
-                $type = 'Zend\Form\Element\Checkbox';
+                $type = 'Laminas\Form\Element\Checkbox';
                 break;
             default:
                 ;

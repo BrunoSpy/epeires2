@@ -19,9 +19,9 @@ namespace Application\Controller;
 
 use DateTime;
 use DateInterval;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
 use Doctrine\ORM\EntityManager;
 
 use Application\Entity\Category;

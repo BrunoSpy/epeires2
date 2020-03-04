@@ -22,7 +22,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use RRule\RRule;
 use RRule\RSet;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * 
@@ -44,7 +44,7 @@ class Recurrence
     /**
      * Recurrence pattern following RFC 2445 RRULE spec
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      */
     protected $recurrencePattern;
     

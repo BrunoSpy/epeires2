@@ -33,10 +33,10 @@ use Application\Entity\Status;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Element;
 
 use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
@@ -494,7 +494,7 @@ class EventsController extends TabsController
 
     /**
      *
-     * @return \Zend\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application.
+     * @return \Laminas\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application.
      */
     public function saveAction()
     {
@@ -1168,7 +1168,7 @@ class EventsController extends TabsController
     /**
      * Create a new form
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function formAction()
     {
@@ -1595,7 +1595,7 @@ class EventsController extends TabsController
     /**
      * Return {'open' => '<true or false>'}
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function toggleficheAction()
     {
@@ -1714,7 +1714,7 @@ class EventsController extends TabsController
      * 'evt_id_1' => ...
      * }
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function geteventsAction()
     {
@@ -2192,11 +2192,11 @@ class EventsController extends TabsController
                     $content .= $this->eventservice->getUpdateAuthor($update).' le '.$formatter->format($update->getCreatedOn()) . ' : <br />';
                     $content .= nl2br($update->getText()).'<br />';
                 }
-                $text = new \Zend\Mime\Part($content);
-                $text->type = \Zend\Mime\Mime::TYPE_HTML;
+                $text = new \Laminas\Mime\Part($content);
+                $text->type = \Laminas\Mime\Mime::TYPE_HTML;
                 $text->charset = 'utf-8';
                 
-                $mimeMessage = new \Zend\Mime\Message();
+                $mimeMessage = new \Laminas\Mime\Message();
                 $mimeMessage->setParts(array(
                     $text
                 ));
@@ -2204,15 +2204,15 @@ class EventsController extends TabsController
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
-                    $message = new \Zend\Mail\Message();
+                    $message = new \Laminas\Mail\Message();
                     $message->addTo($event->getOrganisation()
                         ->getIpoEmail())
                         ->addFrom($this->config['emailfrom'])
                         ->setSubject("Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event))
                         ->setBody($mimeMessage);
                     
-                    $transport = new \Zend\Mail\Transport\Smtp();
-                    $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
+                    $transport = new \Laminas\Mail\Transport\Smtp();
+                    $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
                     $transport->setOptions($transportOptions);
                     try {
                         $transport->send($message);

@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -35,13 +35,13 @@ class CustomField
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom"})
      */
@@ -50,7 +50,7 @@ class CustomField
     /**
      * Bidirectional - owning side
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="customfields")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Catégorie"})
      * @Gedmo\SortableGroup
@@ -59,7 +59,7 @@ class CustomField
 
     /**
      * @ORM\ManyToOne(targetEntity="CustomFieldType")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Type", "empty_option":"Choisir le type"})
      */
@@ -73,7 +73,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="text")
-     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Type("Laminas\Form\Element\Textarea")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Valeur par défaut"})
      * Stores default value, for example for select customtype
@@ -82,7 +82,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Popup d'aide"})
      */
@@ -90,7 +90,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Sélection multiple"})
      */
@@ -98,7 +98,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Traçable"})
      */
@@ -106,7 +106,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Jalon"})
      */
@@ -114,7 +114,7 @@ class CustomField
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Caché"})
      */

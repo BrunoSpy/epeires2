@@ -30,7 +30,7 @@ use Core\Entity\Role;
 use Core\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
-use Zend\Console\Request as ConsoleRequest;
+use Laminas\Console\Request as ConsoleRequest;
 
 /**
  *

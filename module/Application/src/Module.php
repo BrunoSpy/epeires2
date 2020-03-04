@@ -17,14 +17,14 @@
  */
 namespace Application;
 
-use Zend\Mvc\ModuleRouteListener;
-use Zend\Mvc\MvcEvent;
-use Zend\Session\Config\SessionConfig;
-use Zend\Session\SessionManager;
-use Zend\Session\Container;
-use Zend\ModuleManager\ModuleManager;
-use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
-use Zend\Console\Adapter\AdapterInterface as Console;
+use Laminas\Mvc\ModuleRouteListener;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Session\Config\SessionConfig;
+use Laminas\Session\SessionManager;
+use Laminas\Session\Container;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Laminas\Console\Adapter\AdapterInterface as Console;
 
 /**
  *

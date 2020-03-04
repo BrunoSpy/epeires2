@@ -2,7 +2,7 @@
 namespace Application\View\Helper;
 
 use Application\Entity\Afis;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 class AfisHelper extends AbstractHelper
 {

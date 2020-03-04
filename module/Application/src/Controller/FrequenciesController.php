@@ -20,10 +20,10 @@ namespace Application\Controller;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use Doctrine\Common\Collections\Criteria;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Entity\Event;
@@ -473,7 +473,7 @@ class FrequenciesController extends TabController
     /**
      * State of the frequencies
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getFrequenciesStateAction()
     {

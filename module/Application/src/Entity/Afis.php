@@ -18,7 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Core\Entity\TemporaryResource;
 use Application\Entity\Organisation;
 /**
@@ -35,13 +35,13 @@ class Afis extends TemporaryResource
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=4, unique=true, nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Code OACI :"})
      * @Annotation\Required(True)
      * @Annotation\Validator({"name": "StringLength", "options": {"min": 4, "max": 4}})
@@ -50,7 +50,7 @@ class Afis extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Nom Long :"})
      */
     protected $name;
@@ -58,7 +58,7 @@ class Afis extends TemporaryResource
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(True)
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -66,14 +66,14 @@ class Afis extends TemporaryResource
 
     /**
      * @ORM\Column(type="text")
-     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Type("Laminas\Form\Element\Textarea")
      * @Annotation\Options({"label":"Horaires ouvertures :"})
      */
     protected $openedhours;
 
     /**
      * @ORM\Column(type="text")
-     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Type("Laminas\Form\Element\Textarea")
      * @Annotation\Options({"label":"Contacts :"})
      */
     protected $contacts;

@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -40,7 +40,7 @@ class ATFCMCategory extends Category
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"TVs (séparés par une virgule) :"})
      * @Annotation\Attributes({"placeholder":"Par défaut : LF* si le filtre est vide"})
      * TVs to fetch
@@ -49,7 +49,7 @@ class ATFCMCategory extends Category
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Filtre sur l'id, par défaut : aucun"})
      */
     protected $regex;
@@ -82,7 +82,7 @@ class ATFCMCategory extends Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
      */
     protected $nmB2B = false;

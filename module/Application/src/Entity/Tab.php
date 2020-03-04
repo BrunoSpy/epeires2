@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -41,7 +41,7 @@ class Tab
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -49,7 +49,7 @@ class Tab
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom court :"})
      */
@@ -57,7 +57,7 @@ class Tab
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Type("Laminas\Form\Element\Number")
      * @Annotation\Attributes({"min":0})
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Place :"})
@@ -68,7 +68,7 @@ class Tab
     /**
      * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readtabs")
      * @ORM\JoinTable(name="roles_tabs_read")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Affiché pour :"})
@@ -78,7 +78,7 @@ class Tab
     /**
      * Categories to be displayed
      * @ORM\ManyToMany(targetEntity="Category", inversedBy="tabs")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Catégories à afficher :"})
@@ -88,7 +88,7 @@ class Tab
     /**
      * Show only root categories
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Catégories racines seulement :"})
      */
     protected $onlyroot = false;
@@ -96,7 +96,7 @@ class Tab
     /**
      * Default tab. Only one default tab allowed.
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Onglet principal :"})
      */
     protected $isDefault = false;

@@ -17,7 +17,7 @@
  */
 namespace Administration\Form;
 
-use Zend\Form\Form;
+use Laminas\Form\Form;
 use ZfcBase\Form\ProvidesEventsForm;
 
 /**

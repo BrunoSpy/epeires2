@@ -18,7 +18,7 @@
 namespace Application\View\Helper;
 
 use Interop\Container\ContainerInterface;
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 
 /**
  *

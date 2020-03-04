@@ -16,7 +16,7 @@
  *
  */
 use ZfcRbac\Guard\GuardInterface;
-use Zend\Session;
+use Laminas\Session;
 
 return array(
     'doctrine' => array(
@@ -49,7 +49,7 @@ return array(
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
         ),
         'aliases' => array(
-            'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service'
+            'Laminas\Authentication\AuthenticationService' => 'zfcuser_auth_service'
         )
     ),
     'controllers' => array(

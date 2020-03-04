@@ -19,7 +19,7 @@ namespace Application\Controller\Factory;
 
 use Application\Controller\SarBeaconsController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class SarBeaconsControllerFactory implements FactoryInterface {
 

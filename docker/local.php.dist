@@ -45,11 +45,11 @@ return array(
         'warning' => 'yellow'
     ),
     //API Authentication configuration
-    'zf-mvc-auth' => array(
+    'api-tools-mvc-auth' => array(
         'authentication' => array(
             'adapters' => array(
                 'basic' => array(
-                    'adapter' => 'ZF\\MvcAuth\\Authentication\\HttpAdapter',
+                    'adapter' => 'Laminas\\ApiTools\\MvcAuth\\Authentication\\HttpAdapter',
                     'options' => array(
                         'accept_schemes' => array(
                             0 => 'basic',

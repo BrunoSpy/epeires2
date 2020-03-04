@@ -19,8 +19,8 @@ namespace Application\Controller\Factory;
 
 use Application\Controller\FlightPlansController;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\Session\SessionManager;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Session\SessionManager;
 
 class FlightPlansControllerFactory  implements FactoryInterface 
 {

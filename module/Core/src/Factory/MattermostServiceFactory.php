@@ -19,7 +19,7 @@ namespace Core\Factory;
 
 use Core\Service\MattermostService;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *

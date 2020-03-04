@@ -19,8 +19,8 @@ namespace Application\Form;
 
 use Application\Services\CustomFieldService;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Fieldset;
+use Laminas\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Collections\Criteria;
 
 /**
@@ -51,7 +51,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
         // add category id to regenerate fieldset during creation process
         $this->add(array(
             'name' => 'category_id',
-            'type' => '\Zend\Form\Element\Hidden',
+            'type' => '\Laminas\Form\Element\Hidden',
             'attributes' => array(
                 'value' => $categoryid
             )

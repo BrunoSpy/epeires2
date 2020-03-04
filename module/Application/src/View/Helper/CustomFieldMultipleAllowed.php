@@ -17,8 +17,8 @@
  */
 namespace Application\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Laminas\Form\View\Helper\AbstractHelper;
+use Laminas\ServiceManager\ServiceManagerAwareInterface;
 
 /**
  *
@@ -34,7 +34,7 @@ class CustomFieldMultipleAllowed extends AbstractHelper implements ServiceManage
         return $this->servicemanager->get('customfieldservice')->isMultipleAllowed($customfield);
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
+    public function setServiceManager(\Laminas\ServiceManager\ServiceManager $serviceLocator)
     {
         $this->servicemanager = $serviceLocator;
     }
