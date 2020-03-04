@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9d1c1d750a8f6cde44085ecad1d3b85",
+    "content-hash": "7385b447baeed808853a3ab48721483e",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -1991,13 +1991,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Kipperlenny/OpenTBSBundle.git",
-                "reference": "15959dbb998f0837fee49736dccaab952498e0e8"
+                "url": "https://github.com/BrunoSpy/OpenTBSBundle.git",
+                "reference": "ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Kipperlenny/OpenTBSBundle/zipball/15959dbb998f0837fee49736dccaab952498e0e8",
-                "reference": "15959dbb998f0837fee49736dccaab952498e0e8",
+                "url": "https://api.github.com/repos/BrunoSpy/OpenTBSBundle/zipball/ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f",
+                "reference": "ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f",
                 "shasum": ""
             },
             "require": {
@@ -2029,7 +2029,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "OpenTBS Bundle for ZF2 - create OpenOffice and Ms Office documents with ZF2",
+            "description": "OpenTBS Bundle for Laminas - create OpenOffice and Ms Office documents with Laminas",
             "homepage": "https://github.com/kipperlenny/OpenTBSBundle",
             "keywords": [
                 "MS Office",
@@ -2038,15 +2038,15 @@
                 "TBS",
                 "document",
                 "docx",
+                "laminas",
                 "odt",
                 "pptx",
-                "xlsx",
-                "zf2"
+                "xlsx"
             ],
             "support": {
-                "source": "https://github.com/Kipperlenny/OpenTBSBundle/tree/master"
+                "source": "https://github.com/BrunoSpy/OpenTBSBundle/tree/master"
             },
-            "time": "2015-03-08T23:57:01+00:00"
+            "time": "2020-03-04T16:13:47+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -5759,21 +5759,22 @@
         },
         {
             "name": "murganikolay/doctrine-migrations-module",
-            "version": "dev-zf3",
+            "version": "dev-laminas",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/DoctrineMigrationsModule.git",
-                "reference": "4a71df377d9fa0c808bcea87bc16bb9b94d1dde0"
+                "reference": "5ce21592e270c9294cf7347db7bacb8619af7963"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/DoctrineMigrationsModule/zipball/4a71df377d9fa0c808bcea87bc16bb9b94d1dde0",
-                "reference": "4a71df377d9fa0c808bcea87bc16bb9b94d1dde0",
+                "url": "https://api.github.com/repos/BrunoSpy/DoctrineMigrationsModule/zipball/5ce21592e270c9294cf7347db7bacb8619af7963",
+                "reference": "5ce21592e270c9294cf7347db7bacb8619af7963",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-orm-module": "^2.1",
                 "doctrine/migrations": "^2.0",
+                "laminas/laminas-dependency-plugin": "^1.0",
                 "php": "^7.0"
             },
             "type": "library",
@@ -5801,9 +5802,9 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/zf3"
+                "source": "https://github.com/BrunoSpy/DoctrineMigrationsModule/tree/laminas"
             },
-            "time": "2019-11-26T09:31:04+00:00"
+            "time": "2020-03-04T15:43:48+00:00"
         },
         {
             "name": "ocramius/package-versions",
