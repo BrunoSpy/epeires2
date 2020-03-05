@@ -60,14 +60,18 @@
         "laminas/laminas-dependency-plugin": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0",
-        "codeception/codeception": "^3.0",
+        "phpunit/phpunit": "^9.0",
+        "codeception/codeception": "^4.0",
         "sensiolabs/security-checker": "^5.0.0",
         "api-skeletons/zf-doctrine-data-fixture": "^5.0",
         "laminas-api-tools/api-tools-admin": "^1.8",
         "laminas/laminas-log": "^2.10",
         "laminas/laminas-router": "^3.3",
-        "laminas/laminas-component-installer": "^2.1"
+        "laminas/laminas-component-installer": "^2.1",
+        "codeception/module-webdriver": "^1.0.0",
+        "codeception/module-asserts": "^1.0.0",
+        "codeception/module-zf2": "^1.0.0",
+        "codeception/module-doctrine2": "^1.0.0"
     },
     "config": {
         "platform": {
