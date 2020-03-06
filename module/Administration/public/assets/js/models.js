@@ -374,4 +374,19 @@ var models = function(url, urlapp){
 	$('#add-alert, #add-file, #action-container').on('hidden.bs.modal', function(e){
 		$('body').addClass('modal-open');
 	});
+
+	$('#json-form').on('submit', function(e){
+		e.preventDefault();
+		var action = $(this).attr('action');
+		$(this).ajaxSubmit({
+			url: action,
+			type: 'POST',
+			success: function(data, textStatus, jqXGR){
+				if(!data.messages['error']) {
+					$("#import-container").modal('hide');
+				}
+				displayMessages(data.messages);
+			}
+		});
+	});
 };
