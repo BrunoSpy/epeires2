@@ -1796,6 +1796,7 @@ class EventRepository extends ExtendedRepository
         $daystart = clone $day;
         $daystart->setTime(0, 0, 0);
         $dayend = clone $day;
+        $dayend->add(new \DateInterval('P1D'));
         $dayend->setTime(23, 59, 59);
         $daystart = $daystart->format("Y-m-d H:i:s");
         $dayend = $dayend->format("Y-m-d H:i:s");

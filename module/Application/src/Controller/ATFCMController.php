@@ -108,7 +108,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
         $end = clone $day;
         //get regulations for the next day too
         //to avoid having to wait for 00h01 to get regulations
-        $end->add(New \DateInterval('P1D'));
+        $end->add(new \DateInterval('P1D'));
         $end->setTime(23,59);
 
         $startImport = microtime(true);
