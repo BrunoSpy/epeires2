@@ -22,7 +22,7 @@ if (count($this->actions) > 0) {
         if(!$this->compact) {
             echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
         }
-        echo "<td>" . $this->eventName($action) . "</td>";
+        echo "<td style='word-break: break-word'>" . $this->eventName($action) . "</td>";
         if ($action instanceof \Application\Entity\Event) {
             echo "<td class=\"todo\"><a class=\"fiche btn ";
             if($this->compact){
