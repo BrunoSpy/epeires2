@@ -67,6 +67,14 @@ class ATFCMController extends AbstractEntityManagerAwareController
             $this->nmb2b->deActivateErrorEmail();
         }
 
+        $verbose = $request->getParam('verbose');
+
+        if($verbose) {
+            $this->nmb2b->setVerbose(true);
+        } else {
+            $this->nmb2b->setVerbose(false);
+        }
+
         $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
             'shortname' => $org
         ));
@@ -100,7 +108,7 @@ class ATFCMController extends AbstractEntityManagerAwareController
         $end = clone $day;
         //get regulations for the next day too
         //to avoid having to wait for 00h01 to get regulations
-        $end->add(New \DateInterval('P1D'));
+        $end->add(new \DateInterval('P1D'));
         $end->setTime(23,59);
 
         $startImport = microtime(true);

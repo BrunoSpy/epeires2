@@ -300,77 +300,7 @@ class CategoriesController extends FormController
         $category = $objectManager->getRepository('Application\Entity\Category')->find($id);
         
         if ($category) {
-            $childs = $objectManager->getRepository('Application\Entity\Category')->findBy(array(
-                'parent' => $id
-            ));
-            foreach ($childs as $child) { // delete category
-                $child->setParent(null);
-                $objectManager->persist($child);
-            }
-            // delete fieldname to avoid loop
-            $category->setFieldname(null);
-            if ($category instanceof AntennaCategory) {
-                $category->setAntennafield(null);
-                $category->setFrequenciesField(null);
-                $category->setStatefield(null);
-            }
-            if ($category instanceof RadarCategory) {
-                $category->setRadarfield(null);
-                $category->setStatefield(null);
-            }
-            if ($category instanceof FrequencyCategory) {
-                $category->setCurrentAntennaField(null);
-                $category->setStateField(null);
-                $category->setFrequencyField(null);
-                $category->setOtherFrequencyField(null);
-                $category->setCauseField(null);
-            }
-            if ($category instanceof BrouillageCategory) {
-                $category->setFrequencyField(null);
-            }
-            if ($category instanceof MilCategory) {
-                $category->setLowerLevelField(null);
-                $category->setUpperLevelField(null);
-            }
-            if($category instanceof AfisCategory) {
-                $category->setAfisfield(null);
-                $category->setStatefield(null);
-            }
-            if($category instanceof FlightPlanCategory) {
-                $category->setAircraftidfield(null);
-                $category->setDestinationfield(null);
-                $category->setStartfield(null);
-                $category->setAlertfield(null);
-                $category->setEstimatedtimeofarrivalfield(null);
-            }
-            if($category instanceof AlertCategory) {
-                $category->setTypeField(null);
-                $category->setCauseField(null);
-            }
-            if($category instanceof InterrogationPlanCategory) {
-                $category->setTypeField(null);
-                $category->setLatField(null);
-                $category->setLongField(null);
-                $category->setAlertField(null);
-            }
-            if($category instanceof FieldCategory) {
-                $category->setNameField(null);
-                $category->setCodeField(null);
-                $category->setLatField(null);
-                $category->setLongField(null);
-            }
-            if($category instanceof ATFCMCategory) {
-                $category->setReasonField(null);
-                $category->setDescriptionField(null);
-                $category->setInternalId(null);
-                $category->setNormalRateField(null);
-                $category->setRegulationStateField(null);
-            }
-            $objectManager->persist($category);
-            $objectManager->flush();
-            // suppression des evts associés par cascade
-            $objectManager->remove($category);
-            $objectManager->flush();
+            $objectManager->getRepository(Category::class)->delete($category);
         }
         
         return $this->redirect()->toRoute('administration', array(

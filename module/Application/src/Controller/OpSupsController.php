@@ -110,8 +110,9 @@ class OpSupsController extends AbstractEntityManagerAwareController
                 'type' => $type,
                 'current' => true
             ));
-            
-            $json[$current->getId()] = $current->getName();
+            if($current) {
+                $json[$current->getId()] = $current->getName();
+            }
         }
         
         return new JsonModel($json);
