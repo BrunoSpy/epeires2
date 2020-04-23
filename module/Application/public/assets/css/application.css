@@ -145,6 +145,7 @@ body {
 	display: list-item;
 	list-style-type: disc;
 	margin-left: 2em;
+	word-break: break-word;
 }
 
 .panel-left .dl-horizontal dd {
@@ -324,6 +325,7 @@ body {
 #Event blockquote p, #updates blockquote p {
 	font-size: 85%;
 	font-weight: bold;
+	word-break: break-word;
 }
 
 #Event blockquote small, #updates blockquote small {
