@@ -128,7 +128,7 @@ return array(
             'ipo' => 'Application\Factories\IPOFactory',
             'opsup' => 'Application\Factories\OpSupFactory',
             'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory',
-            'ismultipleallowed' => 'Application\Factories\CustomFieldMultipleAllowedFactory'
+            'isMultipleAllowed' => 'Application\Factories\CustomFieldMultipleAllowedFactory'
         )
     ),
     'view_manager' => array(

@@ -24,7 +24,7 @@ use Laminas\ServiceManager\ServiceManagerAwareInterface;
  *
  * @author Bruno Spyckerelle
  */
-class CustomFieldMultipleAllowed extends AbstractHelper implements ServiceManagerAwareInterface
+class CustomFieldMultipleAllowed extends AbstractHelper
 {
 
     private $servicemanager;
