@@ -160,7 +160,7 @@ var models = function(url, urlapp){
 			}
 			$("#model-container").modal('hide');
 			//reload only if no other modal
-			if(!$("#models-container").is(':visible') && !messages.error){
+			if(!$("#models-container").is(':visible') && (!messages.error || messages.error.length == 0)){
 				location.reload();
 			} else {
 				displayMessages(messages);
