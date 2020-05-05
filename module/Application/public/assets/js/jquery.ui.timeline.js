@@ -159,7 +159,8 @@
             compact: false,
             view: "",
             day: "",
-            mattermost: false
+            mattermost: false,
+            tabCats: ""
         },
         //Main function
         //Initialize the timeline
@@ -1547,13 +1548,9 @@
         _addModelToCategories: function() {
             var self = this;
             var url = this.options.controllerUrl;
-            var cats = [];
-            $.each(self.categories, function(key, value){
-                cats.push(value.id);
-            });
             $.each(self.categories, function(key, value){
                 var catid = value.id;
-                $.getJSON(url + '/getQuickModels?id='+catid+'&include='+self.options.showOnlyRootCategories+'&cats='+cats, function(data){
+                $.getJSON(url + '/getQuickModels?id='+catid+'&include='+self.options.showOnlyRootCategories+'&cats='+self.options.tabCats, function(data){
                     var txt = '';
                     $.each(data, function(key, value){
                         txt += '<p><a class="btn btn-sm use-model" data-id="'+key+'" data-name="'+value+'" title="'+value+'"><span class="pull-left title">'+value+'</span> <span class="pull-right glyphicon glyphicon-share-alt"></span></a></p>';

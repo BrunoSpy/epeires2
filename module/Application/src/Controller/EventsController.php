@@ -1939,10 +1939,11 @@ class EventsController extends TabsController
     public function getQuickModelsAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $onlyroot = $this->params()->fromQuery('onlyroot', false);
+        $onlyroot = $this->params()->fromQuery('include', false);
         $cats = $this->params()->fromQuery('cats', null);
-        if($cats !== null && $onlyroot) {
-            $cats = explode(',', $cats);
+
+        if(!$onlyroot) {
+           $cats = null;
         }
         $json = array();
         if($id) {
