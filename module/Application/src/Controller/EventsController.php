@@ -1939,12 +1939,17 @@ class EventsController extends TabsController
     public function getQuickModelsAction()
     {
         $id = $this->params()->fromQuery('id', null);
+        $onlyroot = $this->params()->fromQuery('onlyroot', false);
+        $cats = $this->params()->fromQuery('cats', null);
+        if($cats !== null && $onlyroot) {
+            $cats = explode(',', $cats);
+        }
         $json = array();
         if($id) {
             $om = $this->getEntityManager();
             $cat = $om->getRepository(Category::class)->find($id);
             if($cat) {
-                return new JsonModel($om->getRepository(PredefinedEvent::class)->getQuickAccessModelsFromCategoryAsArray($cat));
+                return new JsonModel($om->getRepository(PredefinedEvent::class)->getQuickAccessModelsFromCategoryAsArray($cat, $cats));
             }
         }
         return new JsonModel($json);

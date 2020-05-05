@@ -79,10 +79,10 @@ class PredefinedEventRepository extends SortableRepository
     /**
      * Returns an array with predefined events to be accessed quickly from the timeline (quickaccess = true)
      * @param Category $category
-     * @param bool $include Include events from children
+     * @param array include children in list
      * @return array
      */
-    public function getQuickAccessModelsFromCategoryAsArray(Category $category, $include = true)
+    public function getQuickAccessModelsFromCategoryAsArray(Category $category, $cats = null)
     {
         $res = array();
         $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $category));
@@ -95,9 +95,9 @@ class PredefinedEventRepository extends SortableRepository
         foreach ($list as $element) {
             $res[$element->getId()] = $element->getName();
         }
-        if($include) {
+        if($cats !== null) {
             foreach ($category->getChildren() as $cat) {
-                if (!$cat->isArchived()) {
+                if (!$cat->isArchived() && in_array($cat->getId(), $cats) ) {
                     $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
                     $criteria->andWhere(Criteria::expr()->isNull('parent'));
                     $criteria->andWhere(Criteria::expr()->eq('quickaccess', true));
