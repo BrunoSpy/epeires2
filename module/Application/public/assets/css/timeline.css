@@ -338,6 +338,10 @@
   vertical-align: middle;
 }
 
+.tooltip.tooltip-actions .table > tbody > tr > td:nth-child(3) {
+	word-break: break-word;
+}
+
 .tooltip.tooltip-actions .table {
 	margin-bottom: 3px;
 }

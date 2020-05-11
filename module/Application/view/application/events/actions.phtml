@@ -14,7 +14,7 @@ if (count($this->actions) > 0) {
                 ->getTextField()
                 ->getId()) {
                 if ($value->getValue() !== '') {
-                    echo ' data-container="body" data-html="true" data-toggle="tooltip" data-placement="top" title="<span class=elmt_tooltip>' . nl2br(htmlspecialchars($value->getValue())) . '</span>"';
+                    echo ' data-html="true" data-toggle="tooltip" data-placement="top" title="<span class=elmt_tooltip>' . nl2br(htmlspecialchars($value->getValue())) . '</span>"';
                 }
             }
         }

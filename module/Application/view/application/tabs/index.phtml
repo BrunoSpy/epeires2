@@ -219,6 +219,7 @@ $('#timeline').timeline({
     topOffset: 100,
     leftOffset: 120,
     rightOffset: 85,
+    tabCats: cats,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
     view: '<?php echo ($this->view == "24" ? 'day' : ''); ?>',
     day: '<?php echo ($this->day !== null ? str_replace('"','',$this->day) : ''); ?>',

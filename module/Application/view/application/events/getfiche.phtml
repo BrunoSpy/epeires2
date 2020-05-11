@@ -28,7 +28,7 @@
 
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h4 class="panel-title" style="text-overflow:ellipsis">Fiche réflexe <?php echo $this->eventName($this->event); ?>
+                <h4 class="panel-title">Fiche réflexe <?php echo $this->eventName($this->event); ?>
                 <div class="panel-badge"><span class="badge"><?php echo $count; ?></span> <span class="glyphicon glyphicon-chevron-up"></span></h4>
             </div>
             <div class="panel-collapse collapse in">
@@ -82,7 +82,7 @@
 <div class="panel panel-info">
     <?php $visibleUpdates = $this->event->getVisibleUpdates(); ?>
     <div class="panel-heading">
-        <h4 class="panel-title">Notes
+        <h4 class="panel-title">Suivi
         <div class="panel-badge"><span class="badge"><?php echo count($visibleUpdates) ?></span> <span class="glyphicon glyphicon-chevron-<?php echo (($visibleUpdates && count($visibleUpdates) > 0) ? 'up' : 'down')?>"></span></h4>
     </div>
     <div class="panel-collapse collapse <?php echo (($visibleUpdates && count($visibleUpdates) > 0) ? 'in' : '')?>">
