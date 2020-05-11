@@ -95,6 +95,7 @@ body {
 
 #fiche .panel-title {
 	position:relative;
+	padding-right: 48px;
 }
 
 #fiche .panel-title .panel-badge {
@@ -117,7 +118,10 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 	padding-right: 15px;
-	height: calc(100% - 104px)
+	height: calc(100% - 104px);
+	/* fix to show scrollbar */
+	border-right-width: 10px;
+	border-right-style: solid;
 }
 
 .panel-left .panel-heading {
