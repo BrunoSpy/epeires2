@@ -95,6 +95,7 @@ body {
 
 #fiche .panel-title {
 	position:relative;
+	padding-right: 48px;
 }
 
 #fiche .panel-title .panel-badge {
@@ -117,7 +118,10 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 	padding-right: 15px;
-	height: calc(100% - 104px)
+	height: calc(100% - 104px);
+	/* fix to show scrollbar */
+	border-right-width: 10px;
+	border-right-style: solid;
 }
 
 .panel-left .panel-heading {
@@ -145,6 +149,7 @@ body {
 	display: list-item;
 	list-style-type: disc;
 	margin-left: 2em;
+	word-break: break-word;
 }
 
 .panel-left .dl-horizontal dd {
@@ -324,6 +329,7 @@ body {
 #Event blockquote p, #updates blockquote p {
 	font-size: 85%;
 	font-weight: bold;
+	word-break: break-word;
 }
 
 #Event blockquote small, #updates blockquote small {
