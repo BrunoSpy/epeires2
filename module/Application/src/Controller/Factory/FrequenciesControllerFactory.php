@@ -30,7 +30,8 @@ class FrequenciesControllerFactory implements FactoryInterface {
             $container->get('eventservice'),
             $container->get('customfieldservice'),
             $container->get('config'),
-            $container->get('mattermostservice'));
+            $container->get('mattermostservice'),
+            $container->get('timelineZone'));
     }
 
 }

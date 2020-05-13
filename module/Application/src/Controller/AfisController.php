@@ -44,9 +44,9 @@ class AfisController extends TabController
 
     private $em, $cf, $repo, $form, $notamweb;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb)
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb, $sessioncontainer)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->em = $em;
         $this->cf = $cf;
         $this->repo = $this->em->getRepository(Afis::class);

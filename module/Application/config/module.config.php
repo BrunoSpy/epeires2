@@ -106,8 +106,8 @@ return array(
             'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
             'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
             'Application\Controller\Afis' => 'Application\Controller\Factory\AfisControllerFactory',
-            'Application\Controller\FlightPlans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
-            'Application\Controller\SarBeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
+            'Application\Controller\Flightplans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
+            'Application\Controller\Sarbeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
             'Application\Controller\ATFCM' => 'Application\Controller\Factory\ATFCMControllerFactory',
             'Application\Controller\Briefing' => 'Application\Controller\Factory\BriefingControllerFactory',
         )

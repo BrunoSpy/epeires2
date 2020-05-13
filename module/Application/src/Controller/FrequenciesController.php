@@ -45,9 +45,9 @@ class FrequenciesController extends TabController
     public function __construct(EntityManager $entityManager,
                                 EventService $eventservice,
                                 CustomFieldService $customfieldService,
-                                $config, $mattermost)
+                                $config, $mattermost, $sessioncontainer)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->entityManager = $entityManager;
         $this->eventservice = $eventservice;
         $this->customfieldservice = $customfieldService;

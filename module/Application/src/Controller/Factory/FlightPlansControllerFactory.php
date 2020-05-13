@@ -34,7 +34,8 @@ class FlightPlansControllerFactory  implements FactoryInterface
             $container->get('config'),
             $container->get('mattermostservice'),
             $container->get('translator'),
-            $container->get(SessionManager::class)
+            $container->get(SessionManager::class),
+            $container->get('timelineZone')
         );
     }
 }

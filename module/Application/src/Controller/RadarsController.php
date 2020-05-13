@@ -42,9 +42,9 @@ class RadarsController extends TabController
     public function __construct(EntityManager $entityManager,
                                 CustomFieldService $customfieldService,
                                 EventService $eventservice,
-                                $config, $mattermost)
+                                $config, $mattermost, $sessioncontainer)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->entityManager = $entityManager;
         $this->customfieldservice = $customfieldService;
         $this->eventservice = $eventservice;

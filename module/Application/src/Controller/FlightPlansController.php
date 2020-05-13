@@ -76,7 +76,8 @@ class FlightPlansController extends EventsController
         Array $config,
         $mattermost,
         $translator,
-        $sessionManager)
+        $sessionManager,
+        $sessioncontainer)
     {
         parent::__construct(
             $em,
@@ -85,7 +86,8 @@ class FlightPlansController extends EventsController
             $zfrcbacOptions,
             $config,
             $mattermost,
-            $translator
+            $translator,
+            $sessioncontainer
         );
 
         $this->em = $em;

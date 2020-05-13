@@ -30,7 +30,8 @@ class AfisControllerFactory implements FactoryInterface {
            	$container->get('customfieldservice'),
            	$container->get('config'),
             $container->get('mattermostservice'),
-            $container->get('notamweb')
+            $container->get('notamweb'),
+            $container->get('timelineZone')
         );
     }
 
