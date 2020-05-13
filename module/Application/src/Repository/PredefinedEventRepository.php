@@ -92,8 +92,10 @@ class PredefinedEventRepository extends SortableRepository
             'place' => 'ASC'
         ));
         $list = parent::matching($criteria);
+        $place = 0;
         foreach ($list as $element) {
-            $res[$element->getId()] = $element->getName();
+            $res[] = array("place" => $place, "key" => $element->getId(), "name" => $element->getName());
+            $place++;
         }
         if($cats !== null) {
             foreach ($category->getChildren() as $cat) {
@@ -106,7 +108,8 @@ class PredefinedEventRepository extends SortableRepository
                     ));
                     $list = parent::matching($criteria);
                     foreach ($list as $element) {
-                        $res[$element->getId()] = $element->getName();
+                        $res[] = array("place" => $place, "key" => $element->getId(), "name" => $element->getName());
+                        $place++;
                     }
                 }
             }

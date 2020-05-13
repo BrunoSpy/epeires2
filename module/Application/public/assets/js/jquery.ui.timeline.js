@@ -1552,8 +1552,13 @@
                 var catid = value.id;
                 $.getJSON(url + '/getQuickModels?id='+catid+'&include='+self.options.showOnlyRootCategories+'&cats='+self.options.tabCats, function(data){
                     var txt = '';
-                    $.each(data, function(key, value){
-                        txt += '<p><a class="btn btn-sm use-model" data-id="'+key+'" data-name="'+value+'" title="'+value+'"><span class="pull-left title">'+value+'</span> <span class="pull-right glyphicon glyphicon-share-alt"></span></a></p>';
+                    let res = [];
+                    $.each(data, function(index, value){
+                        res.push(value);
+                    });
+                    res.sort(function(a,b){return a.place - b.place;});
+                    $.each(res, function(index, value){
+                        txt += '<p><a class="btn btn-sm use-model" data-id="'+value.key+'" data-name="'+value.name+'" title="'+value.name+'"><span class="pull-left title">'+value.name+'</span> <span class="pull-right glyphicon glyphicon-share-alt"></span></a></p>';
                     });
                     $("#category"+catid).popover({
                         trigger: 'focus',
