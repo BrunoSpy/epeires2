@@ -16,13 +16,19 @@ switch ($this->part) {
             echo '<p>Aucun modèle défini.</p>';
             echo '</div>';
         } else {
+            $count = 0;
             if(!empty($this->values)) {
-                echo '<div class="col-md-6">';
-                echo '<table>';
-                echo '<tbody>';
-                $count = count($this->values);
-                $i = 1;
-                $separated = false;
+                $count += count($this->values);
+            }
+            if(!empty($this->subvalues)) {
+                $count += count($this->subvalues);
+            }
+            $i = 1;
+            $separated = false;
+            echo '<div class="col-md-6">';
+            echo '<table>';
+            echo '<tbody>';
+            if(!empty($this->values)) {
                 foreach ($this->values as $key => $value) {
                     echo '<tr>';
                     echo '<td class="hidden-xs">';
@@ -43,17 +49,8 @@ switch ($this->part) {
                     }
                     $i ++;
                 }
-                echo '</tbody>';
-                echo '</table>';
-                echo '</div>';
             }
             if(!empty($this->subvalues)) {
-                echo '<div class="col-md-6">';
-                echo '<table>';
-                echo '<tbody>';
-                $count = count($this->subvalues);
-                $i = 0;
-                $separated = false;
                 foreach ($this->subvalues as $key => $value) {
                     echo '<tr>';
                     echo '<td class="hidden-xs">';
@@ -74,10 +71,11 @@ switch ($this->part) {
                     }
                     $i ++;
                 }
-                echo '</tbody>';
-                echo '</table>';
-                echo '</div>';
+
             }
+            echo '</tbody>';
+            echo '</table>';
+            echo '</div>';
         }
         break;
     case 'custom_fields':
