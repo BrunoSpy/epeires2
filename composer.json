@@ -68,7 +68,7 @@
         "phpunit/phpunit": "^9.0",
         "codeception/codeception": "^4.0",
         "sensiolabs/security-checker": "^5.0.0",
-        "api-skeletons/zf-doctrine-data-fixture": "^5.0",
+        "api-skeletons/doctrine-data-fixture": "^6.0",
         "laminas-api-tools/api-tools-admin": "^1.8",
         "laminas/laminas-log": "^2.10",
         "laminas/laminas-router": "^3.3",
