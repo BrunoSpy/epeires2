@@ -8,7 +8,6 @@ return [
     // Development time modules
     'modules' => [
         'Laminas\Mvc\I18n',
-        'ZF\Doctrine\DataFixture',
         'Laminas\Mvc\Plugin\FlashMessenger',
         'Laminas\Mvc\Plugin\Prg',
         'Laminas\Db',
