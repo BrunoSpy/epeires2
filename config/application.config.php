@@ -74,7 +74,7 @@ $modules = array(
 if ($env == 'development') {
 
     //$modules [] = 'Laminas\DeveloperTools';
-    $modules[] = 'ZF\Doctrine\DataFixture';
+    $modules[] = 'ApiSkeletons\Doctrine\DataFixture';
 }
 
 return array(
