@@ -978,6 +978,8 @@ class ModelsController extends FormController
     {
         $form = new ImportForm();
         $messages = array();
+        $missing = array();
+        $count = 0;
         if($this->getRequest()->isPost()) {
             $request = $this->getRequest();
             $data = array_merge_recursive(
@@ -991,65 +993,69 @@ class ModelsController extends FormController
                 $data = $form->getData();
                 $json = json_decode(file_get_contents($data['jsonfile']['tmp_name']), true);
 
-                $objectManager = $this->getEntityManager();
-                $count = 0;
-                $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
-                foreach ($json as $name => $actions) {
-                    $model = $objectManager->getRepository(PredefinedEvent::class)->findOneBy(array('name'=>$name));
-                    if($model) {
-                        //remove existingg actions
-                        foreach ($model->getChildren() as $child) {
-                            if($child->getCategory() instanceof ActionCategory) {
-                                $objectManager->remove($child);
+                if($json == NULL) {
+                    $messages['error'][] = "Impossible de décoder le fichier.";
+                } else {
+                    $objectManager = $this->getEntityManager();
+                    $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
+                    foreach ($json as $name => $actions) {
+                        $model = $objectManager->getRepository(PredefinedEvent::class)->findOneBy(array('name' => $name));
+                        if ($model) {
+                            //remove existing actions
+                            foreach ($model->getChildren() as $child) {
+                                if ($child->getCategory() instanceof ActionCategory) {
+                                    $objectManager->remove($child);
+                                }
                             }
+                            $objectManager->flush();
+                            //create new actions
+                            foreach ($actions as $action) {
+                                $actionObject = new PredefinedEvent();
+                                $actionObject->setCategory($actionCategory);
+                                $actionObject->setOrganisation($model->getOrganisation());
+                                $actionObject->setParent($model);
+                                $actionObject->setListable(false);
+                                $actionObject->setSearchable(false);
+                                $actionObject->setPunctual(true);
+                                $actionObject->setImpact($objectManager->getRepository('Application\Entity\Impact')
+                                    ->find((int)$action["impact"]));
+                                $actionObject->setPlace($action["place"]);
+
+                                $name = new CustomFieldValue();
+                                $name->setCustomField($actionCategory->getNamefield());
+                                $name->setValue($action['name']);
+                                $name->setEvent($actionObject);
+
+                                $text = new CustomFieldValue();
+                                $text->setCustomField($actionCategory->getTextfield());
+                                $text->setValue($action['text']);
+                                $text->setEvent($actionObject);
+
+                                $color = new CustomFieldValue();
+                                $color->setCustomField($actionCategory->getColorField());
+                                $color->setValue($action['color']);
+                                $color->setEvent($actionObject);
+
+                                $objectManager->persist($name);
+                                $objectManager->persist($text);
+                                $objectManager->persist($color);
+                                $objectManager->persist($actionObject);
+                                $objectManager->persist($model);
+                            }
+                            $count++;
+                        } else {
+                            $missing[] = $name;
                         }
+                    }
+
+                    try {
                         $objectManager->flush();
-                        //create new actions
-                        foreach ($actions as $action) {
-                            $actionObject = new PredefinedEvent();
-                            $actionObject->setCategory($actionCategory);
-                            $actionObject->setOrganisation($model->getOrganisation());
-                            $actionObject->setParent($model);
-                            $actionObject->setListable(false);
-                            $actionObject->setSearchable(false);
-                            $actionObject->setPunctual(true);
-                            $actionObject->setImpact($objectManager->getRepository('Application\Entity\Impact')
-                                ->find(5));
-                            $actionObject->setPlace($action["place"]);
-
-                            $name = new CustomFieldValue();
-                            $name->setCustomField($actionCategory->getNamefield());
-                            $name->setValue($action['name']);
-                            $name->setEvent($actionObject);
-
-                            $text = new CustomFieldValue();
-                            $text->setCustomField($actionCategory->getTextfield());
-                            $text->setValue($action['text']);
-                            $text->setEvent($actionObject);
-
-                            $color = new CustomFieldValue();
-                            $color->setCustomField($actionCategory->getColorField());
-                            $color->setValue($action['color']);
-                            $color->setEvent($actionObject);
-
-                            $objectManager->persist($name);
-                            $objectManager->persist($text);
-                            $objectManager->persist($color);
-                            $objectManager->persist($actionObject);
-                            $objectManager->persist($model);
-                        }
-                        $count++;
+                        $messages['success'][] = $count . " fiches importées.";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = 'Impossible d\'importer les fiches.';
+                        $messages['error'][] = $e->getMessage();
                     }
                 }
-
-                try {
-                    $objectManager->flush();
-                    $messages['success'][] = $count . " fiches importées.";
-                } catch (\Exception $e) {
-                    $messages['error'][] = 'Impossible d\'importer les fiches.';
-                    $messages['error'][] = $e->getMessage();
-                }
-
             } else {
                 $this->processFormMessages($form->getMessages(), $messages);
             }
@@ -1058,6 +1064,8 @@ class ModelsController extends FormController
         }
         $json = array();
         $json['messages'] = $messages;
+        $json['missing'] = $missing;
+        $json['count'] = $count;
         return new JsonModel($json);
     }
 }

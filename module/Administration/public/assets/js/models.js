@@ -381,11 +381,37 @@ var models = function(url, urlapp){
 		$(this).ajaxSubmit({
 			url: action,
 			type: 'POST',
-			success: function(data, textStatus, jqXGR){
-				if(!data.messages['error']) {
-					$("#import-container").modal('hide');
+			success: function(data, textStatus, jqXGR) {
+				$("#import-container").modal('hide');
+				if (!data.messages['error']) {
+					if(data.count == 0) {
+						$("#import-result #count-import").html("Aucune fiche n'a été importée.");
+					} else if(data.count == 1) {
+						$("#import-result #count-import").html(data.count + " fiche a été correctement importée.");
+					} else {
+						$("#import-result #count-import").html(data.count + " fiches ont été correctement importées.");
+					}
+
+					if(data['missing'] && Object.keys(data.missing).length > 0) {
+						let ul = $('<ul></ul>');
+						data.missing.forEach(function(item, index){
+							ul.append('<li>'+item+'</li>');
+						});
+						let missingcount = Object.keys(data.missing).length;
+						$("#missing-import").empty();
+						if(missingcount == 1) {
+							$("#missing-import")
+								.append(missingcount + " modèle non importé :")
+								.append(ul);
+						} else {
+							$("#missing-import").append(missingcount + " modèles non importés :")
+								.append(ul);
+						}
+					}
+					$("#import-result").modal('show');
+				} else {
+					displayMessages(data.messages);
 				}
-				displayMessages(data.messages);
 			}
 		});
 	});
