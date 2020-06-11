@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ee1bdc5a3a2fde3d1dcf691d3664b05",
+    "content-hash": "49ea7647ece7a61e5d9261f6e8fe3568",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -5797,6 +5797,63 @@
                 "parser"
             ],
             "time": "2019-06-18T18:29:15+00:00"
+        },
+        {
+            "name": "linkorb/jsmin-php",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/linkorb/jsmin-php.git",
+                "reference": "be85d87fc9c27730e7e9ced742b13010dafc1026"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/linkorb/jsmin-php/zipball/be85d87fc9c27730e7e9ced742b13010dafc1026",
+                "reference": "be85d87fc9c27730e7e9ced742b13010dafc1026",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joost Faassen",
+                    "email": "j.faassen@linkorb.com",
+                    "role": "Packaging for Composer"
+                },
+                {
+                    "name": "Ryan Grove",
+                    "email": "ryan@wonko.com",
+                    "role": "PHP port"
+                },
+                {
+                    "name": "Adam Gofort",
+                    "email": "aag@adamgoforth.com",
+                    "role": "Updates to the PHP port"
+                },
+                {
+                    "name": "Douglas Crockford",
+                    "email": "douglas@crockford.com"
+                }
+            ],
+            "description": "Unofficial package of jsmin-php",
+            "homepage": "http://www.github.com/linkorb/jsmin-php",
+            "keywords": [
+                "javascript",
+                "jsmin",
+                "minify"
+            ],
+            "time": "2013-03-15T13:16:35+00:00"
         },
         {
             "name": "maglnet/magl-markdown",
