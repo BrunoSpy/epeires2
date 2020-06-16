@@ -94,8 +94,8 @@ return array(
             'Administration\Controller\Radars' => 'Administration\Controller\Factory\RadarsControllerFactory',
             'Administration\Controller\Users' => 'Administration\Controller\Factory\UsersControllerFactory',
             'Administration\Controller\Roles' => 'Administration\Controller\Factory\RolesControllerFactory',
-            'Administration\Controller\IPOS' => 'Administration\Controller\Factory\IPOSControllerFactory',
-            'Administration\Controller\OpSups' => 'Administration\Controller\Factory\OpSupsControllerFactory',
+            'Administration\Controller\Ipos' => 'Administration\Controller\Factory\IPOSControllerFactory',
+            'Administration\Controller\Opsups' => 'Administration\Controller\Factory\OpSupsControllerFactory',
             'Administration\Controller\Categories' => 'Administration\Controller\Factory\CategoriesControllerFactory',
             'Administration\Controller\Models' => 'Administration\Controller\Factory\ModelsControllerFactory',
             'Administration\Controller\Tabs' => 'Administration\Controller\Factory\TabsControllerFactory',
@@ -103,7 +103,7 @@ return array(
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
             'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
             'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory',
-            'Administration\Controller\ATFCM' => 'Administration\Controller\Factory\ATFCMControllerFactory'
+            'Administration\Controller\Atfcm' => 'Administration\Controller\Factory\ATFCMControllerFactory'
         )
     ),
     'view_manager' => array(
