@@ -438,3 +438,19 @@ body {
 	height: 550px;
 	bottom: -20px;
 }
+
+/**** tooltip de la checklist ****/
+.list-actions .tooltip-arrow {
+	display: block;
+	border-top-color: rgba(101,101,101,0.9) !important;
+	bottom: -5px !important;
+	border-width: 10px 10px 0px 10px !important;
+}
+
+.list-actions .tooltip {
+	word-wrap: break-word;
+}
+
+.list-actions .tooltip-inner {
+	line-height: 1.2em;
+}
