@@ -221,6 +221,10 @@ return array(
             'events.mod-opsup' => array(
                 'name' => 'Modifier Chef Op',
                 'description' => ''
+            ),
+            'events.raz-checklist' => array(
+                'name' => 'RAZ Checklist',
+                'description' => 'Permet la remise à zéro de la checklist.'
             )
         ),
         'Radio' => array(
