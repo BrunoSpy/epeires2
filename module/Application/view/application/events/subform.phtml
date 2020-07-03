@@ -32,10 +32,10 @@ switch ($this->part) {
                 foreach ($this->values as $key => $value) {
                     echo '<tr>';
                     echo '<td class="hidden-xs">';
-                    echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
+                    echo '<div class="round round-lg" style="background-color: '.$value["color"].'"><i class="mdi-content-content-paste"></i></div>';
                     echo '</td>';
-                    echo '<td class="tr-value"> '.$value.'</td>';
-                    echo '<td><span class="pull-right"><a data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</a></span></td>';
+                    echo '<td class="tr-value"> '.$value["name"].'</td>';
+                    echo '<td><span class="pull-right"><a data-id="'.$key.'" class="btn btn-sm btn-primary" style="background-color: '.$value["color"].'">Utiliser</a></span></td>';
                     echo '</tr>';
 
                     if ($i >= $count / 2 && ! $separated) {
@@ -54,10 +54,10 @@ switch ($this->part) {
                 foreach ($this->subvalues as $key => $value) {
                     echo '<tr>';
                     echo '<td class="hidden-xs">';
-                    echo '<div class="round round-lg grey"><i class="mdi-content-content-paste"></i></div>';
+                    echo '<div class="round round-lg" style="background-color: '.$value["color"].'"><i class="mdi-content-content-paste"></i></div>';
                     echo '</td>';
                     echo '<td class="tr-value"> '.$value['name'].'</td>';
-                    echo '<td><span class="pull-right"><a data-catid="'.$value['catid'].'" data-id="'.$key.'" class="btn btn-sm btn-primary">Utiliser</a></span></td>';
+                    echo '<td><span class="pull-right"><a data-catid="'.$value['catid'].'" data-id="'.$key.'" class="btn btn-sm btn-primary" style="background-color: '.$value["color"].'">Utiliser</a></span></td>';
                     echo '</tr>';
 
                     if ($i >= $count / 2 && ! $separated) {

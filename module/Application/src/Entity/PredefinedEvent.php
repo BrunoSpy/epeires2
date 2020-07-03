@@ -82,6 +82,15 @@ class PredefinedEvent extends AbstractEvent
      */
     protected $quickaccess = false;
 
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Options({"label":"Couleur :"})
+     * @Annotation\Required(false)
+     * Color coded in hexa, ex: #FFFFFF
+     */
+    protected $color = "#888"; //grey by default
+
     public function __construct()
     {
         parent::__construct();
@@ -95,6 +104,22 @@ class PredefinedEvent extends AbstractEvent
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setColor($color)
+    {
+        if (! (strpos($color, "#") === 0)) {
+            $color = "#" . $color;
+        }
+        $this->color = $color;
+    }
+
+    public function getColor()
+    {
+        if($this->color == NULL) {
+            $this->setColor("#888");
+        }
+        return $this->color;
     }
 
     /**

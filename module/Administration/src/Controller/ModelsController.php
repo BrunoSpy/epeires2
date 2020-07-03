@@ -554,7 +554,7 @@ class ModelsController extends FormController
             ->getAllAsArray());
         
         $form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getAllAsArray());
+            ->getAllAsArray(array('archived' => false, "system" => false)));
         
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')
             ->getRootsAsArray());

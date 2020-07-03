@@ -72,11 +72,13 @@ var models = function(url, urlapp){
 			$("#model-form").load(url+'/models/form', function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
 				$.material.checkbox();
+				$("#model-form").find(".pick-a-color").pickAColor();
 			});	
 		} else {
 			$("#model-form").load(url+'/models/form?catid='+catid, function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
 				$.material.checkbox();
+				$("#model-form").find(".pick-a-color").pickAColor();
 			});
 		}
 	});
@@ -111,13 +113,15 @@ var models = function(url, urlapp){
 	$(document).on('change', 'select[name=category]', function(){
 		$(this).closest(".modal-body").find(".custom-fields").load(url+'/models/customfields?id='+$(this).val(), function(){
 			$.material.checkbox();
+			$("#model-form").find(".pick-a-color").pickAColor();
 		});
 	});
 	$(document).on('click',".mod-model", function(){
 		$("#model-title").html("Modification de <em>"+$(this).data('name')+"</em>");
 		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'), function(){
 			//fillZoneFilters($("#model-container select[name=organisation]").val());
-		    	$.material.checkbox();
+			$.material.checkbox();
+			$("#model-form").find(".pick-a-color").pickAColor();
 		});	
 	});
 		
