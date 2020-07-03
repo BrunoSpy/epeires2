@@ -178,7 +178,7 @@
 }
 
 .label_elmt.popover, .quickaccess.popover {
-	min-width: 185px;
+	min-width: 285px;
 	background-color: #fff;
 	z-index:1033;
 }
@@ -196,8 +196,8 @@
 }
 
 .quickaccess .btn {
-	min-width: 150px;
-	max-width: 150px;
+	min-width: 260px;
+	max-width: 260px;
 	margin: 0px 1px;
 	padding-left: 10px;
 	padding-right: 10px;
@@ -209,7 +209,7 @@
 
 .quickaccess .title {
 	overflow: hidden;
-	max-width: 115px;
+	max-width: 215px;
 	text-overflow: ellipsis;
 }
 
