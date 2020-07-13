@@ -33,6 +33,7 @@ class MilCategory extends Category
      * @ORM\Column(type="string")
      * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Zones associées :"})
+     * @Annotation\Attributes({"placeholder":"Ex : /LFTSA43[AB]/"})
      * Displayed zones, must be included in <$filter>*
      */
     protected $zonesRegex;
@@ -52,14 +53,6 @@ class MilCategory extends Category
      * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
      */
     protected $nmB2B = false;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Annotation\Required(false)
-     * @Annotation\Type("Laminas\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Actualiser avec SIA (uniquement possible pour ZTBA) :"})
-     */
-    protected $sia = false;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -89,16 +82,6 @@ class MilCategory extends Category
     public function isNMB2B()
     {
         return $this->nmB2B;
-    }
-
-    public function setSia($sia)
-    {
-        $this->sia = $sia;
-    }
-
-    public function isSia()
-    {
-        return $this->sia;
     }
 
     public function setLastUpdateDate($update)
