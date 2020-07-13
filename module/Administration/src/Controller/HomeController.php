@@ -95,6 +95,12 @@ class HomeController extends AbstractActionController
             $certifName = null;
         }
 
+        if(array_key_exists('IHM_OPE_Light', $this->config) && $this->config['IHM_OPE_Light'] == true) {
+            $IHMLight = true;
+        } else {
+            $IHMLight = false;
+        }
+
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
             'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
@@ -108,7 +114,8 @@ class HomeController extends AbstractActionController
             'certifname' => $certifName,
             'myversion' => Version::VERSION,
             'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
-            'git' => $git
+            'git' => $git,
+            'IHMLight' => $IHMLight
         );
     }
 }

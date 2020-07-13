@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 
 /**
- *
+ * Controller for a timeline tab
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
@@ -98,6 +98,15 @@ class TabsController extends TabController
                 }
             }
         }
+
+        if(array_key_exists('IHM_OPE_Light', $this->config) && $this->config['IHM_OPE_Light'] === true) {
+            $this->layout()->IHMLight = true;
+            $this->viewmodel->setVariable('IHMLight', true);
+        } else {
+            $this->layout()->IHMLight = false;
+            $this->viewmodel->setVariable('IHMLight', false);
+        }
+
         $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
         
         $this->viewmodel->setVariable('messages', $return);

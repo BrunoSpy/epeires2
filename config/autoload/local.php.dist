@@ -1,21 +1,21 @@
 <?php
 /**
- * Local Configuration Override
- *
- * This configuration override file is for overriding environment-specific and
- * security-sensitive configuration information. Copy this file without the
- * .dist extension at the end and populate values as needed.
- *
- * @NOTE: This file is ignored from Git by default with the .gitignore included
- * in ZendSkeletonApplication. This is a good practice, as it prevents sensitive
- * credentials from accidentally being committed into version control.
+ * Exemple de fichier de configuration
+ * Mode d'emploi :
+ * - créer un fichier local.php
+ * - y mettre le paramétrage strictement nécessaire sur le modèle de ce fichier
  */
 
 return array(
 
+    //activer la simplification de l'IHM OPE
+    //si paramètre absent ou différent de true : IHM normale
+    "IHM_OPE_Light" => true,
+
     "secret_key" => "<my secret key>",
     "secret_init" => "<my secret initialisation vector>",
 
+    // Paramétrage de connexion automatique pour les clients basé sur leur IPv4
     'zfc_rbac' => array(
         'guards' => array(
             //Configure autoconnection according to the example below

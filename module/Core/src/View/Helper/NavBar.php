@@ -30,7 +30,7 @@ class NavBar extends AbstractHelper
 
     private $sm;
 
-    public function __invoke($color = 'epeires', $showHome = true)
+    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false)
     {
         $html = "";
         

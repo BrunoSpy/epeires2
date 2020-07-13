@@ -29,7 +29,7 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $title, $return = null, $iponumber = null, $zoneform = null) {
+    public function __invoke($color, $title, $return = null, $iponumber = null, $zoneform = null, $IHMLight = false) {
         
         $auth = $this->sm->get('ZfcRbac\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');
@@ -78,23 +78,49 @@ class NavBarTop extends AbstractHelper {
         }
         */
 
-        if ($auth->getIdentity() /*&& $zoneform*/) {
-            $opsuptypes = array();
-            foreach($auth->getIdentity()->getRoles() as $role) {
-                foreach ($role->getOpsuptypes() as $type) {
-                    if( ! array_key_exists($type->getId(), $opsuptypes)) {
-                        $opsuptypes[$type->getId()] = $type->getName();
+        if(!$IHMLight) { // Epeires Light : no supervisor and no IPO
+
+            if ($auth->getIdentity() /*&& $zoneform*/) {
+                $opsuptypes = array();
+                foreach ($auth->getIdentity()->getRoles() as $role) {
+                    foreach ($role->getOpsuptypes() as $type) {
+                        if (!array_key_exists($type->getId(), $opsuptypes)) {
+                            $opsuptypes[$type->getId()] = $type->getName();
+                        }
                     }
                 }
+                foreach ($opsuptypes as $id => $name) {
+                    $html .= $this->view->opsup($id);
+                }
             }
-            foreach($opsuptypes as $id => $name) {
-                $html .= $this->view->opsup($id);
-            }
+
+            $html .= $this->view->ipo($iponumber);
+
         }
-        
-        $html .= $this->view->ipo($iponumber);
+
+
         $html .= '<p class="navbar-text navbar-right" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
-                       
+
+        if($IHMLight) { //TODO refactor : same code in NavBar.php
+            $html .= '<form class="navbar-form navbar-right" role="search" id="search">';
+            $html .= '<div class="form-group form-group-material-' . $color . '-500 has-feedback">';
+            $html .= '<input type="text" class="form-control" placeholder="Chercher" name="search">';
+            $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
+            $html .= '</div>';
+            $html .= '</form>';
+            $html .= '<div id="changeview" class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
+            $html .= '<label class="btn btn-xs btn-info active">';
+            $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked><strong>6 h</strong>';
+            $html .= '</label>';
+            $html .= '<label class="btn btn-xs btn-info ">';
+            $html .= '<input name="viewOptions" id="viewday" type="radio" autocomplete="off" value="day"><strong>24 h</strong>';
+            $html .= '</label>';
+            $html .= '<label class="btn btn-xs btn-info ">';
+            $html .= '<input name="viewOptions" id="viewmonth" type="radio" autocomplete="off" value="month"><strong>7 j/+</strong>';
+            $html .= '</label>';
+            $html .= '</div>';
+        }
+
         $html .= '</div></div></nav>';
         
         return $html;
