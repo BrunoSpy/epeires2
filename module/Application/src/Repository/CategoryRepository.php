@@ -72,7 +72,7 @@ class CategoryRepository extends ExtendedRepository
                 $criteria['parent'] = $root->getId();
                 $children = parent::findBy($criteria, array('place'=>'ASC'));
             } else {
-                $newCriteria = Criteria::create()->where(Criteria::expr()->eq('parent', $root->getId()))->orderBy(array('place'=> 'ASC'));
+                $newCriteria = Criteria::create()->where(Criteria::expr()->eq('parent', $root))->orderBy(array('place'=> 'ASC'));
                 $children = parent::matching($newCriteria);
             }
             foreach ($children as $child) {

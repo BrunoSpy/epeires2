@@ -121,6 +121,14 @@ class CustomField
     protected $hidden = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Obligatoire"})
+     */
+    protected $required = false;
+
+    /**
      * @ORM\OneToMany(targetEntity="CustomFieldValue", mappedBy="customfield", cascade={"remove"})
      */
     protected $values;
@@ -168,6 +176,16 @@ class CustomField
     public function setPlace($place)
     {
         $this->place = $place;
+    }
+
+    public function isRequired()
+    {
+        return $this->required;
+    }
+
+    public function setRequired(bool $req)
+    {
+        $this->required = $req;
     }
 
     public function isMultiple()
@@ -231,6 +249,7 @@ class CustomField
     {
         $object_vars = get_object_vars($this);
         $object_vars['category'] = ($this->category ? $this->category->getId() : null);
+        $object_vars['type'] = ($this->type ? $this->type->getId() : null);
         return $object_vars;
     }
 }

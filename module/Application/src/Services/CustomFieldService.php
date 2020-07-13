@@ -237,6 +237,9 @@ class CustomFieldService
                 $attributes['data-trigger-refresh-to'] = $customfield->getCategory()->getFrequenciesField()->getId();
             }
         }
+        if($customfield->isRequired()) {
+            $attributes['required'] = 'required';
+        }
         return $attributes;
     }
 
