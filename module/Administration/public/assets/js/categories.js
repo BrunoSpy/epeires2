@@ -259,4 +259,26 @@ var categories = function(url){
                     displayMessages(data);
                 });
         });
+
+        //activate sortable rows
+		$(".sortablesub").sortable({
+			placeholder: "sub-highlight",
+			update: function(event, ui) {
+				ui.item.closest('tbody').find('tr').each(function(index, element){
+					var place = $(this).siblings('tr').index(this);
+					var id = $(this).find('td.subcat-id').data('id');
+					$.post(url+'/categories/setplacecategory?id='+id+'&place='+index, function(data){
+						displayMessages(data);
+					})
+				});
+			}
+		});
+
+		$("#table-categories thead tr th").each(function (index, element) {
+			var width = $(this).width();
+			var i = index;
+			$("#table-categories .sortablesub").each(function(index0, element0) {
+				$(this).find("td:eq("+i+")").css("width", width+"px");
+			});
+		});
 }

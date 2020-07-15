@@ -377,6 +377,30 @@ class CategoriesController extends FormController
         return new JsonModel($messages);
     }
 
+    public function setplacecategoryAction()
+    {
+        $messages = array();
+        $id = $this->params()->fromQuery('id', null);
+        $place = $this->params()->fromQuery('place', null);
+        $objectManager = $this->getEntityManager();
+        if ($id) {
+            $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
+            if ($cat) {
+                $cat->setPlace($place);
+                $objectManager->persist($cat);
+                try {
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie ".$cat->getName()." correctement modifiée en place ".$cat->getPlace().".";
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver la catégorie";
+            }
+        }
+        return new JsonModel($messages);
+    }
+
     public function archiveAction(){
         $id = $this->params()->fromQuery('id', null);
         $archive = $this->params()->fromQuery('archive', null);

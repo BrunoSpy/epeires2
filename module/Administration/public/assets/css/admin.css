@@ -106,3 +106,17 @@ table .btn-xs {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.sub-highlight {
+  height: 100px;
+  background-color: yellow !important;
+}
+
+.table-subcat {
+  border-bottom: solid #ddd;
+}
+
+.content-subcat {
+  padding: 0px !important;
+
+}
