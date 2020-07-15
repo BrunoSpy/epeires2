@@ -141,6 +141,7 @@ class Sector extends TemporaryResource
         }
         $object_vars['sectorsgroups'] = $sectorsgroups;
         $object_vars['frequency'] = ($this->frequency ? $this->frequency->getId() : null);
+        $object_vars['zone'] = ($this->zone ? $this->zone->getId() : null);
         return $object_vars;
     }
 }

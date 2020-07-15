@@ -156,6 +156,7 @@ class SectorGroup
             $sectors[] = $sector->getId();
         }
         $object_vars['sectors'] = $sectors;
+        $object_vars['zone'] = ($this->zone ? $this->zone->getId() : null);
         return $object_vars;
     }
 }
