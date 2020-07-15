@@ -690,7 +690,7 @@ var form = function(url, cats){
                         $("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
                     });
                 }
-                customvalues = data.customvalues;
+                var customvalues = data.customvalues;
                 $.each(data.customvalues, function(key, value){
                     var elt = $("#custom_fields [name='custom_fields["+key+"]']");
                     if(elt.length == 0) {

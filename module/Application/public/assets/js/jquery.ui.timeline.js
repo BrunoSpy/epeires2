@@ -34,7 +34,7 @@
  * @author Bruno Spyckerelle
  */
 
-(function ($, undefined) {
+(function ($) {
 
     $.widget("epeires.timeline", {
 

@@ -176,7 +176,7 @@ var categories = function(url){
 //	ajaxify form field submit
 	$('#fieldscontainer').on('submit', function(event){
 		event.preventDefault();
-		href = $("#CustomField").attr('action');
+		var href = $("#CustomField").attr('action');
 		var me = $("#CustomField").find("input[type=submit]");
 		$.post(href, $("#CustomField").serialize(), function(data){
 			var id = me.closest('tr').find('input[type=hidden]').val();
