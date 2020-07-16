@@ -50,7 +50,11 @@ class IPOHelper extends AbstractHelper
             ), array(
                 'name' => 'asc'
             ));
-            
+
+            if(count($ipos) == 0) { //no need to display an empty form
+                return $html;
+            }
+
             $currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(array(
                 'organisation' => $zfcuserauth->getIdentity()
                     ->getOrganisation()
@@ -92,8 +96,6 @@ class IPOHelper extends AbstractHelper
                     $html .= '<p class="navbar-text navbar-left"><span class="glyphicon glyphicon-warning-sign"></span><b> '.$this->view->translate('IPO').' ' . ($iponumber !== null ? $iponumber : '') . ' : </b><em>Aucun '.$this->view->translate('IPO').' configuré</em></p>';
                 }
             }
-        } else {
-            $html .= '<p class="navbar-text navbar-left"><em>Connexion nécessaire</em></p>';
         }
         return $html;
     }
