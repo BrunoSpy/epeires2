@@ -2040,6 +2040,7 @@ class EventRepository extends ExtendedRepository
      * @param \DateTime $enddate
      * @param $search
      * @param null $categories
+     * @param bool $onlytitle
      * @return array
      */
     public function searchEvents($user, \DateTime $startdate, \DateTime $enddate, $search, $categories = null, $onlytitle = false){
@@ -2055,7 +2056,6 @@ class EventRepository extends ExtendedRepository
             ->andWhere($qb->expr()
                 ->isNull('e.parent'));
         if($onlytitle) {
-            error_log('only title');
             $qb->andWhere($qb->expr()->eq('c.fieldname', 'cf.id'));
         }
         if($startdate !== null) {
@@ -2098,8 +2098,8 @@ class EventRepository extends ExtendedRepository
 
         //full text search on raw custom fields values
         $customfields = $qb->expr()->orX();
-        $customfields->add('MATCH (v.value) AGAINST (?4) > 0');
-        $parameters[4] = $search;
+        $customfields->add('MATCH (v.value) AGAINST (?4 boolean) > 0');
+        $parameters[4] = $search."*";
 
         //search specific custom fields : sectors, radars, stacks, antennas
         $qbc = $this->getEntityManager()->createQueryBuilder();

@@ -22,9 +22,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="customfieldvalues")
+ * @ORM\Table(name="customfieldvalues",indexes={@ORM\Index(columns={"value"}, flags={"fulltext"})})
  * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
- *
  * @author Bruno Spyckerelle
  */
 class CustomFieldValue
