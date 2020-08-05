@@ -164,7 +164,7 @@ var formModifyAlarm = function(alarm) {
 	$('#alarm-table').append(tr);
 };
 
-var form = function(url, cats){
+var form = function(url, cats, sunrise, sunrise_url){
 
 	urlt = url;
 	
@@ -541,8 +541,8 @@ var form = function(url, cats){
 				url+'events/form'+'?'+cats,
 				function(){
 					initTabs(0);
-					$("#event input[name=startdate]").timepickerform({'id':'start'});
-					$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+					$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
+					$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 					updateHours();
 					//updateHourTitle();
 					if(cat_parent_id >= 0){
@@ -571,8 +571,8 @@ var form = function(url, cats){
 		$("#create-evt").modal('show');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
 			initTabs(2);
-			$("#event input[name=startdate]").timepickerform({'id':'start'});
-			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
 		});
 		$("#search-results").offset({top:0});
@@ -588,8 +588,8 @@ var form = function(url, cats){
 
 		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&'+cats, function(){
 			initTabs(2);
-			$("#event input[name=startdate]").timepickerform({'id':'start'});
-			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
 		});
 		$("#search-results").offset({top:0});
@@ -604,8 +604,8 @@ var form = function(url, cats){
 		$("#create-evt").modal('show');
 		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
 			initTabs(2);
-			$("#event input[name=startdate]").timepickerform({'id':'start'});
-			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
+			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
 		});
 		pauseUpdateAlarms();
@@ -646,8 +646,8 @@ var form = function(url, cats){
         $("#event").load(url+'events/form?id='+id+'&'+cats, function(){
             initTabs(1);
             $("#event input[name=exclude]").val(exclude);
-            $("#event input[name=startdate]").timepickerform({'id':'start'});
-            $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true});
+            $("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
+            $("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
             //mise à jour en fonction du statut ponctuel
             $('#event #punctual').trigger('change');
             updateHours();

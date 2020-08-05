@@ -231,7 +231,7 @@ $('#timeline').timeline({
 });
 
 //init form
-form('<?php echo $this->url('application');?>', cats);
+form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
 
 fileupload('<?php echo $this->url('application')?>');
 

@@ -138,6 +138,8 @@ class TabController extends FormController
             $this->viewmodel->setVariable('day', $daySession);
         }
 
+        $this->viewmodel->setVariable("sunrise", array_key_exists("sunrise", $this->config));
+
         $this->layout()->lang = $this->config['lang'];
 
         //add mattermost chat

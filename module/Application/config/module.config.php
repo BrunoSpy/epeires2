@@ -110,6 +110,7 @@ return array(
             'Application\Controller\Sarbeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
             'Application\Controller\ATFCM' => 'Application\Controller\Factory\ATFCMControllerFactory',
             'Application\Controller\Briefing' => 'Application\Controller\Factory\BriefingControllerFactory',
+            'Application\Controller\Sunrisesunset' => 'Application\Controller\Factory\SunrisesunsetControllerFactory'
         )
     ),
     'view_helpers' => array(
