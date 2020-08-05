@@ -44,7 +44,7 @@ use Application\Form\CustomFieldset;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Doctrine\ORM\QueryBuilder;
 
-use ZfcRbac\Exception\UnauthorizedException;
+use LmcRbacMvc\Exception\UnauthorizedException;
 
 
 /**

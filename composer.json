@@ -19,10 +19,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/BrunoSpy/ZfcUser"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/basz/zfc-rbac"
         }
     ],
     "require": {
@@ -45,7 +41,6 @@
         "gedmo/doctrine-extensions": "^2.4",
         "zf-commons/zfc-user": "3.x-dev",
         "zf-commons/zfc-user-doctrine-orm": "^3.0",
-        "zf-commons/zfc-rbac": "dev-laminas-migration-master",
         "rwoverdijk/assetmanager": "^1.8",
         "dino/dompdf-module": "dev-zf3",
         "kipperlenny/opentbs-bundle": "dev-master",
@@ -63,7 +58,8 @@
         "laminas/laminas-file": "^2.8",
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^1.0",
-        "linkorb/jsmin-php": "^1.0"
+        "linkorb/jsmin-php": "^1.0",
+        "laminas-commons/lmc-rbac-mvc": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",

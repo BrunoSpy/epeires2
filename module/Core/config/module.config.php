@@ -15,7 +15,7 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-use ZfcRbac\Guard\GuardInterface;
+use LmcRbacMvc\Guard\GuardInterface;
 use Laminas\Session;
 
 return array(
@@ -85,11 +85,11 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'protection_policy' => GuardInterface::POLICY_ALLOW,
         'guest_role' => 'guest',
         'role_provider' => array(
-            'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
+            'LmcRbacMvc\Role\ObjectRepositoryRoleProvider' => array(
                 'object_manager' => 'doctrine.entitymanager.orm_default',
                 'class_name' => 'Core\Entity\Role',
                 'role_name_property' => 'name'

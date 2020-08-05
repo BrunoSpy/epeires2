@@ -290,9 +290,9 @@ return array(
         )
     ),
     
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+            'LmcRbacMvc\Guard\ControllerPermissionsGuard' => array(
                 array(
                     'controller' => 'Application\Controller\Frequencies',
                     'permissions' => [

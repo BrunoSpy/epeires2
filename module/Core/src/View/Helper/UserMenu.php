@@ -81,7 +81,7 @@ class UserMenu extends AbstractHelper
         return $html;
     }
 
-    public function setAuthService(\ZfcRbac\Service\AuthorizationService $auth)
+    public function setAuthService(\LmcRbacMvc\Service\AuthorizationService $auth)
     {
         $this->auth = $auth;
     }

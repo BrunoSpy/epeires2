@@ -32,7 +32,7 @@ class UserMenuFactory implements FactoryInterface
     {
         $usermenu = new \Core\View\Helper\UserMenu();
         $usermenu->setAuthService($container
-            ->get('ZfcRbac\Service\AuthorizationService'));
+            ->get('LmcRbacMvc\Service\AuthorizationService'));
         $usermenu->setServiceManager($container);
         return $usermenu;
     }

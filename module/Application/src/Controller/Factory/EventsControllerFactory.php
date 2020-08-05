@@ -29,7 +29,7 @@ class EventsControllerFactory implements FactoryInterface {
             $container->get('Doctrine\ORM\EntityManager'),
             $container->get('eventservice'),
             $container->get('customfieldservice'),
-            $container->get('ZfcRbac\Options\ModuleOptions'),
+            $container->get('LmcRbacMvc\Options\ModuleOptions'),
             $container->get('config'),
             $container->get('mattermostservice'),
             $container->get('translator'),

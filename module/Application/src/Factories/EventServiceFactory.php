@@ -33,7 +33,7 @@ class EventServiceFactory implements FactoryInterface
         return new \Application\Services\EventService(
             $container->get('Doctrine\ORM\EntityManager'),
             $container->get('zfcuser_auth_service'),
-            $container->get('ZfcRbac\Service\AuthorizationService'),
+            $container->get('LmcRbacMvc\Service\AuthorizationService'),
             $container->get('customfieldservice')
         );
     }

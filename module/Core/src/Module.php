@@ -39,7 +39,7 @@ class Module implements ConfigProviderInterface
         $e->getTarget()->getEventManager()->attach(
             $e::EVENT_DISPATCH_ERROR,
             function($e) use ($sm) {
-                return $sm->get('ZfcRbac\View\Strategy\UnauthorizedStrategy')->onError($e);
+                return $sm->get('LmcRbacMvc\View\Strategy\UnauthorizedStrategy')->onError($e);
             }
         );
 

@@ -190,14 +190,14 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+            'LmcRbacMvc\Guard\RoutePermissionsGuard' => array(
                 'administration' => array(
                     'admin.access'
                 )
             ),
-            'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+            'LmcRbacMvc\Guard\ControllerPermissionsGuard' => array(
                 array(
                     'controller' => 'Administration\Controller\Categories',
                     'permissions' => [

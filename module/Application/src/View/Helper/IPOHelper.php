@@ -35,7 +35,7 @@ class IPOHelper extends AbstractHelper
     {
         $html = "";
         
-        $auth = $this->sm->get('ZfcRbac\Service\AuthorizationService');
+        $auth = $this->sm->get('LmcRbacMvc\Service\AuthorizationService');
         
         $zfcuserauth = $this->sm->get('zfcuser_auth_service');
         

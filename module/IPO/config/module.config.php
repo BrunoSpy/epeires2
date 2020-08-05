@@ -110,9 +110,9 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+            'LmcRbacMvc\Guard\RoutePermissionsGuard' => array(
                 'ipo' => array(
                     'ipo.read'
                 )

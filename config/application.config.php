@@ -41,7 +41,7 @@ $modules = array(
         'DoctrineORMModule',
         'DoctrineMigrationsModule',
 //        'ZfcBase',
-        'ZfcRbac',
+        'LmcRbacMvc',
         'ZfcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',

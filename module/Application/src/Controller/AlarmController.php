@@ -194,7 +194,7 @@ class AlarmController extends FormController
                     ->getOrganisation()
                     ->getId());
             } else {
-                throw new \ZfcRbac\Exception\UnauthorizedException();
+                throw new \LmcRbacMvc\Exception\UnauthorizedException();
             }
             
             $form->add(array(

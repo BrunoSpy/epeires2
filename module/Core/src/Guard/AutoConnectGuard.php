@@ -19,7 +19,7 @@ namespace Core\Guard;
 
 use \Laminas\Http\Request as HttpRequest;
 use \Laminas\Mvc\MvcEvent;
-use \ZfcRbac\Guard\AbstractGuard;
+use \LmcRbacMvc\Guard\AbstractGuard;
 
 /**
  * AutoConnect users based on IP
