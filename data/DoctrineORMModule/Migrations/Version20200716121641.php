@@ -22,7 +22,7 @@ final class Version20200716121641 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP INDEX IF EXISTS value ON customfieldvalues');
+        $this->addSql('DROP INDEX value ON customfieldvalues');
         $this->addSql('CREATE FULLTEXT INDEX IDX_C78CFA531D775834 ON customfieldvalues (`value`)');
     }
 

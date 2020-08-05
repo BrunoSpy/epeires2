@@ -41,10 +41,12 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
     function __construct(EntityManager $entityManager, $config)
     {
         parent::__construct($entityManager);
-        if(in_array("sunrise", $config) )
-        $this->url = $config["sunrise"]["service"];
-        $this->lat = $config["sunrise"]["lat"];
-        $this->lon = $config["sunrise"]["lon"];
+
+        if(array_key_exists("sunrise", $config) ) {
+        	$this->url = $config["sunrise"]["service"];
+	        $this->lat = $config["sunrise"]["lat"];
+        	$this->lon = $config["sunrise"]["lon"];
+	}
 
     }
 
@@ -79,6 +81,7 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
 
     public function getsunriseAction()
     {
+
         $date = $this->params()->fromQuery('date', null);
         if($date !== null) {
             try {
