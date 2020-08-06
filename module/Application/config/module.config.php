@@ -159,7 +159,7 @@ return array(
     'doctrine' => array(
         'driver' => array(
             'application_entities' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
                 'cache' => 'array',
                 'paths' => array(
                     __DIR__ . '/../src/Entity'

@@ -32,7 +32,7 @@ return array(
             // overriding zfc-user-doctrine-orm's config
             'zfcuser_entity' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'paths' => __DIR__ . '/../src/Entity'
+                'paths' => [__DIR__ . '/../src/Entity']
             ),
             'orm_default' => array(
                 'drivers' => array(
