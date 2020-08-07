@@ -6,9 +6,7 @@ return array(
         'wsdl' => array(
             'airspaceservices' => 'path to airspace services wsdl file',//to enable AUP import
             'flowservices' => 'path to flow services wsdl file',//to enable regulations import
-        ),
-        'proxy_host' => 'http or https proxy', //optional
-        'proxy_port' => 'proxy port' //optional
+        )
     ),
 );
 

@@ -37,6 +37,8 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
     private $url;
     private $lat;
     private $lon;
+    private $proxy_host = '';
+    private $proxy_port;
 
     function __construct(EntityManager $entityManager, $config)
     {
@@ -46,7 +48,16 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
         	$this->url = $config["sunrise"]["service"];
 	        $this->lat = $config["sunrise"]["lat"];
         	$this->lon = $config["sunrise"]["lon"];
-	}
+	    }
+
+        if(array_key_exists('proxy', $this->config)) {
+            if (array_key_exists('proxy_host', $this->config['proxy'])) {
+                $this->proxy_host =  $this->config['proxy']['proxy_host'];
+                if (array_key_exists('proxy_port', $this->config['proxy'])) {
+                    $this->proxy_port = $this->config['proxy']['proxy_port'];
+                }
+            }
+        }
 
     }
 
@@ -57,9 +68,15 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
         $request->setMethod('GET');
         $request->setUri($this->url."?lat=".$this->lat."&lng=".$this->lon."&date=".$date->format('Y-m-d')."&formatted=0");
 
-        //TODO Proxy
+        $config = array(
+            'adapter' => Client\Adapter\Proxy::class,
+            'proxy_host' => $this->proxy_host,
+            'proxy_port' => $this->proxy_port
+        );
+
         $client = new Client();
         $client->resetParameters();
+        $client->setOptions($config);
         $response = $client->dispatch($request);
 
         $result = json_decode($response->getBody(), true);

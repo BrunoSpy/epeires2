@@ -58,11 +58,19 @@ class MattermostService extends Mattermost
                         'password' => $password
                     )
                 );
-                if (array_key_exists('proxy', $this->mattermost)) {
+                if (array_key_exists('proxy', $this->config)) {
+                    $proxy = '';
+                    if (array_key_exists('proxy_host', $this->config['proxy'])) {
+                        $proxy = $this->config['proxy']['proxy_host'];
+                        if (array_key_exists('proxy_port', $this->config['proxy'])) {
+                            $proxy .= ":" . $this->config['proxy']['proxy_port'];
+                        }
+                    }
+
                     $containerOptions['guzzle'] = array(
                         'proxy' => [
-                            'http' => $this->mattermost['proxy'],
-                            'https' => $this->mattermost['proxy'],
+                            'http' => $proxy,
+                            'https' => $proxy,
                         ]
                     );
                 }

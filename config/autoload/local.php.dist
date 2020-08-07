@@ -81,8 +81,6 @@ return array(
         // rayon de récupération des NOTAM : site du SIA (30), comportement d'avant la mise à jour SIA : 
         'af_rayon' => 0,
         'af_plafond' => 30,
-        // proxy pour récupérer notam sur le site du SIA http://proxy...
-        'af_proxynotam' => '',
         // paramétrage du serveur de carte, ici mapbox
         'ip_map' => [
             'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",

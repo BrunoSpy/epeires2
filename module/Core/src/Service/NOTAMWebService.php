@@ -41,10 +41,14 @@ class NOTAMWebService
             $this->timeout = self::CURL_TIMEOUT;
         }
 
-        if (isset($this->config['btiv']['af_proxynotam'])) {
-            $this->proxy = $this->config['btiv']['af_proxynotam'];
-        } else {
-            $this->proxy = '';
+        $this->proxy = '';
+        if(array_key_exists('proxy', $this->config)) {
+            if (array_key_exists('proxy_host', $this->config['proxy'])) {
+                $this->proxy = "http://" . $this->config['proxy']['proxy_host'];
+                if (array_key_exists('proxy_port', $this->config['proxy'])) {
+                    $this->proxy .= ":" . $this->config['proxy']['proxy_port'];
+                }
+            }
         }
 
         if (isset($this->config['btiv']['af_rayon'])) {

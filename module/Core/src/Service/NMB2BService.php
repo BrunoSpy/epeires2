@@ -54,12 +54,16 @@ class NMB2BService
             $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
             ini_set('default_socket_timeout', $socket_timeout);
         }
-        if (array_key_exists('proxy_host', $this->nmb2b)) {
-            $options['proxy_host'] = $this->nmb2b['proxy_host'];
+
+        if(array_key_exists('proxy', $this->config)) {
+            if (array_key_exists('proxy_host', $this->config['proxy'])) {
+                $options['proxy_host'] = $this->config['proxy']['proxy_host'];
+            }
+            if (array_key_exists('proxy_port', $this->config['proxy'])) {
+                $options['proxy_port'] = $this->config['proxy']['proxy_port'];
+            }
         }
-        if (array_key_exists('proxy_port', $this->nmb2b)) {
-            $options['proxy_port'] = $this->nmb2b['proxy_port'];
-        }
+
         if (array_key_exists('force_url', $this->nmb2b)) {
             $options['location'] = $this->nmb2b['force_url'];
         }
