@@ -1333,9 +1333,15 @@ class EventsController extends TabsController
                 ));
             }
         }
-        
+
+        $history = null;
+        if ($event) {
+            $history = $this->eventservice->getHistory($event);
+        }
+
         $viewmodel->setVariables(array(
-            'form' => $form
+            'form' => $form,
+            'history' => $history
         ));
         return $viewmodel;
     }

@@ -49,7 +49,9 @@ echo $this->formHidden($this->form->get('category'));
         <li role="presentation" id="actions-title">
             <a href="#actions-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="tasks" class="glyphicon glyphicon-tasks"></span></div> Fiche réflèxe<span class="badge ext">0</span></a>
         </li>
-
+        <li role="presentation" id="history-title">
+            <a href="#history-tab" data-toggle="tab" class="disabled"><div class="round round-sm grey"><span data-class="calendar" class="glyphicon glyphicon-calendar"></span></div> Historique</a>
+        </li>
     </ul>
 
     <div class="tab-content">
@@ -408,6 +410,12 @@ echo $this->formHidden($this->form->get('category'));
             }
             ?>
         </div>
+
+      <div role="tabpanel" class="tab-pane fade" id="history-tab">
+        <?php
+        echo $this->partial('gethistory.phtml', array('history' => $this->history));
+        ?>
+      </div>
 
     </div>
 

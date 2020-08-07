@@ -177,20 +177,20 @@ var form = function(url, cats, sunrise, sunrise_url){
 			case 0:
 				//création d'un nouvel évènement vide ou à partir d'un modèle
 				//$('#notes-title').hide();
-				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
+				$('#Event .nav-tabs > li').css('width', (100/7)+'%');
 				$("#event input[name='submit']").prop('disabled', true).addClass('disabled');
 				break;
 			case 1:
 				//modification d'un evt
 				//$('#notes-title').show();
-				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
+				$('#Event .nav-tabs > li').css('width', (100/7)+'%');
 				$('#Event .nav-tabs > li > a').removeClass('disabled');
 				$('#description-title > a').trigger('click');
 				break;
 			case 2:
 				//copie d'un evt ou utilisatio modèle via recherche
 				//$('#notes-title').hide();
-				$('#Event .nav-tabs > li').css('width', (100/6)+'%');
+				$('#Event .nav-tabs > li').css('width', (100/7)+'%');
 				$('#Event .nav-tabs > li > a').removeClass('disabled');
 				$('#hours-title > a').trigger('click');
 				break;
