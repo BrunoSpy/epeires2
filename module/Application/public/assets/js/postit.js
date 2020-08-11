@@ -9,7 +9,7 @@ var newPostIt = function(id, date, name, content) {
     var bg = background[Math.floor(Math.random()*4)];
     var rotation = rotate[(Math.random() < 0.5 ? 0 : 1)];
     var options = {year: "numeric", month: "numeric", day: "numeric",
-        hour: "numeric", minute: "numeric"};
+        hour: "numeric", minute: "numeric", timeZone: "UTC"};
     var dateString = new Intl.DateTimeFormat('fr-FR', options).format(new Date(date));
     var li = $('<li data-id="'+id+'" id="postit-'+id+'"><div class="'+bg+' '+rotation+'">'
                 +'<div class="postit-handle"><small>'+dateString+'</small><h5 title="'+name+'">'+name+'</h5></div>'
