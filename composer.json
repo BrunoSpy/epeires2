@@ -19,6 +19,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/BrunoSpy/ZfcUser"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/BrunoSpy/psr-container-doctrine"
         }
     ],
     "require": {
@@ -35,13 +39,13 @@
         "laminas/laminas-mvc-console": "^1.2",
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.1",
         "laminas/laminas-mvc-form": "^1.0",
-        "laminas/laminas-hydrator": "^2.3",
-        "doctrine/doctrine-orm-module": "^2.1",
-        "murganikolay/doctrine-migrations-module": "^2.0",
+        "doctrine/doctrine-orm-module": "^3.0",
+        "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^2.4",
-        "zf-commons/zfc-user": "3.x-dev",
-        "zf-commons/zfc-user-doctrine-orm": "3.0.1",
-        "rwoverdijk/assetmanager": "^2.0",
+        "laminas-commons/lmc-user": "^3.0",
+        "zf-commons/zfc-user-doctrine-orm": "^3.0",
+        "jield-webdev/laminas-assetmanager": "dev-master",
+        "jield-webdev/assetic": "2.1.x-dev",
         "dino/dompdf-module": "dev-zf3",
         "kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^1.3",

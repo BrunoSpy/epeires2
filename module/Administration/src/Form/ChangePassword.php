@@ -17,7 +17,7 @@
  */
 namespace Administration\Form;
 
-use ZfcUser\Form\ProvidesEventsForm;
+use LmcUser\Form\ProvidesEventsForm;
 
 /**
  *
@@ -29,7 +29,7 @@ class ChangePassword extends ProvidesEventsForm
 
     /**
      *
-     * @var /ZfcUser/Options/AuthenticationOptionsInterface
+     * @var /LmcUser/Options/AuthenticationOptionsInterface
      */
     protected $authOptions;
 

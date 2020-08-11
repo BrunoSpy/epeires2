@@ -197,7 +197,7 @@ class AfisController extends TabController
                     $event->setPunctual(false);
                     $afis = $this->em->getRepository('Application\Entity\Afis')->find($id);
                     $event->setOrganisation($afis->getOrganisation());
-                    $event->setAuthor($this->zfcUserAuthentication()
+                    $event->setAuthor($this->lmcUserAuthentication()
                         ->getIdentity());
 
                     $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
@@ -301,7 +301,7 @@ class AfisController extends TabController
 
     private function authAfis($action)
     {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
+        return (!$this->lmcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 
 }

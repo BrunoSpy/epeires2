@@ -44,7 +44,7 @@ class Module implements ConfigProviderInterface
         );
 
         $events = $e->getApplication()->getEventManager()->getSharedManager();
-        $events->attach('ZfcUser\Form\Login','init', function($e) {
+        $events->attach('LmcUser\Form\Login','init', function($e) {
             $form = $e->getTarget();
             $form->get('identity')->setLabel("Nom d'utilisateur");
             $form->get('credential')->setLabel("Mot de passe");
@@ -65,7 +65,7 @@ class Module implements ConfigProviderInterface
 
                     
                     /* @var RedirectCallback $redirectCallback */
-                    $redirectCallback = $container->get('zfcuser_redirect_callback');
+                    $redirectCallback = $container->get('lmcuser_redirect_callback');
 
                     /* @var UserController $controller */
                     $controller = new UserController($redirectCallback);

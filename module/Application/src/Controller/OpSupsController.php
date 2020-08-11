@@ -99,10 +99,10 @@ class OpSupsController extends AbstractEntityManagerAwareController
         $zone = $this->params()->fromQuery('zoneid', '');
         
         $json = array();
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             
             $current = $this->getEntityManager()->getRepository('Application\Entity\OperationalSupervisor')->findOneBy(array(
-                'organisation' => $this->zfcUserAuthentication()
+                'organisation' => $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getId(),

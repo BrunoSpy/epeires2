@@ -40,7 +40,7 @@ class LoggableListener extends \Gedmo\Loggable\LoggableListener
      */
     protected function prePersistLogEntry($logEntry, $object)
     {
-        $auth = $this->getServiceManager()->get('zfcuser_auth_service');
+        $auth = $this->getServiceManager()->get('lmcuser_auth_service');
         if ($auth->hasIdentity()) {
             $logEntry->setUsername($auth->getIdentity()
                 ->getUsername());

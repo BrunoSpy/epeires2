@@ -26,7 +26,7 @@ return array(
     "secret_init" => "<my secret initialisation vector>",
 
     // Paramétrage de connexion automatique pour les clients basé sur leur IPv4
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
             //Configure autoconnection according to the example below
             //Clients with IP matching this list won't be able to connect with another user

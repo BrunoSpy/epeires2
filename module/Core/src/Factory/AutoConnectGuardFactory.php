@@ -37,7 +37,7 @@ class AutoConnectGuardFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $autoconnectGuard = new AutoConnectGuard($options);
-        $autoconnectGuard->setAuthService($container->get('zfcuser_auth_service'));
+        $autoconnectGuard->setAuthService($container->get('lmcuser_auth_service'));
         
         return $autoconnectGuard;
     }

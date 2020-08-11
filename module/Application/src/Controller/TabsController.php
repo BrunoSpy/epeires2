@@ -62,7 +62,7 @@ class TabsController extends TabController
 
         $tabid = $this->params()->fromQuery('tabid', null);
 
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
 
         if ($tabid) {
             $tab = $this->entityManager->getRepository('Application\Entity\Tab')->find($tabid);
@@ -85,7 +85,7 @@ class TabsController extends TabController
         if($userauth->hasIdentity()) {
             //determine if user can create postit
             $postitCategory = $this->entityManager->getRepository(Category::class)->findOneBy(array('name'=>'PostIt'));
-            $userroles = $this->zfcUserAuthentication()->getIdentity()->getRoles();
+            $userroles = $this->lmcUserAuthentication()->getIdentity()->getRoles();
             foreach ($userroles as $role) {
                 foreach ($role->getReadCategories() as $cat) {
                     if($cat->getId() == $postitCategory->getId()) {

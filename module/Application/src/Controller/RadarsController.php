@@ -103,7 +103,7 @@ class RadarsController extends TabController
     public function switchradarAction()
     {
         $messages = array();
-        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
 
             $post = $this->getRequest()->getPost();
             $state = $this->params()->fromQuery('state', null);
@@ -160,7 +160,7 @@ class RadarsController extends TabController
                         $event->setPunctual(false);
                         $radar = $this->entityManager->getRepository('Application\Entity\Radar')->find($radarid);
                         $event->setOrganisation($radar->getOrganisation());
-                        $event->setAuthor($this->zfcUserAuthentication()
+                        $event->setAuthor($this->lmcUserAuthentication()
                             ->getIdentity());
                         
                         $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(

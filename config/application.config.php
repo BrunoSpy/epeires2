@@ -39,10 +39,9 @@ $modules = array(
         'Laminas\Validator',
         'DoctrineModule',
         'DoctrineORMModule',
-        'DoctrineMigrationsModule',
 //        'ZfcBase',
         'LmcRbacMvc',
-        'ZfcUser',
+        'LmcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
         'DompdfModule',
@@ -73,7 +72,7 @@ $modules = array(
 
 if ($env == 'development') {
 
-    //$modules [] = 'Laminas\DeveloperTools';
+    $modules [] = 'Laminas\DeveloperTools';
     $modules[] = 'ApiSkeletons\Doctrine\DataFixture';
 }
 

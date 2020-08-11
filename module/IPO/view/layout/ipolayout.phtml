@@ -78,8 +78,8 @@
     </div> <!-- /container -->
         
     <?php 
-	if(!$this->zfcUserIdentity()){
-			echo $this->modalwindow("loginwindow", "<h3>Connexion</h3>", "", $this->zfcUserLoginWidget(array('redirect'=>$this->url('ipo'))));
+	if(!$this->lmcUserIdentity()){
+			echo $this->modalwindow("loginwindow", "<h3>Connexion</h3>", "", $this->lmcUserLoginWidget(array('redirect'=>$this->url('ipo'))));
 	} ?>
 
     <?php $this->inlineScript()->captureStart(); ?>

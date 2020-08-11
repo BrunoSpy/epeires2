@@ -893,8 +893,8 @@ class ModelsController extends FormController
             $form->get('impact')->setValue(5);
             $form->get('punctual')->setValue(true);
             $form->get('category')->setValue($alarmcat->getId());
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $form->get('organisation')->setValue($this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $form->get('organisation')->setValue($this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getId());

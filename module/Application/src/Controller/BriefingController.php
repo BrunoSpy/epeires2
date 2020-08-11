@@ -37,7 +37,7 @@ class BriefingController extends AbstractEntityManagerAwareController
         $briefing = null;
         $importantEvents = null;
 
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
         if ($userauth != null && $userauth->hasIdentity()) {
             //get last briefing of the organisation
             $briefing = $this->getEntityManager()->getRepository(Briefing::class)->findOneBy(array('organisation' => $userauth->getIdentity()->getOrganisation()->getId()));
@@ -62,7 +62,7 @@ class BriefingController extends AbstractEntityManagerAwareController
     public function saveAction() {
         $json = array();
         $messages = array();
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
         if ($userauth != null && $userauth->hasIdentity()) {
             if ($this->getRequest()->isPost()) {
                 $post = $this->getRequest()->getPost();
@@ -94,7 +94,7 @@ class BriefingController extends AbstractEntityManagerAwareController
         $json = array();
         $json['briefing'] = "";
 
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
         if ($userauth != null && $userauth->hasIdentity()) {
             $briefing = $this->getEntityManager()->getRepository(Briefing::class)->findOneBy(array('organisation' => $userauth->getIdentity()->getOrganisation()->getId()));
             if($briefing !== null) {

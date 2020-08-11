@@ -108,8 +108,8 @@ class FrequenciesController extends TabController
                 }
             }
         }
-        if (($zonesession == null || ($zonesession != null && $zonesession == '0')) && $this->zfcUserAuthentication()->hasIdentity()) {
-            $orga = $this->zfcUserAuthentication()
+        if (($zonesession == null || ($zonesession != null && $zonesession == '0')) && $this->lmcUserAuthentication()->hasIdentity()) {
+            $orga = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation();
             $qb->andWhere($qb->expr()
@@ -144,7 +144,7 @@ class FrequenciesController extends TabController
         $json = array();
         $messages = array();
         
-        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
             $fromid = $this->params()->fromQuery('fromid', null);
             $toid = $this->params()->fromQuery('toid', null);
             
@@ -175,7 +175,7 @@ class FrequenciesController extends TabController
                     // 1 evt : on modifie
                     // 2 ou + : indécidable -> erreur
                     if (count($frequencyEvents) == 0) {
-                        $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
+                        $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->lmcUserAuthentication()
                             ->getIdentity(), null, $messages);
                     } else 
                         if (count($frequencyEvents) == 1) {
@@ -183,7 +183,7 @@ class FrequenciesController extends TabController
                             // une exception : si l'évènement a un parent, il faut créer un nouvel évènement
                             // sinon il sera fermé automatiquement à la fermeture du parent
                             if ($event->getParent() != null) {
-                                $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->zfcUserAuthentication()
+                                $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyEvent($fromfreq, $tofreq, $this->lmcUserAuthentication()
                                     ->getIdentity(), null, $messages);
                             } else {
                                 // deux cas : changement de fréquence ou retour à la fréquence nominale
@@ -274,7 +274,7 @@ class FrequenciesController extends TabController
     {
         $json = array();
         $messages = array();
-        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
             $state = $this->params()->fromQuery('state', null);
             if($state == null) {
                 $messages['error'][] = "Requête incomplète : état de l'antenne manquant.";
@@ -309,7 +309,7 @@ class FrequenciesController extends TabController
                         $this->entityManager->getRepository('Application\Entity\Event')->addSwitchAntennaStateEvent(
                             $antenna,
                             $state,
-                            $this->zfcUserAuthentication()->getIdentity(),
+                            $this->lmcUserAuthentication()->getIdentity(),
                             $frequencies,
                             $messages
                         );
@@ -348,7 +348,7 @@ class FrequenciesController extends TabController
     public function switchFrequencyStateAction()
     {
         $messages = array();
-        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
             $state = $this->params()->fromQuery('state', null);
             $frequencyid = $this->params()->fromQuery('freqid', null);
             
@@ -374,7 +374,7 @@ class FrequenciesController extends TabController
                             // - pas d'evt
                             // - 1 evt : création si il y a un parent
                             // pour éviter la fermeture inopinée
-                            $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyStateEvent($freq, $now, $this->zfcUserAuthentication()
+                            $this->entityManager->getRepository('Application\Entity\Event')->addSwitchFrequencyStateEvent($freq, $now, $this->lmcUserAuthentication()
                                 ->getIdentity(), null, $messages);
                             try {
                                 $this->entityManager->flush();
@@ -434,7 +434,7 @@ class FrequenciesController extends TabController
     public function switchCovertureAction()
     {
         $messages = array();
-        if ($this->isGranted('events.write') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
             $cov = $this->params()->fromQuery('cov', null);
             $frequencyid = $this->params()->fromQuery('frequencyid', null);
             $cause = $this->params()->fromQuery('cause', '');
@@ -450,7 +450,7 @@ class FrequenciesController extends TabController
                             $freq,
                             $cov,
                             $cause,
-                            $this->zfcUserAuthentication()->getIdentity(),
+                            $this->lmcUserAuthentication()->getIdentity(),
                             null,
                             $messages);
                 } else {
@@ -931,7 +931,7 @@ class FrequenciesController extends TabController
         
         $freqId = $this->params()->fromQuery('freqid', null);
 
-        if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.create')) {
+        if ($this->lmcUserAuthentication()->hasIdentity() && $this->isGranted('events.create')) {
             if ($this->getRequest()->isPost()) {
                 $post = $this->getRequest()->getPost();
                 $datas = $this->getFormBrouillage($freqId);
@@ -941,9 +941,9 @@ class FrequenciesController extends TabController
                 $form->setData($post);
                 if ($form->isValid()) {
                     // getAuthor
-                    $event->setAuthor($this->zfcUserAuthentication()
+                    $event->setAuthor($this->lmcUserAuthentication()
                         ->getIdentity());
-                    $event->setOrganisation($this->zfcUserAuthentication()
+                    $event->setOrganisation($this->lmcUserAuthentication()
                         ->getIdentity()
                         ->getOrganisation());
                     
@@ -1014,8 +1014,8 @@ class FrequenciesController extends TabController
         $form->get('impact')->setValueOptions($this->entityManager->getRepository('Application\Entity\Impact')
             ->getAllAsArray());
         
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $org = $this->zfcUserAuthentication()
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $org = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation();
             $form->get('organisation')->setValue($org->getId());

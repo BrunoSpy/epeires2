@@ -36,7 +36,7 @@ use Core\Entity\User;
 
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
-use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
+use LmcUser\Controller\Plugin\LmcUserAuthentication;
 
 /**
  * Description of EventRepository
@@ -50,7 +50,7 @@ class EventRepository extends ExtendedRepository
      * Get all events readable by <code>$userauth</code>
      * intersecting <code>$day</code>
      *
-     * @param ZfcUserAuthentication $userauth
+     * @param lmcUserAuthentication $userauth
      * @param \DateTime $day
      *            If null : use current day
      * @param \DateTime $end
@@ -341,7 +341,7 @@ class EventRepository extends ExtendedRepository
     /**
      * Get all events intersecting [$start, $end] and affected to the user's organisation
      *
-     * @param ZfcUserAuthentication $user
+     * @param lmcUserAuthentication $user
      * @param \DateTime $start
      * @param \DateTime $end
      * @param boolean $exclude
@@ -407,7 +407,7 @@ class EventRepository extends ExtendedRepository
     }
 
     /**
-     * @param ZfcUserAuthentication $user
+     * @param lmcUserAuthentication $user
      * @return array
      */
     public function getCurrentImportantEvents($user) {

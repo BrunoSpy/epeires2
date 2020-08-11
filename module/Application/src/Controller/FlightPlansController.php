@@ -563,10 +563,10 @@ class FlightPlansController extends EventsController
         $event->setStartdate($now);
         $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
         $event->setPunctual(false);
-        $event->setOrganisation($this->zfcUserAuthentication()
+        $event->setOrganisation($this->lmcUserAuthentication()
             ->getIdentity()
             ->getOrganisation());
-        $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+        $event->setAuthor($this->lmcUserAuthentication()->getIdentity());
 
         // affectation de la catégorie
         // TODO si plusieurs catégories?
@@ -740,7 +740,7 @@ class FlightPlansController extends EventsController
 
     private function authFlightPlans(string $action) : bool
     {
-        return ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('flightplans.'.$action)) ? true : false;
+        return ($this->lmcUserAuthentication()->hasIdentity() && $this->isGranted('flightplans.'.$action)) ? true : false;
     }
 
     private function getEventCategories(string $classCategory) : array
@@ -758,9 +758,9 @@ class FlightPlansController extends EventsController
         foreach ($cats as $cat)
         {
             $category = $this->em->getRepository(Category::class)->find($cat);
-            if ($this->zfcUserAuthentication()->hasIdentity())
+            if ($this->lmcUserAuthentication()->hasIdentity())
             {
-                $roles = $this->zfcUserAuthentication()
+                $roles = $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getRoles();
                 foreach ($roles as $role)
