@@ -15,7 +15,8 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-use ZfcRbac\Guard\GuardInterface;
+use LmcRbacMvc\Guard\GuardInterface;
+use Laminas\Session;
 
 return array(
     'doctrine' => array(
@@ -31,7 +32,7 @@ return array(
             // overriding zfc-user-doctrine-orm's config
             'zfcuser_entity' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'paths' => __DIR__ . '/../src/Entity'
+                'paths' => [__DIR__ . '/../src/Entity']
             ),
             'orm_default' => array(
                 'drivers' => array(
@@ -48,7 +49,7 @@ return array(
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
         ),
         'aliases' => array(
-            'Zend\Authentication\AuthenticationService' => 'zfcuser_auth_service'
+            'Laminas\Authentication\AuthenticationService' => 'zfcuser_auth_service'
         )
     ),
     'controllers' => array(
@@ -84,11 +85,11 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'protection_policy' => GuardInterface::POLICY_ALLOW,
         'guest_role' => 'guest',
         'role_provider' => array(
-            'ZfcRbac\Role\ObjectRepositoryRoleProvider' => array(
+            'LmcRbacMvc\Role\ObjectRepositoryRoleProvider' => array(
                 'object_manager' => 'doctrine.entitymanager.orm_default',
                 'class_name' => 'Core\Entity\Role',
                 'role_name_property' => 'name'
@@ -146,19 +147,6 @@ return array(
             'userMenu' => 'Core\Factory\UserMenuFactory',
             'navbartop' => 'Core\Factory\NavBarTopFactory',
             'navbar' => 'Core\Factory\NavBarFactory',
-        )
-    ),
-    'session' => array(
-        'config' => array(
-            'class' => 'Zend\Session\Config\SessionConfig',
-            'options' => array(
-                'name' => 'epeires2'
-            )
-        ),
-        'storage' => 'Zend\Session\Storage\SessionArrayStorage',
-        'validators' => array(
-            'Zend\Session\Validator\RemoteAddr',
-            'Zend\Session\Validator\HttpUserAgent'
         )
     ),
     /**

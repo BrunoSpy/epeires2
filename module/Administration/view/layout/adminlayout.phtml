@@ -198,8 +198,8 @@
     </div> <!-- /container -->
         
     <?php 
-	if(!$this->zfcuserIdentity()){
-			echo $this->modalWindow("loginwindow", "<h4>Connexion</h4>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
+	if(!$this->zfcUserIdentity()){
+			echo $this->modalwindow("loginwindow", "<h4>Connexion</h4>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
 	} ?>
 
 

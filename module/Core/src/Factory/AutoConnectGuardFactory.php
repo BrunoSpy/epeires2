@@ -18,44 +18,26 @@
 namespace Core\Factory;
 
 use Core\Guard\AutoConnectGuard;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\MutableCreationOptionsInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class AutoConnectGuardFactory implements FactoryInterface, MutableCreationOptionsInterface
+class AutoConnectGuardFactory implements FactoryInterface
 {
 
     /**
      *
-     * @var array
-     */
-    protected $options;
-
-    /**
-     *
      * {@inheritDoc}
      *
      */
-    public function setCreationOptions(array $options)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $this->options = $options;
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     *
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        $autoconnectGuard = new AutoConnectGuard($this->options);
-        $autoconnectGuard->setAuthService($serviceLocator->getServiceLocator()
-            ->get('zfcuser_auth_service'));
+        $autoconnectGuard = new AutoConnectGuard($options);
+        $autoconnectGuard->setAuthService($container->get('zfcuser_auth_service'));
         
         return $autoconnectGuard;
     }

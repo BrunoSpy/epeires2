@@ -40,12 +40,55 @@ class CategoryRepository extends ExtendedRepository
 {
 
     /**
+     * Return all categories matching criteria, ordered by place and add > to children
+     * @param null $criteria
+     * @return array|void
+     */
+    public function getAllAsArray($criteria = null)
+    {
+        //first get root categories
+        $roots = array();
+        if ($criteria instanceof Criteria) {
+            $criteria->andWhere(Criteria::expr()->isNull('parent'))
+                    ->orderBy(array('place'=> 'ASC'));
+            $roots = parent::matching($criteria);
+        } elseif (is_array($criteria)) {
+            $criteria['parent'] = null;
+            $roots = parent::findBy($criteria, array('place'=>'ASC'));
+        } else {
+            $newCriteria = Criteria::create()->where(Criteria::expr()->isNull('parent'))->orderBy(array('place'=> 'ASC'));
+            $roots = parent::matching($newCriteria);
+        }
+
+        $res = array();
+        foreach ($roots as $root) {
+            $res[$root->getId()] = $root->getName();
+            $children = array();
+            if ($criteria instanceof Criteria) {
+                $criteria->andWhere(Criteria::expr()->eq('parent', $root->getId()))
+                    ->orderBy(array('place'=> 'ASC'));
+                $children = parent::matching($criteria);
+            } elseif (is_array($criteria)) {
+                $criteria['parent'] = $root->getId();
+                $children = parent::findBy($criteria, array('place'=>'ASC'));
+            } else {
+                $newCriteria = Criteria::create()->where(Criteria::expr()->eq('parent', $root))->orderBy(array('place'=> 'ASC'));
+                $children = parent::matching($newCriteria);
+            }
+            foreach ($children as $child) {
+                $res[$child->getId()] = " > " . $child->getName();
+            }
+        }
+        return $res;
+    }
+
+
+    /**
      * @param null $id Exclude specific id from results
      * @param true $system If false, exclude system categories
      * @param null $archived If true, return archived categories
      * @return array
      */
-
     public function getRootsAsArray($id = null, $system = true, $archived = false)
     {
         $res = array();

@@ -23,8 +23,8 @@ use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Core\Controller\AbstractEntityManagerAwareController;
 use Doctrine\ORM\EntityManager;
-use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\JsonModel;
+use Laminas\Http\PhpEnvironment\Response;
+use Laminas\View\Model\JsonModel;
 
 /**
  *

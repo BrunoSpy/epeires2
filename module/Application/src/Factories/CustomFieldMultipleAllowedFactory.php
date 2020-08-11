@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -27,10 +27,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class CustomFieldMultipleAllowedFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $customHelper = new \Application\View\Helper\CustomFieldMultipleAllowed();
-        $customHelper->setServiceManager($serviceLocator->getServiceLocator());
+        $customHelper->setServiceManager($container);
         return $customHelper;
     }
 }

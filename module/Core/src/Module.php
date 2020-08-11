@@ -17,9 +17,9 @@
  */
 namespace Core;
 
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\EventManager\EventInterface;
+use Laminas\ModuleManager\Feature\AutoloaderProviderInterface;
+use Laminas\ModuleManager\Feature\ConfigProviderInterface;
+use Laminas\EventManager\EventInterface;
 use Core\Controller\UserController;
 
 /**
@@ -32,11 +32,17 @@ class Module implements ConfigProviderInterface
 
     public function onBootstrap(EventInterface $e)
     {
-        $t = $e->getTarget();
-        
-        $t->getEventManager()->attach($t->getServiceManager()
-            ->get('ZfcRbac\View\Strategy\UnauthorizedStrategy'));
-        
+
+        $app = $e->getApplication();
+        $sm = $app->getServiceManager();
+
+        $e->getTarget()->getEventManager()->attach(
+            $e::EVENT_DISPATCH_ERROR,
+            function($e) use ($sm) {
+                return $sm->get('LmcRbacMvc\View\Strategy\UnauthorizedStrategy')->onError($e);
+            }
+        );
+
         $events = $e->getApplication()->getEventManager()->getSharedManager();
         $events->attach('ZfcUser\Form\Login','init', function($e) {
             $form = $e->getTarget();
@@ -55,15 +61,15 @@ class Module implements ConfigProviderInterface
     {
         return array(
             'factories' => array(
-                'coreuser' => function ($controllerManager) {
-                    /* @var ControllerManager $controllerManager*/
-                    $serviceManager = $controllerManager->getServiceLocator();
+                'coreuser' => function ($container) {
+
                     
                     /* @var RedirectCallback $redirectCallback */
-                    $redirectCallback = $serviceManager->get('zfcuser_redirect_callback');
-                    
+                    $redirectCallback = $container->get('zfcuser_redirect_callback');
+
                     /* @var UserController $controller */
                     $controller = new UserController($redirectCallback);
+                    $controller->setServiceLocator($container);
                     
                     return $controller;
                 }

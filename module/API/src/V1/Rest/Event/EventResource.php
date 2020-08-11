@@ -4,8 +4,8 @@ namespace API\V1\Rest\Event;
 use Application\Paginator\Adapter;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use ZF\ApiProblem\ApiProblem;
-use ZF\Rest\AbstractResourceListener;
+use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\Rest\AbstractResourceListener;
 
 class EventResource extends AbstractResourceListener
 {

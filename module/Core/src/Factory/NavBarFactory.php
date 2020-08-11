@@ -17,8 +17,8 @@
  */
 namespace Core\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,10 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class NavBarFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $navbarHelper = new \Core\View\Helper\NavBar();
-        $navbarHelper->setServiceManager($serviceLocator->getServiceLocator());
+        $navbarHelper->setServiceManager($container);
         return $navbarHelper;
     }
 }

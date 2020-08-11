@@ -17,7 +17,7 @@
  */
 namespace Core\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 
 /**
  * Bootstrap control group helper
@@ -49,17 +49,17 @@ class ControlGroup extends AbstractHelper
                 $element->getAttributes(),
                 array('class' => 'form-control '.$elementClass)));
 
-        if ($element instanceof \Zend\Form\Element\Select) {
+        if ($element instanceof \Laminas\Form\Element\Select) {
             $controlForm = $view->formSelect($element);
-        } elseif ($element instanceof \Zend\Form\Element\Checkbox) {
+        } elseif ($element instanceof \Laminas\Form\Element\Checkbox) {
             $element->setUseHiddenElement(true);
             $controlForm = '<div class="checkbox"><label>'.$view->formCheckbox($element).'</label></div>';
             $controlForm .= '<p class="help-block">'.$element->getAttribute('title').'</p>';
-        } elseif ($element instanceof \Zend\Form\Element\Text) {
+        } elseif ($element instanceof \Laminas\Form\Element\Text) {
             $controlForm = $view->formText($element);
-        } elseif ($element instanceof \Zend\Form\Element\Textarea) {
+        } elseif ($element instanceof \Laminas\Form\Element\Textarea) {
            $controlForm = $view->formTextarea($element);
-        } elseif ($element instanceof \Zend\Form\Element\File) {
+        } elseif ($element instanceof \Laminas\Form\Element\File) {
             $controlForm = $view->formFile($element)
                                . $view->formElementErrors($element)
                                . '<div id="file-errors" class="help-block"></div>'

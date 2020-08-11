@@ -206,7 +206,6 @@ if($this->default) {
   echo 'var defaultTimeline = 0;';
 }
 ?>
-
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', 'action' => 'getevents'),
@@ -216,7 +215,7 @@ $('#timeline').timeline({
     										array('controller' => 'events', 'action' => 'getcategories'), 
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),
     																		'cats' => $this->cats))) ?>',
-    topOffset: 100,
+    topOffset: <?php echo ($this->IHMLight ? 50 : 100)  ?>,
     leftOffset: 120,
     rightOffset: 85,
     tabCats: cats,
@@ -232,7 +231,7 @@ $('#timeline').timeline({
 });
 
 //init form
-form('<?php echo $this->url('application');?>', cats);
+form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
 
 fileupload('<?php echo $this->url('application')?>');
 

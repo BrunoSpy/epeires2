@@ -17,15 +17,14 @@
  */
 namespace Core\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
+class UserMenu extends AbstractHelper
 {
 
     private $auth;
@@ -82,12 +81,12 @@ class UserMenu extends AbstractHelper implements ServiceManagerAwareInterface
         return $html;
     }
 
-    public function setAuthService(\ZfcRbac\Service\AuthorizationService $auth)
+    public function setAuthService(\LmcRbacMvc\Service\AuthorizationService $auth)
     {
         $this->auth = $auth;
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
+    public function setServiceManager(\Laminas\ServiceManager\ServiceManager $serviceLocator)
     {
         $this->servicemanager = $serviceLocator;
     }

@@ -17,8 +17,8 @@
  */
 namespace Application\Form;
 
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Fieldset;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
  *
@@ -34,7 +34,7 @@ class CategoryFormFieldset extends Fieldset implements InputFilterProviderInterf
         
         $this->add(array(
             'name' => 'root_categories',
-            'type' => 'Zend\Form\Element\Select',
+            'type' => 'Laminas\Form\Element\Select',
             'options' => array(
                 'label' => 'Catégorie',
                 'value_options' => $array,
@@ -47,7 +47,7 @@ class CategoryFormFieldset extends Fieldset implements InputFilterProviderInterf
         
         $this->add(array(
             'name' => 'subcategories',
-            'type' => 'Zend\Form\Element\Select',
+            'type' => 'Laminas\Form\Element\Select',
             'options' => array(
                 'label' => 'Sous-catégorie',
                 'empty_option' => 'Veuillez choisir une catégorie'

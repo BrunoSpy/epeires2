@@ -18,17 +18,16 @@
 namespace Application\Controller\Factory;
 
 use Application\Controller\MilController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class MilControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new MilController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('nmb2b')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('nmb2b')
             );
     }
 

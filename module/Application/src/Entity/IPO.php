@@ -18,7 +18,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
@@ -36,13 +36,13 @@ class IPO
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -50,7 +50,7 @@ class IPO
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */

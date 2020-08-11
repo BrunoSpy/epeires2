@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -13,7 +13,7 @@ class Version20170805014011 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -24,7 +24,7 @@ class Version20170805014011 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -32,7 +32,7 @@ class Version20170805014011 extends AbstractMigration
         $this->addSql('ALTER TABLE tabs DROP isDefault');
     }
     
-    public function postUp(Schema $schema)
+    public function postUp(Schema $schema) : void
     {
         //create the tab corresponding to the default timeline
         $this->connection->insert('tabs', array('name' => 'Timeline principale', 'shortname' => "Timeline", 'place' => '0', 'onlyroot' => 1, 'isDefault' => 1));

@@ -17,8 +17,7 @@
  */
 namespace Administration\Form;
 
-use Zend\Form\Form;
-use ZfcBase\Form\ProvidesEventsForm;
+use ZfcUser\Form\ProvidesEventsForm;
 
 /**
  *
@@ -30,7 +29,7 @@ class ChangePassword extends ProvidesEventsForm
 
     /**
      *
-     * @var AuthenticationOptionsInterface
+     * @var /ZfcUser/Options/AuthenticationOptionsInterface
      */
     protected $authOptions;
 

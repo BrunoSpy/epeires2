@@ -18,19 +18,19 @@
 namespace Application\Controller\Factory;
 
 use Application\Controller\SarBeaconsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class SarBeaconsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new SarBeaconsController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('viewpdfrenderer'),
-            $service->get('config'),
-            $service->get('mattermostservice')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('ViewPdfRenderer'),
+            $container->get('config'),
+            $container->get('mattermostservice'),
+            $container->get('timelineZone')
     	);
     }
 

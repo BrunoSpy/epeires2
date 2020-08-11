@@ -18,7 +18,7 @@
 namespace Administration\Controller;
 
 use Core\Version;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  *
@@ -95,10 +95,16 @@ class HomeController extends AbstractActionController
             $certifName = null;
         }
 
+        if(array_key_exists('IHM_OPE_Light', $this->config) && $this->config['IHM_OPE_Light'] == true) {
+            $IHMLight = true;
+        } else {
+            $IHMLight = false;
+        }
+
         return array(
             'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
-            'version' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getCurrentVersion()),
-            'latestversion' => $this->doctrinemigrations->formatVersion($this->doctrinemigrations->getLatestVersion()),
+            'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
+            'latestversion' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getLatestVersion()),
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
             'migrations' => $newMigrations,
             'extensions' => $extensions,
@@ -108,7 +114,8 @@ class HomeController extends AbstractActionController
             'certifname' => $certifName,
             'myversion' => Version::VERSION,
             'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
-            'git' => $git
+            'git' => $git,
+            'IHMLight' => $IHMLight
         );
     }
 }

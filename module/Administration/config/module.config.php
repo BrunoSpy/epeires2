@@ -68,8 +68,8 @@ return array(
     ),
     'service_manager' => array(
         'abstract_factories' => array(
-            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
-            'Zend\Log\LoggerAbstractServiceFactory'
+            'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
+            'Laminas\Log\LoggerAbstractServiceFactory'
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator'
@@ -94,8 +94,8 @@ return array(
             'Administration\Controller\Radars' => 'Administration\Controller\Factory\RadarsControllerFactory',
             'Administration\Controller\Users' => 'Administration\Controller\Factory\UsersControllerFactory',
             'Administration\Controller\Roles' => 'Administration\Controller\Factory\RolesControllerFactory',
-            'Administration\Controller\IPOS' => 'Administration\Controller\Factory\IPOSControllerFactory',
-            'Administration\Controller\OpSups' => 'Administration\Controller\Factory\OpSupsControllerFactory',
+            'Administration\Controller\Ipos' => 'Administration\Controller\Factory\IPOSControllerFactory',
+            'Administration\Controller\Opsups' => 'Administration\Controller\Factory\OpSupsControllerFactory',
             'Administration\Controller\Categories' => 'Administration\Controller\Factory\CategoriesControllerFactory',
             'Administration\Controller\Models' => 'Administration\Controller\Factory\ModelsControllerFactory',
             'Administration\Controller\Tabs' => 'Administration\Controller\Factory\TabsControllerFactory',
@@ -103,7 +103,7 @@ return array(
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
             'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
             'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory',
-            'Administration\Controller\ATFCM' => 'Administration\Controller\Factory\ATFCMControllerFactory'
+            'Administration\Controller\Atfcm' => 'Administration\Controller\Factory\ATFCMControllerFactory'
         )
     ),
     'view_manager' => array(
@@ -190,14 +190,14 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+            'LmcRbacMvc\Guard\RoutePermissionsGuard' => array(
                 'administration' => array(
                     'admin.access'
                 )
             ),
-            'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+            'LmcRbacMvc\Guard\ControllerPermissionsGuard' => array(
                 array(
                     'controller' => 'Administration\Controller\Categories',
                     'permissions' => [

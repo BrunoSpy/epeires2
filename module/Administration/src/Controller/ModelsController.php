@@ -17,16 +17,19 @@
  */
 namespace Administration\Controller;
 
+use Administration\Form\ImportForm;
+use Application\Entity\ActionCategory;
+use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\PredefinedEvent;
 use Application\Entity\CustomFieldValue;
 use Application\Form\CustomFieldset;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 
@@ -87,7 +90,8 @@ class ModelsController extends FormController
             'models' => $models,
             'actions' => $actions,
             'alerts' => $alerts,
-            'files' => $files
+            'files' => $files,
+            'form' => new ImportForm()
         ));
         
         $return = array();
@@ -312,7 +316,7 @@ class ModelsController extends FormController
             
             // remove required inputfilter on custom fields (default to true for select elements...)
             foreach ($form->getInputFilter()->getInputs() as $input) {
-                if ($input instanceof \Zend\InputFilter\InputFilter) {
+                if ($input instanceof \Laminas\InputFilter\InputFilter) {
                     foreach ($input->getInputs() as $i) {
                         $i->setRequired(false);
                         $i->setAllowEmpty(true); //FIX bug form non valide si un champ ne contient que des espaces...
@@ -550,7 +554,7 @@ class ModelsController extends FormController
             ->getAllAsArray());
         
         $form->get('category')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getAllAsArray());
+            ->getAllAsArray(array('archived' => false, "system" => false)));
         
         $form->get('parent')->setValueOptions($objectManager->getRepository('Application\Entity\PredefinedEvent')
             ->getRootsAsArray());
@@ -827,7 +831,7 @@ class ModelsController extends FormController
             }
         }
         $json['messages'] = $messages;
-        return new \Zend\View\Model\JsonModel($json);
+        return new \Laminas\View\Model\JsonModel($json);
     }
 
     public function formalarmAction()
@@ -895,7 +899,7 @@ class ModelsController extends FormController
                     ->getOrganisation()
                     ->getId());
             } else {
-                throw new \ZfcRbac\Exception\UnauthorizedException();
+                throw new \LmcRbacMvc\Exception\UnauthorizedException();
             }
         }
         
@@ -967,6 +971,101 @@ class ModelsController extends FormController
             $messages['error'][] = "Impossible de modifier le modèle : paramètres incorrects.";
         }
         $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    public function uploadAction()
+    {
+        $form = new ImportForm();
+        $messages = array();
+        $missing = array();
+        $count = 0;
+        if($this->getRequest()->isPost()) {
+            $request = $this->getRequest();
+            $data = array_merge_recursive(
+                $request->getPost()->toArray(),
+                $request->getFiles()->toArray()
+            );
+
+            $form->setData($data);
+
+            if($form->isValid()) {
+                $data = $form->getData();
+                $json = json_decode(file_get_contents($data['jsonfile']['tmp_name']), true);
+
+                if($json == NULL) {
+                    $messages['error'][] = "Impossible de décoder le fichier.";
+                } else {
+                    $objectManager = $this->getEntityManager();
+                    $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
+                    foreach ($json as $name => $actions) {
+                        $model = $objectManager->getRepository(PredefinedEvent::class)->findOneBy(array('name' => $name));
+                        if ($model) {
+                            //remove existing actions
+                            foreach ($model->getChildren() as $child) {
+                                if ($child->getCategory() instanceof ActionCategory) {
+                                    $objectManager->remove($child);
+                                }
+                            }
+                            $objectManager->flush();
+                            //create new actions
+                            foreach ($actions as $action) {
+                                $actionObject = new PredefinedEvent();
+                                $actionObject->setCategory($actionCategory);
+                                $actionObject->setOrganisation($model->getOrganisation());
+                                $actionObject->setParent($model);
+                                $actionObject->setListable(false);
+                                $actionObject->setSearchable(false);
+                                $actionObject->setPunctual(true);
+                                $actionObject->setImpact($objectManager->getRepository('Application\Entity\Impact')
+                                    ->find((int)$action["impact"]));
+                                $actionObject->setPlace($action["place"]);
+
+                                $name = new CustomFieldValue();
+                                $name->setCustomField($actionCategory->getNamefield());
+                                $name->setValue($action['name']);
+                                $name->setEvent($actionObject);
+
+                                $text = new CustomFieldValue();
+                                $text->setCustomField($actionCategory->getTextfield());
+                                $text->setValue($action['text']);
+                                $text->setEvent($actionObject);
+
+                                $color = new CustomFieldValue();
+                                $color->setCustomField($actionCategory->getColorField());
+                                $color->setValue($action['color']);
+                                $color->setEvent($actionObject);
+
+                                $objectManager->persist($name);
+                                $objectManager->persist($text);
+                                $objectManager->persist($color);
+                                $objectManager->persist($actionObject);
+                                $objectManager->persist($model);
+                            }
+                            $count++;
+                        } else {
+                            $missing[] = $name;
+                        }
+                    }
+
+                    try {
+                        $objectManager->flush();
+                        $messages['success'][] = $count . " fiches importées.";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = 'Impossible d\'importer les fiches.';
+                        $messages['error'][] = $e->getMessage();
+                    }
+                }
+            } else {
+                $this->processFormMessages($form->getMessages(), $messages);
+            }
+        } else {
+            $messages['error'][] = "Requête interdite.";
+        }
+        $json = array();
+        $json['messages'] = $messages;
+        $json['missing'] = $missing;
+        $json['count'] = $count;
         return new JsonModel($json);
     }
 }

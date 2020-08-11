@@ -17,15 +17,15 @@
  */
 namespace Application\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\Form\View\Helper\AbstractHelper;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class CustomFieldValue extends AbstractHelper implements ServiceManagerAwareInterface
+class CustomFieldValue extends AbstractHelper
 {
 
     private $servicemanager;
@@ -33,14 +33,14 @@ class CustomFieldValue extends AbstractHelper implements ServiceManagerAwareInte
     public function __invoke($customfieldvalue, $value = null)
     {
         if($value !== null) {
-            return $this->servicemanager->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $value);
+            return $this->servicemanager->get('customfieldservice')->getFormattedValue($customfieldvalue->getCustomField(), $value);
         } else {
-            return $this->servicemanager->get('CustomFieldService')->getFormattedValue($customfieldvalue->getCustomField(), $customfieldvalue->getValue());
+            return $this->servicemanager->get('customfieldservice')->getFormattedValue($customfieldvalue->getCustomField(), $customfieldvalue->getValue());
         }
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceLocator)
+    public function setServiceManager(ContainerInterface $container)
     {
-        $this->servicemanager = $serviceLocator;
+        $this->servicemanager = $container;
     }
 }

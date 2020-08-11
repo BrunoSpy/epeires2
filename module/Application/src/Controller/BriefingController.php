@@ -22,9 +22,9 @@ namespace Application\Controller;
 use Application\Entity\Briefing;
 use Application\Entity\Event;
 use Core\Controller\AbstractEntityManagerAwareController;
-use Zend\Json\Json;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\Json\Json;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 
 class BriefingController extends AbstractEntityManagerAwareController
 {

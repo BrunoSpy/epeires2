@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
@@ -37,7 +37,7 @@ class ShiftHour
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
@@ -45,7 +45,7 @@ class ShiftHour
     /**
      * @ORM\ManyToOne(targetEntity="OpSupType", inversedBy="shifthours")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Type de superviseur"})
      */
@@ -55,7 +55,7 @@ class ShiftHour
     /** 
      * @ORM\ManyToOne(targetEntity="QualificationZone")
      * @ORM\JoinColumn(nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Zone de qualification","empty_option":"Facultatif"})
      */
@@ -64,7 +64,7 @@ class ShiftHour
 
     /**
      * @ORM\Column(type="time")
-     * @Annotation\Type("Zend\Form\Element\Text") //type=time not supported by Firefox...
+     * @Annotation\Type("Laminas\Form\Element\Text") //type=time not supported by Firefox...
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Heure", "format" : "H:i"})
      * @Annotation\Attributes({"placeholder":"Heure locale Europe/Paris"})

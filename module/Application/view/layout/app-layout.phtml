@@ -75,14 +75,19 @@
         ?>
 
     </head>
-    <body class="fuelux">
+    <body class="fuelux" <?php if($this->IHMLight) echo 'style="padding-top:50px;"' ?> >
 
-	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform); ?>
+	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform, $this->IHMLight); ?>
 
-	<?php echo $this->navbar("blue", $this->showHome); ?>
+	<?php if(!$this->IHMLight) {echo $this->navbar("blue", $this->showHome);} ?>
 
     <?php if($this->isGranted('events.create')):?>
-			<a id="create-link" href="#" type="button" class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
+			<a
+              <?php if($this->IHMLight) echo 'style="top:55px"'; ?>
+              id="create-link"
+              href="#"
+              type="button"
+              class="navbar-left btn-material-blue-300 btn btn-default btn-info mdi-action-raised btn-fab navbar-btn"><i class="mdi-image-edit"></i></a>
     <?php endif;?>
         
     <div class="content">
@@ -98,12 +103,12 @@
     </div>
 
     <?php
-    if(!$this->zfcuserIdentity()){
-            echo $this->modalWindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
+    if(!$this->zfcUserIdentity()){
+            echo $this->modalwindow("loginwindow", '<h4 class="modal-title">Connexion</h4>', "", $this->zfcUserLoginWidget(array('redirect'=>'application')));
     } ?>
 
     <?php
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "opsupwindow",
         null,
         "",
@@ -135,7 +140,7 @@
     ?>
 
     <?php
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "releveWindow",
         "<h4 class=\"modal-title\">Briefing de relève</h4>",
         "",
@@ -145,7 +150,7 @@
         "modal-lg"
     );
 
-    echo $this->modalWindow(
+    echo $this->modalwindow(
         "editwindow",
         '<h4 class="modal-title">Éditer le texte</h4>',
         "",

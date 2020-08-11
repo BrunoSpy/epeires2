@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,11 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class EventNameFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $eventnameHelper = new \Application\View\Helper\EventNameHelper();
-        $eventnameHelper->setEventService($serviceLocator->getServiceLocator()
-            ->get('eventservice'));
+        $eventnameHelper->setEventService($container->get('eventservice'));
         return $eventnameHelper;
     }
 }

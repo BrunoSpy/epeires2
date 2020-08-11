@@ -39,5 +39,7 @@ if (count($this->actions) > 0) {
     }
     echo '</tbody>';
     echo '</table>';
-    echo '<a title="Remettre toutes les actions à l\'état \"À Faire\"."" href="#" id="clearActions" class="btn btn-xs btn-danger pull-right" style="margin: -10px 0 0 0;">RàZ</a>';
+    if($this->isGranted('events.raz-checklist')){
+        echo '<a title="Remettre toutes les actions à l\'état \"À Faire\"."" href="#" id="clearActions" class="btn btn-xs btn-danger pull-right" style="margin: -10px 0 0 0;">RàZ</a>';
+    }
 }

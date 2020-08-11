@@ -102,7 +102,7 @@ $formatter = \IntlDateFormatter::create(
                             $title .= "</tbody></table></span>";
                             echo '<td data-toggle="tooltip" title="'.htmlentities($title, ENT_QUOTES).'" data-html="true" data-container="body"'
                                 .' data-template="<div class=&quot;tooltip tooltip-actions&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-arrow&quot;></div><div class=&quot;tooltip-inner&quot;></div></div>">'
-                                .$this->eventname($event)
+                                .$this->eventName($event)
                                 ."</td>";
                             echo "<td>".$formatter->format($event->getStartdate())."</td>";
                             echo "<td>";

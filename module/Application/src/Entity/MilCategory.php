@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,15 +31,16 @@ class MilCategory extends Category
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Zones associées :"})
+     * @Annotation\Attributes({"placeholder":"Ex : /LFTSA43[AB]/"})
      * Displayed zones, must be included in <$filter>*
      */
     protected $zonesRegex;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Filtre d'import :"})
      * Filter applied at import
      */
@@ -48,18 +49,10 @@ class MilCategory extends Category
     /**
      * @ORM\Column(type="boolean")
      * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
      */
     protected $nmB2B = false;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Actualiser avec SIA (uniquement possible pour ZTBA) :"})
-     */
-    protected $sia = false;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -89,16 +82,6 @@ class MilCategory extends Category
     public function isNMB2B()
     {
         return $this->nmB2B;
-    }
-
-    public function setSia($sia)
-    {
-        $this->sia = $sia;
-    }
-
-    public function isSia()
-    {
-        return $this->sia;
     }
 
     public function setLastUpdateDate($update)

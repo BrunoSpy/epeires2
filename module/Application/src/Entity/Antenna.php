@@ -20,7 +20,7 @@ namespace Application\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Core\Entity\TemporaryResource;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
@@ -38,7 +38,7 @@ class Antenna extends TemporaryResource
 
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -46,7 +46,7 @@ class Antenna extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -54,7 +54,7 @@ class Antenna extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom abrégé :"})
      */
@@ -62,7 +62,7 @@ class Antenna extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Localisation :"})
      */

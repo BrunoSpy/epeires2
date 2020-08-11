@@ -29,6 +29,8 @@ if(!$this->action){// une action est ponctuelle, non listable et non recherchabl
 	echo $this->controlGroup($this->form->get('searchable'));
 
 	echo $this->controlGroup($this->form->get('quickaccess'));
+
+	echo $this->controlGroup($this->form->get('color')->setAttribute('class', 'pick-a-color'));
 	
 	echo $this->controlGroup($this->form->get('programmed'));
 
@@ -164,14 +166,14 @@ if($this->childs) {
 		echo '<tr id="'.$child->getId().'">';
 			echo '<td>'.$this->eventName($child).'</td>';
 			echo '<td>'.$this->impact($child->getImpact()).'</td>';
-			echo '<td><a 
+			echo '<td style="width: 38px"><a 
 						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'down'), array('query'=>array('id'=>$child->getId()))).'"'. 
 						'class="down'.($i == $total ? ' disabled':'').'">
 						<span class="caret middle"></span></a>
 					  <a 
 						href="'.$this->url('administration', array('controller'=>'models', 'action'=>'up'), array('query'=>array('id'=>$child->getId()))).'"'.
 						'class="up'.($i == 1 ? ' disabled' : '').'">  <span class="up-caret middle"></span></a></td>';
-			echo '<td><a
+			echo '<td style="width: 50px"><a
 				title="Modifier" 
 				class="mod-action"
 				href="#action-container"

@@ -1,0 +1,17 @@
+<?php
+/**
+ * Exemple de fichier de configuration d'un proxy web
+ * Mode d'emploi :
+ * - copier le fichier proxy.local.php.dist proxy.local.php
+ * - adapter les valeurs en fonction du proxy local
+ */
+
+return array(
+
+    //global configuration for proxy
+    //used by : NM B2B, Sunrise_sunset API, BTIV, Mattermost
+    'proxy' => array(
+        'proxy_host' => '100.78.176.201',
+        'proxy_port' => '8001'
+    )
+);

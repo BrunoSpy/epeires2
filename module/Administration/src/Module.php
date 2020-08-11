@@ -17,11 +17,11 @@
  */
 namespace Administration;
 
-use Zend\Mvc\ModuleRouteListener;
-use Zend\Mvc\MvcEvent;
-use Zend\ModuleManager\ModuleManager;
-use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
-use Zend\Console\Adapter\AdapterInterface as Console;
+use Laminas\Mvc\ModuleRouteListener;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Laminas\Console\Adapter\AdapterInterface as Console;
 
 /**
  *

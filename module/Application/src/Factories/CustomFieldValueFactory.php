@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,10 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class CustomFieldValueFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $customHelper = new \Application\View\Helper\CustomFieldValue();
-        $customHelper->setServiceManager($serviceLocator->getServiceLocator());
+        $customHelper->setServiceManager($container);
         return $customHelper;
     }
 }

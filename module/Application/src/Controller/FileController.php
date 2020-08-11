@@ -18,10 +18,9 @@
 namespace Application\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Zend\Session\Container;
-use Zend\ProgressBar;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+//use Laminas\ProgressBar;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Application\Form\FileUpload;
 
 /**
@@ -31,28 +30,21 @@ use Application\Form\FileUpload;
 class FileController extends FormController
 {
 
-    /**
-     *
-     * @var Container
-     */
-    protected $sessionContainer;
-
     private $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->sessionContainer = new Container('file_upload');
         $this->entityManager = $entityManager;
     }
 
     public function sessionprogressAction()
     {
         $id = $this->params()->fromQuery('id', null);
-        $progress = new ProgressBar\Upload\SessionProgress();
+        //$progress = new ProgressBar\Upload\SessionProgress();
         
         $view = new JsonModel(array(
-            'id' => $id,
-            'status' => $progress->getProgress($id)
+            'id' => $id//,
+            //'status' => $progress->getProgress($id)
         ));
         return $view;
     }
@@ -61,7 +53,6 @@ class FileController extends FormController
     {
         $viewmodel = new ViewModel();
         $request = $this->getRequest();
-        
         // disable layout if request by Ajax
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         

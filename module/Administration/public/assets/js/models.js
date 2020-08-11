@@ -72,11 +72,13 @@ var models = function(url, urlapp){
 			$("#model-form").load(url+'/models/form', function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
 				$.material.checkbox();
+				$("#model-form").find(".pick-a-color").pickAColor();
 			});	
 		} else {
 			$("#model-form").load(url+'/models/form?catid='+catid, function(){
 				fillZoneFilters($("#model-container select[name=organisation]").val());
 				$.material.checkbox();
+				$("#model-form").find(".pick-a-color").pickAColor();
 			});
 		}
 	});
@@ -111,13 +113,15 @@ var models = function(url, urlapp){
 	$(document).on('change', 'select[name=category]', function(){
 		$(this).closest(".modal-body").find(".custom-fields").load(url+'/models/customfields?id='+$(this).val(), function(){
 			$.material.checkbox();
+			$("#model-form").find(".pick-a-color").pickAColor();
 		});
 	});
 	$(document).on('click',".mod-model", function(){
 		$("#model-title").html("Modification de <em>"+$(this).data('name')+"</em>");
 		$("#model-form").load(url+'/models/form'+'?id='+$(this).data('id'), function(){
 			//fillZoneFilters($("#model-container select[name=organisation]").val());
-		    	$.material.checkbox();
+			$.material.checkbox();
+			$("#model-form").find(".pick-a-color").pickAColor();
 		});	
 	});
 		
@@ -373,5 +377,46 @@ var models = function(url, urlapp){
 
 	$('#add-alert, #add-file, #action-container').on('hidden.bs.modal', function(e){
 		$('body').addClass('modal-open');
+	});
+
+	$('#json-form').on('submit', function(e){
+		e.preventDefault();
+		var action = $(this).attr('action');
+		$(this).ajaxSubmit({
+			url: action,
+			type: 'POST',
+			success: function(data, textStatus, jqXGR) {
+				$("#import-container").modal('hide');
+				if (!data.messages['error']) {
+					if(data.count == 0) {
+						$("#import-result #count-import").html("Aucune fiche n'a été importée.");
+					} else if(data.count == 1) {
+						$("#import-result #count-import").html(data.count + " fiche a été correctement importée.");
+					} else {
+						$("#import-result #count-import").html(data.count + " fiches ont été correctement importées.");
+					}
+
+					if(data['missing'] && Object.keys(data.missing).length > 0) {
+						let ul = $('<ul></ul>');
+						data.missing.forEach(function(item, index){
+							ul.append('<li>'+item+'</li>');
+						});
+						let missingcount = Object.keys(data.missing).length;
+						$("#missing-import").empty();
+						if(missingcount == 1) {
+							$("#missing-import")
+								.append(missingcount + " modèle non importé :")
+								.append(ul);
+						} else {
+							$("#missing-import").append(missingcount + " modèles non importés :")
+								.append(ul);
+						}
+					}
+					$("#import-result").modal('show');
+				} else {
+					displayMessages(data.messages);
+				}
+			}
+		});
 	});
 };

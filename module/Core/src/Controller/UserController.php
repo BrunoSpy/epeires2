@@ -18,7 +18,7 @@
 namespace Core\Controller;
 
 use Core\Entity\LoginAttempt;
-use Zend\Stdlib\ResponseInterface as Response;
+use Laminas\Stdlib\ResponseInterface as Response;
 
 /**
  *

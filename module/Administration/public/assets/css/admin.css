@@ -87,8 +87,17 @@ table .btn-xs {
     background-color: white;
 }
 
-#sectors {
+#sectors.list-group {
     min-height: 100px;
+    padding-bottom: 100px;
+  border-style: dotted;
+  border-width: 1px;
+}
+
+#avalaiblesectors.list-group {
+  padding-bottom: 100px;
+  border-style: dotted;
+  border-width: 1px;
 }
 
 .atfcm-regex {
@@ -96,4 +105,18 @@ table .btn-xs {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.sub-highlight {
+  height: 100px;
+  background-color: yellow !important;
+}
+
+.table-subcat {
+  border-bottom: solid #ddd;
+}
+
+.content-subcat {
+  padding: 0px !important;
+
 }

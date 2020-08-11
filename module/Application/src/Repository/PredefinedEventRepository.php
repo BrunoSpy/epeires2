@@ -44,7 +44,7 @@ class PredefinedEventRepository extends SortableRepository
         $list = parent::matching($criteria);
         $res = array();
         foreach ($list as $element) {
-            $res[$element->getId()] = $element->getName();
+            $res[$element->getId()] = array("name" => $element->getName(), "color" => $element->getColor());
         }
         return $res;
     }
@@ -69,7 +69,7 @@ class PredefinedEventRepository extends SortableRepository
                 $list = parent::matching($criteria);
     
                 foreach ($list as $element) {
-                    $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId());
+                    $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId(), "color" => $element->getColor());
                 }
             }
         }

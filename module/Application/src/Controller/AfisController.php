@@ -21,10 +21,10 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
+use Laminas\Stdlib\Parameters;
 
 use Application\Services\CustomFieldService;
 use Application\Form\CustomFieldset;
@@ -44,9 +44,9 @@ class AfisController extends TabController
 
     private $em, $cf, $repo, $form, $notamweb;
 
-    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb)
+    public function __construct(EntityManager $em, CustomFieldService $cf, $config, $mattermost, $notamweb, $sessioncontainer)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->em = $em;
         $this->cf = $cf;
         $this->repo = $this->em->getRepository(Afis::class);

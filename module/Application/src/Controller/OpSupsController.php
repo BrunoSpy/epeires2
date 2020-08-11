@@ -20,8 +20,8 @@ namespace Application\Controller;
 
 
 use Core\Controller\AbstractEntityManagerAwareController;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 
 class OpSupsController extends AbstractEntityManagerAwareController
 {

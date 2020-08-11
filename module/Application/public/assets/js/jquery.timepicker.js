@@ -136,6 +136,10 @@
                 '<a class="previous" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>' +
                 '</td>' +
                 '<td>'+
+                (parameters.sunrise ? '<a href="#" class="sunrise" title="Heure du lever du soleil"><span class="glyphicon glyphicon-eye-open"></span></a>' : '')+
+                (parameters.sunset ? '<a href="#" class="sunset" title="Heure du coucher du soleil"><span class="glyphicon glyphicon-eye-close"></span></a>' : '')+
+                '</td>'+
+                '<td>'+
                 (parameters.clearable ? '<a href="#" class="clear-time"><span class="glyphicon glyphicon-remove"></span></a>' : '') +
                 '</td>' +
                 '</tr>' +
@@ -144,11 +148,22 @@
             return div;
         };
 
+        /*
+        Return the day with YYYY-MM-DD format
+         */
+        var getDay = function(element) {
+            var day = element.find('.day input').val().split('-');
+            return day[2]+'-'+day[1]+'-'+day[0];
+        };
+
         var defaults = {
             'id': '',
             'required': false,
             'clearable': false,
-            'init': false
+            'init': false,
+            'sunrise': false,
+            'sunset': false,
+            'api_sunrise_url': ''
         };
 
         var parameters = $.extend(defaults, options);
@@ -268,6 +283,48 @@
                     var form = $(this).closest('.timepicker-form');
                     form.find('td input').val('');
                     element.trigger('change');
+                });
+
+                div.on('click', 'a.sunrise', function(event){
+                    event.preventDefault();
+                    var hourinput = div.find('td.hour input');
+                    var mininput = div.find('td.minute input');
+                    var date = getDay($(this).closest('tr'));
+                    $.getJSON(parameters.api_sunrise_url + '/getsunrise?date='+date, function(data){
+                        var d = new Date(data.sunrise);
+                        var hour = ""+d.getUTCHours();
+                        if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
+                            hour = "0"+d.getUTCHours();
+                        }
+                        hourinput.val(hour);
+                        var minute = ""+d.getUTCMinutes();
+                        if(d.getUTCMinutes()>=0 && d.getUTCMinutes()<=9){
+                            minute = "0"+d.getUTCMinutes();
+                        }
+                        mininput.val(minute);
+                        element.trigger('change');
+                    });
+                });
+
+                div.on('click', 'a.sunset', function(event){
+                    event.preventDefault();
+                    var hourinput = div.find('td.hour input');
+                    var mininput = div.find('td.minute input');
+                    var date = getDay($(this).closest('tr'));
+                    $.getJSON(parameters.api_sunrise_url + '/getsunset?date='+date, function(data){
+                        var d = new Date(data.sunset);
+                        var hour = ""+d.getUTCHours();
+                        if(d.getUTCHours() >= 0 && d.getUTCHours() <= 9){
+                            hour = "0"+d.getUTCHours();
+                        }
+                        hourinput.val(hour);
+                        var minute = ""+d.getUTCMinutes();
+                        if(d.getUTCMinutes()>=0 && d.getUTCMinutes()<=9){
+                            minute = "0"+d.getUTCMinutes();
+                        }
+                        mininput.val(minute);
+                        element.trigger('change');
+                    });
                 });
 
                 //change input if more than 2 digits are entered in the hour input

@@ -38,14 +38,14 @@ return array(
             ),
         ),
     ),
-    'zf-versioning' => array(
+    'api-tools-versioning' => array(
         'uri' => array(
             0 => 'api.rest.frequency',
             1 => 'api.rest.event',
             2 => 'api.rest.sector',
         ),
     ),
-    'zf-rest' => array(
+    'api-tools-rest' => array(
         'API\\V1\\Rest\\Frequency\\Controller' => array(
             'listener' => 'API\\V1\\Rest\\Frequency\\FrequencyResource',
             'route_name' => 'api.rest.frequency',
@@ -101,7 +101,7 @@ return array(
             'service_name' => 'sector',
         ),
     ),
-    'zf-content-negotiation' => array(
+    'api-tools-content-negotiation' => array(
         'controllers' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => 'HalJson',
             'API\\V1\\Rest\\Event\\Controller' => 'HalJson',
@@ -139,13 +139,13 @@ return array(
             ),
         ),
     ),
-    'zf-hal' => array(
+    'api-tools-hal' => array(
         'metadata_map' => array(
             'API\\V1\\Rest\\Frequency\\FrequencyEntity' => array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.frequency',
                 'route_identifier_name' => 'frequency_id',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
             'API\\V1\\Rest\\Frequency\\FrequencyCollection' => array(
                 'entity_identifier_name' => 'id',
@@ -157,13 +157,13 @@ return array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.frequency',
                 'route_identifier_name' => 'frequency_id',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
             'API\\V1\\Rest\\Event\\EventEntity' => array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.event',
                 'route_identifier_name' => 'event_id',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
             'API\\V1\\Rest\\Event\\EventCollection' => array(
                 'entity_identifier_name' => 'id',
@@ -175,13 +175,13 @@ return array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.event',
                 'route_identifier_name' => 'event_id',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
             'API\\V1\\Rest\\Sector\\SectorEntity' => array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api.rest.sector',
                 'route_identifier_name' => 'sector_id',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
             'API\\V1\\Rest\\Sector\\SectorCollection' => array(
                 'entity_identifier_name' => 'name',
@@ -193,11 +193,11 @@ return array(
                 'entity_identifier_name' => 'name',
                 'route_name' => 'api.rest.sector',
                 'route_identifier_name' => 'sector_name',
-                'hydrator' => 'Zend\\Hydrator\\ArraySerializable',
+                'hydrator' => 'Laminas\\Hydrator\\ArraySerializable',
             ),
         ),
     ),
-    'zf-content-validation' => array(
+    'api-tools-content-validation' => array(
         'API\\V1\\Rest\\Frequency\\Controller' => array(
             'input_filter' => 'API\\V1\\Rest\\Frequency\\Validator',
         ),
@@ -209,7 +209,7 @@ return array(
                 'validators' => array(),
                 'filters' => array(
                     0 => array(
-                        'name' => 'Zend\\Filter\\Boolean',
+                        'name' => 'Laminas\\Filter\\Boolean',
                         'options' => array(),
                     ),
                 ),
@@ -221,8 +221,8 @@ return array(
     'controllers' => array(
         'factories' => array(),
     ),
-    'zf-rpc' => array(),
-    'zf-mvc-auth' => array(
+    'api-tools-rpc' => array(),
+    'api-tools-mvc-auth' => array(
         'authorization' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => array(
                 'collection' => array(

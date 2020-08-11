@@ -17,11 +17,11 @@
  */
 namespace Core\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
-use ZfcRbac\Identity\IdentityInterface;
+use LmcRbacMvc\Identity\IdentityInterface;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -38,13 +38,13 @@ class User implements UserInterface, IdentityInterface
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Utilisateur :"})
      */
@@ -52,7 +52,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\Column(type="string", unique=true, length=255)
-     * @Annotation\Type("Zend\Form\Element\Email")
+     * @Annotation\Type("Laminas\Form\Element\Email")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Email :"})
      */
@@ -60,7 +60,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"false"})
      * @Annotation\Options({"label":"Nom complet :"})
      */
@@ -68,7 +68,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\Column(type="string", length=128)
-     * @Annotation\Type("Zend\Form\Element\Password")
+     * @Annotation\Type("Laminas\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe :"})
      * @Annotation\Attributes({"data-rule-minlength":"6"})
      * @Annotation\Required({"required":"true"})
@@ -78,7 +78,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Mattermost Username :"})
      */
@@ -86,7 +86,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\Column(type="string", length=128, nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Password")
+     * @Annotation\Type("Laminas\Form\Element\Password")
      * @Annotation\Options({"label":"Mot de passe Mattermost:"})
      * @Annotation\Attributes({"data-rule-minlength":"6"})
      * @Annotation\Required(false)
@@ -105,7 +105,7 @@ class User implements UserInterface, IdentityInterface
      *                joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *                inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
      * )
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Rôles :"})
@@ -120,7 +120,7 @@ class User implements UserInterface, IdentityInterface
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\Organisation", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Organisation :", "empty_option":"Choisir l'organisation"})
      */
@@ -128,7 +128,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="Application\Entity\QualificationZone")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Zone de qualification :", "empty_option":"Facultatif"})
      */

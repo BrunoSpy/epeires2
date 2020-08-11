@@ -18,7 +18,7 @@
 
 namespace Application\Paginator;
 
-use Zend\Paginator\Adapter\AdapterInterface;
+use Laminas\Paginator\Adapter\AdapterInterface;
 
 class Adapter implements AdapterInterface {
 

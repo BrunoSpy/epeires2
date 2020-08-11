@@ -21,7 +21,7 @@ namespace Application\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 //use RRule\RRule;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  *

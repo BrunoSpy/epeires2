@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -41,13 +41,13 @@ abstract class AbstractEvent
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Ponctuel"})
      * @Annotation\Attributes({"id":"punctual"})
      * @Gedmo\Versioned
@@ -56,7 +56,7 @@ abstract class AbstractEvent
 
     /**
      * @ORM\ManyToOne(targetEntity="AbstractEvent", inversedBy="children", cascade={"persist"})
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Evènement parent", "empty_option":"Choisir l'evt parent"})
      */
@@ -75,7 +75,7 @@ abstract class AbstractEvent
 
     /**
      * @ORM\ManyToOne(targetEntity="Impact")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Impact"})
      * @Gedmo\Versioned
@@ -85,7 +85,7 @@ abstract class AbstractEvent
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Catégorie", "empty_option":"Choisir la catégorie"})
      * @var Category $category
@@ -100,7 +100,7 @@ abstract class AbstractEvent
     /**
      * @ORM\ManyToOne(targetEntity="Organisation")
      * @ORM\JoinColumn(nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Organisation"})
      */
@@ -109,7 +109,7 @@ abstract class AbstractEvent
     /**
      * @ORM\ManyToMany(targetEntity="QualificationZone")
      * @ORM\JoinTable(name="events_qualificationzones")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":true})
      * @Annotation\Options({"label":"Visibilité"})

@@ -2,7 +2,7 @@
 
 namespace DoctrineORMModule\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -10,11 +10,11 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20150228153251 extends AbstractMigration
 {
-    public function up(Schema $schema) {
+    public function up(Schema $schema) : void {
 		$this->connection->update('status', array('name' => 'Fin confirmée'), array('id' => 3));
     }
 
-    public function down(Schema $schema) {
+    public function down(Schema $schema) : void {
     	$this->connection->update('status', array('name' => 'Terminé'), array('id' => 3));
     }
 }

@@ -23,10 +23,10 @@ use Core\Controller\AbstractEntityManagerAwareController;
 use Doctrine\ORM\EntityManager;
 use OpentbsBundle\Factory\TBSFactory as TBS;
 use IPO\Entity\Report;
-use Zend\View\Model\ViewModel;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\View\Model\ViewModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\JsonModel;
 use IPO\Entity\Element;
 
 /**

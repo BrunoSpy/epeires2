@@ -18,14 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\RolesController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class RolesControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new RolesController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new RolesController(
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config')
+        );
     }
 
 }

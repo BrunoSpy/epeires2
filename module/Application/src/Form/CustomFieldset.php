@@ -19,8 +19,8 @@ namespace Application\Form;
 
 use Application\Services\CustomFieldService;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Fieldset;
+use Laminas\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Collections\Criteria;
 
 /**
@@ -51,7 +51,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
         // add category id to regenerate fieldset during creation process
         $this->add(array(
             'name' => 'category_id',
-            'type' => '\Zend\Form\Element\Hidden',
+            'type' => '\Laminas\Form\Element\Hidden',
             'attributes' => array(
                 'value' => $categoryid
             )
@@ -87,8 +87,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             
             if (! $model && $customfield->getId() == $category->getFieldname()->getId()) {
                 $definition['attributes']['required'] = 'required';
+            }
+            if(strcmp($customfield->getType()->getType(), 'string') == 0) {
                 $definition['attributes']['maxlength'] = '48';
             }
+
             $definition['attributes']['title'] = $customfield->getTooltip();
             $definition['attributes']['placeholder'] = $customfield->getTooltip();
             

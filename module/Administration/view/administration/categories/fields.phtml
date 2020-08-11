@@ -7,13 +7,14 @@
 				<th>id</th>
 				<th>Nom</th>
 				<th>Type</th>
-                <th>Multiple</th>
+        <th>Obligatoire</th>
+        <th>Multiple</th>
 				<th>Défaut</th>
-                <th>Aide</th>
+        <th>Aide</th>
 				<th data-container="body" data-toggle="tooltip" title="Tracer les changements dans le compte-rendu IPO">Trace<sup>?</sup></th>
-                <th data-container="body" data-toggle="tooltip" title="Matérialise les changements de valeur sur la timeline">Jalon<sup>?</sup></th>
-                <th>Caché</th>
-                <th> </th>
+        <th data-container="body" data-toggle="tooltip" title="Matérialise les changements de valeur sur la timeline">Jalon<sup>?</sup></th>
+        <th>Caché</th>
+        <th> </th>
 				<th><a href="#" data-id="<?php echo $this->categoryid; ?>" class="btn btn-xs btn-primary" id="new-field">Ajouter</a></th>
 			</tr>
 		</thead>
@@ -27,6 +28,13 @@
 			echo "<td>".$field->getId()."</td>";
 			echo "<td>".$field->getName()."</td>";
 			echo "<td>".$field->getType()->getName()."</td>";
+			echo "<td>";
+			if($field->isRequired()) {
+          echo '<span class="glyphicon glyphicon-ok"></span>';
+      } else {
+          echo '<span class="glyphicon glyphicon-remove"></span>';
+      }
+			echo "</td>";
             echo "<td>";
                 if(!$this->isMultipleAllowed($field)){
                     echo '<span class="glyphicon glyphicon-remove" style="color:lightgrey"></span>';

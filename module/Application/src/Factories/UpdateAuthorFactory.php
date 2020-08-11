@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,11 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class UpdateAuthorFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $updateauthorHelper = new \Application\View\Helper\UpdateAuthorHelper();
-        $updateauthorHelper->setEventService($serviceLocator->getServiceLocator()
-            ->get('eventservice'));
+        $updateauthorHelper->setEventService($container->get('eventservice'));
         return $updateauthorHelper;
     }
 }

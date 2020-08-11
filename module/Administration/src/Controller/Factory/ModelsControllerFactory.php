@@ -18,18 +18,17 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\ModelsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class ModelsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new ModelsController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('EventService'),
-            $service->get('CustomFieldService')
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('eventservice'),
+            $container->get('customfieldservice')
             );
     }
 

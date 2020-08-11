@@ -18,7 +18,7 @@
 namespace Core\Entity;
 
 use Doctrine\ORM\PersistentCollection;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,7 +38,7 @@ class Role implements HierarchicalRoleInterface
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Annotation\Type("Zend\Form\Element\Hidden")
+     * @Annotation\Type("Laminas\Form\Element\Hidden")
      *
      * @var int
      *
@@ -48,7 +48,7 @@ class Role implements HierarchicalRoleInterface
     /**
      *
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="children")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":false})
      * @Annotation\Options({"label":"Parent :", "empty_option":"Rôle parent (facultatif)"})
@@ -65,7 +65,7 @@ class Role implements HierarchicalRoleInterface
     /**
      *
      * @ORM\Column(type="string", length=32)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Nom :"})
      * 
@@ -87,7 +87,7 @@ class Role implements HierarchicalRoleInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="Application\Entity\Category", mappedBy="readroles")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":"true"})
      * @Annotation\Options({"label":"Catégories accessibles :"})
@@ -96,7 +96,7 @@ class Role implements HierarchicalRoleInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="Application\Entity\Tab", mappedBy="readroles")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":"true"})
      * @Annotation\Options({"label":"Onglets accessibles :"})
@@ -105,7 +105,7 @@ class Role implements HierarchicalRoleInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="Application\Entity\OpSupType", mappedBy="roles")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Attributes({"multiple":"true"})
      * @Annotation\Options({"label":"Types Opsup affichés :"})

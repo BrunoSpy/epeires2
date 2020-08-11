@@ -20,7 +20,7 @@ namespace Application\Controller;
 use Core\Controller\AbstractEntityManagerAwareController;
 use Core\Service\NMB2BService;
 use Doctrine\ORM\EntityManager;
-use Zend\Console\Request as ConsoleRequest;
+use Laminas\Console\Request as ConsoleRequest;
 
 /**
  *
@@ -172,49 +172,5 @@ class MilController extends AbstractEntityManagerAwareController
         echo 'Traitement : '.$totalTR.' secondes'."\n";
         echo "Nombre d'évènements créés : ".$totalEvents."\n";
     }
-/* WIP import des ZTBA
-    public function importSIAAction()
-    {
-        $request = $this->getRequest();
 
-        if (! $request instanceof ConsoleRequest) {
-            throw new \RuntimeException('Action only available from console.');
-        }
-
-        $j = $request->getParam('delta');
-
-        $org = $request->getParam('orgshortname');
-
-        $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
-            'shortname' => $org
-        ));
-
-        if (! $organisation) {
-            throw new \RuntimeException('Unable to find organisation.');
-        }
-
-        $username = $request->getParam('username');
-
-        $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
-            'username' => $username
-        ));
-
-        if (! $user) {
-            throw new \RuntimeException('Unable to find user.');
-        }
-
-        $day = new \DateTime('now');
-        if ($j) {
-            if ($j > 0) {
-                $day->add(new \DateInterval('P' . $j . 'D'));
-            } else {
-                $j = - $j;
-                $interval = new \DateInterval('P' . $j . 'D');
-                $interval->invert = 1;
-                $day->add($interval);
-            }
-        }
-
-    }
-*/
 }

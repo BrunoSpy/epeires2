@@ -53,40 +53,40 @@
     background-color: #3EA6CE;
 }
 
+.round.hollow.blue {
+  color: #3EA6CE;
+  background-color: #FFF;
+  -webkit-box-shadow: 0px 0px 0px 3px #3EA6CE;
+  -moz-box-shadow: 0px 0px 0px 3px #3EA6CE;
+  box-shadow: 0px 0px 0px 3px #3EA6CE;
+}
+
 .round.orange {
     background-color: #FF6701;
+}
+
+.round.hollow.orange {
+  color: #FF6701;
+  background-color: #FFF;
+  -webkit-box-shadow: 0px 0px 0px 3px #FF6701;
+  -moz-box-shadow: 0px 0px 0px 3px #FF6701;
+  box-shadow: 0px 0px 0px 3px #FF6701;
 }
 
 .round.green {
     background-color: #42A129;
 }
 
-.round.grey {
-	background-color: #888;
-}
-
-.round.hollow.blue {
-    color: #3EA6CE;   
-    background-color: #FFF;    
-    -webkit-box-shadow: 0px 0px 0px 3px #3EA6CE;
-    -moz-box-shadow: 0px 0px 0px 3px #3EA6CE;
-    box-shadow: 0px 0px 0px 3px #3EA6CE;
-}
-
-.round.hollow.orange {
-    color: #FF6701;
-    background-color: #FFF;    
-    -webkit-box-shadow: 0px 0px 0px 3px #FF6701;
-    -moz-box-shadow: 0px 0px 0px 3px #FF6701;
-    box-shadow: 0px 0px 0px 3px #FF6701;
-}
-
 .round.hollow.green {
-    color: #42A129;
-    background-color: #FFF;    
-    -webkit-box-shadow: 0px 0px 0px 3px #42A129;
-    -moz-box-shadow: 0px 0px 0px 3px #42A129;
-    box-shadow: 0px 0px 0px 3px #42A129;
+  color: #42A129;
+  background-color: #FFF;
+  -webkit-box-shadow: 0px 0px 0px 3px #42A129;
+  -moz-box-shadow: 0px 0px 0px 3px #42A129;
+  box-shadow: 0px 0px 0px 3px #42A129;
+}
+
+.round.grey, .round.primary {
+	background-color: #888;
 }
 
 .round span.glyphicon {

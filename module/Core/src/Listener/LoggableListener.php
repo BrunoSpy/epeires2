@@ -1,8 +1,8 @@
 <?php
 namespace Core\Listener;
 
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManagerAwareInterface;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Loggable listener
@@ -40,7 +40,7 @@ class LoggableListener extends \Gedmo\Loggable\LoggableListener
      */
     protected function prePersistLogEntry($logEntry, $object)
     {
-        $auth = $this->getServiceManager()->get('zfc_user_auth_service');
+        $auth = $this->getServiceManager()->get('zfcuser_auth_service');
         if ($auth->hasIdentity()) {
             $logEntry->setUsername($auth->getIdentity()
                 ->getUsername());

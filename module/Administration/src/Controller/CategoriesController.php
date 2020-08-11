@@ -19,15 +19,15 @@ namespace Administration\Controller;
 
 use Application\Entity\ATFCMCategory;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Doctrine\Common\Collections\Criteria;
 use Application\Entity\Category;
 use Application\Entity\CustomField;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
-use Zend\Form\Element\Select;
+use Laminas\Form\Element\Select;
 use Application\Entity\RadarCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
@@ -367,6 +367,30 @@ class CategoriesController extends FormController
                 try {
                     $objectManager->flush();
                     $messages['success'][] = "Catégorie correctement modifiée.";
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver la catégorie";
+            }
+        }
+        return new JsonModel($messages);
+    }
+
+    public function setplacecategoryAction()
+    {
+        $messages = array();
+        $id = $this->params()->fromQuery('id', null);
+        $place = $this->params()->fromQuery('place', null);
+        $objectManager = $this->getEntityManager();
+        if ($id) {
+            $cat = $objectManager->getRepository('Application\Entity\Category')->find($id);
+            if ($cat) {
+                $cat->setPlace($place);
+                $objectManager->persist($cat);
+                try {
+                    $objectManager->flush();
+                    $messages['success'][] = "Catégorie ".$cat->getName()." correctement modifiée en place ".$cat->getPlace().".";
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
                 }

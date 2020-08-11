@@ -18,7 +18,7 @@
 namespace Core\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Mapped Superclass to manage hardware resources that can be decommissionned (frequencies, radars, .
@@ -32,7 +32,7 @@ class TemporaryResource
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Hors service :"})
      * @Annotation\Attributes({"title":"En cochant cette option, tous les évènements liés ne seront plus modifiables."})
      */

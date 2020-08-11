@@ -20,15 +20,32 @@
 $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
+        'Laminas\Mvc\I18n',
+        'ApiSkeletons\Doctrine\DataFixture',
+        'Laminas\Mvc\Plugin\FlashMessenger',
+        'Laminas\Mvc\Plugin\Prg',
+        'Laminas\Db',
+        'Laminas\Log',
+        'Laminas\Session',
+        'Laminas\Cache',
+        'Laminas\Paginator',
+        'Laminas\Form',
+        'Laminas\InputFilter',
+        'Laminas\Filter',
+        'Laminas\Hydrator',
+        'Laminas\I18n',
+        'Laminas\Mvc\Console',
+        'Laminas\Router',
+        'Laminas\Validator',
         'DoctrineModule',
         'DoctrineORMModule',
         'DoctrineMigrationsModule',
-        'ZfcBase',
-        'ZfcRbac',
+//        'ZfcBase',
+        'LmcRbacMvc',
         'ZfcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
-        'DOMPDFModule',
+        'DompdfModule',
         'OpentbsBundle',
         'MaglMarkdown',
         'MattermostMessenger',
@@ -36,28 +53,28 @@ $modules = array(
         'Application',
         'Administration',
         'IPO',
-        'ZF\\Apigility',
-        'ZF\\Apigility\\Provider',
-        'ZF\\ApiProblem',
-        'ZF\\MvcAuth',
-        'ZF\\OAuth2',
-        'ZF\\Hal',
-        'ZF\\ContentNegotiation',
-        'ZF\\ContentValidation',
-        'ZF\\Rest',
-        'ZF\\Rpc',
-        'ZF\\Versioning',
-        'ZF\\DevelopmentMode',
-        'ZF\\Apigility\\Documentation',
-        'ZF\\Apigility\\Documentation\Swagger',
-        'ZF\\Configuration',
+        'Laminas\\ApiTools',
+        'Laminas\\ApiTools\\Provider',
+        'Laminas\\ApiTools\\ApiProblem',
+        'Laminas\\ApiTools\\MvcAuth',
+        'Laminas\\ApiTools\\OAuth2',
+        'Laminas\\ApiTools\\Hal',
+        'Laminas\\ApiTools\\ContentNegotiation',
+        'Laminas\\ApiTools\\ContentValidation',
+        'Laminas\\ApiTools\\Rest',
+        'Laminas\\ApiTools\\Rpc',
+        'Laminas\\ApiTools\\Versioning',
+//        'Laminas\\DevelopmentMode',
+        'Laminas\\ApiTools\\Documentation',
+        'Laminas\\ApiTools\\Documentation\Swagger',
+        'Laminas\\ApiTools\\Configuration',
         'API'
     );
 
 if ($env == 'development') {
 
-    //$modules [] = 'ZendDeveloperTools';
-    $modules[] = 'DoctrineDataFixtureModule';
+    //$modules [] = 'Laminas\DeveloperTools';
+    $modules[] = 'ApiSkeletons\Doctrine\DataFixture';
 }
 
 return array(

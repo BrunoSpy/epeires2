@@ -18,16 +18,16 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\ConfigController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class ConfigControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new ConfigController(
-            $serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'),
-            $serviceLocator->getServiceLocator()->get('config'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config'));
     }
 
 }

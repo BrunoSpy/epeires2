@@ -37,8 +37,8 @@ return array(
     ),
     'service_manager' => array(
         'abstract_factories' => array(
-            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
-            'Zend\Log\LoggerAbstractServiceFactory'
+            'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
+            'Laminas\Log\LoggerAbstractServiceFactory'
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator'
@@ -110,9 +110,9 @@ return array(
             )
         )
     ),
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\RoutePermissionsGuard' => array(
+            'LmcRbacMvc\Guard\RoutePermissionsGuard' => array(
                 'ipo' => array(
                     'ipo.read'
                 )

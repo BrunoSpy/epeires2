@@ -21,8 +21,8 @@ use Doctrine\ORM\EntityManager;
 use DSNA\NMB2BDriver\Exception\WSDLFileUnavailable;
 use DSNA\NMB2BDriver\Models\EAUPChain;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
 use DSNA\NMB2BDriver\NMB2BClient;
 
 /**
@@ -54,12 +54,16 @@ class NMB2BService
             $socket_timeout = intval($this->nmb2b['timeout'] / 1000);
             ini_set('default_socket_timeout', $socket_timeout);
         }
-        if (array_key_exists('proxy_host', $this->nmb2b)) {
-            $options['proxy_host'] = $this->nmb2b['proxy_host'];
+
+        if(array_key_exists('proxy', $this->config)) {
+            if (array_key_exists('proxy_host', $this->config['proxy'])) {
+                $options['proxy_host'] = $this->config['proxy']['proxy_host'];
+            }
+            if (array_key_exists('proxy_port', $this->config['proxy'])) {
+                $options['proxy_port'] = $this->config['proxy']['proxy_port'];
+            }
         }
-        if (array_key_exists('proxy_port', $this->nmb2b)) {
-            $options['proxy_port'] = $this->nmb2b['proxy_port'];
-        }
+
         if (array_key_exists('force_url', $this->nmb2b)) {
             $options['location'] = $this->nmb2b['force_url'];
         }
@@ -177,23 +181,23 @@ class NMB2BService
         $ipoEmail = $org[0]->getIpoEmail();
 
         // prepare body with file attachment
-        $text = new \Zend\Mime\Part($textError);
-        $text->type = \Zend\Mime\Mime::TYPE_TEXT;
+        $text = new \Laminas\Mime\Part($textError);
+        $text->type = \Laminas\Mime\Mime::TYPE_TEXT;
         $text->charset = 'utf-8';
 
-        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage = new \Laminas\Mime\Message();
         $mimeMessage->setParts(array(
             $text
         ));
         if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
-            $message = new \Zend\Mail\Message();
+            $message = new \Laminas\Mail\Message();
             $message->addTo($ipoEmail)
                 ->addFrom($this->config['emailfrom'])
                 ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
                 ->setBody($mimeMessage);
     
-            $transport = new \Zend\Mail\Transport\Smtp();
-            $transportOptions = new \Zend\Mail\Transport\SmtpOptions($this->config['smtp']);
+            $transport = new \Laminas\Mail\Transport\Smtp();
+            $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
             $transport->setOptions($transportOptions);
             $transport->send($message);
         }

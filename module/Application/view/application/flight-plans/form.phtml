@@ -2,7 +2,7 @@
 $form = $this->form;
 //TODO BOF
 $form->add([
-    'type' => \Zend\Form\Element\Checkbox::class,
+    'type' => \Laminas\Form\Element\Checkbox::class,
     'name' => 'c-absclot',
     'options' => [
         'label' => 'Absence de clôture en sortie de zone',
@@ -13,7 +13,7 @@ $form->add([
 ]);
 
 $form->add([
-    'type' => \Zend\Form\Element\Checkbox::class,
+    'type' => \Laminas\Form\Element\Checkbox::class,
     'name' => 'c-nonclot',
     'options' => [
         'label' => 'Non-clôture en sortie de zone',

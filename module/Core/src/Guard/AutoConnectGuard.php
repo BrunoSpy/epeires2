@@ -17,9 +17,9 @@
  */
 namespace Core\Guard;
 
-use \Zend\Http\Request as HttpRequest;
-use \Zend\Mvc\MvcEvent;
-use \ZfcRbac\Guard\AbstractGuard;
+use \Laminas\Http\Request as HttpRequest;
+use \Laminas\Mvc\MvcEvent;
+use \LmcRbacMvc\Guard\AbstractGuard;
 
 /**
  * AutoConnect users based on IP
@@ -40,12 +40,12 @@ class AutoConnectGuard extends AbstractGuard
      *
      * @param array $ipAddresses            
      */
-    public function __construct(array $users)
+    public function __construct(?array $users)
     {
         $this->users = $users;
     }
 
-    public function setAuthService(\Zend\Authentication\AuthenticationService $auth)
+    public function setAuthService(\Laminas\Authentication\AuthenticationService $auth)
     {
         $this->auth = $auth;
     }
@@ -69,7 +69,7 @@ class AutoConnectGuard extends AbstractGuard
             $clientIp = $_SERVER['REMOTE_ADDR'];
         }
         
-        if (array_key_exists($clientIp, $this->users)) {
+        if ($this->users && array_key_exists($clientIp, $this->users)) {
             $user = $this->users[$clientIp];
             
             if ($this->auth->hasIdentity()) {

@@ -3,8 +3,8 @@ namespace API\V1\Rest\Sector;
 
 use Application\Paginator\Adapter;
 use Doctrine\ORM\EntityManager;
-use ZF\ApiProblem\ApiProblem;
-use ZF\Rest\AbstractResourceListener;
+use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\Rest\AbstractResourceListener;
 
 class SectorResource extends AbstractResourceListener
 {

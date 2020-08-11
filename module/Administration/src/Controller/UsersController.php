@@ -18,12 +18,12 @@
 namespace Administration\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Core\Entity\User;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Zend\Crypt\Password\Bcrypt;
+use Laminas\Crypt\Password\Bcrypt;
 use Doctrine\Common\Collections\Criteria;
 use Administration\Form\ChangePassword;
 use Administration\Form\ChangePasswordFilter;

@@ -19,7 +19,7 @@
 namespace Core\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 abstract class AbstractEntityManagerAwareController extends AbstractActionController {
 

@@ -18,14 +18,14 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\TabsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class TabsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new TabsController($serviceLocator->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
+        return new TabsController($container->get('Doctrine\ORM\EntityManager'));
     }
 
 }

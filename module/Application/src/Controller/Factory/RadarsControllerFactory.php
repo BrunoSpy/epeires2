@@ -18,20 +18,20 @@
 namespace Application\Controller\Factory;
 
 use Application\Controller\RadarsController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class RadarsControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
         return new RadarsController(
-            $service->get('Doctrine\ORM\EntityManager'),
-            $service->get('CustomFieldService'),
-            $service->get('EventService'),
-            $service->get('config'),
-            $service->get('mattermostservice'));
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('customfieldservice'),
+            $container->get('eventservice'),
+            $container->get('config'),
+            $container->get('mattermostservice'),
+            $container->get('timelineZone'));
     }
 
 }

@@ -19,7 +19,7 @@ namespace Administration\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 
 /**
  * 

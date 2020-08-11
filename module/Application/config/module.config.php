@@ -72,8 +72,8 @@ return array(
     ),
     'service_manager' => array(
         'abstract_factories' => array(
-            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
-            'Zend\Log\LoggerAbstractServiceFactory'
+            'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
+            'Laminas\Log\LoggerAbstractServiceFactory'
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator'
@@ -101,15 +101,16 @@ return array(
             'Application\Controller\Frequencies' => 'Application\Controller\Factory\FrequenciesControllerFactory',
             'Application\Controller\Tabs' => 'Application\Controller\Factory\TabsControllerFactory',
             'Application\Controller\Alarm' => 'Application\Controller\Factory\AlarmControllerFactory',
-            'Application\Controller\OpSups' => 'Application\Controller\Factory\OpSupsControllerFactory',
+            'Application\Controller\Opsups' => 'Application\Controller\Factory\OpSupsControllerFactory',
             'Application\Controller\Mil' => 'Application\Controller\Factory\MilControllerFactory',
             'Application\Controller\Report' => 'Application\Controller\Factory\ReportControllerFactory',
             'Application\Controller\File' => 'Application\Controller\Factory\FileControllerFactory',
             'Application\Controller\Afis' => 'Application\Controller\Factory\AfisControllerFactory',
-            'Application\Controller\FlightPlans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
-            'Application\Controller\SarBeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
+            'Application\Controller\Flightplans' => 'Application\Controller\Factory\FlightPlansControllerFactory',
+            'Application\Controller\Sarbeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
             'Application\Controller\ATFCM' => 'Application\Controller\Factory\ATFCMControllerFactory',
             'Application\Controller\Briefing' => 'Application\Controller\Factory\BriefingControllerFactory',
+            'Application\Controller\Sunrisesunset' => 'Application\Controller\Factory\SunrisesunsetControllerFactory'
         )
     ),
     'view_helpers' => array(
@@ -128,7 +129,7 @@ return array(
             'ipo' => 'Application\Factories\IPOFactory',
             'opsup' => 'Application\Factories\OpSupFactory',
             'customfieldvalue' => 'Application\Factories\CustomFieldValueFactory',
-            'ismultipleallowed' => 'Application\Factories\CustomFieldMultipleAllowedFactory'
+            'isMultipleAllowed' => 'Application\Factories\CustomFieldMultipleAllowedFactory'
         )
     ),
     'view_manager' => array(
@@ -158,7 +159,7 @@ return array(
     'doctrine' => array(
         'driver' => array(
             'application_entities' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
                 'cache' => 'array',
                 'paths' => array(
                     __DIR__ . '/../src/Entity'
@@ -181,7 +182,9 @@ return array(
             )
         )
     ),
-    
+    'session_containers' => [
+        'timelineZone'
+    ],
     'permissions' => array(
         'Evènements' => array(
             'events.create' => array(
@@ -219,6 +222,10 @@ return array(
             'events.mod-opsup' => array(
                 'name' => 'Modifier Chef Op',
                 'description' => ''
+            ),
+            'events.raz-checklist' => array(
+                'name' => 'RAZ Checklist',
+                'description' => 'Permet la remise à zéro de la checklist.'
             )
         ),
         'Radio' => array(
@@ -283,9 +290,9 @@ return array(
         )
     ),
     
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
-            'ZfcRbac\Guard\ControllerPermissionsGuard' => array(
+            'LmcRbacMvc\Guard\ControllerPermissionsGuard' => array(
                 array(
                     'controller' => 'Application\Controller\Frequencies',
                     'permissions' => [

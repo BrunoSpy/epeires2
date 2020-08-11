@@ -17,7 +17,7 @@
  */
 namespace Application\Entity;
 
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,8 +30,8 @@ class PredefinedEvent extends AbstractEvent
 {
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @ORM\Column(type="string", unique=true, nullable=true, options={"collation":"utf8_bin"})
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Nom :"})
      */
@@ -39,35 +39,35 @@ class PredefinedEvent extends AbstractEvent
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Liste :"})
      */
     protected $listable;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Recherche :"})
      */
     protected $searchable;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Programmé par défaut :"})
      */
     protected $programmed = false;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Forcer affichage dans catégorie parente :"})
      */
     protected $forceroot = false;
 
     /**
      * @ORM\Column(type="integer")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Durée :"})
      * @Annotation\Attributes({"placeholder":"En minutes (facultatif)."})
@@ -76,11 +76,20 @@ class PredefinedEvent extends AbstractEvent
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Accès rapide :"})
      * @Annotation\Required(false)
      */
     protected $quickaccess = false;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Options({"label":"Couleur :"})
+     * @Annotation\Required(false)
+     * Color coded in hexa, ex: #FFFFFF
+     */
+    protected $color = "#888"; //grey by default
 
     public function __construct()
     {
@@ -95,6 +104,22 @@ class PredefinedEvent extends AbstractEvent
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setColor($color)
+    {
+        if (! (strpos($color, "#") === 0)) {
+            $color = "#" . $color;
+        }
+        $this->color = $color;
+    }
+
+    public function getColor()
+    {
+        if($this->color == NULL) {
+            $this->setColor("#888");
+        }
+        return $this->color;
     }
 
     /**

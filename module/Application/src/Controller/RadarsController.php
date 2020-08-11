@@ -20,11 +20,11 @@ namespace Application\Controller;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Application\Form\CustomFieldset;
 
@@ -42,9 +42,9 @@ class RadarsController extends TabController
     public function __construct(EntityManager $entityManager,
                                 CustomFieldService $customfieldService,
                                 EventService $eventservice,
-                                $config, $mattermost)
+                                $config, $mattermost, $sessioncontainer)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->entityManager = $entityManager;
         $this->customfieldservice = $customfieldService;
         $this->eventservice = $eventservice;

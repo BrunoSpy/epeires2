@@ -18,15 +18,14 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\CentreController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class CentreControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
-        return new CentreController($service->get('Doctrine\ORM\EntityManager'));
+        return new CentreController($container->get('Doctrine\ORM\EntityManager'));
     }
 
 }

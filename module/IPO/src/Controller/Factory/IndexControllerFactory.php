@@ -17,16 +17,15 @@
  */
 namespace IPO\Controller\Factory;
 
+use Interop\Container\ContainerInterface;
 use IPO\Controller\IndexController;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class IndexControllerFactory implements FactoryInterface {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $service = $serviceLocator->getServiceLocator();
-        return new IndexController($service->get('Doctrine\ORM\EntityManager')
+        return new IndexController($container->get('Doctrine\ORM\EntityManager')
         );
     }
 

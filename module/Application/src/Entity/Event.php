@@ -19,7 +19,7 @@ namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\EventRepository")
@@ -36,7 +36,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\ManyToOne(targetEntity="Status")
-     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)
      * @Annotation\Options({"label":"Statut"})
      * @Gedmo\Versioned
@@ -46,7 +46,7 @@ class Event extends AbstractEvent
     /**
      * Actions need an empty start date at creation
      * @ORM\Column(type="datetime", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\DateTime")
+     * @Annotation\Type("Laminas\Form\Element\DateTime")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Début", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
@@ -56,7 +56,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Annotation\Type("Zend\Form\Element\DateTime")
+     * @Annotation\Type("Laminas\Form\Element\DateTime")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Fin", "format" : "d-m-Y H:i"})
      * @Annotation\Attributes({"class":"datetime"})
@@ -92,7 +92,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\Column(type="boolean")
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Evènement programmé"})
      * @Annotation\Attributes({"id":"scheduled"})
      */
@@ -110,7 +110,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\ManyToOne(targetEntity="Recurrence", inversedBy="events")
-     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Text")
      */
     protected $recurrence;
 

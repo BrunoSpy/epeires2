@@ -36,7 +36,6 @@ use Core\Entity\User;
 
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
-use Zend\Session\Container;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**
@@ -50,7 +49,7 @@ class EventRepository extends ExtendedRepository
     /**
      * Get all events readable by <code>$userauth</code>
      * intersecting <code>$day</code>
-     * 
+     *
      * @param ZfcUserAuthentication $userauth
      * @param \DateTime $day
      *            If null : use current day
@@ -61,7 +60,9 @@ class EventRepository extends ExtendedRepository
      * @param array $cats
      * @param array $status If $cats != null, restrict events status
      * @param boolean $default If default tab, take into account cat.timelineconfirmed parameter
+     * @param string $zoneSession Unused parameter, to be cleaned
      * @return array
+     * @throws \Exception
      */
     public function getEvents($userauth,
                               $day = null,
@@ -70,7 +71,8 @@ class EventRepository extends ExtendedRepository
                               $orderbycat = false,
                               $cats = null,
                               $status = null,
-                              $default = null)
+                              $default = null,
+                              $zoneSession = null)
     {
         $parameters = array();
         
@@ -242,18 +244,16 @@ class EventRepository extends ExtendedRepository
         }
         
         // filtre par zone
-        $session = new Container('zone');
-        $zonesession = $session->zoneshortname;
         if ($userauth && $userauth->hasIdentity()) {
             // on filtre soit par la valeur en session soit par l'organisation de l'utilisateur
             // TODO gérer les evts partagés
-            if ($zonesession != null) { // application d'un filtre géographique
-                if ($zonesession != '0') {
+            if ($zoneSession != null) { // application d'un filtre géographique
+                if ($zoneSession != '0') {
                     // la variable de session peut contenir soit une orga soit une zone
                     $orga = $this->getEntityManager()
                         ->getRepository('Application\Entity\Organisation')
                         ->findOneBy(array(
-                        'shortname' => $zonesession
+                        'shortname' => $zoneSession
                     ));
                     if ($orga) {
                         $qb->andWhere($qb->expr()
@@ -262,7 +262,7 @@ class EventRepository extends ExtendedRepository
                         $zone = $this->getEntityManager()
                             ->getRepository('Application\Entity\QualificationZone')
                             ->findOneBy(array(
-                            'shortname' => $zonesession
+                            'shortname' => $zoneSession
                         ));
                         if ($zone) {
                             $qb->andWhere($qb->expr()
@@ -2040,6 +2040,7 @@ class EventRepository extends ExtendedRepository
      * @param \DateTime $enddate
      * @param $search
      * @param null $categories
+     * @param bool $onlytitle
      * @return array
      */
     public function searchEvents($user, \DateTime $startdate, \DateTime $enddate, $search, $categories = null, $onlytitle = false){
@@ -2055,7 +2056,6 @@ class EventRepository extends ExtendedRepository
             ->andWhere($qb->expr()
                 ->isNull('e.parent'));
         if($onlytitle) {
-            error_log('only title');
             $qb->andWhere($qb->expr()->eq('c.fieldname', 'cf.id'));
         }
         if($startdate !== null) {
@@ -2098,8 +2098,8 @@ class EventRepository extends ExtendedRepository
 
         //full text search on raw custom fields values
         $customfields = $qb->expr()->orX();
-        $customfields->add('MATCH (v.value) AGAINST (?4) > 0');
-        $parameters[4] = $search;
+        $customfields->add('MATCH (v.value) AGAINST (?4 boolean) > 0');
+        $parameters[4] = $search."*";
 
         //search specific custom fields : sectors, radars, stacks, antennas
         $qbc = $this->getEntityManager()->createQueryBuilder();

@@ -17,8 +17,8 @@
  */
 namespace Application\Factories;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  *
@@ -28,10 +28,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class OpSupFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $opsupHelper = new \Application\View\Helper\OpSupHelper();
-        $opsupHelper->setServiceManager($serviceLocator->getServiceLocator());
+        $opsupHelper->setServiceManager($container);
         return $opsupHelper;
     }
 }

@@ -17,8 +17,9 @@
  */
 namespace Core\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  *
@@ -28,10 +29,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class LoggableListenerFactory implements FactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $loggablelistener = new \Core\Listener\LoggableListener();
-        $loggablelistener->setServiceManager($serviceLocator);
+        $loggablelistener->setServiceManager($container);
         return $loggablelistener;
     }
 }

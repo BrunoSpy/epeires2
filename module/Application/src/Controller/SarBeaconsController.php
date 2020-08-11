@@ -17,21 +17,21 @@
  */
 namespace Application\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
 
 use Doctrine\ORM\EntityManager;
-use DOMPDFModule\View\Model\PdfModel;
+use DompdfModule\View\Model\PdfModel;
 
-use Zend\Form\Element;
-use Zend\Form\Form;
-use Zend\Mail\Message;
-use Zend\Mail\Transport\Smtp;
-use Zend\Mail\Transport\SmtpOptions;
-use Zend\Mime\Mime;
-use Zend\Mime\Part as MimePart;
-use Zend\Mime\Message as MimeMessage;
+use Laminas\Form\Element;
+use Laminas\Form\Form;
+use Laminas\Mail\Message;
+use Laminas\Mail\Transport\Smtp;
+use Laminas\Mail\Transport\SmtpOptions;
+use Laminas\Mime\Mime;
+use Laminas\Mime\Part as MimePart;
+use Laminas\Mime\Message as MimeMessage;
 
 use Core\Controller\AbstractEntityManagerAwareController;
 
@@ -62,7 +62,7 @@ class SarBeaconsController extends TabController
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config, $mattermost)
     {
-        parent::__construct($config, $mattermost);
+        parent::__construct($config, $mattermost, $sessioncontainer);
         $this->em = $em;
 
         $this->viewpdfrenderer = $viewpdfrenderer;
@@ -871,8 +871,8 @@ class SarBeaconsController extends TabController
             $attachment = new MimePart($fileContents);
             $attachment->type = 'application/pdf';
             $attachment->filename = $ipArray['pdffilename'];
-            $attachment->disposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT;
-            $attachment->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
+            $attachment->disposition = \Laminas\Mime\Mime::DISPOSITION_ATTACHMENT;
+            $attachment->encoding = \Laminas\Mime\Mime::ENCODING_BASE64;
             // création du body
             $body = new MimeMessage();
             $body->setParts([$text, $attachment]);

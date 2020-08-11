@@ -17,7 +17,7 @@
  */
 namespace Core\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 
 
 /**
@@ -30,7 +30,7 @@ class NavBar extends AbstractHelper
 
     private $sm;
 
-    public function __invoke($color = 'epeires', $showHome = true)
+    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false)
     {
         $html = "";
         

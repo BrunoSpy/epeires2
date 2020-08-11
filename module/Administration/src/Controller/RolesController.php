@@ -19,9 +19,9 @@
 namespace Administration\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Form\Annotation\AnnotationBuilder;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Form\Annotation\AnnotationBuilder;
 use Core\Entity\Permission;
 use Core\Entity\Role;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -36,10 +36,12 @@ use Application\Controller\FormController;
 class RolesController extends FormController
 {
     private $entityManager;
+    private $config;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
+        $this->config = $config;
     }
 
     public function getEntityManager()
@@ -52,9 +54,7 @@ class RolesController extends FormController
         $viewmodel = new ViewModel();
         
         $this->layout()->title = "Utilisateurs > Roles";
-        
-        $config = $this->serviceLocator->get('config');
-        
+
         $objectManager = $this->getEntityManager();
         
         $roles = $objectManager->getRepository('Core\Entity\Role')->findAll();
@@ -72,7 +72,7 @@ class RolesController extends FormController
         
         $viewmodel->setVariables(array(
             'messages' => $return,
-            'config' => $config['permissions'],
+            'config' => $this->config['permissions'],
             'roles' => $roles
         ));
         

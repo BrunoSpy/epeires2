@@ -26,7 +26,7 @@ before_script:
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
 - php public/index.php initDB
-- php public/index.php data-fixture:import --no-interaction --append
+- php public/index.php data-fixture:import default_group --no-interaction
 - chmod a+rwx -Rf ./data
 #launch server
 - cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
@@ -46,83 +46,6 @@ variables:
   MYSQL_ROOT_PASSWORD: epeires2
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
-
-test:7.2-mariadb101:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
-  stage: test
-  services:
-  - mariadb:10.1
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.2-mariadb102:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
-  stage: test
-  services:
-  - mariadb:10.2
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.2-mariadb103:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
-  stage: test
-  services:
-  - mariadb:10.3
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.2-mariadb104:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
-  stage: test
-  services:
-    - mariadb:10.4
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.2-mysql57:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
-  stage: test
-  services:
-  - mysql:5.7
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mariadb101:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-  - mariadb:10.1
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mariadb102:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-  - mariadb:10.2
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.3-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
@@ -156,28 +79,6 @@ test:7.3-mysql57:
   script:
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.4-mariadb101:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
-  stage: test
-  services:
-    - mariadb:10.1
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.4-mariadb102:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
-  stage: test
-  services:
-    - mariadb:10.2
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
@@ -213,10 +114,10 @@ test:7.4-mysql57:
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:docker:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php72
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
-  - mariadb:10.2.14
+  - mariadb:10.3.20
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
