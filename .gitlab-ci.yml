@@ -47,39 +47,6 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-test:7.3-mariadb103:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-  - mariadb:10.3
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mariadb104:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - mariadb:10.4
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mysql57:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-  - mysql:5.7
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-  - php vendor/bin/codecept run acceptance
-  - php vendor/bin/codecept run unit --coverage-text --no-colors
-
 test:7.4-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
@@ -114,7 +81,7 @@ test:7.4-mysql57:
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:docker:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
   - mariadb:10.3.20

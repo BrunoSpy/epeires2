@@ -1,4 +1,4 @@
-FROM registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
+FROM registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
 
 # Install system dependencies for PHP extensions
 RUN apt-get update && apt-get install -qqy \
