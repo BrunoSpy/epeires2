@@ -22,7 +22,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Core\Entity\User;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Laminas\Crypt\Password\Bcrypt;
 use Doctrine\Common\Collections\Criteria;
 use Administration\Form\ChangePassword;

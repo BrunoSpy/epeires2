@@ -17,7 +17,7 @@
  */
 namespace Application\Controller;
 
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\Laminas\Hydrator\DoctrineObject as DoctrineHydrator;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;

@@ -25,7 +25,7 @@ use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use Laminas\Form\Annotation\AnnotationBuilder;
 use Doctrine\Common\Collections\Criteria;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Entity\Event;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\FrequencyCategory;

@@ -25,7 +25,7 @@ use Laminas\InputFilter\Input;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Entity\Organisation;
 use Application\Entity\QualificationZone;
 use Application\Entity\SectorGroup;

@@ -25,7 +25,7 @@ use OpentbsBundle\Factory\TBSFactory as TBS;
 use IPO\Entity\Report;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Laminas\View\Model\JsonModel;
 use IPO\Entity\Element;
 

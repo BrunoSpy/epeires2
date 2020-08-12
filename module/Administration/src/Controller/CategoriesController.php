@@ -25,7 +25,7 @@ use Doctrine\Common\Collections\Criteria;
 use Application\Entity\Category;
 use Application\Entity\CustomField;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 use Laminas\Form\Element\Select;
 use Application\Entity\RadarCategory;

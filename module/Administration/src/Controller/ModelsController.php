@@ -30,7 +30,7 @@ use Application\Entity\PredefinedEvent;
 use Application\Entity\CustomFieldValue;
 use Application\Form\CustomFieldset;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 
 /**

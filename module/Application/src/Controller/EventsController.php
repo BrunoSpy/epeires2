@@ -41,7 +41,7 @@ use Laminas\Form\Element;
 use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
 
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Doctrine\ORM\QueryBuilder;
 
 use LmcRbacMvc\Exception\UnauthorizedException;
