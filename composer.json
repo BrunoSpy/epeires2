@@ -63,7 +63,8 @@
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^1.0",
         "linkorb/jsmin-php": "^1.0",
-        "laminas-commons/lmc-rbac-mvc": "^3.0"
+        "laminas-commons/lmc-rbac-mvc": "^3.0",
+        "laminas/laminas-mail": "^2.12"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
