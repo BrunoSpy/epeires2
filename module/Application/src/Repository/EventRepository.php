@@ -2144,7 +2144,7 @@ class EventRepository extends ExtendedRepository
         $qbc->select(array(
             'r'
         ))
-            ->from(Application\Entity\SwitchObject::class, 'r')
+            ->from(SwitchObject::class, 'r')
             ->andWhere($qbc->expr()
                 ->like('r.name', $qbc->expr()
                     ->literal($search . '%')))

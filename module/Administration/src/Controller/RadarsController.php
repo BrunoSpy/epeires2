@@ -90,7 +90,7 @@ class RadarsController extends AbstractEntityManagerAwareController
     public function decommissionAction() {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();
-        $radar = $objectManager->getRepository(Application\Entity\SwitchObject::class)->find($id);
+        $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
         if($radar) {
             $radar->setDecommissionned(true);
             $objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
@@ -109,7 +109,7 @@ class RadarsController extends AbstractEntityManagerAwareController
     {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();
-        $radar = $objectManager->getRepository(Application\Entity\SwitchObject::class)->find($id);
+        $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
         if ($radar) {
             $objectManager->remove($radar);
             $objectManager->flush();
@@ -147,7 +147,7 @@ class RadarsController extends AbstractEntityManagerAwareController
             ->getAllAsArray());
         
         if ($id) {
-            $radar = $objectManager->getRepository(Application\Entity\SwitchObject::class)->find($id);
+            $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
             if ($radar) {
                 $form->bind($radar);
                 $form->setData($radar->getArrayCopy());
@@ -175,7 +175,7 @@ class RadarsController extends AbstractEntityManagerAwareController
         $this->layout()->title = "Onglets > Radars";
         
         $viewmodel->setVariable(
-            'radars', $this->getEntityManager()->getRepository(Application\Entity\SwitchObject::class)
+            'radars', $this->getEntityManager()->getRepository(SwitchObject::class)
                 ->findBy(array(), array('name' => 'ASC'))
         );
         
@@ -249,7 +249,7 @@ class RadarsController extends AbstractEntityManagerAwareController
         $datas = array();
         $form = null;
         if ($id) {
-            $radar = $this->getEntityManager()->getRepository(Application\Entity\SwitchObject::class)->find($id);
+            $radar = $this->getEntityManager()->getRepository(SwitchObject::class)->find($id);
             if ($radar) {
                 $datas['radar'] = $radar;
                 $qb = $this->getEntityManager()->createQueryBuilder();
