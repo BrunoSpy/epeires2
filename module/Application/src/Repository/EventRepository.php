@@ -29,7 +29,7 @@ use Application\Entity\Sector;
 use Application\Entity\Stack;
 use Application\Entity\Tab;
 use Core\Entity\TemporaryResource;
-use Application\Entity\Radar;
+use Application\Entity\SwitchObject;
 use Application\Entity\Antenna;
 
 use Core\Entity\User;
@@ -2144,7 +2144,7 @@ class EventRepository extends ExtendedRepository
         $qbc->select(array(
             'r'
         ))
-            ->from('Application\Entity\Radar', 'r')
+            ->from(Application\Entity\SwitchObject::class, 'r')
             ->andWhere($qbc->expr()
                 ->like('r.name', $qbc->expr()
                     ->literal($search . '%')))

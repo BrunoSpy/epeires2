@@ -28,7 +28,7 @@ use Laminas\View\Model\ViewModel;
  * @author Bruno Spyckerelle
  * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
-class TabsController extends TabController
+class TimelineTabController extends TabController
 {
 
     protected $entityManager;

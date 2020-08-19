@@ -2,7 +2,7 @@
 <?php if( $this->radars && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
-<div class="main-nav panel-left" id="fiche" data-url="radars/getfiche"></div>
+<div class="main-nav panel-left" id="fiche" data-url="switchlisttab/getfiche"></div>
 <div class="page-wrap">
     <div class="container-fluid" id="radar">
         <p></p>
@@ -32,7 +32,7 @@
 								data-radarid="'.$radarid.'"
 								data-radar="'.$radar['name'].'" 
 								data-href="'.$this->url('application',
-                                    array('controller'=>'radars', 'action' => 'switchradar'),
+                                    array('controller'=>'switchlisttab', 'action' => 'switchradar'),
                                     array('query' => array('radarid' => $radarid))).'"
 	                            class="radar-switch" type="checkbox" '.($radar['status'] ? 'checked="checked"' : '').
                                 ($this->isGranted('events.write') ? '' : ' disabled="disabled"').

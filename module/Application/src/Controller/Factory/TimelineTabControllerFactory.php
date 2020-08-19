@@ -17,18 +17,16 @@
  */
 namespace Application\Controller\Factory;
 
-use Application\Controller\RadarsController;
+use Application\Controller\TimelineTabController;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class RadarsControllerFactory implements FactoryInterface {
+class TimelineTabControllerFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new RadarsController(
+        return new TimelineTabController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('customfieldservice'),
-            $container->get('eventservice'),
             $container->get('config'),
             $container->get('mattermostservice'),
             $container->get('timelineZone'));

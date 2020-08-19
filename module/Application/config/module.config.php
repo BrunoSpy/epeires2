@@ -97,9 +97,9 @@ return array(
     'controllers' => array(
         'factories' => array(
             'Application\Controller\Events' => 'Application\Controller\Factory\EventsControllerFactory',
-            'Application\Controller\Radars' => 'Application\Controller\Factory\RadarsControllerFactory',
+            'Application\Controller\Switchlisttab' => 'Application\Controller\Factory\SwitchlistTabControllerFactory',
             'Application\Controller\Frequencies' => 'Application\Controller\Factory\FrequenciesControllerFactory',
-            'Application\Controller\Tabs' => 'Application\Controller\Factory\TabsControllerFactory',
+            'Application\Controller\Timelinetab' => 'Application\Controller\Factory\TimelineTabControllerFactory',
             'Application\Controller\Alarm' => 'Application\Controller\Factory\AlarmControllerFactory',
             'Application\Controller\Opsups' => 'Application\Controller\Factory\OpSupsControllerFactory',
             'Application\Controller\Mil' => 'Application\Controller\Factory\MilControllerFactory',

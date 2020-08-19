@@ -75,7 +75,7 @@ class NavBar extends AbstractHelper
         }
         if ($this->view->isGranted('radars.read')) {
             $html .= '<li><a id="radartab" href="' . $urlHelper('application', array(
-                'controller' => 'radars',
+                'controller' => 'switchlisttab',
                 'action' => 'index'
             )) . '">Radars</a></li>';
         }
@@ -130,7 +130,7 @@ class NavBar extends AbstractHelper
                 $html .= '<li class="dropdown">'.
                             '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" '.
                                 'href="' . $urlHelper('application', array(
-                                                        'controller' => 'tabs',
+                                                        'controller' => 'timelinetab',
                                                         'action' => 'index'
                                                     ), array(
                                                         'query' => array(

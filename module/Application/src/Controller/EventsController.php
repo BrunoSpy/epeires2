@@ -51,7 +51,7 @@ use LmcRbacMvc\Exception\UnauthorizedException;
  *
  * @author Bruno Spyckerelle
  */
-class EventsController extends TabsController
+class EventsController extends TimelineTabController
 {
 
     private $eventservice;
@@ -340,7 +340,7 @@ class EventsController extends TabsController
         $qb->select(array(
             'r'
         ))
-            ->from('Application\Entity\Radar', 'r')
+            ->from('Application\Entity\SwitchObject', 'r')
             ->andWhere($qb->expr()
             ->like('r.name', $qb->expr()
             ->literal($search . '%')))

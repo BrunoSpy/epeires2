@@ -17,16 +17,18 @@
  */
 namespace Application\Controller\Factory;
 
-use Application\Controller\TabsController;
+use Application\Controller\SwitchlistTabController;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class TabsControllerFactory implements FactoryInterface {
+class SwitchlistTabControllerFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new TabsController(
+        return new SwitchlistTabController(
             $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('customfieldservice'),
+            $container->get('eventservice'),
             $container->get('config'),
             $container->get('mattermostservice'),
             $container->get('timelineZone'));

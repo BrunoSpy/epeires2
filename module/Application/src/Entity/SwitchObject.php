@@ -23,12 +23,12 @@ use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="radars")
+ * @ORM\Table(name="switchobjects")
  *
  * @author Bruno Spyckerelle
  *        
  */
-class Radar extends TemporaryResource
+class SwitchObject extends TemporaryResource
 {
 
     /**
@@ -67,6 +67,24 @@ class Radar extends TemporaryResource
      * @ORM\OneToOne(targetEntity="PredefinedEvent")
      */
     protected $model;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="SwitchObject", inversedBy="children", cascade={"persist"})
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Evènement parent", "empty_option":"Choisir l'objet parent"})
+     */
+    protected $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="SwitchObject", mappedBy="parent", cascade={"persist", "remove"})
+     */
+    protected $children;
     
     public function getId()
     {

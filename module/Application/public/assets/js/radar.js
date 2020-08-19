@@ -70,7 +70,7 @@ var radar = function(url){
 
     //refresh page every 30s
     (function doPoll(){
-        $.post(url+'radars/getradarstate')
+        $.post(url+'switchlisttab/getradarstate')
             .done(function(data) {
                 $.each(data, function(key, value){
                     $('#switch_'+key).prop('checked', value);

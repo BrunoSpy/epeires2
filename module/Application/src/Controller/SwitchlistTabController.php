@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\SwitchObject;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -32,7 +33,7 @@ use Application\Form\CustomFieldset;
  *
  * @author Bruno Spyckerelle
  */
-class RadarsController extends TabController
+class SwitchlistTabController extends TabController
 {
 
     private $entityManager;
@@ -158,7 +159,7 @@ class RadarsController extends TabController
                         $event->setStartdate($now);
                         $event->setImpact($impact);
                         $event->setPunctual(false);
-                        $radar = $this->entityManager->getRepository('Application\Entity\Radar')->find($radarid);
+                        $radar = $this->entityManager->getRepository(SwitchObject::class)->find($radarid);
                         $event->setOrganisation($radar->getOrganisation());
                         $event->setAuthor($this->lmcUserAuthentication()
                             ->getIdentity());
@@ -271,7 +272,7 @@ class RadarsController extends TabController
 
         $radars = array();
         
-        foreach ($this->entityManager->getRepository('Application\Entity\Radar')->findBy(array(
+        foreach ($this->entityManager->getRepository(SwitchObject::class)->findBy(array(
             'decommissionned' => false
         )) as $radar) {
             // avalaible by default
@@ -325,7 +326,7 @@ class RadarsController extends TabController
     
         $radarId = $this->params()->fromQuery('id', null);
         
-        $radar = $this->entityManager->getRepository('Application\Entity\Radar')->find($radarId);
+        $radar = $this->entityManager->getRepository(SwitchObject::class)->find($radarId);
         
         $fiche = null;
         $history = null;

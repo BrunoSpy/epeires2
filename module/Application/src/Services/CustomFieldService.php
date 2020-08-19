@@ -18,6 +18,7 @@
 namespace Application\Services;
 
 use Application\Entity\AntennaCategory;
+use Application\Entity\SwitchObject;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -118,7 +119,7 @@ class CustomFieldService
                     $radars = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($radars as $r) {
-                        $radar = $this->em->getRepository('Application\Entity\Radar')->find($r);
+                        $radar = $this->em->getRepository(SwitchObject::class)->find($r);
                         if ($radar) {
                             if (strlen($name) > 0) {
                                 $name .= "+ ";
@@ -127,7 +128,7 @@ class CustomFieldService
                         }
                     }
                 } else {
-                    $radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
+                    $radar = $this->em->getRepository(SwitchObject::class)->find($fieldvalue);
                     if ($radar) {
                         $name = $radar->getName();
                     }
@@ -348,7 +349,7 @@ class CustomFieldService
                 $value_options = $result;
                 break;
             case 'radar':
-                $value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray(array(
+                $value_options = $om->getRepository('Application\Entity\SwitchObject')->getAllAsArray(array(
                     'decommissionned' => false
                 ));
                 break;
