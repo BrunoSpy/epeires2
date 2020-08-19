@@ -17,8 +17,8 @@
  */
 namespace Administration\Controller;
 
-use Core\Controller\AbstractEntityManagerAwareController;
-use Laminas\Json\Json;
+use Application\Controller\FormController;
+use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
@@ -30,8 +30,20 @@ use Application\Entity\SwitchObject;
  * @author Bruno Spyckerelle
  *        
  */
-class RadarsController extends AbstractEntityManagerAwareController
+class RadarsController extends FormController
 {
+
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
 
     public function indexAction()
     {
@@ -41,7 +53,7 @@ class RadarsController extends AbstractEntityManagerAwareController
         
         $objectManager = $this->getEntityManager();
         
-        $radars = $objectManager->getRepository('Application\Entity\SwitchObject')->findAll();
+        $radars = $objectManager->getRepository('Application\Entity\SwitchObject')->findBy(array('type'=>"radar"), array('name'=>'ASC'));
     
         $return = array();
         if ($this->flashMessenger()->hasErrorMessages()) {
@@ -71,8 +83,7 @@ class RadarsController extends AbstractEntityManagerAwareController
             $datas = $this->getForm($id);
             $form = $datas['form'];
             $form->setData($post);
-            $radar = $datas['radar'];
-            
+            $radar = $datas['switchobject'];
             if ($form->isValid()) {
                 
                 $objectManager->persist($radar);
@@ -82,7 +93,10 @@ class RadarsController extends AbstractEntityManagerAwareController
                     // sets all related events read-only
                     $objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
                 }
+            } else {
+                $this->processFormMessages($form->getMessages());
             }
+
         }
         return new JsonModel();
     }
@@ -138,7 +152,7 @@ class RadarsController extends AbstractEntityManagerAwareController
     private function getForm($id = null)
     {
         $objectManager = $this->getEntityManager();
-        $radar = new Radar();
+        $radar = new SwitchObject();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($radar);
         $form->setHydrator(new DoctrineObject($objectManager))->setObject($radar);
@@ -152,6 +166,8 @@ class RadarsController extends AbstractEntityManagerAwareController
                 $form->bind($radar);
                 $form->setData($radar->getArrayCopy());
             }
+        } else {
+            $form->get('type')->setValue(SwitchObject::RADAR);
         }
         
         $form->add(array(
@@ -165,7 +181,7 @@ class RadarsController extends AbstractEntityManagerAwareController
         
         return array(
             'form' => $form,
-            'radar' => $radar
+            'switchobject' => $radar
         );
     }
     

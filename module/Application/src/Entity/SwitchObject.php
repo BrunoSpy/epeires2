@@ -31,6 +31,8 @@ use Laminas\Form\Annotation;
 class SwitchObject extends TemporaryResource
 {
 
+    const RADAR = "radar";
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -130,7 +132,23 @@ class SwitchObject extends TemporaryResource
     {
         $this->model = $model;
     }
-    
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type): void
+    {
+        $this->type = $type;
+    }
+
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);

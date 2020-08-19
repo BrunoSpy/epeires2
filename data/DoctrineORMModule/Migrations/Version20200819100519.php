@@ -37,4 +37,9 @@ final class Version20200819100519 extends AbstractMigration
         $this->addSql('DROP INDEX IDX_7A2EA925727ACA70 ON radars');
         $this->addSql('ALTER TABLE radars DROP parent_id, DROP type');
     }
+
+    public function postUp(Schema $schema): void
+    {
+        $stmt = $this->connection->executeQuery("UPDATE `switchobjects` SET `type`='radar' WHERE 1");
+    }
 }

@@ -16,6 +16,8 @@ $form->setAttribute('class', 'form-horizontal');
 
 echo $this->formHidden($form->get('id'));
 
+echo $this->formHidden($form->get('type'));
+
 echo $this->controlGroup($form->get('name'));
 
 echo $this->controlGroup($form->get('shortname'));

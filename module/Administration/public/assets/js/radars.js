@@ -20,7 +20,7 @@ var radars = function(url){
 	
 	$("#radar-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/radars/save', $("#Radar").serialize(), function(data){
+		$.post(url+'/radars/save', $("#SwitchObject").serialize(), function(data){
 			location.reload();
 		}, 'json');
 	});
