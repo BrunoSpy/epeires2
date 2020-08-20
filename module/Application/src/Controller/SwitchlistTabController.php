@@ -74,7 +74,7 @@ class SwitchlistTabController extends TabController
             'form' => $this->getRadarForm()
         ));
         
-        $viewmodel->setVariable('radars', $this->getRadars());
+        $viewmodel->setVariable('radars', $this->getSwitchObjects());
         
         return $viewmodel;
     }
@@ -94,7 +94,7 @@ class SwitchlistTabController extends TabController
             $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
             //uniquement les champs ajoutés par conf
             $form->get('custom_fields')->remove($cat->getRadarfield()->getId());
-            $form->get('custom_fields')->remove($cat->getStatefield()->getId());
+            $form->get('custom_fields')->remove($cat->getStateField()->getId());
             return $form;
         } else {
             return null;
@@ -175,7 +175,7 @@ class SwitchlistTabController extends TabController
                             $radarfieldvalue->setEvent($event);
                             $event->addCustomFieldValue($radarfieldvalue);
                             $statusvalue = new CustomFieldValue();
-                            $statusvalue->setCustomField($cat->getStatefield());
+                            $statusvalue->setCustomField($cat->getStateField());
                             $statusvalue->setValue(true);
                             $statusvalue->setEvent($event);
                             $event->addCustomFieldValue($statusvalue);
@@ -264,10 +264,10 @@ class SwitchlistTabController extends TabController
 
     public function getRadarStateAction()
     {
-        return new JsonModel($this->getRadars(false));
+        return new JsonModel($this->getSwitchObjects(false));
     }
 
-    private function getRadars($full = true)
+    private function getSwitchObjects($full = true)
     {
 
         $radars = array();
@@ -289,7 +289,7 @@ class SwitchlistTabController extends TabController
         
         foreach ($results as $result) {
             $statefield = $result->getCategory()
-                ->getStatefield()
+                ->getStateField()
                 ->getId();
             $radarfield = $result->getCategory()
                 ->getRadarfield()

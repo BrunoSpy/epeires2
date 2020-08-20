@@ -18,7 +18,7 @@
  * @author Bruno Spyckerelle
  */
 
-var radar = function(url){
+var switchlist = function(url){
 
     //if true, switch the button to its previous state
     var back = true;

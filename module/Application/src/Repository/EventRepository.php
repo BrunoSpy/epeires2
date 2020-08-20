@@ -1586,7 +1586,7 @@ class EventRepository extends ExtendedRepository
             ->andWhere($qbEvents->expr()
             ->isNull('e.parent'));
         
-        if ($resource instanceof Radar) {
+        if ($resource instanceof SwitchObject) {
             $qbEvents->andWhere($qbEvents->expr()
                 ->andX($qbEvents->expr()
                 ->eq('t.type', '?1'), $qbEvents->expr()

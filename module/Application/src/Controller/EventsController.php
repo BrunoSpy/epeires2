@@ -969,7 +969,7 @@ class EventsController extends TimelineTabController
                         if( !$id ) { //uniquement lors d'une création d'évènement
                             if( $e->getCategory() instanceof AntennaCategory ) {
                                 $frequencies = $e->getCustomFieldValue($e->getCategory()->getFrequenciesField());
-                                $antennaState = $e->getCustomFieldValue($e->getCategory()->getStatefield())->getValue();
+                                $antennaState = $e->getCustomFieldValue($e->getCategory()->getStateField())->getValue();
                                 $antennaId = $e->getCustomFieldValue($e->getCategory()->getAntennafield())->getValue();
                                 $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
                                 $freqs = array();

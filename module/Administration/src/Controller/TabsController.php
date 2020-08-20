@@ -18,7 +18,12 @@
 namespace Administration\Controller;
 
 use Application\Controller\FormController;
+use Application\Entity\Category;
+use Application\Entity\RadarCategory;
+use Application\Entity\StateCategoryInterface;
+use Application\Entity\SwitchObject;
 use Application\Entity\Tab;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -107,7 +112,7 @@ class TabsController extends FormController
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             $tab = $datas['tab'];
-            
+
             if ($form->isValid()) {
                 
                 $objectManager->persist($tab);
@@ -165,8 +170,14 @@ class TabsController extends FormController
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
         $form->get('categories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
-            ->getAllAsArray(array('system'=>false)));
-        
+            ->getAllAsArray(array('system'=>false, 'archived' => false)));
+
+        $typeOptions = array();
+        foreach (Tab::OPTIONS as $option) {
+            $typeOptions[$option] = $option;
+        }
+        $form->get('type')->setValueOptions($typeOptions);
+
         if ($id) {
             $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
             if ($tab) {
@@ -179,6 +190,55 @@ class TabsController extends FormController
             'form' => $form,
             'tab' => $tab
         );
+    }
+
+    public function getcategoriesAction()
+    {
+        $type = $this->params()->fromQuery('type', null);
+        $categories = array();
+        if($type == null || strcmp($type, 'timeline') == 0) {
+            $roots = $this->getEntityManager()->getRepository(Category::class)->findBy(array('system' => false, 'archived' => false, 'parent' => null), array('place'=>'ASC'));
+            $place = 0;
+            foreach ($roots as $root) {
+                $entry = array();
+                $entry["id"] = $root->getId();
+                $entry["name"] = $root->getName();
+                $entry["place"] = $place++;
+                $categories[] = $entry;
+                $children = $this->getEntityManager()->getRepository(Category::class)->findBy(array('system' => false, 'archived' => false, 'parent' => $root->getId()), array('place'=>'ASC'));
+                foreach ($children as $child) {
+                    $entry = array();
+                    $entry["id"] = $child->getId();
+                    $entry["name"] = ' > '.$child->getName();
+                    $entry["place"] = $place++;
+                    $categories[] = $entry;
+                }
+            }
+
+        } elseif (strcmp($type, 'switchlist') == 0) {
+            $cats = $this->getEntityManager()->getRepository(Category::class)->findBy(array('system' => false, "archived" => false, 'parent' => null), array('place' => 'ASC'));
+            $place = 0;
+            foreach ($cats as $root) {
+                if($root instanceof StateCategoryInterface) {
+                    $entry = array();
+                    $entry["id"] = $root->getId();
+                    $entry["name"] = $root->getName();
+                    $entry["place"] = $place++;
+                    $categories[] = $entry;
+                }
+                $children = $this->getEntityManager()->getRepository(Category::class)->findBy(array('parent'=>$root->getId(), 'archived'=>false));
+                foreach ($children as $child) {
+                    if($child instanceof StateCategoryInterface) {
+                        $entry = array();
+                        $entry["id"] = $child->getId();
+                        $entry["name"] = ' > '.$child->getName();
+                        $entry["place"] = $place++;
+                        $categories[] = $entry;
+                    }
+                }
+            }
+        }
+        return new JsonModel($categories);
     }
 
     public function removeAction()

@@ -31,6 +31,8 @@ use Laminas\Form\Annotation;
 class SwitchObject extends TemporaryResource
 {
 
+
+
     const RADAR = "radar";
 
     /**

@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Bruno Spyckerelle
  *        
  */
-class AntennaCategory extends Category
+class AntennaCategory extends Category implements StateCategoryInterface
 {
 
     /**
@@ -60,12 +60,12 @@ class AntennaCategory extends Category
         $this->defaultantennacategory = $default;
     }
 
-    public function getStatefield()
+    public function getStateField() : CustomField
     {
         return $this->statefield;
     }
 
-    public function setStatefield($statefield)
+    public function setStateField(CustomField $statefield) : void
     {
         $this->statefield = $statefield;
     }

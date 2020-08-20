@@ -1,4 +1,4 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radar.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchlist.js')?>
 <?php if( $this->radars && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
@@ -7,6 +7,11 @@
     <div class="container-fluid" id="radar">
         <p></p>
         <div class="row">
+
+
+
+
+
             <div class="col-sm-4 col-sm-offset-4" id="radars">
                 <?php if($this->radars) : ?>
                     <table class="table table-striped table-hover table-bordered sortable" id="radars">
@@ -47,7 +52,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>Aucun radar configuré.</p>
+                    <p>Aucun objet configuré.</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -94,7 +99,7 @@ $("#changeview").remove();
 
 $('#search').remove();
 
-radar('<?php echo $this->url('application'); ?>');
+switchlist('<?php echo $this->url('application'); ?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

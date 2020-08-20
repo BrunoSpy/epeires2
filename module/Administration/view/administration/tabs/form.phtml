@@ -12,6 +12,8 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
+echo $this->controlGroup($this->form->get('type'));
+
 echo $this->controlGroup($this->form->get('name'));
 
 echo $this->controlGroup($this->form->get('shortname'));

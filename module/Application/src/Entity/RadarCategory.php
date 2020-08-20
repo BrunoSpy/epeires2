@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Bruno Spyckerelle
  *        
  */
-class RadarCategory extends Category
+class RadarCategory extends Category implements StateCategoryInterface
 {
 
     /**
@@ -54,12 +54,12 @@ class RadarCategory extends Category
         $this->defaultradarcategory = $default;
     }
 
-    public function getStatefield()
+    public function getStateField() : CustomField
     {
         return $this->statefield;
     }
 
-    public function setStatefield($statefield)
+    public function setStateField(CustomField $statefield) : void
     {
         $this->statefield = $statefield;
     }

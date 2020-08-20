@@ -36,6 +36,7 @@
                             <th>Onglet principal</th>
                             <th data-toggle="tooltip" data-container="body" title="Cocher pour concaténer les catégories filles dans la catégorie parente.">Catégories racines seulement<sup>?</sup></th>
                             <th data-sort="int" data-toggle="tooltip" data-container="body" title="Uniquement valable pour les onglets non principaux">Place<sup>?</sup></th>
+                            <th>Type</th>
                             <th><a class="btn btn-xs btn-primary" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
                         </tr>
                         </thead>
@@ -87,6 +88,7 @@
                             echo '<td><span class="'.($tab->isDefault() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove').'"></span></td>';
                             echo '<td><span class="'.($tab->isOnlyroot() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' ).'"></span></td>';
                             echo '<td>' . $tab->getPlace() . '</td>';
+                            echo '<td>' . $tab->getType() . '</td>';
                             echo '<td><a '
                                 . 'href="#tab-container" '
                                 . 'class="mod-tab" '
