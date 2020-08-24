@@ -23,7 +23,6 @@ final class Version20200819065003 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE MilCategory DROP sia');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_D4BE998C5E237E06 ON PredefinedEvent (name)');
     }
 
     public function down(Schema $schema) : void
@@ -32,6 +31,5 @@ final class Version20200819065003 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE MilCategory ADD sia TINYINT(1) NOT NULL');
-        $this->addSql('DROP INDEX UNIQ_D4BE998C5E237E06 ON PredefinedEvent');
     }
 }

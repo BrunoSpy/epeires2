@@ -30,7 +30,7 @@ class PredefinedEvent extends AbstractEvent
 {
 
     /**
-     * @ORM\Column(type="string", unique=true, nullable=true, options={"collation":"utf8_bin"})
+     * @ORM\Column(type="string", nullable=true)
      * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Nom :"})
