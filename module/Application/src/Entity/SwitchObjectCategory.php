@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Bruno Spyckerelle
  *        
  */
-class RadarCategory extends Category implements StateCategoryInterface
+class SwitchObjectCategory extends Category implements StateCategoryInterface
 {
 
     /**

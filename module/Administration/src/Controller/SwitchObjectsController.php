@@ -30,7 +30,7 @@ use Application\Entity\SwitchObject;
  * @author Bruno Spyckerelle
  *        
  */
-class RadarsController extends FormController
+class SwitchObjectsController extends FormController
 {
 
     private $entityManager;
@@ -275,12 +275,12 @@ class RadarsController extends FormController
                 ))
                     ->from('Application\Entity\PredefinedEvent', 'p')
                     ->leftJoin('p.category', 'c')
-                    ->andWhere('c INSTANCE OF Application\Entity\RadarCategory');
+                    ->andWhere('c INSTANCE OF Application\Entity\SwitchObjectCategory');
                 $models = array();
                 foreach ($qb->getQuery()->getResult() as $model) {
                     foreach ($model->getCustomFieldsValues() as $value) {
                         if ($value->getCustomField()->getID() == $model->getCategory()
-                                ->getRadarfield()
+                                ->getSwitchObjectField()
                                 ->getId()) {
                             if ($value->getValue() == $id) {
                                 $models[] = $model;
