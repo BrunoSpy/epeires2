@@ -19,7 +19,7 @@ namespace Application\Factories;
 
 use Application\Entity\ATFCMCategory;
 use Application\Entity\CustomFieldType;
-use Application\Entity\RadarCategory;
+use Application\Entity\SwitchObjectCategory;
 use Application\Entity\CustomField;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
@@ -99,24 +99,24 @@ class CategoryEntityFactory
     /**
      * To be persisted
      * 
-     * @return \Application\Entity\RadarCategory
+     * @return \Application\Entity\SwitchObjectCategory
      */
-    public function createRadarCategory()
+    public function createSwitchObjectCategory()
     {
         $em = $this->getEntityManager();
-        $radarcat = new RadarCategory();
-        $radarfield = new CustomField();
-        $radarfield->setCategory($radarcat);
-        $radarfield->setName('Radar');
-        $radarfield->setType($em->getRepository('Application\Entity\CustomFieldType')
+        $switchcat = new SwitchObjectCategory();
+        $switchobjectfield = new CustomField();
+        $switchobjectfield->setCategory($switchcat);
+        $switchobjectfield->setName('Objet');
+        $switchobjectfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
-            'type' => 'radar'
+            'type' => 'switch'
         )));
-        $radarfield->setPlace(1);
-        $radarfield->setDefaultValue("");
-        $radarfield->setTooltip("");
+        $switchobjectfield->setPlace(1);
+        $switchobjectfield->setDefaultValue("");
+        $switchobjectfield->setTooltip("");
         $statusfield = new CustomField();
-        $statusfield->setCategory($radarcat);
+        $statusfield->setCategory($switchcat);
         $statusfield->setName('Indisponible');
         $statusfield->setType($em->getRepository('Application\Entity\CustomFieldType')
             ->findOneBy(array(
@@ -125,19 +125,13 @@ class CategoryEntityFactory
         $statusfield->setPlace(2);
         $statusfield->setDefaultValue("");
         $statusfield->setTooltip("");
-        $radarcat->setFieldname($radarfield);
-        $radarcat->setRadarfield($radarfield);
-        $radarcat->setStatefield($statusfield);
+        $switchcat->setFieldname($switchobjectfield);
+        $switchcat->setSwitchObjectField($switchobjectfield);
+        $switchcat->setStateField($statusfield);
         
-        // si aucune cat par défaut --> nouvelle catégorie par défaut
-        $cats = $em->getRepository('Application\Entity\RadarCategory')->findBy(array(
-            'defaultradarcategory' => true
-        ));
-        $radarcat->setDefaultRadarCategory((count($cats) == 0));
-        
-        $em->persist($radarfield);
+        $em->persist($switchobjectfield);
         $em->persist($statusfield);
-        return $radarcat;
+        return $switchcat;
     }
 
     public function createAntennaCategory()

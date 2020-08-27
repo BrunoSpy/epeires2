@@ -28,7 +28,7 @@ use Laminas\Form\Annotation\AnnotationBuilder;
 use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 use Laminas\Form\Element\Select;
-use Application\Entity\RadarCategory;
+use Application\Entity\SwitchObjectCategory;
 use Application\Entity\AntennaCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\BrouillageCategory;
@@ -152,7 +152,7 @@ class CategoriesController extends FormController
             // bind to the category
             $category = $objectManager->getRepository('Application\Entity\Category')->find($id);
             if ($category) {
-                if ($category instanceof RadarCategory) {
+                if ($category instanceof SwitchObjectCategory) {
                     $form->get('type')->setValue('radar');
                 } elseif ($category instanceof AntennaCategory) {
                     $form->get('type')->setValue('antenna');
@@ -220,8 +220,8 @@ class CategoriesController extends FormController
             if ($post['id']) {
                 $category = $objectManager->getRepository('Application\Entity\Category')->find($post['id']);
             } else {
-                if ($post['type'] == 'radar') {
-                    $category = $this->categoryFactory->createRadarCategory();
+                if ($post['type'] == 'switch') {
+                    $category = $this->categoryFactory->createSwitchObjectCategory();
                 } elseif ($post['type'] == 'antenna') {
                     $category = $this->categoryFactory->createAntennaCategory();
                 } elseif ($post['type'] == 'frequency') {
@@ -448,16 +448,13 @@ class CategoriesController extends FormController
         
         $objectManager = $this->getEntityManager();
         $freqcategories = $objectManager->getRepository('Application\Entity\FrequencyCategory')->findAll();
-        
-        $radarcategories = $objectManager->getRepository('Application\Entity\RadarCategory')->findAll();
-        
+
         $antennacategories = $objectManager->getRepository('Application\Entity\AntennaCategory')->findAll();
         
         $brouillagecategories = $objectManager->getRepository('Application\Entity\BrouillageCategory')->findAll();
         
         return array(
             'freqcategories' => $freqcategories,
-            'radarcategories' => $radarcategories,
             'antennacategories' => $antennacategories,
             'brouillagecategories' => $brouillagecategories
         );
@@ -478,29 +475,6 @@ class CategoriesController extends FormController
                 try {
                     $objectManager->flush();
                     $messages['success'][] = "Catégorie fréquence par défaut modifiée";
-                } catch (\Exception $ex) {
-                    $messages['error'][] = $ex->getMessage();
-                }
-            }
-        }
-        return new JsonModel($messages);
-    }
-
-    public function changedefaultradarAction()
-    {
-        $id = $this->params()->fromQuery('id', null);
-        $objectManager = $this->getEntityManager();
-        $messages = array();
-        if ($id) {
-            $radar = $objectManager->getRepository('Application\Entity\RadarCategory')->find($id);
-            if ($radar) {
-                foreach ($objectManager->getRepository('Application\Entity\RadarCategory')->findAll() as $radarcat) {
-                    $radarcat->setDefaultRadarCategory(($radarcat->getId() == $radar->getId()));
-                    $objectManager->persist($radarcat);
-                }
-                try {
-                    $objectManager->flush();
-                    $messages['success'][] = "Catégorie radar par défaut modifiée";
                 } catch (\Exception $ex) {
                     $messages['error'][] = $ex->getMessage();
                 }

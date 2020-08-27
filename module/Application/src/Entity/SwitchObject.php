@@ -74,6 +74,9 @@ class SwitchObject extends TemporaryResource
 
     /**
      * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Type d'objet :"})
      */
     protected $type;
 
@@ -81,7 +84,7 @@ class SwitchObject extends TemporaryResource
      * @ORM\ManyToOne(targetEntity="SwitchObject", inversedBy="children", cascade={"persist"})
      * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
-     * @Annotation\Options({"label":"Evènement parent", "empty_option":"Choisir l'objet parent"})
+     * @Annotation\Options({"label":"Objet parent :", "empty_option":"Facultatif"})
      */
     protected $parent;
 
@@ -89,10 +92,28 @@ class SwitchObject extends TemporaryResource
      * @ORM\OneToMany(targetEntity="SwitchObject", mappedBy="parent", cascade={"persist", "remove"})
      */
     protected $children;
-    
+
+    /**
+     * @ORM\ManyToMany(targetEntity="SwitchObjectCategory", mappedBy="switchObjects")
+     */
+    protected $categories;
+
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param mixed $categories
+     */
+    public function setCategories($categories): void
+    {
+        $this->categories = $categories;
     }
 
     public function getName()
@@ -138,6 +159,38 @@ class SwitchObject extends TemporaryResource
     /**
      * @return mixed
      */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     */
+    public function setParent($parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param mixed $children
+     */
+    public function setChildren($children): void
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getType()
     {
         return $this->type;
@@ -155,6 +208,7 @@ class SwitchObject extends TemporaryResource
     {
         $object_vars = get_object_vars($this);
         $object_vars['organisation'] = $this->organisation->getId();
+        if($this->parent) {$object_vars['parent'] = $this->parent->getId();}
         return $object_vars;
     }
 }

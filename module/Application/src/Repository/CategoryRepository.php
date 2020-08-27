@@ -28,7 +28,7 @@ use Application\Entity\FlightPlanCategory;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\InterrogationPlanCategory;
 use Application\Entity\MilCategory;
-use Application\Entity\RadarCategory;
+use Application\Entity\SwitchObjectCategory;
 use Doctrine\Common\Collections\Criteria;
 
 /**
@@ -196,11 +196,11 @@ class CategoryRepository extends ExtendedRepository
         if ($category instanceof AntennaCategory) {
             $category->setAntennafield(null);
             $category->setFrequenciesField(null);
-            $category->setStatefield(null);
+            $category->setStateField(null);
         }
-        if ($category instanceof RadarCategory) {
-            $category->setRadarfield(null);
-            $category->setStatefield(null);
+        if ($category instanceof SwitchObjectCategory) {
+            $category->setSwitchObjectField(null);
+            $category->setStateField(null);
         }
         if ($category instanceof FrequencyCategory) {
             $category->setCurrentAntennaField(null);

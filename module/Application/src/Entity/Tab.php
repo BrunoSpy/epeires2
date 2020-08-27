@@ -115,6 +115,15 @@ class Tab
      */
     protected $type;
 
+    /**
+     * Used only if type=switchlist
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Affichage horizontal :"})
+     */
+    protected $horizontal = false;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -132,6 +141,22 @@ class Tab
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHorizontal(): bool
+    {
+        return $this->horizontal;
+    }
+
+    /**
+     * @param bool $horizontal
+     */
+    public function setHorizontal(bool $horizontal): void
+    {
+        $this->horizontal = $horizontal;
     }
 
     /**

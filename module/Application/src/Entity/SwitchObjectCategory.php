@@ -17,7 +17,10 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
@@ -29,11 +32,6 @@ class SwitchObjectCategory extends Category implements StateCategoryInterface
 {
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $defaultradarcategory = false;
-
-    /**
      * Ref to the field used to store the state of a radar
      * @ORM\OneToOne(targetEntity="CustomField")
      */
@@ -42,16 +40,49 @@ class SwitchObjectCategory extends Category implements StateCategoryInterface
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
      */
-    protected $radarfield;
+    protected $switchobjectfield;
 
-    public function isDefaultRadarCategory()
+    /**
+     * @ORM\ManyToMany(targetEntity="SwitchObject", inversedBy="categories")
+     * @ORM\JoinTable(name="switchobjects_categories")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     */
+    protected $switchObjects;
+
+    public function __construct()
     {
-        return $this->defaultradarcategory;
+        parent::__construct();
+        $this->switchObjects = new ArrayCollection();
     }
 
-    public function setDefaultRadarCategory($default)
+    public function getSwitchObjects()
     {
-        $this->defaultradarcategory = $default;
+        return $this->switchObjects;
+    }
+
+    public function addSwitchObject(SwitchObject $so)
+    {
+        $this->switchObjects->add($so);
+    }
+
+    public function addSwitchObjects(Collection $switchobjects)
+    {
+        foreach ($switchobjects as $s) {
+            $this->switchObjects->add($s);
+        }
+    }
+
+    public function removeSwitchObjects(Collection $switchobjects)
+    {
+        foreach ($switchobjects as $s){
+            $this->switchObjects->removeElement($s);
+        }
+    }
+
+    public function clearSwitchObjects()
+    {
+        $this->switchObjects->clear();
     }
 
     public function getStateField() : CustomField
@@ -64,13 +95,13 @@ class SwitchObjectCategory extends Category implements StateCategoryInterface
         $this->statefield = $statefield;
     }
 
-    public function getRadarfield()
+    public function getSwitchObjectField()
     {
-        return $this->radarfield;
+        return $this->switchobjectfield;
     }
 
-    public function setRadarfield($radarfield)
+    public function setSwitchObjectfield($switchobjectfield)
     {
-        $this->radarfield = $radarfield;
+        $this->switchobjectfield = $switchobjectfield;
     }
 }

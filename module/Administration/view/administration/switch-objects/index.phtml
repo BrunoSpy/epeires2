@@ -1,37 +1,39 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/radars.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchobjects.js')?>
 <?php 
 	
-	function trRadar($radar, $deleteUrl, $decommissionurl = null){
+	function trObject($object, $deleteUrl, $decommissionurl = null){
 		echo '<tr>';
-		echo '<td>'.$radar->getId().'</td>';
-		echo '<td>'.$radar->getName().'</td>';
-		echo '<td>'.$radar->getShortname().'</td>';
-		echo '<td>'.$radar->getOrganisation()->getName().'</td>';
+		echo '<td>'.$object->getId().'</td>';
+		echo '<td>'.$object->getName().'</td>';
+		echo '<td>'.$object->getShortname().'</td>';
+		echo '<td>'.$object->getOrganisation()->getName().'</td>';
+		echo '<td>'.($object->getParent() ? $object->getParent()->getName() : '').'</td>';
 		echo '<td>';
 		echo "<a
 				title=\"Modifier\"
-				href=\"#radar-container\"
-				class=\"mod-radar\"
-				data-id=\"".$radar->getId()."\"
-				data-name=\"".$radar->getName()."\"
+				href=\"#object-container\"
+				class=\"mod-object\"
+				data-id=\"".$object->getId()."\"
+				data-name=\"".$object->getName()."\"
+				data-type=\"".$object->getType()."\"
 				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-pencil\"></span></a>  ";
 		if($decommissionurl) {
             echo "<a
 				title=\"Archiver\"
-				href=\"#confirm-decommission-radar\"
+				href=\"#confirm-decommission-object\"
 				data-href=\"" . $decommissionurl . "\"
-				class=\"decommission-radar\"
-				data-id=\"" . $radar->getId() . "\"
-				data-name=\"" . $radar->getName() . "\"
+				class=\"decommission-object\"
+				data-id=\"" . $object->getId() . "\"
+				data-name=\"" . $object->getName() . "\"
 				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-hdd\"></span></a>  ";
         }
 		echo "<a
 				title=\"Supprimer\"
-				href=\"#confirm-delete-radar\"
+				href=\"#confirm-delete-object\"
 				data-href=\"".$deleteUrl."\"
-				class=\"delete-radar\"
-				data-id=\"".$radar->getId()."\"
-				data-name=\"".$radar->getName()."\"
+				class=\"delete-object\"
+				data-id=\"".$object->getId()."\"
+				data-name=\"".$object->getName()."\"
 				data-toggle=\"modal\"><span class=\"glyphicon glyphicon-trash\"></span></a>";
 		echo '</td>';
 		echo '</tr>';
@@ -42,100 +44,121 @@
 	<div class="row">
 		<div class="col-md-3" id="sidebar">
 			<ul class="nav sidenav">
-				<li>
-					<a href="#radars">1. Radars</a>
-				</li>
-				<li>
-					<a href="#oldradars">2. Anciens radars</a>
-				</li>
+          <?php
+          $index = 0;
+          foreach ($this->types as $type) {
+            echo '<li><a href="#'.$type.'">'.$index++.'. '.ucfirst($type).'</a></li>';
+          }
+          foreach ($this->types as $type) {
+              echo '<li><a href="#old'.$type.'">'.$index++.'. Anciens '.$type.'</a></li>';
+          }
+          ?>
 			</ul>
 		</div>
-		<div class="col-md-9">
+		<div class="col-md-6">
 			<p></p>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title" id="radars">1. Radars en service</h4>
-				</div>
-				<div class="panel-body">
-                    <table class="table table-striped sortable">
-                        <thead>
+        <?php
+        $index = 1;
+        foreach ($this->types as $type) {
+          echo '<div class="panel panel-default">';
+          echo '<div class="panel-heading">';
+          echo '<h4 class="panel-title" id="'.$type.'">'.$index++.'. '.ucfirst($type).' en service</h4>';
+          echo '</div>';
+          echo '<div class="panel-body">';
+          echo '<table class="table table-striped sortable">';
+          echo '<thead>
                         	<tr>
                         		<th data-sort="int">id</th>
                         		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
-                        		<th><a class="btn btn-xs btn-primary" href="#radar-container" data-toggle="modal" id="add-radar">Ajouter</a></th>
+                        		<th>Parent</th>
+                        		<th><a class="btn btn-xs btn-primary add-object" href="#object-container" data-toggle="modal"  data-type="'.$type.'">Ajouter</a></th>
                         	</tr>
-                        </thead>
-                        <tbody>
-                        	<?php 	
-                        	foreach ($this->radars as $radar){
-                        		if(!$radar->isDecommissionned()){
-                        			trRadar(
-                        			        $radar,
-                                            $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId()))),
-                                            $this->url('administration', array('controller'=>'radars', 'action'=>'decommission'), array('query'=>array('id'=>$radar->getId())))
-                                    );
-                        		}
-                        	}
-                        	?>
-                        </tbody>
-                    </table>
-				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title" id="oldradars">2. Anciens radars</h4>
-				</div>
-				<div class="panel-body">
-					<table class="table table-striped sortable">
-                        <thead>
+                   </thead>
+                   <tbody>';
+          $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>false), array('name'=>'ASC'));
+          foreach ($objects as $object){
+            trObject(
+                $object,
+                    $this->url('administration', array('controller'=>'switchobjects', 'action'=>'delete'), array('query'=>array('id'=>$object->getId()))),
+                    $this->url('administration', array('controller'=>'switchobjects', 'action'=>'decommission'), array('query'=>array('id'=>$object->getId())))
+            );
+          }
+          echo '</tbody>
+                </table>
+				        </div>
+			        </div>';
+        }
+
+        foreach ($this->types as $type) {
+            echo '<div class="panel panel-default">';
+            echo '<div class="panel-heading">';
+            echo '<h4 class="panel-title" id="old'.$type.'">'.$index++.'. Anciens '.$type.'</h4>';
+            echo '</div>';
+            echo '<div class="panel-body">';
+            echo '<table class="table table-striped sortable">';
+            echo '<thead>
                         	<tr>
                         		<th data-sort="int">id</th>
                         		<th data-sort="string" data-autosort="true">Nom</th>
                         		<th data-sort="string">Nom court</th>
                         		<th>Organisation</th>
+                        		<th>Parent</th>
                         		<th></th>
                         	</tr>
-                        </thead>
-                        
-                        <tbody>
-                        	<?php 	
-                        	foreach ($this->radars as $radar){
-                        		if($radar->isDecommissionned()){
-                                    trRadar(
-                                        $radar,
-                                        $this->url('administration', array('controller'=>'radars', 'action'=>'delete'), array('query'=>array('id'=>$radar->getId())))
-                                    );
-                        		}
-                        	}
-                        	?>
-                        </tbody>
+                   </thead>
+                   <tbody>';
+            $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>true), array('name'=>'ASC'));
+            foreach ($objects as $object){
+                trObject(
+                    $object,
+                    $this->url('administration', array('controller'=>'switchobjects', 'action'=>'delete'), array('query'=>array('id'=>$object->getId())))
+                );
+            }
+            echo ' </tbody>
                     </table>
 				</div>
-			</div>
+			</div>';
+        }
+        ?>
+
+
 		</div>
+    <div class="col-md-3">
+      <p></p>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">Aide</h4>
+        </div>
+        <div class="panel-body">
+          <p>Cette page permet de créer des objets possédant un statut On/Off qui peuvent ensuite être affichés sous la forme de liste de boutons commutables.</p>
+          <p>Il est possible de définir un parent à un objet. Dans ce cas, l'activation d'un enfant aura pour conséquence l'activation du parent et la désactivation du parent désactivera tous les enfants.</p>
+          <p>À noter :<ul><li>un enfant ne sera affiché que si son parent est aussi affiché ;</li><li>attention à ne pas configurer plusieurs niveaux, seuls les enfants directement rattachés à un parent sont affichés.</li></ul></p>
+        </div>
+      </div>
+    </div>
 	</div>
 </div>
 
-<?php echo $this->modalwindow("radar-container", "<h3 id=\"radar-title\">Nouveau radar</h3>", "", "<div id=\"radar-form\"></div>")?>
+<?php echo $this->modalwindow("object-container", "<h3 id=\"object-title\">Nouvel objet</h3>", "", "<div id=\"object-form\"></div>")?>
 
-<?php echo $this->modalwindow("confirm-delete-radar",
+<?php echo $this->modalwindow("confirm-delete-object",
 						"<h4>Confirmer la suppression ?</h4>",
 						"", 
 						null,
-                        "<div class=\"alert alert-warning\">La suppression définitive d'un radar impacte les évènements existants liés à ce radar."
-                        ." Si des évènements liés à ce radar existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
-						."<p>Voulez-vous vraiment supprimer le radar <em><span class=\"radar-name\"></span></em> ?</p>",
-						"<a class=\"btn btn-danger\" id=\"delete-radar-href\">Confirmer</a>
+                        "<div class=\"alert alert-warning\">La suppression définitive d'un objet impacte les évènements existants liés à cet objet."
+                        ." Si des évènements liés à ce objet existent, il est préférable de l'archiver (<span class='glyphicon glyphicon-hand-right'></span> Modifier puis cocher la case Hors Service).</div>"
+						."<p>Voulez-vous vraiment supprimer l'objet  <em><span class=\"object-name\"></span></em> ?</p>",
+						"<a class=\"btn btn-danger\" id=\"delete-object-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
-<?php echo $this->modalwindow("confirm-decommission-radar",
+<?php echo $this->modalwindow("confirm-decommission-object",
     "<h4>Confirmer l'archivage ?</h4>",
     "",
     null,
-    "<p>Voulez-vous vraiment archiver le radar <em><span class=\"radar-name\"></span></em> ?</p>",
-    "<a class=\"btn btn-danger\" id=\"decommission-radar-href\">Confirmer</a>
+    "<p>Voulez-vous vraiment archiver l'objet <em><span class=\"object-name\"></span></em> ?</p>",
+    "<a class=\"btn btn-danger\" id=\"decommission-object-href\">Confirmer</a>
 						<button class=\"btn\" href=\"#\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>") ?>
 
 <?php $this->inlineScript()->captureStart();?>
@@ -144,7 +167,7 @@ $('.sidenav').affix();
 
 $('body').scrollspy({target:'#sidebar', offset:120});
 
-radars('<?php echo $this->url('administration')?>');
+switchobjects('<?php echo $this->url('administration')?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

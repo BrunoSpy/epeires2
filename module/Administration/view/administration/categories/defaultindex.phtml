@@ -63,21 +63,6 @@
                                 ?>
                             </select>
                         </td>
-                    <tr>
-                        <td>Radar</td>
-                        <td>
-                            <select id="radar-select" class="form-control">
-                                <option value="0">Choisir la catégorie radar par défaut</option>
-                                <?php
-                                foreach ($this->radarcategories as $radar) {
-                                    echo "<option value=\"" . $radar->getId() . "\" " .
-                                    ($radar->isDefaultRadarCategory() ? "selected=\"selected\"" : "") .
-                                    ">" . $radar->getName() . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
             </div>
@@ -92,7 +77,6 @@
                 <div class="panel-body">
                     Les catégories par défaut sont utilisées lors de la création automatique d'évènements depuis les pages spéciales telles que :
                     <ul>
-                        <li>la page Radar ;</li>
                         <li>la page Fréquences.</li>
                     </ul>
                 </div>

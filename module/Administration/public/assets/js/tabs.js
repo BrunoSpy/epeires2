@@ -23,7 +23,11 @@ var tab = function(url){
 	$("#tab-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/tabs/save', $("#Tab").serialize(), function(data){
-			location.reload();
+			if(data.messages['error']) {
+				displayMessages(data.messages);
+			} else {
+				location.reload();
+			}
 		}, 'json');
 	});
 

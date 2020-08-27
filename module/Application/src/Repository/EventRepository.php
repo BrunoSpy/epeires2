@@ -482,10 +482,11 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
+    //TODO
     public function getRadarEvents()
     {
         $qbEvents = $this->getQueryEvents();
-        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\RadarCategory');
+        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\SwitchObjectCategory');
         $qbEvents->andWhere($qbEvents->expr()->eq('cat.archived', 'false'));
         
         $query = $qbEvents->getQuery();

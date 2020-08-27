@@ -18,6 +18,8 @@
 namespace Application\Controller;
 
 use Application\Entity\SwitchObject;
+use Application\Entity\SwitchObjectCategory;
+use Application\Entity\Tab;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -68,79 +70,122 @@ class SwitchlistTabController extends TabController
         }
         
         $this->flashMessenger()->clearMessages();
-        
+        $tabid = $this->params()->fromQuery('tabid', null);
+
         $viewmodel->setVariables(array(
             'messages' => $return,
-            'form' => $this->getRadarForm()
+            'form' => $this->getObjectForm(),
+            'tabid' => $tabid,
         ));
-        
-        $viewmodel->setVariable('radars', $this->getSwitchObjects());
-        
+
+        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+        $viewmodel->setVariable('direction', ($tab->isHorizontal() ? 'row' : 'column'));
+        $so = $tab->getCategories()[0]->getSwitchObjects()->toArray();
+        $viewmodel->setVariable('switchobjectsObjects', $so);
+        $viewmodel->setVariable('switchobjects', $this->getSwitchObjects($tabid));
+
         return $viewmodel;
     }
 
-    private function getRadarForm() {
+    private function getObjectForm() {
         $event = new Event();
         $builder = new AnnotationBuilder();
         $form = $builder->createForm($event);
         $form->setHydrator(new DoctrineObject($this->entityManager))->setObject($event);
-        
-        $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(
-            'defaultradarcategory' => true,
-            'archived' => false
-        ));
-        if ($categories) {
-            $cat = $categories[0];
-            $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
-            //uniquement les champs ajoutés par conf
-            $form->get('custom_fields')->remove($cat->getRadarfield()->getId());
-            $form->get('custom_fields')->remove($cat->getStateField()->getId());
-            return $form;
-        } else {
-            return null;
-        }
+
+        $tabid = $this->params()->fromQuery('tabid', null);
+        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+        $cat = $tab->getCategories()[0];
+
+        $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
+        //uniquement les champs ajoutés par conf
+        $form->get('custom_fields')->remove($cat->getSwitchObjectField()->getId());
+        $form->get('custom_fields')->remove($cat->getStateField()->getId());
+        return $form;
     }
     
-    public function switchradarAction()
+    public function switchobjectAction()
     {
         $messages = array();
+
+        $tabid = $this->params()->fromQuery('tabid', null);
+        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+        $cat = null;
+        if($tab) {
+            $cat = $tab->getCategories()[0];
+        } else {
+            $messages['error'][] = "Paramètre tabid incorrect ou manquant";
+            return new JsonModel($messages);
+        }
+        if($cat == null || !($cat instanceof SwitchObjectCategory)) {
+            $messages['error'][] = "Aucune catégorie trouvée.";
+            return new JsonModel($messages);
+        }
+
         if ($this->isGranted('events.write') && $this->lmcUserAuthentication()->hasIdentity()) {
 
             $post = $this->getRequest()->getPost();
             $state = $this->params()->fromQuery('state', null);
-            $radarid = $this->params()->fromQuery('radarid', null);
+            $objectid = $this->params()->fromQuery('objectid', null);
             
             $now = new \DateTime('NOW');
             $now->setTimezone(new \DateTimeZone("UTC"));
             
-            if ($state != null && $radarid) {
+            if ($state != null && $objectid) {
                 $events = $this->entityManager
                     ->getRepository('Application\Entity\Event')
-                    ->getCurrentEvents('Application\Entity\RadarCategory');
-                
-                $radarevents = array();
+                    ->getCurrentEvents('Application\Entity\SwitchObjectCategory');
+
+                $object = $this->entityManager->getRepository(SwitchObject::class)->find($objectid);
+
+                $objectevents = array();
                 foreach ($events as $event) {
-                    $radarfield = $event->getCategory()->getRadarfield();
+                    $objectfield = $event->getCategory()->getSwitchObjectField();
                     foreach ($event->getCustomFieldsValues() as $value) {
-                        if ($value->getCustomField()->getId() == $radarfield->getId()) {
-                            if ($value->getValue() == $radarid) {
-                                $radarevents[] = $event;
+                        if ($value->getCustomField()->getId() == $objectfield->getId()) {
+                            if ($value->getValue() == $objectid) {
+                                $objectevents[] = $event;
                             }
                         }
                     }
                 }
                 
                 if ($state == 'true') {
-                    // passage d'un radar à l'état OPE -> recherche de l'evt à fermer
-                    if (count($radarevents) == 1) {
-                        $event = $radarevents[0];
+                    // passage d'un objet à l'état OPE -> recherche de l'evt à fermer
+                    if (count($objectevents) == 1) {
+                        $event = $objectevents[0];
                         $endstatus = $this->entityManager->getRepository('Application\Entity\Status')->find('3');
                         $event->setStatus($endstatus);
                         $event->setEnddate($now);
+
+                        //si objet est parent -> on ferme aussi tous les évènements enfants
+                        if($object->getParent() == null) {
+                            foreach ($object->getChidren() as $child) {
+                                $childevents = array();
+                                foreach ($events as $e) {
+                                    $objectfield = $child->getCategory()->getSwitchObjectField();
+                                    foreach ($e->getCustomFieldsValues() as $value) {
+                                        if($value->getCustomField()->getId() == $objectfield->getId()) {
+                                            if($value->getValue() == $child->getId()) {
+                                                $childevents[] = $e;
+                                            }
+                                        }
+                                    }
+                                }
+                                if(count($childevents) > 1) {
+                                    $messages['error'][] = "Impossible de déterminer l'évènement à terminer.";
+                                } elseif (count($childevents) == 1) {
+                                    $childevent = $childevents[0];
+                                    $childevent->setStatus($endstatus);
+                                    $childevent->setEnddate($now);
+                                    $this->entityManager->persist($childevent);
+                                }
+                            }
+                        }
                         $this->entityManager->persist($event);
                         try {
                             $this->entityManager->flush();
-                            $messages['success'][] = "Evènement radar correctement terminé.";
+                            $messages['success'][] = "Evènement correctement terminé.";
                         } catch (\Exception $e) {
                             $messages['error'][] = $e->getMessage();
                         }
@@ -148,172 +193,180 @@ class SwitchlistTabController extends TabController
                         $messages['error'][] = "Impossible de déterminer l'évènement à terminer.";
                     }
                 } else {
-                    // passage d'un radar à l'état HS -> on vérifie qu'il n'y a pas d'evt en cours
-                    if (count($radarevents) > 0) {
-                        $messages['error'][] = "Un évènement est déjà en cours pour ce radar, impossible d'en créer un nouveau";
+                    // passage d'un objet à l'état HS -> on vérifie qu'il n'y a pas d'evt en cours
+                    if (count($objectevents) > 0) {
+                        $messages['error'][] = "Un évènement est déjà en cours pour cet objet, impossible d'en créer un nouveau";
                     } else {
-                        $event = new Event();
-                        $status = $this->entityManager->getRepository('Application\Entity\Status')->find('2');
-                        $impact = $this->entityManager->getRepository('Application\Entity\Impact')->find('3');
-                        $event->setStatus($status);
-                        $event->setStartdate($now);
-                        $event->setImpact($impact);
-                        $event->setPunctual(false);
-                        $radar = $this->entityManager->getRepository(SwitchObject::class)->find($radarid);
-                        $event->setOrganisation($radar->getOrganisation());
-                        $event->setAuthor($this->lmcUserAuthentication()
-                            ->getIdentity());
-                        
-                        $categories = $this->entityManager->getRepository('Application\Entity\RadarCategory')->findBy(array(
-                            'defaultradarcategory' => true
-                        ));
-                        if ($categories) {
-                            $cat = $categories[0];
-                            $radarfieldvalue = new CustomFieldValue();
-                            $radarfieldvalue->setCustomField($cat->getRadarfield());
-                            $radarfieldvalue->setValue($radarid);
-                            $radarfieldvalue->setEvent($event);
-                            $event->addCustomFieldValue($radarfieldvalue);
-                            $statusvalue = new CustomFieldValue();
-                            $statusvalue->setCustomField($cat->getStateField());
-                            $statusvalue->setValue(true);
-                            $statusvalue->setEvent($event);
-                            $event->addCustomFieldValue($statusvalue);
-                            $event->setCategory($categories[0]);
-                            $this->entityManager->persist($radarfieldvalue);
-                            $this->entityManager->persist($statusvalue);
-                            //on ajoute les valeurs des champs persos
-                            if (isset($post['custom_fields'])) {
-                                foreach ($post['custom_fields'] as $key => $value) {
-                                    // génération des customvalues si un customfield dont le nom est $key est trouvé
-                                    $customfield = $this->entityManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
-                                        'id' => $key
-                                    ));
-                                    if ($customfield) {
-                                        if (is_array($value)) {
-                                            $temp = "";
-                                            foreach ($value as $v) {
-                                                $temp .= (string) $v . "\r";
-                                            }
-                                            $value = trim($temp);
-                                        }
-                                        $customvalue = new CustomFieldValue();
-                                        $customvalue->setEvent($event);
-                                        $customvalue->setCustomField($customfield);
-                                        $event->addCustomFieldValue($customvalue);
-                                        
-                                        $customvalue->setValue($value);
-                                        $this->entityManager->persist($customvalue);
-                                    }
-                                }
-                            }
-    
-                            // création de la fiche réflexe
-                            if ($radar->getModel()) {
-                                foreach ($this->entityManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
-                                    'parent' => $radar->getModel()->getId()
-                                )) as $action) {
-                                    $child = new Event();
-                                    $child->setParent($event);
-                                    $child->setAuthor($event->getAuthor());
-                                    $child->setOrganisation($event->getOrganisation());
-                                    $child->createFromPredefinedEvent($action);
-                                    $child->setStatus($this->entityManager->getRepository('Application\Entity\Status')
-                                        ->findOneBy(array(
-                                            'defaut' => true,
-                                            'open' => true
-                                        )));
-                                    foreach ($action->getCustomFieldsValues() as $value) {
-                                        $newvalue = new CustomFieldValue();
-                                        $newvalue->setEvent($child);
-                                        $newvalue->setCustomField($value->getCustomField());
-                                        $newvalue->setValue($value->getValue());
-                                        $child->addCustomFieldValue($newvalue);
-                                        $this->entityManager->persist($newvalue);
-                                    }
-                                    $child->updateAlarmDate();
-                                    $this->entityManager->persist($child);
-                                }
-                                // ajout des fichiers
-                                foreach ($radar->getModel()->getFiles() as $file) {
-                                    $file->addEvent($event);
-                                }
-                            }
-                            
-                            //et on sauve le tout
-                            $this->entityManager->persist($event);
-                            try {
-                                $this->entityManager->flush();
-                                $messages['success'][] = "Nouvel évènement radar créé.";
-                            } catch (\Exception $e) {
-                                $messages['error'][] = $e->getMessage();
-                            }
-                        } else {
-                            $messages['error'][] = "Impossible de créer un nouvel évènement.";
+                        $this->createEvent($cat, $object, $now, isset($post['custom_fields']) ? $post['custom_fields'] : null);
+                        //si l'objet a un parent, il faut créer l'évènement pour le parent aussi
+                        if($object->getParent() !== null) {
+                            $this->createEvent($cat, $object->getParent(), $now);
                         }
+                        try {
+                            $this->entityManager->flush();
+                            $messages['success'][] = "Nouvel évènement objet créé.";
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+
                     }
                 }
             } else {
-                $messages['error'][] = "Requête incorrecte, impossible de trouver le radar correspondant.";
+                $messages['error'][] = "Requête incorrecte, impossible de trouver l'objet correspondant.";
             }
         } else {
-            $messages['error'][] = "Droits insuffisants pour modifier l'état du radar";
+            $messages['error'][] = "Droits insuffisants pour modifier l'état de l'objet";
         }
         return new JsonModel($messages);
     }
 
-    public function getRadarStateAction()
+    public function createEvent($cat, $object, $now, $customfields = null)
     {
-        return new JsonModel($this->getSwitchObjects(false));
+        $event = new Event();
+        $status = $this->entityManager->getRepository('Application\Entity\Status')->find('2');
+        $impact = $this->entityManager->getRepository('Application\Entity\Impact')->find('3');
+        $event->setStatus($status);
+        $event->setStartdate($now);
+        $event->setImpact($impact);
+        $event->setPunctual(false);
+        $object = $this->entityManager->getRepository(SwitchObject::class)->find($object->getId());
+        $event->setOrganisation($object->getOrganisation());
+        $event->setAuthor($this->lmcUserAuthentication()
+            ->getIdentity());
+
+        $objectfieldvalue = new CustomFieldValue();
+        $objectfieldvalue->setCustomField($cat->getSwitchObjectField());
+        $objectfieldvalue->setValue($object->getId());
+        $objectfieldvalue->setEvent($event);
+        $event->addCustomFieldValue($objectfieldvalue);
+        $statusvalue = new CustomFieldValue();
+        $statusvalue->setCustomField($cat->getStateField());
+        $statusvalue->setValue(true);
+        $statusvalue->setEvent($event);
+        $event->addCustomFieldValue($statusvalue);
+        $event->setCategory($cat);
+        $this->entityManager->persist($objectfieldvalue);
+        $this->entityManager->persist($statusvalue);
+        //on ajoute les valeurs des champs persos
+        if ($customfields) {
+            foreach ($customfields as $key => $value) {
+                // génération des customvalues si un customfield dont le nom est $key est trouvé
+                $customfield = $this->entityManager->getRepository('Application\Entity\CustomField')->findOneBy(array(
+                    'id' => $key
+                ));
+                if ($customfield) {
+                    if(is_array($value)) {
+                        $temp = "";
+                        foreach ($value as $v) {
+                            $temp .= (string) $v . "\r";
+                        }
+                        $value = trim($temp);
+                    }
+                    $customvalue = new CustomFieldValue();
+                    $customvalue->setEvent($event);
+                    $customvalue->setCustomField($customfield);
+                    $event->addCustomFieldValue($customvalue);
+
+                    $customvalue->setValue($value);
+                    $this->entityManager->persist($customvalue);
+                }
+            }
+        }
+
+        // création de la fiche réflexe
+        if ($object->getModel()) {
+            foreach ($this->entityManager->getRepository('Application\Entity\PredefinedEvent')->findBy(array(
+                'parent' => $object->getModel()->getId()
+            )) as $action) {
+                $child = new Event();
+                $child->setParent($event);
+                $child->setAuthor($event->getAuthor());
+                $child->setOrganisation($event->getOrganisation());
+                $child->createFromPredefinedEvent($action);
+                $child->setStatus($this->entityManager->getRepository('Application\Entity\Status')
+                    ->findOneBy(array(
+                        'defaut' => true,
+                        'open' => true
+                    )));
+                foreach ($action->getCustomFieldsValues() as $value) {
+                    $newvalue = new CustomFieldValue();
+                    $newvalue->setEvent($child);
+                    $newvalue->setCustomField($value->getCustomField());
+                    $newvalue->setValue($value->getValue());
+                    $child->addCustomFieldValue($newvalue);
+                    $this->entityManager->persist($newvalue);
+                }
+                $child->updateAlarmDate();
+                $this->entityManager->persist($child);
+            }
+            // ajout des fichiers
+            foreach ($object->getModel()->getFiles() as $file) {
+                $file->addEvent($event);
+            }
+        }
+
+        //et on sauve le tout
+        $this->entityManager->persist($event);
+
     }
 
-    private function getSwitchObjects($full = true)
+    public function getObjectStateAction()
+    {
+        $tabid = $this->params()->fromQuery("tabid", null);
+        return new JsonModel($this->getSwitchObjects($tabid, false));
+    }
+
+    private function getSwitchObjects($tabid, $full = true)
     {
 
-        $radars = array();
-        
-        foreach ($this->entityManager->getRepository(SwitchObject::class)->findBy(array(
-            'decommissionned' => false
-        )) as $radar) {
+        $objects = array();
+
+        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+        $cat = $tab->getCategories()[0];
+
+        foreach ($cat->getSwitchObjects() as $object) {
+            if($object->isDecommissionned()) {
+                break;
+            }
             // avalaible by default
             if ($full) {
-                $radars[$radar->getId()] = array();
-                $radars[$radar->getId()]['name'] = $radar->getName();
-                $radars[$radar->getId()]['status'] = true;
+                $objects[$object->getId()] = array();
+                $objects[$object->getId()]['name'] = $object->getName();
+                $objects[$object->getId()]['status'] = true;
             } else {
-                $radars[$radar->getId()] = true;
+                $objects[$object->getId()] = true;
             }
         }
         
-        $results = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\RadarCategory');
+        $results = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\SwitchObjectCategory');
         
         foreach ($results as $result) {
             $statefield = $result->getCategory()
                 ->getStateField()
                 ->getId();
-            $radarfield = $result->getCategory()
-                ->getRadarfield()
+            $objectfield = $result->getCategory()
+                ->getSwitchObjectField()
                 ->getId();
-            $radarid = 0;
+            $objectid = 0;
             $available = true;
             foreach ($result->getCustomFieldsValues() as $customvalue) {
                 if ($customvalue->getCustomField()->getId() == $statefield) {
                     $available = ! $customvalue->getValue();
                 } else 
-                    if ($customvalue->getCustomField()->getId() == $radarfield) {
-                        $radarid = $customvalue->getValue();
+                    if ($customvalue->getCustomField()->getId() == $objectfield) {
+                        $objectid = $customvalue->getValue();
                     }
             }
-            if (array_key_exists($radarid, $radars)) {
+            if (array_key_exists($objectid, $objects)) {
                 if ($full) {
-                    $radars[$radarid]['status'] *= $available;
+                    $objects[$objectid]['status'] *= $available;
                 } else {
-                    $radars[$radarid] *= ($available ? true : false);
+                    $objects[$objectid] *= ($available ? true : false);
                 }
             }
         }
         
-        return $radars;
+        return $objects;
     }
 
     public function  getficheAction()
@@ -334,10 +387,10 @@ class SwitchlistTabController extends TabController
         if($radar) {
             $events = $this->entityManager
                 ->getRepository('Application\Entity\Event')
-                ->getCurrentEvents('Application\Entity\RadarCategory');
+                ->getCurrentEvents('Application\Entity\SwitchObjectCategory');
             $radarEvents = array();
             foreach ($events as $event) {
-                $radarField = $event->getCustomFieldValue($event->getCategory()->getRadarfield());
+                $radarField = $event->getCustomFieldValue($event->getCategory()->getSwitchObjectField());
                 if ($radarField->getValue() == $radarId) {
                     $radarEvents[] = $event;
                 }

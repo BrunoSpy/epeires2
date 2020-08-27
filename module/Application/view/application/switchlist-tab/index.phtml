@@ -1,70 +1,79 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchlist.js')?>
-<?php if( $this->radars && $this->form) : ?>
+
+<?php
+function addSwitchButton($name, $id, $helper) {
+  $html = '<div class="togglebutton togglebutton-red">';
+  $html .= '<label>';
+  $html .= '<input ';
+	$html .= 'id="switch_'.$id.'" ';
+	$html .= 'data-objectid="'.$id.'" ';
+	$html .= 'data-object="'.$name.'" ';
+	$html .= 'data-href="'.$helper->url('application',
+                              array('controller'=>'switchlisttab', 'action' => 'switchobject'),
+                             array('query' => array('objectid' => $id))).'" ';
+	$html .= 'class="object-switch" type="checkbox" ';
+  $html .=  ($helper->isGranted('events.write') ? '' : ' disabled="disabled"');
+  $html .= '></label>';
+  $html .= '</div>';
+  return $html;
+}
+?>
+<?php if( $this->switchobjects && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
 <div class="main-nav panel-left" id="fiche" data-url="switchlisttab/getfiche"></div>
 <div class="page-wrap">
-    <div class="container-fluid" id="radar">
+    <div class="container-fluid" id="object">
         <p></p>
-        <div class="row">
+        <div class="row" style="height: calc(100vh - 120px)">
 
 
 
+            <div class="switch-content" style="flex-direction: <?php echo $this->direction; ?>">
 
+                <?php
+                function soCmp($a, $b) {
+                  return strcmp($a->getName(), $b->getName());
+                }
+                $sortedSO = call_user_func(function(array $a){usort($a, "soCmp");return $a;}, $this->switchobjectsObjects);
+                foreach ($sortedSO as $so) {
+                  if($so->getParent() == null) {
+                    echo '<div class="list-group switch-group">';
+                    echo '<div class="list-group-item switchobject-line" id="object-'.$so->getId().'"><div class="switchobject-name">'.$so->getName();
+                    echo' <a href="#" data-id="'.$so->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                    echo '</div>';
+                    echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this).'</div>';
+                    echo '</div>';
+                    foreach ($so->getChildren() as $child) {
+                      $found = array_filter($sortedSO, function($uniqueobject) use ($child){
+                        return $uniqueobject->getId() == $child->getId();
+                      });
+                      if($found) {
+                        echo '<div class="list-group-item switchobject-line" id="object-'.$child->getId().'"><div class="switchobject-name">';
+                        echo ' > '.$child->getName();
+                        echo' <a href="#" data-id="'.$child->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                        echo '</div>';
+                        echo '<div class="switchobject-button">'.addSwitchButton($child->getName(), $child->getId(), $this).'</div>';
+                        echo "</div>";
+                      }
+                    }
+                    echo "</div>";
+                  }
+                }
+                ?>
 
-            <div class="col-sm-4 col-sm-offset-4" id="radars">
-                <?php if($this->radars) : ?>
-                    <table class="table table-striped table-hover table-bordered sortable" id="radars">
-                        <thead>
-                        <tr>
-                            <th data-sort="string" data-autosort="true">Nom</th>
-                            <th>État</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        foreach ($this->radars as $radarid => $radar){
-                            echo '<tr id="radar-'.$radarid.'">';
-                            echo '<td>'.$radar['name'];
-                            echo ' <a href="#" data-id="'.$radarid.'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
-                            echo '</td>';
-                            echo '<td>';
-                            
-                            echo	'<div class="togglebutton togglebutton-red">';
-                            echo '<label>';
-                            echo '<input
-	                            id="switch_'.$radarid.'" 
-								data-radarid="'.$radarid.'"
-								data-radar="'.$radar['name'].'" 
-								data-href="'.$this->url('application',
-                                    array('controller'=>'switchlisttab', 'action' => 'switchradar'),
-                                    array('query' => array('radarid' => $radarid))).'"
-	                            class="radar-switch" type="checkbox" '.($radar['status'] ? 'checked="checked"' : '').
-                                ($this->isGranted('events.write') ? '' : ' disabled="disabled"').
-                                '>';
-                            echo '</label>';
-                            echo '</div>';
-                            
-                            echo '</td>';
-                            echo '</tr>';
-                        }
-                        ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p>Aucun objet configuré.</p>
-                <?php endif; ?>
             </div>
+
         </div>
     </div>
 </div>
 <?php else : ?>
 <div class="alert alert-danger">
-  Aucun radar ou aucune catégorie support configurée. Veuillez contacter votre administrateur.
+  Aucun objet ou aucune catégorie support configurée. Veuillez contacter votre administrateur.
 </div>
 <?php endif; ?>
 <?php
-if($this->radars && $this->form) {
+if($this->switchobjects && $this->form) {
     $this->form->setAttribute('class', 'form-horizontal');
     $this->form->prepare();
     
@@ -77,15 +86,15 @@ if($this->radars && $this->form) {
     }
     $form .= '</div>';
     $form .= '<div class="modal-footer">';
-    $form .= '<button class="btn btn-danger" id="end-radar-href" type="submit">Confirmer</button>';
-    $form .= "<button class=\"btn\" href=\"#\" id=\"cancel-radar\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
+    $form .= '<button class="btn btn-danger" id="end-object-href" type="submit">Confirmer</button>';
+    $form .= "<button class=\"btn\" href=\"#\" id=\"cancel-object\" data-dismiss=\"modal\" aria-hidden=\"true\">Annuler</button>";
     
     $form .= '</div>';
     $form .= $this->form()->closeTag();
     
     
     echo $this->modalwindow("confirm-end-event",
-        "<h3>Radar <em><span id=\"radar_name\"></span></em></h3>",
+        "<h3>Objet <em><span id=\"object_name\"></span></em></h3>",
         "",
         null,
         $form);
@@ -99,7 +108,7 @@ $("#changeview").remove();
 
 $('#search').remove();
 
-switchlist('<?php echo $this->url('application'); ?>');
+switchlist('<?php echo $this->url('application'); ?>', '<?php echo $this->tabid; ?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

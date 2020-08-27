@@ -19,7 +19,7 @@ namespace Administration\Controller;
 
 use Application\Controller\FormController;
 use Application\Entity\Category;
-use Application\Entity\RadarCategory;
+use Application\Entity\SwitchObjectCategory;
 use Application\Entity\StateCategoryInterface;
 use Application\Entity\SwitchObject;
 use Application\Entity\Tab;

@@ -18,6 +18,7 @@
 namespace Administration\Controller;
 
 use Application\Controller\FormController;
+use Application\Entity\Category;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -49,12 +50,19 @@ class SwitchObjectsController extends FormController
     {
         $viewmodel = new ViewModel();
     
-        $this->layout()->title = "Centres > Radars";
+        $this->layout()->title = "Centres > Objets commutables";
         
         $objectManager = $this->getEntityManager();
         
-        $radars = $objectManager->getRepository('Application\Entity\SwitchObject')->findBy(array('type'=>"radar"), array('name'=>'ASC'));
-    
+        $repo = $objectManager->getRepository('Application\Entity\SwitchObject');
+
+        $types = $objectManager->createQueryBuilder()->select('so.type')
+            ->from('Application\Entity\SwitchObject', 'so')
+            ->distinct(true)
+            ->getQuery()->getResult();
+
+        $types = array_column($types, "type");
+
         $return = array();
         if ($this->flashMessenger()->hasErrorMessages()) {
             $return['error'] = $this->flashMessenger()->getErrorMessages();
@@ -67,8 +75,9 @@ class SwitchObjectsController extends FormController
         $this->flashMessenger()->clearMessages();
     
         $viewmodel->setVariables(array(
+            'types' => $types,
             'messages' => $return,
-            'radars' => $radars
+            'repo' => $repo
         ));
         
         return $viewmodel;
@@ -80,7 +89,7 @@ class SwitchObjectsController extends FormController
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
-            $datas = $this->getForm($id);
+            $datas = $this->getForm($id, $post['type']);
             $form = $datas['form'];
             $form->setData($post);
             $radar = $datas['switchobject'];
@@ -123,9 +132,9 @@ class SwitchObjectsController extends FormController
     {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();
-        $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
-        if ($radar) {
-            $objectManager->remove($radar);
+        $object = $objectManager->getRepository(SwitchObject::class)->find($id);
+        if ($object) {
+            $objectManager->remove($object);
             $objectManager->flush();
         }
         return new JsonModel();
@@ -139,8 +148,9 @@ class SwitchObjectsController extends FormController
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         
         $id = $this->params()->fromQuery('id', null);
+        $type = $this->params()->fromQuery('type', null);
         
-        $getform = $this->getForm($id);
+        $getform = $this->getForm($id, $type);
         
         $viewmodel->setVariables(array(
             'form' => $getform['form'],
@@ -149,25 +159,32 @@ class SwitchObjectsController extends FormController
         return $viewmodel;
     }
 
-    private function getForm($id = null)
+    private function getForm($id = null, $type)
     {
         $objectManager = $this->getEntityManager();
-        $radar = new SwitchObject();
+        $object = new SwitchObject();
         $builder = new AnnotationBuilder();
-        $form = $builder->createForm($radar);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($radar);
+        $form = $builder->createForm($object);
+        $form->setHydrator(new DoctrineObject($objectManager))->setObject($object);
         
         $form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
-        
+
+        $parents = array();
+        foreach ($this->getEntityManager()
+                     ->getRepository(SwitchObject::class)
+                     ->findBy(array('type'=>$type, 'parent' => null, 'decommissionned' => false), array('name' => 'ASC')) as $parent) {
+            $parents[$parent->getId()] = $parent->getName();
+        }
+        $form->get('parent')->setValueOptions($parents);
         if ($id) {
-            $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
-            if ($radar) {
-                $form->bind($radar);
-                $form->setData($radar->getArrayCopy());
+            unset($parents[$id]);
+            $form->get('parent')->setValueOptions($parents);
+            $object = $objectManager->getRepository(SwitchObject::class)->find($id);
+            if ($object) {
+                $form->bind($object);
+                $form->setData($object->getArrayCopy());
             }
-        } else {
-            $form->get('type')->setValue(SwitchObject::RADAR);
         }
         
         $form->add(array(
@@ -181,24 +198,130 @@ class SwitchObjectsController extends FormController
         
         return array(
             'form' => $form,
-            'switchobject' => $radar
+            'switchobject' => $object
         );
     }
-    
+
+    public function formcategoryAction()
+    {
+        $request = $this->getRequest();
+        $viewmodel = new ViewModel();
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+
+        $id = $this->params()->fromQuery('id', null);
+
+        $form = $this->getFormCategory($id);
+
+        $viewmodel->setVariables(array(
+            'objects' => $form['objects'],
+            'availableobjects' => $form['availableobjects'],
+            'form' => $form['form']
+        ));
+
+        return $viewmodel;
+    }
+
+    /**
+     * @param $id Not NULL
+     * @return array
+     */
+    private function getFormCategory($id)
+    {
+        $object = new Category();
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($object);
+        $form->setHydrator(new DoctrineObject($this->getEntityManager()))->setObject($object);
+        $objects = array();
+        $availableobjects = array();
+        $object = $this->getEntityManager()->getRepository(Category::class)->find($id);
+        if($object) {
+            $objects = $object->getSwitchObjects();
+            $allobjects = $this->getEntityManager()->getRepository(SwitchObject::class)->findBy(array('decommissionned'=>false));
+            foreach ($allobjects as $o) {
+                if(!$objects->contains($o)) {
+                    $availableobjects[] = $o;
+                }
+            }
+            $form->bind($object);
+            $form->setData($object->getArrayCopy());
+        }
+        $form->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Enregistrer',
+                'class' => 'btn btn-primary btn-small'
+            )
+        ));
+        return array(
+            'form' => $form,
+            'objects' => $objects,
+            'availableobjects' => $availableobjects,
+            'category' => $object
+        );
+    }
+
+    public function savecategoryAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $id = $post['id'];
+
+            $category = $this->getEntityManager()->getRepository(Category::class)->find($id);
+
+            if($category && isset($post['objects'])) {
+                $category->clearSwitchObjects();
+                foreach ($post['objects'] as $objectid) {
+                    $object = $this->getEntityManager()->getRepository(SwitchObject::class)->find($objectid);
+                    if($object) {
+                        $category->addSwitchObject($object);
+                    }
+                }
+            }
+            $this->getEntityManager()->persist($category);
+            try {
+                $this->getEntityManager()->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+
+        }
+
+        $json = array(
+
+        );
+        return new JsonModel($json);
+    }
+
     public function configAction()
     {
         $viewmodel = new ViewModel();
-        $this->layout()->title = "Onglets > Radars";
-        
-        $viewmodel->setVariable(
-            'radars', $this->getEntityManager()->getRepository(SwitchObject::class)
-                ->findBy(array(), array('name' => 'ASC'))
-        );
+        $this->layout()->title = "Onglets > Objets commutables";
+
+        $types = $this->getEntityManager()->createQueryBuilder()->select('so.type')
+            ->from('Application\Entity\SwitchObject', 'so')
+            ->distinct(true)
+            ->getQuery()->getResult();
+
+        $types = array_column($types, "type");
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $categories = $qb
+            ->select('c')
+            ->from('Application\Entity\Category', 'c')
+            ->where($qb->expr()->isInstanceOf('c', 'Application\Entity\SwitchObjectCategory'))
+            ->getQuery()->getResult();
+
+        $viewmodel->setVariables(array(
+            'repo' => $this->getEntityManager()->getRepository(SwitchObject::class),
+            'types' => $types,
+            'categories' => $categories
+        ));
         
         return $viewmodel;
     }
     
-    public function formradarmodelAction()
+    public function formobjectmodelAction()
     {
         $request = $this->getRequest();
         $viewmodel = new ViewModel();
@@ -207,7 +330,7 @@ class SwitchObjectsController extends FormController
         
         $id = $this->params()->fromQuery('id', null);
         
-        $getform = $this->getFormRadarModel($id);
+        $getform = $this->getFormObjectModel($id);
         
         $form = $getform['form'];
         $form->add(array(
@@ -225,13 +348,13 @@ class SwitchObjectsController extends FormController
         return $viewmodel;
     }
     
-    public function saveradarmodelAction()
+    public function saveobjectmodelAction()
     {
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
             
-            $getform = $this->getFormRadarModel($id);
+            $getform = $this->getFormObjectModel($id);
             $form = $getform['form'];
             $form->setData($post);
             
@@ -260,7 +383,7 @@ class SwitchObjectsController extends FormController
         return new JsonModel($json);
     }
     
-    private function getFormRadarModel($id)
+    private function getFormObjectModel($id)
     {
         $datas = array();
         $form = null;

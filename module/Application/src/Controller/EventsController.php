@@ -1692,7 +1692,7 @@ class EventsController extends TimelineTabController
             $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab, $this->lmcUserAuthentication());
             $json[$tab->getId()] = count($events);
         }
-        $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
+        //$json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
         $json['radio'] = count($em->getRepository('Application\Entity\Event')->getRadioEvents());
         $json['afis'] = count($em->getRepository('Application\Entity\Event')->getAfisEvents());
         $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents(null,null,[1,2]));

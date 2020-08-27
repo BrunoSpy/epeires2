@@ -30,7 +30,7 @@ use Doctrine\Common\Collections\Collection;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"generic" = "Category",
- * "radar" = "RadarCategory",
+ * "switch" = "SwitchObjectCategory",
  * "antenna" = "AntennaCategory",
  * "frequency" = "FrequencyCategory",
  * "action" = "ActionCategory",
@@ -191,7 +191,7 @@ class Category
     {
         $type = array();
         $type['generic'] = "Générique";
-        $type['radar'] = "Radar";
+        $type['switch'] = "Objet commutable";
         $type['antenna'] = "Antenne";
         $type['frequency'] = "Fréquence";
         $type['brouillage'] = "Brouillage fréquence";
