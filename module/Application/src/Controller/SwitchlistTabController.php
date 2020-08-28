@@ -163,7 +163,7 @@ class SwitchlistTabController extends TabController
                             foreach ($object->getChildren() as $child) {
                                 $childevents = array();
                                 foreach ($events as $e) {
-                                    $objectfield = $child->getCategory()->getSwitchObjectField();
+                                    $objectfield = $e->getCategory()->getSwitchObjectField();
                                     foreach ($e->getCustomFieldsValues() as $value) {
                                         if($value->getCustomField()->getId() == $objectfield->getId()) {
                                             if($value->getValue() == $child->getId()) {
