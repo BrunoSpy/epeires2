@@ -20,6 +20,7 @@
 
 var afis = function(url)
 {
+    // capture des evenements DOM {{{1
     $('#search-afis').find('input')
         .keyup(searchKeyUpHandler)
         .click(searchClickHandler);
@@ -28,6 +29,7 @@ var afis = function(url)
 
     $('.a-show-not, #refresh-not').click(clickBtnNotamHandler);
 
+    // initialisation des tooltips {{{1
     $.each($('.af-tooltip'), function() {
         $(this).tooltip({
             title: '<span class="elmt_tooltip">'+ $(this).data('tooltip') +'</span>',
@@ -37,6 +39,7 @@ var afis = function(url)
         });
     });
 
+    // handler lors de l'activation/désactivation d'un AFIS {{{1
     function switchAfisHandler(data)
     {
         var boolState = 0;
@@ -58,10 +61,12 @@ var afis = function(url)
         $.material.togglebutton();
     }
 
+    // handler lors du click sur le champ de recherche pour le préremplissage du champ indicatif s'il est vide  {{{1
     function searchClickHandler() {
         if($(this).val() == "") $(this).val('LF');
     }
 
+    // handler lors d'un appui sur une touche dans le champ de recherche d'afis pour mettre à jour la liste des afis{{{1
     function searchKeyUpHandler() {
         $entree = $(this).val().toLowerCase();
         $tUsrbody.find('tr').each(function() {
@@ -70,6 +75,7 @@ var afis = function(url)
         });
     }
 
+    // handler lors d'un click sur le bouton NOTAM d'un afis{{{1
     function clickBtnNotamHandler()
     {
         var code = $(this).data('code');
