@@ -26,19 +26,18 @@ class NOTAMWebService
 
     private 
         $em, $config, 
-        $timeout, $proxy, 
+        $notam_url, $proxy, $timeout, 
         $aero_rayon, $aero_plafond;
 
     public function __construct($em, $config)
     {
         $this->em = $em;
         $this->config = $config;
-
-        if (isset($this->config['btiv']['af_notam_max_loading_seconds'])) {
-            $this->timeout = $this->config['btiv']['af_notam_max_loading_seconds'];
-        }
-        else {
-            $this->timeout = self::CURL_TIMEOUT;
+        
+        if (isset($this->config['btiv']['af_notam_url'])) {
+            $this->notam_url = $this->config['btiv']['af_notam_url'];
+        } else {
+            $this->notam_url = self::URL_NOTAMWEB;
         }
 
         $this->proxy = '';
@@ -49,6 +48,12 @@ class NOTAMWebService
                     $this->proxy .= ":" . $this->config['proxy']['proxy_port'];
                 }
             }
+        }
+
+        if (isset($this->config['btiv']['af_notam_max_loading_seconds'])) {
+            $this->timeout = $this->config['btiv']['af_notam_max_loading_seconds'];
+        } else {
+            $this->timeout = self::CURL_TIMEOUT;
         }
 
         if (isset($this->config['btiv']['af_rayon'])) {
@@ -69,7 +74,7 @@ class NOTAMWebService
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::URL_NOTAMWEB,
+            CURLOPT_URL => $this->notam_url,
             CURLOPT_PROXY => $this->proxy,
             CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_RETURNTRANSFER => 1,
@@ -120,10 +125,10 @@ class NOTAMWebService
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::URL_NOTAMWEB,
+            CURLOPT_URL => $this->notam_url,
             CURLOPT_PROXY => $this->proxy,
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
+            CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_POST => $fields,
             CURLOPT_POSTFIELDS => $fields_string,
             CURLOPT_USERAGENT => 'Codular Sample cURL Request'
@@ -157,6 +162,21 @@ class NOTAMWebService
 
     public function getNotamWebUrl()
     {
-        return self::URL_NOTAMWEB;
+        return $this->notam_url;
+    }
+ 
+    public function getNotamWebCurlTimeout()
+    {
+        return $this->timeout;
+    }
+ 
+    public function getNotamWebAeroPlafond()
+    {
+        return $this->aero_plafond;
+    }
+ 
+    public function getNotamWebAeroRayon()
+    {
+        return $this->aero_rayon;
     }
 }

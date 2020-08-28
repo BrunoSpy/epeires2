@@ -1,3 +1,4 @@
+// objet ListNotam {{{1
 var ListNotam = function()
 {
     this.list = [];
@@ -35,6 +36,7 @@ var ListNotam = function()
     }
 }
 
+// objet Notam {{{1
 var Notam = function(raw)
 {
     this.raw = raw;
@@ -97,6 +99,7 @@ var Notam = function(raw)
     }
 }
 
+// création de la liste des Notam à partir d'une liste obtenue du site du SIA {{{1
 function CreateNotamListFromSIA(siaNotams)
 {
     var listNotam = new ListNotam();
@@ -106,6 +109,7 @@ function CreateNotamListFromSIA(siaNotams)
     return listNotam;
 }
 
+// affiche les notam dans un $element {{{1
 function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNotam)
 {
     $element.html('');
@@ -119,7 +123,7 @@ function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNot
         }
         else
         {
-            $element.html('<div class="alert alert-danger">Impossible de télécharger les informations depuis le site notamweb. <br />Url utilisée : <b>' + data.notamUrl + '</b><br />Proxy utilisé : <b>' + data.notamProxy + '</b><br /><hr />Le paramètre <b>af_notam_max_loading_seconds</b> permet d\'augmenter la durée avant l\'échec de la récupération. Augmenter la valeur du paramètre dans la configuration peut améliorer un comportement erratique.</div>');
+            $element.html('<div class="alert alert-danger">Impossible de télécharger les NOTAM depuis l\'url fournie en paramètre. <br />Url utilisée : <b>' + data.notamUrl + '</b><br />Proxy utilisé : <b>' + data.notamProxy + '</b><br />Temps avant échec (timeout) : <b>' + data.notamTimeout + '<hr />Le paramètre <b>af_notam_max_loading_seconds</b> a modifier dans config/autoload/local.php permet d\'augmenter la durée avant l\'échec de la récupération. Augmenter la valeur du paramètre dans la configuration peut améliorer un comportement erratique de la récupération des NOTAM.</div>');
             $loadingDiv.hide();
         }
     });
@@ -129,7 +133,7 @@ function showNotamInElement($element, $loadingDiv, code, urlTestAcces, urlGetNot
         var siaNotams = $(data.notams).find('font.NOTAMBulletin');
         if (siaNotams.length <= 0)
         {
-            $element.html('<div class="alert alert-danger">Aucun NOTAM n\'existe pour ce code OACI </div>');
+            $element.html('<div class="alert alert-danger">L\'accès au NOTAM est possible mais aucun NOTAM n\'a été trouvé par l\'application pour ce code OACI. <br />Temps avant échec (timeout) : <b>' + data.notamTimeout + '</b><br />Plafond : <b>' + data.notamPlafond + '</b></br>Rayon : <b> ' + data.notamRayon + '</b><hr />Le paramètre <b>af_notam_max_loading_seconds</b> a modifier dans <b>config/autoload/local.php</b> permet d\'augmenter la durée avant l\'échec de la récupération (timeout). Augmenter la valeur du paramètre dans la configuration peut améliorer un comportement erratique de la récupération des NOTAM.<hr />Enfin le nombre de NOTAM récupérés est parfois trop important pour être traité par l\'application. Pour pallier à ce problème il faut régler les paramètres de plafond <b>af_plafond</b> et de rayon <b>af_rayon</b></div>.');
             $loadingDiv.hide();
         }
 
