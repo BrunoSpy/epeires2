@@ -69,6 +69,17 @@ test:7.4-mariadb104:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
+test:7.4-mariadb105:
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  stage: test
+  services:
+    - mariadb:10.5
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 test:7.4-mysql57:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
