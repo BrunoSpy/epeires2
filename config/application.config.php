@@ -21,7 +21,6 @@ $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
         'Laminas\Mvc\I18n',
-        'ApiSkeletons\Doctrine\DataFixture',
         'Laminas\Mvc\Plugin\FlashMessenger',
         'Laminas\Mvc\Plugin\Prg',
         'Laminas\Db',
