@@ -160,7 +160,7 @@ class SwitchlistTabController extends TabController
 
                         //si objet est parent -> on ferme aussi tous les évènements enfants
                         if($object->getParent() == null) {
-                            foreach ($object->getChidren() as $child) {
+                            foreach ($object->getChildren() as $child) {
                                 $childevents = array();
                                 foreach ($events as $e) {
                                     $objectfield = $child->getCategory()->getSwitchObjectField();
