@@ -17,7 +17,7 @@
  */
 namespace Application\Controller;
 
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\Laminas\Hydrator\DoctrineObject as DoctrineHydrator;
 use Core\Controller\AbstractEntityManagerAwareController;
 
 use Doctrine\ORM\EntityManager;
@@ -199,7 +199,7 @@ class AfisController extends TabController
                     $event->setPunctual(false);
                     $afis = $this->em->getRepository('Application\Entity\Afis')->find($id);
                     $event->setOrganisation($afis->getOrganisation());
-                    $event->setAuthor($this->zfcUserAuthentication()
+                    $event->setAuthor($this->lmcUserAuthentication()
                         ->getIdentity());
 
                     $categories = $this->em->getRepository('Application\Entity\AfisCategory')->findBy(array(
@@ -303,7 +303,7 @@ class AfisController extends TabController
 
     private function authAfis($action)
     {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
+        return (!$this->lmcUserAuthentication()->hasIdentity() or !$this->isGranted('afis.'.$action)) ? false : true;
     }
 
 }

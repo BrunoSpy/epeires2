@@ -16,11 +16,15 @@ $form->setAttribute('class', 'form-horizontal');
 
 echo $this->formHidden($form->get('id'));
 
+echo $this->controlGroup($form->get('type'));
+
 echo $this->controlGroup($form->get('name'));
 
 echo $this->controlGroup($form->get('shortname'));
 
 echo $this->controlGroup($form->get('organisation'));
+
+echo $this->controlGroup($form->get('parent'));
 
 echo $this->controlGroup($form->get('decommissionned'));
 

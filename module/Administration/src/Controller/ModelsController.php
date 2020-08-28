@@ -30,7 +30,7 @@ use Application\Entity\PredefinedEvent;
 use Application\Entity\CustomFieldValue;
 use Application\Form\CustomFieldset;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Controller\FormController;
 
 /**
@@ -893,8 +893,8 @@ class ModelsController extends FormController
             $form->get('impact')->setValue(5);
             $form->get('punctual')->setValue(true);
             $form->get('category')->setValue($alarmcat->getId());
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $form->get('organisation')->setValue($this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $form->get('organisation')->setValue($this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getId());
@@ -999,8 +999,9 @@ class ModelsController extends FormController
                     $objectManager = $this->getEntityManager();
                     $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
                     foreach ($json as $name => $actions) {
-                        $model = $objectManager->getRepository(PredefinedEvent::class)->findOneBy(array('name' => $name));
-                        if ($model) {
+                        $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
+                        if (count($model) !== 1 ) {
+                            $model = $model[0];
                             //remove existing actions
                             foreach ($model->getChildren() as $child) {
                                 if ($child->getCategory() instanceof ActionCategory) {

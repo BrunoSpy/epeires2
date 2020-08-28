@@ -17,15 +17,15 @@
  */
 namespace Administration\Controller\Factory;
 
-use Administration\Controller\RadarsController;
+use Administration\Controller\SwitchObjectsController;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class RadarsControllerFactory implements FactoryInterface {
+class SwitchObjectsControllerFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new RadarsController($container->get('Doctrine\ORM\EntityManager'));
+        return new SwitchObjectsController($container->get('Doctrine\ORM\EntityManager'));
     }
 
 }

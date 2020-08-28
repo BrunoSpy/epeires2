@@ -18,6 +18,7 @@
 namespace Application\Services;
 
 use Application\Entity\AntennaCategory;
+use Application\Entity\SwitchObject;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -113,12 +114,13 @@ class CustomFieldService
                     }
                 }
                 break;
-            case 'radar':
+            case 'radar': //deprecated, not removed for compatibility reasons
+            case 'switch':
                 if ($customfield->isMultiple()) {
                     $radars = explode("\r", $fieldvalue);
                     $name = "";
                     foreach ($radars as $r) {
-                        $radar = $this->em->getRepository('Application\Entity\Radar')->find($r);
+                        $radar = $this->em->getRepository(SwitchObject::class)->find($r);
                         if ($radar) {
                             if (strlen($name) > 0) {
                                 $name .= "+ ";
@@ -127,7 +129,7 @@ class CustomFieldService
                         }
                     }
                 } else {
-                    $radar = $this->em->getRepository('Application\Entity\Radar')->find($fieldvalue);
+                    $radar = $this->em->getRepository(SwitchObject::class)->find($fieldvalue);
                     if ($radar) {
                         $name = $radar->getName();
                     }
@@ -224,6 +226,7 @@ class CustomFieldService
             case 'select':
             case 'stack':
             case 'radar':
+            case 'switch':
             case 'afis':
                 if ($customfield->isMultiple()) {
                     $attributes['multiple'] = 'multiple';
@@ -266,6 +269,7 @@ class CustomFieldService
             case 'select':
             case 'stack':
             case 'radar':
+            case 'switch':
             case 'afis':
                 $type = 'Laminas\Form\Element\Select';
                 break;
@@ -293,6 +297,7 @@ class CustomFieldService
                 case 'antenna':
                 case 'frequency':
                 case 'radar':
+                case 'switch':
                 case 'select':
                 case 'stack':
                 case 'afis':
@@ -348,9 +353,13 @@ class CustomFieldService
                 $value_options = $result;
                 break;
             case 'radar':
-                $value_options = $om->getRepository('Application\Entity\Radar')->getAllAsArray(array(
-                    'decommissionned' => false
-                ));
+            case 'switch':
+                $value_options = array();
+                foreach ($customfield->getCategory()->getSwitchObjects() as $so) {
+                    if(!$so->isDecommissionned()){
+                        $value_options[$so->getId()] = $so->getName();
+                    }
+                }
                 break;
             case 'select':
                 $input = preg_replace('~\r[\n]?~', "\n", $customfield->getDefaultValue());
@@ -418,6 +427,13 @@ class CustomFieldService
                     $empty_option = "Tous les radars";
                 } else {
                     $empty_option = "Choisissez le radar.";
+                }
+                break;
+            case 'switch':
+                if ($customfield->isMultiple()) {
+                    $empty_option = "Tous les objets";
+                } else {
+                    $empty_option = "Choisissez l'objet.";
                 }
                 break;
             case 'select':

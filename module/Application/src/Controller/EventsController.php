@@ -41,7 +41,7 @@ use Laminas\Form\Element;
 use Application\Form\CategoryFormFieldset;
 use Application\Form\CustomFieldset;
 
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Doctrine\ORM\QueryBuilder;
 
 use LmcRbacMvc\Exception\UnauthorizedException;
@@ -51,7 +51,7 @@ use LmcRbacMvc\Exception\UnauthorizedException;
  *
  * @author Bruno Spyckerelle
  */
-class EventsController extends TabsController
+class EventsController extends TimelineTabController
 {
 
     private $eventservice;
@@ -92,7 +92,7 @@ class EventsController extends TabsController
     
         $this->flashMessenger()->clearMessages();
 
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
         $onlyroot = false;
         $cats = array();
 
@@ -197,10 +197,10 @@ class EventsController extends TabsController
     {
         $json = array();
         $objectmanager = $this->getEntityManager();
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             
             $currentipo = $objectmanager->getRepository('Application\Entity\IPO')->findOneBy(array(
-                'organisation' => $this->zfcUserAuthentication()
+                'organisation' => $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getId(),
@@ -215,7 +215,7 @@ class EventsController extends TabsController
     }
 
     public function testAuthenticationAction() {
-        if($this->zfcUserAuthentication()->hasIdentity()) {
+        if($this->lmcUserAuthentication()->hasIdentity()) {
             $this->getResponse()->setStatusCode(200);
             return new JsonModel();
         } else {
@@ -340,7 +340,7 @@ class EventsController extends TabsController
         $qb->select(array(
             'r'
         ))
-            ->from('Application\Entity\Radar', 'r')
+            ->from('Application\Entity\SwitchObject', 'r')
             ->andWhere($qb->expr()
             ->like('r.name', $qb->expr()
             ->literal($search . '%')))
@@ -504,7 +504,7 @@ class EventsController extends TabsController
         $sendEvents = array();
         $return = $this->params()->fromQuery('return', null);
         
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             
             if ($this->getRequest()->isPost()) {
                 $post = array_merge_recursive($this->getRequest()
@@ -524,7 +524,7 @@ class EventsController extends TabsController
                     // modification
                     $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
                     if ($event) {
-                        if ($this->isGranted('events.write') || $event->getAuthor()->getId() === $this->zfcUserAuthentication()
+                        if ($this->isGranted('events.write') || $event->getAuthor()->getId() === $this->lmcUserAuthentication()
                             ->getIdentity()
                             ->getId()) {
                             $credentials = true;
@@ -538,9 +538,9 @@ class EventsController extends TabsController
                     // création
                     if ($this->isGranted('events.create')) {
                         $event = new Event();
-                        $event->setAuthor($this->zfcUserAuthentication()
+                        $event->setAuthor($this->lmcUserAuthentication()
                             ->getIdentity());
-                        $event->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                        $event->setOrganisation($this->lmcUserAuthentication()->getIdentity()->getOrganisation());
                         // si utilisateur n'a pas les droits events.status, le champ est désactivé et aucune valeur n'est envoyée
                         if (! isset($post['status'])) {
                             $post['status'] = 1;
@@ -626,9 +626,9 @@ class EventsController extends TabsController
                                         foreach ($recurrence->getRSet() as $occurrence) {
                                             $e = new Event();
                                             $e->setRecurrence($recurrence);
-                                            $e->setAuthor($this->zfcUserAuthentication()
+                                            $e->setAuthor($this->lmcUserAuthentication()
                                                 ->getIdentity());
-                                            $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                                            $e->setOrganisation($this->lmcUserAuthentication()->getIdentity()->getOrganisation());
                                             $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
                                             $e->setStatus($status);
                                             $e->setStartdate($occurrence);
@@ -681,9 +681,9 @@ class EventsController extends TabsController
                                 $status = $objectManager->getRepository('Application\Entity\Status')->find(1);
                                 $e->setStatus($status);
                                 $e->setStartdate($occurrence);
-                                $e->setAuthor($this->zfcUserAuthentication()
+                                $e->setAuthor($this->lmcUserAuthentication()
                                     ->getIdentity());
-                                $e->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                                $e->setOrganisation($this->lmcUserAuthentication()->getIdentity()->getOrganisation());
                                 if($enddate !== null) {
                                     $end = clone $occurrence;
                                     $end->add($diff);
@@ -913,7 +913,7 @@ class EventsController extends TabsController
                                 $alarm = new Event();
                                 $alarm->setCategory($objectManager->getRepository('Application\Entity\AlarmCategory')
                                     ->findAll()[0]);
-                                $alarm->setAuthor($this->zfcUserAuthentication()
+                                $alarm->setAuthor($this->lmcUserAuthentication()
                                     ->getIdentity());
                                 $alarm->setOrganisation($e->getOrganisation());
                                 $alarm->setParent($e);
@@ -969,7 +969,7 @@ class EventsController extends TabsController
                         if( !$id ) { //uniquement lors d'une création d'évènement
                             if( $e->getCategory() instanceof AntennaCategory ) {
                                 $frequencies = $e->getCustomFieldValue($e->getCategory()->getFrequenciesField());
-                                $antennaState = $e->getCustomFieldValue($e->getCategory()->getStatefield())->getValue();
+                                $antennaState = $e->getCustomFieldValue($e->getCategory()->getStateField())->getValue();
                                 $antennaId = $e->getCustomFieldValue($e->getCategory()->getAntennafield())->getValue();
                                 $antenna = $objectManager->getRepository('Application\Entity\Antenna')->find($antennaId);
                                 $freqs = array();
@@ -1005,7 +1005,7 @@ class EventsController extends TabsController
                                                     "Antenne principale indisponible",
                                                     $e->getStartdate(),
                                                     $e->getEnddate(),
-                                                    $this->zfcUserAuthentication()->getIdentity(),
+                                                    $this->lmcUserAuthentication()->getIdentity(),
                                                     $e,
                                                     $messages
                                                 );
@@ -1242,8 +1242,8 @@ class EventsController extends TabsController
             $form->add(new CustomFieldset($this->entityManager, $this->customfieldservice, $cat->getId()));
         }
         if (! $zonefilters) { // si aucun filtre => cas d'un nouvel evt
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $org = $this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $org = $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation();
                 $form->get('organisation')->setValue($org->getId());
@@ -1689,10 +1689,10 @@ class EventsController extends TabsController
         $em = $this->getEntityManager();
         $json = array();
         foreach ($em->getRepository('Application\Entity\Tab')->findAll() as $tab) {
-            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab, $this->zfcUserAuthentication());
+            $events = $em->getRepository('Application\Entity\Event')->getTabEvents($tab, $this->lmcUserAuthentication());
             $json[$tab->getId()] = count($events);
         }
-        $json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
+        //$json['radar'] = count($em->getRepository('Application\Entity\Event')->getRadarEvents());
         $json['radio'] = count($em->getRepository('Application\Entity\Event')->getRadioEvents());
         $json['afis'] = count($em->getRepository('Application\Entity\Event')->getAfisEvents());
         $json['flightplans'] = count($em->getRepository('Application\Entity\Event')->getFlightPlanEvents(null,null,[1,2]));
@@ -1739,7 +1739,7 @@ class EventsController extends TabsController
         $objectManager = $this->getEntityManager();
         
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
-            $this->zfcUserAuthentication(), 
+            $this->lmcUserAuthentication(),
             $day,
             null,
             $lastmodified, 
@@ -1792,7 +1792,7 @@ class EventsController extends TabsController
         $events = array();
 
         foreach ($om->getRepository('Application\Entity\Event')->getEvents(
-            $this->zfcUserAuthentication(),
+            $this->lmcUserAuthentication(),
             $start,
             $end,
             $lastmodified,
@@ -1967,8 +1967,8 @@ class EventsController extends TabsController
         $objectManager = $this->getEntityManager();
         $readablecat = array();
         foreach ($categories as $category) {
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $roles = $this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $roles = $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getRoles();
                 foreach ($roles as $role) {
@@ -2054,7 +2054,7 @@ class EventsController extends TabsController
             $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
             if ($event) {
                 // modification autorisée à l'auteur ou aux utilisateurs disposant des droits en écriture
-                if ($this->zfcUserAuthentication()->hasIdentity() && ($event->getAuthor()->getId() == $this->zfcUserAuthentication()
+                if ($this->lmcUserAuthentication()->hasIdentity() && ($event->getAuthor()->getId() == $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getId() || $this->isGranted('events.write'))) {
                     switch ($field) {
@@ -2514,8 +2514,8 @@ class EventsController extends TabsController
     public function getshifthoursAction() {
         $json = array();
         $em = $this->getEntityManager();
-        if ($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('events.mod-opsup')) {
-            $user =  $this->zfcUserAuthentication()->getIdentity();
+        if ($this->lmcUserAuthentication()->hasIdentity() && $this->isGranted('events.mod-opsup')) {
+            $user =  $this->lmcUserAuthentication()->getIdentity();
             $shifthours = array();
             foreach ($em->getRepository('Application\Entity\ShiftHour')->findAll() as $shifthour) {
                 foreach ($shifthour->getOpSupType()->getRoles() as $role) {
@@ -2566,16 +2566,16 @@ class EventsController extends TabsController
             'HH:mm'
         );
         $postits = array();
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             
-            $user = $this->zfcUserAuthentication()
+            $user = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getId();
             
             $lastupdate = $this->params()->fromQuery('lastupdate', null);
             
             $userroles = array();
-            foreach ($this->zfcUserAuthentication()
+            foreach ($this->lmcUserAuthentication()
                          ->getIdentity()
                          ->getRoles() as $role) {
                 $userroles[] = $role->getId();
@@ -2664,7 +2664,7 @@ class EventsController extends TabsController
         $id = $this->params()->fromQuery('id', null);
         $em = $this->getEntityManager();
         $messages = array();
-        if ($this->isGranted('events.create') && $this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->isGranted('events.create') && $this->lmcUserAuthentication()->hasIdentity()) {
             if ($this->getRequest()->isPost()) {
         
                 $post = $this->getRequest()->getPost();
@@ -2700,11 +2700,11 @@ class EventsController extends TabsController
                         $postit->setStartdate($now);
                         $postit->setCategory($postitCategory);
                         $postit->setPunctual(false);
-                        $postit->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                        $postit->setAuthor($this->lmcUserAuthentication()->getIdentity());
                         
                         $confirmedStatus = $em->getRepository(Status::class)->find('2');
                         $postit->setStatus($confirmedStatus);
-                        $postit->setOrganisation($this->zfcUserAuthentication()->getIdentity()->getOrganisation());
+                        $postit->setOrganisation($this->lmcUserAuthentication()->getIdentity()->getOrganisation());
                         $name = new CustomFieldValue();
                         $name->setCustomField($postitCategory->getNamefield());
                         $name->setValue($post['name']);

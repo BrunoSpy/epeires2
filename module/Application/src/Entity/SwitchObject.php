@@ -23,13 +23,17 @@ use Laminas\Form\Annotation;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
- * @ORM\Table(name="radars")
+ * @ORM\Table(name="switchobjects")
  *
  * @author Bruno Spyckerelle
  *        
  */
-class Radar extends TemporaryResource
+class SwitchObject extends TemporaryResource
 {
+
+
+
+    const RADAR = "radar";
 
     /**
      * @ORM\Id
@@ -67,10 +71,49 @@ class Radar extends TemporaryResource
      * @ORM\OneToOne(targetEntity="PredefinedEvent")
      */
     protected $model;
-    
+
+    /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Options({"label":"Type d'objet :"})
+     */
+    protected $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="SwitchObject", inversedBy="children", cascade={"persist"})
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Objet parent :", "empty_option":"Facultatif"})
+     */
+    protected $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="SwitchObject", mappedBy="parent", cascade={"persist", "remove"})
+     */
+    protected $children;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="SwitchObjectCategory", mappedBy="switchObjects")
+     */
+    protected $categories;
+
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param mixed $categories
+     */
+    public function setCategories($categories): void
+    {
+        $this->categories = $categories;
     }
 
     public function getName()
@@ -112,11 +155,60 @@ class Radar extends TemporaryResource
     {
         $this->model = $model;
     }
-    
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     */
+    public function setParent($parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param mixed $children
+     */
+    public function setChildren($children): void
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type): void
+    {
+        $this->type = $type;
+    }
+
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);
         $object_vars['organisation'] = $this->organisation->getId();
+        if($this->parent) {$object_vars['parent'] = $this->parent->getId();}
         return $object_vars;
     }
 }

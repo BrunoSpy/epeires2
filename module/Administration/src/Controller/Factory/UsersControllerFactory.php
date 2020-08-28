@@ -27,7 +27,7 @@ class UsersControllerFactory implements FactoryInterface {
     {
         return new UsersController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('zfcuser_module_options'),
+            $container->get('lmcuser_module_options'),
             $container->get('config'));
     }
 

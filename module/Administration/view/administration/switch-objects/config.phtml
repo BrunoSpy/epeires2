@@ -1,0 +1,114 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')?>
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchobjects.js')?>
+    
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9">
+                <p></p>
+
+              <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" id="reflex">Catégories </h4>
+                    </div>
+
+                  <div class="panel-body">
+                        <table class="table table-striped sortable">
+                            <thead>
+                            <tr>
+                                <th data-sort="string">Catégorie</th>
+                                <th>Objets</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                  <?php foreach ($this->categories as $category) {
+                    echo '<tr><td>';
+                    echo $category->getName();
+                    echo '</td><td>';
+                    foreach ($category->getSwitchObjects() as $o) {
+                      echo '<span class="label label-default">'.$o->getName() . '</span> ';
+                    }
+                    echo '</td><td>';
+                    echo '<a class="mod-category" data-toggle="modal" data-name="'.$category->getName().'" data-id="'.$category->getId().'" href="#category-container"><span class="glyphicon glyphicon-pencil"></span></a>';
+                    echo '</td></tr>';
+                  }
+                  ?>
+                  </tbody></table></div>
+
+                  </div>
+
+
+
+                <?php
+
+                foreach ($this->types as $type) {
+                  echo '<div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" id="reflex">Fiches réflexes des objets '.$type.' </h4>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped sortable">
+                            <thead>
+                            <tr>
+                                <th data-sort="string">'.ucfirst($type).'</th>
+                                <th>Fiche réflexe</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>';
+                  foreach ($this->repo->findBy(array('type'=>$type, 'decommissionned'=>false), array('name'=>'ASC')) as $object) {
+                      echo '<tr>';
+                      echo '<td data-id="'.$object->getId().'">'.$object->getName().'</td>';
+                      echo '<td>'.($object->getModel() ? $object->getModel()->getName() : 'Aucun modèle associé.').'</td>';
+                      echo '<td><a href="#model-container" '
+                          . 'data-toggle="modal" '
+                          . 'data-name="'.$object->getName().'" '
+                          . 'data-id="'.$object->getId().'" '
+                          . 'class="change-model"><span class="glyphicon glyphicon-pencil"></span></a></td>';
+                      echo '</tr>';
+                  }
+                  echo '</tbody>
+                        </table>
+                    </div>
+                </div>';
+                }
+
+                ?>
+
+            </div>
+          <div class="col-md-3">
+            <p></p>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">Aide</h4>
+              </div>
+              <div class="panel-body">
+                <p>Cette page permet de configurer les onglets affichant les évènements sous forme de liste de commutateurs.</p>
+                <p>Pour créer un onglet de ce type, il faut :
+                <ul>
+                  <li>créer une catégorie de type "Objet commutable" via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a> ;</li>
+                  <li>créer un onglet de type "switchlist" via <a href="<?php echo $this->url('administration', array('controller'=>'tabs', 'action'=>'index'));?>">la page de configuration des onglets ;</a> </li>
+                  <li>créer des objets commutables via <a href="<?php echo $this->url('administration', array('controller'=>'switchobjects', 'action'=>'index'));?>">la page de création d'objets ;</a></li>
+                  <li>affecter ces objets à la catégorie pertinente via cette page.</li>
+                </ul>
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+<?php echo $this->modalwindow("model-container", "<h4 id=\"model-title\"></h4>", "", "<div id=\"model-form\"></div>") ?>
+
+<?php echo $this->modalwindow("category-container", '<h4 id="category-title"></h4>', '', '<div id="category-form"></div>>') ?>
+
+<?php $this->inlineScript()->captureStart();?>
+    
+    $('.sidenav').affix();
+    
+    switchobjects('<?php echo $this->url('administration'); ?>');
+
+<?php echo $this->notifications($this->messages); ?>
+
+<?php $this->inlineScript()->captureEnd();?>

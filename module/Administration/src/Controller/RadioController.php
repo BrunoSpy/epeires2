@@ -20,7 +20,7 @@ namespace Administration\Controller;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Entity\Antenna;
 use Application\Entity\Frequency;
 use Doctrine\Common\Collections\Criteria;

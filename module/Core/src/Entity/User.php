@@ -20,7 +20,7 @@ namespace Core\Entity;
 use Laminas\Form\Annotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use ZfcUser\Entity\UserInterface;
+use LmcUser\Entity\UserInterface;
 use LmcRbacMvc\Identity\IdentityInterface;
 use Doctrine\ORM\PersistentCollection;
 

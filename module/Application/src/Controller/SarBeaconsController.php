@@ -292,10 +292,10 @@ class SarBeaconsController extends TabController
             $event->setStartdate($now);
             $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
             $event->setPunctual(false);
-            $event->setOrganisation($this->zfcUserAuthentication()
+            $event->setOrganisation($this->lmcUserAuthentication()
                         ->getIdentity()
                         ->getOrganisation());
-            $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+            $event->setAuthor($this->lmcUserAuthentication()->getIdentity());
 
             $categories = $this->em->getRepository('Application\Entity\InterrogationPlanCategory')->findAll();
 
@@ -336,7 +336,7 @@ class SarBeaconsController extends TabController
                     $alertevent->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
                     $alertevent->setPunctual(false);
                     $alertevent->setOrganisation($event->getOrganisation());
-                    $alertevent->setAuthor($this->zfcUserAuthentication()->getIdentity());
+                    $alertevent->setAuthor($this->lmcUserAuthentication()->getIdentity());
                     $alertevent->setCategory($alertcat);
 
                     $typealertfieldvalue = new CustomFieldValue();
@@ -524,10 +524,10 @@ class SarBeaconsController extends TabController
             $event->setStartdate($now);
             $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
             $event->setPunctual(false);
-            $event->setOrganisation($this->zfcUserAuthentication()
+            $event->setOrganisation($this->lmcUserAuthentication()
                         ->getIdentity()
                         ->getOrganisation());
-            $event->setAuthor($this->zfcUserAuthentication()->getIdentity());
+            $event->setAuthor($this->lmcUserAuthentication()->getIdentity());
             $event->setParent($ip);
 
             $categories = $this->em->getRepository('Application\Entity\FieldCategory')->findAll();
@@ -901,7 +901,7 @@ class SarBeaconsController extends TabController
     }
 
     private function authSarBeacons($action) {
-        return (!$this->zfcUserAuthentication()->hasIdentity() or !$this->isGranted('sarbeacons.'.$action)) ? false : true;
+        return (!$this->lmcUserAuthentication()->hasIdentity() or !$this->isGranted('sarbeacons.'.$action)) ? false : true;
     }
 
 }

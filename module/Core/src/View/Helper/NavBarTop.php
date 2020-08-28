@@ -32,7 +32,7 @@ class NavBarTop extends AbstractHelper {
     public function __invoke($color, $title, $return = null, $iponumber = null, $zoneform = null, $IHMLight = false) {
         
         $auth = $this->sm->get('LmcRbacMvc\Service\AuthorizationService');
-        $zfcuserauth = $this->sm->get('zfcuser_auth_service');
+        $zfcuserauth = $this->sm->get('lmcuser_auth_service');
 
         $html = '<nav class="navbar navbar-default navbar-fixed-top navbar-material-'.$color.'-800" id="navbar-first">';
         $html .= '<div class="container-fluid">';

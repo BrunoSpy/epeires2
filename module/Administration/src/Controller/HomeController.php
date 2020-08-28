@@ -19,6 +19,7 @@ namespace Administration\Controller;
 
 use Core\Version;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Roave\PsrContainerDoctrine\MigrationsConfigurationFactory;
 
 /**
  *
@@ -31,8 +32,7 @@ class HomeController extends AbstractActionController
     private $doctrinemigrations;
     private $config;
 
-    public function __construct($doctrinemigrations, $config) {
-        $this->doctrinemigrations = $doctrinemigrations;
+    public function __construct( $config) {
         $this->config = $config;
     }
 
@@ -57,14 +57,14 @@ class HomeController extends AbstractActionController
             }
         }
 
-        $this->doctrinemigrations->setMigrationsTableName($this->config['doctrine']['migrations']['migrations_table']);
+    /*
         $this->doctrinemigrations->validate();
         $executedMigrations = $this->doctrinemigrations->getMigratedVersions();
         $availableMigrations = $this->doctrinemigrations->getAvailableVersions();
         $executedUnavailableMigrations = array_diff($executedMigrations, $availableMigrations);
         $numExecutedUnavailableMigrations = count($executedUnavailableMigrations);
         $newMigrations = count($availableMigrations) - count($executedMigrations);
-
+*/
         $extensions = array();
         $extensions['gd'] = extension_loaded('gd');
         $extensions['iconv'] = extension_loaded('iconv');
@@ -102,11 +102,11 @@ class HomeController extends AbstractActionController
         }
 
         return array(
-            'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
+           /* 'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
             'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
             'latestversion' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getLatestVersion()),
             'table' => $this->doctrinemigrations->getMigrationsTableName(),
-            'migrations' => $newMigrations,
+            'migrations' => $newMigrations,*/
             'extensions' => $extensions,
             'phpversionid' => PHP_VERSION_ID,
             'certifvalid' => $certifValidTo,

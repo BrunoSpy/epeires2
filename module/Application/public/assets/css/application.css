@@ -454,3 +454,37 @@ body {
 .list-actions .tooltip-inner {
 	line-height: 1.2em;
 }
+
+/**** switchobject list tab ***/
+.switch-content {
+	max-height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: center;
+	margin-right: 15px;
+	margin-left: 15px;
+	column-gap: 10px;
+}
+.switchobject-name {
+	padding-top: 5px;
+}
+.switchobject-line {
+	columns: 2;
+}
+
+.switch-group {
+	width: 400px;
+	border: solid #ddd 1px;
+	margin-bottom: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.switch-group:nth-of-type(2n+1) {
+	background-color: #f9f9f9;
+}
+
+.switchobject-button {
+	width: 60px;
+	float: right;
+}

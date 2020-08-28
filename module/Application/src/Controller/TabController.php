@@ -57,8 +57,8 @@ class TabController extends FormController
         $this->viewmodel = new ViewModel();
         
         $this->layout()->iponumber = "";
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $iponumber = $this->zfcUserAuthentication()
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $iponumber = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation()
                 ->getIpoNumber();
@@ -67,7 +67,7 @@ class TabController extends FormController
             }
         }
 
-        $userauth = $this->zfcUserAuthentication();
+        $userauth = $this->lmcUserAuthentication();
         $this->layout()->showHome = true;
         //determine if there's a default tab to show home entry or not
         if ($userauth != null && $userauth->hasIdentity()) {
@@ -92,8 +92,8 @@ class TabController extends FormController
 
         // initialisation de la session si utilisateur connecté
         if ($this->sessionContainer->zoneshortname == null) {
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $this->sessionContainer->zoneshortname = $this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $this->sessionContainer->zoneshortname = $this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getShortname();
@@ -102,8 +102,8 @@ class TabController extends FormController
 
         $form = $this->getZoneForm();
         if($form != null) {
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $user = $this->zfcUserAuthentication()->getIdentity();
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $user = $this->lmcUserAuthentication()->getIdentity();
                 $org = $user->getOrganisation();
                 $zone = $user->getZone();
 
@@ -143,8 +143,8 @@ class TabController extends FormController
         $this->layout()->lang = $this->config['lang'];
 
         //add mattermost chat
-        if($this->zfcUserAuthentication()->hasIdentity() && $this->isGranted('chat.access')) {
-            $user = $this->zfcUserAuthentication()->getIdentity();
+        if($this->lmcUserAuthentication()->hasIdentity() && $this->isGranted('chat.access')) {
+            $user = $this->lmcUserAuthentication()->getIdentity();
             $mattermostLogin = $user->getMattermostUsername();
             try{
                 if($mattermostLogin && strlen($mattermostLogin) > 0 && array_key_exists('mattermost', $this->config)) {
@@ -184,8 +184,8 @@ class TabController extends FormController
         $values = array();
         $values['0'] = "Tout";
         $countZones = 0;
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $user = $this->zfcUserAuthentication()->getIdentity();
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $user = $this->lmcUserAuthentication()->getIdentity();
             $values[$user->getOrganisation()->getShortname()] = $user->getOrganisation()->getName();
             foreach ($user->getOrganisation()->getZones() as $zone) {
                 $values[$zone->getShortname()] = " > " . $zone->getName();

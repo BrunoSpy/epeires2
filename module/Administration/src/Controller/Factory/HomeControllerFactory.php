@@ -18,6 +18,7 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\HomeController;
+use Doctrine\Migrations\Tools\Console\Command\StatusCommand;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
@@ -26,7 +27,6 @@ class HomeControllerFactory implements FactoryInterface {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new HomeController(
-            $container->get('doctrine.migrations.configuration'),
             $container->get('config'));
     }
 

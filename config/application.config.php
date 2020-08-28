@@ -21,7 +21,6 @@ $env = getenv('APP_ENV') ?  : 'production';
 
 $modules = array(
         'Laminas\Mvc\I18n',
-        'ApiSkeletons\Doctrine\DataFixture',
         'Laminas\Mvc\Plugin\FlashMessenger',
         'Laminas\Mvc\Plugin\Prg',
         'Laminas\Db',
@@ -39,10 +38,9 @@ $modules = array(
         'Laminas\Validator',
         'DoctrineModule',
         'DoctrineORMModule',
-        'DoctrineMigrationsModule',
 //        'ZfcBase',
         'LmcRbacMvc',
-        'ZfcUser',
+        'LmcUser',
         'ZfcUserDoctrineORM',
         'AssetManager',
         'DompdfModule',
@@ -73,7 +71,7 @@ $modules = array(
 
 if ($env == 'development') {
 
-    //$modules [] = 'Laminas\DeveloperTools';
+    $modules [] = 'Laminas\DeveloperTools';
     $modules[] = 'ApiSkeletons\Doctrine\DataFixture';
 }
 

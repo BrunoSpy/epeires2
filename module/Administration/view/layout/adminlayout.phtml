@@ -87,13 +87,13 @@
     						</li>
     						<li>
     							<a
-    							href="<?php echo $this->url('administration', array('controller'=>'radars', 'action'=>'index'))?>"
-    							data-title="Centres > Radars">Radars</a>
+    							href="<?php echo $this->url('administration', array('controller'=>'switchobjects', 'action'=>'index'))?>"
+    							data-title="Centres > Objects commutables">Objets commutables</a>
     						</li>
-                            <li>
-                                <a 
-                                href="<?php echo $this->url('administration', array('controller'=> 'afis', 'action' => 'index'))?>" data-title="Centres > Afis">Afis</a>
-                            </li>
+                <li>
+                    <a
+                    href="<?php echo $this->url('administration', array('controller'=> 'afis', 'action' => 'index'))?>" data-title="Centres > Afis">Afis</a>
+                </li>
     					</ul>
     				</li>
                     <?php endif; ?>
@@ -163,15 +163,15 @@
     							data-title="Onglets > Radio"
     							href="<?php echo $this->url('administration', array('controller'=> 'radio', 'action' => 'config'))?>">Onglet radio</a>
     						</li>
-                            <?php endif; ?>
-                            <?php if($this->isGranted('admin.radar')) : ?>
-                                <li><a
-                                        data-title="Onglets > Radar"
-                                        href="<?php echo $this->url('administration', array('controller'=> 'radars', 'action' => 'config'))?>">Onglet radar</a>
-                                </li>
-                            <?php endif; ?>
-                            <?php if($this->isGranted('admin.zonesmil')) : ?>
-                            <li><a
+                <?php endif; ?>
+                <?php if($this->isGranted('admin.switchobjects')) : ?>
+                    <li><a
+                            data-title="Onglets > Objets commutables"
+                            href="<?php echo $this->url('administration', array('controller'=> 'switchobjects', 'action' => 'config'))?>">Onglets d'objets commutables</a>
+                    </li>
+                <?php endif; ?>
+                <?php if($this->isGranted('admin.zonesmil')) : ?>
+                <li><a
     							data-title="Onglets > Zones militaires"
     							href="<?php echo $this->url('administration', array('controller'=> 'mil', 'action' => 'config'))?>">Onglet zones militaires</a>
     						</li>
@@ -198,8 +198,8 @@
     </div> <!-- /container -->
         
     <?php 
-	if(!$this->zfcUserIdentity()){
-			echo $this->modalwindow("loginwindow", "<h4>Connexion</h4>", "", $this->zfcUserLoginWidget(array('redirect'=>'administration')));
+	if(!$this->lmcUserIdentity()){
+			echo $this->modalwindow("loginwindow", "<h4>Connexion</h4>", "", $this->lmcUserLoginWidget(array('redirect'=>'administration')));
 	} ?>
 
 

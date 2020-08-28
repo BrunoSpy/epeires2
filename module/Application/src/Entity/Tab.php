@@ -32,6 +32,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 class Tab
 {
 
+    const TIMELINE = "timeline";
+    const SWITCHLIST = "switchlist";
+
+    const OPTIONS = array(self::TIMELINE, self::SWITCHLIST);
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -100,7 +105,25 @@ class Tab
      * @Annotation\Options({"label":"Onglet principal :"})
      */
     protected $isDefault = false;
-    
+
+    /**
+     * Type of tab : timeline or switchlist
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Required(true)
+     * @Annotation\Options({"label":"Type d'onglet :"})
+     */
+    protected $type;
+
+    /**
+     * Used only if type=switchlist
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Affichage horizontal :"})
+     */
+    protected $horizontal = false;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -110,6 +133,38 @@ class Tab
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHorizontal(): bool
+    {
+        return $this->horizontal;
+    }
+
+    /**
+     * @param bool $horizontal
+     */
+    public function setHorizontal(bool $horizontal): void
+    {
+        $this->horizontal = $horizontal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     public function getName()

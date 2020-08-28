@@ -33,7 +33,7 @@ class MattermostServiceFactory implements FactoryInterface
     {
         return new MattermostService(
             $container->get('config'),
-            $container->get('zfcuser_auth_service'));
+            $container->get('lmcuser_auth_service'));
     }
 }
 

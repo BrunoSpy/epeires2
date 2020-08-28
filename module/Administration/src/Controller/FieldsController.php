@@ -23,7 +23,7 @@ use Laminas\View\Model\JsonModel;
 use Application\Controller\FormController;
 use Application\Entity\CustomField;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 
 /**
  *

@@ -12,6 +12,8 @@ echo $this->form()->openTag($this->form);
 
 echo $this->formHidden($this->form->get('id'));
 
+echo $this->controlGroup($this->form->get('type'));
+
 echo $this->controlGroup($this->form->get('name'));
 
 echo $this->controlGroup($this->form->get('shortname'));
@@ -21,6 +23,8 @@ echo $this->controlGroup($this->form->get('place'));
 echo $this->controlGroup($this->form->get('isDefault'));
 
 echo $this->controlGroup($this->form->get('onlyroot'));
+
+echo $this->controlGroup($this->form->get('horizontal'));
 
 echo $this->controlGroup($this->form->get('categories'));
 

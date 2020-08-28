@@ -91,7 +91,7 @@ return array(
             'Administration\Controller\Config' => 'Administration\Controller\Factory\ConfigControllerFactory',
             'Administration\Controller\Centre' => 'Administration\Controller\Factory\CentreControllerFactory',
             'Administration\Controller\Radio' => 'Administration\Controller\Factory\RadioControllerFactory',
-            'Administration\Controller\Radars' => 'Administration\Controller\Factory\RadarsControllerFactory',
+            'Administration\Controller\Switchobjects' => 'Administration\Controller\Factory\SwitchObjectsControllerFactory',
             'Administration\Controller\Users' => 'Administration\Controller\Factory\UsersControllerFactory',
             'Administration\Controller\Roles' => 'Administration\Controller\Factory\RolesControllerFactory',
             'Administration\Controller\Ipos' => 'Administration\Controller\Factory\IPOSControllerFactory',
@@ -170,8 +170,8 @@ return array(
                 'name' => 'Onglets',
                 'description' => ''
             ),
-            'admin.radar' => array(
-                'name' => 'Radars',
+            'admin.switchobjects' => array(
+                'name' => 'Objets commutables',
                 'description' => ''
             ),
             'admin.atfcm' => array(

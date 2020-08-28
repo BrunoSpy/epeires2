@@ -29,14 +29,14 @@ use Application\Entity\Sector;
 use Application\Entity\Stack;
 use Application\Entity\Tab;
 use Core\Entity\TemporaryResource;
-use Application\Entity\Radar;
+use Application\Entity\SwitchObject;
 use Application\Entity\Antenna;
 
 use Core\Entity\User;
 
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
-use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
+use LmcUser\Controller\Plugin\LmcUserAuthentication;
 
 /**
  * Description of EventRepository
@@ -50,7 +50,7 @@ class EventRepository extends ExtendedRepository
      * Get all events readable by <code>$userauth</code>
      * intersecting <code>$day</code>
      *
-     * @param ZfcUserAuthentication $userauth
+     * @param lmcUserAuthentication $userauth
      * @param \DateTime $day
      *            If null : use current day
      * @param \DateTime $end
@@ -341,7 +341,7 @@ class EventRepository extends ExtendedRepository
     /**
      * Get all events intersecting [$start, $end] and affected to the user's organisation
      *
-     * @param ZfcUserAuthentication $user
+     * @param lmcUserAuthentication $user
      * @param \DateTime $start
      * @param \DateTime $end
      * @param boolean $exclude
@@ -407,7 +407,7 @@ class EventRepository extends ExtendedRepository
     }
 
     /**
-     * @param ZfcUserAuthentication $user
+     * @param lmcUserAuthentication $user
      * @return array
      */
     public function getCurrentImportantEvents($user) {
@@ -482,10 +482,11 @@ class EventRepository extends ExtendedRepository
         return $query->getResult();
     }
 
+    //TODO
     public function getRadarEvents()
     {
         $qbEvents = $this->getQueryEvents();
-        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\RadarCategory');
+        $qbEvents->andWhere('cat INSTANCE OF Application\Entity\SwitchObjectCategory');
         $qbEvents->andWhere($qbEvents->expr()->eq('cat.archived', 'false'));
         
         $query = $qbEvents->getQuery();
@@ -1586,7 +1587,7 @@ class EventRepository extends ExtendedRepository
             ->andWhere($qbEvents->expr()
             ->isNull('e.parent'));
         
-        if ($resource instanceof Radar) {
+        if ($resource instanceof SwitchObject) {
             $qbEvents->andWhere($qbEvents->expr()
                 ->andX($qbEvents->expr()
                 ->eq('t.type', '?1'), $qbEvents->expr()
@@ -2144,7 +2145,7 @@ class EventRepository extends ExtendedRepository
         $qbc->select(array(
             'r'
         ))
-            ->from('Application\Entity\Radar', 'r')
+            ->from(SwitchObject::class, 'r')
             ->andWhere($qbc->expr()
                 ->like('r.name', $qbc->expr()
                     ->literal($search . '%')))

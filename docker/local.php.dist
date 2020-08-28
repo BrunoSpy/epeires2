@@ -7,7 +7,6 @@
  */
 
 return array(
-
     //activer les boutons sunrise/sunset dans le formulaire de création d'évènement
     //service utilisé : https://api.sunrise-sunset.org/json
     //exemple avec les coordonnées de Paris : latitude et longitude en format décimal uniquement
@@ -26,7 +25,7 @@ return array(
     "secret_init" => "<my secret initialisation vector>",
 
     // Paramétrage de connexion automatique pour les clients basé sur leur IPv4
-    'zfc_rbac' => array(
+    'lmc_rbac' => array(
         'guards' => array(
             //Configure autoconnection according to the example below
             //Clients with IP matching this list won't be able to connect with another user

@@ -75,13 +75,13 @@ class ReportController extends AbstractEntityManagerAwareController
                 //évènements lisibles par l'utilisateur, du jour spécifié, de la catégorie et non supprimés
                 $category['events'] = $this->getEntityManager()
                     ->getRepository('Application\Entity\Event')
-                    ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($cat->getId()), array(1,2,3,4));
+                    ->getEvents($this->lmcUserAuthentication(), $day, null, null, true, array($cat->getId()), array(1,2,3,4));
                 $category['childs'] = array();
                 foreach ($cat->getChildren() as $subcat) {
                     $subcategory = array();
                     $subcategory['events'] = $this->getEntityManager()
                         ->getRepository('Application\Entity\Event')
-                        ->getEvents($this->zfcUserAuthentication(), $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
+                        ->getEvents($this->lmcUserAuthentication(), $day, null, null, true, array($subcat->getId()), array(1,2,3,4));
                     $subcategory['name'] = $subcat->getName();
                     $category['childs'][] = $subcategory;
                 }

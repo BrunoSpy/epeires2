@@ -25,7 +25,7 @@ use Laminas\Form\Annotation\AnnotationBuilder;
 use Core\Entity\Permission;
 use Core\Entity\Role;
 use Doctrine\Common\Collections\ArrayCollection;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Doctrine\Common\Collections\Criteria;
 use Application\Controller\FormController;
 

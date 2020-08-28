@@ -18,23 +18,24 @@
  * @author Bruno Spyckerelle
  */
 
-var radar = function(url){
+var switchlist = function(url, tabid){
 
     //if true, switch the button to its previous state
     var back = true;
+    var timeout;
 
-    $('.radar-switch').on('change', function(e){
+    $('.object-switch').on('change', function(e){
         var newState = $(this).is(':checked');
-        $('button#end-radar-href').attr('href', $(this).data('href')+"&state="+newState);
-        $('#radar_name').html($(this).data('radar'));
-        $("#cancel-radar").data('radar', $(this).data('radarid')) ;
+        $('button#end-object-href').attr('href', $(this).data('href')+"&state="+newState+"&tabid="+tabid);
+        $('#object_name').html($(this).data('object'));
+        $("#cancel-object").data('object', $(this).data('objectid')) ;
 
         if(!newState){
-            $("#confirm-end-event .modal-body #message").html("<p>Voulez-vous vraiment créer un nouvel évènement radar ?</p>"+
+            $("#confirm-end-event .modal-body #message").html("<p>Voulez-vous vraiment créer un nouvel évènement ?</p>"+
                 "<p>L'heure actuelle sera utilisée comme heure de début.</p>");
             $('.form-group').show();
         } else {
-            $("#confirm-end-event .modal-body #message").html( "<p>Voulez-vous vraiment terminer l'évènement radar en cours ?</p>"+
+            $("#confirm-end-event .modal-body #message").html( "<p>Voulez-vous vraiment terminer l'évènement en cours ?</p>"+
                 "<p>L'heure actuelle sera utilisée comme heure de fin.</p>");
             $('.form-group').hide();
         }
@@ -43,7 +44,7 @@ var radar = function(url){
 
     $("#confirm-end-event").on('hide.bs.modal', function(){
         if(back){
-            var button = $('#switch_'+$("#cancel-radar").data('radar'));
+            var button = $('#switch_'+$("#cancel-object").data('object'));
             button.prop('checked', !button.is(':checked') );
         }
     });
@@ -52,35 +53,33 @@ var radar = function(url){
         event.preventDefault();
         back = false;
         $("#confirm-end-event").modal('hide');
-        $.post($("#end-radar-href").attr('href'), $("#Event").serialize(), function(data){
+        $.post($("#end-object-href").attr('href'), $("#Event").serialize(), function(data){
             displayMessages(data);
             back = true;
-            var button = $('#switch_'+$("#cancel-radar").data('radar'));
+            var button = $('#switch_'+$("#cancel-object").data('object'));
             if(data['error']){
                 //dans le doute, on remet le bouton à son état antérieur
                 button.prop('checked', !button.is(':checked') );
             }
-            if(!button.is(':checked')) {
-                $("#radar-"+$("#cancel-radar").data('radar')+" a.open-fiche").show();
-            } else {
-                $("#radar-"+$("#cancel-radar").data('radar')+" a.open-fiche").hide();
-            }
+            clearTimeout(timeout);
+            doPoll();
         }, 'json');
     });
 
     //refresh page every 30s
-    (function doPoll(){
-        $.post(url+'radars/getradarstate')
+    var doPoll = function(){
+        $.post(url+'switchlisttab/getobjectstate?tabid='+tabid)
             .done(function(data) {
                 $.each(data, function(key, value){
                     $('#switch_'+key).prop('checked', value);
                     if(!value) {
-                        $("#radar-"+key+" a.open-fiche").show();
+                        $("#object-"+key+" a.open-fiche").show();
                     } else {
-                        $("#radar-"+key+" a.open-fiche").hide();
+                        $("#object-"+key+" a.open-fiche").hide();
                     }
                 });
             })
-            .always(function() { setTimeout(doPoll, 30000);});
-    })();
+            .always(function() { timeout = setTimeout(doPoll, 30000);});
+    };
+    doPoll();
 };

@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Application\Form\CustomFieldset;
 use Application\Entity\Event;
 
@@ -188,8 +188,8 @@ class AlarmController extends FormController
                 'defaut' => true
             ))
                 ->getId());
-            if ($this->zfcUserAuthentication()->hasIdentity()) {
-                $form->get('organisation')->setValue($this->zfcUserAuthentication()
+            if ($this->lmcUserAuthentication()->hasIdentity()) {
+                $form->get('organisation')->setValue($this->lmcUserAuthentication()
                     ->getIdentity()
                     ->getOrganisation()
                     ->getId());
@@ -254,15 +254,15 @@ class AlarmController extends FormController
             'HH:mm'
         );
         $alarms = array();
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
-            $organisation = $this->zfcUserAuthentication()
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $organisation = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation()
                 ->getId();
             $lastupdate = $this->params()->fromQuery('lastupdate', null);
             
             $userroles = array();
-            foreach ($this->zfcUserAuthentication()
+            foreach ($this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getRoles() as $role) {
                 $userroles[] = $role->getId();
@@ -375,7 +375,7 @@ class AlarmController extends FormController
      */
     public function confirmAction()
     {
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             if ($this->isGranted('events.write')) {
                 $id = $this->params()->fromQuery('id', null);
                 $messages = array();

@@ -30,13 +30,15 @@ return array(
         ),
         'driver' => array(
             // overriding zfc-user-doctrine-orm's config
-            'zfcuser_entity' => array(
+            'lmcuser_entity' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'paths' => [__DIR__ . '/../src/Entity']
+                'paths' => array(
+                    __DIR__ . '/../src/Entity'
+                )
             ),
             'orm_default' => array(
                 'drivers' => array(
-                    'Core\Entity' => 'zfcuser_entity'
+                    'Core\Entity' => 'lmcuser_entity'
                 )
             )
         )
@@ -49,7 +51,7 @@ return array(
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
         ),
         'aliases' => array(
-            'Laminas\Authentication\AuthenticationService' => 'zfcuser_auth_service'
+            'Laminas\Authentication\AuthenticationService' => 'lmcuser_auth_service'
         )
     ),
     'controllers' => array(
@@ -104,7 +106,7 @@ return array(
             )
         )
     ),
-    'zfcuser' => array(
+    'lmcuser' => array(
         // telling ZfcUser to use our own class
         'user_entity_class' => 'Core\Entity\User',
         // telling ZfcUserDoctrineORM to skip the entities it defines

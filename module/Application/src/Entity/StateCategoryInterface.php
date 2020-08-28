@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Epeires².
  * Epeires² is free software: you can redistribute it and/or modify
@@ -15,23 +16,12 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
 
-use Application\Controller\RadarsController;
-use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+namespace Application\Entity;
 
-class RadarsControllerFactory implements FactoryInterface {
+interface StateCategoryInterface {
 
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        return new RadarsController(
-            $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('customfieldservice'),
-            $container->get('eventservice'),
-            $container->get('config'),
-            $container->get('mattermostservice'),
-            $container->get('timelineZone'));
-    }
+    public function getStateField() : CustomField;
 
+    public function setStateField(CustomField $field) : void;
 }

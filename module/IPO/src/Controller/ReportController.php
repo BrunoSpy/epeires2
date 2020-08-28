@@ -25,7 +25,7 @@ use OpentbsBundle\Factory\TBSFactory as TBS;
 use IPO\Entity\Report;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Laminas\View\Model\JsonModel;
 use IPO\Entity\Element;
 
@@ -55,12 +55,12 @@ class ReportController extends AbstractEntityManagerAwareController
         
         $id = $this->params()->fromQuery('id', null);
         
-        if ($this->zfcUserAuthentication()->hasIdentity() && $id !== null) {
+        if ($this->lmcUserAuthentication()->hasIdentity() && $id !== null) {
             $tbs = new TBS();
             
             $tbs->LoadTemplate('data/templates/cr_ipo_model_v1.odt', OPENTBS_ALREADY_UTF8);
             
-            $org_id = $this->zfcUserAuthentication()
+            $org_id = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation()
                 ->getId();
@@ -271,7 +271,7 @@ class ReportController extends AbstractEntityManagerAwareController
 
     public function showAction()
     {
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
 
             $id = $this->params()->fromQuery('id', null);
             if ($id !== null) {
@@ -292,7 +292,7 @@ class ReportController extends AbstractEntityManagerAwareController
                 );
                 if ($report) {
                     $events = $this->getEntityManager()->getRepository('Application\Entity\Event')->getAllEvents(
-                        $this->zfcUserAuthentication(), 
+                        $this->lmcUserAuthentication(),
                         $report->getStartDate(), 
                         $report->getEndDate(),
                         true,

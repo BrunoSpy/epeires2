@@ -113,7 +113,7 @@ var models = function(url, urlapp){
 	$(document).on('change', 'select[name=category]', function(){
 		$(this).closest(".modal-body").find(".custom-fields").load(url+'/models/customfields?id='+$(this).val(), function(){
 			$.material.checkbox();
-			$("#model-form").find(".pick-a-color").pickAColor();
+			$("#model-form .custom-fields").find(".pick-a-color").pickAColor();
 		});
 	});
 	$(document).on('click',".mod-model", function(){

@@ -153,7 +153,7 @@ echo $this->formHidden($this->form->get('category'));
                     echo $this->controlGroup($this->form->get('zonefilters'));
                 }
                 echo "</div>";
-                $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->zfcUserIdentity() && $this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId())));
+                $mod = !$this->event || ($this->event && ($this->isGranted('events.write') || ($this->lmcUserIdentity() && $this->event->getAuthor()->getId() == $this->lmcUserIdentity()->getId())));
 
                 if($this->event){
                     echo '</div>';
@@ -320,9 +320,9 @@ echo $this->formHidden($this->form->get('category'));
             <?php
             $countfiles = 0;
             $mod = false;
-            if($this->zfcUserIdentity()){
+            if($this->lmcUserIdentity()){
                 if($this->event) {
-                    $mod = ($this->event->getAuthor()->getId() == $this->zfcUserIdentity()->getId()) || ($this->isGranted('events.write'));
+                    $mod = ($this->event->getAuthor()->getId() == $this->lmcUserIdentity()->getId()) || ($this->isGranted('events.write'));
                 } else {
                     //pas de modification possible d'un modèle
                     $mod = false;

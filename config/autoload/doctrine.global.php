@@ -1,4 +1,6 @@
 <?php
+use Doctrine\Migrations\Tools\Console\Command;
+
 return array(
     'doctrine' => array(
         'connection' => array(
@@ -16,9 +18,10 @@ return array(
         ),
         'migrations' => array( // /!\ do not change these settings /!\
             'connection' => 'doctrine.connection.orm_default',
-            'migrations_table' => 'migrations',
-            'migrations_namespace' => 'DoctrineORMModule\Migrations',
-            'migrations_directory' => 'data/DoctrineORMModule/Migrations'
+            'name' => 'Epeires Migrations',
+            'table' => 'migrations',
+            'namespace' => 'DoctrineORMModule\Migrations',
+            'directory' => 'data/DoctrineORMModule/Migrations'
         ),
         'fixture' => array(
             'default_group' => [
@@ -38,6 +41,20 @@ return array(
                     'match' => 'DoctrineExtensions\Query\Mysql\MatchAgainst'
                 )
             )
-        )
+        ),
+        'dependencies' => [
+            'factories' => [
+                Command\DiffCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\DumpSchemaCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\ExecuteCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\GenerateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\LatestCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\MigrateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\RollupCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\StatusCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\UpToDateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\VersionCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                ]
+            ]
     )
 );

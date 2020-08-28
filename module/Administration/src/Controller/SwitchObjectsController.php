@@ -17,32 +17,52 @@
  */
 namespace Administration\Controller;
 
-use Core\Controller\AbstractEntityManagerAwareController;
-use Laminas\Json\Json;
+use Application\Controller\FormController;
+use Application\Entity\Category;
+use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
-use Application\Entity\Radar;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
+use Application\Entity\SwitchObject;
 
 /**
  *
  * @author Bruno Spyckerelle
  *        
  */
-class RadarsController extends AbstractEntityManagerAwareController
+class SwitchObjectsController extends FormController
 {
+
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
 
     public function indexAction()
     {
         $viewmodel = new ViewModel();
     
-        $this->layout()->title = "Centres > Radars";
+        $this->layout()->title = "Centres > Objets commutables";
         
         $objectManager = $this->getEntityManager();
         
-        $radars = $objectManager->getRepository('Application\Entity\Radar')->findAll();
-    
+        $repo = $objectManager->getRepository('Application\Entity\SwitchObject');
+
+        $types = $objectManager->createQueryBuilder()->select('so.type')
+            ->from('Application\Entity\SwitchObject', 'so')
+            ->distinct(true)
+            ->getQuery()->getResult();
+
+        $types = array_column($types, "type");
+
         $return = array();
         if ($this->flashMessenger()->hasErrorMessages()) {
             $return['error'] = $this->flashMessenger()->getErrorMessages();
@@ -55,8 +75,9 @@ class RadarsController extends AbstractEntityManagerAwareController
         $this->flashMessenger()->clearMessages();
     
         $viewmodel->setVariables(array(
+            'types' => $types,
             'messages' => $return,
-            'radars' => $radars
+            'repo' => $repo
         ));
         
         return $viewmodel;
@@ -68,11 +89,10 @@ class RadarsController extends AbstractEntityManagerAwareController
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
-            $datas = $this->getForm($id);
+            $datas = $this->getForm($id, $post['type']);
             $form = $datas['form'];
             $form->setData($post);
-            $radar = $datas['radar'];
-            
+            $radar = $datas['switchobject'];
             if ($form->isValid()) {
                 
                 $objectManager->persist($radar);
@@ -82,7 +102,10 @@ class RadarsController extends AbstractEntityManagerAwareController
                     // sets all related events read-only
                     $objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
                 }
+            } else {
+                $this->processFormMessages($form->getMessages());
             }
+
         }
         return new JsonModel();
     }
@@ -90,7 +113,7 @@ class RadarsController extends AbstractEntityManagerAwareController
     public function decommissionAction() {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();
-        $radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
+        $radar = $objectManager->getRepository(SwitchObject::class)->find($id);
         if($radar) {
             $radar->setDecommissionned(true);
             $objectManager->getRepository('Application\Entity\Event')->setReadOnly($radar);
@@ -109,9 +132,9 @@ class RadarsController extends AbstractEntityManagerAwareController
     {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();
-        $radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
-        if ($radar) {
-            $objectManager->remove($radar);
+        $object = $objectManager->getRepository(SwitchObject::class)->find($id);
+        if ($object) {
+            $objectManager->remove($object);
             $objectManager->flush();
         }
         return new JsonModel();
@@ -125,8 +148,9 @@ class RadarsController extends AbstractEntityManagerAwareController
         $viewmodel->setTerminal($request->isXmlHttpRequest());
         
         $id = $this->params()->fromQuery('id', null);
+        $type = $this->params()->fromQuery('type', null);
         
-        $getform = $this->getForm($id);
+        $getform = $this->getForm($id, $type);
         
         $viewmodel->setVariables(array(
             'form' => $getform['form'],
@@ -135,22 +159,31 @@ class RadarsController extends AbstractEntityManagerAwareController
         return $viewmodel;
     }
 
-    private function getForm($id = null)
+    private function getForm($id = null, $type)
     {
         $objectManager = $this->getEntityManager();
-        $radar = new Radar();
+        $object = new SwitchObject();
         $builder = new AnnotationBuilder();
-        $form = $builder->createForm($radar);
-        $form->setHydrator(new DoctrineObject($objectManager))->setObject($radar);
+        $form = $builder->createForm($object);
+        $form->setHydrator(new DoctrineObject($objectManager))->setObject($object);
         
         $form->get('organisation')->setValueOptions($objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
-        
+
+        $parents = array();
+        foreach ($this->getEntityManager()
+                     ->getRepository(SwitchObject::class)
+                     ->findBy(array('type'=>$type, 'parent' => null, 'decommissionned' => false), array('name' => 'ASC')) as $parent) {
+            $parents[$parent->getId()] = $parent->getName();
+        }
+        $form->get('parent')->setValueOptions($parents);
         if ($id) {
-            $radar = $objectManager->getRepository('Application\Entity\Radar')->find($id);
-            if ($radar) {
-                $form->bind($radar);
-                $form->setData($radar->getArrayCopy());
+            unset($parents[$id]);
+            $form->get('parent')->setValueOptions($parents);
+            $object = $objectManager->getRepository(SwitchObject::class)->find($id);
+            if ($object) {
+                $form->bind($object);
+                $form->setData($object->getArrayCopy());
             }
         }
         
@@ -165,24 +198,130 @@ class RadarsController extends AbstractEntityManagerAwareController
         
         return array(
             'form' => $form,
-            'radar' => $radar
+            'switchobject' => $object
         );
     }
-    
+
+    public function formcategoryAction()
+    {
+        $request = $this->getRequest();
+        $viewmodel = new ViewModel();
+        $viewmodel->setTerminal($request->isXmlHttpRequest());
+
+        $id = $this->params()->fromQuery('id', null);
+
+        $form = $this->getFormCategory($id);
+
+        $viewmodel->setVariables(array(
+            'objects' => $form['objects'],
+            'availableobjects' => $form['availableobjects'],
+            'form' => $form['form']
+        ));
+
+        return $viewmodel;
+    }
+
+    /**
+     * @param $id Not NULL
+     * @return array
+     */
+    private function getFormCategory($id)
+    {
+        $object = new Category();
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($object);
+        $form->setHydrator(new DoctrineObject($this->getEntityManager()))->setObject($object);
+        $objects = array();
+        $availableobjects = array();
+        $object = $this->getEntityManager()->getRepository(Category::class)->find($id);
+        if($object) {
+            $objects = $object->getSwitchObjects();
+            $allobjects = $this->getEntityManager()->getRepository(SwitchObject::class)->findBy(array('decommissionned'=>false));
+            foreach ($allobjects as $o) {
+                if(!$objects->contains($o)) {
+                    $availableobjects[] = $o;
+                }
+            }
+            $form->bind($object);
+            $form->setData($object->getArrayCopy());
+        }
+        $form->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'value' => 'Enregistrer',
+                'class' => 'btn btn-primary btn-small'
+            )
+        ));
+        return array(
+            'form' => $form,
+            'objects' => $objects,
+            'availableobjects' => $availableobjects,
+            'category' => $object
+        );
+    }
+
+    public function savecategoryAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $id = $post['id'];
+
+            $category = $this->getEntityManager()->getRepository(Category::class)->find($id);
+
+            if($category && isset($post['objects'])) {
+                $category->clearSwitchObjects();
+                foreach ($post['objects'] as $objectid) {
+                    $object = $this->getEntityManager()->getRepository(SwitchObject::class)->find($objectid);
+                    if($object) {
+                        $category->addSwitchObject($object);
+                    }
+                }
+            }
+            $this->getEntityManager()->persist($category);
+            try {
+                $this->getEntityManager()->flush();
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+
+        }
+
+        $json = array(
+
+        );
+        return new JsonModel($json);
+    }
+
     public function configAction()
     {
         $viewmodel = new ViewModel();
-        $this->layout()->title = "Onglets > Radars";
-        
-        $viewmodel->setVariable(
-            'radars', $this->getEntityManager()->getRepository('Application\Entity\Radar')
-                ->findBy(array(), array('name' => 'ASC'))
-        );
+        $this->layout()->title = "Onglets > Objets commutables";
+
+        $types = $this->getEntityManager()->createQueryBuilder()->select('so.type')
+            ->from('Application\Entity\SwitchObject', 'so')
+            ->distinct(true)
+            ->getQuery()->getResult();
+
+        $types = array_column($types, "type");
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $categories = $qb
+            ->select('c')
+            ->from('Application\Entity\Category', 'c')
+            ->where($qb->expr()->isInstanceOf('c', 'Application\Entity\SwitchObjectCategory'))
+            ->getQuery()->getResult();
+
+        $viewmodel->setVariables(array(
+            'repo' => $this->getEntityManager()->getRepository(SwitchObject::class),
+            'types' => $types,
+            'categories' => $categories
+        ));
         
         return $viewmodel;
     }
     
-    public function formradarmodelAction()
+    public function formobjectmodelAction()
     {
         $request = $this->getRequest();
         $viewmodel = new ViewModel();
@@ -191,7 +330,7 @@ class RadarsController extends AbstractEntityManagerAwareController
         
         $id = $this->params()->fromQuery('id', null);
         
-        $getform = $this->getFormRadarModel($id);
+        $getform = $this->getFormObjectModel($id);
         
         $form = $getform['form'];
         $form->add(array(
@@ -209,13 +348,13 @@ class RadarsController extends AbstractEntityManagerAwareController
         return $viewmodel;
     }
     
-    public function saveradarmodelAction()
+    public function saveobjectmodelAction()
     {
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
             
-            $getform = $this->getFormRadarModel($id);
+            $getform = $this->getFormObjectModel($id);
             $form = $getform['form'];
             $form->setData($post);
             
@@ -244,12 +383,12 @@ class RadarsController extends AbstractEntityManagerAwareController
         return new JsonModel($json);
     }
     
-    private function getFormRadarModel($id)
+    private function getFormObjectModel($id)
     {
         $datas = array();
         $form = null;
         if ($id) {
-            $radar = $this->getEntityManager()->getRepository('Application\Entity\Radar')->find($id);
+            $radar = $this->getEntityManager()->getRepository(SwitchObject::class)->find($id);
             if ($radar) {
                 $datas['radar'] = $radar;
                 $qb = $this->getEntityManager()->createQueryBuilder();
@@ -259,12 +398,12 @@ class RadarsController extends AbstractEntityManagerAwareController
                 ))
                     ->from('Application\Entity\PredefinedEvent', 'p')
                     ->leftJoin('p.category', 'c')
-                    ->andWhere('c INSTANCE OF Application\Entity\RadarCategory');
+                    ->andWhere('c INSTANCE OF Application\Entity\SwitchObjectCategory');
                 $models = array();
                 foreach ($qb->getQuery()->getResult() as $model) {
                     foreach ($model->getCustomFieldsValues() as $value) {
                         if ($value->getCustomField()->getID() == $model->getCategory()
-                                ->getRadarfield()
+                                ->getSwitchObjectField()
                                 ->getId()) {
                             if ($value->getValue() == $id) {
                                 $models[] = $model;

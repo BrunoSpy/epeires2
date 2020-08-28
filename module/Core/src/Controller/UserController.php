@@ -25,14 +25,14 @@ use Laminas\Stdlib\ResponseInterface as Response;
  * @author Bruno Spyckerelle
  *        
  */
-class UserController extends \ZfcUser\Controller\UserController
+class UserController extends \LmcUser\Controller\UserController
 {
 
     protected $failedLoginMessage = 'Connexion impossible. Merci de réessayer';
     
     public function loginAction()
     {
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             return $this->redirect()->toRoute($this->getOptions()
                 ->getLoginRedirectRoute());
         }
@@ -59,10 +59,10 @@ class UserController extends \ZfcUser\Controller\UserController
         }
         
         // clear adapters
-        $this->zfcUserAuthentication()
+        $this->lmcUserAuthentication()
             ->getAuthAdapter()
             ->resetAdapters();
-        $this->zfcUserAuthentication()
+        $this->lmcUserAuthentication()
             ->getAuthService()
             ->clearIdentity();
         
@@ -73,11 +73,11 @@ class UserController extends \ZfcUser\Controller\UserController
     
     public function authenticateAction()
     {
-        if ($this->zfcUserAuthentication()->hasIdentity()) {
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             return $this->redirect()->toRoute($this->getOptions()->getLoginRedirectRoute());
         }
     
-        $adapter = $this->zfcUserAuthentication()->getAuthAdapter();
+        $adapter = $this->lmcUserAuthentication()->getAuthAdapter();
         $redirect = $this->params()->fromPost('redirect', $this->params()->fromQuery('redirect', false));
     
         $result = $adapter->prepareForAuthentication($this->getRequest());
@@ -87,7 +87,7 @@ class UserController extends \ZfcUser\Controller\UserController
             return $result;
         }
     
-        $auth = $this->zfcUserAuthentication()->getAuthService()->authenticate($adapter);
+        $auth = $this->lmcUserAuthentication()->getAuthService()->authenticate($adapter);
 
         $om = $this->serviceLocator->get('Doctrine\ORM\EntityManager');
         $attempt = new LoginAttempt();
@@ -102,14 +102,14 @@ class UserController extends \ZfcUser\Controller\UserController
 
         if (!$auth->isValid()) {
             $this->flashMessenger()->addErrorMessage($this->failedLoginMessage);
-            $attempt->setUsername($this->zfcUserAuthentication()->getAuthAdapter()->getEvent()->getRequest()->getPost()->identity);
+            $attempt->setUsername($this->lmcUserAuthentication()->getAuthAdapter()->getEvent()->getRequest()->getPost()->identity);
             $adapter->resetAdapters();
             $om->persist($attempt);
             $om->flush();
             return $this->redirect()->toUrl(
                 $this->url()->fromRoute($redirect));
         } else {
-            $attempt->setUser($this->zfcUserAuthentication()->getIdentity());
+            $attempt->setUser($this->lmcUserAuthentication()->getIdentity());
             $om->persist($attempt);
             $om->flush();
         }

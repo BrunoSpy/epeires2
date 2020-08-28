@@ -62,7 +62,7 @@ class SearchController extends AbstractEntityManagerAwareController
         $onlytitle = $this->params()->fromQuery('onlytitle', null);
         if ($search !== null && strlen($search) >= 2 && $startdate !== null) {
             $results = $this->getEntityManager()->getRepository(Event::class)->searchEvents(
-                $this->zfcUserAuthentication(),
+                $this->lmcUserAuthentication(),
                 new \DateTime($startdate),
                 new \DateTime($enddate),
                 $search,

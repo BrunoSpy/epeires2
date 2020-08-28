@@ -23,7 +23,11 @@ var tab = function(url){
 	$("#tab-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/tabs/save', $("#Tab").serialize(), function(data){
-			location.reload();
+			if(data.messages['error']) {
+				displayMessages(data.messages);
+			} else {
+				location.reload();
+			}
 		}, 'json');
 	});
 
@@ -55,6 +59,52 @@ var tab = function(url){
             $.post(url+'/tabs/unsetdefault?id='+id, function(data){
                 displayMessages(data.messages);
             });
+		}
+	});
+
+	$("#tab-container").on('change', 'select[name="type"]', function(e){
+		let type = $(this).find("option:selected").text();
+		switch (type) {
+			case 'timeline':
+				$('#tab-container input[name="onlyroot"]').closest('.form-group').show();
+				$.getJSON(url+'/tabs/getcategories?type=timeline', function(data){
+					let cats = [];
+					$.each(data, function(index, val){
+						cats.push(val);
+					});
+					cats.sort(function(a,b){
+						return a.place > b.place;
+					});
+					let elt = $('#tab-container select[name="categories[]"]').empty();
+					cats.forEach(function(element){
+						elt.append($('<option>',{
+							value: element.id,
+							text: element.name
+						}));
+					});
+					elt.prop("multiple", "multiple");
+				});
+				break;
+			case 'switchlist':
+				$('#tab-container input[name="onlyroot"]').closest('.form-group').hide();
+				$.getJSON(url+'/tabs/getcategories?type=switchlist', function(data){
+					let cats = [];
+					$.each(data, function(index, val){
+						cats.push(val);
+					});
+					cats.sort(function(a,b){
+						return a.place > b.place;
+					});
+					let elt = $('#tab-container select[name="categories[]"]').empty();
+					cats.forEach(function(element){
+						elt.append($('<option>',{
+							value: element.id,
+							text: element.name
+						}));
+					});
+					elt.prop("multiple", "");
+				});
+				break;
 		}
 	});
 };

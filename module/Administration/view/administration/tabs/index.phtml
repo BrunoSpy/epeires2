@@ -36,6 +36,7 @@
                             <th>Onglet principal</th>
                             <th data-toggle="tooltip" data-container="body" title="Cocher pour concaténer les catégories filles dans la catégorie parente.">Catégories racines seulement<sup>?</sup></th>
                             <th data-sort="int" data-toggle="tooltip" data-container="body" title="Uniquement valable pour les onglets non principaux">Place<sup>?</sup></th>
+                            <th>Type</th>
                             <th><a class="btn btn-xs btn-primary" href="#tab-container" data-toggle="modal" id="add-tab">Ajouter</a></th>
                         </tr>
                         </thead>
@@ -87,6 +88,7 @@
                             echo '<td><span class="'.($tab->isDefault() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove').'"></span></td>';
                             echo '<td><span class="'.($tab->isOnlyroot() ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' ).'"></span></td>';
                             echo '<td>' . $tab->getPlace() . '</td>';
+                            echo '<td>' . $tab->getType() . '</td>';
                             echo '<td><a '
                                 . 'href="#tab-container" '
                                 . 'class="mod-tab" '
@@ -117,9 +119,11 @@
                     <h4 class="panel-title">Aide</h4>
                 </div>
                 <div class="panel-body">
-                    <p>Cette page permet de configurer de nouveaux onglets, positionnés après les onglets Radio et Radar.</p>
+                    <p>Cette page permet de configurer de nouveaux onglets, positionnés après l'onglet Radio.</p>
                     <p>Il est nécessaire de créer au préalable les catégories via <a href="<?php echo $this->url('administration', array('controller' => 'categories', 'action' => 'index'))?>">la page de configuration des catégories</a>.</p>
                     <p><strong>Attention : </strong>Il peut y avoir plusieurs onglets principaux, mais un rôle ne peut être affecté qu'à un seul onglet principal.</p>
+                    <p>Il existe deux types d'onglets en terme d'affichage : les onglets "timeline" qui affichent les évènements sous forme de frise chronologique et les onglets "switchlist" qui affichent les évènements sous forme d'une liste de boutons commutables.</p>
+                    <p>Le paramètre "Affichage horizontal" ne s'applique qu'aux onglets de type "switchlist". Par ailleurs, il n'est possible d'affecter à ces derniers que des catégories dont le type est "Objet commutable";</p>
                 </div>
             </div>
         </div>
