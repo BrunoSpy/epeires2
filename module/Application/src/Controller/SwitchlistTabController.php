@@ -139,6 +139,8 @@ class SwitchlistTabController extends TabController
                 $object = $this->entityManager->getRepository(SwitchObject::class)->find($objectid);
 
                 $objectevents = array();
+                $parentevents = array();
+                $parentId = ($object->getParent() ? $object->getParent()->getId() : null );
                 foreach ($events as $event) {
                     $objectfield = $event->getCategory()->getSwitchObjectField();
                     foreach ($event->getCustomFieldsValues() as $value) {
@@ -146,10 +148,13 @@ class SwitchlistTabController extends TabController
                             if ($value->getValue() == $objectid) {
                                 $objectevents[] = $event;
                             }
+                            if($parentId && $value->getValue() == $parentId) {
+                                $parentevents[] = $event;
+                            }
                         }
                     }
                 }
-                
+
                 if ($state == 'true') {
                     // passage d'un objet à l'état OPE -> recherche de l'evt à fermer
                     if (count($objectevents) == 1) {
@@ -200,7 +205,10 @@ class SwitchlistTabController extends TabController
                         $this->createEvent($cat, $object, $now, isset($post['custom_fields']) ? $post['custom_fields'] : null);
                         //si l'objet a un parent, il faut créer l'évènement pour le parent aussi
                         if($object->getParent() !== null) {
-                            $this->createEvent($cat, $object->getParent(), $now);
+                            //création uniquement si il n'y en a pas déjà un en cours
+                            if(count($parentevents) == 0) {
+                                $this->createEvent($cat, $object->getParent(), $now);
+                            }
                         }
                         try {
                             $this->entityManager->flush();
