@@ -83,13 +83,13 @@ return array(
         // rayon de récupération des NOTAM : site du SIA (30), comportement d'avant la mise à jour SIA : 
         'af_rayon' => 0,
         'af_plafond' => 30,
-        // paramétrage du serveur de carte, ici mapbox
+        /// paramétrage par défaut du serveur de carte 
+        // chaque site doit se créer son accès mapbox et changer l'accesToken
         'ip_map' => [
-            'url' => "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
-            'attribution' => 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>',
-            'maxZoom' => 18,
-            'id' => "oziatek.ppg7d633",
-            'accessToken' => "pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw"
+            'url' => 'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90'
+            'accessToken' => "pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw",
+             'id' => "mapbox/streets",
+             'maxZoom' => 18,
         ],
         // nombre de résultats du déclenchement d'un plan d'interrogation
         'ip_nb_terrains' => 30,
