@@ -1,5 +1,8 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchlist.js')?>
-
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchlist.js');
+$this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
+$this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
+?>
 <?php
 function addSwitchButton($name, $id, $helper) {
   $html = '<div class="togglebutton togglebutton-red">';
@@ -18,12 +21,29 @@ function addSwitchButton($name, $id, $helper) {
   return $html;
 }
 ?>
+
+<?php if($this->isGranted('events.create') || $this->isGranted('events.write')):?>
+  <div id="create-evt" data-toggle="modal" data-backdrop="static" class="modal fade in" data-spy="affix" data-offset-top="80">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="loading"></div>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="form-title">Nouvel évènement</h4>
+        </div>
+        <div id="event">
+        </div>
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
 <?php if( $this->switchobjects && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
 <div class="main-nav panel-left" id="fiche" data-url="switchlisttab/getfiche"></div>
 <div class="page-wrap">
-    <div class="container-fluid" id="object">
+    <div class="container-fluid" id="objects">
         <p></p>
         <div class="row" style="height: calc(100vh - 120px)">
 
@@ -40,7 +60,8 @@ function addSwitchButton($name, $id, $helper) {
                   if($so->getParent() == null) {
                     echo '<div class="list-group switch-group">';
                     echo '<div class="list-group-item switchobject-line" id="object-'.$so->getId().'"><div class="switchobject-name">'.$so->getName();
-                    echo' <a href="#" data-id="'.$so->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                    echo ' <a href="#" data-id="'.$so->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
+                    echo ' <a href="#" data-id="'.$so->getId().'" class="modify-evt"><span class="glyphicon glyphicon-pencil"></span></a>';
                     echo '</div>';
                     echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this).'</div>';
                     echo '</div>';
@@ -100,15 +121,66 @@ if($this->switchobjects && $this->form) {
         $form);
 }
 ?>
+<?php
+echo $this->modalwindow(
+"add-file",
+"<h4>Ajout d'un fichier</h4>",
+"",
+"<div id=\"file-upload-form\"></div>"
+);
+
+echo $this->modalwindow("add-alarm",
+"<h3 id=\"alarm-title\">Ajout d'un mémo</h3>",
+"",
+"<div id=\"alarm-form\"></div>");
+
+echo $this->modalwindow('add-note-modal',
+"<h4>Ajout d'une note</h4>",
+"",
+"<form id=\"add-note\" class=\"form-horizontal\" action=\"<?php echo $this->url('application', array('controller' => 'events', 'action' => 'addnote'))?>\">"
+  . "<div class=\"modal-body\">"
+    . "<div class=\"form-group\">"
+      . "<label class=\"control-label col-sm-2\">Contenu : </label>"
+      . "<div class=\"col-sm-10\">"
+        . "<textarea class=\"form-control\" name=\"new-update\" placeholder=\"Ajouter une note.\"></textarea>"
+        . "</div>"
+      . "</div>"
+    . "</div>"
+  . "<div class=\"modal-footer\">"
+    . "<input type=\"submit\" class=\"btn btn-sm btn-primary\" value=\"Ajouter la note\"></input>"
+    . "</div>"
+  . "</form>");
+?>
 <?php $this->inlineScript()->captureStart();?>
 
-$("#create-link").remove();
+$("#create-link").hide();
 
 $("#changeview").remove();
 
 $('#search').remove();
 
 switchlist('<?php echo $this->url('application'); ?>', '<?php echo $this->tabid; ?>');
+
+<?php
+if($this->cats) {
+$catsString = "";
+$i = 0;
+foreach ($this->cats as $cat) {
+if(strlen($catsString) > 0) {
+$catsString .= "&";
+}
+$catsString .= 'cats[' . $i . ']=' . $cat;
+$i++;
+}
+echo 'cats = "'.$catsString.'";';
+} else {
+echo 'cats = null;';
+}
+?>
+
+form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
+
+fileupload('<?php echo $this->url('application')?>');
 
 <?php echo $this->notifications($this->messages); ?>
 

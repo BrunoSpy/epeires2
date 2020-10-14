@@ -71,11 +71,16 @@ var switchlist = function(url, tabid){
         $.post(url+'switchlisttab/getobjectstate?tabid='+tabid)
             .done(function(data) {
                 $.each(data, function(key, value){
-                    $('#switch_'+key).prop('checked', value);
-                    if(!value) {
+                    $('#switch_'+key).prop('checked', value.status);
+                    if(!value.status) {
                         $("#object-"+key+" a.open-fiche").show();
                     } else {
                         $("#object-"+key+" a.open-fiche").hide();
+                    }
+                    if(value.eventid > 0 ) {
+                        $("#object-"+key+" a.modify-evt").data('id', value.eventid).show();
+                    } else {
+                        $("#object-"+key+" a.modify-evt").hide();
                     }
                 });
             })
