@@ -27,7 +27,8 @@ class MilControllerFactory implements FactoryInterface {
     {
         return new MilController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('nmb2b')
+            $container->get('nmb2b'),
+            $container->get('mapd')
             );
     }
 

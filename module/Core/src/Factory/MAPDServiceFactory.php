@@ -15,27 +15,22 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Core\Factory;
 
-use Application\Controller\EventsController;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class EventsControllerFactory implements FactoryInterface {
+/**
+ *
+ * @author Bruno Spyckerelle
+ *
+ */
+class MAPDServiceFactory implements FactoryInterface
+{
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new EventsController(
-            $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('eventservice'),
-            $container->get('customfieldservice'),
-            $container->get('LmcRbacMvc\Options\ModuleOptions'),
-            $container->get('config'),
-            $container->get('mattermostservice'),
-            $container->get('translator'),
-            $container->get('timelineZone'),
-            $container->get('mapd')
-        );
+        return new \Core\Service\MAPDService($container->get('Doctrine\ORM\EntityManager'), $container->get('config'));
     }
-
 }
+

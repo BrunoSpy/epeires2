@@ -49,6 +49,7 @@ return array(
             'nmb2b' => 'Core\Factory\NMB2BServiceFactory',
             'mattermostservice' => 'Core\Factory\MattermostServiceFactory',
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
+            'mapd' => 'Core\Factory\MAPDServiceFactory'
         ),
         'aliases' => array(
             'Laminas\Authentication\AuthenticationService' => 'lmcuser_auth_service'

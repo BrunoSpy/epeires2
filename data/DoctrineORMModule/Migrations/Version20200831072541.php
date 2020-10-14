@@ -31,7 +31,7 @@ final class Version20200831072541 extends AbstractMigration
 
     public function postUp(Schema $schema): void
     {
-        $cats = $this->connection->fetchAll("SELECT id FROM `categories` WHERE `discr`='switch' ");
+        $cats = $this->connection->fetchAllAssociative("SELECT id FROM `categories` WHERE `discr`='switch' ");
         if(count($cats) == 1) {
             $radarcatid = $cats[0]['id'];
 

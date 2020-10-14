@@ -17,6 +17,8 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MilCategory extends Category
 {
+
+    const NMB2B = "nmb2b";
+    const MAPD = "mapd";
 
     /**
      * @ORM\Column(type="string")
@@ -47,22 +52,17 @@ class MilCategory extends Category
     protected $filter;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string")
      * @Annotation\Required(false)
-     * @Annotation\Type("Laminas\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Options({"label":"Actualiser avec :"})
      */
-    protected $nmB2B = false;
+    protected $origin;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\OneToMany(targetEntity="MilCategoryLastUpdate", mappedBy="category")
      */
-    protected $lastUpdateDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    protected $lastUpdateSequence;
+    protected $lastUpdates;
 
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
@@ -74,34 +74,62 @@ class MilCategory extends Category
      */
     protected $lowerLevelField;
 
-    public function setNMB2B($nmb2b)
-    {
-        $this->nmB2B = $nmb2b;
+    public function __construct(){
+        parent::__construct();
+        $this->lastUpdates = new ArrayCollection();
     }
 
-    public function isNMB2B()
+    /**
+     * @param mixed $origin
+     */
+    public function setOrigin($origin): void
     {
-        return $this->nmB2B;
+        $this->origin = $origin;
     }
 
-    public function setLastUpdateDate($update)
+    /**
+     * @return mixed
+     */
+    public function getOrigin()
     {
-        $this->lastUpdateDate = $update;
+        return $this->origin;
+    }
+/*
+    public function addLastUpdate(\DateTime $date)
+    {
+        $day = $date->format('!Y-m-d');
+        $lastUpdate = $this->lastUpdates->filter(function(MilCategoryLastUpdate $update) use ($day) {
+            return strcmp($update->getDay(), $day) ==0 ;
+        });
+        if($lastUpdate->isEmpty()) {
+
+        }
+    }
+*/
+
+    public function addLastUpdates(Collection $lastUpdates)
+    {
+        foreach ($lastUpdates as $u){
+            $this->lastUpdates->add($u);
+        }
     }
 
-    public function getLastUpdateDate()
+    public function removeLastUpdates(Collection $lastUpdates)
     {
-        return $this->lastUpdateDate;
+        foreach ($lastUpdates as $u)
+        {
+            $this->lastUpdates->removeElement($u);
+        }
     }
 
-    public function setLastUpdateSequence($sequence)
+    public function setLastUpdates($lastUpdates)
     {
-        $this->lastUpdateSequence = $sequence;
+        $this->lastUpdates = $lastUpdates;
     }
 
-    public function getLastUpdateSequence()
+    public function getLastUpdates()
     {
-        $this->lastUpdateSequence;
+        return $this->lastUpdates;
     }
 
     public function setZonesRegex($regex)

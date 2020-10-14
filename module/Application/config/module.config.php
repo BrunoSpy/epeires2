@@ -51,10 +51,10 @@ return array(
                 ),
                 'import-nmb2b' => array(
                     'options' => array(
-                        'route' => 'import-nmb2b [--delta=] [--email] [--verbose] <orgshortname> <username>',
+                        'route' => 'import-zones-mil [--delta=] [--email] [--verbose] <service> <orgshortname> <username>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Mil',
-                            'action' => 'importNMB2B'
+                            'action' => 'import'
                         )
                     )
                 ),
