@@ -18,10 +18,6 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/BrunoSpy/ZfcUser"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/BrunoSpy/psr-container-doctrine"
         }
     ],
@@ -43,7 +39,7 @@
         "doctrine/doctrine-orm-module": "^3.0",
         "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^2.4",
-        "laminas-commons/lmc-user": "^3.0",
+        "lm-commons/lmc-user": "^3.0",
         "zf-commons/zfc-user-doctrine-orm": "^3.0",
         "jield-webdev/laminas-assetmanager": "dev-master",
         "jield-webdev/assetic": "2.1.x-dev",
@@ -64,12 +60,11 @@
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^1.0",
         "linkorb/jsmin-php": "^1.0",
-        "laminas-commons/lmc-rbac-mvc": "^3.0",
+        "lm-commons/lmc-rbac-mvc": "^3.0",
         "laminas/laminas-mail": "^2.12"
     },
     "require-dev": {
         "codeception/codeception": "^4.0",
-        "phpunit/php-code-coverage" : "^8.0",
         "sensiolabs/security-checker": "^6.0.0",
         "api-skeletons/doctrine-data-fixture": "^6.0",
         "laminas-api-tools/api-tools-admin": "^1.8",
