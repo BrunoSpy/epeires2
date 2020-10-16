@@ -29,7 +29,7 @@ use Laminas\Stdlib\Parameters;
 class MAPDService
 {
 
-    private EntityManager $entityManager;
+    private $entityManager;
     
     private $config;
 
@@ -37,7 +37,7 @@ class MAPDService
 
     private $client = null;
 
-    private bool $verbose = false;
+    private $verbose = false;
 
     public function __construct(EntityManager $entityManager, $config)
     {

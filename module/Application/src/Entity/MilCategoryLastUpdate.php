@@ -39,13 +39,13 @@ class MilCategoryLastUpdate
     /**
      * @ORM\ManyToOne(targetEntity="MilCategory", inversedBy="lastUpdates")
      */
-    private MilCategory $category;
+    private $category;
 
     /**
      * Stores last-modified
      * @ORM\Column(type="datetime")
      */
-    private \DateTime $lastUpdate;
+    private $lastUpdate;
 
     /**
      * Stores Y-m-d day of update
