@@ -71,6 +71,24 @@ class SwitchlistTabController extends TabController
         
         $this->flashMessenger()->clearMessages();
         $tabid = $this->params()->fromQuery('tabid', null);
+        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+        if ($tabid) {
+            if ($tab) {
+                $categories = $tab->getCategories();
+                $cats = array();
+                foreach ($categories as $cat) {
+                    $cats[] = $cat->getId();
+                }
+                $viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
+                $viewmodel->setVariable('cats', $cats);
+                $viewmodel->setVariable('default', false);
+            } else {
+                $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
+            }
+        } else {
+            $return['error'][] = "Aucun onglet défini. Contactez votre administrateur.";
+        }
+
 
         $viewmodel->setVariables(array(
             'messages' => $return,
@@ -78,7 +96,7 @@ class SwitchlistTabController extends TabController
             'tabid' => $tabid,
         ));
 
-        $tab = $this->entityManager->getRepository(Tab::class)->find($tabid);
+
         $viewmodel->setVariable('direction', ($tab->isHorizontal() ? 'row' : 'column'));
         $so = $tab->getCategories()[0]->getSwitchObjects()->toArray();
         $viewmodel->setVariable('switchobjectsObjects', $so);
@@ -139,6 +157,8 @@ class SwitchlistTabController extends TabController
                 $object = $this->entityManager->getRepository(SwitchObject::class)->find($objectid);
 
                 $objectevents = array();
+                $parentevents = array();
+                $parentId = ($object->getParent() ? $object->getParent()->getId() : null );
                 foreach ($events as $event) {
                     $objectfield = $event->getCategory()->getSwitchObjectField();
                     foreach ($event->getCustomFieldsValues() as $value) {
@@ -146,10 +166,13 @@ class SwitchlistTabController extends TabController
                             if ($value->getValue() == $objectid) {
                                 $objectevents[] = $event;
                             }
+                            if($parentId && $value->getValue() == $parentId) {
+                                $parentevents[] = $event;
+                            }
                         }
                     }
                 }
-                
+
                 if ($state == 'true') {
                     // passage d'un objet à l'état OPE -> recherche de l'evt à fermer
                     if (count($objectevents) == 1) {
@@ -200,7 +223,10 @@ class SwitchlistTabController extends TabController
                         $this->createEvent($cat, $object, $now, isset($post['custom_fields']) ? $post['custom_fields'] : null);
                         //si l'objet a un parent, il faut créer l'évènement pour le parent aussi
                         if($object->getParent() !== null) {
-                            $this->createEvent($cat, $object->getParent(), $now);
+                            //création uniquement si il n'y en a pas déjà un en cours
+                            if(count($parentevents) == 0) {
+                                $this->createEvent($cat, $object->getParent(), $now);
+                            }
                         }
                         try {
                             $this->entityManager->flush();
@@ -313,7 +339,7 @@ class SwitchlistTabController extends TabController
     public function getObjectStateAction()
     {
         $tabid = $this->params()->fromQuery("tabid", null);
-        return new JsonModel($this->getSwitchObjects($tabid, false));
+        return new JsonModel($this->getSwitchObjects($tabid, true));
     }
 
     private function getSwitchObjects($tabid, $full = true)
@@ -333,6 +359,7 @@ class SwitchlistTabController extends TabController
                 $objects[$object->getId()] = array();
                 $objects[$object->getId()]['name'] = $object->getName();
                 $objects[$object->getId()]['status'] = true;
+                $objects[$object->getId()]['eventid'] = -1;
             } else {
                 $objects[$object->getId()] = true;
             }
@@ -362,6 +389,15 @@ class SwitchlistTabController extends TabController
                     $objects[$objectid]['status'] *= $available;
                 } else {
                     $objects[$objectid] *= ($available ? true : false);
+                }
+                //on enregistre le premier évènement qui code l'indispo et si on en trouve un autre, on enlève la valeur pour éviter de modifier le mauvais evt
+                if(!$available && $full) {
+                    if($objects[$objectid]['eventid'] == -1) {
+                        $objects[$objectid]['eventid'] = $result->getId();
+                    } else {
+                        //deuxième evt ?! -> reset
+                        $objects[$objectid]['eventid'] = -2;
+                    }
                 }
             }
         }

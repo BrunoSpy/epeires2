@@ -612,7 +612,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 	});
 
 	//click sur modification d'un évènement
-	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #calendarview a.modify-evt, #list-fp a.modify-evt", function(e){
+	$(document).on("click", "#timeline a.modify-evt, #search-results a.modify-evt, #calendarview a.modify-evt, #list-fp a.modify-evt, #objects a.modify-evt", function(e){
 		e.preventDefault();
 		var me = $(this);
         if(me.data('recurr') == true) {

@@ -1202,7 +1202,6 @@ class EventsController extends TimelineTabController
         $pevent = null;
         
         $zonefilters = null;
-        
         if ($id || $model) {
             $cat = null;
             if ($id && $model) { // copie d'un modèle
