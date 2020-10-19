@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.3",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -78,7 +78,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "7.3"
         }
     },
     "autoload": {
