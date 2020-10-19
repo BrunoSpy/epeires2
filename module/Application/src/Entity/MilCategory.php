@@ -52,7 +52,7 @@ class MilCategory extends Category
     protected $filter;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @Annotation\Required(false)
      * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Options({"label":"Actualiser avec :"})
