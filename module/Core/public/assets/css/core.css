@@ -128,6 +128,16 @@ body{
   position: relative;
 }
 
+#navbar-tabs .navbar-nav {
+  display: inline-block;
+  vertical-align: top;
+  float:none;
+}
+
+#navbar-tabs .navbar-collapse {
+  text-align: center;
+}
+
 #navbar-clock {
 	margin-top: 10px;
 	margin-bottom: 10px;
