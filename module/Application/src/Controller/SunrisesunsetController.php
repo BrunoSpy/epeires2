@@ -50,11 +50,11 @@ class SunrisesunsetController extends AbstractEntityManagerAwareController
         	$this->lon = $config["sunrise"]["lon"];
 	    }
 
-        if(array_key_exists('proxy', $this->config)) {
-            if (array_key_exists('proxy_host', $this->config['proxy'])) {
-                $this->proxy_host =  $this->config['proxy']['proxy_host'];
-                if (array_key_exists('proxy_port', $this->config['proxy'])) {
-                    $this->proxy_port = $this->config['proxy']['proxy_port'];
+        if(array_key_exists('proxy', $config)) {
+            if (array_key_exists('proxy_host', $config['proxy'])) {
+                $this->proxy_host =  $config['proxy']['proxy_host'];
+                if (array_key_exists('proxy_port', $config['proxy'])) {
+                    $this->proxy_port = $config['proxy']['proxy_port'];
                 }
             }
         }

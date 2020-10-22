@@ -677,6 +677,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 	});
 
 	var getPredefinedValues = function(eventid) {
+		let customvalues;
         $.getJSON(
             url+'events/getpredefinedvalues?id='+eventid,
             function(data){
@@ -690,8 +691,8 @@ var form = function(url, cats, sunrise, sunrise_url){
                         $("select[name='zonefilters[]'] option[value="+value+"]").prop('selected', true);
                     });
                 }
-                var customvalues = data.customvalues;
-                $.each(data.customvalues, function(key, value){
+                customvalues = data.customvalues;
+                $.each(customvalues, function(key, value){
                     var elt = $("#custom_fields [name='custom_fields["+key+"]']");
                     if(elt.length == 0) {
                         //select à choix multiples ?
