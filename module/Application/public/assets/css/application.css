@@ -393,6 +393,27 @@ body {
 	background-color: #bdbdbd;
 }
 
+.togglebutton.togglebutton-red-inversed label input[type="checkbox"]:not(:checked) + .toggle::after,
+.togglebutton.togglebutton-orange-inversed label input[type="checkbox"]:not(:checked) + .toggle::after {
+	background-color: #009688;;
+}
+
+.togglebutton.togglebutton-red-inversed label .toggle.togglebutton label .toggle{
+	background-color: #ff4900;
+}
+
+.togglebutton.togglebutton-orange-inversed label .toggle.togglebutton label .toggle {
+	background-color: #FFBF00;
+}
+
+.togglebutton.togglebutton-red-inversed label input[type="checkbox"]:checked + .toggle::after {
+	background-color: #ff4900;
+}
+
+.togglebutton label .toggle {
+	background-color: rgba(0,150,136,.5);
+}
+
 #calendarview {
 	display: none;
 	margin-right: 1em;

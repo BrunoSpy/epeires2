@@ -82,6 +82,7 @@ class SwitchlistTabController extends TabController
                 $viewmodel->setVariable('onlyroot', $tab->isOnlyroot());
                 $viewmodel->setVariable('cats', $cats);
                 $viewmodel->setVariable('default', false);
+                $viewmodel->setVariable('inversed', $tab->isColorsInversed());
             } else {
                 $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
             }
