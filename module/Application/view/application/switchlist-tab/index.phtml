@@ -4,8 +4,8 @@ $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 ?>
 <?php
-function addSwitchButton($name, $id, $helper) {
-  $html = '<div class="togglebutton togglebutton-red">';
+function addSwitchButton($name, $id, $helper, $inversed) {
+  $html = '<div class="togglebutton togglebutton-red'.($inversed ? '-inversed' : '').'">';
   $html .= '<label>';
   $html .= '<input ';
 	$html .= 'id="switch_'.$id.'" ';
@@ -63,7 +63,7 @@ function addSwitchButton($name, $id, $helper) {
                     echo ' <a href="#" data-id="'.$so->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
                     echo ' <a href="#" data-id="'.$so->getId().'" class="modify-evt"><span class="glyphicon glyphicon-pencil"></span></a>';
                     echo '</div>';
-                    echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this).'</div>';
+                    echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this, $this->inversed).'</div>';
                     echo '</div>';
                     foreach ($so->getChildren() as $child) {
                       $found = array_filter($sortedSO, function($uniqueobject) use ($child){
@@ -74,7 +74,7 @@ function addSwitchButton($name, $id, $helper) {
                         echo ' > '.$child->getName();
                         echo' <a href="#" data-id="'.$child->getId().'" class="open-fiche"><span class="glyphicon glyphicon-tasks"></span></a>';
                         echo '</div>';
-                        echo '<div class="switchobject-button">'.addSwitchButton($child->getName(), $child->getId(), $this).'</div>';
+                        echo '<div class="switchobject-button">'.addSwitchButton($child->getName(), $child->getId(), $this, $this->inversed).'</div>';
                         echo "</div>";
                       }
                     }

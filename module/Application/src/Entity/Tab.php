@@ -124,6 +124,15 @@ class Tab
      */
     protected $horizontal = false;
 
+    /**
+     * Used only if type=swhitchlist
+     * @ORM\Column(type="boolean")
+     * @Annotation\Required(false)
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
+     * @Annotation\Options({"label":"Couleurs inversées :"})
+     */
+    protected $colorsInversed = false;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -157,6 +166,22 @@ class Tab
     public function setHorizontal(bool $horizontal): void
     {
         $this->horizontal = $horizontal;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isColorsInversed(): bool
+    {
+        return $this->colorsInversed;
+    }
+
+    /**
+     * @param bool $colorsInversed
+     */
+    public function setColorsInversed(bool $colorsInversed): void
+    {
+        $this->colorsInversed = $colorsInversed;
     }
 
     /**

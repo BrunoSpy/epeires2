@@ -49,7 +49,7 @@ class NavBar extends AbstractHelper
         
         $html .= '<div class="collapse navbar-collapse" id="navbar-collapse">';
 
-        $html .= '<ul class="nav navbar-nav navbar-center">';
+        $html .= '<ul class="nav navbar-nav">';
         if($showHome == true) {
             $html .= '<li class="dropdown active">';
             $html .= '<a id="home" href="';

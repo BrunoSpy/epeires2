@@ -79,26 +79,17 @@ var updateNavbar = function() {
         var windowWidth = $(window).width();
         var totalWidth = 0;
         var maxWidth = $("#navbar-collapse").width();
-        var padding = maxWidth / 4;
-        var centerWidth = $(".navbar-lower .navbar-center").width()
-            + padding;
+        var centerWidth = $(".navbar-lower .navbar-nav").width();
         var searchWidth = $("#search").show().innerWidth();
         var viewWidth = $("#changeview").innerWidth();
 
         var totalWidth = centerWidth + searchWidth + viewWidth;
 
-        $(".navbar-lower .navbar-center").css('padding-left', '25%');
         if (windowWidth > 768) {
-            if (totalWidth > maxWidth) {
-                $(".navbar-lower .navbar-center").css('padding-left', '0%');
-                totalWidth -= padding;
-            }
             if (totalWidth > maxWidth) {
                 $("#search").hide();
             }
-        } else {
-            $(".navbar-lower .navbar-center").css('padding-left', '0%');
-        }
+        } 
     }
 };
 

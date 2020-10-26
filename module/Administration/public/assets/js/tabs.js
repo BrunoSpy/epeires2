@@ -67,6 +67,8 @@ var tab = function(url){
 		switch (type) {
 			case 'timeline':
 				$('#tab-container input[name="onlyroot"]').closest('.form-group').show();
+				$('#tab-container input[name="horizontal"]').closest('.form-group').hide();
+				$('#tab-container input[name="colorsInversed"]').closest('.form-group').hide();
 				$.getJSON(url+'/tabs/getcategories?type=timeline', function(data){
 					let cats = [];
 					$.each(data, function(index, val){
@@ -87,6 +89,8 @@ var tab = function(url){
 				break;
 			case 'switchlist':
 				$('#tab-container input[name="onlyroot"]').closest('.form-group').hide();
+				$('#tab-container input[name="horizontal"]').closest('.form-group').show();
+				$('#tab-container input[name="colorsInversed"]').closest('.form-group').show();
 				$.getJSON(url+'/tabs/getcategories?type=switchlist', function(data){
 					let cats = [];
 					$.each(data, function(index, val){

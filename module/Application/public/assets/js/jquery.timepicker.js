@@ -302,7 +302,8 @@
                             minute = "0"+d.getUTCMinutes();
                         }
                         mininput.val(minute);
-                        element.trigger('change');
+                        //trigger a change of minutes' input will update hidden input
+                        mininput.trigger('change');
                     });
                 });
 
@@ -323,7 +324,7 @@
                             minute = "0"+d.getUTCMinutes();
                         }
                         mininput.val(minute);
-                        element.trigger('change');
+                        mininput.trigger('change');
                     });
                 });
 
