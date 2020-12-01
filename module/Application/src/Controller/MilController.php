@@ -67,7 +67,7 @@ class MilController extends AbstractEntityManagerAwareController
             'username' => $username
         ));
 
-        $service = $this->getParam('service');
+        $service = $request->getParam('service');
         if(strcmp($service, 'nmb2b') == 0) {
             $this->importNMB2B($j, $organisation, $user, $email, $verbose);
         } elseif (strcmp($service, 'mapd') == 0) {
