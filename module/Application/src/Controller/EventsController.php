@@ -30,6 +30,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\PredefinedEvent;
 
 use Application\Entity\Status;
+use Application\Entity\SwitchObjectCategory;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
@@ -2384,13 +2385,15 @@ class EventsController extends TimelineTabController
                     $child->setEnddate($event->getEnddate());
                 }
                 $child->setStatus($event->getStatus());
-            } else 
-                if ($child->getCategory() instanceof AlarmCategory) {
+            } elseif ($child->getCategory() instanceof AlarmCategory) {
                     // si evt annulé uniquement : on annule toutes les alarmes
                     if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
                         $child->setStatus($event->getStatus());
                     }
-                }
+            } elseif ($child->getCategory() instanceof SwitchObjectCategory) {
+                $child->setStatus($event->getStatus());
+                $child->setEnddate($event->getEnddate());
+            }
             $objectManager->persist($child);
         }
     }

@@ -27,6 +27,7 @@ use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\Sector;
 use Application\Entity\Stack;
+use Application\Entity\SwitchObjectCategory;
 use Application\Entity\Tab;
 use Core\Entity\TemporaryResource;
 use Application\Entity\SwitchObject;
@@ -87,8 +88,11 @@ class EventRepository extends ExtendedRepository
             ->leftJoin('e.zonefilters', 'f')
             ->leftJoin('e.category', 'c')
             ->leftJoin('c.parent', 'p')
-            ->andWhere($qb->expr()
-            ->isNull('e.parent')); // display only root events
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('e.parent'),
+                $qb->expr()->isInstanceOf('c', 'Application\Entity\SwitchObjectCategory')
+                )
+            ); // display only root events if not switch object
         
         if ($cats) {
             $qb->andWhere($qb->expr()
@@ -1342,6 +1346,7 @@ class EventRepository extends ExtendedRepository
                     $messages['success'][] = "Changement de couverture de la fréquence " . $frequency->getValue() . " enregistré.";
                 }
             } catch (\Exception $e) {
+                error_log($e->getMessage());
                 if ($messages != null) {
                     $messages['error'][] = $e->getMessage();
                 } else {

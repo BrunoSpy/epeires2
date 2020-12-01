@@ -16,12 +16,13 @@ return array(
                 )
             )
         ),
-        'migrations' => array( // /!\ do not change these settings /!\
-            'connection' => 'doctrine.connection.orm_default',
-            'name' => 'Epeires Migrations',
-            'table' => 'migrations',
-            'namespace' => 'DoctrineORMModule\Migrations',
-            'directory' => 'data/DoctrineORMModule/Migrations'
+        'migrations_configuration' => array( // /!\ do not change these settings /!\
+            'orm_default' => array(
+                'table_storage' => array(
+                    'table_name' => 'migrations',
+                ),
+                'migrations_paths' => array('DoctrineORMModule\Migrations' => 'data/DoctrineORMModule/Migrations')
+            )
         ),
         'fixture' => array(
             'default_group' => [

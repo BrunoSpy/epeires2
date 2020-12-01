@@ -221,15 +221,20 @@ class SwitchlistTabController extends TabController
                     if (count($objectevents) > 0) {
                         $messages['error'][] = "Un évènement est déjà en cours pour cet objet, impossible d'en créer un nouveau";
                     } else {
-                        $this->createEvent($cat, $object, $now, isset($post['custom_fields']) ? $post['custom_fields'] : null);
+                        $event = $this->createEvent($cat, $object, $now, isset($post['custom_fields']) ? $post['custom_fields'] : null);
                         //si l'objet a un parent, il faut créer l'évènement pour le parent aussi
                         if($object->getParent() !== null) {
                             //création uniquement si il n'y en a pas déjà un en cours
                             if(count($parentevents) == 0) {
-                                $this->createEvent($cat, $object->getParent(), $now);
+                                $parent = $this->createEvent($cat, $object->getParent(), $now);
+                                $event->setParent($parent);
+                            } elseif (count($parentevents) == 1) {
+                                $parent = $parentevents[0];
+                                $event->setParent($parent);
                             }
                         }
                         try {
+                            $this->entityManager->persist($event);
                             $this->entityManager->flush();
                             $messages['success'][] = "Nouvel évènement objet créé.";
                         } catch (\Exception $e) {
@@ -334,7 +339,7 @@ class SwitchlistTabController extends TabController
 
         //et on sauve le tout
         $this->entityManager->persist($event);
-
+        return $event;
     }
 
     public function getObjectStateAction()
