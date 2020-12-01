@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca5fdb21a5bd4063a4268e1919b76888",
+    "content-hash": "8b1f9ea4a7141f05647021f5317997a3",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -58,6 +58,9 @@
                 "doctrine",
                 "orm"
             ],
+            "support": {
+                "source": "https://github.com/beberlei/DoctrineExtensions/tree/v1.3.0"
+            },
             "time": "2020-11-29T07:37:23+00:00"
         },
         {
@@ -103,6 +106,10 @@
                 "slug",
                 "transliterator"
             ],
+            "support": {
+                "issues": "https://github.com/Behat/Transliterator/issues",
+                "source": "https://github.com/Behat/Transliterator/tree/v1.3.0"
+            },
             "time": "2020-01-14T16:39:13+00:00"
         },
         {
@@ -141,6 +148,10 @@
             "keywords": [
                 "var_export"
             ],
+            "support": {
+                "issues": "https://github.com/brick/varexporter/issues",
+                "source": "https://github.com/brick/varexporter/tree/master"
+            },
             "time": "2020-03-13T16:56:53+00:00"
         },
         {
@@ -199,6 +210,10 @@
                 "oauth",
                 "oauth2"
             ],
+            "support": {
+                "issues": "https://github.com/bshaffer/oauth2-server-php/issues",
+                "source": "https://github.com/bshaffer/oauth2-server-php/tree/master"
+            },
             "time": "2018-12-04T00:29:32+00:00"
         },
         {
@@ -254,6 +269,10 @@
                 }
             ],
             "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
+            "support": {
+                "issues": "https://github.com/composer/package-versions-deprecated/issues",
+                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.1"
+            },
             "funding": [
                 {
                     "url": "https://packagist.com",
@@ -299,26 +318,30 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "support": {
+                "issues": "https://github.com/container-interop/container-interop/issues",
+                "source": "https://github.com/container-interop/container-interop/tree/master"
+            },
             "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
             "name": "dgac/mattermostmodule",
-            "version": "v0.3.4",
+            "version": "v0.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/MattermostModule.git",
-                "reference": "7d3e14d6aec6233441ef7e244d6fa32beb373f3b"
+                "reference": "d3e74b04a7eccad4120f1af599567fafa422722c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/7d3e14d6aec6233441ef7e244d6fa32beb373f3b",
-                "reference": "7d3e14d6aec6233441ef7e244d6fa32beb373f3b",
+                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/d3e74b04a7eccad4120f1af599567fafa422722c",
+                "reference": "d3e74b04a7eccad4120f1af599567fafa422722c",
                 "shasum": ""
             },
             "require": {
                 "gnello/php-mattermost-driver": "^2.4",
-                "laminas/laminas-dependency-plugin": "^1.0",
+                "laminas/laminas-dependency-plugin": "^2.0",
                 "laminas/laminas-mvc": "^3.0",
                 "maglnet/magl-markdown": "~1.1"
             },
@@ -346,7 +369,11 @@
                 "chat",
                 "laminas"
             ],
-            "time": "2020-03-04T14:42:34+00:00"
+            "support": {
+                "issues": "https://github.com/DGAC/MattermostModule/issues",
+                "source": "https://github.com/DGAC/MattermostModule/tree/v0.3.5"
+            },
+            "time": "2020-12-01T13:53:33+00:00"
         },
         {
             "name": "dgac/nmb2b-phpclient",
@@ -386,6 +413,10 @@
                 }
             ],
             "description": "PHP Client for NM B2B Web services",
+            "support": {
+                "issues": "https://github.com/DGAC/nmb2b-phpclient/issues",
+                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.3.0"
+            },
             "time": "2020-02-28T16:31:18+00:00"
         },
         {
@@ -436,6 +467,10 @@
                 "pdf",
                 "zf2"
             ],
+            "support": {
+                "issues": "https://github.com/raykolbe/DOMPDFModule/issues",
+                "source": "https://github.com/raykolbe/DOMPDFModule/tree/zf3"
+            },
             "time": "2018-01-07T14:30:24+00:00"
         },
         {
@@ -507,6 +542,10 @@
                 "docblock",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/annotations/issues",
+                "source": "https://github.com/doctrine/annotations/tree/1.11.1"
+            },
             "time": "2020-10-26T10:28:16+00:00"
         },
         {
@@ -589,6 +628,10 @@
                 "redis",
                 "xcache"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/cache/issues",
+                "source": "https://github.com/doctrine/cache/tree/1.10.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -668,6 +711,10 @@
                 "iterators",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/collections/issues",
+                "source": "https://github.com/doctrine/collections/tree/1.6.7"
+            },
             "time": "2020-07-27T17:53:49+00:00"
         },
         {
@@ -751,6 +798,10 @@
                 "doctrine",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/common/issues",
+                "source": "https://github.com/doctrine/common/tree/2.13.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -858,6 +909,10 @@
                 "sqlserver",
                 "sqlsrv"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/dbal/issues",
+                "source": "https://github.com/doctrine/dbal/tree/2.12.1"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -926,6 +981,11 @@
                 "laminas",
                 "zf"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/doctrine-laminas-hydrator/issues",
+                "rss": "https://github.com/doctrine/doctrine-laminas-hydrator/releases.atom",
+                "source": "https://github.com/doctrine/doctrine-laminas-hydrator"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1045,6 +1105,10 @@
                 "laminas",
                 "module"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/DoctrineModule/issues",
+                "source": "https://github.com/doctrine/DoctrineModule/tree/4.0.6"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1158,6 +1222,10 @@
                 "module",
                 "orm"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/DoctrineORMModule/issues",
+                "source": "https://github.com/doctrine/DoctrineORMModule/tree/3.1.1"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1248,6 +1316,10 @@
                 "event system",
                 "events"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/event-manager/issues",
+                "source": "https://github.com/doctrine/event-manager/tree/1.1.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1340,6 +1412,10 @@
                 "uppercase",
                 "words"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/inflector/issues",
+                "source": "https://github.com/doctrine/inflector/tree/1.4.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1405,6 +1481,10 @@
                 "constructor",
                 "instantiate"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/instantiator/issues",
+                "source": "https://github.com/doctrine/instantiator/tree/1.4.0"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1481,6 +1561,10 @@
                 "parser",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/lexer/issues",
+                "source": "https://github.com/doctrine/lexer/tree/1.2.1"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1580,6 +1664,10 @@
                 "migrations",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/migrations/issues",
+                "source": "https://github.com/doctrine/migrations/tree/3.0.1"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1682,6 +1770,10 @@
                 "database",
                 "orm"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/orm/issues",
+                "source": "https://github.com/doctrine/orm/tree/2.7.4"
+            },
             "time": "2020-10-10T17:11:26+00:00"
         },
         {
@@ -1766,6 +1858,10 @@
                 "orm",
                 "persistence"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/persistence/issues",
+                "source": "https://github.com/doctrine/persistence/tree/1.3.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1858,6 +1954,10 @@
                 "reflection",
                 "static"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/reflection/issues",
+                "source": "https://github.com/doctrine/reflection/tree/1.2.2"
+            },
             "abandoned": "roave/better-reflection",
             "time": "2020-10-27T21:46:55+00:00"
         },
@@ -1927,6 +2027,10 @@
             ],
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
+            "support": {
+                "issues": "https://github.com/dompdf/dompdf/issues",
+                "source": "https://github.com/dompdf/dompdf/tree/master"
+            },
             "time": "2020-08-30T22:54:22+00:00"
         },
         {
@@ -1973,6 +2077,10 @@
                 "markdown",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown/issues",
+                "source": "https://github.com/erusev/parsedown/tree/1.7.x"
+            },
             "time": "2019-12-30T22:54:17+00:00"
         },
         {
@@ -2020,6 +2128,10 @@
                 "parsedown",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown-extra/issues",
+                "source": "https://github.com/erusev/parsedown-extra/tree/0.8.x"
+            },
             "time": "2019-12-30T23:20:37+00:00"
         },
         {
@@ -2102,6 +2214,12 @@
                 "tree",
                 "uploadable"
             ],
+            "support": {
+                "email": "gediminas.morkevicius@gmail.com",
+                "issues": "https://github.com/Atlantic18/DoctrineExtensions/issues",
+                "source": "https://github.com/Atlantic18/DoctrineExtensions/tree/v3.0.0-beta",
+                "wiki": "https://github.com/Atlantic18/DoctrineExtensions/tree/master/doc"
+            },
             "time": "2020-08-21T01:27:20+00:00"
         },
         {
@@ -2150,6 +2268,11 @@
                 "Mattermost",
                 "chat"
             ],
+            "support": {
+                "email": "luca@gnello.com",
+                "issues": "https://github.com/gnello/php-mattermost-driver/issues",
+                "source": "https://github.com/gnello/php-mattermost-driver/tree/v2.14.1"
+            },
             "time": "2020-09-20T08:28:00+00:00"
         },
         {
@@ -2217,6 +2340,10 @@
                 "rest",
                 "web service"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/guzzle/issues",
+                "source": "https://github.com/guzzle/guzzle/tree/6.5"
+            },
             "time": "2020-06-16T21:01:06+00:00"
         },
         {
@@ -2268,6 +2395,10 @@
             "keywords": [
                 "promise"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/promises/issues",
+                "source": "https://github.com/guzzle/promises/tree/1.4.0"
+            },
             "time": "2020-09-30T07:37:28+00:00"
         },
         {
@@ -2339,6 +2470,10 @@
                 "uri",
                 "url"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/psr7/issues",
+                "source": "https://github.com/guzzle/psr7/tree/1.7.0"
+            },
             "time": "2020-09-30T07:37:11+00:00"
         },
         {
@@ -2440,6 +2575,9 @@
                 "compression",
                 "minification"
             ],
+            "support": {
+                "source": "https://github.com/jield-webdev/assetic/tree/develop"
+            },
             "time": "2020-02-20T11:04:51+00:00"
         },
         {
@@ -2478,6 +2616,7 @@
             "suggest": {
                 "laminas/laminas-mvc-console": "laminas-mvc-console provides the ability to expose laminas-mvc as a console application"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2518,6 +2657,9 @@
                 "asset manager",
                 "laminas"
             ],
+            "support": {
+                "source": "https://github.com/jield-webdev/laminas-assetmanager/tree/master"
+            },
             "time": "2020-02-20T11:21:02+00:00"
         },
         {
@@ -2537,6 +2679,7 @@
             "require": {
                 "php": ">=5.3.3"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2657,6 +2800,14 @@
                 "framework",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools"
+            },
             "time": "2020-04-01T20:31:10+00:00"
         },
         {
@@ -2718,6 +2869,14 @@
                 "module",
                 "rest"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-api-problem/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-api-problem/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-api-problem"
+            },
             "time": "2019-12-31T15:55:36+00:00"
         },
         {
@@ -2777,6 +2936,14 @@
                 "module",
                 "rest"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-configuration/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-configuration/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-configuration"
+            },
             "time": "2019-12-31T15:55:49+00:00"
         },
         {
@@ -2846,6 +3013,14 @@
                 "laminas",
                 "module"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-content-negotiation/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-content-negotiation/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-content-negotiation"
+            },
             "time": "2019-12-31T15:56:18+00:00"
         },
         {
@@ -2911,6 +3086,14 @@
                 "module",
                 "validation"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-content-validation/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-content-validation/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-content-validation"
+            },
             "time": "2019-12-31T15:56:42+00:00"
         },
         {
@@ -2975,6 +3158,14 @@
                 "laminas",
                 "module"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-documentation/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-documentation/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-documentation"
+            },
             "time": "2019-12-31T15:58:24+00:00"
         },
         {
@@ -3035,6 +3226,14 @@
                 "module",
                 "swagger"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-documentation-swagger/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-documentation-swagger/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-documentation-swagger"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3111,6 +3310,14 @@
                 "psr-13",
                 "rest"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-hal/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-hal/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-hal"
+            },
             "time": "2019-12-31T15:59:57+00:00"
         },
         {
@@ -3176,6 +3383,14 @@
                 "laminas",
                 "module"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-mvc-auth/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-mvc-auth/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-mvc-auth"
+            },
             "time": "2019-12-31T16:00:38+00:00"
         },
         {
@@ -3243,6 +3458,14 @@
                 "laminas",
                 "oauth2"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-oauth2/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-oauth2/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-oauth2"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3299,6 +3522,14 @@
                 "framework",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-provider/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-provider/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-provider"
+            },
             "time": "2019-12-31T16:01:04+00:00"
         },
         {
@@ -3369,6 +3600,14 @@
                 "module",
                 "rest"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-rest/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-rest/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-rest"
+            },
             "time": "2019-12-31T16:01:47+00:00"
         },
         {
@@ -3431,6 +3670,14 @@
                 "module",
                 "rpc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-rpc/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-rpc/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-rpc"
+            },
             "time": "2019-12-31T16:01:57+00:00"
         },
         {
@@ -3491,6 +3738,14 @@
                 "module",
                 "rest"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-versioning/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-versioning/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-versioning"
+            },
             "time": "2019-12-31T16:02:33+00:00"
         },
         {
@@ -3557,6 +3812,14 @@
                 "Authentication",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-authentication/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-authentication/issues",
+                "rss": "https://github.com/laminas/laminas-authentication/releases.atom",
+                "source": "https://github.com/laminas/laminas-authentication"
+            },
             "time": "2019-12-31T16:14:48+00:00"
         },
         {
@@ -3641,6 +3904,14 @@
                 "psr-16",
                 "psr-6"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-cache/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-cache/issues",
+                "rss": "https://github.com/laminas/laminas-cache/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3696,6 +3967,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-apc/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-apc/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-apc/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-apc"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3751,6 +4029,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-apcu/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-apcu/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-apcu/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-apcu"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3803,6 +4088,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-blackhole/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-blackhole/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-blackhole/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-blackhole"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3858,6 +4150,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-dba/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-dba/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-dba/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-dba"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3913,6 +4212,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-ext-mongodb/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-ext-mongodb/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-ext-mongodb/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-ext-mongodb"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -3965,6 +4271,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-filesystem/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-filesystem/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-filesystem/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-filesystem"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4020,6 +4333,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-memcache/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-memcache/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-memcache/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-memcache"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4072,6 +4392,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-memcached/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-memcached/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-memcached/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-memcached"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4124,6 +4451,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-memory/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-memory/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-memory/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-memory"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4176,6 +4510,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-mongodb/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-mongodb/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-mongodb/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-mongodb"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4228,6 +4569,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-redis/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-redis/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-redis/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-redis"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4284,6 +4632,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-session/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-session/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-session/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-session"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4339,6 +4694,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-wincache/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-wincache/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-wincache/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-wincache"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4395,6 +4757,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-xcache/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-xcache/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-xcache/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-xcache"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4447,6 +4816,13 @@
                 "cache",
                 "laminas"
             ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-zend-server/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-zend-server/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-zend-server/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-zend-server"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4507,6 +4883,14 @@
                 "code",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-code/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-code/issues",
+                "rss": "https://github.com/laminas/laminas-code/releases.atom",
+                "source": "https://github.com/laminas/laminas-code"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4577,6 +4961,14 @@
                 "config",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-config/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-config/issues",
+                "rss": "https://github.com/laminas/laminas-config/releases.atom",
+                "source": "https://github.com/laminas/laminas-config"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4640,6 +5032,14 @@
                 "console",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-console/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-console/issues",
+                "rss": "https://github.com/laminas/laminas-console/releases.atom",
+                "source": "https://github.com/laminas/laminas-console"
+            },
             "time": "2019-12-31T16:31:45+00:00"
         },
         {
@@ -4696,6 +5096,14 @@
                 "crypt",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-crypt/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-crypt/issues",
+                "rss": "https://github.com/laminas/laminas-crypt/releases.atom",
+                "source": "https://github.com/laminas/laminas-crypt"
+            },
             "time": "2019-12-31T16:33:24+00:00"
         },
         {
@@ -4758,41 +5166,42 @@
                 "db",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-db/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-db/issues",
+                "rss": "https://github.com/laminas/laminas-db/releases.atom",
+                "source": "https://github.com/laminas/laminas-db"
+            },
             "time": "2020-03-29T12:08:51+00:00"
         },
         {
             "name": "laminas/laminas-dependency-plugin",
-            "version": "1.0.4",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-dependency-plugin.git",
-                "reference": "38bf91861f5b4d49f9a1c530327c997f7a7fb2db"
+                "reference": "1cedcd1590225fcaa3d4d580ab3adf318779ac28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-dependency-plugin/zipball/38bf91861f5b4d49f9a1c530327c997f7a7fb2db",
-                "reference": "38bf91861f5b4d49f9a1c530327c997f7a7fb2db",
+                "url": "https://api.github.com/repos/laminas/laminas-dependency-plugin/zipball/1cedcd1590225fcaa3d4d580ab3adf318779ac28",
+                "reference": "1cedcd1590225fcaa3d4d580ab3adf318779ac28",
                 "shasum": ""
             },
             "require": {
-                "composer-plugin-api": "^1.1",
-                "php": "^5.6 || ^7.0"
+                "composer-plugin-api": "^1.1 || ^2.0",
+                "php": "^7.3 || ~8.0.0"
             },
             "require-dev": {
-                "composer/composer": "^1.9",
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-                "phpcompatibility/php-compatibility": "^9.3",
-                "phpunit/phpunit": "^8.4",
-                "roave/security-advisories": "dev-master",
-                "webimpress/coding-standard": "^1.0"
+                "composer/composer": "^1.9 || ^2.0",
+                "mikey179/vfsstream": "^1.6",
+                "roave/security-advisories": "dev-master"
             },
             "type": "composer-plugin",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev",
-                    "dev-develop": "1.1.x-dev"
-                },
-                "class": "Laminas\\DependencyPlugin\\DependencyRewriterPlugin"
+                "class": "Laminas\\DependencyPlugin\\DependencyRewriterPluginDelegator"
             },
             "autoload": {
                 "psr-4": {
@@ -4804,13 +5213,17 @@
                 "BSD-3-Clause"
             ],
             "description": "Replace zendframework and zfcampus packages with their Laminas Project equivalents.",
+            "support": {
+                "issues": "https://github.com/laminas/laminas-dependency-plugin/issues",
+                "source": "https://github.com/laminas/laminas-dependency-plugin/tree/2.1.0"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-05-20T13:45:39+00:00"
+            "time": "2020-11-02T18:16:57+00:00"
         },
         {
             "name": "laminas/laminas-development-mode",
@@ -4857,6 +5270,13 @@
                 "framework",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-development-mode/issues",
+                "rss": "https://github.com/laminas/laminas-development-mode/releases.atom",
+                "source": "https://github.com/laminas/laminas-development-mode"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4912,6 +5332,14 @@
                 "escaper",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-escaper/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-escaper/issues",
+                "rss": "https://github.com/laminas/laminas-escaper/releases.atom",
+                "source": "https://github.com/laminas/laminas-escaper"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -4976,6 +5404,14 @@
                 "events",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-eventmanager/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-eventmanager/issues",
+                "rss": "https://github.com/laminas/laminas-eventmanager/releases.atom",
+                "source": "https://github.com/laminas/laminas-eventmanager"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5043,6 +5479,14 @@
                 "file",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-file/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-file/issues",
+                "rss": "https://github.com/laminas/laminas-file/releases.atom",
+                "source": "https://github.com/laminas/laminas-file"
+            },
             "time": "2019-12-31T16:51:52+00:00"
         },
         {
@@ -5112,6 +5556,14 @@
                 "filter",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-filter/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-filter/issues",
+                "rss": "https://github.com/laminas/laminas-filter/releases.atom",
+                "source": "https://github.com/laminas/laminas-filter"
+            },
             "time": "2020-03-29T12:41:29+00:00"
         },
         {
@@ -5194,6 +5646,14 @@
                 "form",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-form/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-form/issues",
+                "rss": "https://github.com/laminas/laminas-form/releases.atom",
+                "source": "https://github.com/laminas/laminas-form"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5252,6 +5712,14 @@
                 "http client",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-http/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-http/issues",
+                "rss": "https://github.com/laminas/laminas-http/releases.atom",
+                "source": "https://github.com/laminas/laminas-http"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5318,6 +5786,14 @@
                 "hydrator",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-hydrator/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-hydrator/issues",
+                "rss": "https://github.com/laminas/laminas-hydrator/releases.atom",
+                "source": "https://github.com/laminas/laminas-hydrator"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5395,6 +5871,14 @@
                 "i18n",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-i18n/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-i18n/issues",
+                "rss": "https://github.com/laminas/laminas-i18n/releases.atom",
+                "source": "https://github.com/laminas/laminas-i18n"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5459,6 +5943,14 @@
                 "inputfilter",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-inputfilter/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-inputfilter/issues",
+                "rss": "https://github.com/laminas/laminas-inputfilter/releases.atom",
+                "source": "https://github.com/laminas/laminas-inputfilter"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5519,6 +6011,14 @@
                 "json",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-json/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-json/issues",
+                "rss": "https://github.com/laminas/laminas-json/releases.atom",
+                "source": "https://github.com/laminas/laminas-json"
+            },
             "time": "2019-12-31T17:15:04+00:00"
         },
         {
@@ -5568,6 +6068,14 @@
                 "laminas",
                 "loader"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-loader/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-loader/issues",
+                "rss": "https://github.com/laminas/laminas-loader/releases.atom",
+                "source": "https://github.com/laminas/laminas-loader"
+            },
             "time": "2019-12-31T17:18:27+00:00"
         },
         {
@@ -5639,6 +6147,14 @@
                 "log",
                 "logging"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-log/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-log/issues",
+                "rss": "https://github.com/laminas/laminas-log/releases.atom",
+                "source": "https://github.com/laminas/laminas-log"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5707,6 +6223,14 @@
                 "laminas",
                 "mail"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mail/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mail/issues",
+                "rss": "https://github.com/laminas/laminas-mail/releases.atom",
+                "source": "https://github.com/laminas/laminas-mail"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5768,6 +6292,14 @@
                 "laminas",
                 "math"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-math/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-math/issues",
+                "rss": "https://github.com/laminas/laminas-math/releases.atom",
+                "source": "https://github.com/laminas/laminas-math"
+            },
             "time": "2019-12-31T17:24:18+00:00"
         },
         {
@@ -5822,6 +6354,14 @@
                 "laminas",
                 "mime"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mime/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mime/issues",
+                "rss": "https://github.com/laminas/laminas-mime/releases.atom",
+                "source": "https://github.com/laminas/laminas-mime"
+            },
             "time": "2020-03-29T13:12:07+00:00"
         },
         {
@@ -5881,6 +6421,14 @@
                 "laminas",
                 "modulemanager"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-modulemanager/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-modulemanager/issues",
+                "rss": "https://github.com/laminas/laminas-modulemanager/releases.atom",
+                "source": "https://github.com/laminas/laminas-modulemanager"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -5963,6 +6511,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc/issues",
+                "rss": "https://github.com/laminas/laminas-mvc/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc"
+            },
             "time": "2019-12-31T17:33:14+00:00"
         },
         {
@@ -6033,6 +6589,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-console/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-console/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-console/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-console"
+            },
             "time": "2019-12-31T17:33:37+00:00"
         },
         {
@@ -6079,6 +6643,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-form/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-form/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-form/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-form"
+            },
             "time": "2019-12-31T17:33:38+00:00"
         },
         {
@@ -6147,6 +6719,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-i18n/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-i18n/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-i18n/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-i18n"
+            },
             "time": "2019-12-31T17:33:41+00:00"
         },
         {
@@ -6207,6 +6787,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-plugin-flashmessenger/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger"
+            },
             "time": "2019-12-31T17:33:46+00:00"
         },
         {
@@ -6262,6 +6850,14 @@
                 "laminas",
                 "mvc"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-plugin-prg/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-plugin-prg/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-plugin-prg/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-plugin-prg"
+            },
             "time": "2019-12-31T17:33:51+00:00"
         },
         {
@@ -6327,6 +6923,14 @@
                 "laminas",
                 "paginator"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-paginator/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-paginator/issues",
+                "rss": "https://github.com/laminas/laminas-paginator/releases.atom",
+                "source": "https://github.com/laminas/laminas-paginator"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6380,6 +6984,14 @@
                 "acl",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-permissions-acl/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-permissions-acl/issues",
+                "rss": "https://github.com/laminas/laminas-permissions-acl/releases.atom",
+                "source": "https://github.com/laminas/laminas-permissions-acl"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6437,6 +7049,14 @@
                 "laminas-permssions-rbac",
                 "rbac"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-permissions-rbac/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-permissions-rbac/issues",
+                "rss": "https://github.com/laminas/laminas-permissions-rbac/releases.atom",
+                "source": "https://github.com/laminas/laminas-permissions-rbac"
+            },
             "time": "2019-12-31T17:37:57+00:00"
         },
         {
@@ -6493,6 +7113,14 @@
                 "laminas",
                 "progressbar"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-progressbar/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-progressbar/issues",
+                "rss": "https://github.com/laminas/laminas-progressbar/releases.atom",
+                "source": "https://github.com/laminas/laminas-progressbar"
+            },
             "time": "2019-12-31T17:38:44+00:00"
         },
         {
@@ -6550,6 +7178,14 @@
                 "laminas",
                 "routing"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-router/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-router/issues",
+                "rss": "https://github.com/laminas/laminas-router/releases.atom",
+                "source": "https://github.com/laminas/laminas-router"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6560,7 +7196,7 @@
         },
         {
             "name": "laminas/laminas-servicemanager",
-            "version": "3.4.1",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-servicemanager.git",
@@ -6628,6 +7264,14 @@
                 "service-manager",
                 "servicemanager"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-servicemanager/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-servicemanager/issues",
+                "rss": "https://github.com/laminas/laminas-servicemanager/releases.atom",
+                "source": "https://github.com/laminas/laminas-servicemanager"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6702,6 +7346,14 @@
                 "laminas",
                 "session"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-session/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-session/issues",
+                "rss": "https://github.com/laminas/laminas-session/releases.atom",
+                "source": "https://github.com/laminas/laminas-session"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6752,6 +7404,14 @@
                 "laminas",
                 "stdlib"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-stdlib/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-stdlib/issues",
+                "rss": "https://github.com/laminas/laminas-stdlib/releases.atom",
+                "source": "https://github.com/laminas/laminas-stdlib"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6804,6 +7464,14 @@
                 "laminas",
                 "text"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-text/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-text/issues",
+                "rss": "https://github.com/laminas/laminas-text/releases.atom",
+                "source": "https://github.com/laminas/laminas-text"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6855,6 +7523,14 @@
                 "laminas",
                 "uri"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-uri/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-uri/issues",
+                "rss": "https://github.com/laminas/laminas-uri/releases.atom",
+                "source": "https://github.com/laminas/laminas-uri"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -6940,6 +7616,14 @@
                 "laminas",
                 "validator"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-validator/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-validator/issues",
+                "rss": "https://github.com/laminas/laminas-validator/releases.atom",
+                "source": "https://github.com/laminas/laminas-validator"
+            },
             "time": "2020-03-31T18:57:01+00:00"
         },
         {
@@ -7031,6 +7715,14 @@
                 "laminas",
                 "view"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-view/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-view/issues",
+                "rss": "https://github.com/laminas/laminas-view/releases.atom",
+                "source": "https://github.com/laminas/laminas-view"
+            },
             "time": "2019-12-31T18:03:30+00:00"
         },
         {
@@ -7079,6 +7771,12 @@
                 "laminas",
                 "zf"
             ],
+            "support": {
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-zendframework-bridge/issues",
+                "rss": "https://github.com/laminas/laminas-zendframework-bridge/releases.atom",
+                "source": "https://github.com/laminas/laminas-zendframework-bridge"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -7155,6 +7853,12 @@
                 "markdown",
                 "parser"
             ],
+            "support": {
+                "docs": "https://commonmark.thephpleague.com/",
+                "issues": "https://github.com/thephpleague/commonmark/issues",
+                "rss": "https://github.com/thephpleague/commonmark/releases.atom",
+                "source": "https://github.com/thephpleague/commonmark"
+            },
             "time": "2019-06-18T18:29:15+00:00"
         },
         {
@@ -7212,6 +7916,10 @@
                 "jsmin",
                 "minify"
             ],
+            "support": {
+                "issues": "https://github.com/linkorb/jsmin-php/issues",
+                "source": "https://github.com/linkorb/jsmin-php/tree/1.0.0"
+            },
             "time": "2013-03-15T13:16:35+00:00"
         },
         {
@@ -7290,6 +7998,10 @@
                 "permissions",
                 "rbac"
             ],
+            "support": {
+                "issues": "https://github.com/LM-Commons/LmcRbacMvc/issues",
+                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/v3.1.1"
+            },
             "time": "2020-11-18T15:07:39+00:00"
         },
         {
@@ -7371,6 +8083,10 @@
             "keywords": [
                 "laminas"
             ],
+            "support": {
+                "issues": "https://github.com/LM-Commons/LmcUser/issues",
+                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.1"
+            },
             "time": "2020-10-01T15:27:31+00:00"
         },
         {
@@ -7438,6 +8154,10 @@
                 "parsedown",
                 "zf2"
             ],
+            "support": {
+                "issues": "https://github.com/maglnet/MaglMarkdown/issues",
+                "source": "https://github.com/maglnet/MaglMarkdown"
+            },
             "time": "2017-05-30T14:03:43+00:00"
         },
         {
@@ -7487,6 +8207,10 @@
             "keywords": [
                 "markdown"
             ],
+            "support": {
+                "issues": "https://github.com/michelf/php-markdown/issues",
+                "source": "https://github.com/michelf/php-markdown/tree/1.9.0"
+            },
             "time": "2019-12-02T02:32:27+00:00"
         },
         {
@@ -7539,6 +8263,10 @@
                 "parser",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/nikic/PHP-Parser/issues",
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.2"
+            },
             "time": "2020-09-26T10:30:38+00:00"
         },
         {
@@ -7609,6 +8337,10 @@
                 "proxy pattern",
                 "service proxies"
             ],
+            "support": {
+                "issues": "https://github.com/Ocramius/ProxyManager/issues",
+                "source": "https://github.com/Ocramius/ProxyManager/tree/2.2.x"
+            },
             "time": "2019-08-10T08:37:15+00:00"
         },
         {
@@ -7654,6 +8386,11 @@
                 "pseudorandom",
                 "random"
             ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/random_compat/issues",
+                "source": "https://github.com/paragonie/random_compat"
+            },
             "time": "2018-07-02T15:55:56+00:00"
         },
         {
@@ -7691,6 +8428,10 @@
             ],
             "description": "A library to read, parse, export and make subsets of different types of font files.",
             "homepage": "https://github.com/PhenX/php-font-lib",
+            "support": {
+                "issues": "https://github.com/PhenX/php-font-lib/issues",
+                "source": "https://github.com/PhenX/php-font-lib/tree/0.5.2"
+            },
             "time": "2020-03-08T15:31:32+00:00"
         },
         {
@@ -7731,6 +8472,10 @@
             ],
             "description": "A library to read, parse and export to PDF SVG files.",
             "homepage": "https://github.com/PhenX/php-svg-lib",
+            "support": {
+                "issues": "https://github.com/PhenX/php-svg-lib/issues",
+                "source": "https://github.com/PhenX/php-svg-lib/tree/master"
+            },
             "time": "2019-09-11T20:02:13+00:00"
         },
         {
@@ -7781,6 +8526,9 @@
                 "container",
                 "dependency injection"
             ],
+            "support": {
+                "source": "https://github.com/silexphp/Pimple/tree/v3.3.1"
+            },
             "time": "2020-11-24T20:35:42+00:00"
         },
         {
@@ -7827,6 +8575,9 @@
                 "psr",
                 "psr-6"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/cache/tree/master"
+            },
             "time": "2016-08-06T20:24:11+00:00"
         },
         {
@@ -7876,6 +8627,10 @@
                 "container-interop",
                 "psr"
             ],
+            "support": {
+                "issues": "https://github.com/php-fig/container/issues",
+                "source": "https://github.com/php-fig/container/tree/master"
+            },
             "time": "2017-02-14T16:28:37+00:00"
         },
         {
@@ -7926,6 +8681,9 @@
                 "request",
                 "response"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
@@ -7975,6 +8733,9 @@
                 "psr-13",
                 "rest"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/link/tree/master"
+            },
             "time": "2016-10-28T16:06:13+00:00"
         },
         {
@@ -8022,6 +8783,9 @@
                 "psr",
                 "psr-3"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/1.1.3"
+            },
             "time": "2020-03-23T09:12:05+00:00"
         },
         {
@@ -8070,6 +8834,9 @@
                 "psr-16",
                 "simple-cache"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/master"
+            },
             "time": "2017-10-23T01:57:42+00:00"
         },
         {
@@ -8110,6 +8877,10 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
+            "support": {
+                "issues": "https://github.com/ralouphie/getallheaders/issues",
+                "source": "https://github.com/ralouphie/getallheaders/tree/develop"
+            },
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
@@ -8154,6 +8925,10 @@
                 "recurring",
                 "rrule"
             ],
+            "support": {
+                "issues": "https://github.com/rlanvin/php-rrule/issues",
+                "source": "https://github.com/rlanvin/php-rrule/tree/v1.6.3"
+            },
             "time": "2019-01-13T09:49:03+00:00"
         },
         {
@@ -8184,6 +8959,7 @@
                 "psalm/plugin-phpunit": "^0.9.0",
                 "vimeo/psalm": "^3.8"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -8262,6 +9038,10 @@
                 "parser",
                 "stylesheet"
             ],
+            "support": {
+                "issues": "https://github.com/sabberworm/PHP-CSS-Parser/issues",
+                "source": "https://github.com/sabberworm/PHP-CSS-Parser/tree/8.3.1"
+            },
             "time": "2020-06-01T09:10:00+00:00"
         },
         {
@@ -8325,6 +9105,10 @@
                 "scss",
                 "stylesheet"
             ],
+            "support": {
+                "issues": "https://github.com/scssphp/scssphp/issues",
+                "source": "https://github.com/scssphp/scssphp/tree/v1.4.0"
+            },
             "time": "2020-11-07T20:53:41+00:00"
         },
         {
@@ -8405,6 +9189,9 @@
                 "console",
                 "terminal"
             ],
+            "support": {
+                "source": "https://github.com/symfony/console/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8481,6 +9268,9 @@
                 "polyfill",
                 "portable"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8559,6 +9349,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8643,6 +9436,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-idn/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8724,6 +9520,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8801,6 +9600,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8874,6 +9676,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php72/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -8950,6 +9755,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php73/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9030,6 +9838,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.20.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9088,6 +9899,9 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/process/tree/v4.4.17"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9164,6 +9978,9 @@
                 "interoperability",
                 "standards"
             ],
+            "support": {
+                "source": "https://github.com/symfony/service-contracts/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9223,6 +10040,9 @@
             ],
             "description": "Symfony Stopwatch Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/stopwatch/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9303,6 +10123,9 @@
                 "utf-8",
                 "utf8"
             ],
+            "support": {
+                "source": "https://github.com/symfony/string/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -9363,6 +10186,10 @@
                 "idna",
                 "punycode"
             ],
+            "support": {
+                "issues": "https://github.com/true/php-punycode/issues",
+                "source": "https://github.com/true/php-punycode/tree/master"
+            },
             "time": "2016-11-16T10:37:54+00:00"
         },
         {
@@ -9425,6 +10252,10 @@
             "keywords": [
                 "templating"
             ],
+            "support": {
+                "issues": "https://github.com/twigphp/Twig/issues",
+                "source": "https://github.com/twigphp/Twig/tree/v3.1.1"
+            },
             "funding": [
                 {
                     "url": "https://github.com/fabpot",
@@ -9484,6 +10315,10 @@
                 "safe writer",
                 "webimpress"
             ],
+            "support": {
+                "issues": "https://github.com/webimpress/safe-writer/issues",
+                "source": "https://github.com/webimpress/safe-writer/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://github.com/michalbundyra",
@@ -9494,21 +10329,21 @@
         },
         {
             "name": "zf-commons/zfc-user-doctrine-orm",
-            "version": "v3.0.7",
+            "version": "v3.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/ZfcUserDoctrineORM.git",
-                "reference": "f5f920f0c3a40ed1be87c02473c51a81cb3ff239"
+                "reference": "88ad59cb347950537ae5dba460587741055435d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/ZfcUserDoctrineORM/zipball/f5f920f0c3a40ed1be87c02473c51a81cb3ff239",
-                "reference": "f5f920f0c3a40ed1be87c02473c51a81cb3ff239",
+                "url": "https://api.github.com/repos/BrunoSpy/ZfcUserDoctrineORM/zipball/88ad59cb347950537ae5dba460587741055435d9",
+                "reference": "88ad59cb347950537ae5dba460587741055435d9",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-orm-module": "~3.0",
-                "laminas/laminas-dependency-plugin": "^1.0",
+                "laminas/laminas-dependency-plugin": "^2.0",
                 "lm-commons/lmc-user": "*",
                 "php": ">=5.3.3"
             },
@@ -9542,9 +10377,9 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/BrunoSpy/ZfcUserDoctrineORM/tree/v3.0.7"
+                "source": "https://github.com/BrunoSpy/ZfcUserDoctrineORM/tree/v3.0.8"
             },
-            "time": "2020-10-11T08:31:35+00:00"
+            "time": "2020-12-01T13:55:04+00:00"
         },
         {
             "name": "zfr/rbac",
@@ -9594,28 +10429,32 @@
                 "zf2",
                 "zf3"
             ],
+            "support": {
+                "issues": "https://github.com/zf-fr/rbac/issues",
+                "source": "https://github.com/zf-fr/rbac/tree/master"
+            },
             "time": "2014-02-06T14:18:34+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "api-skeletons/doctrine-data-fixture",
-            "version": "6.0.3",
+            "version": "v6.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/API-Skeletons/doctrine-data-fixture.git",
-                "reference": "52d894bd0e849a73987c3759b29ee70211c7d90c"
+                "url": "https://github.com/BrunoSpy/doctrine-data-fixture.git",
+                "reference": "b0144c3b92cb0e66d9dc8f7749995b9353fb8073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/API-Skeletons/doctrine-data-fixture/zipball/52d894bd0e849a73987c3759b29ee70211c7d90c",
-                "reference": "52d894bd0e849a73987c3759b29ee70211c7d90c",
+                "url": "https://api.github.com/repos/BrunoSpy/doctrine-data-fixture/zipball/b0144c3b92cb0e66d9dc8f7749995b9353fb8073",
+                "reference": "b0144c3b92cb0e66d9dc8f7749995b9353fb8073",
                 "shasum": ""
             },
             "require": {
                 "doctrine/data-fixtures": "^1.3.0",
                 "doctrine/doctrine-module": "^2.1 || ^4.0",
-                "laminas/laminas-dependency-plugin": "^1.0",
+                "laminas/laminas-dependency-plugin": "^2.0",
                 "laminas/laminas-eventmanager": "^3.0.0",
                 "laminas/laminas-modulemanager": "^2.7.2 || ^3.0.0",
                 "laminas/laminas-servicemanager": "^3.1.0",
@@ -9643,7 +10482,29 @@
                     "ApiSkeletons\\Doctrine\\DataFixture\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "ci-check": [
+                    "@lint",
+                    "@phpcs",
+                    "@test",
+                    "@phpstan"
+                ],
+                "lint": [
+                    "lint src/"
+                ],
+                "phpcs": [
+                    "phpcs"
+                ],
+                "phpstan": [
+                    "phpstan analyze -c phpstan.neon --level=7 src/"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ],
+                "test-coverage": [
+                    "phpunit --colors=always --coverage-clover clover.xml"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -9660,7 +10521,10 @@
                 "doctrine",
                 "laminas"
             ],
-            "time": "2020-07-17T01:07:38+00:00"
+            "support": {
+                "source": "https://github.com/BrunoSpy/doctrine-data-fixture/tree/v6.0.5"
+            },
+            "time": "2020-12-01T13:58:38+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -9719,6 +10583,10 @@
                 "gherkin",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/Behat/Gherkin/issues",
+                "source": "https://github.com/Behat/Gherkin/tree/master"
+            },
             "time": "2020-03-17T14:03:26+00:00"
         },
         {
@@ -9804,6 +10672,10 @@
                 "functional testing",
                 "unit testing"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/Codeception/issues",
+                "source": "https://github.com/Codeception/Codeception/tree/4.1.12"
+            },
             "funding": [
                 {
                     "url": "https://opencollective.com/codeception",
@@ -9860,6 +10732,10 @@
             "keywords": [
                 "codeception"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/lib-asserts/issues",
+                "source": "https://github.com/Codeception/lib-asserts/tree/1.13.2"
+            },
             "time": "2020-10-21T16:26:20+00:00"
         },
         {
@@ -9916,6 +10792,10 @@
             "keywords": [
                 "codeception"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/lib-innerbrowser/issues",
+                "source": "https://github.com/Codeception/lib-innerbrowser/tree/1.3.4"
+            },
             "time": "2020-10-22T05:45:03+00:00"
         },
         {
@@ -9969,6 +10849,10 @@
                 "asserts",
                 "codeception"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-asserts/issues",
+                "source": "https://github.com/Codeception/module-asserts/tree/1.3.1"
+            },
             "time": "2020-10-21T16:48:15+00:00"
         },
         {
@@ -10019,6 +10903,10 @@
                 "codeception",
                 "doctrine2"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-doctrine2/issues",
+                "source": "https://github.com/Codeception/module-doctrine2/tree/1.1.1"
+            },
             "time": "2020-11-26T06:56:31+00:00"
         },
         {
@@ -10071,6 +10959,10 @@
                 "browser-testing",
                 "codeception"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-webdriver/issues",
+                "source": "https://github.com/Codeception/module-webdriver/tree/1.1.4"
+            },
             "time": "2020-11-16T06:50:15+00:00"
         },
         {
@@ -10124,6 +11016,10 @@
                 "zf2",
                 "zf3"
             ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-zf2/issues",
+                "source": "https://github.com/Codeception/module-zf2/tree/1.0.3"
+            },
             "time": "2020-01-29T15:12:50+00:00"
         },
         {
@@ -10168,6 +11064,10 @@
                 }
             ],
             "description": "PHPUnit classes used by Codeception",
+            "support": {
+                "issues": "https://github.com/Codeception/phpunit-wrapper/issues",
+                "source": "https://github.com/Codeception/phpunit-wrapper/tree/9.0.5"
+            },
             "time": "2020-10-11T18:14:42+00:00"
         },
         {
@@ -10198,6 +11098,10 @@
                 "MIT"
             ],
             "description": "Flexible Stub wrapper for PHPUnit's Mock Builder",
+            "support": {
+                "issues": "https://github.com/Codeception/Stub/issues",
+                "source": "https://github.com/Codeception/Stub/tree/3.7.0"
+            },
             "time": "2020-07-03T15:54:43+00:00"
         },
         {
@@ -10261,6 +11165,10 @@
             "keywords": [
                 "database"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/data-fixtures/issues",
+                "source": "https://github.com/doctrine/data-fixtures/tree/1.4.x"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -10360,6 +11268,14 @@
                 "framework",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-admin/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-admin/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-admin"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -10421,6 +11337,14 @@
                 "framework",
                 "laminas"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-admin-ui/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-admin-ui/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-admin-ui"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -10479,6 +11403,14 @@
                 "laminas",
                 "plugin"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-component-installer/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-component-installer/issues",
+                "rss": "https://github.com/laminas/laminas-component-installer/releases.atom",
+                "source": "https://github.com/laminas/laminas-component-installer"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -10551,6 +11483,13 @@
                 "laminas",
                 "module"
             ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-developer-tools/issues",
+                "rss": "https://github.com/laminas/laminas-developer-tools/releases.atom",
+                "source": "https://github.com/laminas/laminas-developer-tools"
+            },
             "funding": [
                 {
                     "url": "https://funding.communitybridge.org/projects/laminas-project",
@@ -10605,6 +11544,10 @@
                 "object",
                 "object graph"
             ],
+            "support": {
+                "issues": "https://github.com/myclabs/DeepCopy/issues",
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.10.2"
+            },
             "funding": [
                 {
                     "url": "https://tidelift.com/funding/github/packagist/myclabs/deep-copy",
@@ -10666,6 +11609,10 @@
                 }
             ],
             "description": "Component for reading phar.io manifest information from a PHP Archive (PHAR)",
+            "support": {
+                "issues": "https://github.com/phar-io/manifest/issues",
+                "source": "https://github.com/phar-io/manifest/tree/master"
+            },
             "time": "2018-07-08T19:23:20+00:00"
         },
         {
@@ -10713,6 +11660,10 @@
                 }
             ],
             "description": "Library for handling version information and constraints",
+            "support": {
+                "issues": "https://github.com/phar-io/version/issues",
+                "source": "https://github.com/phar-io/version/tree/master"
+            },
             "time": "2018-07-08T19:19:57+00:00"
         },
         {
@@ -10780,6 +11731,10 @@
                 "selenium",
                 "webdriver"
             ],
+            "support": {
+                "issues": "https://github.com/php-webdriver/php-webdriver/issues",
+                "source": "https://github.com/php-webdriver/php-webdriver/tree/1.9.0"
+            },
             "time": "2020-11-19T15:21:05+00:00"
         },
         {
@@ -10829,6 +11784,10 @@
                 "reflection",
                 "static analysis"
             ],
+            "support": {
+                "issues": "https://github.com/phpDocumentor/ReflectionCommon/issues",
+                "source": "https://github.com/phpDocumentor/ReflectionCommon/tree/2.x"
+            },
             "time": "2020-06-27T09:03:43+00:00"
         },
         {
@@ -10881,6 +11840,10 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
+            "support": {
+                "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
+                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/master"
+            },
             "time": "2020-09-03T19:13:55+00:00"
         },
         {
@@ -10926,6 +11889,10 @@
                 }
             ],
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
+            "support": {
+                "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.4.0"
+            },
             "time": "2020-09-17T18:55:26+00:00"
         },
         {
@@ -10989,6 +11956,10 @@
                 "spy",
                 "stub"
             ],
+            "support": {
+                "issues": "https://github.com/phpspec/prophecy/issues",
+                "source": "https://github.com/phpspec/prophecy/tree/1.12.1"
+            },
             "time": "2020-09-29T09:10:42+00:00"
         },
         {
@@ -11053,6 +12024,10 @@
                 "testing",
                 "xunit"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/8.0.2"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11109,6 +12084,10 @@
                 "filesystem",
                 "iterator"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-file-iterator/issues",
+                "source": "https://github.com/sebastianbergmann/php-file-iterator/tree/3.0.5"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11168,6 +12147,10 @@
             "keywords": [
                 "process"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-invoker/issues",
+                "source": "https://github.com/sebastianbergmann/php-invoker/tree/3.1.1"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11223,6 +12206,10 @@
             "keywords": [
                 "template"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-text-template/issues",
+                "source": "https://github.com/sebastianbergmann/php-text-template/tree/2.0.4"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11278,6 +12265,10 @@
             "keywords": [
                 "timer"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-timer/issues",
+                "source": "https://github.com/sebastianbergmann/php-timer/tree/5.0.3"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11333,6 +12324,10 @@
             "keywords": [
                 "tokenizer"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/php-token-stream/issues",
+                "source": "https://github.com/sebastianbergmann/php-token-stream/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11428,6 +12423,10 @@
                 "testing",
                 "xunit"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/phpunit/issues",
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.2.6"
+            },
             "funding": [
                 {
                     "url": "https://phpunit.de/donate.html",
@@ -11484,6 +12483,10 @@
                 "psr",
                 "psr-14"
             ],
+            "support": {
+                "issues": "https://github.com/php-fig/event-dispatcher/issues",
+                "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
+            },
             "time": "2019-01-08T18:20:26+00:00"
         },
         {
@@ -11530,6 +12533,10 @@
             ],
             "description": "Collection of value objects that represent the PHP code units",
             "homepage": "https://github.com/sebastianbergmann/code-unit",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/code-unit/issues",
+                "source": "https://github.com/sebastianbergmann/code-unit/tree/1.0.8"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11581,6 +12588,10 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/issues",
+                "source": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/tree/2.0.3"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11651,6 +12662,10 @@
                 "compare",
                 "equality"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/comparator/issues",
+                "source": "https://github.com/sebastianbergmann/comparator/tree/4.0.6"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11713,6 +12728,10 @@
                 "unidiff",
                 "unified diff"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/diff/issues",
+                "source": "https://github.com/sebastianbergmann/diff/tree/4.0.4"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11772,6 +12791,10 @@
                 "environment",
                 "hhvm"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/environment/issues",
+                "source": "https://github.com/sebastianbergmann/environment/tree/5.1.3"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11845,6 +12868,10 @@
                 "export",
                 "exporter"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/exporter/issues",
+                "source": "https://github.com/sebastianbergmann/exporter/tree/4.0.3"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -11905,6 +12932,10 @@
             "keywords": [
                 "global state"
             ],
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/global-state/issues",
+                "source": "https://github.com/sebastianbergmann/global-state/tree/master"
+            },
             "time": "2020-02-07T06:11:37+00:00"
         },
         {
@@ -11952,6 +12983,10 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/object-enumerator/issues",
+                "source": "https://github.com/sebastianbergmann/object-enumerator/tree/4.0.4"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12003,6 +13038,10 @@
             ],
             "description": "Allows reflection of object attributes, including inherited and non-public ones",
             "homepage": "https://github.com/sebastianbergmann/object-reflector/",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/object-reflector/issues",
+                "source": "https://github.com/sebastianbergmann/object-reflector/tree/2.0.4"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12062,6 +13101,10 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/recursion-context/issues",
+                "source": "https://github.com/sebastianbergmann/recursion-context/tree/4.0.4"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12113,6 +13156,10 @@
             ],
             "description": "Provides a list of PHP built-in functions that operate on resources",
             "homepage": "https://www.github.com/sebastianbergmann/resource-operations",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/resource-operations/issues",
+                "source": "https://github.com/sebastianbergmann/resource-operations/tree/3.0.3"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12165,6 +13212,10 @@
             ],
             "description": "Collection of value objects that represent the types of the PHP type system",
             "homepage": "https://github.com/sebastianbergmann/type",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/type/issues",
+                "source": "https://github.com/sebastianbergmann/type/tree/2.3.1"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12214,6 +13265,10 @@
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/version/issues",
+                "source": "https://github.com/sebastianbergmann/version/tree/3.0.2"
+            },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -12268,6 +13323,10 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
+            "support": {
+                "issues": "https://github.com/sensiolabs/security-checker/issues",
+                "source": "https://github.com/sensiolabs/security-checker/tree/master"
+            },
             "time": "2019-11-01T13:20:14+00:00"
         },
         {
@@ -12322,6 +13381,9 @@
             ],
             "description": "Symfony BrowserKit Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/browser-kit/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12384,6 +13446,9 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/css-selector/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12448,6 +13513,9 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/deprecation-contracts/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12519,6 +13587,9 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/dom-crawler/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12601,6 +13672,9 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/event-dispatcher/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12677,6 +13751,9 @@
                 "interoperability",
                 "standards"
             ],
+            "support": {
+                "source": "https://github.com/symfony/event-dispatcher-contracts/tree/v2.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12735,6 +13812,9 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/finder/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12818,6 +13898,9 @@
             ],
             "description": "Symfony HttpClient component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/http-client/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12894,6 +13977,9 @@
                 "interoperability",
                 "standards"
             ],
+            "support": {
+                "source": "https://github.com/symfony/http-client-contracts/tree/v2.3.1"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -12971,6 +14057,9 @@
                 "mime",
                 "mime-type"
             ],
+            "support": {
+                "source": "https://github.com/symfony/mime/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -13056,6 +14145,9 @@
                 "debug",
                 "dump"
             ],
+            "support": {
+                "source": "https://github.com/symfony/var-dumper/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -13128,6 +14220,9 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v5.2.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -13182,6 +14277,10 @@
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
+            "support": {
+                "issues": "https://github.com/theseer/tokenizer/issues",
+                "source": "https://github.com/theseer/tokenizer/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://github.com/theseer",
@@ -13237,6 +14336,10 @@
                 "check",
                 "validate"
             ],
+            "support": {
+                "issues": "https://github.com/webmozart/assert/issues",
+                "source": "https://github.com/webmozart/assert/tree/master"
+            },
             "time": "2020-07-08T17:02:28+00:00"
         }
     ],
@@ -13266,5 +14369,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
