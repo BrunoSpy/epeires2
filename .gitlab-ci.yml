@@ -18,7 +18,6 @@ before_script:
 - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
 - unzip ./sonar-scanner.zip
 #parallelize downloads
-- composer global require --optimize-autoloader "hirak/prestissimo"
 - composer install --no-interaction --prefer-dist
 #configure database
 - cp $DOCTRINE config/autoload/doctrine.local.php
