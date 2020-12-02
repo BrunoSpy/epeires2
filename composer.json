@@ -23,10 +23,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/BrunoSpy/psr-container-doctrine"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/BrunoSpy/doctrine-data-fixture"
         }
     ],
     "require": {
@@ -75,7 +71,7 @@
         "codeception/codeception": "^4.0",
         "phpunit/php-code-coverage" : "^8.0",
         "sensiolabs/security-checker": "^6.0.0",
-        "api-skeletons/doctrine-data-fixture": "6.0.5",
+        "api-skeletons/doctrine-data-fixture": "^6.0.0",
         "laminas-api-tools/api-tools-admin": "^1.8",
         "laminas/laminas-router": "^3.3",
         "laminas/laminas-component-installer": "^2.1",
