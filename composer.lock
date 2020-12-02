@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f7d917bccf7b14b1048477c193b5e477",
+    "content-hash": "5a5049ee4c6b5c168072f7fc8be31a84",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -8006,16 +8006,16 @@
         },
         {
             "name": "lm-commons/lmc-user",
-            "version": "3.3.1",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcUser.git",
-                "reference": "ce32f1ba94fab3c3c6d7b9fe536ecd18fcdea18f"
+                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/ce32f1ba94fab3c3c6d7b9fe536ecd18fcdea18f",
-                "reference": "ce32f1ba94fab3c3c6d7b9fe536ecd18fcdea18f",
+                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/1415342a94d9dfeb18226912f685e25e0d8a453e",
+                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e",
                 "shasum": ""
             },
             "require": {
@@ -8085,9 +8085,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcUser/issues",
-                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.1"
+                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.2"
             },
-            "time": "2020-10-01T15:27:31+00:00"
+            "time": "2020-12-01T15:53:44+00:00"
         },
         {
             "name": "maglnet/magl-markdown",
@@ -10439,16 +10439,16 @@
     "packages-dev": [
         {
             "name": "api-skeletons/doctrine-data-fixture",
-            "version": "v6.0.5",
+            "version": "6.0.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/BrunoSpy/doctrine-data-fixture.git",
-                "reference": "b0144c3b92cb0e66d9dc8f7749995b9353fb8073"
+                "url": "https://github.com/API-Skeletons/doctrine-data-fixture.git",
+                "reference": "ced4d87197ab03394194546379145c5b15f1f4b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/doctrine-data-fixture/zipball/b0144c3b92cb0e66d9dc8f7749995b9353fb8073",
-                "reference": "b0144c3b92cb0e66d9dc8f7749995b9353fb8073",
+                "url": "https://api.github.com/repos/API-Skeletons/doctrine-data-fixture/zipball/ced4d87197ab03394194546379145c5b15f1f4b4",
+                "reference": "ced4d87197ab03394194546379145c5b15f1f4b4",
                 "shasum": ""
             },
             "require": {
@@ -10482,29 +10482,7 @@
                     "ApiSkeletons\\Doctrine\\DataFixture\\": "src/"
                 }
             },
-            "scripts": {
-                "ci-check": [
-                    "@lint",
-                    "@phpcs",
-                    "@test",
-                    "@phpstan"
-                ],
-                "lint": [
-                    "lint src/"
-                ],
-                "phpcs": [
-                    "phpcs"
-                ],
-                "phpstan": [
-                    "phpstan analyze -c phpstan.neon --level=7 src/"
-                ],
-                "test": [
-                    "phpunit --colors=always"
-                ],
-                "test-coverage": [
-                    "phpunit --colors=always --coverage-clover clover.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -10522,9 +10500,10 @@
                 "laminas"
             ],
             "support": {
-                "source": "https://github.com/BrunoSpy/doctrine-data-fixture/tree/v6.0.5"
+                "issues": "https://github.com/API-Skeletons/doctrine-data-fixture/issues",
+                "source": "https://github.com/API-Skeletons/doctrine-data-fixture/tree/6.0.4"
             },
-            "time": "2020-12-01T13:58:38+00:00"
+            "time": "2020-12-01T22:42:29+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -11355,22 +11334,22 @@
         },
         {
             "name": "laminas/laminas-component-installer",
-            "version": "2.3.2",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-component-installer.git",
-                "reference": "ea0c0d147f229ff78eeab52f4097e532ed7e2351"
+                "reference": "98c6590594b5a61710a5b5119edb93d2fc66e090"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-component-installer/zipball/ea0c0d147f229ff78eeab52f4097e532ed7e2351",
-                "reference": "ea0c0d147f229ff78eeab52f4097e532ed7e2351",
+                "url": "https://api.github.com/repos/laminas/laminas-component-installer/zipball/98c6590594b5a61710a5b5119edb93d2fc66e090",
+                "reference": "98c6590594b5a61710a5b5119edb93d2fc66e090",
                 "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^1.0 || ^2.0",
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.1"
+                "php": "^7.3 || ~8.0.0"
             },
             "replace": {
                 "zendframework/zend-component-installer": "^2.1.2"
@@ -11380,7 +11359,10 @@
                 "laminas/laminas-coding-standard": "~1.0.0",
                 "malukenho/docheader": "^0.1.6",
                 "mikey179/vfsstream": "^1.6.7",
-                "phpunit/phpunit": "^7.5.15 || ^8.3.4"
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.3",
+                "psalm/plugin-phpunit": "^0.13.0",
+                "vimeo/psalm": "^4.2"
             },
             "type": "composer-plugin",
             "extra": {
@@ -11417,7 +11399,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-10-27T21:29:13+00:00"
+            "time": "2020-12-01T22:04:24+00:00"
         },
         {
             "name": "laminas/laminas-developer-tools",
