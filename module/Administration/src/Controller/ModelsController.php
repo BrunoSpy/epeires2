@@ -1000,7 +1000,7 @@ class ModelsController extends FormController
                     $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
                     foreach ($json as $name => $actions) {
                         $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
-                        if (count($model) !== 1 ) {
+                        if (count($model) == 1 ) {
                             $model = $model[0];
                             //remove existing actions
                             foreach ($model->getChildren() as $child) {
