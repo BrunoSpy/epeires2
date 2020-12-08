@@ -152,7 +152,7 @@ class Category
     protected $place;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="`system`", type="boolean")
      */
     protected $system = false;
 
@@ -163,7 +163,7 @@ class Category
 
     /**
      * Exclude category from IPO report
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="`exclude`", type="boolean")
      * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({"label":"Exclure IPO"})
      */
