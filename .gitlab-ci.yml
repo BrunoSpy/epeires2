@@ -94,7 +94,8 @@ test:7.3-mysql80:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
   stage: test
   services:
-    - mysql:8.0
+    - name: mysql:8.0
+      command: ["--default-authentication-plugin=mysql_native_password"]
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
