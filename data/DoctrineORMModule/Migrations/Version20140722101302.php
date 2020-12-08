@@ -29,10 +29,10 @@ class Version20140722101302 extends AbstractMigration
     public function postUp(Schema $schema) : void {
         $stmt = $this->connection->executeQuery("SELECT id FROM categories WHERE name = ?", array('Action'));
         $catid = $stmt->fetch()['id'];
-        $this->connection->update('categories', array('system' => true), array('id' => $catid));
+        $this->connection->update('categories', array("`system`" => true), array('id' => $catid));
         
         $stmt = $this->connection->executeQuery("SELECT id FROM categories WHERE name = ?", array('Alarme'));
         $catid = $stmt->fetch()['id'];
-        $this->connection->update('categories', array('system' => true), array('id' => $catid));
+        $this->connection->update('categories', array("`system`" => true), array('id' => $catid));
     }
 }
