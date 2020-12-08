@@ -63,7 +63,7 @@ class Version20170825094102 extends AbstractMigration
         
         $this->connection->insert('categories', array(
             'fieldname_id' => $nameid, 'shortname' => 'PostIt', 'color' => '#000000',
-            'compactmode' => 0, 'name' => 'PostIt', 'discr' => 'postit', "`system`" => 1, 'exclude' => 1, 'timelineconfirmed' => 0, 'archived' => 0));
+            'compactmode' => 0, 'name' => 'PostIt', 'discr' => 'postit', "`system`" => 1, "`exclude`" => 1, 'timelineconfirmed' => 0, 'archived' => 0));
         $catid = $this->connection->lastInsertId();
     
         $this->connection->update('customfields', array('category_id' => $catid), array('id' => $nameid));

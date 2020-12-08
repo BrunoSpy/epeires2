@@ -33,7 +33,7 @@ class Version20160404133659 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE categories ADD exclude TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE categories ADD `exclude` TINYINT(1) NOT NULL');
     }
 
     /**
@@ -44,6 +44,6 @@ class Version20160404133659 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE categories DROP exclude');
+        $this->addSql('ALTER TABLE categories DROP `exclude`');
     }
 }
