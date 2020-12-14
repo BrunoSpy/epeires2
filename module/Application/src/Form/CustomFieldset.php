@@ -88,6 +88,12 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             if (! $model && $customfield->getId() == $category->getFieldname()->getId()) {
                 $definition['attributes']['required'] = 'required';
             }
+
+            //disable required fields if model
+            if( $model ){
+                $definition['attributes']['required'] = '';
+            }
+
             if(strcmp($customfield->getType()->getType(), 'string') == 0) {
                 $definition['attributes']['maxlength'] = '48';
             }
