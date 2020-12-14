@@ -23,7 +23,7 @@ use Core\Entity\TemporaryResource;
 use Laminas\Form\Annotation;
 
 /**
- * @ORM\Entity(repositoryClass="Application\Repository\CategoryRepository")
+ * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
  * @ORM\Table(name="antennas")
  */
 class Antenna extends TemporaryResource
