@@ -1018,8 +1018,19 @@ class ModelsController extends FormController
                                 $actionObject->setListable(false);
                                 $actionObject->setSearchable(false);
                                 $actionObject->setPunctual(true);
-                                $actionObject->setImpact($objectManager->getRepository('Application\Entity\Impact')
-                                    ->find((int)$action["impact"]));
+
+                                $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                    ->find((int)$action["impact"]);
+                                if($impact == null) {
+                                    $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                        ->findOneBy(array("name"=>$action["impact"]));
+                                }
+                                if($impact == null) { //Significatif by default
+                                    $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                        ->find(3);
+                                }
+
+                                $actionObject->setImpact($impact);
                                 $actionObject->setPlace($action["place"]);
 
                                 $name = new CustomFieldValue();

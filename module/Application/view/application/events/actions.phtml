@@ -19,8 +19,8 @@ if (count($this->actions) > 0) {
             }
         }
         echo ">";
-        if(!$this->compact) {
-            echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
+        if(!$this->compact && $action->getImpact() !== null) {
+             echo "<td><span class=\"label label-" . $action->getImpact()->getStyle() . "\">" . $action->getImpact()->getName() . "</span></td>";
         }
         echo "<td style='word-break: break-word'>" . $this->eventName($action) . "</td>";
         if ($action instanceof \Application\Entity\Event) {
