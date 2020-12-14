@@ -257,6 +257,12 @@ return array(
                     'permissions' => [
                         'admin.atfcm'
                     ]
+                ),
+                array(
+                    'controller' => 'Administration\Controller\Switchobjects',
+                    'permissions' => [
+                        'admin.switchobjects'
+                    ]
                 )
             )
         )
