@@ -91,7 +91,7 @@ class Module implements ConsoleUsageProviderInterface
                 'orgshortname',
                 'Shortname of the organisation as configured in the database'
             ),
-            'import-nmb2b [--delta=] [--email] [--verbose] orgshortname username' => 'Import RSAs from NM B2B WS',
+            'import-zones-mil [--delta=] [--email] [--verbose] service orgshortname username' => 'Import RSAs from NM B2B WS or MAPD Service',
             array(
                 '--delta',
                 '(optional) Delta to add to the current day (-1=yesterday)'
@@ -103,6 +103,10 @@ class Module implements ConsoleUsageProviderInterface
             array(
                 '--verbose',
                 '(optional) Print requests and responses.'
+            ),
+            array(
+                'service',
+                'Whiche service to use for import : nmb2b or mapd'
             ),
             array(
                 'orgshortname',

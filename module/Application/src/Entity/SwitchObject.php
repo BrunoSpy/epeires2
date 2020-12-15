@@ -30,11 +30,6 @@ use Laminas\Form\Annotation;
  */
 class SwitchObject extends TemporaryResource
 {
-
-
-
-    const RADAR = "radar";
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")

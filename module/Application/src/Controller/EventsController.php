@@ -23,6 +23,7 @@ use Application\Entity\Category;
 use Application\Entity\EventUpdate;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\MilCategory;
 use Application\Entity\PostItCategory;
 use Application\Entity\Recurrence;
 use Application\Entity\Event;
@@ -59,18 +60,20 @@ class EventsController extends TimelineTabController
     private $customfieldservice;
     private $zfcRbacOptions;
     private $translator;
+    private $mapd;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, $sessionContainer)
+                                $config, $mattermost, $translator, $sessionContainer, $mapd)
     {
         parent::__construct($entityManager, $config, $mattermost, $sessionContainer);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
         $this->translator = $translator;
+        $this->mapd = $mapd;
     }
     
     public function indexAction()
@@ -1737,7 +1740,10 @@ class EventsController extends TimelineTabController
         $json = array();
         
         $objectManager = $this->getEntityManager();
-        
+
+        //update MAPD Events
+        $this->updateMAPDEvents($cats, $day);
+
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->lmcUserAuthentication(),
             $day,
@@ -1750,7 +1756,7 @@ class EventsController extends TimelineTabController
         ) as $event) {
             $json[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
         }
-        
+
         if (count($json) === 0) {
             $this->getResponse()->setStatusCode(304);
             return new JsonModel();
@@ -1761,6 +1767,20 @@ class EventsController extends TimelineTabController
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
         
         return new JsonModel($json);
+    }
+
+    private function updateMAPDEvents($cats, $day)
+    {
+        $day = new \DateTime($day);
+
+        if($this->mapd->isEnabled())
+        {
+            foreach ($cats as $cat) {
+                if($cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
+
+                }
+            }
+        }
     }
 
     private function hex2rgb($hex) {

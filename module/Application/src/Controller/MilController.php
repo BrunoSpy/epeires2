@@ -17,7 +17,11 @@
  */
 namespace Application\Controller;
 
+use Application\Entity\MilCategory;
+use Application\Entity\MilCategoryLastUpdate;
+use Application\Entity\Organisation;
 use Core\Controller\AbstractEntityManagerAwareController;
+use Core\Entity\User;
 use Core\Service\NMB2BService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Console\Request as ConsoleRequest;
@@ -38,35 +42,48 @@ class MilController extends AbstractEntityManagerAwareController
         $this->nmb2b = $nmb2b;
     }
 
-    public function importNMB2BAction()
+    public function importAction()
     {
         $request = $this->getRequest();
-        
+
         if (! $request instanceof ConsoleRequest) {
             throw new \RuntimeException('Action only available from console.');
         }
 
         $j = $request->getParam('delta');
-        
+
         $org = $request->getParam('orgshortname');
-        
         $organisation = $this->getEntityManager()->getRepository('Application\Entity\Organisation')->findOneBy(array(
             'shortname' => $org
         ));
-        
-        if (! $organisation) {
-            throw new \RuntimeException('Unable to find organisation.');
-        }
 
         $email = $request->getParam('email');
 
+        $verbose = $request->getParam('verbose');
+
+        $username = $request->getParam('username');
+
+        $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
+            'username' => $username
+        ));
+
+        $service = $request->getParam('service');
+        if(strcmp($service, 'nmb2b') == 0) {
+            $this->importNMB2B($j, $organisation, $user, $email, $verbose);
+        } elseif (strcmp($service, 'mapd') == 0) {
+            $this->importMAPD($j, $organisation, $user, $email);
+        } else {
+            throw new \RuntimeException('Service '.$service.' unknown.');
+        }
+    }
+
+    private function importNMB2B($delta, Organisation $organisation, User $user, $email, $verbose)
+    {
         if($email) {
             $this->nmb2b->activateErrorEmail();
         } else {
             $this->nmb2b->deActivateErrorEmail();
         }
-
-        $verbose = $request->getParam('verbose');
 
         if($verbose) {
             $this->nmb2b->setVerbose(true);
@@ -74,23 +91,13 @@ class MilController extends AbstractEntityManagerAwareController
             $this->nmb2b->setVerbose(false);
         }
 
-        $username = $request->getParam('username');
-        
-        $user = $this->getEntityManager()->getRepository('Core\Entity\User')->findOneBy(array(
-            'username' => $username
-        ));
-        
-        if (! $user) {
-            throw new \RuntimeException('Unable to find user.');
-        }
-        
         $day = new \DateTime('now');
-        if ($j) {
-            if ($j > 0) {
-                $day->add(new \DateInterval('P' . $j . 'D'));
+        if ($delta) {
+            if ($delta > 0) {
+                $day->add(new \DateInterval('P' . $delta . 'D'));
             } else {
-                $j = - $j;
-                $interval = new \DateInterval('P' . $j . 'D');
+                $delta = - $delta;
+                $interval = new \DateInterval('P' . $delta . 'D');
                 $interval->invert = 1;
                 $day->add($interval);
             }
@@ -121,7 +128,8 @@ class MilController extends AbstractEntityManagerAwareController
         
         //$lastSequence = $eaupchain->getLastSequenceNumber();
         $milcats = $this->getEntityManager()->getRepository('Application\Entity\MilCategory')->findBy(array(
-            'nmB2B' => true
+            'archived' => false,
+            'origin' => MilCategory::NMB2B
         ));
 
         $designators = array();
@@ -171,6 +179,36 @@ class MilController extends AbstractEntityManagerAwareController
         echo 'Téléchargement : '.$totalDL.' secondes'."\n";
         echo 'Traitement : '.$totalTR.' secondes'."\n";
         echo "Nombre d'évènements créés : ".$totalEvents."\n";
+    }
+
+    private function importMAPD($delta, Organisation $organisation, User $user, $email)
+    {
+        $day = new \DateTime('now');
+        if ($delta) {
+            if ($delta > 0) {
+                $day->add(new \DateInterval('P' . $delta . 'D'));
+            } else {
+                $delta = - $delta;
+                $interval = new \DateInterval('P' . $delta . 'D');
+                $interval->invert = 1;
+                $day->add($interval);
+            }
+        }
+
+        $milcats = $this->getEntityManager()->getRepository(MilCategory::class)->findBy(array('archived'=>false, 'origin' => MilCategory::MAPD));
+        foreach ($milcats as $milcat) {
+            //determine if initialisation needed or update
+            $lastUpdate = $milcat->getLastUpdates()->filter(function(MilCategoryLastUpdate $lastUpdate) use ($day) {
+                return strcmp($lastUpdate->getDay(), $day->format('!Y-m-d')) == 0;
+            });
+            if($lastUpdate->isEmpty()) {
+                //init
+
+            } else {
+                //last-modified
+                $lastModified = $lastUpdate->first()->getLastUpdate();
+            }
+        }
     }
 
 }

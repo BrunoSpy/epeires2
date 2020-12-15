@@ -15,14 +15,22 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+namespace Core\Factory;
 
-namespace Core;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Class Version
- * @package Core
+ *
+ * @author Bruno Spyckerelle
+ *
  */
-final class Version
+class MAPDServiceFactory implements FactoryInterface
 {
-    const VERSION = "2.6-dev";
+
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new \Core\Service\MAPDService($container->get('Doctrine\ORM\EntityManager'), $container->get('config'));
+    }
 }
+

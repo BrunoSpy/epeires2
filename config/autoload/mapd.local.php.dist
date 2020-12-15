@@ -1,0 +1,8 @@
+<?php
+return array(
+    'mapd' => array(
+        'url' => 'url du serveur',
+        'user' => 'username',
+        'password' => 'password'
+    )
+);
