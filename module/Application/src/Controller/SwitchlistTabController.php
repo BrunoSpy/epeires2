@@ -99,7 +99,7 @@ class SwitchlistTabController extends TabController
 
 
         $viewmodel->setVariable('direction', ($tab->isHorizontal() ? 'row' : 'column'));
-        $so = $tab->getCategories()[0]->getSwitchObjects()->toArray();
+        $so = $tab->getCategories()[0]->getSwitchObjects(false)->toArray();
         $viewmodel->setVariable('switchobjectsObjects', $so);
         $viewmodel->setVariable('switchobjects', $this->getSwitchObjects($tabid));
 
@@ -358,7 +358,7 @@ class SwitchlistTabController extends TabController
 
         foreach ($cat->getSwitchObjects() as $object) {
             if($object->isDecommissionned()) {
-                break;
+                continue;
             }
             // avalaible by default
             if ($full) {
@@ -370,9 +370,10 @@ class SwitchlistTabController extends TabController
                 $objects[$object->getId()] = true;
             }
         }
-        
+
+
         $results = $this->entityManager->getRepository('Application\Entity\Event')->getCurrentEvents('Application\Entity\SwitchObjectCategory');
-        
+
         foreach ($results as $result) {
             $statefield = $result->getCategory()
                 ->getStateField()
