@@ -56,9 +56,20 @@ class SwitchObjectCategory extends Category implements StateCategoryInterface
         $this->switchObjects = new ArrayCollection();
     }
 
-    public function getSwitchObjects()
+    /**
+     * @param bool $decommissioned
+     * @return ArrayCollection Return all objects with decommissionned by default
+     */
+    public function getSwitchObjects($decommissioned = true)
     {
-        return $this->switchObjects;
+        if($decommissioned == false) {
+            $filter = function($object) {
+                return ! $object->isDecommissionned();
+            };
+            return $this->switchObjects->filter($filter);
+        } else {
+            return $this->switchObjects;
+        }
     }
 
     public function addSwitchObject(SwitchObject $so)

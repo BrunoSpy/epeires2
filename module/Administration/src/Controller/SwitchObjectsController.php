@@ -310,6 +310,7 @@ class SwitchObjectsController extends FormController
             ->select('c')
             ->from('Application\Entity\Category', 'c')
             ->where($qb->expr()->isInstanceOf('c', 'Application\Entity\SwitchObjectCategory'))
+            ->andWhere($qb->expr()->eq('c.archived', 0))
             ->getQuery()->getResult();
 
         $viewmodel->setVariables(array(
