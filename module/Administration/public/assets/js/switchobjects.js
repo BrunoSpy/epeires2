@@ -7,7 +7,7 @@ var switchobjects = function(url){
 	$(".add-object").on('click', function(){
 		$("#object-title").html("Nouvel objet");
 		let type = $(this).data('type');
-		$("#object-form").load(url+'/switchobjects/form?type='+type, function(e){
+		$("#object-form").load(url+'/switchobjects/form?type='+encodeURI(type), function(e){
 		    $.material.checkbox();
 		    $('#SwitchObject input[name="type"]').val(type);
 		});
@@ -15,7 +15,7 @@ var switchobjects = function(url){
 	
 	$(".mod-object").on('click', function(){
 		$("#object-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#object-form").load(url+'/switchobjects/form?id='+$(this).data('id')+'&type='+$(this).data('type'), function(e){
+		$("#object-form").load(url+'/switchobjects/form?id='+$(this).data('id')+'&type='+encodeURI($(this).data('type')), function(e){
 		    $.material.checkbox();
 		});
 	});
