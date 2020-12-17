@@ -1,6 +1,6 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/assets/js/switchobjects.js')?>
 <?php 
-	
+
 	function trObject($object, $deleteUrl, $decommissionurl = null){
 		echo '<tr>';
 		echo '<td>'.$object->getId().'</td>';
@@ -47,10 +47,10 @@
           <?php
           $index = 1;
           foreach ($this->types as $type) {
-            echo '<li><a href="#'.$type.'">'.$index++.'. '.ucfirst($type).'</a></li>';
+            echo '<li><a href="#'.preg_replace("/[^a-zA-Z]/", "", $type).'">'.$index++.'. '.$type.'</a></li>';
           }
           foreach ($this->types as $type) {
-              echo '<li><a href="#old'.$type.'">'.$index++.'. Anciens '.$type.'</a></li>';
+              echo '<li><a href="#old'.preg_replace("/[^a-zA-Z]/", "", $type).'">'.$index++.'. Anciens '.$type.'</a></li>';
           }
           ?>
 			</ul>
@@ -67,7 +67,7 @@
         foreach ($this->types as $type) {
           echo '<div class="panel panel-default">';
           echo '<div class="panel-heading">';
-          echo '<h4 class="panel-title" id="'.$type.'">'.$index++.'. '.ucfirst($type).' en service</h4>';
+          echo '<h4 class="panel-title" id="'.preg_replace("/[^a-zA-Z]/", "", $type).'">'.$index++.'. '.$type.' en service</h4>';
           echo '</div>';
           echo '<div class="panel-body">';
           echo '<table class="table table-striped sortable">';
@@ -99,7 +99,7 @@
         foreach ($this->types as $type) {
             echo '<div class="panel panel-default">';
             echo '<div class="panel-heading">';
-            echo '<h4 class="panel-title" id="old'.$type.'">'.$index++.'. Anciens '.$type.'</h4>';
+            echo '<h4 class="panel-title" id="old'.preg_replace("/[^a-zA-Z]/", "", $type).'">'.$index++.'. Anciens '.$type.'</h4>';
             echo '</div>';
             echo '<div class="panel-body">';
             echo '<table class="table table-striped sortable">';
