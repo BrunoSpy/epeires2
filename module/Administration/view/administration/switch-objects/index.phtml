@@ -58,6 +58,11 @@
 		<div class="col-md-6">
 			<p></p>
         <?php
+        if(count($this->types) == 0) {
+          echo "<p> Aucun objet existant : ";
+            echo '<a class="btn btn-xs btn-primary add-object" href="#object-container" data-toggle="modal"  data-type="">Créer un objet</a></p>';
+        }
+
         $index = 1;
         foreach ($this->types as $type) {
           echo '<div class="panel panel-default">';
