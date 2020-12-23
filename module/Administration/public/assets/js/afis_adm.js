@@ -104,7 +104,7 @@ var afis_adm = function(url)
 
                 function accesNotam(data)
                 {
-                    if(data.accesNotam == 1) {
+                    if(data.notamAccess == 1) {
                         $.get(url + '/afis/getAllNotamFromCode', {code: code}, getFormDataFromNotam);
                     } else {
                         noty({
