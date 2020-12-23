@@ -47,12 +47,14 @@ var Notam = function(raw)
     }
 
     this.getA = function() {
-        return this.lignes[3];
+        var ligneIndex = this.lignes.findIndex(ligne => ligne.startsWith('A)'));
+        return this.lignes[ligneIndex];
     }
 
     this.getE = function() {
-        var str = this.lignes[5].substr(3) + '\n';
-        for (i=6;i<this.lignes.length;i++) {
+        var ligneIndex = this.lignes.findIndex(ligne => ligne.startsWith('E)'));
+        var str = this.lignes[ligneIndex].substr(3) + '\n';
+        for (i=ligneIndex+1;i<this.lignes.length;i++) {
             str+= this.lignes[i] + '\n';
         }
         return str;
