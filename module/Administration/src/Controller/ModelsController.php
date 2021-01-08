@@ -571,7 +571,7 @@ class ModelsController extends FormController
                 // set category
                 $form->get('category')->setAttribute('value', $catid);
                 // add custom fields input
-                $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $catid));
+                $form->add(new CustomFieldset($this->getEntityManager(), $this->customFieldService, $catid, !$action));
             } else {
                 $catactions = $objectManager->getRepository('Application\Entity\ActionCategory')->findAll();
                 // TODO rendre paramétrable
