@@ -6,19 +6,19 @@ var opsups = function(url){
 	
 	$("#add-opsup").on('click', function(){
 		$("#opsup-title").html("Nouveau Op Sup");
-		$("#opsup-form").load(url+'/op-sups/form');
+		$("#opsup-form").load(url+'/opsups/form');
 	});
 	
 	$(".mod-opsup").on('click', function(){
 		$("#opsup-title").html('Modification de <em>'+$(this).data('name')+'</em>');
-		$("#opsup-form").load(url+'/op-sups/form?opsupid='+$(this).data('id'), function(e){
+		$("#opsup-form").load(url+'/opsups/form?opsupid='+$(this).data('id'), function(e){
             $.material.checkbox();
 		});
 	});
 	
 	$("#opsup-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/op-sups/saveopsup', $("#OperationalSupervisor").serialize(), function(data){
+		$.post(url+'/opsups/saveopsup', $("#OperationalSupervisor").serialize(), function(data){
 			location.reload();
 		}, 'json');
 	});
@@ -39,7 +39,7 @@ var opsups = function(url){
 	});
 	
 	$("#opsup-container").on('change', 'select[name=organisation]', function(){
-		$.getJSON(url+'/op-sups/getqualifzone?id='+$(this).val(), function(data){
+		$.getJSON(url+'/opsups/getqualifzone?id='+$(this).val(), function(data){
 			var select = $("#opsup-container select[name=zone]");
 			var options = select.prop('options');
 			$('option', select).remove();
@@ -66,17 +66,17 @@ var opsups = function(url){
 
 	$("#add-opsuptype").on('click', function(){
 		$("#opsuptype-title").html("Nouveau type Op Sup");
-		$("#opsuptype-form").load(url+'/op-sups/formtype');
+		$("#opsuptype-form").load(url+'/opsups/formtype');
 	});
 
 	$(".mod-opsuptype").on('click', function(){
 		$("#opsuptype-title").html('Modification du type <em>'+$(this).data('name')+'</em>');
-		$("#opsuptype-form").load(url+'/op-sups/formtype?opsuptypeid='+$(this).data('id'));
+		$("#opsuptype-form").load(url+'/op-ups/formtype?opsuptypeid='+$(this).data('id'));
 	});
 
 	$("#opsuptype-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/op-sups/saveopsuptype', $("#OpSupType").serialize(), function(data){
+		$.post(url+'/opsups/saveopsuptype', $("#OpSupType").serialize(), function(data){
 			location.reload();
 		}, 'json');
 	});
@@ -101,7 +101,7 @@ var opsups = function(url){
 	/**** Shift Hour ****/
 	$("#add-shifthour").on('click', function(){
 		$("#shifthour-title").html("Nouvelle heure de relève");
-		$("#shifthour-form").load(url+'/op-sups/formshifthour', function(){
+		$("#shifthour-form").load(url+'/opopsups/formshifthour', function(){
 			$("#shifthour-form input[name=hour]").bootstrapMaterialDatePicker({
                 format: 'HH:mm',
                 date: false,
@@ -115,7 +115,7 @@ var opsups = function(url){
 
 	$(".mod-shifthour").on('click', function(){
 		$("#shifthour-title").html('Modification de l\'heure de relève');
-		$("#shifthour-form").load(url+'/op-sups/formshifthour?shifthourid='+$(this).data('id'), function() {
+		$("#shifthour-form").load(url+'/opsups/formshifthour?shifthourid='+$(this).data('id'), function() {
             $("#shifthour-form input[name=hour]").bootstrapMaterialDatePicker({
                 format: 'HH:mm',
                 date: false,
@@ -129,7 +129,7 @@ var opsups = function(url){
 
 	$("#shifthour-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/op-sups/saveshifthour', $("#ShiftHour").serialize(), function(data){
+		$.post(url+'/opsups/saveshifthour', $("#ShiftHour").serialize(), function(data){
 			location.reload();
 		}, 'json');
 	});
