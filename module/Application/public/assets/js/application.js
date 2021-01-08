@@ -565,6 +565,7 @@ $(document).ready(function(){
                 lastupdateFC = new Date();
             }
             timerFC = setTimeout(updateFC, 10000);
+            $("#calendarview").find('.popover').remove();
         },
         loading: function(isLoading, view){
             if(isLoading) {
