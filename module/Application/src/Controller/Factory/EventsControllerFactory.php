@@ -32,8 +32,7 @@ class EventsControllerFactory implements FactoryInterface {
             $container->get('LmcRbacMvc\Options\ModuleOptions'),
             $container->get('config'),
             $container->get('mattermostservice'),
-            $container->get('translator'),
-            $container->get('timelineZone')
+            $container->get('translator')
         );
     }
 

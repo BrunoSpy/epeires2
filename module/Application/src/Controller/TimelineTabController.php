@@ -34,9 +34,9 @@ class TimelineTabController extends TabController
     protected $entityManager;
 
     public function __construct(EntityManager $entityManager,
-                                $config, $mattermost, $sessionContainer)
+                                $config, $mattermost)
     {
-        parent::__construct($config, $mattermost, $sessionContainer);
+        parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
     }
 

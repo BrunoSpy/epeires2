@@ -182,9 +182,6 @@ return array(
             )
         )
     ),
-    'session_containers' => [
-        'timelineZone'
-    ],
     'permissions' => array(
         'Evènements' => array(
             'events.create' => array(

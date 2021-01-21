@@ -25,7 +25,6 @@ $modules = array(
         'Laminas\Mvc\Plugin\Prg',
         'Laminas\Db',
         'Laminas\Log',
-        'Laminas\Session',
         'Laminas\Cache',
         'Laminas\Paginator',
         'Laminas\Form',

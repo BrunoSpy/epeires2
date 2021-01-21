@@ -28,8 +28,8 @@ class TimelineTabControllerFactory implements FactoryInterface {
         return new TimelineTabController(
             $container->get('Doctrine\ORM\EntityManager'),
             $container->get('config'),
-            $container->get('mattermostservice'),
-            $container->get('timelineZone'));
+            $container->get('mattermostservice')
+        );
     }
 
 }

@@ -19,9 +19,6 @@ namespace Application;
 
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Session\Config\SessionConfig;
-use Laminas\Session\SessionManager;
-use Laminas\Session\Container;
 use Laminas\ModuleManager\ModuleManager;
 use Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Laminas\Console\Adapter\AdapterInterface as Console;
@@ -39,15 +36,6 @@ class Module implements ConsoleUsageProviderInterface
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-        $this->bootstrapSession($e);
-    }
-
-    public function bootstrapSession($e)
-    {
-        $session = $e->getApplication()
-            ->getServiceManager()
-            ->get(SessionManager::class);
-
     }
 
     public function getServiceConfig()

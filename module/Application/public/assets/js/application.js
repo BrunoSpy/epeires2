@@ -303,6 +303,18 @@ $(document).ready(function(){
 		    buttons: false // an array of buttons
 		};
 
+   if(Cookies.get("timelineview") == "day") {
+       if(Cookies.get("timelineday") !== undefined) {
+           $("#calendar input[type=text].date").val(Cookies.get("timelineday"));
+       } else {
+           $("#calendar input[type=text].date").val(moment().utc().format('DD/MM/YYYY'));
+       }
+       $("#calendar").show();
+       $("#export").show();
+       $("#viewsix").prop("checked", false).parent().removeClass("active");
+       $("#viewday").prop("checked", true).parent().addClass("active");
+   }
+
 	/* **************************************************************************** */
 	/* Gestion des éléments dans les navbars en fonction de la taille de la fenêtre */
     /* **************************************************************************** */
@@ -502,12 +514,12 @@ $(document).ready(function(){
             $("#calendarview").hide();
             $("#timeline").show();
             $("#timeline").timeline('view', 'sixhours');
-            $.post(url + 'events/saveview?view=6');
+            Cookies.set('timelineview', 'sixhours');
             var now = new Date();
             var date = FormatNumberLength(now.getUTCDate(), 2) + '/'
                     + FormatNumberLength(now.getUTCMonth()+1, 2)+ '/'
                     + FormatNumberLength(now.getUTCFullYear(), 4);
-            $.post(url + 'events/saveday?day="' + date+'"');
+            Cookies.set('timelineday', date);
         } else if(view.localeCompare("day") == 0) {
             $("#calendarview").hide();
             $("#timeline").show();
@@ -520,14 +532,14 @@ $(document).ready(function(){
             var nowString = FormatNumberLength(day, 2) + "/" + FormatNumberLength(month, 2) + "/" + FormatNumberLength(year, 4);
             $("#calendar input[type=text].date").val(nowString);
             $('#timeline').timeline("view", "day");
-            $.post(url + 'events/saveview?view=24');
+            Cookies.set('timelineview', 'day');
             //first activation of 24 view -> center on current hour
             $("#calendar input[type=text].date").data('center', true);
         } else if(view.localeCompare("month") == 0) {
             $("#calendarview").show();
             $("#calendarview").fullCalendar('changeView', 'basicWeek');
             $("#timeline").hide();
-            $.post(url + 'events/saveview?view=30');
+            Cookies.set('timelineview', 'month');
         }
     });
 
@@ -554,10 +566,10 @@ $(document).ready(function(){
             $("#timeline").show();
             $("#calendar").show();
             $("#export").show();
-            var dayString = date.format('DD/MM/YYYY');
+            let dayString = date.format('DD/MM/YYYY');
             $("#calendar input[type=text].date").val(dayString);
             $('#timeline').timeline("view", "day");
-            $.post(url + 'events/saveview?view=24');
+            Cookies.set("timelineview","day");
             $("#calendar input[type=text].date").trigger('change');
         },
         eventAfterAllRender: function(view) {
@@ -808,7 +820,7 @@ $(document).ready(function(){
         });
     });
 
-    if(typeof(forceMonth) != "undefined" && forceMonth == true) {
+    if(Cookies.get('timelineview') == "month") {
         $("#viewmonth").trigger('click');
     }
 
@@ -827,7 +839,7 @@ $(document).ready(function(){
         var temp = $('#calendar input[type=text].date').val().split('/');
         var date = new Date(temp[2], temp[1] - 1, temp[0], "5");
         $("#timeline").timeline("day", date.toString());
-        $.post(url + 'events/saveday?day="' + $('#calendar input[type=text].date').val()+'"');
+        Cookies.set("timelineday", $('#calendar input[type=text].date').val());
     });
     
     $("#day-backward").on('click', function(e) {

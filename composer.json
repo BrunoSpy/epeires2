@@ -59,7 +59,6 @@
         "laminas/laminas-inputfilter": "^2.10",
         "laminas/laminas-mvc-i18n": "^1.1",
         "beberlei/doctrineextensions": "^1.2",
-        "laminas/laminas-session": "^2.9",
         "laminas/laminas-file": "^2.8",
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^2.0",
