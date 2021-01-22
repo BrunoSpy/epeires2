@@ -168,7 +168,7 @@ test:docker:
   - ./sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
+  - ./local-php-security-checker
 
 docker_images:
   before_script:
