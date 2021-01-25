@@ -71,7 +71,7 @@ var opsups = function(url){
 
 	$(".mod-opsuptype").on('click', function(){
 		$("#opsuptype-title").html('Modification du type <em>'+$(this).data('name')+'</em>');
-		$("#opsuptype-form").load(url+'/op-ups/formtype?opsuptypeid='+$(this).data('id'));
+		$("#opsuptype-form").load(url+'/opsups/formtype?opsuptypeid='+$(this).data('id'));
 	});
 
 	$("#opsuptype-container").on('submit', function(event){
@@ -101,7 +101,7 @@ var opsups = function(url){
 	/**** Shift Hour ****/
 	$("#add-shifthour").on('click', function(){
 		$("#shifthour-title").html("Nouvelle heure de relève");
-		$("#shifthour-form").load(url+'/opopsups/formshifthour', function(){
+		$("#shifthour-form").load(url+'/opsups/formshifthour', function(){
 			$("#shifthour-form input[name=hour]").bootstrapMaterialDatePicker({
                 format: 'HH:mm',
                 date: false,
