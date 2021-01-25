@@ -23,7 +23,8 @@
 
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
-                                      ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')  
+            ->prependFile($this->basePath() . '/components/js-cookie/src/js.cookie.js')
+                ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
         							  ->prependFile($this->basePath() . '/components/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js')
         							  ->prependFile($this->basePath() . '/components/tinycolor/dist/tinycolor-min.js')
 						->prependFile($this->basePath() . '/components/fullcalendar/dist/fullcalendar.min.js')

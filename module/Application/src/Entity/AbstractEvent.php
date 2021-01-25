@@ -285,6 +285,11 @@ abstract class AbstractEvent
         $this->children->add($event);
     }
 
+    public function removeChild($event)
+    {
+        $this->children->removeElement($event);
+    }
+
     public function getArrayCopy()
     {
         $object_vars = get_object_vars($this);

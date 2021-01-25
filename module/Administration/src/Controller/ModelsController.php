@@ -997,18 +997,18 @@ class ModelsController extends FormController
                     $messages['error'][] = "Impossible de décoder le fichier.";
                 } else {
                     $objectManager = $this->getEntityManager();
-                    $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
                     foreach ($json as $name => $actions) {
                         $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
+                        $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
                         if (count($model) == 1 ) {
                             $model = $model[0];
                             //remove existing actions
                             foreach ($model->getChildren() as $child) {
                                 if ($child->getCategory() instanceof ActionCategory) {
+                                    $model->removeChild($child);
                                     $objectManager->remove($child);
                                 }
                             }
-                            $objectManager->flush();
                             //create new actions
                             foreach ($actions as $action) {
                                 $actionObject = new PredefinedEvent();
@@ -1019,12 +1019,17 @@ class ModelsController extends FormController
                                 $actionObject->setSearchable(false);
                                 $actionObject->setPunctual(true);
 
-                                $impact = $objectManager->getRepository('Application\Entity\Impact')
-                                    ->find((int)$action["impact"]);
-                                if($impact == null) {
+                                if(array_key_exists("impact", $action)) {
                                     $impact = $objectManager->getRepository('Application\Entity\Impact')
-                                        ->findOneBy(array("name"=>$action["impact"]));
+                                        ->find((int)$action["impact"]);
+                                    if($impact == null) {
+                                        $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                            ->findOneBy(array("name"=>$action["impact"]));
+                                    }
+                                } else {
+                                    $impact = null;
                                 }
+
                                 if($impact == null) { //Significatif by default
                                     $impact = $objectManager->getRepository('Application\Entity\Impact')
                                         ->find(3);
@@ -1052,7 +1057,14 @@ class ModelsController extends FormController
                                 $objectManager->persist($text);
                                 $objectManager->persist($color);
                                 $objectManager->persist($actionObject);
-                                $objectManager->persist($model);
+
+                            }
+                            $objectManager->persist($model);
+                            try {
+                                $objectManager->flush();
+                                $objectManager->clear();
+                            } catch (\Exception $e) {
+                                error_log($e->getMessage());
                             }
                             $count++;
                         } else {
