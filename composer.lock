@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1115208de34254c1ac0aa9e00b64e90c",
+    "content-hash": "a7861dc1310beaea27d76d906171be74",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -6254,16 +6254,16 @@
         },
         {
             "name": "laminas/laminas-mail",
-            "version": "2.12.5",
+            "version": "2.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mail.git",
-                "reference": "ed5b36a0deef4ffafe6138c2ae9cafcffafab856"
+                "reference": "a259ddb091618bdcbfb1540e0fe4671a823c342b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mail/zipball/ed5b36a0deef4ffafe6138c2ae9cafcffafab856",
-                "reference": "ed5b36a0deef4ffafe6138c2ae9cafcffafab856",
+                "url": "https://api.github.com/repos/laminas/laminas-mail/zipball/a259ddb091618bdcbfb1540e0fe4671a823c342b",
+                "reference": "a259ddb091618bdcbfb1540e0fe4671a823c342b",
                 "shasum": ""
             },
             "require": {
@@ -6273,7 +6273,7 @@
                 "laminas/laminas-stdlib": "^2.7 || ^3.0",
                 "laminas/laminas-validator": "^2.10.2",
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.1",
+                "php": "^7.3 || ~8.0.0",
                 "true/punycode": "^2.1"
             },
             "replace": {
@@ -6281,10 +6281,10 @@
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "laminas/laminas-config": "^2.6",
+                "laminas/laminas-config": "^3.4",
                 "laminas/laminas-crypt": "^2.6 || ^3.0",
                 "laminas/laminas-servicemanager": "^3.2.1",
-                "phpunit/phpunit": "^7.5.20"
+                "phpunit/phpunit": "^9.3"
             },
             "suggest": {
                 "laminas/laminas-crypt": "Crammd5 support in SMTP Auth",
@@ -6326,7 +6326,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-12-31T11:41:57+00:00"
+            "time": "2021-01-26T13:40:34+00:00"
         },
         {
             "name": "laminas/laminas-math",
@@ -8118,16 +8118,16 @@
         },
         {
             "name": "lm-commons/lmc-user",
-            "version": "3.3.3",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcUser.git",
-                "reference": "355aa8e9155c90f4dd9620895ffd86ce2e3c7cfb"
+                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/355aa8e9155c90f4dd9620895ffd86ce2e3c7cfb",
-                "reference": "355aa8e9155c90f4dd9620895ffd86ce2e3c7cfb",
+                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/1415342a94d9dfeb18226912f685e25e0d8a453e",
+                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e",
                 "shasum": ""
             },
             "require": {
@@ -8197,9 +8197,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcUser/issues",
-                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.3"
+                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.2"
             },
-            "time": "2021-01-19T11:37:30+00:00"
+            "time": "2020-12-01T15:53:44+00:00"
         },
         {
             "name": "maglnet/magl-markdown",
@@ -10620,16 +10620,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "4.1.15",
+            "version": "4.1.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "9b174d18ba58bb2e8cc4cecce619d6124df1d83a"
+                "reference": "daf4fe110b33855252009a0dcab87ce8bcf7c009"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/9b174d18ba58bb2e8cc4cecce619d6124df1d83a",
-                "reference": "9b174d18ba58bb2e8cc4cecce619d6124df1d83a",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/daf4fe110b33855252009a0dcab87ce8bcf7c009",
+                "reference": "daf4fe110b33855252009a0dcab87ce8bcf7c009",
                 "shasum": ""
             },
             "require": {
@@ -10703,7 +10703,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/Codeception/issues",
-                "source": "https://github.com/Codeception/Codeception/tree/4.1.15"
+                "source": "https://github.com/Codeception/Codeception/tree/4.1.16"
             },
             "funding": [
                 {
@@ -10711,7 +10711,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-01-17T19:19:40+00:00"
+            "time": "2021-01-26T07:25:32+00:00"
         },
         {
             "name": "codeception/lib-asserts",
