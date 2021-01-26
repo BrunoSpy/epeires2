@@ -20,7 +20,6 @@ namespace Application\Controller;
 use MattermostMessenger\Service\MattermostService;
 use Laminas\Form\Element\Select;
 use Laminas\Form\Form;
-use Laminas\Session\Container;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
 

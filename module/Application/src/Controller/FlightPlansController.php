@@ -21,7 +21,6 @@ use DateTime;
 use DateInterval;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
-use Laminas\Session\Container;
 use Doctrine\ORM\EntityManager;
 
 use Application\Entity\Category;
@@ -377,8 +376,8 @@ class FlightPlansController extends EventsController
 
         $checkedValue = $this->params()->fromPost('value', false);
 
-        $filterSession = new Container($filter, $this->sessionManager);
-        $filterSession->checked = $checkedValue;
+        //$filterSession = new Container($filter, $this->sessionManager);
+        //$filterSession->checked = $checkedValue;
         return new JsonModel();
     }
 
@@ -818,13 +817,14 @@ class FlightPlansController extends EventsController
         return "<div class='alert alert-danger'>".$msg."</div>";
     }
 
+    //TODO restore function using cookies instead
     private function getFpFilters() : array 
     {
-        $fpFilter = new Container('fp', $this->sessionManager);
-        $altFilter = new Container('alt', $this->sessionManager);
+        //$fpFilter = new Container('fp', $this->sessionManager);
+        //$altFilter = new Container('alt', $this->sessionManager);
         return [
-            'fp' => (isset($fpFilter->checked)) ? $fpFilter->checked : false,
-            'alt' => (isset($altFilter->checked)) ? $altFilter->checked : false,
+            'fp' => /*isset($fpFilter->checked)) ? $fpFilter->checked : */false,
+            'alt' => /*(isset($altFilter->checked)) ? $altFilter->checked :*/ false,
         ];
     }
 }
