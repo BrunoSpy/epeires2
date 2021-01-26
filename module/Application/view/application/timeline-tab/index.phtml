@@ -2,7 +2,6 @@
 $this->headScript()->appendFile($this->basePath() . '/components/jquery-form/jquery.form.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/fileupload.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/search.js');
-$this->headScript()->appendFile($this->basePath() . '/components/js-cookie/src/js.cookie.js');
 $this->headScript()->appendFile($this->basePath() . '/assets/js/postit.js');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/form.css');
 $this->headLink()->prependStylesheet($this->basePath() . '/assets/css/fullcalendar.material.css');
@@ -163,9 +162,7 @@ if($this->isGranted('events.recurrent')) {
 
 <?php $this->inlineScript()->captureStart();?>
 <?php
-if($this->view == "30") {
-    echo 'forceMonth = true;';
-}
+
 if($this->cats) {
     $catsString = "";
     $i = 0;
@@ -181,19 +178,6 @@ if($this->cats) {
     echo 'cats = null;';
 }
 
-if($this->view == "24") {
-    if($this->day !== null) {
-        echo '$("#calendar input[type=text].date").val('.$this->day.');';
-    } else {
-        $today = new DateTime();
-        echo '$("#calendar input[type=text].date").val("'.$today->format('d/m/Y').'");';
-    }
-    echo '$("#calendar").show();';
-    echo '$("#export").show();';
-    echo '$("#viewsix").prop("checked", false).parent().removeClass("active");';
-    echo '$("#viewday").prop("checked", true).parent().addClass("active");';
-}
-
 //used in application.js to determine fullcalendar view
 if($this->onlyroot) {
     echo 'var onlyroot = 1;';
@@ -206,6 +190,7 @@ if($this->default) {
   echo 'var defaultTimeline = 0;';
 }
 ?>
+
 $('#timeline').timeline({
     controllerUrl: '<?php echo $this->url('application', array('controller' => 'events', '')) ?>',
     eventUrl: '<?php echo $this->url('application', array('controller' => 'events', 'action' => 'getevents'),
@@ -220,10 +205,11 @@ $('#timeline').timeline({
     rightOffset: 85,
     tabCats: cats,
     showOnlyRootCategories: '<?php  echo ($this->onlyroot ? true : false) ?>',
-    view: '<?php echo ($this->view == "24" ? 'day' : ''); ?>',
-    day: '<?php echo ($this->day !== null ? str_replace('"','',$this->day) : ''); ?>',
+    view: Cookies.get("timelineview"),
+    day: Cookies.get("timelineday"),
     initComplete: function(){
         $("#timeline .loading").hide();
+        $(".chat-container").mattermost("initialize");
     }<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost){echo ',';
       echo 'mattermost: true';
     }
@@ -239,6 +225,8 @@ fileupload('<?php echo $this->url('application')?>');
 search('<?php echo $this->url('application', array('controller'=>'events'));?>');
 
 postit('<?php echo $this->url('application');?>');
+
+let initializeMattermost = false;
 
 <?php echo $this->notifications($this->messages); ?>
 

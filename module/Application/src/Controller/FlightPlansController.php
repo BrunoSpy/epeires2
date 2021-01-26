@@ -75,9 +75,8 @@ class FlightPlansController extends EventsController
         $zfrcbacOptions,
         Array $config,
         $mattermost,
-        $translator,
-        $sessionManager,
-        $sessioncontainer)
+        $translator
+        )
     {
         parent::__construct(
             $em,
@@ -86,8 +85,7 @@ class FlightPlansController extends EventsController
             $zfrcbacOptions,
             $config,
             $mattermost,
-            $translator,
-            $sessioncontainer
+            $translator
         );
 
         $this->em = $em;
@@ -96,7 +94,6 @@ class FlightPlansController extends EventsController
         $this->zfrcbacOptions = $zfrcbacOptions;
         $this->fp_cats = $this->getEventCategories(FlightPlanCategory::class);
         $this->alt_cats = $this->getEventCategories(AlertCategory::class);
-        $this->sessionManager = $sessionManager;
     }
 
     // vues

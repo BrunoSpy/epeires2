@@ -66,9 +66,9 @@ class EventsController extends TimelineTabController
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, $sessionContainer, $mapd)
+                                $config, $mattermost, $translator, $mapd)
     {
-        parent::__construct($entityManager, $config, $mattermost, $sessionContainer);
+        parent::__construct($entityManager, $config, $mattermost);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;

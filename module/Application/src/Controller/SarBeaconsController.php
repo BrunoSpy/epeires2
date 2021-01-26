@@ -62,7 +62,7 @@ class SarBeaconsController extends TabController
 
     public function __construct(EntityManager $em, $viewpdfrenderer, $config, $mattermost)
     {
-        parent::__construct($config, $mattermost, $sessioncontainer);
+        parent::__construct($config, $mattermost);
         $this->em = $em;
 
         $this->viewpdfrenderer = $viewpdfrenderer;

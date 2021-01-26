@@ -36,6 +36,7 @@
         <?php
         $this->headScript()
 			      ->prependFile($this->basePath() . '/assets/js/application.js')
+            ->prependFile($this->basePath() . '/components/js-cookie/src/js.cookie.js')
             ->prependFile($this->basePath() . '/components/html2pdf/html2pdf.bundle.min.js')
 			      ->prependFile($this->basePath() . '/components/jquery-stupid-table/stupidtable.min.js')
             ->prependFile($this->basePath() . '/assets/js/headerbar.js')
@@ -77,7 +78,7 @@
     </head>
     <body class="fuelux" <?php if($this->IHMLight) echo 'style="padding-top:50px;"' ?> >
 
-	<?php echo $this->navbartop("blue", '', null, $this->iponumber, $this->zoneform, $this->IHMLight); ?>
+	<?php echo $this->navbartop("blue", '', null, $this->iponumber,$this->IHMLight); ?>
 
 	<?php if(!$this->IHMLight) {echo $this->navbar("blue", $this->showHome);} ?>
 
@@ -203,8 +204,12 @@
             if(array_key_exists('monochannel', $this->mattermost)){
                 echo "monochannel: ".$this->mattermost['monochannel'].",";
             }
-            echo "utc: true";
+            echo "utc: true,";
+            echo "token: Cookies.get('mattermosttoken')";
             echo "});";
+            echo "if(typeof initializeMattermost === 'undefined' || initializeMattermost == true) {";
+              echo "$('.chat-container').mattermost('initialize')";
+            echo "};";
             echo "var mattermostHostname = '".$this->mattermost['server_url']."';";
         }
         ?>

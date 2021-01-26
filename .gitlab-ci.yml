@@ -27,6 +27,7 @@ before_script:
 - php public/index.php initDB
 - php public/index.php data-fixture:import default_group --no-interaction
 - chmod a+rwx -Rf ./data
+- chmod +x ./local-php-security-checker
 #launch server
 - cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
 - sed -e "s?%BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-enabled/vhost.conf
@@ -228,7 +229,7 @@ test:docker:
   - ./sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
-  - php vendor/bin/security-checker security:check composer.lock
+  - ./local-php-security-checker
 
 docker_images:
   before_script:

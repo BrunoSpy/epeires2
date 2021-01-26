@@ -20,14 +20,6 @@ var headerbar = function (url) {
 
     setInterval('updateClock()', 1000);
 
-    $("select[name=zone]").on("change", function (event) {
-        event.preventDefault();
-        $.post(url + 'events/savezone', $("#zoneform").serialize(), function () {
-            //refresh timeline instead of entire window
-            location.reload();
-        });
-    });
-
     $("select[name=nameopsup]").on("change", function (event) {
         event.preventDefault();
         var form = $(this).closest('form');

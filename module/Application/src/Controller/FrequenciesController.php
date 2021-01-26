@@ -45,9 +45,9 @@ class FrequenciesController extends TabController
     public function __construct(EntityManager $entityManager,
                                 EventService $eventservice,
                                 CustomFieldService $customfieldService,
-                                $config, $mattermost, $sessioncontainer)
+                                $config, $mattermost)
     {
-        parent::__construct($config, $mattermost, $sessioncontainer);
+        parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
         $this->eventservice = $eventservice;
         $this->customfieldservice = $customfieldService;
@@ -81,34 +81,8 @@ class FrequenciesController extends TabController
             ->andWhere($qb->expr()
             ->eq('s.display', true))
             ->orderBy('s.position', 'ASC');
-        
-        $zonesession = $this->sessionContainer->zoneshortname;
-        
-        if ($zonesession != null) {
-            if ($zonesession != '0') {
-                $orga = $this->entityManager->getRepository('Application\Entity\Organisation')->findOneBy(array(
-                    'shortname' => $zonesession
-                ));
-                if ($orga) {
-                    $qb->andWhere($qb->expr()
-                        ->eq('z.organisation', $orga->getId()));
-                } else {
-                    $zone = $this->entityManager->getRepository('Application\Entity\QualificationZone')->findOneBy(array(
-                        'shortname' => $zonesession
-                    ));
-                    if ($zone) {
-                        $qb->andWhere($qb->expr()
-                            ->andX($qb->expr()
-                            ->eq('z.organisation', $zone->getOrganisation()
-                            ->getId()), $qb->expr()
-                            ->eq('s.zone', $zone->getId())));
-                    } else {
-                        // error
-                    }
-                }
-            }
-        }
-        if (($zonesession == null || ($zonesession != null && $zonesession == '0')) && $this->lmcUserAuthentication()->hasIdentity()) {
+
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
             $orga = $this->lmcUserAuthentication()
                 ->getIdentity()
                 ->getOrganisation();

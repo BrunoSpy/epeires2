@@ -29,7 +29,7 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $title, $return = null, $iponumber = null, $zoneform = null, $IHMLight = false) {
+    public function __invoke($color, $title, $return = null, $iponumber = null, $IHMLight = false) {
         
         $auth = $this->sm->get('LmcRbacMvc\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('lmcuser_auth_service');
@@ -56,31 +56,10 @@ class NavBarTop extends AbstractHelper {
         $html .= '<ul class="nav navbar-nav navbar-left">';
         $html .= $this->view->userMenu($color);
         $html .= '</ul>';
-        /* Non utilisé pour l'instant
-        
-        if($auth->getIdentity() && !$zoneform) {
-            $html .= '<p class="navbar-text navbar-left visible-lg-block">';
-            $html .= '<span class="glyphicon glyphicon-road" aria-hidden="true"></span><b> Organisation : </b>' . $auth->getIdentity()->getOrganisation()->getName();
-            $html .= '</p>';
-        }
-
-        if($zoneform) {
-            $form = $zoneform;
-            $form->setAttributes(array('action' => $this->view->url('application', array('controller'=>'events', 'action'=>'savezone')),
-                'class'=>'navbar-form navbar-left'));
-            $form->prepare();
-            $html .= $this->view->form()->openTag($form);
-            $html .= '<div class="form-group visible-xs-block visible-lg-block">';
-            $html .= '<label for="zoneInput"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span><b> Zone : </b></label>';
-            $html .= $this->view->formSelect($form->get('zone')->setAttributes(array('id' => 'zoneInput', 'class' => 'form-control')));
-            $html .= '</div>';
-            $html .= $this->view->form()->closeTag();
-        }
-        */
 
         if(!$IHMLight) { // Epeires Light : no supervisor and no IPO
 
-            if ($auth->getIdentity() /*&& $zoneform*/) {
+            if ($auth->getIdentity()) {
                 $opsuptypes = array();
                 foreach ($auth->getIdentity()->getRoles() as $role) {
                     foreach ($role->getOpsuptypes() as $type) {

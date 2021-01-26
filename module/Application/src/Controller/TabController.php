@@ -39,13 +39,10 @@ class TabController extends FormController
 
     protected $messages;
 
-    protected $sessionContainer;
-
-    public function __construct($config, MattermostService $mattermost, $sessionContainer)
+    public function __construct($config, MattermostService $mattermost)
     {
         $this->config = $config;
         $this->mattermost = $mattermost;
-        $this->sessionContainer = $sessionContainer;
     }
 
     public function indexAction()
@@ -90,53 +87,6 @@ class TabController extends FormController
             }
         }
 
-        // initialisation de la session si utilisateur connecté
-        if ($this->sessionContainer->zoneshortname == null) {
-            if ($this->lmcUserAuthentication()->hasIdentity()) {
-                $this->sessionContainer->zoneshortname = $this->lmcUserAuthentication()
-                    ->getIdentity()
-                    ->getOrganisation()
-                    ->getShortname();
-            }
-        }
-
-        $form = $this->getZoneForm();
-        if($form != null) {
-            if ($this->lmcUserAuthentication()->hasIdentity()) {
-                $user = $this->lmcUserAuthentication()->getIdentity();
-                $org = $user->getOrganisation();
-                $zone = $user->getZone();
-
-                $zonesession = $this->sessionContainer->zoneshortname;
-
-                if ($zonesession != null) { // warning: "all" == 0
-                    $values = $form->get('zone')->getValueOptions();
-                    if (array_key_exists($zonesession, $values)) {
-                        $form->get('zone')->setValue($zonesession);
-                    }
-                } else {
-                    if ($zone) {
-                        $form->get('zone')->setValue($zone->getShortname());
-                    } else {
-                        $form->get('zone')->setValue($org->getShortname());
-                    }
-                }
-            } else {
-                $form->get('zone')->setValue('0');
-            }
-        }
-        $this->layout()->zoneform = $form;
-
-
-        //session de la vue courante : day and 24/6
-        $viewSession = $this->sessionContainer->view;
-        if($viewSession !== null) {
-            $this->viewmodel->setVariable('view', $viewSession);
-        }
-        $daySession = $this->sessionContainer->day;
-        if($daySession !== null) {
-            $this->viewmodel->setVariable('day', $daySession);
-        }
 
         $this->viewmodel->setVariable("sunrise", array_key_exists("sunrise", $this->config));
 
@@ -158,24 +108,6 @@ class TabController extends FormController
                 $this->messages['error'][] = "Impossible de se connecter au serveur Mattermost : ".$e->getMessage();
             }
         }
-    }
-
-    public function savedayAction()
-    {
-        $day = $this->params()->fromQuery('day', 0);
-        if($day !== 0) {
-            $this->sessionContainer->day = $day;
-        }
-        return new JsonModel(array('value' => $day));
-    }
-
-    public function saveviewAction()
-    {
-        $view = $this->params()->fromQuery('view', 0);
-        if($view !== 0) {
-            $this->sessionContainer->view = $view;
-        }
-        return new JsonModel(array('value' => $view));
     }
 
     private function getZoneForm()
@@ -203,14 +135,5 @@ class TabController extends FormController
         }
     }
 
-    public function savezoneAction()
-    {
-        if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
-            $zone = $post['zone'];
-            $this->sessionContainer->zoneshortname = $zone;
-        }
-        return new JsonModel();
-    }
 }
 

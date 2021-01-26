@@ -30,8 +30,8 @@ class SwitchlistTabControllerFactory implements FactoryInterface {
             $container->get('customfieldservice'),
             $container->get('eventservice'),
             $container->get('config'),
-            $container->get('mattermostservice'),
-            $container->get('timelineZone'));
+            $container->get('mattermostservice')
+        );
     }
 
 }
