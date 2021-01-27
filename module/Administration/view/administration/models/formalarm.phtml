@@ -32,7 +32,7 @@ echo $this->formHidden($this->form->get('searchable')->setAttribute('value', fal
 echo $this->formHidden($this->form->get('forceroot')->setAttribute('value', false));
 
 foreach ($this->form->get('custom_fields')->getElements() as $element){
-	echo $this->controlgroup($element);
+	echo $this->controlGroup($element);
 }
 
 ?>

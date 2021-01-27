@@ -22,7 +22,6 @@ use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
-use Laminas\Session\Container;
 use Laminas\Form\Annotation\AnnotationBuilder;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Laminas\Hydrator\DoctrineObject;
