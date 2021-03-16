@@ -207,7 +207,7 @@ test:8.0-mysql57:
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mysql80:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   allow_failure: true
   services:
@@ -216,7 +216,7 @@ test:8.0-mysql80:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:docker:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
