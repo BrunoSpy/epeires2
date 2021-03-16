@@ -168,7 +168,7 @@ test:8.0-mariadb103:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
 
 test:8.0-mariadb104:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
@@ -180,7 +180,7 @@ test:8.0-mariadb104:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
 
 test:8.0-mariadb105:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
@@ -192,7 +192,7 @@ test:8.0-mariadb105:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
 
 test:8.0-mysql57:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
@@ -204,7 +204,7 @@ test:8.0-mysql57:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
 
 test:8.0-mysql80:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
@@ -216,7 +216,7 @@ test:8.0-mysql80:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - php vendor/bin/codecept run unit --coverage-text --no-colors XDEBUG_MODE=coverage
 
 test:docker:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
