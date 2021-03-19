@@ -20,6 +20,7 @@ namespace Core\Service;
 use Doctrine\ORM\EntityManager;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
+use Laminas\Http\Response;
 use Laminas\Stdlib\Parameters;
 
 /**
@@ -55,7 +56,6 @@ class MAPDService
     {
         if($this->client == null && array_key_exists('mapd', $this->config)) {
             $mapd = $this->config['mapd'];
-
             $this->client = new Client($mapd['url']);
             if (array_key_exists('user', $mapd) && array_key_exists('password', $mapd)) {
                 $this->client->setAuth($mapd['user'], $mapd['password']);
@@ -80,13 +80,16 @@ class MAPDService
         }
         $request = new Request();
         $request->setMethod('GET');
+        $request->setUri($this->getClient()->getUri() . '/activations');
         $request->setQuery(new Parameters(array(
-            'start' => $start->format(DATE_ISO8601),
-            'end' => $end->format(DATE_ISO8601),
+            'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
+            'end' => $end->format("Y-m-d\TH:i:s"),
             'areaName' => $filter)));
+
 
         $response = $this->getClient()->dispatch($request);
         if($response->isSuccess()) {
+            error_log(print_r($response->getBody(), true));
             return json_decode($response->getBody(), true);
         } else {
             throw new \RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
@@ -96,7 +99,29 @@ class MAPDService
 
     public function getEAUPRSADiff($filter, \DateTime $start, \DateTime $end, \DateTime $since)
     {
+        if($this->getClient() == null) {
+            throw new \RuntimeException('Unable to get MAPD CLient');
+        }
+        $request = new Request();
+        $request->setMethod('GET');
+        $request->setUri($this->getClient()->getUri() . '/activations/diff');
+        $request->setQuery(new Parameters(array(
+            'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
+            'end' => $end->format("Y-m-d\TH:i:s"),
+            'since' => $since->format("Y-m-d\TH:i:s"),
+            'areaName' => $filter)));
 
+        error_log(print_r($request->getQuery(), true));
+
+        $response = $this->getClient()->dispatch($request);
+        if($response->isSuccess()) {
+            error_log(print_r($response->getBody(), true));
+            return json_decode($response->getBody(), true);
+        } else if ($response->getStatusCode() == Response::STATUS_CODE_304) {
+            //do nothing
+        } else {
+            throw new \RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
+        }
     }
 
     public function createRSA($name, \DateTime $start, \DateTime $end, $upperFL, $lowerFL)

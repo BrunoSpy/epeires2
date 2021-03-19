@@ -74,6 +74,11 @@ class MilCategory extends Category
      */
     protected $lowerLevelField;
 
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $internalidField;
+
     public function __construct(){
         parent::__construct();
         $this->lastUpdates = new ArrayCollection();
@@ -94,18 +99,11 @@ class MilCategory extends Category
     {
         return $this->origin;
     }
-/*
-    public function addLastUpdate(\DateTime $date)
-    {
-        $day = $date->format('!Y-m-d');
-        $lastUpdate = $this->lastUpdates->filter(function(MilCategoryLastUpdate $update) use ($day) {
-            return strcmp($update->getDay(), $day) ==0 ;
-        });
-        if($lastUpdate->isEmpty()) {
 
-        }
+    public function addLastUpdate(MilCategoryLastUpdate $lastupdate)
+    {
+        $this->lastUpdates->add($lastupdate);
     }
-*/
 
     public function addLastUpdates(Collection $lastUpdates)
     {
@@ -170,6 +168,16 @@ class MilCategory extends Category
     public function getLowerLevelField()
     {
         return $this->lowerLevelField;
+    }
+
+    public function setInternalidField($internalid)
+    {
+        $this->internalidField = $internalid;
+    }
+
+    public function getInternalidField()
+    {
+        return $this->internalidField;
     }
 
     public function getArrayCopy()

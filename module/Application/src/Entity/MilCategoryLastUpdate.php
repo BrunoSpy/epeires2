@@ -48,10 +48,18 @@ class MilCategoryLastUpdate
     private $lastUpdate;
 
     /**
-     * Stores Y-m-d day of update
-     * @ORM\Column(type="string")
+     * Stores Y-m-d day of data imported
+     * Only one value per day : the last lastModified value received
+     * @ORM\Column(type="string", unique=true)
      */
     private $day;
+
+    public function __construct(\DateTime $lastUpdate, MilCategory $category, $day)
+    {
+        $this->setLastUpdate($lastUpdate);
+        $this->setCategory($category);
+        $this->setDay($day);
+    }
 
     /**
      * @ORM\PostLoad
@@ -79,16 +87,13 @@ class MilCategoryLastUpdate
         $this->category = $category;
     }
 
-    /**
-     * @param \DateTime $day
-     */
-    public function setDay( $day): void
-    {
-        $this->day = $day;
-    }
-
     public function getDay(){
         return $this->day;
+    }
+
+    public function setDay($day)
+    {
+        $this->day = $day;
     }
 
     /**

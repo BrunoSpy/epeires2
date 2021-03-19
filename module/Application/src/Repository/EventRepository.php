@@ -25,6 +25,7 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\MilCategory;
 use Application\Entity\Sector;
 use Application\Entity\Stack;
 use Application\Entity\SwitchObjectCategory;
@@ -35,6 +36,7 @@ use Application\Entity\Antenna;
 
 use Core\Entity\User;
 
+use Doctrine\ORM\Query\Expr;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
 use LmcUser\Controller\Plugin\LmcUserAuthentication;
@@ -1443,7 +1445,7 @@ class EventRepository extends ExtendedRepository
             // si aucun evt pour la même zone (= même nom, même niveaux) existe ou inclus le nouvel evt
             // on en crée un nouveau
             if (count($previousEvents) == 0) {
-                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
+                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, '', $messages);
                 $addedEvents++;
             }
         }
@@ -1451,7 +1453,7 @@ class EventRepository extends ExtendedRepository
         return $addedEvents;
     }
 
-    private function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, &$messages)
+    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages)
     {
         $event = new \Application\Entity\Event();
         $event->setOrganisation($organisation);
@@ -1485,6 +1487,14 @@ class EventRepository extends ExtendedRepository
         $lower->setEvent($event);
         $lower->setValue($lowerLevel);
 
+        // internalid : not available if import with nmb2b : manage compatibility with old DB
+        $internal = null;
+        if($cat->getInternalidField() !== null) {
+            $internal = new CustomFieldValue();
+            $internal->setCustomField($cat->getInternalidField());
+            $internal->setEvent($event);
+            $internal->setValue($internalid);
+        }
         $this->importModel($event, $user, $timeBegin, $designator, $organisation, $cat);
         
         try {
@@ -1492,6 +1502,9 @@ class EventRepository extends ExtendedRepository
             $this->getEntityManager()->persist($upper);
             $this->getEntityManager()->persist($lower);
             $this->getEntityManager()->persist($event);
+            if($internal !== null) {
+                $this->getEntityManager()->persist($internal);
+            }
             $this->getEntityManager()->flush();
         } catch (\Exception $ex) {
             error_log($ex->getMessage());
@@ -1567,6 +1580,39 @@ class EventRepository extends ExtendedRepository
             }
         }
         return $results;
+    }
+
+    /**
+     * Get an event of Milcategory with the corresponding $internalid
+     * @param MilCategory $cat
+     * @param $internalid
+     * @return id of the event or -1 if no event
+     */
+    public function getZoneMilEventId(MilCategory $cat, $internalid)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select(array('e', 'v', 'cat'))
+            ->from('Application\Entity\Event', 'e')
+            ->leftJoin('e.custom_fields_values', 'v')
+            ->leftJoin('e.category', 'cat')
+            ->andWhere(
+                $qb->expr()->eq('cat.id', '?1')
+            )->andWhere(
+                $qb->expr()->eq('v.customfield', '?2')
+            )->andWhere(
+                $qb->expr()->eq('v.value', '?3')
+            )
+        ->setParameters(array(
+            1 => $cat->getId(),
+            2 => $cat->getInternalidField(),
+            3 => $internalid
+        ));
+        $results = $qb->getQuery()->getResult();
+        if(count($results) == 1) {
+            return $results[0]->getId();
+        } else {
+            return -1;
+        }
     }
 
     /**
