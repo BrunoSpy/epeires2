@@ -161,7 +161,6 @@ test:7.4-mysql80:
 test:8.0-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
-  allow_failure: true
   services:
     - mariadb:10.3
   variables:
@@ -173,7 +172,6 @@ test:8.0-mariadb103:
 test:8.0-mariadb104:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
-  allow_failure: true
   services:
     - mariadb:10.4
   variables:
@@ -185,7 +183,6 @@ test:8.0-mariadb104:
 test:8.0-mariadb105:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
-  allow_failure: true
   services:
     - mariadb:10.5
   variables:
@@ -197,7 +194,6 @@ test:8.0-mariadb105:
 test:8.0-mysql57:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
-  allow_failure: true
   services:
     - mysql:5.7
   variables:
@@ -209,7 +205,6 @@ test:8.0-mysql57:
 test:8.0-mysql80:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
-  allow_failure: true
   services:
     - mysql:8.0
   variables:
