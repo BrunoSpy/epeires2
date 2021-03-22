@@ -50,7 +50,7 @@ class MilCategoryLastUpdate
     /**
      * Stores Y-m-d day of data imported
      * Only one value per day : the last lastModified value received
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string")
      */
     private $day;
 

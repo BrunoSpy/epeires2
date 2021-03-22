@@ -40,6 +40,8 @@ class MAPDService
 
     private $verbose = false;
 
+    private $uri = "";
+
     public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
@@ -56,7 +58,8 @@ class MAPDService
     {
         if($this->client == null && array_key_exists('mapd', $this->config)) {
             $mapd = $this->config['mapd'];
-            $this->client = new Client($mapd['url']);
+            $this->uri = $mapd['url'];
+            $this->client = new Client();
             if (array_key_exists('user', $mapd) && array_key_exists('password', $mapd)) {
                 $this->client->setAuth($mapd['user'], $mapd['password']);
             }
@@ -80,7 +83,7 @@ class MAPDService
         }
         $request = new Request();
         $request->setMethod('GET');
-        $request->setUri($this->getClient()->getUri() . '/activations');
+        $request->setUri($this->uri . '/activations');
         $request->setQuery(new Parameters(array(
             'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s"),
@@ -89,7 +92,6 @@ class MAPDService
 
         $response = $this->getClient()->dispatch($request);
         if($response->isSuccess()) {
-            error_log(print_r($response->getBody(), true));
             return json_decode($response->getBody(), true);
         } else {
             throw new \RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
@@ -104,18 +106,15 @@ class MAPDService
         }
         $request = new Request();
         $request->setMethod('GET');
-        $request->setUri($this->getClient()->getUri() . '/activations/diff');
+        $request->setUri($this->uri . '/activations/diff');
         $request->setQuery(new Parameters(array(
             'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s"),
             'since' => $since->format("Y-m-d\TH:i:s"),
             'areaName' => $filter)));
 
-        error_log(print_r($request->getQuery(), true));
-
         $response = $this->getClient()->dispatch($request);
         if($response->isSuccess()) {
-            error_log(print_r($response->getBody(), true));
             return json_decode($response->getBody(), true);
         } else if ($response->getStatusCode() == Response::STATUS_CODE_304) {
             //do nothing

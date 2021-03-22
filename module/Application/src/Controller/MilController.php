@@ -217,10 +217,14 @@ class MilController extends AbstractEntityManagerAwareController
             $lastUpdate = $milcat->getLastUpdates()->filter(function(MilCategoryLastUpdate $lastUpdate) use ($day) {
                 return strcmp($lastUpdate->getDay(), $day->format('Y-m-d')) == 0;
             });
+            //in order to be consistent with NM B2B bahavior : add * at the end of the filter
+            //if user wants a specific zone, he must use a regex
+            $filter = strcmp(substr($milcat->getFilter(), -1), "*") == 0 ? $milcat->getFilter() : $milcat->getFilter().'*';
+
             if($lastUpdate->isEmpty()) {
                 //init
                 error_log('no data for this day : init');
-                $eauprsas = $this->mapd->getEAUPRSA($milcat->getFilter(), $start, $end);
+                $eauprsas = $this->mapd->getEAUPRSA($filter, $start, $end);
                 //TODO temp bugfix
                 $lastModified = new \DateTime($eauprsas['lastModified']);
                 $milLastUpdate = new MilCategoryLastUpdate($lastModified, $milcat, $day->format('Y-m-d'));
@@ -228,19 +232,20 @@ class MilController extends AbstractEntityManagerAwareController
                 $milcat->addLastUpdate($milLastUpdate);
 
                 foreach ($eauprsas["results"] as $zonemil) {
-                    //TODO add regex filter
-                    $this->getEntityManager()->getRepository(Event::class)->doAddMilEvent(
-                        $milcat,
-                        $organisation,
-                        $user,
-                        $zonemil["areaName"],
-                        new \DateTime($zonemil['dateFrom']),
-                        new  \DateTime($zonemil['dateUntil']),
-                        $zonemil['maxFL'],
-                        $zonemil['minFL'],
-                        $zonemil['id'],
-                        $messages
-                    );
+                    if(preg_match($milcat->getZonesRegex(), $zonemil["areaName"])) {
+                        $this->getEntityManager()->getRepository(Event::class)->doAddMilEvent(
+                            $milcat,
+                            $organisation,
+                            $user,
+                            $zonemil["areaName"],
+                            new \DateTime($zonemil['dateFrom']),
+                            new  \DateTime($zonemil['dateUntil']),
+                            $zonemil['maxFL'],
+                            $zonemil['minFL'],
+                            $zonemil['id'],
+                            $messages
+                        );
+                    }
                 }
                 try {
                     $this->getEntityManager()->flush();
@@ -255,12 +260,15 @@ class MilController extends AbstractEntityManagerAwareController
                 $eauprsas = $this->mapd->getEAUPRSADiff($milcat->getFilter(), $start, $end, $lastModified);
 
                 if($eauprsas !== null) {
-                    
+
                     $newLastModified = new \Datetime($eauprsas['lastModified']);
                     $lastUpdate->first()->setLastUpdate($newLastModified);
                     $this->getEntityManager()->persist($lastUpdate->first());
 
                     foreach ($eauprsas['results'] as $zonemil) {
+                        if(preg_match($milcat->getZonesRegex(), $zonemil["areaName"])) {
+                            continue;
+                        }
                         if (strcmp($zonemil['diffType'], "created") == 0) {
 
                             //verify if event is already in database juste in case...
