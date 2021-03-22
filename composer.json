@@ -36,6 +36,7 @@
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.1",
         "laminas/laminas-mvc-form": "^1.0",
         "laminas/laminas-log": "^2.10",
+        "laminas/laminas-form": "2.15.*",
         "doctrine/doctrine-orm-module": "^3.0",
         "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^2.4",
