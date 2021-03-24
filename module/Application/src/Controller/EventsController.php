@@ -1741,8 +1741,9 @@ class EventsController extends TimelineTabController
         
         $objectManager = $this->getEntityManager();
 
-        //update MAPD Events
-        $this->updateMAPDEvents($cats, $day);
+        //update MAPD Events after this action
+        //as a consequence this call will not be fully updated but will not block the call if MAPD is offline
+        defer($_, function() use ($cats, $day) {$this->updateMAPDEvents($cats, new \DateTime($day));});
 
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->lmcUserAuthentication(),
@@ -1765,19 +1766,27 @@ class EventsController extends TimelineTabController
         $this->getResponse()
             ->getHeaders()
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
-        
+
         return new JsonModel($json);
     }
 
-    private function updateMAPDEvents($cats, $day)
+    private function updateMAPDEvents($cats, \DateTime $day)
     {
-        $day = new \DateTime($day);
+
+
+        $messages = array();
 
         if($this->mapd->isEnabled())
         {
             foreach ($cats as $cat) {
-                if($cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
-
+                $cat = $this->getEntityManager()->getRepository(Category::class)->find($cat);
+                if($cat !== null && $cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
+                    //check auth
+                    if($this->lmcUserAuthentication()->hasIdentity()) {
+                        if($this->isGranted('events.write')) {
+                            $this->mapd->updateCategory($cat, $day, $this->lmcUserAuthentication()->getIdentity(), $messages);
+                        }
+                    }
                 }
             }
         }

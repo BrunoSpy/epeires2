@@ -274,6 +274,7 @@
                     } else {
                         urlday = '?day=' + self.currentDay.toUTCString();
                     }
+
                 }
                 //get events and display them
                 $.when($.getJSON(self.options.eventUrl + urlday,
@@ -1691,6 +1692,12 @@
             clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
+            if(url.indexOf('?') > 0){
+                urlday = '&day=' + self.currentDay.toUTCString();
+            } else {
+                urlday = '?day=' + self.currentDay.toUTCString();
+            }
+            url += urlday;
             if(typeof(refetch) == "undefined" || refetch == false) {
                 if(url.indexOf('?') > 0){
                     url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');

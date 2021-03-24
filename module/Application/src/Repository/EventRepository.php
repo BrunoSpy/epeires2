@@ -1453,7 +1453,7 @@ class EventRepository extends ExtendedRepository
         return $addedEvents;
     }
 
-    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages)
+    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages, $flush = true)
     {
         $event = new \Application\Entity\Event();
         $event->setOrganisation($organisation);
@@ -1505,7 +1505,9 @@ class EventRepository extends ExtendedRepository
             if($internal !== null) {
                 $this->getEntityManager()->persist($internal);
             }
-            $this->getEntityManager()->flush();
+            if($flush){
+                $this->getEntityManager()->flush();
+            }
         } catch (\Exception $ex) {
             error_log($ex->getMessage());
             if ($messages != null) {
