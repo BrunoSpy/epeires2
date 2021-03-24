@@ -36,7 +36,6 @@
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.1",
         "laminas/laminas-mvc-form": "^1.0",
         "laminas/laminas-log": "^2.10",
-        "laminas/laminas-form": "2.15.*",
         "doctrine/doctrine-orm-module": "^3.0",
         "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^2.4",
@@ -61,7 +60,9 @@
         "laminas/laminas-dependency-plugin": "^2.0",
         "linkorb/jsmin-php": "^1.0",
         "lm-commons/lmc-rbac-mvc": "^3.0",
-        "laminas/laminas-mail": "^2.12"
+        "laminas/laminas-mail": "^2.12",
+        "laminas/laminas-code": "^3.5.0",
+        "php-defer/php-defer": "^4.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0",
