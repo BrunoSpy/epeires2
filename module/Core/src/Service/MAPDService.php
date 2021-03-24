@@ -113,7 +113,7 @@ class MAPDService
                     $cat->addLastUpdate($milLastUpdate);
 
                     foreach ($eauprsas['results'] as $zonemil) {
-                        if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->ZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
+                        if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
                             $this->entityManager->getRepository(Event::class)->doAddMilEvent(
                                 $cat,
                                 $user->getOrganisation(),
@@ -149,7 +149,7 @@ class MAPDService
                     $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
 
                     foreach ($eauprsas['results'] as $zonemil) {
-                        if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->ZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
+                        if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
                             continue;
                         }
                         $event = $this->entityManager->getRepository(Event::class)->find(
