@@ -32,8 +32,11 @@ class HomeController extends AbstractActionController
     private $doctrinemigrations;
     private $config;
 
-    public function __construct( $config) {
+    private $mapd;
+
+    public function __construct( $config, $mapd) {
         $this->config = $config;
+        $this->mapd = $mapd;
     }
 
     public function indexAction() {
@@ -101,6 +104,12 @@ class HomeController extends AbstractActionController
             $IHMLight = false;
         }
 
+        if($this->mapd->isEnabled()) {
+            $mapdStatus = $this->mapd->getStatus();
+        } else {
+            $mapdStatus = null;
+        }
+
         return array(
            /* 'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
             'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
@@ -115,7 +124,8 @@ class HomeController extends AbstractActionController
             'myversion' => Version::VERSION,
             'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
             'git' => $git,
-            'IHMLight' => $IHMLight
+            'IHMLight' => $IHMLight,
+            'mapd' => $mapdStatus
         );
     }
 }

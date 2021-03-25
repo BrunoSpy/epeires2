@@ -76,6 +76,29 @@
     			</div>
     		</div>
 -->
+        <?php if($this->mapd !== null) : ?>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Connexion au serveur MAPD</h4>
+            </div>
+            <div class="panel-body">
+                <?php
+                if(strcmp($this->mapd['status'], "ERROR") == 0) {
+                    echo '<div class="alert alert-danger">Erreur du serveur MAPD </div>';
+                    echo '<p>Statut AUP : '. $this->mapd['aupToday']['status'].'</p>';
+                    if(strcmp($this->mapd['aupToday']['status'], "ERROR") == 0) {
+                      foreach ($this->mapd['aupToday']['statusReasons'] as $reason) {
+                        echo '<p>Erreur AUP : '.$reason.'</p>';
+                      }
+                    }
+                } else {
+                    echo '<div class="alert alert-success">Aucune erreur remontée du serveur MAPD </div>';
+                }
+                ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
             <?php if($this->certifvalid !== null) : ?>
 
             <div class="panel panel-default">

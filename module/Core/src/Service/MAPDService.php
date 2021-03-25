@@ -62,6 +62,23 @@ class MAPDService
         return $this->getClient() !== null;
     }
 
+
+    public function getStatus()
+    {
+        if($this->getClient() == null) {
+            throw new \RuntimeException('Unable to get MAPD CLient');
+        }
+        $request = new Request();
+        $request->setMethod('GET');
+        $request->setUri($this->uri . '/status');
+        $response = $this->getClient()->dispatch($request);
+        if($response->isSuccess()) {
+            return json_decode($response->getBody(), true);
+        } else {
+            return null;
+        }
+    }
+
     private function getClient()
     {
         if($this->client == null && array_key_exists('mapd', $this->config)) {
