@@ -131,19 +131,25 @@ class MAPDService
 
                     foreach ($eauprsas['results'] as $zonemil) {
                         if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
-                            $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                $cat,
-                                $user->getOrganisation(),
-                                $user,
-                                $zonemil['areaName'],
-                                new \DateTime($zonemil['dateFrom']),
-                                new  \DateTime($zonemil['dateUntil']),
-                                $zonemil['maxFL'],
-                                $zonemil['minFL'],
-                                $zonemil['id'],
-                                $messages,
-                                false
+                            $event = $this->entityManager->getRepository(Event::class)->find(
+                                $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id'])
                             );
+                            //$event should be null but if the first event in the db is created by Epeires, event is already in the epeires side
+                            if($event == null) {
+                                $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                    $cat,
+                                    $user->getOrganisation(),
+                                    $user,
+                                    $zonemil['areaName'],
+                                    new \DateTime($zonemil['dateFrom']),
+                                    new  \DateTime($zonemil['dateUntil']),
+                                    $zonemil['maxFL'],
+                                    $zonemil['minFL'],
+                                    $zonemil['id'],
+                                    $messages,
+                                    false
+                                );
+                            }
                         }
                     }
 
@@ -320,31 +326,93 @@ class MAPDService
 
     /**
      * @param Event $event
-     * @param $messages
-     * @return bool
+     * @return int Internal Id of the event, -1 if problem...
      */
-    public function saveRSA(Event $event, &$messages): bool
+    public function saveRSA(Event $event): int
     {
         if($this->getClient() == null) {
             throw new RuntimeException('Unable to get MAPD CLient');
         }
-        error_log('eventid '.$event->getId());
+        if(!($event->getCategory() instanceof MilCategory) ||
+            ($event->getCategory() instanceof MilCategory && strcmp($event->getCategory()->getOrigin(), MilCategory::MAPD) !== 0)) {
+            throw new RuntimeException("Tentative d'enregistrer un évènement non lié à MAPD");
+        }
         if($event->getId()) {
             //mod
             $internalId = $event->getCustomFieldValue($event->getCategory()->getInternalidField());
             if($internalId){
                 error_log('internalid '. $internalId->getValue());
             }
+        } else {
+            $name = $event->getCustomFieldValue($event->getCategory()->getFieldname())->getValue();
+            //check if name if consistent with rules of the category
+            $filter = $event->getCategory()->getFilter();
+            if(strcmp(substr($filter, -1), "*") == 0) {
+                $filter = substr($filter, 0, -1);
+            }
+            if(preg_match('/'.$filter.'\w*/', $name)){
+                $regex = $event->getCategory()->getZonesRegex();
+                if(!(strlen($regex) == 0 || (strlen($regex) > 0 && preg_match($regex, $name)))){
+                    throw new RuntimeException('Impossible de créer une zone avec un nom ne correspondant pas à la catégorie.');
+                }
+            } else {
+                throw new RuntimeException('Impossible de créer une zone avec un nom ne correspondant pas à la catégorie.');
+            }
+
+            $minfl = $event->getCustomFieldValue($event->getCategory()->getLowerLevelField())->getValue();
+            $maxfl = $event->getCustomFieldValue($event->getCategory()->getUpperLevelField())->getValue();
+            $start = $event->getStartdate();
+            $end = $event->getEnddate();
+            $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
+            return $response['id'];
         }
-        return false;
+        return -1;
     }
 
-    public function createRSA($name, DateTime $start, DateTime $end, $upperFL, $lowerFL)
+
+    /**
+     * @param $name
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param $upperFL
+     * @param $lowerFL
+     * @return mixed
+     */
+    private function createRSA($name, DateTime $start, DateTime $end, $upperFL, $lowerFL)
     {
+        if($this->getClient() == null) {
+            throw new RuntimeException('Unable to get MAPD CLient');
+        }
+        if($end == null) {
+            throw new RuntimeException('Impossible de créer un évènement MAPD sans date de fin.');
+        }
+        if($upperFL == null || strlen($upperFL) == 0){
+            $upperFL = 660;
+        }
+        if($lowerFL == null || strlen($lowerFL) == 0){
+            $lowerFL = 0;
+        }
+        $request = new Request();
+        $request->setUri($this->uri . '/activations');
+        $request->setMethod(Request::METHOD_POST);
+        $request->setPost(new Parameters(array(
+            'areaName' => $name,
+            'minFL' => $lowerFL,
+            'maxFL' => $upperFL,
+            'dateFrom' => $start->format(DATE_ISO8601),
+            'dateUntil' => $end->format(DATE_ISO8601)
+        )));
 
+        $response = $this->getClient()->send($request);
+
+        if($response->getStatusCode() == Response::STATUS_CODE_201) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new RuntimeException($response->getStatusCode(). ' '. $response->getReasonPhrase());
+        }
     }
 
-    public function updateRSA($id, DateTime $start = null, DateTime $end = null, $upperFL = null, $lowerFL = null)
+    private function updateRSA($id, DateTime $start = null, DateTime $end = null, $upperFL = null, $lowerFL = null)
     {
         if($start == null && $end == null && $upperFL == null && $lowerFL == null) {
             return;

@@ -1046,13 +1046,26 @@ class EventsController extends TimelineTabController
                                 //should not happen, no reccurence if MAPD event...
                                 $messages['error'][] = "Impossible d'enregistrer les modifications, les données sont incohérentes.";
                             } else {
-                                error_log('test');
-                                if($this->mapd->saveRSA($events[0], $messages)) {
-                                    error_log('test2');
+                                try {
+                                    $response = $this->mapd->saveRSA($events[0]);
+                                    $internalId = $events[0]->getCustomFieldValue($events[0]->getCategory()->getInternalidField());
+                                    if($response > -1 && $internalId !== null && $internalId->getValue() !== null &&
+                                        strlen($internalId->getValue()) > 0 &&
+                                        $response !== $internalId->getValue()) {
+                                        throw new \RuntimeException("Impossible de modifier l'évènment : MAPD a renvoyé un id différent de celui connu.");
+                                    }
+                                    if($internalId == null) {
+                                        $internalId = new CustomFieldValue();
+                                        $internalId->setCustomField($events[0]->getCategory()->getInternalidField());
+                                        $internalId->setEvent($events[0]);
+                                    }
+                                    $internalId->setValue($response);
+                                    $objectManager->persist($internalId);
+                                    $objectManager->persist($events[0]);
                                     $objectManager->flush();
-                                    $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
-                                } else {
-                                    $messages['error'][] = "Impossible d'enregistrer l'évènement, erreur du serveur MAPD.";
+                                } catch (\Exception $e) {
+                                    $messages['error'][] = "Impossible d'enregistrer l'évènement";
+                                    $messages['error'][] = $e->getMessage();
                                     $events = array();
                                 }
                             }
@@ -1062,7 +1075,6 @@ class EventsController extends TimelineTabController
                         }
                     } catch (\Exception $e) {
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
-                        error_log($e->getMessage());
                         $messages['error'][] = $e->getMessage();
                         $events = array();
                     }
@@ -1751,10 +1763,11 @@ class EventsController extends TimelineTabController
      * },
      * 'evt_id_1' => ...
      * }
-     * 
-     * @return \Laminas\View\Model\JsonModel
+     *
+     * @return JsonModel
+     * @throws \Exception
      */
-    public function geteventsAction()
+    public function geteventsAction() : JsonModel
     {
         $lastmodified = $this->params()->fromQuery('lastupdate', null);
         
