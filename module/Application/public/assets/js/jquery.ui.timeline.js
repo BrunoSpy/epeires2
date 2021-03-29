@@ -1713,6 +1713,9 @@
                         self.addEvents(data);
                         self.forceUpdateView();
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                        if(data['messages']) {
+                            displayMessages(data.messages);
+                        }
                     }
                 }).always(function () {
                 self.timerUpdate = setTimeout(function () {

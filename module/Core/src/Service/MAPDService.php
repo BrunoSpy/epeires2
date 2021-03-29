@@ -30,6 +30,7 @@ use Laminas\Http\Client;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
 use Laminas\Stdlib\Parameters;
+use RuntimeException;
 
 /**
  *
@@ -66,7 +67,7 @@ class MAPDService
     public function getStatus()
     {
         if($this->getClient() == null) {
-            throw new \RuntimeException('Unable to get MAPD CLient');
+            throw new RuntimeException('Unable to get MAPD CLient');
         }
         $request = new Request();
         $request->setMethod('GET');
@@ -97,10 +98,9 @@ class MAPDService
      * @param Category $cat
      * @param DateTime $day
      * @param User $user
-     * @param $messages
      * @throws \Exception
      */
-    public function updateCategory(Category $cat, DateTime $day, User $user, &$messages)
+    public function updateCategory(Category $cat, DateTime $day, User $user)
     {
 
         $start = clone $day;
@@ -255,13 +255,13 @@ class MAPDService
      * @param string $filter
      * @param DateTime $start
      * @param DateTime $end
-     * @return array
-     * @throws \RuntimeException
+     * @return mixed
+     * @throws RuntimeException
      */
-    public function getEAUPRSA($filter, DateTime $start, DateTime $end)
+    public function getEAUPRSA(string $filter, DateTime $start, DateTime $end)
     {
         if($this->getClient() == null) {
-            throw new \RuntimeException('Unable to get MAPD CLient');
+            throw new RuntimeException('Unable to get MAPD CLient');
         }
         $request = new Request();
         $request->setMethod('GET');
@@ -280,15 +280,23 @@ class MAPDService
                 return json_decode($response->getBody(), true);
             }
         } else {
-            return null;
+            throw new RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
         }
 
     }
 
+    /**
+     * @param $filter
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param DateTime $since
+     * @return mixed
+     * @throws RuntimeException
+     */
     public function getEAUPRSADiff($filter, DateTime $start, DateTime $end, DateTime $since)
     {
         if($this->getClient() == null) {
-            throw new \RuntimeException('Unable to get MAPD CLient');
+            throw new RuntimeException('Unable to get MAPD CLient');
         }
         $request = new Request();
         $request->setMethod('GET');
@@ -305,8 +313,30 @@ class MAPDService
         } else if ($response->getStatusCode() == Response::STATUS_CODE_304) {
             //do nothing
         } else {
-            throw new \RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
+            throw new RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
         }
+    }
+
+
+    /**
+     * @param Event $event
+     * @param $messages
+     * @return bool
+     */
+    public function saveRSA(Event $event, &$messages): bool
+    {
+        if($this->getClient() == null) {
+            throw new RuntimeException('Unable to get MAPD CLient');
+        }
+        error_log('eventid '.$event->getId());
+        if($event->getId()) {
+            //mod
+            $internalId = $event->getCustomFieldValue($event->getCategory()->getInternalidField());
+            if($internalId){
+                error_log('internalid '. $internalId->getValue());
+            }
+        }
+        return false;
     }
 
     public function createRSA($name, DateTime $start, DateTime $end, $upperFL, $lowerFL)
