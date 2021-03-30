@@ -1353,9 +1353,11 @@ class EventsController extends TimelineTabController
                             ->get($customfield->getId())
                             ->setValue($values);
                     } else {
-                        $form->get('custom_fields')
-                            ->get($customfield->getId())
-                            ->setAttribute('value', $customfieldvalue->getValue());
+                        if(!$customfield->isHidden()) {
+                            $form->get('custom_fields')
+                                ->get($customfield->getId())
+                                ->setAttribute('value', $customfieldvalue->getValue());
+                        }
                     }
                 }
             }
@@ -1789,6 +1791,8 @@ class EventsController extends TimelineTabController
         //as a consequence this call will not be fully updated but will not block the call if MAPD is offline
         defer($_, function() use ($cats, $day) {$this->updateMAPDEvents($cats, new \DateTime($day));});
 
+        $events = array();
+
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->lmcUserAuthentication(),
             $day,
@@ -1799,10 +1803,10 @@ class EventsController extends TimelineTabController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
+            $events[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
         }
 
-        if (count($json) === 0) {
+        if (count($events) === 0) {
             $this->getResponse()->setStatusCode(304);
             return new JsonModel();
         }
@@ -1816,6 +1820,7 @@ class EventsController extends TimelineTabController
             $this->flashMessenger()->clearMessages(FlashMessenger::NAMESPACE_ERROR);
         }
 
+        $json['events'] = $events;
         $json['messages'] = $messages;
 
         return new JsonModel($json);

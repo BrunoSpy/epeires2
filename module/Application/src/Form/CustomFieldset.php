@@ -17,6 +17,7 @@
  */
 namespace Application\Form;
 
+use Application\Entity\MilCategory;
 use Application\Services\CustomFieldService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Form\Fieldset;
@@ -87,6 +88,20 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             
             if (! $model && $customfield->getId() == $category->getFieldname()->getId()) {
                 $definition['attributes']['required'] = 'required';
+                if($category instanceof MilCategory) {
+                    if(strlen($category->getZonesRegex()) > 0) {
+                        $regex = substr($category->getZonesRegex(), 1);
+                        $regex = substr($regex, 0, -1);
+                        $definition['attributes']['pattern'] = $regex;
+                    }
+                }
+            }
+
+            if($category instanceof MilCategory &&
+                ($customfield->getId() == $category->getUpperLevelField()->getId() || $customfield->getId() == $category->getLowerLevelField()->getId())) {
+                $definition['attributes']['data-rule-number'] = true;
+                $definition['attributes']['data-rule-min'] = 0;
+                $definition['attributes']['data-rule-max'] = 999;
             }
 
             //disable required fields if model
