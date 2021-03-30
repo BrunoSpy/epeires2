@@ -170,74 +170,72 @@ class MAPDService
                 if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
                     $newLastModified = $eauprsas['lastModified'];
                     $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
-
                     foreach ($eauprsas['results'] as $zonemil) {
                         if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
-                            continue;
-                        }
-                        $event = $this->entityManager->getRepository(Event::class)->find(
-                            $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id'])
-                        );
-                        switch ($zonemil['diffType']){
-                            case 'created':
-                                if($event == null) {
-                                    $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                        $cat,
-                                        $user->getOrganisation(),
-                                        $user,
-                                        $zonemil["areaName"],
-                                        new \DateTime($zonemil['dateFrom']),
-                                        new \DateTime($zonemil['dateUntil']),
-                                        $zonemil['maxFL'],
-                                        $zonemil['minFL'],
-                                        $zonemil['id'],
-                                        $messages,
-                                        false
-                                    );
-                                } else {
-                                    //do nothing, event should not pre-exist
-                                }
-                                break;
-                            case 'modified':
-                                if($event !== null) {
-                                    $upperlevel = $event->getCustomFieldValue($milcat->getUpperLevelField());
-                                    if(!$upperlevel) {
-                                        $upperlevel = new CustomFieldValue();
-                                        $upperlevel->setEvent($event);
-                                        $upperlevel->setCustomField($milcat->getUpperLevelField());
+                            $event = $this->entityManager->getRepository(Event::class)->find(
+                                $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id'])
+                            );
+                            switch ($zonemil['diffType']) {
+                                case 'created':
+                                    if ($event == null) {
+                                        $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                            $cat,
+                                            $user->getOrganisation(),
+                                            $user,
+                                            $zonemil["areaName"],
+                                            new \DateTime($zonemil['dateFrom']),
+                                            new \DateTime($zonemil['dateUntil']),
+                                            $zonemil['maxFL'],
+                                            $zonemil['minFL'],
+                                            $zonemil['id'],
+                                            $messages,
+                                            false
+                                        );
+                                    } else {
+                                        //do nothing, event should not pre-exist
                                     }
-                                    $upperlevel->setValue($zonemil['maxFL']);
+                                    break;
+                                case 'modified':
+                                    if ($event !== null) {
+                                        $upperlevel = $event->getCustomFieldValue($milcat->getUpperLevelField());
+                                        if (!$upperlevel) {
+                                            $upperlevel = new CustomFieldValue();
+                                            $upperlevel->setEvent($event);
+                                            $upperlevel->setCustomField($milcat->getUpperLevelField());
+                                        }
+                                        $upperlevel->setValue($zonemil['maxFL']);
 
-                                    $lowerLevel = $event->getCustomFieldValue($milcat->getLowerLevelField());
-                                    if(!$lowerLevel){
-                                        $lowerLevel = new CustomFieldValue();
-                                        $lowerLevel->setEvent($event);
-                                        $lowerLevel->setCustomField($milcat->getLowerLevelField());
+                                        $lowerLevel = $event->getCustomFieldValue($milcat->getLowerLevelField());
+                                        if (!$lowerLevel) {
+                                            $lowerLevel = new CustomFieldValue();
+                                            $lowerLevel->setEvent($event);
+                                            $lowerLevel->setCustomField($milcat->getLowerLevelField());
+                                        }
+                                        $lowerLevel->setValue($zonemil['minFL']);
+
+                                        $event->setDates(new Datetime($zonemil['dateFrom']), new Datetime($zonemil['dateUntil']));
+
+                                        try {
+                                            $this->entityManager->persist($lowerLevel);
+                                            $this->entityManager->persist($upperlevel);
+                                        } catch (\Exception $e) {
+                                            error_log($e->getMessage());
+                                        }
                                     }
-                                    $lowerLevel->setValue($zonemil['minFL']);
-
-                                    $event->setDates(new Datetime($zonemil['dateFrom']), new Datetime($zonemil['dateUntil']));
-
-                                    try{
-                                        $this->entityManager->persist($lowerLevel);
-                                        $this->entityManager->persist($upperlevel);
-                                    } catch (\Exception $e) {
-                                        error_log($e->getMessage());
+                                    break;
+                                case 'deleted':
+                                    if ($event !== null) {
+                                        $status = $this->entityManager->getRepository(Status::class)->find(5);
+                                        $event->setStatus($status);
                                     }
+                                    break;
+                            }
+                            if ($event !== null) {
+                                try {
+                                    $this->entityManager->persist($event);
+                                } catch (\Exception $e) {
+                                    error_log($e->getMessage());
                                 }
-                                break;
-                            case 'deleted':
-                                if($event !== null) {
-                                    $status = $this->entityManager->getRepository(Status::class)->find(5);
-                                    $event->setStatus($status);
-                                }
-                                break;
-                        }
-                        if($event !== null) {
-                            try {
-                                $this->entityManager->persist($event);
-                            } catch (\Exception $e) {
-                                error_log($e->getMessage());
                             }
                         }
                     }
