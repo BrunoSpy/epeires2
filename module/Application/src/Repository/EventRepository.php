@@ -1453,6 +1453,21 @@ class EventRepository extends ExtendedRepository
         return $addedEvents;
     }
 
+    /**
+     * @param MilCategory $cat
+     * @param \Application\Entity\Organisation $organisation
+     * @param User $user
+     * @param $designator
+     * @param \DateTime $timeBegin
+     * @param \DateTime $timeEnd
+     * @param $upperLevel
+     * @param $lowerLevel
+     * @param $internalid
+     * @param $messages
+     * @param bool $flush
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages, $flush = true)
     {
         $event = new \Application\Entity\Event();
@@ -1509,9 +1524,10 @@ class EventRepository extends ExtendedRepository
                 $this->getEntityManager()->flush();
             }
         } catch (\Exception $ex) {
-            error_log($ex->getMessage());
             if ($messages != null) {
                 $messages['error'][] = $ex->getMessage();
+            } else {
+                throw $ex;
             }
         }
     }

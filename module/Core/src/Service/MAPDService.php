@@ -140,19 +140,23 @@ class MAPDService
                             );
                             //$event should be null but if the first event in the db is created by Epeires, event is already in the epeires side
                             if($event == null) {
-                                $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                    $cat,
-                                    $user->getOrganisation(),
-                                    $user,
-                                    $zonemil['areaName'],
-                                    new \DateTime($zonemil['dateFrom']),
-                                    new  \DateTime($zonemil['dateUntil']),
-                                    $zonemil['maxFL'],
-                                    $zonemil['minFL'],
-                                    $zonemil['id'],
-                                    $messages,
-                                    false
-                                );
+                                try {
+                                    $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                        $cat,
+                                        $user->getOrganisation(),
+                                        $user,
+                                        $zonemil['areaName'],
+                                        new \DateTime($zonemil['dateFrom']),
+                                        new  \DateTime($zonemil['dateUntil']),
+                                        $zonemil['maxFL'],
+                                        $zonemil['minFL'],
+                                        $zonemil['id'],
+                                        $messages,
+                                        false
+                                    );
+                                } catch (\Exception $e) {
+                                    throw $e;
+                                }
                             }
                         }
                     }
@@ -161,24 +165,23 @@ class MAPDService
                         $this->entityManager->persist($milLastUpdate);
                         $this->entityManager->flush();
                     } catch(\Exception $e) {
-                        error_log($e->getMessage());
+                        throw $e;
                     }
 
                 }
 
             } else {
                 $lastModified = $lastUpdate->first()->getLastUpdate();
-
                 $eauprsas = $this->getEAUPRSADiff($filter, $start, $end, $lastModified);
-
                 if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
                     $newLastModified = $eauprsas['lastModified'];
                     $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
                     foreach ($eauprsas['results'] as $zonemil) {
                         if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
-                            $event = $this->entityManager->getRepository(Event::class)->find(
-                                $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id'])
-                            );
+                            $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
+                            $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
+                            //query getzonemilevent filters custom fields, refresh needed
+                            $this->entityManager->refresh($event);
                             switch ($zonemil['diffType']) {
                                 case 'created':
                                     if ($event == null) {
@@ -199,21 +202,21 @@ class MAPDService
                                         //do nothing, event should not pre-exist
                                     }
                                     break;
-                                case 'modified':
+                                case 'updated':
                                     if ($event !== null) {
-                                        $upperlevel = $event->getCustomFieldValue($milcat->getUpperLevelField());
-                                        if (!$upperlevel) {
+                                        $upperlevel = $event->getCustomFieldValue($cat->getUpperLevelField());
+                                        if ($upperlevel == null) {
                                             $upperlevel = new CustomFieldValue();
                                             $upperlevel->setEvent($event);
-                                            $upperlevel->setCustomField($milcat->getUpperLevelField());
+                                            $upperlevel->setCustomField($cat->getUpperLevelField());
                                         }
                                         $upperlevel->setValue($zonemil['maxFL']);
 
-                                        $lowerLevel = $event->getCustomFieldValue($milcat->getLowerLevelField());
-                                        if (!$lowerLevel) {
+                                        $lowerLevel = $event->getCustomFieldValue($cat->getLowerLevelField());
+                                        if ($lowerLevel == null) {
                                             $lowerLevel = new CustomFieldValue();
                                             $lowerLevel->setEvent($event);
-                                            $lowerLevel->setCustomField($milcat->getLowerLevelField());
+                                            $lowerLevel->setCustomField($cat->getLowerLevelField());
                                         }
                                         $lowerLevel->setValue($zonemil['minFL']);
 
@@ -223,7 +226,7 @@ class MAPDService
                                             $this->entityManager->persist($lowerLevel);
                                             $this->entityManager->persist($upperlevel);
                                         } catch (\Exception $e) {
-                                            error_log($e->getMessage());
+                                            throw $e;
                                         }
                                     }
                                     break;
@@ -238,7 +241,7 @@ class MAPDService
                                 try {
                                     $this->entityManager->persist($event);
                                 } catch (\Exception $e) {
-                                    error_log($e->getMessage());
+                                    throw $e;
                                 }
                             }
                         }
@@ -248,7 +251,7 @@ class MAPDService
                         $this->entityManager->persist($lastUpdate->first());
                         $this->entityManager->flush();
                     } catch(\Exception $e) {
-                        error_log($e->getMessage());
+                        throw $e;
                     }
 
                 }
