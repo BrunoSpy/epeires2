@@ -39,6 +39,10 @@ use RuntimeException;
 class MAPDService
 {
 
+    const ACTIVATIONS_ENDPOINT = "/activations";
+
+    const ACTIVATIONSDIFF_ENDPOINT = "/activations/diff";
+
     private $entityManager;
     
     private $config;
@@ -269,7 +273,7 @@ class MAPDService
         }
         $request = new Request();
         $request->setMethod('GET');
-        $request->setUri($this->uri . '/activations');
+        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
         $request->setQuery(new Parameters(array(
             'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s"),
@@ -304,7 +308,7 @@ class MAPDService
         }
         $request = new Request();
         $request->setMethod('GET');
-        $request->setUri($this->uri . '/activations/diff');
+        $request->setUri($this->uri . self::ACTIVATIONSDIFF_ENDPOINT);
         $request->setQuery(new Parameters(array(
             'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s"),
@@ -325,6 +329,7 @@ class MAPDService
     /**
      * @param Event $event
      * @return int Internal Id of the event, -1 if problem...
+     * @throws \Exception
      */
     public function saveRSA(Event $event): int
     {
@@ -339,21 +344,25 @@ class MAPDService
             //mod
             $internalId = $event->getCustomFieldValue($event->getCategory()->getInternalidField());
             if($internalId){
-                error_log('internalid '. $internalId->getValue());
+                $name = $event->getCustomFieldValue($event->getCategory()->getFieldname())->getValue();
+                $minfl = $event->getCustomFieldValue($event->getCategory()->getLowerLevelField())->getValue();
+                $maxfl = $event->getCustomFieldValue($event->getCategory()->getUpperLevelField())->getValue();
+                $start = $event->getStartdate();
+                $end = $event->getEnddate();
+                if(!$this->checkName($name, $event->getCategory())) {
+                    throw new RuntimeException("Impossible de modifier l'évènement : le nom n'est pas cohérent avec la catégorie.");
+                }
+                try {
+                    $this->updateRSA($internalId->getValue(), $name, $start, $end, $maxfl, $minfl);
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+            } else {
+                throw new RuntimeException("Impossible de mettre à jour un évènement sans identifiant MAPD.");
             }
         } else {
             $name = $event->getCustomFieldValue($event->getCategory()->getFieldname())->getValue();
-            //check if name if consistent with rules of the category
-            $filter = $event->getCategory()->getFilter();
-            if(strcmp(substr($filter, -1), "*") == 0) {
-                $filter = substr($filter, 0, -1);
-            }
-            if(preg_match('/'.$filter.'\w*/', $name)){
-                $regex = $event->getCategory()->getZonesRegex();
-                if(!(strlen($regex) == 0 || (strlen($regex) > 0 && preg_match($regex, $name)))){
-                    throw new RuntimeException('Impossible de créer une zone avec un nom ne correspondant pas à la catégorie.');
-                }
-            } else {
+            if(!$this->checkName($name, $event->getCategory())) {
                 throw new RuntimeException('Impossible de créer une zone avec un nom ne correspondant pas à la catégorie.');
             }
 
@@ -361,12 +370,37 @@ class MAPDService
             $maxfl = $event->getCustomFieldValue($event->getCategory()->getUpperLevelField())->getValue();
             $start = $event->getStartdate();
             $end = $event->getEnddate();
-            $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
+            try {
+                $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
+            } catch(\Exception $e) {
+                throw $e;
+            }
             return $response['id'];
         }
         return -1;
     }
 
+    /**
+     * @param $name
+     * @param $cat
+     * @return bool
+     */
+    private function checkName($name, $cat) : bool
+    {
+        $filter = $cat->getFilter();
+        if(strcmp(substr($filter, -1), "*") == 0) {
+            $filter = substr($filter, 0, -1);
+        }
+        if(preg_match('/'.$filter.'\w*/', $name)){
+            $regex = $cat->getZonesRegex();
+            if(!(strlen($regex) == 0 || (strlen($regex) > 0 && preg_match($regex, $name)))){
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * @param $name
@@ -391,7 +425,7 @@ class MAPDService
             $lowerFL = 0;
         }
         $request = new Request();
-        $request->setUri($this->uri . '/activations');
+        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
         $request->setMethod(Request::METHOD_POST);
         $request->setPost(new Parameters(array(
             'areaName' => $name,
@@ -410,12 +444,33 @@ class MAPDService
         }
     }
 
-    private function updateRSA($id, DateTime $start = null, DateTime $end = null, $upperFL = null, $lowerFL = null)
+    private function updateRSA(int $id, $name, DateTime $start = null, DateTime $end = null, $upperFL = null, $lowerFL = null)
     {
         if($start == null && $end == null && $upperFL == null && $lowerFL == null) {
-            return;
+            throw new RuntimeException("Imossible de mettre à jour la zone, paramètres manquants.");
+        }
+        if($this->getClient() == null) {
+            throw new RuntimeException('Unable to get MAPD CLient');
         }
 
+        $request = new Request();
+        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
+        $request->setMethod(Request::METHOD_PUT);
+        $request->setPost(new Parameters(array(
+            'areaName' => $name,
+            'minFL' => $lowerFL,
+            'maxFL' => $upperFL,
+            'dateFrom' => $start->format(DATE_ISO8601),
+            'dateUntil' => $end->format(DATE_ISO8601)
+        )));
+
+        $response = $this->getClient()->send($request);
+
+        if($response->getStatusCode() == Response::STATUS_CODE_200) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new RuntimeException($response->getStatusCode() . ' '.$response->getReasonPhrase());
+        }
     }
 
     public function cancelRSA($id)

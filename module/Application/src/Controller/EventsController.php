@@ -2200,11 +2200,13 @@ class EventsController extends TimelineTabController
                     }
                     try {
                         if($event->getCategory() instanceof MilCategory && strcmp($event->getCategory()->getOrigin(), MilCategory::MAPD) == 0) {
-                            if($this->mapd->saveRSA($event, $messages)) {
+                            try {
+                                $this->mapd->saveRSA($event, $messages);
                                 $objectManager->flush();
-                            } else {
+                            } catch (\Exception $e) {
                                 $objectManager->refresh($event);
                                 $messages['error'][] = "Erreur du serveur MAPD. Impossible d'enregistrer la modification.";
+                                $messages['error'][] = $e->getMessage();
                             }
                         } else {
                             $objectManager->flush();
