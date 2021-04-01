@@ -62,7 +62,8 @@
         "lm-commons/lmc-rbac-mvc": "^3.0",
         "laminas/laminas-mail": "^2.12",
         "laminas/laminas-code": "^3.5.0",
-        "php-defer/php-defer": "^4.0"
+        "php-defer/php-defer": "^4.0",
+        "samsonasik/force-https-module": "^4.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0",

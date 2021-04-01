@@ -17,6 +17,8 @@
 
 var urlt;
 
+let validator;
+
 var formAddFile = function(fileId, formData, modifiable){
 	modifiable = (typeof modifiable === "undefined") ? true : modifiable;
 	var tr = $('<tr id="file_'+fileId+'"></tr>');
@@ -273,11 +275,12 @@ var form = function(url, cats, sunrise, sunrise_url){
         $("#event input, #event select, #event textarea").each(function(index){
             if($(this).prop('required') && !$(this).val()) {
                 fail = true;
-                $(this).parents('.form-group').addClass('has-error');
+                //$(this).parents('.form-group').addClass('has-error');
             } else {
-                $(this).parents('.form-group').removeClass('has-error');
+                //$(this).parents('.form-group').removeClass('has-error');
             }
         });
+
         if(fail) {
             $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
         } else {
@@ -478,44 +481,45 @@ var form = function(url, cats, sunrise, sunrise_url){
 		if($('#end .hour input').val().length > 0 && $('#end .minute input').val().length === 0){
 			$('#end .minute input').val('00').trigger('change');
 		}
-		var formData = new FormData($("#Event")[0]);
-		$.ajax({
-			type: "POST",
-			url: url+'events/save',
-			xhr: function() {  // Custom XMLHttpRequest
-				var myXhr = $.ajaxSettings.xhr();
-				if(myXhr.upload){ // Check if upload property exists
-					//    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
-				}
-				return myXhr;
-			},
-			// Form data
-			data: formData,
-			//Options to tell jQuery not to process data or worry about content-type.
-			cache: false,
-			contentType: false,
-			processData: false,
-			success: function(data){
-				//close form
-				$("#create-link").trigger("click");
-				//update timeline
-				if(data['events'])
-				{
-					if ($("#timeline").length > 0) {
-						$("#timeline").timeline('pauseUpdateView');
+		if($("#Event").valid()) {
+			var formData = new FormData($("#Event")[0]);
+			$.ajax({
+				type: "POST",
+				url: url + 'events/save',
+				xhr: function () {  // Custom XMLHttpRequest
+					var myXhr = $.ajaxSettings.xhr();
+					if (myXhr.upload) { // Check if upload property exists
+						//    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
 					}
-					var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
-					
-					if ($("#timeline").length > 0) {
-						$('#timeline').timeline('addEvents', data.events, sendToMattermost);
-						$('#timeline').timeline('forceUpdateView');
+					return myXhr;
+				},
+				// Form data
+				data: formData,
+				//Options to tell jQuery not to process data or worry about content-type.
+				cache: false,
+				contentType: false,
+				processData: false,
+				success: function (data) {
+					//close form
+					$("#create-link").trigger("click");
+					//update timeline
+					if (data['events']) {
+						if ($("#timeline").length > 0) {
+							$("#timeline").timeline('pauseUpdateView');
+						}
+						var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
+
+						if ($("#timeline").length > 0) {
+							$('#timeline').timeline('addEvents', data.events, sendToMattermost);
+							$('#timeline').timeline('forceUpdateView');
+						}
+						$('#calendarview').fullCalendar('refetchEvents');
 					}
-					$('#calendarview').fullCalendar('refetchEvents');
-				}
-				displayMessages(data.messages);
-			},
-			dataType: "json"
-		});
+					displayMessages(data.messages);
+				},
+				dataType: "json"
+			});
+		}
 	});
 
 	$("#event").on("click", "#cancel-form", function(event){
@@ -555,6 +559,19 @@ var form = function(url, cats, sunrise, sunrise_url){
 							$('#root_categories').trigger('change');
 						}
 					}
+					validator = $('#Event').validate({
+						errorClass: 'has-error',
+						ignore: ':hidden, .date',
+						success: function(label, element){
+							$(element).parents('.form-group').removeClass('has-error');
+						},
+						showErrors: function(errorMap, errorList) {
+							$.each(errorMap, function(key, value){
+								$("input[name='"+key+"']").parents('.form-group').addClass('has-error');
+							});
+							this.defaultShowErrors();
+						}
+					});
 				}
 			);
 			$("#create-evt").modal('show');
@@ -903,6 +920,7 @@ var form = function(url, cats, sunrise, sunrise_url){
                     $("#event input, #event select").on("invalid", function(event){
                         $("#description-title a").trigger('click');
                     });
+
                     //force recalcule des conditions en fonction des champs chargés
                     $("#event").trigger('change');
                     $.material.checkbox();

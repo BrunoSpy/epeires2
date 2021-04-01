@@ -35,6 +35,7 @@ use Application\Entity\SwitchObjectCategory;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
@@ -66,9 +67,9 @@ class EventsController extends TimelineTabController
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, $mapd)
+                                $config, $mattermost, $translator, $mapd, $logger)
     {
-        parent::__construct($entityManager, $config, $mattermost);
+        parent::__construct($entityManager, $config, $mattermost, $logger);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
@@ -580,6 +581,15 @@ class EventsController extends TimelineTabController
 
                     $recurrence = null;
 
+                    $category = $objectManager->getRepository(Category::class)->find($post['category']);
+
+                    if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern']) &&
+                        $category instanceof MilCategory && strcmp($category->getOrigin(), MilCategory::MAPD) == 0) {
+                        //recurrence is forbidden for MAPD Categories
+                        $messages['error'][] = "Impossible d'enregistrer une récurrence pour un évènement MAPD. Seul le premier évènement est pris en compte.";
+                        $post['recurrencepattern'] = '';
+                    }
+
                     if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern'])) {
                         if($id) {
                             //récurrence existante
@@ -718,7 +728,7 @@ class EventsController extends TimelineTabController
                         $e->setImpact($impact);
 
                         //catégorie
-                        $e->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
+                        $e->setCategory($category);
 
                         //champs horaires : ponctuel, programmé
                         $e->setPunctual($post['punctual']);
@@ -1030,8 +1040,39 @@ class EventsController extends TimelineTabController
                             $objectManager->persist($recurrence);
                             $messages['success'][] = "Récurrence correctement enregistrée.";
                         }
-                        $objectManager->flush();
-                        $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                        //if event is managed by MAPD, we flush only is MAPD is successfull
+                        if($events[0]->getCategory() instanceof MilCategory && strcmp($events[0]->getCategory()->getOrigin(), MilCategory::MAPD) == 0) {
+                            if(count($events) !== 1) {
+                                //should not happen, no reccurence if MAPD event...
+                                $messages['error'][] = "Impossible d'enregistrer les modifications, les données sont incohérentes.";
+                            } else {
+                                try {
+                                    $response = $this->mapd->saveRSA($events[0]);
+                                    $internalId = $events[0]->getCustomFieldValue($events[0]->getCategory()->getInternalidField());
+                                    if($response > -1 && $internalId !== null && $internalId->getValue() !== null &&
+                                        strlen($internalId->getValue()) > 0 &&
+                                        $response !== $internalId->getValue()) {
+                                        throw new \RuntimeException("Impossible de modifier l'évènment : MAPD a renvoyé un id différent de celui connu.");
+                                    }
+                                    if($internalId == null) {
+                                        $internalId = new CustomFieldValue();
+                                        $internalId->setCustomField($events[0]->getCategory()->getInternalidField());
+                                        $internalId->setEvent($events[0]);
+                                    }
+                                    $internalId->setValue($response);
+                                    $objectManager->persist($internalId);
+                                    $objectManager->persist($events[0]);
+                                    $objectManager->flush();
+                                } catch (\Exception $e) {
+                                    $messages['error'][] = "Impossible d'enregistrer l'évènement";
+                                    $messages['error'][] = $e->getMessage();
+                                    $events = array();
+                                }
+                            }
+                        } else {
+                            $objectManager->flush();
+                            $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                        }
                     } catch (\Exception $e) {
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
                         $messages['error'][] = $e->getMessage();
@@ -1312,9 +1353,11 @@ class EventsController extends TimelineTabController
                             ->get($customfield->getId())
                             ->setValue($values);
                     } else {
-                        $form->get('custom_fields')
-                            ->get($customfield->getId())
-                            ->setAttribute('value', $customfieldvalue->getValue());
+                        if(!$customfield->isHidden()) {
+                            $form->get('custom_fields')
+                                ->get($customfield->getId())
+                                ->setAttribute('value', $customfieldvalue->getValue());
+                        }
                     }
                 }
             }
@@ -1722,10 +1765,11 @@ class EventsController extends TimelineTabController
      * },
      * 'evt_id_1' => ...
      * }
-     * 
-     * @return \Laminas\View\Model\JsonModel
+     *
+     * @return JsonModel
+     * @throws \Exception
      */
-    public function geteventsAction()
+    public function geteventsAction() : JsonModel
     {
         $lastmodified = $this->params()->fromQuery('lastupdate', null);
         
@@ -1741,9 +1785,13 @@ class EventsController extends TimelineTabController
         
         $objectManager = $this->getEntityManager();
 
+        $messages = array();
+
         //update MAPD Events after this action
         //as a consequence this call will not be fully updated but will not block the call if MAPD is offline
         defer($_, function() use ($cats, $day) {$this->updateMAPDEvents($cats, new \DateTime($day));});
+
+        $events = array();
 
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->lmcUserAuthentication(),
@@ -1755,10 +1803,10 @@ class EventsController extends TimelineTabController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
+            $events[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
         }
 
-        if (count($json) === 0) {
+        if (count($events) === 0) {
             $this->getResponse()->setStatusCode(304);
             return new JsonModel();
         }
@@ -1767,24 +1815,31 @@ class EventsController extends TimelineTabController
             ->getHeaders()
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
 
+        foreach ($this->flashMessenger()->getMessages(FlashMessenger::NAMESPACE_ERROR) as $message) {
+            $messages['error'][] = $message;
+            $this->flashMessenger()->clearMessages(FlashMessenger::NAMESPACE_ERROR);
+        }
+
+        $json['events'] = $events;
+        $json['messages'] = $messages;
+
         return new JsonModel($json);
     }
 
     private function updateMAPDEvents($cats, \DateTime $day)
     {
-
-
-        $messages = array();
-
-        if($this->mapd->isEnabled())
-        {
+        if($this->mapd->isEnabled() && $cats != null){
             foreach ($cats as $cat) {
                 $cat = $this->getEntityManager()->getRepository(Category::class)->find($cat);
                 if($cat !== null && $cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
                     //check auth
                     if($this->lmcUserAuthentication()->hasIdentity()) {
                         if($this->isGranted('events.write')) {
-                            $this->mapd->updateCategory($cat, $day, $this->lmcUserAuthentication()->getIdentity(), $messages);
+                            try {
+                                $this->mapd->updateCategory($cat, $day, $this->lmcUserAuthentication()->getIdentity());
+                            } catch(\Exception $e) {
+                                $this->flashMessenger()->addErrorMessage('Erreur du serveur MAPD : '.$e->getMessage());
+                            }
                         }
                     }
                 }
@@ -2144,7 +2199,18 @@ class EventsController extends TimelineTabController
                             break;
                     }
                     try {
-                        $objectManager->flush();
+                        if($event->getCategory() instanceof MilCategory && strcmp($event->getCategory()->getOrigin(), MilCategory::MAPD) == 0) {
+                            try {
+                                $this->mapd->saveRSA($event, $messages);
+                                $objectManager->flush();
+                            } catch (\Exception $e) {
+                                $objectManager->refresh($event);
+                                $messages['error'][] = "Erreur du serveur MAPD. Impossible d'enregistrer la modification.";
+                                $messages['error'][] = $e->getMessage();
+                            }
+                        } else {
+                            $objectManager->flush();
+                        }
                     } catch (\Exception $ex) {
                         $messages['error'][] = $ex->getMessage();
                     }

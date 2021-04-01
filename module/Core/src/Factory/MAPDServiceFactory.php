@@ -30,7 +30,10 @@ class MAPDServiceFactory implements FactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new \Core\Service\MAPDService($container->get('Doctrine\ORM\EntityManager'), $container->get('config'));
+        return new \Core\Service\MAPDService(
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config'),
+            $container->get('EpeiresLogger'));
     }
 }
 

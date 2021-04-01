@@ -17,6 +17,7 @@
  */
 namespace Core;
 
+use Laminas\Log\Logger;
 use Laminas\ModuleManager\Feature\AutoloaderProviderInterface;
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 use Laminas\EventManager\EventInterface;
@@ -42,6 +43,9 @@ class Module implements ConfigProviderInterface
                 return $sm->get('LmcRbacMvc\View\Strategy\UnauthorizedStrategy')->onError($e);
             }
         );
+
+        $logger = $sm->get("EpeiresLogger");
+        Logger::registerErrorHandler($logger);
 
         $events = $e->getApplication()->getEventManager()->getSharedManager();
         $events->attach('LmcUser\Form\Login','init', function($e) {

@@ -281,7 +281,7 @@
                     function (data, textStatus, jqHXR) {
                         if (jqHXR.status !== 304) {
                             var pos = 0;
-                            $.each(data, function (key, value) {
+                            $.each(data.events, function (key, value) {
                                 //ajout des attributs aux évènements
                                 value.display = true;
                                 value.shade = false;
@@ -771,7 +771,7 @@
                                 function (data, textStatus, jqHXR) {
                                     if (jqHXR.status !== 304) {
                                         self.pauseUpdateView();
-                                        self.addEvents(data);
+                                        self.addEvents(data.events);
                                     }
                                 }))
                                 .then(function () {
@@ -1710,9 +1710,12 @@
                 function (data, textStatus, jqHXR) {
                     if (jqHXR.status !== 304) {
                         self.update = false;
-                        self.addEvents(data);
+                        self.addEvents(data.events);
                         self.forceUpdateView();
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                        if(data['messages']) {
+                            displayMessages(data.messages);
+                        }
                     }
                 }).always(function () {
                 self.timerUpdate = setTimeout(function () {
