@@ -339,9 +339,9 @@ class MAPDService
         $request->setMethod('GET');
         $request->setUri($this->uri . self::ACTIVATIONSDIFF_ENDPOINT);
         $request->setQuery(new Parameters(array(
-            'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
-            'end' => $end->format("Y-m-d\TH:i:s"),
-            'since' => $since->format("Y-m-d\TH:i:s"),
+            'start' => $start->format("Y-m-d\TH:i:s\Z"), //TODO change server to accept ISO8601
+            'end' => $end->format("Y-m-d\TH:i:s\Z"),
+            'since' => $since->format("Y-m-d\TH:i:s\Z"),
             'areaName' => $filter)));
 
         $response = $this->getClient()->dispatch($request);
@@ -453,23 +453,31 @@ class MAPDService
         if($lowerFL == null || strlen($lowerFL) == 0){
             $lowerFL = 0;
         }
-        $request = new Request();
-        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
-        $request->setMethod(Request::METHOD_POST);
-        $request->setPost(new Parameters(array(
+        $parameters = array(
             'areaName' => $name,
             'minFL' => $lowerFL,
             'maxFL' => $upperFL,
-            'dateFrom' => $start->format(DATE_ISO8601),
-            'dateUntil' => $end->format(DATE_ISO8601)
-        )));
+            'dateFrom' => $start->format("Y-m-d\TH:i:s\Z"),
+            'dateUntil' => $end->format("Y-m-d\TH:i:s\Z")
+        );
+        /*
+        $request = new Request();
+        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
+        $request->setMethod(Request::METHOD_POST);
+        $request->setPost(new Parameters());
+        */
 
-        $response = $this->getClient()->send($request);
+        $this->getClient()->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
+        $this->getClient()->setMethod(Request::METHOD_POST);
+        $this->getClient()->setRawBody(json_encode($parameters));
+        $this->getClient()->setEncType('application/json');
+
+        $response = $this->getClient()->send();
 
         if($response->getStatusCode() == Response::STATUS_CODE_201) {
             return json_decode($response->getBody(), true);
         } else {
-            throw new RuntimeException($response->getStatusCode(). ' '. $response->getReasonPhrase());
+            throw new RuntimeException($response->getStatusCode(). ' '. $response->getReasonPhrase().'<br>'.$response->getBody());
         }
     }
 
@@ -481,24 +489,34 @@ class MAPDService
         if($this->getClient() == null) {
             throw new RuntimeException('Unable to get MAPD CLient');
         }
-
+        $parameters = array(
+        'areaName' => $name,
+        'minFL' => $lowerFL,
+        'maxFL' => $upperFL,
+        'dateFrom' => $start->format("Y-m-d\TH:i:s\Z"),
+        'dateUntil' => $end->format("Y-m-d\TH:i:s\Z")
+        );
+        /*
         $request = new Request();
         $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
         $request->setMethod(Request::METHOD_PUT);
-        $request->setPost(new Parameters(array(
-            'areaName' => $name,
-            'minFL' => $lowerFL,
-            'maxFL' => $upperFL,
-            'dateFrom' => $start->format(DATE_ISO8601),
-            'dateUntil' => $end->format(DATE_ISO8601)
-        )));
 
-        $response = $this->getClient()->send($request);
+        $request->setPost(new Parameters($parameters));
+        */
+        $this->getClient()->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
+        $this->getClient()->setMethod(Request::METHOD_PUT);
+        $this->getClient()->setRawBody(json_encode($parameters));
+        $this->getClient()->setEncType('application/json');
+
+        error_log(print_r(json_encode($parameters), true));
+
+        $response = $this->getClient()->send();
 
         if($response->getStatusCode() == Response::STATUS_CODE_200) {
             return json_decode($response->getBody(), true);
         } else {
-            throw new RuntimeException($response->getStatusCode() . ' '.$response->getReasonPhrase());
+            throw new RuntimeException($response->getStatusCode() . ' '.$response->getReasonPhrase().'<br>'
+                                    .$response->getBody());
         }
     }
 
