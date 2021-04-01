@@ -26,6 +26,8 @@ before_script:
 - php public/index.php orm:generate-proxies
 - php public/index.php initDB
 - php public/index.php data-fixture:import default_group --no-interaction
+- mkdir logs
+- chmod a+rwx ./logs
 - chmod a+rwx -Rf ./data
 - chmod +x ./local-php-security-checker
 #launch server
