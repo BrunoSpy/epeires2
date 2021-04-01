@@ -21,6 +21,7 @@ use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
+use Laminas\Log\Logger;
 use Laminas\View\Model\ViewModel;
 
 /**
@@ -33,11 +34,14 @@ class TimelineTabController extends TabController
 
     protected $entityManager;
 
+    protected $logger;
+
     public function __construct(EntityManager $entityManager,
-                                $config, $mattermost)
+                                $config, $mattermost, $logger)
     {
         parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     public function indexAction()
@@ -110,7 +114,9 @@ class TimelineTabController extends TabController
         $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
         
         $this->viewmodel->setVariable('messages', $return);
-        
+
+        $this->getLogger()->info('timeline index.html');
+
         return $this->viewmodel;
     }
     
@@ -121,4 +127,13 @@ class TimelineTabController extends TabController
     {
         return $this->entityManager;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLogger() : Logger
+    {
+        return $this->logger;
+    }
+
 }

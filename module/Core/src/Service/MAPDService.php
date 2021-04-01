@@ -29,6 +29,7 @@ use Doctrine\ORM\EntityManager;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
+use Laminas\Log\Logger;
 use Laminas\Stdlib\Parameters;
 use RuntimeException;
 
@@ -55,11 +56,13 @@ class MAPDService
 
     private $uri = "";
 
-    public function __construct(EntityManager $entityManager, $config)
+    private $logger;
+
+    public function __construct(EntityManager $entityManager, $config, Logger $logger)
     {
         $this->entityManager = $entityManager;
         $this->config = $config;
-
+        $this->logger = $logger;
     }
 
     public function isEnabled()
@@ -114,6 +117,8 @@ class MAPDService
         $end = clone $start;
         $end->setTime(23,59,59);
 
+        $this->logger->info('Mise à jour catégorie '.$cat->getName());
+
         if($cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
             //determine if initialisation needed or update
             $lastUpdate = $cat->getLastUpdates()->filter(function(MilCategoryLastUpdate $lastUpdate) use ($day) {
@@ -125,6 +130,7 @@ class MAPDService
 
 
             if($lastUpdate->isEmpty()) {
+                $this->logger->info('No data : get data from /activations');
                 //no data for this day
                 $eauprsas = $this->getEAUPRSA($filter, $start, $end);
 
@@ -171,8 +177,10 @@ class MAPDService
                 }
 
             } else {
+                $this->logger->info('Data present : get data from /activations/diff');
                 $lastModified = $lastUpdate->first()->getLastUpdate();
                 $eauprsas = $this->getEAUPRSADiff($filter, $start, $end, $lastModified);
+                $this->logger->debug(print_r($eauprsas, true));
                 if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
                     $newLastModified = $eauprsas['lastModified'];
                     $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
@@ -181,7 +189,9 @@ class MAPDService
                             $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
                             $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
                             //query getzonemilevent filters custom fields, refresh needed
-                            $this->entityManager->refresh($event);
+                            if($event !== null) {
+                                $this->entityManager->refresh($event);
+                            }
                             switch ($zonemil['diffType']) {
                                 case 'created':
                                     if ($event == null) {
@@ -228,6 +238,22 @@ class MAPDService
                                         } catch (\Exception $e) {
                                             throw $e;
                                         }
+                                    } else {
+                                        $this->logger->info("Tentative de mise à jour d'un évènement non connue : création");
+                                        //update of an unknown event, should not happen but let's create it
+                                        $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                            $cat,
+                                            $user->getOrganisation(),
+                                            $user,
+                                            $zonemil["areaName"],
+                                            new \DateTime($zonemil['dateFrom']),
+                                            new \DateTime($zonemil['dateUntil']),
+                                            $zonemil['maxFL'],
+                                            $zonemil['minFL'],
+                                            $zonemil['id'],
+                                            $messages,
+                                            false
+                                        );
                                     }
                                     break;
                                 case 'deleted':
