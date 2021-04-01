@@ -23,8 +23,8 @@ before_script:
 - cp $DOCTRINE config/autoload/doctrine.local.php
 #populate database
 - mkdir logs
-- chmod a+rwx logs
-- ls -al
+- touch logs/epeires2.log
+- chmod -Rf a+rwx logs
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
 - php public/index.php initDB
