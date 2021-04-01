@@ -93,6 +93,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                         $regex = substr($category->getZonesRegex(), 1);
                         $regex = substr($regex, 0, -1);
                         $definition['attributes']['pattern'] = $regex;
+                        $definition['attributes']['placeholder'] = $customfield->getTooltip();
                     }
                 }
             }
