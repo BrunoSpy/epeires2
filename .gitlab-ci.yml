@@ -22,12 +22,13 @@ before_script:
 #configure database
 - cp $DOCTRINE config/autoload/doctrine.local.php
 #populate database
+- mkdir logs
+- chmod a+rwx ./logs
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
 - php public/index.php initDB
 - php public/index.php data-fixture:import default_group --no-interaction
-- mkdir logs
-- chmod a+rwx ./logs
+
 - chmod a+rwx -Rf ./data
 - chmod +x ./local-php-security-checker
 #launch server
