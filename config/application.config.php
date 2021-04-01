@@ -68,6 +68,10 @@ $modules = array(
         'API'
     );
 
+if ($env == 'production') {
+    $modules[] = 'ForceHttpsModule';
+}
+
 if ($env == 'development') {
 
     $modules [] = 'Laminas\DeveloperTools';

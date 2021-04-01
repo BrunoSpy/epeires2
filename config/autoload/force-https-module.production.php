@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'force-https-module' => [
+        'enable'                => true,
+        'force_all_routes'      => true,
+        'force_specific_routes' => [
+            // a lists of specific routes to be https
+            // only works if previous config 'force_all_routes' => false
+        ],
+        'exclude_specific_routes' => [
+            // a lists of specific routes to not be https
+            // only works if previous config 'force_all_routes' => true
+        ],
+        // set HTTP Strict Transport Security Header
+        'strict_transport_security' => [
+            'enable' => true, // set to false to disable it
+            'value'  => 'max-age=31536000',
+        ],
+        'add_www_prefix'        => false,
+        'remove_www_prefix'     => false,
+        'allow_404'             => true,
+    ],
+];
