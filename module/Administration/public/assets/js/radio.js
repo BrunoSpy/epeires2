@@ -58,11 +58,14 @@ var radio = function(url){
 		    $.material.checkbox();
 		});
 	});
-	
 	$("#frequency-container").on('submit', function(event){
 		event.preventDefault();
 		$.post(url+'/radio/savefrequency', $("#Frequency").serialize(), function(data){
-			location.reload();
+			if(data['messages'] && data.messages['error']) {
+				displayMessages(data.messages);
+			} else {
+				location.reload();
+			}
 		}, 'json');
 	});
 	

@@ -216,6 +216,7 @@ class RadioController extends \Application\Controller\FormController
 
     public function savefrequencyAction()
     {
+        $messages = array();
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $id = $post['id'];
@@ -230,15 +231,21 @@ class RadioController extends \Application\Controller\FormController
                 // $antenna->setOrganisation($objectManager->getRepository('Application\Entity\Organisation')->find($post['organisation']));
                 
                 $this->objectManager->persist($frequency);
-                $this->objectManager->flush();
+                try {
+                    $this->objectManager->flush();
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+
             }
         }
-        
+
+
         $json = array(
             'id' => $frequency->getId(),
             'name' => $frequency->getValue()
         );
-        
+        $json['messages'] = $messages;
         return new JsonModel($json);
     }
 
