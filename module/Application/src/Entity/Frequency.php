@@ -90,8 +90,9 @@ class Frequency extends TemporaryResource
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=3)
-     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Type("Laminas\Form\Element\Number")
      * @Annotation\Required({"required":"true"})
+     * @Annotation\Attributes({"min" : "0", "step": ".001", "placeholder": "0.000" })
      * @Annotation\Options({"label":"Valeur :"})
      */
     protected $value;
