@@ -64,7 +64,8 @@
         "laminas/laminas-dependency-plugin": "^2.0",
         "linkorb/jsmin-php": "^1.0",
         "lm-commons/lmc-rbac-mvc": "^3.0",
-        "laminas/laminas-mail": "^2.12"
+        "laminas/laminas-mail": "^2.12",
+        "laminas/laminas-code": "^3.5.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0",
