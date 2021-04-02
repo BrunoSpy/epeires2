@@ -209,7 +209,10 @@ $('#timeline').timeline({
     day: Cookies.get("timelineday"),
     initComplete: function(){
         $("#timeline .loading").hide();
-        $(".chat-container").mattermost("initialize");
+<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost) {
+        echo '$(".chat-container") . mattermost("initialize");';
+}
+?>
     }<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost){echo ',';
       echo 'mattermost: true';
     }
