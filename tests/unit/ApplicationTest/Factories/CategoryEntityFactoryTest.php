@@ -22,7 +22,7 @@ class CategoryEntityFactoryTest extends \Codeception\Test\Unit
     {
         $em = $this->getModule('Doctrine2')->em;
 
-        $milcategory = $this->getModule('ZF2')->grabServiceFromContainer('categoryfactory')->createMilCategory();
+        $milcategory = $this->getModule('Laminas')->grabServiceFromContainer('categoryfactory')->createMilCategory();
         $milcategory->setName("Military");
         $milcategory->setShortName("Mil");
         $milcategory->setColor("#00FF00");

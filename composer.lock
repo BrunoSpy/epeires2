@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d61bbf11b8c26dd101223a343acd6e1e",
+    "content-hash": "0632e2189658165f03b992ec74dc069e",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -11158,6 +11158,64 @@
             "time": "2020-11-26T06:56:31+00:00"
         },
         {
+            "name": "codeception/module-laminas",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Codeception/module-laminas.git",
+                "reference": "c9f65ce6037ecefe03378adfc2dbd1e5e80e3063"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Codeception/module-laminas/zipball/c9f65ce6037ecefe03378adfc2dbd1e5e80e3063",
+                "reference": "c9f65ce6037ecefe03378adfc2dbd1e5e80e3063",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "^4.0",
+                "codeception/lib-innerbrowser": "^1.0",
+                "laminas/laminas-console": "^2.8.0",
+                "laminas/laminas-db": "^2.11.3",
+                "laminas/laminas-mvc": "^3.1.1",
+                "php": "^5.6 | ^7.0 | ^8.0"
+            },
+            "require-dev": {
+                "codeception/module-asserts": "^1.0",
+                "codeception/module-doctrine2": "^1.0",
+                "codeception/module-rest": "^1.0",
+                "codeception/util-robohelpers": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gintautas Miselis"
+                },
+                {
+                    "name": "Michael Bodnarchuk"
+                }
+            ],
+            "description": "Codeception module for the Laminas Project",
+            "homepage": "http://codeception.com/",
+            "keywords": [
+                "codeception",
+                "laminas"
+            ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-laminas/issues",
+                "source": "https://github.com/Codeception/module-laminas/tree/1.0.0"
+            },
+            "time": "2020-11-25T07:56:50+00:00"
+        },
+        {
             "name": "codeception/module-webdriver",
             "version": "1.2.0",
             "source": {
@@ -11212,63 +11270,6 @@
                 "source": "https://github.com/Codeception/module-webdriver/tree/1.2.0"
             },
             "time": "2021-01-17T19:23:20+00:00"
-        },
-        {
-            "name": "codeception/module-zf2",
-            "version": "1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Codeception/module-zf2.git",
-                "reference": "5f78fe0f9bc80e2c171a74cd5c1c72d67514203b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-zf2/zipball/5f78fe0f9bc80e2c171a74cd5c1c72d67514203b",
-                "reference": "5f78fe0f9bc80e2c171a74cd5c1c72d67514203b",
-                "shasum": ""
-            },
-            "require": {
-                "codeception/codeception": "4.0.x-dev | ^4.0",
-                "codeception/lib-innerbrowser": "dev-master | ^1.0",
-                "php": ">=5.6.0 <8.0"
-            },
-            "require-dev": {
-                "codeception/module-asserts": "dev-master | ^1.0",
-                "codeception/module-doctrine2": "dev-master | ^1.0",
-                "codeception/module-rest": "dev-master | ^1.0",
-                "codeception/util-robohelpers": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Gintautas Miselis"
-                },
-                {
-                    "name": "Michael Bodnarchuk"
-                }
-            ],
-            "description": "Codeception module for Zend Framework 2 and 3",
-            "homepage": "http://codeception.com/",
-            "keywords": [
-                "ZendFramework",
-                "codeception",
-                "zf2",
-                "zf3"
-            ],
-            "support": {
-                "issues": "https://github.com/Codeception/module-zf2/issues",
-                "source": "https://github.com/Codeception/module-zf2/tree/1.0.3"
-            },
-            "time": "2020-01-29T15:12:50+00:00"
         },
         {
             "name": "codeception/phpunit-wrapper",
