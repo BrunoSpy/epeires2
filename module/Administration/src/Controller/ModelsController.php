@@ -22,6 +22,7 @@ use Application\Entity\ActionCategory;
 use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
@@ -1007,7 +1008,7 @@ class ModelsController extends FormController
                     foreach ($json as $name => $actions) {
                         $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
                         if (count($model) == 1) {
-                            $modelsId = $model[0]->getId();
+                            $modelsId[] = $model[0]->getId();
                         } else {
                             $missing [] = $name;
                         }
@@ -1016,19 +1017,16 @@ class ModelsController extends FormController
                     $continueImport = false;
                     try {
                         $sql = 'DELETE FROM `customfieldvalues` WHERE `event_id` IN (
-                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
-                        $stmt = $objectManager->getConnection()->prepare($sql);
-                        $stmt->bindValue(1, $modelsId);
-                        $stmt->execute();
+                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (:modelsid) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
+                        $stmt = $objectManager->getConnection()->executeQuery($sql, array('modelsid' => $modelsId), array('modelsid' => Connection::PARAM_INT_ARRAY));
+
                         $sql2 = 'DELETE FROM `PredefinedEvent` WHERE `id` IN (
-                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
-                        $stmt2 = $objectManager->getConnection()->prepare($sql2);
-                        $stmt2->bindValue(1, $modelsId);
-                        $stmt2->execute();
-                        $sql3 = 'DELETE FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`)';
-                        $stmt3 = $objectManager->getConnection()->prepare($sql3);
-                        $stmt3->bindValue(1, $modelsId);
-                        $stmt3->execute();
+                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (:modelsid) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
+                        $stmt2 = $objectManager->getConnection()->executeQuery($sql2, array('modelsid' => $modelsId), array('modelsid' => Connection::PARAM_INT_ARRAY));
+
+                        $sql3 = 'DELETE FROM `events` WHERE `discr` = "model" AND `parent_id` IN (:modelsid) AND `category_id` IN (SELECT `id` FROM `ActionCategory`)';
+                        $stmt3 = $objectManager->getConnection()->executeQuery($sql3, array('modelsid' => $modelsId), array('modelsid' => Connection::PARAM_INT_ARRAY));
+
                         $continueImport = true;
                     } catch (\Exception $e) {
                         $messages['error'][] = $e->getMessage();
