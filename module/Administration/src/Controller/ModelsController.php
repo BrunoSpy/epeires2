@@ -22,6 +22,7 @@ use Application\Entity\ActionCategory;
 use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -980,6 +981,8 @@ class ModelsController extends FormController
         $messages = array();
         $missing = array();
         $count = 0;
+        $objectManager = $this->getEntityManager();
+        $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
         if($this->getRequest()->isPost()) {
             $request = $this->getRequest();
             $data = array_merge_recursive(
@@ -989,6 +992,8 @@ class ModelsController extends FormController
 
             $form->setData($data);
 
+            $sql = 'SELECT * FROM `events` WHERE `discr` = "model" AND `parent_id` IN (662, 645) AND `category_id` IN (SELECT `id` FROM `ActionCategory`)';
+
             if($form->isValid()) {
                 $data = $form->getData();
                 $json = json_decode(file_get_contents($data['jsonfile']['tmp_name']), true);
@@ -996,82 +1001,101 @@ class ModelsController extends FormController
                 if($json == NULL) {
                     $messages['error'][] = "Impossible de décoder le fichier.";
                 } else {
-                    $objectManager = $this->getEntityManager();
+
+                    $modelsId = array();
+                    //first pass : find each model
                     foreach ($json as $name => $actions) {
                         $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
-                        $actionCategory = $objectManager->getRepository(Category::class)->findOneBy(array('name' => 'Action'));
-                        if (count($model) == 1 ) {
-                            $model = $model[0];
-                            //remove existing actions
-                            foreach ($model->getChildren() as $child) {
-                                if ($child->getCategory() instanceof ActionCategory) {
-                                    $model->removeChild($child);
-                                    $objectManager->remove($child);
-                                }
-                            }
-                            //create new actions
-                            foreach ($actions as $action) {
-                                $actionObject = new PredefinedEvent();
-                                $actionObject->setCategory($actionCategory);
-                                $actionObject->setOrganisation($model->getOrganisation());
-                                $actionObject->setParent($model);
-                                $actionObject->setListable(false);
-                                $actionObject->setSearchable(false);
-                                $actionObject->setPunctual(true);
-
-                                if(array_key_exists("impact", $action)) {
-                                    $impact = $objectManager->getRepository('Application\Entity\Impact')
-                                        ->find((int)$action["impact"]);
-                                    if($impact == null) {
-                                        $impact = $objectManager->getRepository('Application\Entity\Impact')
-                                            ->findOneBy(array("name"=>$action["impact"]));
-                                    }
-                                } else {
-                                    $impact = null;
-                                }
-
-                                if($impact == null) { //Significatif by default
-                                    $impact = $objectManager->getRepository('Application\Entity\Impact')
-                                        ->find(3);
-                                }
-
-                                $actionObject->setImpact($impact);
-                                $actionObject->setPlace($action["place"]);
-
-                                $name = new CustomFieldValue();
-                                $name->setCustomField($actionCategory->getNamefield());
-                                $name->setValue($action['name']);
-                                $name->setEvent($actionObject);
-
-                                $text = new CustomFieldValue();
-                                $text->setCustomField($actionCategory->getTextfield());
-                                $text->setValue($action['text']);
-                                $text->setEvent($actionObject);
-
-                                $color = new CustomFieldValue();
-                                $color->setCustomField($actionCategory->getColorField());
-                                $color->setValue($action['color']);
-                                $color->setEvent($actionObject);
-
-                                $objectManager->persist($name);
-                                $objectManager->persist($text);
-                                $objectManager->persist($color);
-                                $objectManager->persist($actionObject);
-
-                            }
-                            $objectManager->persist($model);
-                            try {
-                                $objectManager->flush();
-                                $objectManager->clear();
-                            } catch (\Exception $e) {
-                                error_log($e->getMessage());
-                            }
-                            $count++;
+                        if (count($model) == 1) {
+                            $modelsId = $model[0]->getId();
                         } else {
-                            $missing[] = $name;
+                            $missing [] = $name;
                         }
                     }
+                    //delete all actions and customfieldvalues for these models
+                    $continueImport = false;
+                    try {
+                        $sql = 'DELETE FROM `customfieldvalues` WHERE `event_id` IN (
+                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
+                        $stmt = $objectManager->getConnection()->prepare($sql);
+                        $stmt->bindValue(1, $modelsId);
+                        $stmt->execute();
+                        $sql2 = 'DELETE FROM `PredefinedEvent` WHERE `id` IN (
+                        SELECT `id` FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`))';
+                        $stmt2 = $objectManager->getConnection()->prepare($sql2);
+                        $stmt2->bindValue(1, $modelsId);
+                        $stmt2->execute();
+                        $sql3 = 'DELETE FROM `events` WHERE `discr` = "model" AND `parent_id` IN (?) AND `category_id` IN (SELECT `id` FROM `ActionCategory`)';
+                        $stmt3 = $objectManager->getConnection()->prepare($sql3);
+                        $stmt3->bindValue(1, $modelsId);
+                        $stmt3->execute();
+                        $continueImport = true;
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    } catch (\Doctrine\DBAL\Driver\Exception $e1) {
+                        $messages['error'][] = $e1->getMessage();
+                    }
+                    if($continueImport) {
+                        foreach ($json as $name => $actions) {
+                            $model = $objectManager->getRepository(PredefinedEvent::class)->findBy(array('name' => $name));
+                            if (count($model) == 1) {
+                                $model = $model[0];
 
+                                //create new actions
+                                foreach ($actions as $action) {
+                                    $actionObject = new PredefinedEvent();
+                                    $actionObject->setCategory($actionCategory);
+                                    $actionObject->setOrganisation($model->getOrganisation());
+                                    $actionObject->setParent($model);
+                                    $actionObject->setListable(false);
+                                    $actionObject->setSearchable(false);
+                                    $actionObject->setPunctual(true);
+
+                                    if (array_key_exists("impact", $action)) {
+                                        $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                            ->find((int)$action["impact"]);
+                                        if ($impact == null) {
+                                            $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                                ->findOneBy(array("name" => $action["impact"]));
+                                        }
+                                    } else {
+                                        $impact = null;
+                                    }
+
+                                    if ($impact == null) { //Significatif by default
+                                        $impact = $objectManager->getRepository('Application\Entity\Impact')
+                                            ->find(3);
+                                    }
+
+                                    $actionObject->setImpact($impact);
+                                    $actionObject->setPlace($action["place"]);
+
+                                    $name = new CustomFieldValue();
+                                    $name->setCustomField($actionCategory->getNamefield());
+                                    $name->setValue($action['name']);
+                                    $name->setEvent($actionObject);
+
+                                    $text = new CustomFieldValue();
+                                    $text->setCustomField($actionCategory->getTextfield());
+                                    $text->setValue($action['text']);
+                                    $text->setEvent($actionObject);
+
+                                    $color = new CustomFieldValue();
+                                    $color->setCustomField($actionCategory->getColorField());
+                                    $color->setValue($action['color']);
+                                    $color->setEvent($actionObject);
+
+                                    $objectManager->persist($name);
+                                    $objectManager->persist($text);
+                                    $objectManager->persist($color);
+                                    $objectManager->persist($actionObject);
+
+                                }
+                                $objectManager->persist($model);
+                                $count++;
+                            }
+                        }
+                    }
                     try {
                         $objectManager->flush();
                         $messages['success'][] = $count . " fiches importées.";

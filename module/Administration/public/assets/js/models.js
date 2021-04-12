@@ -413,9 +413,9 @@ var models = function(url, urlapp){
 						}
 					}
 					$("#import-result").modal('show');
-				} else {
-					displayMessages(data.messages);
 				}
+				displayMessages(data.messages);
+
 			}
 		});
 	});
