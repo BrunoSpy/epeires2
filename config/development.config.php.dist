@@ -38,6 +38,7 @@ return [
         'Laminas\ApiTools\Rest',
         'Laminas\ApiTools\ContentValidation',
         'Laminas\ApiTools',
+        'Laminas\DeveloperTools',
     ],
     // development time configuration globbing
     'module_listener_options' => [
