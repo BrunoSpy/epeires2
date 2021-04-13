@@ -218,9 +218,13 @@ class MilController extends AbstractEntityManagerAwareController
         $end->setTime(23,59,59);
 
         $milcats = $this->getEntityManager()->getRepository(MilCategory::class)->findBy(array('archived'=>false, 'origin' => MilCategory::MAPD));
-        $messages = array();
         foreach ($milcats as $milcat) {
-            $this->mapd->updateCategory($milcat);
+            try {
+                $this->mapd->updateCategory($milcat, $day, $user);
+                echo $milcat->getName(). ' importée';
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+            }
         }
     }
 

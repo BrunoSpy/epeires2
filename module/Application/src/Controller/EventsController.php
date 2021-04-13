@@ -1046,6 +1046,11 @@ class EventsController extends TimelineTabController
                                 //should not happen, no reccurence if MAPD event...
                                 $messages['error'][] = "Impossible d'enregistrer les modifications, les données sont incohérentes.";
                             } else {
+                                if($events[0]->getEnddate() == null) {
+                                    $enddate = clone $events[0]->getStartdate();
+                                    $enddate->add(new \DateInterval('PT1H'));
+                                    $events[0]->setEnddate($enddate);
+                                }
                                 try {
                                     $response = $this->mapd->saveRSA($events[0]);
                                     $internalId = $events[0]->getCustomFieldValue($events[0]->getCategory()->getInternalidField());

@@ -48,12 +48,11 @@ function addSwitchButton($name, $id, $helper, $inversed) {
         <div class="row" style="height: calc(100vh - 120px)">
 
 
-
             <div class="switch-content" style="flex-direction: <?php echo $this->direction; ?>">
 
                 <?php
                 function soCmp($a, $b) {
-                  return strcmp($a->getName(), $b->getName());
+                  return $a->getPlace() - $b->getPlace();
                 }
                 $sortedSO = call_user_func(function(array $a){usort($a, "soCmp");return $a;}, $this->switchobjectsObjects);
                 foreach ($sortedSO as $so) {
@@ -65,7 +64,8 @@ function addSwitchButton($name, $id, $helper, $inversed) {
                     echo '</div>';
                     echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this, $this->inversed).'</div>';
                     echo '</div>';
-                    foreach ($so->getChildren() as $child) {
+                    $children = call_user_func(function(array $a){usort($a, "soCmp");return $a;}, $so->getChildren()->toArray());
+                    foreach ($children as $child) {
                       $found = array_filter($sortedSO, function($uniqueobject) use ($child){
                         return $uniqueobject->getId() == $child->getId();
                       });

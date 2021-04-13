@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0632e2189658165f03b992ec74dc069e",
+    "content-hash": "659e3535b2531700695613e94a1a7d7e",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -2254,33 +2254,43 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.4.42",
+            "version": "v3.0.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "b6c4442b4f32ce05673fbdf1fa4a2d5e315cc0a4"
+                "url": "https://github.com/doctrine-extensions/DoctrineExtensions.git",
+                "reference": "b0db2c2038ff8476898fe60dd59f92c88c40a385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/b6c4442b4f32ce05673fbdf1fa4a2d5e315cc0a4",
-                "reference": "b6c4442b4f32ce05673fbdf1fa4a2d5e315cc0a4",
+                "url": "https://api.github.com/repos/doctrine-extensions/DoctrineExtensions/zipball/b0db2c2038ff8476898fe60dd59f92c88c40a385",
+                "reference": "b0db2c2038ff8476898fe60dd59f92c88c40a385",
                 "shasum": ""
             },
             "require": {
                 "behat/transliterator": "~1.2",
-                "doctrine/common": "~2.4",
-                "php": ">=5.3.2"
+                "doctrine/annotations": "^1.2",
+                "doctrine/cache": "^1.0",
+                "doctrine/collections": "^1.0",
+                "doctrine/common": "^2.13 || ^3.0",
+                "doctrine/event-manager": "^1.0",
+                "php": "^7.2 || ^8.0"
             },
             "conflict": {
-                "doctrine/annotations": "<1.2",
-                "doctrine/mongodb-odm": ">=2.0"
+                "doctrine/mongodb": "<1.3",
+                "doctrine/mongodb-odm": "<2.0",
+                "sebastian/comparator": "<2.0"
+            },
+            "provide": {
+                "ext-mongo": "1.6.12"
             },
             "require-dev": {
-                "doctrine/common": ">=2.5.0",
-                "doctrine/mongodb-odm": ">=1.0.2 <2.0",
-                "doctrine/orm": ">=2.5.0",
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5",
-                "symfony/yaml": "^2.6 || ^3.0 || ^4.0 || ^5.0"
+                "alcaeus/mongo-php-adapter": "^1.1",
+                "doctrine/doctrine-bundle": "^2.3",
+                "doctrine/mongodb-odm": "^2.0",
+                "doctrine/orm": "^2.6.3",
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "phpunit/phpunit": "^8.5",
+                "symfony/yaml": "^4.1"
             },
             "suggest": {
                 "doctrine/mongodb-odm": "to use the extensions with the MongoDB ODM",
@@ -2289,12 +2299,12 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4.x-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Gedmo\\": "lib/Gedmo"
+                    "Gedmo\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2334,11 +2344,11 @@
             ],
             "support": {
                 "email": "gediminas.morkevicius@gmail.com",
-                "issues": "https://github.com/Atlantic18/DoctrineExtensions/issues",
-                "source": "https://github.com/Atlantic18/DoctrineExtensions/tree/v3.0.0-beta",
-                "wiki": "https://github.com/Atlantic18/DoctrineExtensions/tree/master/doc"
+                "issues": "https://github.com/doctrine-extensions/DoctrineExtensions/issues",
+                "source": "https://github.com/doctrine-extensions/DoctrineExtensions/tree/v3.0.4",
+                "wiki": "https://github.com/Atlantic18/DoctrineExtensions/tree/main/doc"
             },
-            "time": "2020-08-21T01:27:20+00:00"
+            "time": "2021-03-27T22:00:19+00:00"
         },
         {
             "name": "gnello/php-mattermost-driver",
@@ -5691,16 +5701,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "2.16.2",
+            "version": "2.16.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "4262d6d6f0e7a47ef8db969481e59d58a0118f0e"
+                "reference": "76fe85b3f126183fe965d60e32e2bf6c7c108d61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/4262d6d6f0e7a47ef8db969481e59d58a0118f0e",
-                "reference": "4262d6d6f0e7a47ef8db969481e59d58a0118f0e",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/76fe85b3f126183fe965d60e32e2bf6c7c108d61",
+                "reference": "76fe85b3f126183fe965d60e32e2bf6c7c108d61",
                 "shasum": ""
             },
             "require": {
@@ -5711,7 +5721,7 @@
                 "php": "^7.3 || ~8.0.0"
             },
             "conflict": {
-                "laminas/laminas-code": "< 3.5.0"
+                "laminas/laminas-code": "<3.5.0 || >=4.0.0"
             },
             "replace": {
                 "zendframework/zend-form": "^2.14.3"
@@ -5780,7 +5790,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-03-23T06:23:46+00:00"
+            "time": "2021-04-07T06:22:41+00:00"
         },
         {
             "name": "laminas/laminas-http",
@@ -5924,16 +5934,16 @@
         },
         {
             "name": "laminas/laminas-i18n",
-            "version": "2.11.0",
+            "version": "2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-i18n.git",
-                "reference": "85678f444b6dcb48e8a04591779e11c24e5bb901"
+                "reference": "5e85a8facc5534e856cc7f5b4326533eede84b8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-i18n/zipball/85678f444b6dcb48e8a04591779e11c24e5bb901",
-                "reference": "85678f444b6dcb48e8a04591779e11c24e5bb901",
+                "url": "https://api.github.com/repos/laminas/laminas-i18n/zipball/5e85a8facc5534e856cc7f5b4326533eede84b8a",
+                "reference": "5e85a8facc5534e856cc7f5b4326533eede84b8a",
                 "shasum": ""
             },
             "require": {
@@ -6005,7 +6015,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-10-24T13:14:32+00:00"
+            "time": "2021-04-07T21:10:50+00:00"
         },
         {
             "name": "laminas/laminas-inputfilter",
@@ -6792,49 +6802,47 @@
         },
         {
             "name": "laminas/laminas-mvc-i18n",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-i18n.git",
-                "reference": "4184f6572b5244a5f5781604f1e03d7955e304a0"
+                "reference": "7ece491a02000a6c4ea2c4457fead3d12efc6eba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-i18n/zipball/4184f6572b5244a5f5781604f1e03d7955e304a0",
-                "reference": "4184f6572b5244a5f5781604f1e03d7955e304a0",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-i18n/zipball/7ece491a02000a6c4ea2c4457fead3d12efc6eba",
+                "reference": "7ece491a02000a6c4ea2c4457fead3d12efc6eba",
                 "shasum": ""
             },
             "require": {
                 "container-interop/container-interop": "^1.1",
-                "laminas/laminas-i18n": "^2.7",
+                "laminas/laminas-i18n": "^2.11",
                 "laminas/laminas-router": "^3.0",
-                "laminas/laminas-servicemanager": "^2.7.10 || ^3.0.3",
-                "laminas/laminas-stdlib": "^2.7.6 || ^3.0",
-                "laminas/laminas-validator": "^2.6",
-                "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^5.6 || ^7.0"
+                "laminas/laminas-servicemanager": "^3.6",
+                "laminas/laminas-stdlib": "^3.3",
+                "laminas/laminas-validator": "^2.14",
+                "laminas/laminas-zendframework-bridge": "^1.2",
+                "php": "^7.3 || ~8.0.0"
             },
             "conflict": {
                 "laminas/laminas-mvc": "<3.0.0",
                 "phpspec/prophecy": "<1.8.0"
             },
             "replace": {
-                "zendframework/zend-mvc-i18n": "self.version"
+                "zendframework/zend-mvc-i18n": "^1.1.1"
             },
             "require-dev": {
-                "laminas/laminas-cache": "^2.6.1",
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.5"
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.5",
+                "psalm/plugin-phpunit": "^0.15.1",
+                "vimeo/psalm": "^4.7"
             },
             "suggest": {
                 "laminas/laminas-cache": "To enable caching of translation strings"
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev",
-                    "dev-develop": "1.2.x-dev"
-                },
                 "laminas": {
                     "component": "Laminas\\Mvc\\I18n",
                     "config-provider": "Laminas\\Mvc\\I18n\\ConfigProvider"
@@ -6864,7 +6872,13 @@
                 "rss": "https://github.com/laminas/laminas-mvc-i18n/releases.atom",
                 "source": "https://github.com/laminas/laminas-mvc-i18n"
             },
-            "time": "2019-12-31T17:33:41+00:00"
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-04-02T15:49:43+00:00"
         },
         {
             "name": "laminas/laminas-mvc-plugin-flashmessenger",
@@ -7078,29 +7092,32 @@
         },
         {
             "name": "laminas/laminas-permissions-acl",
-            "version": "2.7.2",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-permissions-acl.git",
-                "reference": "d8cd35ed94eef5d3d2533af4a72cf1c2932084bb"
+                "reference": "7af6463695d76dbf25c6b03e6ebb792c8f1ab67e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-permissions-acl/zipball/d8cd35ed94eef5d3d2533af4a72cf1c2932084bb",
-                "reference": "d8cd35ed94eef5d3d2533af4a72cf1c2932084bb",
+                "url": "https://api.github.com/repos/laminas/laminas-permissions-acl/zipball/7af6463695d76dbf25c6b03e6ebb792c8f1ab67e",
+                "reference": "7af6463695d76dbf25c6b03e6ebb792c8f1ab67e",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^5.6 || ^7.0"
+                "php": "^7.3 || ~8.0.0"
+            },
+            "conflict": {
+                "laminas/laminas-servicemanager": "<3.0"
             },
             "replace": {
                 "zendframework/zend-permissions-acl": "^2.7.1"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "laminas/laminas-servicemanager": "^2.7.5 || ^3.0.3",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.5"
+                "laminas/laminas-servicemanager": "^3.0.3",
+                "phpunit/phpunit": "^9.5"
             },
             "suggest": {
                 "laminas/laminas-servicemanager": "To support Laminas\\Permissions\\Acl\\Assertion\\AssertionManager plugin manager usage"
@@ -7135,40 +7152,36 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-09-22T14:08:17+00:00"
+            "time": "2021-04-08T12:56:14+00:00"
         },
         {
             "name": "laminas/laminas-permissions-rbac",
-            "version": "3.0.2",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-permissions-rbac.git",
-                "reference": "82757287735fc5c3d437aa59de65d61fe7d6b16c"
+                "reference": "ef224b6c7376d6fc8131b6d5b3609fe2583ffadb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-permissions-rbac/zipball/82757287735fc5c3d437aa59de65d61fe7d6b16c",
-                "reference": "82757287735fc5c3d437aa59de65d61fe7d6b16c",
+                "url": "https://api.github.com/repos/laminas/laminas-permissions-rbac/zipball/ef224b6c7376d6fc8131b6d5b3609fe2583ffadb",
+                "reference": "ef224b6c7376d6fc8131b6d5b3609fe2583ffadb",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.1"
+                "php": "^7.3 || ~8.0.0"
             },
             "replace": {
-                "zendframework/zend-permissions-rbac": "self.version"
+                "zendframework/zend-permissions-rbac": "^3.0.2"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "phpunit/phpunit": "^7.0.1"
+                "phpunit/phpunit": "^9.3",
+                "psalm/plugin-phpunit": "^0.15.1",
+                "vimeo/psalm": "^4.7"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0.x-dev",
-                    "dev-develop": "3.1.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Laminas\\Permissions\\Rbac\\": "src/"
@@ -7183,7 +7196,7 @@
             "keywords": [
                 "authorization",
                 "laminas",
-                "laminas-permssions-rbac",
+                "laminas-permissions-rbac",
                 "rbac"
             ],
             "support": {
@@ -7194,7 +7207,13 @@
                 "rss": "https://github.com/laminas/laminas-permissions-rbac/releases.atom",
                 "source": "https://github.com/laminas/laminas-permissions-rbac"
             },
-            "time": "2019-12-31T17:37:57+00:00"
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-04-08T13:07:31+00:00"
         },
         {
             "name": "laminas/laminas-progressbar",
@@ -10707,35 +10726,35 @@
     "packages-dev": [
         {
             "name": "api-skeletons/doctrine-data-fixture",
-            "version": "6.0.4",
+            "version": "6.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/API-Skeletons/doctrine-data-fixture.git",
-                "reference": "ced4d87197ab03394194546379145c5b15f1f4b4"
+                "reference": "d6e2d02e1bf482b246b73c452a5e207cacf5be95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/API-Skeletons/doctrine-data-fixture/zipball/ced4d87197ab03394194546379145c5b15f1f4b4",
-                "reference": "ced4d87197ab03394194546379145c5b15f1f4b4",
+                "url": "https://api.github.com/repos/API-Skeletons/doctrine-data-fixture/zipball/d6e2d02e1bf482b246b73c452a5e207cacf5be95",
+                "reference": "d6e2d02e1bf482b246b73c452a5e207cacf5be95",
                 "shasum": ""
             },
             "require": {
                 "doctrine/data-fixtures": "^1.3.0",
                 "doctrine/doctrine-module": "^2.1 || ^4.0",
                 "laminas/laminas-dependency-plugin": "^2.0",
-                "laminas/laminas-eventmanager": "^3.0.0",
+                "laminas/laminas-eventmanager": "^3.0",
                 "laminas/laminas-modulemanager": "^2.7.2 || ^3.0.0",
-                "laminas/laminas-servicemanager": "^3.1.0",
+                "laminas/laminas-servicemanager": "^3.1",
                 "php": "^7.2.0"
             },
             "require-dev": {
                 "api-skeletons/coding-standard": "^1.0.0",
-                "doctrine/doctrine-orm-module": "^2.1 || ^3.0.3",
+                "doctrine/doctrine-orm-module": "^2.1 || ^3.0 || ^4.0",
                 "dprevite/lint": "^1.0.0",
-                "laminas/laminas-i18n": "^2.7.0",
-                "laminas/laminas-test": "^3.0.0",
+                "laminas/laminas-i18n": "^2.7",
+                "laminas/laminas-test": "^3.0",
                 "phpstan/phpstan-doctrine": "^0.12.15",
-                "phpunit/phpunit": "^5.7.0",
+                "phpunit/phpunit": "^9.0",
                 "squizlabs/php_codesniffer": "^3.2.0"
             },
             "type": "library",
@@ -10769,9 +10788,9 @@
             ],
             "support": {
                 "issues": "https://github.com/API-Skeletons/doctrine-data-fixture/issues",
-                "source": "https://github.com/API-Skeletons/doctrine-data-fixture/tree/6.0.4"
+                "source": "https://github.com/API-Skeletons/doctrine-data-fixture/tree/6.0.6"
             },
-            "time": "2020-12-01T22:42:29+00:00"
+            "time": "2021-04-06T21:24:24+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -10839,16 +10858,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "4.1.19",
+            "version": "4.1.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "138dc9345a81ec994dcd6b9680c501a752a37b00"
+                "reference": "d8b16e13e1781dbc3a7ae8292117d520c89a9c5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/138dc9345a81ec994dcd6b9680c501a752a37b00",
-                "reference": "138dc9345a81ec994dcd6b9680c501a752a37b00",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/d8b16e13e1781dbc3a7ae8292117d520c89a9c5a",
+                "reference": "d8b16e13e1781dbc3a7ae8292117d520c89a9c5a",
                 "shasum": ""
             },
             "require": {
@@ -10922,7 +10941,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/Codeception/issues",
-                "source": "https://github.com/Codeception/Codeception/tree/4.1.19"
+                "source": "https://github.com/Codeception/Codeception/tree/4.1.20"
             },
             "funding": [
                 {
@@ -10930,7 +10949,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-03-28T13:26:08+00:00"
+            "time": "2021-04-02T16:41:51+00:00"
         },
         {
             "name": "codeception/lib-asserts",
@@ -10988,16 +11007,16 @@
         },
         {
             "name": "codeception/lib-innerbrowser",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/lib-innerbrowser.git",
-                "reference": "693e116f81ef98eae98c43ef785a726faf87394e"
+                "reference": "4ffb91c18e4cacd073ff2914c07e5ccaf5efe449"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/lib-innerbrowser/zipball/693e116f81ef98eae98c43ef785a726faf87394e",
-                "reference": "693e116f81ef98eae98c43ef785a726faf87394e",
+                "url": "https://api.github.com/repos/Codeception/lib-innerbrowser/zipball/4ffb91c18e4cacd073ff2914c07e5ccaf5efe449",
+                "reference": "4ffb91c18e4cacd073ff2914c07e5ccaf5efe449",
                 "shasum": ""
             },
             "require": {
@@ -11042,9 +11061,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/lib-innerbrowser/issues",
-                "source": "https://github.com/Codeception/lib-innerbrowser/tree/1.4.1"
+                "source": "https://github.com/Codeception/lib-innerbrowser/tree/1.4.2"
             },
-            "time": "2021-03-02T08:01:54+00:00"
+            "time": "2021-04-06T05:26:49+00:00"
         },
         {
             "name": "codeception/module-asserts",

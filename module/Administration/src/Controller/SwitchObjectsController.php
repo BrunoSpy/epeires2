@@ -110,6 +110,34 @@ class SwitchObjectsController extends FormController
         return new JsonModel();
     }
 
+    public function saveplaceAction()
+    {
+        $id = $this->params()->fromQuery('id', null);
+        $place = $this->params()->fromQuery('place', null);
+        $messages = array();
+        if($id == null || $place == null) {
+            $messages['error'][] = "Paramètres incorrects";
+        } else {
+            $object = $this->entityManager->getRepository(SwitchObject::class)->find($id);
+            if($object) {
+                error_log('place '.$place);
+                $object->setPlace($place);
+                try {
+                    $this->entityManager->persist($object);
+                    error_log($object->getPlace());
+                    $this->entityManager->flush();
+                    error_log($object->getPlace());
+                    $messages['success'][] = "Objet correctement modifié à la place ".$place;
+                } catch (\Exception $e) {
+                    $messages['error'][] = $e->getMessage();
+                }
+            } else {
+                $messages['error'][] = "Impossible de trouver l'objet à modifier.";
+            }
+        }
+        return new JsonModel($messages);
+    }
+
     public function decommissionAction() {
         $id = $this->params()->fromQuery('id', null);
         $objectManager = $this->getEntityManager();

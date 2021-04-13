@@ -58,6 +58,8 @@ class MAPDService
 
     private $logger;
 
+    private $defaultStatus;
+
     public function __construct(EntityManager $entityManager, $config, Logger $logger)
     {
         $this->entityManager = $entityManager;
@@ -95,6 +97,12 @@ class MAPDService
             $this->client = new Client();
             if (array_key_exists('user', $mapd) && array_key_exists('password', $mapd)) {
                 $this->client->setAuth($mapd['user'], $mapd['password']);
+            }
+            if(array_key_exists('default_status', $mapd)) {
+                $status = $this->entityManager->getRepository(Status::class)->find($mapd['default_status']);
+                if($status) {
+                    $this->defaultStatus = $status;
+                }
             }
         }
         return $this->client;
@@ -158,7 +166,8 @@ class MAPDService
                                         $zonemil['minFL'],
                                         $zonemil['id'],
                                         $messages,
-                                        false
+                                        false,
+                                        $this->defaultStatus
                                     );
                                 } catch (\Exception $e) {
                                     throw $e;

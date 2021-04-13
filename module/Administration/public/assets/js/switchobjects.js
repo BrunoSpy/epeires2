@@ -91,4 +91,14 @@ var switchobjects = function(url){
     		location.reload();
 		}, 'json');
 	});
+
+    $('table.sortable tbody').sortable({
+		update: function(event, ui){
+			let place = ui.item.index();
+			let id = ui.item.data('id');
+			$.post(url+'/switchobjects/saveplace?id='+id+'&place='+place, function(data){
+				displayMessages(data);
+			})
+		}
+	});
 };

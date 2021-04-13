@@ -28,6 +28,7 @@ use Application\Entity\FrequencyCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\Sector;
 use Application\Entity\Stack;
+use Application\Entity\Status;
 use Application\Entity\SwitchObjectCategory;
 use Application\Entity\Tab;
 use Core\Entity\TemporaryResource;
@@ -1465,10 +1466,11 @@ class EventRepository extends ExtendedRepository
      * @param $internalid
      * @param $messages
      * @param bool $flush
+     * @param Status|null $status
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages, $flush = true)
+    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages, $flush = true, Status $status = null)
     {
         $event = new \Application\Entity\Event();
         $event->setOrganisation($organisation);
@@ -1477,10 +1479,14 @@ class EventRepository extends ExtendedRepository
         $event->setScheduled(false);
         $event->setPunctual(false);
         $event->setStartdate($timeBegin);
-        $status = $this->getEntityManager()
-            ->getRepository('Application\Entity\Status')
-            ->find('1');
+
+        if($status == null) {
+            $status = $this->getEntityManager()
+                ->getRepository('Application\Entity\Status')
+                ->find('1');
+        }
         $event->setStatus($status);
+
         $impact = $this->getEntityManager()
             ->getRepository('Application\Entity\Impact')
             ->find('2');

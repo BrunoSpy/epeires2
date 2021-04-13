@@ -2,7 +2,7 @@
 <?php 
 
 	function trObject($object, $deleteUrl, $decommissionurl = null){
-		echo '<tr>';
+		echo '<tr data-id="'.$object->getId().'">';
 		echo '<td>'.$object->getId().'</td>';
 		echo '<td>'.$object->getName().'</td>';
 		echo '<td>'.$object->getShortname().'</td>';
@@ -73,16 +73,16 @@
           echo '<table class="table table-striped sortable">';
           echo '<thead>
                         	<tr>
-                        		<th data-sort="int">id</th>
-                        		<th data-sort="string" data-autosort="true">Nom</th>
-                        		<th data-sort="string">Nom court</th>
+                        		<th>id</th>
+                        		<th>Nom</th>
+                        		<th>Nom court</th>
                         		<th>Organisation</th>
                         		<th>Parent</th>
                         		<th><a class="btn btn-xs btn-primary add-object" href="#object-container" data-toggle="modal"  data-type="'.$type.'">Ajouter</a></th>
                         	</tr>
                    </thead>
                    <tbody>';
-          $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>false), array('name'=>'ASC'));
+          $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>false), array('place'=>'ASC'));
           foreach ($objects as $object){
             trObject(
                 $object,
@@ -105,16 +105,16 @@
             echo '<table class="table table-striped sortable">';
             echo '<thead>
                         	<tr>
-                        		<th data-sort="int">id</th>
-                        		<th data-sort="string" data-autosort="true">Nom</th>
-                        		<th data-sort="string">Nom court</th>
+                        		<th>id</th>
+                        		<th>Nom</th>
+                        		<th>Nom court</th>
                         		<th>Organisation</th>
                         		<th>Parent</th>
                         		<th></th>
                         	</tr>
                    </thead>
                    <tbody>';
-            $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>true), array('name'=>'ASC'));
+            $objects = $this->repo->findBy(array('type'=>$type, 'decommissionned'=>true), array('place'=>'ASC'));
             foreach ($objects as $object){
                 trObject(
                     $object,

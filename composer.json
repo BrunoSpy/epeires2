@@ -38,7 +38,7 @@
         "laminas/laminas-log": "^2.10",
         "doctrine/doctrine-orm-module": "^3.0",
         "roave/psr-container-doctrine": "dev-master",
-        "gedmo/doctrine-extensions": "^2.4",
+        "gedmo/doctrine-extensions": "^3.0",
         "lm-commons/lmc-user": "^3.3.2 !=3.3.3",
         "zf-commons/zfc-user-doctrine-orm": "3.0.8",
         "jield-webdev/laminas-assetmanager": "dev-master",
