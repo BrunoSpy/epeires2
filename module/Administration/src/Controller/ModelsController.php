@@ -1073,6 +1073,9 @@ class ModelsController extends FormController
                                     $name->setValue($action['name']);
                                     $name->setEvent($actionObject);
 
+                                    if($action['text'] == null) {
+                                        $action['text'] = "";
+                                    }
                                     $text = new CustomFieldValue();
                                     $text->setCustomField($actionCategory->getTextfield());
                                     $text->setValue($action['text']);
