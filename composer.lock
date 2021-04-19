@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "717d565942c3458bbc665346ff7220f8",
+    "content-hash": "b2b7b6ca2b8c46671740dd03caef2b38",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -6505,16 +6505,16 @@
         },
         {
             "name": "laminas/laminas-modulemanager",
-            "version": "2.10.1",
+            "version": "2.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-modulemanager.git",
-                "reference": "637aaaf2c85d13694b096e253e5884653f93bb92"
+                "reference": "2068e0b300e87e139112016a6025be341ceaaf33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-modulemanager/zipball/637aaaf2c85d13694b096e253e5884653f93bb92",
-                "reference": "637aaaf2c85d13694b096e253e5884653f93bb92",
+                "url": "https://api.github.com/repos/laminas/laminas-modulemanager/zipball/2068e0b300e87e139112016a6025be341ceaaf33",
+                "reference": "2068e0b300e87e139112016a6025be341ceaaf33",
                 "shasum": ""
             },
             "require": {
@@ -6574,7 +6574,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-09-01T22:26:46+00:00"
+            "time": "2021-04-13T20:11:28+00:00"
         },
         {
             "name": "laminas/laminas-mvc",
@@ -6882,43 +6882,39 @@
         },
         {
             "name": "laminas/laminas-mvc-plugin-flashmessenger",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger.git",
-                "reference": "f5a522c3aab215a9b89a0630beb91582f4a3f202"
+                "reference": "f7569d05dfd774a2c84328792ee716e2d8b1e33e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-flashmessenger/zipball/f5a522c3aab215a9b89a0630beb91582f4a3f202",
-                "reference": "f5a522c3aab215a9b89a0630beb91582f4a3f202",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-flashmessenger/zipball/f7569d05dfd774a2c84328792ee716e2d8b1e33e",
+                "reference": "f7569d05dfd774a2c84328792ee716e2d8b1e33e",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-mvc": "^3.0",
                 "laminas/laminas-session": "^2.8.5",
                 "laminas/laminas-stdlib": "^3.2.1",
-                "laminas/laminas-view": "^2.10",
+                "laminas/laminas-view": "^2.12",
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^5.6 || ^7.0"
+                "php": "^7.3 || ~8.0.0"
             },
             "conflict": {
                 "laminas/laminas-mvc": "<3.0.0"
             },
             "replace": {
-                "zendframework/zend-mvc-plugin-flashmessenger": "self.version"
+                "zendframework/zend-mvc-plugin-flashmessenger": "^1.2.0"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
                 "laminas/laminas-i18n": "^2.8",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.4"
+                "phpunit/phpunit": "^9.3"
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2.x-dev",
-                    "dev-develop": "1.3.x-dev"
-                },
                 "laminas": {
                     "component": "Laminas\\Mvc\\Plugin\\FlashMessenger"
                 }
@@ -6946,42 +6942,44 @@
                 "rss": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger/releases.atom",
                 "source": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger"
             },
-            "time": "2019-12-31T17:33:46+00:00"
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-04-13T16:30:26+00:00"
         },
         {
             "name": "laminas/laminas-mvc-plugin-prg",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-plugin-prg.git",
-                "reference": "f9b094373795dd4250d3551a1fbd6d304762b621"
+                "reference": "943c03a869a1a421ce3c6dc2f034021b247d9b17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-prg/zipball/f9b094373795dd4250d3551a1fbd6d304762b621",
-                "reference": "f9b094373795dd4250d3551a1fbd6d304762b621",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-prg/zipball/943c03a869a1a421ce3c6dc2f034021b247d9b17",
+                "reference": "943c03a869a1a421ce3c6dc2f034021b247d9b17",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-mvc": "^3.0",
                 "laminas/laminas-session": "^2.8.5",
-                "laminas/laminas-stdlib": "^3.2.1",
+                "laminas/laminas-stdlib": "^3.3.0",
                 "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^5.6 || ^7.0"
+                "php": "^7.3 || ~8.0.0"
             },
             "replace": {
-                "zendframework/zend-mvc-plugin-prg": "self.version"
+                "zendframework/zend-mvc-plugin-prg": "^1.2.0"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.4"
+                "phpunit/phpunit": "^9.3"
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2.x-dev",
-                    "dev-develop": "1.3.x-dev"
-                },
                 "laminas": {
                     "component": "Laminas\\Mvc\\Plugin\\Prg"
                 }
@@ -7009,7 +7007,13 @@
                 "rss": "https://github.com/laminas/laminas-mvc-plugin-prg/releases.atom",
                 "source": "https://github.com/laminas/laminas-mvc-plugin-prg"
             },
-            "time": "2019-12-31T17:33:51+00:00"
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-04-13T20:54:46+00:00"
         },
         {
             "name": "laminas/laminas-paginator",
@@ -11625,6 +11629,81 @@
             "time": "2020-04-17T07:36:15+00:00"
         },
         {
+            "name": "laminas/laminas-cli",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-cli.git",
+                "reference": "2b33cb5bf1b6b72e84a33f11c40ca4c7b7d7b2ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-cli/zipball/2b33cb5bf1b6b72e84a33f11c40ca4c7b7d7b2ef",
+                "reference": "2b33cb5bf1b6b72e84a33f11c40ca4c7b7d7b2ef",
+                "shasum": ""
+            },
+            "require": {
+                "composer/package-versions-deprecated": "^1.10.99",
+                "php": "^7.3 || ~8.0.0",
+                "psr/container": "^1.0",
+                "symfony/console": "^4.3 || ^5.1.2",
+                "symfony/event-dispatcher": "^4.0 || ^5.0",
+                "symfony/polyfill-php80": "^1.17",
+                "webmozart/assert": "^1.9"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~2.0.0",
+                "laminas/laminas-mvc": "^3.1.1",
+                "laminas/laminas-servicemanager": "^3.4",
+                "phpunit/phpunit": "^9.4.1",
+                "vimeo/psalm": "^4.4.1"
+            },
+            "bin": [
+                "bin/laminas"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev",
+                    "dev-develop": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/autoload.php"
+                ],
+                "psr-4": {
+                    "Laminas\\Cli\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Command-line interface for Laminas projects",
+            "keywords": [
+                "cli",
+                "command",
+                "console",
+                "laminas"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-cli/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/mezzio/laminas-cli/issues",
+                "rss": "https://github.com/mezzio/laminas-cli/releases.atom",
+                "source": "https://github.com/mezzio/laminas-cli"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-02-26T17:15:07+00:00"
+        },
+        {
             "name": "laminas/laminas-component-installer",
             "version": "2.4.0",
             "source": {
@@ -11695,16 +11774,16 @@
         },
         {
             "name": "laminas/laminas-developer-tools",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-developer-tools.git",
-                "reference": "e8c923c652748957fe959bcad52b4632806f8086"
+                "reference": "8d9e152e0791fe577e1d0fb63c6a973558f36013"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-developer-tools/zipball/e8c923c652748957fe959bcad52b4632806f8086",
-                "reference": "e8c923c652748957fe959bcad52b4632806f8086",
+                "url": "https://api.github.com/repos/laminas/laminas-developer-tools/zipball/8d9e152e0791fe577e1d0fb63c6a973558f36013",
+                "reference": "8d9e152e0791fe577e1d0fb63c6a973558f36013",
                 "shasum": ""
             },
             "require": {
@@ -11770,7 +11849,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-11-02T03:36:33+00:00"
+            "time": "2021-04-13T20:07:35+00:00"
         },
         {
             "name": "myclabs/deep-copy",

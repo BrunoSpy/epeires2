@@ -19,69 +19,16 @@
 // set APP_ENV = 'development' in httpd.conf or virtualhost conf to set up a dev environment
 $env = getenv('APP_ENV') ?  : 'production';
 
-$modules = array(
-        'Laminas\Mvc\I18n',
-        'Laminas\Mvc\Plugin\FlashMessenger',
-        'Laminas\Mvc\Plugin\Prg',
-        'Laminas\Db',
-        'Laminas\Log',
-        'Laminas\Cache',
-        'Laminas\Paginator',
-        'Laminas\Form',
-        'Laminas\InputFilter',
-        'Laminas\Filter',
-        'Laminas\Hydrator',
-        'Laminas\I18n',
-        'Laminas\Mvc\Console',
-        'Laminas\Router',
-        'Laminas\Validator',
-        'DoctrineModule',
-        'DoctrineORMModule',
-//        'ZfcBase',
-        'LmcRbacMvc',
-        'LmcUser',
-        'LmcUserDoctrineORM',
-        'AssetManager',
-        'DompdfModule',
-        'OpentbsBundle',
-        'MaglMarkdown',
-        'MattermostMessenger',
-        'Core',
-        'Application',
-        'Administration',
-        'IPO',
-        'Laminas\\ApiTools',
-        'Laminas\\ApiTools\\Provider',
-        'Laminas\\ApiTools\\ApiProblem',
-        'Laminas\\ApiTools\\MvcAuth',
-        'Laminas\\ApiTools\\OAuth2',
-        'Laminas\\ApiTools\\Hal',
-        'Laminas\\ApiTools\\ContentNegotiation',
-        'Laminas\\ApiTools\\ContentValidation',
-        'Laminas\\ApiTools\\Rest',
-        'Laminas\\ApiTools\\Rpc',
-        'Laminas\\ApiTools\\Versioning',
-//        'Laminas\\DevelopmentMode',
-        'Laminas\\ApiTools\\Documentation',
-        'Laminas\\ApiTools\\Documentation\Swagger',
-        'Laminas\\ApiTools\\Configuration',
-        'API'
-    );
-
 if ($env == 'production') {
     $modules[] = 'ForceHttpsModule';
 }
 
-if ($env == 'development') {
-
-    $modules [] = 'Laminas\DeveloperTools';
-    $modules[] = 'ApiSkeletons\Doctrine\DataFixture';
-}
-
 return array(
-    'modules' => $modules,
+    'modules' => require __DIR__ . '/modules.config.php',
     
     'module_listener_options' => array(
+        'use_laminas_loader' => false,
+
         'module_paths' => array(
             './module',
             './vendor'

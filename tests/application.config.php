@@ -33,7 +33,6 @@ $modules = array(
     'Laminas\Filter',
     'Laminas\Hydrator',
     'Laminas\I18n',
-    'Laminas\Mvc\Console',
     'Laminas\Router',
     'Laminas\Validator',
     'DoctrineModule',

@@ -15,6 +15,12 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+use Application\Command\Factory\ImportRegulationsCommandFactory;
+use Application\Command\Factory\ImportZonesMilCommandFactory;
+use Application\Command\ImportRegulationsCommand;
+use Application\Command\ImportZonesMilCommand;
+
 return array(
     'router' => array(
         'routes' => array(
@@ -37,6 +43,12 @@ return array(
             )
         )
     ),
+    'laminas-cli' => array(
+        'commands' => [
+            'epeires2:import-regulations' => ImportRegulationsCommand::class,
+            'epeires2:import-zones-mil' => ImportZonesMilCommand::class
+        ]
+    ),
     'console' => array(
         'router' => array(
             'routes' => array(
@@ -49,24 +61,6 @@ return array(
                         )
                     )
                 ),
-                'import-nmb2b' => array(
-                    'options' => array(
-                        'route' => 'import-zones-mil [--delta=] [--email] [--verbose] <service> <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Mil',
-                            'action' => 'import'
-                        )
-                    )
-                ),
-                'import-regulations' => array(
-                    'options' => array(
-                        'route' => 'import-regulations [--delta=] [--email] [--verbose] <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\ATFCM',
-                            'action' => 'importRegulations'
-                        )
-                    )
-                )
             )
         )
     ),
@@ -81,7 +75,9 @@ return array(
         'factories' => array(
             'eventservice' => 'Application\Factories\EventServiceFactory',
             'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
-            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory'
+            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory',
+            ImportRegulationsCommand::class => ImportRegulationsCommandFactory::class,
+            ImportZonesMilCommand::class => ImportZonesMilCommandFactory::class
         )
     ),
     'translator' => array(

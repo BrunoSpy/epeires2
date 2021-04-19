@@ -69,7 +69,7 @@ class NMB2BService
         }
 
         $this->nmb2bClient = new NMB2BClient(
-            ROOT_PATH . $this->nmb2b['cert_path'],
+            __DIR__ . '/../../../..' . $this->nmb2b['cert_path'],
             $this->nmb2b['cert_password'],
             $this->nmb2b['wsdl'],
             $options

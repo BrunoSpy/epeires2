@@ -15,20 +15,18 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Application\Command\Factory;
 
-use Application\Controller\ATFCMController;
-use Interop\Container\ContainerInterface;
+use Application\Command\ImportRegulationsCommand;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\ContainerInterface;
 
-class ATFCMControllerFactory implements FactoryInterface {
-
+class ImportRegulationsCommandFactory implements FactoryInterface
+{
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new ATFCMController(
+        return new ImportRegulationsCommand(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('nmb2b')
-            );
+            $container->get('nmb2b'));
     }
-
 }
