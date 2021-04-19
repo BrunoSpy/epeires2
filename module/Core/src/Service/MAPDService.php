@@ -34,8 +34,8 @@ use Laminas\Stdlib\Parameters;
 use RuntimeException;
 
 /**
- *
- * @author Bruno Spyckerelle
+ * Class MAPDService
+ * @package Core\Service
  */
 class MAPDService
 {
@@ -134,8 +134,10 @@ class MAPDService
             });
             //in order to be consistent with NM B2B bahavior : add * at the end of the filter
             //if user wants a specific zone, he must use a regex
-            $filter = strcmp(substr($cat->getFilter(), -1), "*") == 0 ? $cat->getFilter() : $cat->getFilter().'*';
-
+            $filter = $cat->getFilter();
+            if(strlen($filter) > 0) {
+                $filter = strcmp(substr($cat->getFilter(), -1), "*") == 0 ? $cat->getFilter() : $cat->getFilter() . '*';
+            }
 
             if($lastUpdate->isEmpty()) {
                 $this->logger->info('No data : get data from /activations');
@@ -312,11 +314,16 @@ class MAPDService
         $request = new Request();
         $request->setMethod('GET');
         $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
-        $request->setQuery(new Parameters(array(
-            'start' => $start->format("Y-m-d\TH:i:s"), //TODO change server to accept ISO8601
-            'end' => $end->format("Y-m-d\TH:i:s"),
-            'areaName' => $filter)));
 
+        $parameters = array(
+            'start' => $start->format("Y-m-d\TH:i:s\Z"), //TODO change server to accept ISO8601
+            'end' => $end->format("Y-m-d\TH:i:s\Z"));
+
+        if(strlen($filter) > 0 && strcmp($filter, '*') !== 0) {
+            $parameters['areaName'] = $filter;
+        }
+
+        $request->setQuery(new Parameters($parameters));
 
         $response = $this->getClient()->dispatch($request);
         if($response->isSuccess()) {
@@ -326,7 +333,7 @@ class MAPDService
                 return json_decode($response->getBody(), true);
             }
         } else {
-            throw new RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
+            throw new RuntimeException('Récupération initiale '. $filter.' : '.$response->getStatusCode().' : '.$response->getReasonPhrase());
         }
 
     }
@@ -347,11 +354,18 @@ class MAPDService
         $request = new Request();
         $request->setMethod('GET');
         $request->setUri($this->uri . self::ACTIVATIONSDIFF_ENDPOINT);
-        $request->setQuery(new Parameters(array(
+
+        $parameters = array(
             'start' => $start->format("Y-m-d\TH:i:s\Z"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s\Z"),
-            'since' => $since->format("Y-m-d\TH:i:s\Z"),
-            'areaName' => $filter)));
+            'since' => $since->format("Y-m-d\TH:i:s\Z")
+            );
+
+        if(strlen($filter) > 0 && strcmp($filter, '*') !== 0) {
+            $parameters['areaName'] = $filter;
+        }
+
+        $request->setQuery(new Parameters($parameters));
 
         $response = $this->getClient()->dispatch($request);
         if($response->isSuccess()) {
@@ -359,7 +373,7 @@ class MAPDService
         } else if ($response->getStatusCode() == Response::STATUS_CODE_304) {
             //do nothing
         } else {
-            throw new RuntimeException($response->getStatusCode().' : '.$response->getReasonPhrase());
+            throw new RuntimeException('Récupération différentielle '.$filter.' : '.$response->getStatusCode().' : '.$response->getReasonPhrase());
         }
     }
 
