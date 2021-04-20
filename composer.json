@@ -87,5 +87,17 @@
             "Administration\\": "module/Administration/src/",
             "API\\": "module/API/src/"
         }
+    },
+    "scripts": {
+        "development-disable": "laminas-development-mode disable",
+        "development-enable": "laminas-development-mode enable",
+        "development-status": "laminas-development-mode status",
+        "serve": "php -S 0.0.0.0:8080 -t public"
+    },
+    "scripts-descriptions": {
+        "development-disable": "Disable development mode.",
+        "development-enable": "Enable development mode.",
+        "development-status": "Detail whether or not the application is in development mode.",
+        "serve": "Start the built-in PHP web server and serve the application."
     }
 }
