@@ -62,22 +62,4 @@ class Module
         }, 100);
     }
 
-    public function getConsoleUsage(Console $console)
-    {
-        return array(
-            'report [--email] [--delta=] orgshortname' => 'Generate a daily report for an organisation',
-            array(
-                '--email',
-                '(optional) Send an email to IPO'
-            ),
-            array(
-                '--delta',
-                '(optional) Delta to add to the current day (-1=yesterday)'
-            ),
-            array(
-                'orgshortname',
-                'Shortname of the organisation as configured in the database'
-            ),
-        );
-    }
 }
