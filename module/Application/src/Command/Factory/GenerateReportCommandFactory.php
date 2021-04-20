@@ -15,18 +15,24 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Application\Command\Factory;
 
-use Application\Controller\ReportController;
+use Application\Command\GenerateReportCommand;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class ReportControllerFactory implements FactoryInterface {
+/**
+ * Class GenerateReportCommandFactory
+ * @package Application\Command\Factory
+ */
+class GenerateReportCommandFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new ReportController(
-            $container->get('Doctrine\ORM\EntityManager')
+        return new GenerateReportCommand(
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('ViewPdfRenderer'),
+            $container->get('config')
         );
     }
 

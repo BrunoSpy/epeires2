@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2b7b6ca2b8c46671740dd03caef2b38",
+    "content-hash": "fbc43fcb4baa3aa3ce01b28115831f6c",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -421,60 +421,6 @@
             "time": "2020-02-28T16:31:18+00:00"
         },
         {
-            "name": "dino/dompdf-module",
-            "version": "dev-zf3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/raykolbe/DOMPDFModule.git",
-                "reference": "8fa53a3ba0ae6fda765ebd2d426c84c258297580"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/raykolbe/DOMPDFModule/zipball/8fa53a3ba0ae6fda765ebd2d426c84c258297580",
-                "reference": "8fa53a3ba0ae6fda765ebd2d426c84c258297580",
-                "shasum": ""
-            },
-            "require": {
-                "dompdf/dompdf": "^0.8.0",
-                "php": ">=5.6",
-                "zendframework/zend-mvc": "^3.0"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "^0.3.2",
-                "phpmd/phpmd": "^2.4",
-                "phpunit/phpunit": "^4.8.27",
-                "squizlabs/php_codesniffer": "^2.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "DompdfModule\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Raymond J. Kolbe",
-                    "email": "rkolbe@gmail.com"
-                }
-            ],
-            "description": "A Zend Framework 2 module for incorporating Dompdf support.",
-            "homepage": "http://raymondkolbe.com",
-            "keywords": [
-                "dompdf",
-                "pdf",
-                "zf2"
-            ],
-            "support": {
-                "issues": "https://github.com/raykolbe/DOMPDFModule/issues",
-                "source": "https://github.com/raykolbe/DOMPDFModule/tree/zf3"
-            },
-            "time": "2018-01-07T14:30:24+00:00"
-        },
-        {
             "name": "doctrine/annotations",
             "version": "1.12.1",
             "source": {
@@ -816,16 +762,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.13.0",
+            "version": "2.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "67d56d3203b33db29834e6b2fcdbfdc50535d796"
+                "reference": "c800380457948e65bbd30ba92cc17cda108bf8c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/67d56d3203b33db29834e6b2fcdbfdc50535d796",
-                "reference": "67d56d3203b33db29834e6b2fcdbfdc50535d796",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c800380457948e65bbd30ba92cc17cda108bf8c9",
+                "reference": "c800380457948e65bbd30ba92cc17cda108bf8c9",
                 "shasum": ""
             },
             "require": {
@@ -840,6 +786,7 @@
                 "jetbrains/phpstorm-stubs": "2020.2",
                 "phpstan/phpstan": "0.12.81",
                 "phpunit/phpunit": "^7.5.20|^8.5|9.5.0",
+                "squizlabs/php_codesniffer": "3.6.0",
                 "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
                 "vimeo/psalm": "4.6.4"
             },
@@ -902,7 +849,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/2.13.0"
+                "source": "https://github.com/doctrine/dbal/tree/2.13.1"
             },
             "funding": [
                 {
@@ -918,7 +865,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-28T18:10:53+00:00"
+            "time": "2021-04-17T17:30:19+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -1999,16 +1946,16 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v0.8.6",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "db91d81866c69a42dad1d2926f61515a1e3f42c5"
+                "reference": "8768448244967a46d6e67b891d30878e0e15d25c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/db91d81866c69a42dad1d2926f61515a1e3f42c5",
-                "reference": "db91d81866c69a42dad1d2926f61515a1e3f42c5",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/8768448244967a46d6e67b891d30878e0e15d25c",
+                "reference": "8768448244967a46d6e67b891d30878e0e15d25c",
                 "shasum": ""
             },
             "require": {
@@ -2016,11 +1963,11 @@
                 "ext-mbstring": "*",
                 "phenx/php-font-lib": "^0.5.2",
                 "phenx/php-svg-lib": "^0.3.3",
-                "php": "^7.1"
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.3",
-                "phpunit/phpunit": "^7.5",
+                "phpunit/phpunit": "^7.5 || ^8 || ^9",
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "suggest": {
@@ -2065,9 +2012,9 @@
             "homepage": "https://github.com/dompdf/dompdf",
             "support": {
                 "issues": "https://github.com/dompdf/dompdf/issues",
-                "source": "https://github.com/dompdf/dompdf/tree/master"
+                "source": "https://github.com/dompdf/dompdf/tree/v1.0.2"
             },
-            "time": "2020-08-30T22:54:22+00:00"
+            "time": "2021-01-08T14:18:52+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -7285,16 +7232,16 @@
         },
         {
             "name": "laminas/laminas-router",
-            "version": "3.4.4",
+            "version": "3.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-router.git",
-                "reference": "2a7068508af4de67d80ea292e0cc7c37563a33c6"
+                "reference": "aaf2eb364eedeb5c4d5b9ee14cd2938d0f7e89b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-router/zipball/2a7068508af4de67d80ea292e0cc7c37563a33c6",
-                "reference": "2a7068508af4de67d80ea292e0cc7c37563a33c6",
+                "url": "https://api.github.com/repos/laminas/laminas-router/zipball/aaf2eb364eedeb5c4d5b9ee14cd2938d0f7e89b7",
+                "reference": "aaf2eb364eedeb5c4d5b9ee14cd2938d0f7e89b7",
                 "shasum": ""
             },
             "require": {
@@ -7352,7 +7299,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-12-16T22:10:51+00:00"
+            "time": "2021-04-19T16:06:00+00:00"
         },
         {
             "name": "laminas/laminas-servicemanager",
@@ -8450,6 +8397,113 @@
                 "source": "https://github.com/michelf/php-markdown/tree/1.9.0"
             },
             "time": "2019-12-02T02:32:27+00:00"
+        },
+        {
+            "name": "mindplay/composer-locator",
+            "version": "2.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mindplay-dk/composer-locator.git",
+                "reference": "d206ce7a5a88f5336332f489be0c8988eddb7a38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mindplay-dk/composer-locator/zipball/d206ce7a5a88f5336332f489be0c8988eddb7a38",
+                "reference": "d206ce7a5a88f5336332f489be0c8988eddb7a38",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": ">= 5.4"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0 || ^2.0",
+                "mindplay/testies": "^0.3.0",
+                "symfony/filesystem": "^2.7 || ^3.0",
+                "symfony/process": "^2.7 || ^3.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "mindplay\\composer_locator\\Plugin"
+            },
+            "autoload": {
+                "classmap": [
+                    "src/ComposerLocator.php",
+                    "src/Plugin.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Locates Composer package root folders by package name",
+            "support": {
+                "issues": "https://github.com/mindplay-dk/composer-locator/issues",
+                "source": "https://github.com/mindplay-dk/composer-locator/tree/2.1.4"
+            },
+            "time": "2020-12-23T10:58:04+00:00"
+        },
+        {
+            "name": "netiul/dompdf-module",
+            "version": "v0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netiul/DOMPDFModule.git",
+                "reference": "dad046b860b8e00e5d0672ff5b317cf6f699e4e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/netiul/DOMPDFModule/zipball/dad046b860b8e00e5d0672ff5b317cf6f699e4e0",
+                "reference": "dad046b860b8e00e5d0672ff5b317cf6f699e4e0",
+                "shasum": ""
+            },
+            "require": {
+                "dompdf/dompdf": "^v0.8.6 | ^v1.0.1",
+                "laminas/laminas-eventmanager": "^3.3.0",
+                "laminas/laminas-modulemanager": "^2.10.1",
+                "laminas/laminas-servicemanager": "^3.4.1",
+                "laminas/laminas-view": "^2.11.5",
+                "mindplay/composer-locator": "^2.1.4",
+                "php": "~7.4.1 || ~8.0.0"
+            },
+            "replace": {
+                "dino/dompdf-module": "0.*"
+            },
+            "require-dev": {
+                "laminas/laminas-http": "^2.14",
+                "laminas/laminas-mvc": "^3.2",
+                "phpunit/phpunit": "^9.5",
+                "slevomat/coding-standard": "^6.4",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DOMPDFModule\\": "src/DOMPDFModule"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raymond J. Kolbe",
+                    "email": "rkolbe@gmail.com"
+                }
+            ],
+            "description": "A Laminas module for incorporating DOMPDF support - Originally by Raymond Kolbe",
+            "keywords": [
+                "dompdf",
+                "laminas",
+                "pdf",
+                "zf2"
+            ],
+            "support": {
+                "issues": "https://github.com/netiul/DOMPDFModule/issues",
+                "source": "https://github.com/netiul/DOMPDFModule/tree/v0.6.0"
+            },
+            "time": "2021-01-08T09:17:27+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -10567,31 +10621,31 @@
         },
         {
             "name": "webimpress/safe-writer",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webimpress/safe-writer.git",
-                "reference": "5cfafdec5873c389036f14bf832a5efc9390dcdd"
+                "reference": "9d37cc8bee20f7cb2f58f6e23e05097eab5072e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webimpress/safe-writer/zipball/5cfafdec5873c389036f14bf832a5efc9390dcdd",
-                "reference": "5cfafdec5873c389036f14bf832a5efc9390dcdd",
+                "url": "https://api.github.com/repos/webimpress/safe-writer/zipball/9d37cc8bee20f7cb2f58f6e23e05097eab5072e6",
+                "reference": "9d37cc8bee20f7cb2f58f6e23e05097eab5072e6",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0"
+                "php": "^7.3 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.5.8 || ^9.3.7",
-                "vimeo/psalm": "^3.14.2",
-                "webimpress/coding-standard": "^1.1.5"
+                "phpunit/phpunit": "^9.5.4",
+                "vimeo/psalm": "^4.7",
+                "webimpress/coding-standard": "^1.2.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1.x-dev",
-                    "dev-develop": "2.2.x-dev",
+                    "dev-master": "2.2.x-dev",
+                    "dev-develop": "2.3.x-dev",
                     "dev-release-1.0": "1.0.x-dev"
                 }
             },
@@ -10614,7 +10668,7 @@
             ],
             "support": {
                 "issues": "https://github.com/webimpress/safe-writer/issues",
-                "source": "https://github.com/webimpress/safe-writer/tree/master"
+                "source": "https://github.com/webimpress/safe-writer/tree/2.2.0"
             },
             "funding": [
                 {
@@ -10622,7 +10676,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-25T07:21:11+00:00"
+            "time": "2021-04-19T16:34:45+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -14473,7 +14527,6 @@
         "roave/psr-container-doctrine": 20,
         "jield-webdev/laminas-assetmanager": 20,
         "jield-webdev/assetic": 20,
-        "dino/dompdf-module": 20,
         "kipperlenny/opentbs-bundle": 20
     },
     "prefer-stable": false,
@@ -14491,7 +14544,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.4"
+        "php": "7.4.1"
     },
     "plugin-api-version": "2.0.0"
 }

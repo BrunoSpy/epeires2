@@ -16,8 +16,10 @@
  *
  */
 
+use Application\Command\Factory\GenerateReportCommandFactory;
 use Application\Command\Factory\ImportRegulationsCommandFactory;
 use Application\Command\Factory\ImportZonesMilCommandFactory;
+use Application\Command\GenerateReportCommand;
 use Application\Command\ImportRegulationsCommand;
 use Application\Command\ImportZonesMilCommand;
 
@@ -46,23 +48,9 @@ return array(
     'laminas-cli' => array(
         'commands' => [
             'epeires2:import-regulations' => ImportRegulationsCommand::class,
-            'epeires2:import-zones-mil' => ImportZonesMilCommand::class
+            'epeires2:import-zones-mil' => ImportZonesMilCommand::class,
+            'epeires2:generate-report' => GenerateReportCommand::class
         ]
-    ),
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                'generate-report' => array(
-                    'options' => array(
-                        'route' => 'report [--email] [--delta=] <orgshortname>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Report',
-                            'action' => 'report'
-                        )
-                    )
-                ),
-            )
-        )
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -77,7 +65,8 @@ return array(
             'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
             'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory',
             ImportRegulationsCommand::class => ImportRegulationsCommandFactory::class,
-            ImportZonesMilCommand::class => ImportZonesMilCommandFactory::class
+            ImportZonesMilCommand::class => ImportZonesMilCommandFactory::class,
+            GenerateReportCommand::class => GenerateReportCommandFactory::class
         )
     ),
     'translator' => array(
@@ -300,5 +289,10 @@ return array(
                 )
             )
         )
-    )
+    ),
+
+    'dompdf_module' => [
+        'chroot' => __DIR__ . '/../../..',
+        'default_paper_size' => 'a4'
+    ]
 );

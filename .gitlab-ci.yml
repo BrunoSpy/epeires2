@@ -26,7 +26,7 @@ before_script:
 - chmod -Rf a+rwx logs
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
-- php public/index.php initDB
+- vendor/bin/laminas epeires2:initdb
 - php public/index.php data-fixture:import default_group --no-interaction
 
 - chmod a+rwx -Rf ./data
