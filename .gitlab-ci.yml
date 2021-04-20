@@ -24,7 +24,7 @@ before_script:
 #populate database
 - touch logs/epeires2.log
 - chmod -Rf a+rwx logs
-- vendor/bin/laminas laminas-development-mode enable
+- vendor/bin/laminas-development-mode enable
 - php public/index.php migrations:migrate --no-interaction -vvv
 - php public/index.php orm:generate-proxies
 - vendor/bin/laminas epeires2:initdb --no-interaction
