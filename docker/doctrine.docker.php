@@ -14,14 +14,5 @@ return array(
                 )
             )
         ),
-        'migrations' => array( // /!\ do not change these settings /!\
-            'connection' => 'doctrine.connection.orm_default',
-            'migrations_table' => 'migrations',
-            'migrations_namespace' => 'DoctrineORMModule\Migrations',
-            'migrations_directory' => 'data/DoctrineORMModule/Migrations'
-        ),
-        'fixture' => array(
-            'Application_fixture' => __DIR__ . '/../../module/Application/src/Application/Fixtures'
-        )
     )
 );
