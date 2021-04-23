@@ -1,24 +1,5 @@
-FROM registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+FROM registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:docker
 
-# Install system dependencies for PHP extensions
-RUN apt-get update && apt-get install -qqy \
-  # gd extension
-  libfreetype6-dev \
-  libjpeg62-turbo-dev \
-  libpng-dev \
-  # mcrypt extension
-  libmcrypt-dev \
-  # SOAP extension
-  libxml2-dev \
-  # intl extension
-  libicu-dev \
-  # Composer dependencies
-  git \
-  unzip
-
-RUN docker-php-ext-install iconv soap intl pdo_mysql \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-  && docker-php-ext-install gd
 
 # Configure Apache
 ## Set document root
