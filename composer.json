@@ -43,7 +43,7 @@
         "zf-commons/zfc-user-doctrine-orm": "3.0.8",
         "jield-webdev/laminas-assetmanager": "dev-master",
         "jield-webdev/assetic": "2.1.x-dev",
-        "dino/dompdf-module": "dev-zf3",
+        "netiul/dompdf-module": "^0.6.0",
         "kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^1.3",
         "maglnet/magl-markdown": "~1.1",
@@ -79,7 +79,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.3"
+            "php": "7.4.1"
         }
     },
     "autoload": {
