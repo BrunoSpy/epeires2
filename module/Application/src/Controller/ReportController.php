@@ -20,7 +20,7 @@ namespace Application\Controller;
 
 use Core\Controller\AbstractEntityManagerAwareController;
 use Doctrine\ORM\EntityManager;
-use DompdfModule\View\Model\PdfModel;
+use DOMPDFModule\View\Model\PdfModel;
 use Laminas\View\Model\ViewModel;
 use Laminas\Console\Request as ConsoleRequest;
 use Doctrine\Common\Collections\Criteria;

@@ -22,7 +22,7 @@ use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
 
 use Doctrine\ORM\EntityManager;
-use DompdfModule\View\Model\PdfModel;
+use DOMPDFModule\View\Model\PdfModel;
 
 use Laminas\Form\Element;
 use Laminas\Form\Form;

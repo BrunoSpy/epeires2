@@ -42,7 +42,7 @@ $modules = array(
     'LmcUser',
     'ZfcUserDoctrineORM',
     'AssetManager',
-    'DompdfModule',
+    'DOMPDFModule',
     'OpentbsBundle',
     'Core',
     'Application',
