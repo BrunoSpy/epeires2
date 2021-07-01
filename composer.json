@@ -10,10 +10,6 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/BrunoSpy/ZfcUserDoctrineORM"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/BrunoSpy/opentbsbundle"
         },
         {
@@ -40,7 +36,7 @@
         "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^3.0",
         "lm-commons/lmc-user": "3.3.2",
-        "zf-commons/zfc-user-doctrine-orm": "3.0.8",
+        "lm-commons/lmc-user-doctrine-orm": "^3.0.0",
         "jield-webdev/laminas-assetmanager": "dev-master",
         "jield-webdev/assetic": "2.1.x-dev",
         "netiul/dompdf-module": "^0.6.0",

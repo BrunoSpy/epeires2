@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2c264d5c341230e7fa2cd8e9dfb1c05",
+    "content-hash": "6ecb3636a955a5dc0532585498d3ea55",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -8293,6 +8293,70 @@
             "time": "2020-12-01T15:53:44+00:00"
         },
         {
+            "name": "lm-commons/lmc-user-doctrine-orm",
+            "version": "3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LM-Commons/LmcUserDoctrineORM.git",
+                "reference": "fb3568c7a69d94b7c93fe74b662f80023da697c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LM-Commons/LmcUserDoctrineORM/zipball/fb3568c7a69d94b7c93fe74b662f80023da697c6",
+                "reference": "fb3568c7a69d94b7c93fe74b662f80023da697c6",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-orm-module": "~3.0",
+                "lm-commons/lmc-user": "~3.3",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~1.0.0",
+                "phpspec/prophecy": "^1.12",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LmcUserDoctrineORM\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Evan Coury",
+                    "email": "me@evancoury.com",
+                    "homepage": "http://blog.evan.pro/"
+                },
+                {
+                    "name": "Kyle Spraggs",
+                    "email": "theman@spiffyjr.me",
+                    "homepage": "http://www.spiffyjr.me/"
+                },
+                {
+                    "name": "Alexander Zamponi",
+                    "email": "alex@zamponi.biz",
+                    "homepage": "https://www.zamponi.biz/"
+                }
+            ],
+            "description": "Doctrine2 ORM storage adapter for LmcUser.",
+            "homepage": "https://github.com/LM-Commons/LmcUserDoctrineORM",
+            "keywords": [
+                "LmcUser",
+                "laminas"
+            ],
+            "support": {
+                "issues": "https://github.com/LM-Commons/LmcUserDoctrineORM/issues",
+                "source": "https://github.com/LM-Commons/LmcUserDoctrineORM/tree/3.0.1"
+            },
+            "time": "2020-11-25T18:54:52+00:00"
+        },
+        {
             "name": "maglnet/magl-markdown",
             "version": "1.8.0",
             "source": {
@@ -10828,60 +10892,6 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.10.0"
             },
             "time": "2021-03-09T10:59:23+00:00"
-        },
-        {
-            "name": "zf-commons/zfc-user-doctrine-orm",
-            "version": "v3.0.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BrunoSpy/ZfcUserDoctrineORM.git",
-                "reference": "88ad59cb347950537ae5dba460587741055435d9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/ZfcUserDoctrineORM/zipball/88ad59cb347950537ae5dba460587741055435d9",
-                "reference": "88ad59cb347950537ae5dba460587741055435d9",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/doctrine-orm-module": "~3.0",
-                "laminas/laminas-dependency-plugin": "^2.0",
-                "lm-commons/lmc-user": "*",
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ZfcUserDoctrineORM": "src/"
-                },
-                "classmap": [
-                    "./"
-                ]
-            },
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Evan Coury",
-                    "email": "me@evancoury.com",
-                    "homepage": "http://blog.evan.pro/"
-                },
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                }
-            ],
-            "description": "Doctrine2 ORM storage adapter for ZfcUser.",
-            "homepage": "https://github.com/ZF-Commons/ZfcUserDoctrineORM",
-            "keywords": [
-                "zf2"
-            ],
-            "support": {
-                "source": "https://github.com/BrunoSpy/ZfcUserDoctrineORM/tree/v3.0.8"
-            },
-            "time": "2020-12-01T13:55:04+00:00"
         },
         {
             "name": "zfr/rbac",
