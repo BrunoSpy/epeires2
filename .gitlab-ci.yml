@@ -168,7 +168,7 @@ test:docker:
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-  - ./sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
+  - ./sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - ./local-php-security-checker
