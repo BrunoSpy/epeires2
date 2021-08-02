@@ -25,10 +25,10 @@ before_script:
 - touch logs/epeires2.log
 - chmod -Rf a+rwx logs
 - vendor/bin/laminas-development-mode enable
-- php public/index.php migrations:migrate --no-interaction -vvv
-- php public/index.php orm:generate-proxies
+- vendor/bin/doctrine-module migrations:migrate --no-interaction -vvv
+- vendor/bin/doctrine-module orm:generate-proxies
 - vendor/bin/laminas epeires2:initdb --no-interaction
-- php public/index.php data-fixture:import default_group --no-interaction
+- vendor/bin/doctrine-module data-fixture:import default_group --no-interaction
 - chmod a+rwx -Rf ./data
 - chmod +x ./local-php-security-checker
 #launch server
