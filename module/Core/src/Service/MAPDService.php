@@ -95,8 +95,9 @@ class MAPDService
             $mapd = $this->config['mapd'];
             $this->uri = $mapd['url'];
             $this->client = new Client();
+            $this->client->setAdapter(Client\Adapter\Curl::class);
             if (array_key_exists('user', $mapd) && array_key_exists('password', $mapd)) {
-                $this->client->setAuth($mapd['user'], $mapd['password']);
+                $this->client->setAuth($mapd['user'], $mapd['password'], Client::AUTH_BASIC);
             }
             if(array_key_exists('default_status', $mapd)) {
                 $status = $this->entityManager->getRepository(Status::class)->find($mapd['default_status']);

@@ -11,6 +11,8 @@ use Laminas\Stdlib\ArrayUtils;
  */
 chdir(dirname(__DIR__));
 
+define('ROOT_PATH', dirname(__DIR__));
+
 // Decline static file requests back to the PHP built-in webserver
 if (php_sapi_name() === 'cli-server') {
     $path = realpath(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));

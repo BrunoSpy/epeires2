@@ -19,7 +19,7 @@ namespace Administration\Controller;
 
 use Core\Version;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Roave\PsrContainerDoctrine\MigrationsConfigurationFactory;
+//use Roave\PsrContainerDoctrine\MigrationsConfigurationFactory;
 
 /**
  *
