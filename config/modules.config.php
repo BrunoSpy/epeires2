@@ -14,7 +14,6 @@ return array(
     'Laminas\Mvc\I18n',
     'Laminas\Mvc\Plugin\FlashMessenger',
     'Laminas\Mvc\Plugin\Prg',
-    'Laminas\Mvc\Console',
     'Laminas\Db',
     'Laminas\Log',
     'Laminas\Cache',
