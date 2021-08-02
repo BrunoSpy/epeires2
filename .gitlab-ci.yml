@@ -50,7 +50,6 @@ variables:
   APP_ENV: development
   TIMEZONE: "Europe/Paris"
 
-
 test:7.4-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
