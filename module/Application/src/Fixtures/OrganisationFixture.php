@@ -19,7 +19,7 @@
 namespace Application\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Application\Entity\Organisation;
 
