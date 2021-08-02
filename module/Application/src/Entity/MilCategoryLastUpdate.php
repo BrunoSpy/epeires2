@@ -25,6 +25,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="milcategorylastupdates", uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", columns={"category_id", "day"})})
  * @author Bruno Spyckerelle
  *
+ * Class MilCategoryLastUpdate
+ * @package Application\Entity
  */
 class MilCategoryLastUpdate
 {

@@ -15,14 +15,23 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+namespace Administration\Command\Factory;
 
-namespace Core;
+use Administration\Command\DeleteEventsCommand;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Class Version
- * @package Core
+ * Class GenerateReportCommandFactory
+ * @package Administration\Command\Factory
  */
-final class Version
-{
-    const VERSION = "2.7-dev";
+class DeleteEventsCommandFactory implements FactoryInterface {
+
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new DeleteEventsCommand(
+            $container->get('Doctrine\ORM\EntityManager')
+        );
+    }
+
 }

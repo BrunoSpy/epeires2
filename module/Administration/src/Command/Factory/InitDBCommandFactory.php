@@ -15,20 +15,23 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Administration\Controller\Factory;
+namespace Administration\Command\Factory;
 
-use Administration\Controller\MaintenanceController;
+use Administration\Command\InitDBCommand;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class MaintenanceControllerFactory implements FactoryInterface {
+/**
+ * Class InitDBCommandFactory
+ * @package Administration\Command\Factory
+ */
+class InitDBCommandFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new MaintenanceController(
+        return new InitDBCommand(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('categoryfactory'),
-            $container->get('config'));
+            $container->get('config')
+        );
     }
-
 }

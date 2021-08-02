@@ -15,14 +15,23 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+namespace Administration\Command\Factory;
 
-namespace Core;
+use Administration\Command\CleanLogsCommand;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Class Version
- * @package Core
+ * Class CleanLogsCommandFactory
+ * @package Administration\Command\Factory
  */
-final class Version
-{
-    const VERSION = "2.7-dev";
+class CleanLogsCommandFactory implements FactoryInterface {
+
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new CleanLogsCommand(
+            $container->get('Doctrine\ORM\EntityManager')
+        );
+    }
+
 }

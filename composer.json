@@ -10,10 +10,6 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/BrunoSpy/ZfcUserDoctrineORM"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/BrunoSpy/opentbsbundle"
         },
         {
@@ -22,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -39,8 +35,8 @@
         "doctrine/doctrine-orm-module": "^3.0",
         "roave/psr-container-doctrine": "dev-master",
         "gedmo/doctrine-extensions": "^3.0",
-        "lm-commons/lmc-user": "^3.3.2 !=3.3.3",
-        "zf-commons/zfc-user-doctrine-orm": "3.0.8",
+        "lm-commons/lmc-user": "^3.0",
+        "lm-commons/lmc-user-doctrine-orm": "^3.0",
         "jield-webdev/laminas-assetmanager": "dev-master",
         "jield-webdev/assetic": "2.1.x-dev",
         "netiul/dompdf-module": "^0.6.0",
@@ -73,9 +69,10 @@
         "laminas/laminas-component-installer": "^2.1",
         "codeception/module-webdriver": "^1.0.0",
         "codeception/module-asserts": "^1.0.0",
-        "codeception/module-zf2": "^1.0.0",
+        "codeception/module-laminas": "^1.0.0",
         "codeception/module-doctrine2": "^1.0.0",
-        "laminas/laminas-developer-tools": "^2.0"
+        "laminas/laminas-developer-tools": "^2.0",
+        "laminas/laminas-cli": "^1.0"
     },
     "config": {
         "platform": {
@@ -90,5 +87,17 @@
             "Administration\\": "module/Administration/src/",
             "API\\": "module/API/src/"
         }
+    },
+    "scripts": {
+        "development-disable": "laminas-development-mode disable",
+        "development-enable": "laminas-development-mode enable",
+        "development-status": "laminas-development-mode status",
+        "serve": "php -S 0.0.0.0:8080 -t public"
+    },
+    "scripts-descriptions": {
+        "development-disable": "Disable development mode.",
+        "development-enable": "Enable development mode.",
+        "development-status": "Detail whether or not the application is in development mode.",
+        "serve": "Start the built-in PHP web server and serve the application."
     }
 }

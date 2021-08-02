@@ -15,6 +15,14 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+use Application\Command\Factory\GenerateReportCommandFactory;
+use Application\Command\Factory\ImportRegulationsCommandFactory;
+use Application\Command\Factory\ImportZonesMilCommandFactory;
+use Application\Command\GenerateReportCommand;
+use Application\Command\ImportRegulationsCommand;
+use Application\Command\ImportZonesMilCommand;
+
 return array(
     'router' => array(
         'routes' => array(
@@ -37,38 +45,12 @@ return array(
             )
         )
     ),
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                'generate-report' => array(
-                    'options' => array(
-                        'route' => 'report [--email] [--delta=] <orgshortname>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Report',
-                            'action' => 'report'
-                        )
-                    )
-                ),
-                'import-nmb2b' => array(
-                    'options' => array(
-                        'route' => 'import-zones-mil [--delta=] [--email] [--verbose] <service> <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Mil',
-                            'action' => 'import'
-                        )
-                    )
-                ),
-                'import-regulations' => array(
-                    'options' => array(
-                        'route' => 'import-regulations [--delta=] [--email] [--verbose] <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\ATFCM',
-                            'action' => 'importRegulations'
-                        )
-                    )
-                )
-            )
-        )
+    'laminas-cli' => array(
+        'commands' => [
+            'epeires2:import-regulations' => ImportRegulationsCommand::class,
+            'epeires2:import-zones-mil' => ImportZonesMilCommand::class,
+            'epeires2:generate-report' => GenerateReportCommand::class
+        ]
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -81,7 +63,10 @@ return array(
         'factories' => array(
             'eventservice' => 'Application\Factories\EventServiceFactory',
             'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
-            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory'
+            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory',
+            ImportRegulationsCommand::class => ImportRegulationsCommandFactory::class,
+            ImportZonesMilCommand::class => ImportZonesMilCommandFactory::class,
+            GenerateReportCommand::class => GenerateReportCommandFactory::class
         )
     ),
     'translator' => array(
@@ -304,5 +289,10 @@ return array(
                 )
             )
         )
-    )
+    ),
+
+    'dompdf_module' => [
+        'chroot' => __DIR__ . '/../../..',
+        'default_paper_size' => 'a4'
+    ]
 );

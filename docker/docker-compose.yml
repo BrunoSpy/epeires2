@@ -14,7 +14,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   epeires2:
-    image: registry.asap.dsna.fr/bruno.spyckerelle/epeires2:test
+    image: registry.asap.dsna.fr/bruno.spyckerelle/epeires2:docker
     volumes:
       - epeires2-cache-data:/epeires2/data/DoctrineORMModule/Proxy
       - ./doctrine.docker.php:/epeires2/config/autoload/doctrine.local.php

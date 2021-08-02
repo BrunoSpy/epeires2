@@ -7,10 +7,10 @@ modules:
     enabled:
         - Asserts
         - \Helper\Unit
-        - ZF2:
+        - Laminas:
             part: services
         - Doctrine2:
-            depends: ZF2
+            depends: Laminas
 coverage:
     enabled: true
     whitelist:

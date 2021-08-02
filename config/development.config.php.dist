@@ -7,40 +7,16 @@
 return [
     // Development time modules
     'modules' => [
-        'Laminas\Mvc\I18n',
-        'Laminas\Mvc\Plugin\FlashMessenger',
-        'Laminas\Mvc\Plugin\Prg',
-        'Laminas\Db',
-        'Laminas\Log',
-        'Laminas\Session',
-        'Laminas\Cache',
-        'Laminas\Paginator',
-        'Laminas\Form',
-        'Laminas\InputFilter',
-        'Laminas\Filter',
-        'Laminas\Hydrator',
-        'Laminas\I18n',
-        'Laminas\Mvc\Console',
-        'Laminas\Router',
-        'Laminas\Validator',
-        'Laminas\ApiTools\Admin',
-        //'Laminas\ApiTools\Configuration',
-        'DoctrineModule',
-        'DoctrineORMModule',
-        'Laminas\ApiTools\ApiProblem',
-        'Laminas\ApiTools\ContentNegotiation',
-        'Laminas\ApiTools\Documentation',
-        'Laminas\ApiTools\Documentation\Swagger',
-        'Laminas\ApiTools\Versioning',
-        'Laminas\ApiTools\Rpc',
-        'Laminas\ApiTools\MvcAuth',
-        'Laminas\ApiTools\Hal',
-        'Laminas\ApiTools\Rest',
-        'Laminas\ApiTools\ContentValidation',
-        'Laminas\ApiTools',
+        'Laminas\DeveloperTools',
+        'ApiSkeletons\Doctrine\DataFixture'
     ],
     // development time configuration globbing
     'module_listener_options' => [
         'config_glob_paths' => ['config/autoload/{,*.}{global,local}-development.php'],
+        'config_cache_enabled' => false,
+        'module_map_cache_enabled' => false,
+    ],
+    'view_manager' => [
+        'display_exceptions' => true,
     ],
 ];

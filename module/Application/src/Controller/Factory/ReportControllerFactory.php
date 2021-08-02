@@ -26,9 +26,7 @@ class ReportControllerFactory implements FactoryInterface {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new ReportController(
-            $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('ViewPdfRenderer'),
-            $container->get('config')
+            $container->get('Doctrine\ORM\EntityManager')
         );
     }
 

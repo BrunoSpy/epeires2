@@ -15,14 +15,19 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+namespace Application\Command\Factory;
 
-namespace Core;
+use Application\Command\ImportZonesMilCommand;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\ContainerInterface;
 
-/**
- * Class Version
- * @package Core
- */
-final class Version
+class ImportZonesMilCommandFactory implements FactoryInterface
 {
-    const VERSION = "2.7-dev";
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new ImportZonesMilCommand(
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('nmb2b'),
+            $container->get('mapd'));
+    }
 }
