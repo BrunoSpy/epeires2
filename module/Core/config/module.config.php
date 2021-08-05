@@ -121,6 +121,7 @@ return array(
         'login_after_registration' => false,
         'logout_redirect_route' => 'application',
         'login_redirect_route' => 'application',
+        'use_login_form_csrf' => false,
         'use_redirect_parameter_if_present' => true,
         'auth_identity_fields' => array(
             'username',

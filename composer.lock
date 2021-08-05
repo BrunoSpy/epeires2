@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc10930a476c9b3669f90cec69cfc268",
+    "content-hash": "cab09ef19b3a23cbde04237d8c25905b",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -7898,16 +7898,16 @@
         },
         {
             "name": "lm-commons/lmc-user",
-            "version": "3.3.2",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcUser.git",
-                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e"
+                "reference": "a2f63a2970c24985b3d8423e06177cbccd47cdbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/1415342a94d9dfeb18226912f685e25e0d8a453e",
-                "reference": "1415342a94d9dfeb18226912f685e25e0d8a453e",
+                "url": "https://api.github.com/repos/LM-Commons/LmcUser/zipball/a2f63a2970c24985b3d8423e06177cbccd47cdbe",
+                "reference": "a2f63a2970c24985b3d8423e06177cbccd47cdbe",
                 "shasum": ""
             },
             "require": {
@@ -7929,13 +7929,13 @@
                 "laminas/laminas-stdlib": "^3.0",
                 "laminas/laminas-validator": "^2.13",
                 "laminas/laminas-view": "^2.11",
-                "php": "^7.3"
+                "php": "^7.3 || ^8.0"
             },
             "require-dev": {
                 "laminas/laminas-captcha": "^2.6",
-                "phpmd/phpmd": "2.7.0",
-                "phpunit/phpunit": "9.2.6",
-                "squizlabs/php_codesniffer": "3.5.5"
+                "phpmd/phpmd": "^2.7.0",
+                "phpunit/phpunit": "^9.5.4",
+                "squizlabs/php_codesniffer": "^3.5.5"
             },
             "suggest": {
                 "laminas/laminas-captcha": "Laminas\\Captcha if you want to use the captcha component"
@@ -7977,31 +7977,31 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcUser/issues",
-                "source": "https://github.com/LM-Commons/LmcUser/tree/3.3.2"
+                "source": "https://github.com/LM-Commons/LmcUser/tree/3.4.0"
             },
-            "time": "2020-12-01T15:53:44+00:00"
+            "time": "2021-05-20T08:29:03+00:00"
         },
         {
             "name": "lm-commons/lmc-user-doctrine-orm",
-            "version": "3.0.1",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcUserDoctrineORM.git",
-                "reference": "fb3568c7a69d94b7c93fe74b662f80023da697c6"
+                "reference": "7edc4d9f043a0a798482e688be6fbc4cf66ac5f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcUserDoctrineORM/zipball/fb3568c7a69d94b7c93fe74b662f80023da697c6",
-                "reference": "fb3568c7a69d94b7c93fe74b662f80023da697c6",
+                "url": "https://api.github.com/repos/LM-Commons/LmcUserDoctrineORM/zipball/7edc4d9f043a0a798482e688be6fbc4cf66ac5f8",
+                "reference": "7edc4d9f043a0a798482e688be6fbc4cf66ac5f8",
                 "shasum": ""
             },
             "require": {
-                "doctrine/doctrine-orm-module": "~3.0",
-                "lm-commons/lmc-user": "~3.3",
+                "doctrine/doctrine-orm-module": "^3.0",
+                "lm-commons/lmc-user": "^3.3.3",
                 "php": ">=7.3"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~1.0.0",
+                "laminas/laminas-coding-standard": "^1.0.0",
                 "phpspec/prophecy": "^1.12",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.3"
@@ -8041,9 +8041,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcUserDoctrineORM/issues",
-                "source": "https://github.com/LM-Commons/LmcUserDoctrineORM/tree/3.0.1"
+                "source": "https://github.com/LM-Commons/LmcUserDoctrineORM/tree/3.0.3"
             },
-            "time": "2020-11-25T18:54:52+00:00"
+            "time": "2021-02-11T10:50:08+00:00"
         },
         {
             "name": "maglnet/magl-markdown",
