@@ -1,7 +1,6 @@
 <?php
 namespace Core\Listener;
 
-use Laminas\ServiceManager\ServiceManagerAwareInterface;
 use Laminas\ServiceManager\ServiceManager;
 
 /**

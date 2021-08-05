@@ -86,7 +86,7 @@ class ReportController extends AbstractEntityManagerAwareController
             $pdf->setVariables(array(
                 'events' => $eventsbycats,
                 'day' => $day,
-                'logs' => $this->getEntityManager()->getRepository('Application\Entity\Log'),
+                'logs' => $this->getEntityManager()->getRepository('Application\Entity\CustomFieldLog'),
                 'opsups' => $this->getEntityManager()->getRepository('Application\Entity\Log')->getOpSupsChanges($daystart, $dayend, false, 'ASC')
             ));
             $pdf->setOption('paperSize', 'a4');

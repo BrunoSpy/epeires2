@@ -182,6 +182,7 @@ class EventService
         $history = array();
 
         $repo = $this->em->getRepository('Application\Entity\Log');
+        $customfieldslogs = $this->em->getRepository('Application\Entity\CustomFieldLog');
 
         $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd LLL, HH:mm');
 
@@ -257,7 +258,7 @@ class EventService
         foreach ($this->em->getRepository('Application\Entity\CustomFieldValue')->findBy(array(
             'event' => $event->getId()
         )) as $customfieldvalue) {
-            $fieldlogentries = $repo->getLogEntries($customfieldvalue);
+            $fieldlogentries = $customfieldslogs->getLogEntries($customfieldvalue);
             if (count($fieldlogentries) > 1 && $fieldlogentries[count($fieldlogentries) - 1]->getAction() == "create") {
                 $ref = null;
                 foreach (array_reverse($fieldlogentries) as $fieldlogentry) {
@@ -348,6 +349,7 @@ class EventService
     public function getJSON(Event $event, $extendedFormat = false) {
         $objectManager = $this->em;
         $logsRepo = $objectManager->getRepository("Application\Entity\Log");
+        $customfieldslogs = $objectManager->getRepository("Application\Entity\CustomFieldLog");
         $json = array(
             'id' => $event->getId(),
             'name' => $this->getName($event),
@@ -401,7 +403,7 @@ class EventService
             if($value->getCustomField()->isHidden()) //don't display
                 continue;
             if($value->getCustomField()->isTraceable()) {
-                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                foreach(array_reverse($customfieldslogs->getLogEntries($value)) as $log) {
                     $name = $formatterSimple->format($log->getLoggedAt()) . ' ' . $value->getCustomField()->getName();
                     $i = 0;
                     while(array_key_exists($name, $fields)) {
@@ -422,7 +424,7 @@ class EventService
             }
             $i = 0;
             if($value->getCustomField()->isMilestone()) {
-                foreach(array_reverse($logsRepo->getLogEntries($value)) as $log) {
+                foreach(array_reverse($customfieldslogs->getLogEntries($value)) as $log) {
                     //store only changes -> skip firt log
                     if($i > 0) {
                         $milestones[] = $log->getLoggedAt()->format(DATE_RFC2822);
