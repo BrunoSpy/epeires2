@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cab09ef19b3a23cbde04237d8c25905b",
+    "content-hash": "c931dc5c71355c1123ab47a9e998a505",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -328,16 +328,16 @@
         },
         {
             "name": "dgac/mattermostmodule",
-            "version": "v0.3.6",
+            "version": "v0.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/MattermostModule.git",
-                "reference": "a7c53537683924070623f8d5d0888a16e93de650"
+                "reference": "04e8299a0be29ff9c3a77da911bcced826ab5c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/a7c53537683924070623f8d5d0888a16e93de650",
-                "reference": "a7c53537683924070623f8d5d0888a16e93de650",
+                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/04e8299a0be29ff9c3a77da911bcced826ab5c45",
+                "reference": "04e8299a0be29ff9c3a77da911bcced826ab5c45",
                 "shasum": ""
             },
             "require": {
@@ -372,9 +372,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DGAC/MattermostModule/issues",
-                "source": "https://github.com/DGAC/MattermostModule/tree/v0.3.6"
+                "source": "https://github.com/DGAC/MattermostModule/tree/v0.3.7"
             },
-            "time": "2021-01-25T14:18:38+00:00"
+            "time": "2021-08-06T09:29:28+00:00"
         },
         {
             "name": "dgac/nmb2b-phpclient",
@@ -422,16 +422,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "1.13.1",
+            "version": "1.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "e6e7b7d5b45a2f2abc5460cc6396480b2b1d321f"
+                "reference": "5b668aef16090008790395c02c893b1ba13f7e08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/e6e7b7d5b45a2f2abc5460cc6396480b2b1d321f",
-                "reference": "e6e7b7d5b45a2f2abc5460cc6396480b2b1d321f",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/5b668aef16090008790395c02c893b1ba13f7e08",
+                "reference": "5b668aef16090008790395c02c893b1ba13f7e08",
                 "shasum": ""
             },
             "require": {
@@ -488,9 +488,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/annotations/issues",
-                "source": "https://github.com/doctrine/annotations/tree/1.13.1"
+                "source": "https://github.com/doctrine/annotations/tree/1.13.2"
             },
-            "time": "2021-05-16T18:07:53+00:00"
+            "time": "2021-08-05T19:00:23+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -3850,16 +3850,16 @@
         },
         {
             "name": "laminas/laminas-cache",
-            "version": "2.12.1",
+            "version": "2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache.git",
-                "reference": "0b7ef4d22990dc7dda3d755f82bd1de19aa4cc9b"
+                "reference": "36f5cef39f660cae7d0e1361e86e3b47d6448391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/0b7ef4d22990dc7dda3d755f82bd1de19aa4cc9b",
-                "reference": "0b7ef4d22990dc7dda3d755f82bd1de19aa4cc9b",
+                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/36f5cef39f660cae7d0e1361e86e3b47d6448391",
+                "reference": "36f5cef39f660cae7d0e1361e86e3b47d6448391",
                 "shasum": ""
             },
             "require": {
@@ -3951,7 +3951,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-08-01T10:17:21+00:00"
+            "time": "2021-08-06T07:32:13+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-apc",
