@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b341ceee73dbd957e297f59d1a2444cb",
+    "content-hash": "aea1891a8ffd7f6adce6582603d9cba2",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -328,16 +328,16 @@
         },
         {
             "name": "dgac/mattermostmodule",
-            "version": "v0.3.6",
+            "version": "v0.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/MattermostModule.git",
-                "reference": "a7c53537683924070623f8d5d0888a16e93de650"
+                "reference": "04e8299a0be29ff9c3a77da911bcced826ab5c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/a7c53537683924070623f8d5d0888a16e93de650",
-                "reference": "a7c53537683924070623f8d5d0888a16e93de650",
+                "url": "https://api.github.com/repos/DGAC/MattermostModule/zipball/04e8299a0be29ff9c3a77da911bcced826ab5c45",
+                "reference": "04e8299a0be29ff9c3a77da911bcced826ab5c45",
                 "shasum": ""
             },
             "require": {
@@ -372,9 +372,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DGAC/MattermostModule/issues",
-                "source": "https://github.com/DGAC/MattermostModule/tree/v0.3.6"
+                "source": "https://github.com/DGAC/MattermostModule/tree/v0.3.7"
             },
-            "time": "2021-01-25T14:18:38+00:00"
+            "time": "2021-08-06T09:29:28+00:00"
         },
         {
             "name": "dgac/nmb2b-phpclient",

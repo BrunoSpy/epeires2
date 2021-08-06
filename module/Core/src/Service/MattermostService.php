@@ -37,6 +37,10 @@ class MattermostService extends Mattermost
         $this->config = $config;
     }
 
+    /**
+     * @return Driver
+     * @throws \Exception
+     */
     protected function getClient()
     {
         //we do not need session here
@@ -82,8 +86,7 @@ class MattermostService extends Mattermost
                     $this->myId = json_decode($result->getBody())->id;
                     $this->token = $result->getHeader('Token')[0];
                 } else {
-                    //TODO throw something or retry ?
-                    error_log("Impossible de s'authentifier au serveur, erreur " . $result->getStatusCode());
+                    throw new \Exception("Impossible de s'authentifier au serveur, erreur " . $result->getStatusCode());
                 }
             } else {
                 //error
