@@ -50,29 +50,28 @@ class PredefinedEventRepository extends SortableRepository
     }
 
     /**
-     * Returns an array with mandatory predefined events from the children
-     * of the given category
+     * Returns an array with mandatory predefined events from the given category
      * @param Category $category
      * @return array
      */
-    public function getEventsFromCategoryAsArray(Category $category) {
+    public function getEventsFromCategoryAsArray(Category $cat) {
         $res = array();
-        foreach ($category->getChildren() as $cat) {
-            if(!$cat->isArchived()) {
-                $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
-                $criteria->andWhere(Criteria::expr()->isNull('parent'));
-                $criteria->andWhere(Criteria::expr()->eq('listable', true));
-                $criteria->andWhere(Criteria::expr()->eq('forceroot', true));
-                $criteria->orderBy(array(
-                    'place' => 'ASC'
-                ));
-                $list = parent::matching($criteria);
-    
-                foreach ($list as $element) {
-                    $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId(), "color" => $element->getColor());
-                }
+
+        if(!$cat->isArchived()) {
+            $criteria = Criteria::create()->where(Criteria::expr()->eq('category', $cat));
+            $criteria->andWhere(Criteria::expr()->isNull('parent'));
+            $criteria->andWhere(Criteria::expr()->eq('listable', true));
+            $criteria->andWhere(Criteria::expr()->eq('forceroot', true));
+            $criteria->orderBy(array(
+                'place' => 'ASC'
+            ));
+            $list = parent::matching($criteria);
+
+            foreach ($list as $element) {
+                $res[$element->getId()] = array('name' => $element->getName(), 'catid' => $cat->getId(), "color" => $element->getColor());
             }
         }
+
         return $res;
     }
 

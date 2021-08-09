@@ -112,7 +112,7 @@ class EventsController extends TimelineTabController
                 foreach ($tabs as $t) {
                     if($t->isDefault()) {
                         foreach ($t->getCategories() as $c) {
-                            if(!in_array($c->getId(), $cats)) {
+                            if(!in_array($c->getId(), $cats) && $this->isReadableCategory($c)) {
                                 $cats[] = $c->getId();
                             }
                         }
@@ -140,7 +140,7 @@ class EventsController extends TimelineTabController
                     foreach ($roleentity->getReadtabs() as $t) {
                         if($t->isDefault()) {
                             foreach ($t->getCategories() as $c) {
-                                if (!in_array($c->getId(), $cats)) {
+                                if (!in_array($c->getId(), $cats) && $this->isReadableCategory($c)) {
                                     $cats[] = $c->getId();
                                 }
                             }
@@ -1169,12 +1169,18 @@ class EventsController extends TimelineTabController
                     $id = $this->params()->fromQuery('id');
                     $em = $this->getEntityManager();
                     $category = $em->getRepository('Application\Entity\Category')->find($id);
+                    $subvalues = array();
+                    foreach ($category->getChildren() as $c) {
+                        if($this->isReadableCategory($c)) {
+                            $subvalues = array_merge($subvalues, $em->getRepository('Application\Entity\PredefinedEvent')
+                                ->getEventsFromCategoryAsArray($c));
+                        }
+                    }
                     $viewmodel->setVariables(array(
                         'part' => $part,
                         'values' => $em->getRepository('Application\Entity\PredefinedEvent')
                             ->getEventsWithCategoryAsArray($category),
-                        'subvalues' => $em->getRepository('Application\Entity\PredefinedEvent')
-                            ->getEventsFromCategoryAsArray($category)
+                        'subvalues' => $subvalues
                     ));
                     break;
                 case 'custom_fields':
@@ -2051,31 +2057,37 @@ class EventsController extends TimelineTabController
         return new JsonModel($json);
     }
 
-    private function filterReadableCategories($categories)
+    private function isReadableCategory(Category $category)
     {
         $objectManager = $this->getEntityManager();
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $roles = $this->lmcUserAuthentication()
+                ->getIdentity()
+                ->getRoles();
+            foreach ($roles as $role) {
+                if ($category->getReadroles(true)->contains($role)) {
+                    return true;
+                }
+            }
+        } else {
+            $role = $this->zfcRbacOptions->getGuestRole();
+            $roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array(
+                'name' => $role
+            ));
+            if ($roleentity) {
+                if ($category->getReadroles(true)->contains($roleentity)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    private function filterReadableCategories($categories)
+    {
         $readablecat = array();
         foreach ($categories as $category) {
-            if ($this->lmcUserAuthentication()->hasIdentity()) {
-                $roles = $this->lmcUserAuthentication()
-                    ->getIdentity()
-                    ->getRoles();
-                foreach ($roles as $role) {
-                    if ($category->getReadroles(true)->contains($role)) {
-                        $readablecat[] = $category;
-                        break;
-                    }
-                }
-            } else {
-                $role = $this->zfcRbacOptions->getGuestRole();
-                $roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array(
-                    'name' => $role
-                ));
-                if ($roleentity) {
-                    if ($category->getReadroles(true)->contains($roleentity)) {
-                        $readablecat[] = $category;
-                    }
-                }
+            if($this->isReadableCategory($category)) {
+                $readablecat[] = $category;
             }
         }
         return $readablecat;
