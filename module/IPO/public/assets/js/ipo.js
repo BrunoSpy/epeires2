@@ -14,10 +14,10 @@
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-var url;
+var urlIPO;
 
 var setUrl = function(urlt){
-  url = urlt;
+  urlIPO = urlt;
 };
 
 $(document).ready(function(){
@@ -25,18 +25,18 @@ $(document).ready(function(){
     
 	$("#add-report").on('click', function(){
 		$("#report-title").html("Nouveau rapport");
-		$("#report-form").load(url+'/report/newreport');
+		$("#report-form").load(urlIPO+'/report/newreport');
 	});
 	
 	$(".mod-report").on('click', function(){
 		var me = $(this);
 		$("#report-title").html('Modifier le rapport <em>'+me.data('name')+'</em>');
-		$("#report-form").load(url+'/report/newreport?id='+me.data('id'));
+		$("#report-form").load(urlIPO+'/report/newreport?id='+me.data('id'));
 	});
     
 	$("#report-container").on('submit', function(event){
 		event.preventDefault();
-		$.post(url+'/report/savereport', $("#Report").serialize(), function(data){
+		$.post(urlIPO+'/report/savereport', $("#Report").serialize(), function(data){
 			if(data['messages']){
 				displayMessages(data.messages);
 			}
@@ -57,7 +57,7 @@ $(document).ready(function(){
 		var me = $(this);
 		var id = me.data('id');
 		$("#remove-report-container").modal('hide');
-		$.post(url+'/report/delete?id='+id, function(data){
+		$.post(urlIPO+'/report/delete?id='+id, function(data){
 			if(data['messages']) {
 				displayMessages(data.messages);
 			}
