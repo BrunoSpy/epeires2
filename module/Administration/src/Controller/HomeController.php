@@ -105,7 +105,11 @@ class HomeController extends AbstractActionController
         }
 
         if($this->mapd->isEnabled()) {
-            $mapdStatus = $this->mapd->getStatus();
+            try {
+                $mapdStatus = $this->mapd->getStatus();
+            } catch (\Exception $e) {
+                $mapdStatus = array('status' => 'ERROR', 'aupToday' => array('status' => 'ERROR', 'statusReasons' => array($e->getMessage())));
+            }
         } else {
             $mapdStatus = null;
         }

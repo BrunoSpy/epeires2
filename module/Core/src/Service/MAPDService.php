@@ -81,11 +81,15 @@ class MAPDService
         $request = new Request();
         $request->setMethod('GET');
         $request->setUri($this->uri . '/status');
-        $response = $this->getClient()->dispatch($request);
-        if($response->isSuccess()) {
-            return json_decode($response->getBody(), true);
-        } else {
-            return null;
+        try {
+            $response = $this->getClient()->dispatch($request);
+            if ($response->isSuccess()) {
+                return json_decode($response->getBody(), true);
+            } else {
+                return null;
+            }
+        } catch(\Exception $e) {
+            throw new RuntimeException($e->getMessage());
         }
     }
 
