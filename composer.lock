@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c931dc5c71355c1123ab47a9e998a505",
+    "content-hash": "95aa64cdadf57a5d27cd01cc31910efa",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -2638,12 +2638,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BrunoSpy/OpenTBSBundle.git",
-                "reference": "ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f"
+                "reference": "af445b14192f5494f9146248fcaa0cc361d971df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/OpenTBSBundle/zipball/ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f",
-                "reference": "ccbd8994831a7a8b9d2642c25cf9a14733bd5b7f",
+                "url": "https://api.github.com/repos/BrunoSpy/OpenTBSBundle/zipball/af445b14192f5494f9146248fcaa0cc361d971df",
+                "reference": "af445b14192f5494f9146248fcaa0cc361d971df",
                 "shasum": ""
             },
             "require": {
@@ -2693,7 +2693,7 @@
             "support": {
                 "source": "https://github.com/BrunoSpy/OpenTBSBundle/tree/master"
             },
-            "time": "2020-03-04T16:13:47+00:00"
+            "time": "2021-08-10T08:07:38+00:00"
         },
         {
             "name": "laminas-api-tools/api-tools",
@@ -8866,23 +8866,24 @@
         },
         {
             "name": "rlanvin/php-rrule",
-            "version": "v1.6.3",
+            "version": "v2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rlanvin/php-rrule.git",
-                "reference": "1373df401e0926cf7548716dabbc0d19603a144d"
+                "reference": "4e979ff9b1122e7b5f4b4faf87a000396af12d16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/1373df401e0926cf7548716dabbc0d19603a144d",
-                "reference": "1373df401e0926cf7548716dabbc0d19603a144d",
+                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/4e979ff9b1122e7b5f4b4faf87a000396af12d16",
+                "reference": "4e979ff9b1122e7b5f4b4faf87a000396af12d16",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8|^5.5|^6.5"
+                "phpmd/phpmd": "@stable",
+                "phpunit/phpunit": "^5.7|^6.5|^8.0"
             },
             "suggest": {
                 "ext-intl": "Intl extension is needed for humanReadable()"
@@ -8908,9 +8909,9 @@
             ],
             "support": {
                 "issues": "https://github.com/rlanvin/php-rrule/issues",
-                "source": "https://github.com/rlanvin/php-rrule/tree/v1.6.3"
+                "source": "https://github.com/rlanvin/php-rrule/tree/v2.2.2"
             },
-            "time": "2019-01-13T09:49:03+00:00"
+            "time": "2021-01-09T13:20:09+00:00"
         },
         {
             "name": "roave/psr-container-doctrine",
