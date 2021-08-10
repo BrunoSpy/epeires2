@@ -54,7 +54,9 @@ return array(
             DeleteEventsCommand::class => DeleteEventsCommandFactory::class,
             CleanLogsCommand::class => CleanLogsCommandFactory::class,
             InitDBCommand::class => InitDBCommandFactory::class,
-            InitBTIVDBCommand::class => InitBTIVDBCommandFactory::class
+            InitBTIVDBCommand::class => InitBTIVDBCommandFactory::class,
+            \Doctrine\Migrations\Configuration\Migration\ConfigurationLoader::class => \Roave\PsrContainerDoctrine\Migrations\ConfigurationLoaderFactory::class,
+            \Doctrine\Migrations\DependencyFactory::class => \Roave\PsrContainerDoctrine\Migrations\DependencyFactoryFactory::class
         ]
     ),
     'translator' => array(
@@ -101,7 +103,6 @@ return array(
             __DIR__ . '/../view/administration'
         )
     ),
-
     'view_helpers' => array(
         'invokables' => array(
             'afViewHelper' => 'Application\View\Helper\AfisHelper',

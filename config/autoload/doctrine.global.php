@@ -1,4 +1,5 @@
 <?php
+
 use Doctrine\Migrations\Tools\Console\Command;
 use Doctrine\Migrations\DependencyFactory;
 
@@ -18,6 +19,14 @@ return array(
                     'dbname' => 'epeires2',
                     'charset' => 'utf8'
                 )
+            )
+        ),
+        'migrations' => array( // /!\ do not change these settings /!\
+            'orm_default' => array(
+                'table_storage' => array(
+                    'table_name' => 'migrations',
+                ),
+                'migrations_paths' => array('DoctrineORMModule\Migrations' => 'data/DoctrineORMModule/Migrations')
             )
         ),
         'migrations_configuration' => array( // /!\ do not change these settings /!\
@@ -63,6 +72,7 @@ return array(
                 Command\UpToDateCommand::class => CommandFactory::class,
                 Command\VersionCommand::class => CommandFactory::class,
 
+                //ConfigurationLoader::class => ConfigurationLoaderFactory::class,
                 DependencyFactory::class => DependencyFactoryFactory::class,
                 ]
             ]

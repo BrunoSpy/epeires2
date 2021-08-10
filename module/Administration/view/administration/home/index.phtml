@@ -40,7 +40,7 @@
                     <?php endif; ?>
     			</div>
     		</div>
-   <!--
+
        		<div class="panel panel-default">
     			<div class="panel-heading">
     				<h4 class="panel-title">Base de données</h4>
@@ -57,16 +57,16 @@
                 <td><em><?php echo $this->db;?></em></td>
               </tr>
               <tr>
-                <td>Table des migrations</td>
-                <td><em><?php echo $this->table; ?></em></td>
-              </tr>
-              <tr>
                 <td>Version courante</td>
-                <td><em><?php echo $this->version; ?></em></td>
+                <td><em><?php echo $this->currentversion; ?></em></td>
               </tr>
-              <tr>
+             <tr>
                 <td>Dernière version </td>
                 <td><em><?php echo $this->latestversion; ?></em></td>
+              </tr>
+              <tr>
+                <td>Migrations exécutées</td>
+                <td><em><?php echo $this->executedMigrations; ?></em></td>
               </tr>
               <tr>
                 <td>Migrations non exécutées</td>
@@ -75,7 +75,7 @@
             </table>
     			</div>
     		</div>
--->
+
         <?php if($this->mapd !== null) : ?>
           <div class="panel panel-default">
             <div class="panel-heading">
