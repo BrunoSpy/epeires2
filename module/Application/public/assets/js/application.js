@@ -933,6 +933,7 @@ $(document).ready(function(){
         if(enableBriefing) {
             $("#releve-content").load(url + 'briefing/briefing', function () {
                 $("#briefing-content table").addClass("table");
+                $("#briefing-content img").addClass("img-responsive");
             });
             $('#releveWindow').modal('show');
         }
@@ -941,6 +942,7 @@ $(document).ready(function(){
     $('#usermenu-mod-briefing').on('click', function(e){
         $("#releve-content").load(url + 'briefing/briefing', function () {
             $("#briefing-content table").addClass("table");
+            $("#briefing-content img").addClass("img-responsive");
         });
         $('#releveWindow').modal('show');
     });
@@ -958,6 +960,7 @@ $(document).ready(function(){
                 onChange: function (e) {
                     $('#editor-preview').html(e.parseContent());
                     $("#editor-preview table").addClass("table");
+                    $("#editor-preview img").addClass("img-responsive");
                 },
                 resize: "vertical",
                 language: "fr",
@@ -965,6 +968,7 @@ $(document).ready(function(){
                     $.getJSON(url + 'briefing/getBriefing', function (data) {
                         e.setContent(data.briefing);
                         $("#briefing-content table").addClass("table");
+                        $("#briefing-content img").addClass("img-responsive");
                     });
                 },
                 onSave: function (e) {
@@ -975,6 +979,7 @@ $(document).ready(function(){
                         $("#editwindow").modal('hide');
                         $("#briefing-content").html(e.parseContent());
                         $("#briefing-content table").addClass("table");
+                        $("#briefing-content img").addClass("img-responsive");
                     });
                 },
                 savable: true
