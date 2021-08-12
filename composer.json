@@ -34,6 +34,8 @@
         "laminas/laminas-dependency-plugin": "^2.0",
         "laminas/laminas-inputfilter": "^2.10",
         "laminas/laminas-mvc-i18n": "^1.1",
+        "laminas/laminas-cli": "^1.0",
+        "laminas/laminas-router": "^3.3",
         "laminas/laminas-development-mode": "^3.2",
         "laminas/laminas-component-installer": "^2.1",
         "laminas/laminas-zendframework-bridge": "^1.0",
@@ -62,13 +64,11 @@
         "api-skeletons/doctrine-data-fixture": "^6.0.0",
         "laminas-api-tools/api-tools-admin": "^1.8",
         "laminas-api-tools/api-tools-asset-manager": "^1.2",
-        "laminas/laminas-router": "^3.3",
         "codeception/module-webdriver": "^1.0.0",
         "codeception/module-asserts": "^1.0.0",
         "codeception/module-laminas": "^1.0.0",
         "codeception/module-doctrine2": "^1.0.0",
-        "laminas/laminas-developer-tools": "^2.0",
-        "laminas/laminas-cli": "^1.0"
+        "laminas/laminas-developer-tools": "^2.0"
     },
     "config": {
         "platform": {
