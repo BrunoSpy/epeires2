@@ -8,6 +8,7 @@ return [
     // Development time modules
     'modules' => [
         'Laminas\DeveloperTools',
+        'Laminas\ApiTools\Admin',
         'ApiSkeletons\Doctrine\DataFixture'
     ],
     // development time configuration globbing
