@@ -60,7 +60,7 @@ class MilCategory extends Category
     protected $origin;
 
     /**
-     * @ORM\OneToMany(targetEntity="MilCategoryLastUpdate", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="MilCategoryLastUpdate", mappedBy="category", cascade={"remove"}, orphanRemoval=true)
      */
     protected $lastUpdates;
 
