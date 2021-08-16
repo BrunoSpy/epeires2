@@ -26,6 +26,9 @@ use Application\Entity\Status;
 use Core\Entity\User;
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
@@ -88,7 +91,7 @@ class MAPDService
             } else {
                 return null;
             }
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             throw new RuntimeException($e->getMessage());
         }
     }
@@ -118,7 +121,10 @@ class MAPDService
      * @param Category $cat
      * @param DateTime $day
      * @param User $user
-     * @throws \Exception
+     * @throws RuntimeException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws Exception
      */
     public function updateCategory(Category $cat, DateTime $day, User $user)
     {
@@ -156,39 +162,34 @@ class MAPDService
 
                     foreach ($eauprsas['results'] as $zonemil) {
                         if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
-                            $event = $this->entityManager->getRepository(Event::class)->find(
-                                $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id'])
-                            );
+                            $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
+                            if($eventid !== -1) {
+                                $event = $this->entityManager->getRepository(Event::class)->find($eventid);
+                            } else {
+                                $event = null;
+                            }
                             //$event should be null but if the first event in the db is created by Epeires, event is already in the epeires side
                             if($event == null) {
-                                try {
-                                    $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                        $cat,
-                                        $user->getOrganisation(),
-                                        $user,
-                                        $zonemil['areaName'],
-                                        new \DateTime($zonemil['dateFrom']),
-                                        new  \DateTime($zonemil['dateUntil']),
-                                        $zonemil['maxFL'],
-                                        $zonemil['minFL'],
-                                        $zonemil['id'],
-                                        $messages,
-                                        false,
-                                        $this->defaultStatus
-                                    );
-                                } catch (\Exception $e) {
-                                    throw $e;
-                                }
+                                $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                    $cat,
+                                    $user->getOrganisation(),
+                                    $user,
+                                    $zonemil['areaName'],
+                                    new \DateTime($zonemil['dateFrom']),
+                                    new  \DateTime($zonemil['dateUntil']),
+                                    $zonemil['maxFL'],
+                                    $zonemil['minFL'],
+                                    $zonemil['id'],
+                                    $messages,
+                                    false,
+                                    $this->defaultStatus
+                                );
                             }
                         }
                     }
 
-                    try {
-                        $this->entityManager->persist($milLastUpdate);
-                        $this->entityManager->flush();
-                    } catch(\Exception $e) {
-                        throw $e;
-                    }
+                    $this->entityManager->persist($milLastUpdate);
+                    $this->entityManager->flush();
 
                 }
 
@@ -203,7 +204,11 @@ class MAPDService
                     foreach ($eauprsas['results'] as $zonemil) {
                         if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
                             $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
-                            $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
+                            if($eventid !== -1) {
+                                $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
+                            } else {
+                                $event = null;
+                            }
                             //query getzonemilevent filters custom fields, refresh needed
                             if($event !== null) {
                                 $this->entityManager->refresh($event);
@@ -248,15 +253,12 @@ class MAPDService
 
                                         $event->setDates(new Datetime($zonemil['dateFrom']), new Datetime($zonemil['dateUntil']));
 
-                                        try {
-                                            $this->entityManager->persist($lowerLevel);
-                                            $this->entityManager->persist($upperlevel);
-                                        } catch (\Exception $e) {
-                                            throw $e;
-                                        }
+                                        $this->entityManager->persist($lowerLevel);
+                                        $this->entityManager->persist($upperlevel);
                                     } else {
                                         $this->logger->info("Tentative de mise à jour d'un évènement non connue : création");
                                         //update of an unknown event, should not happen but let's create it
+                                        //can happen if event is hosted by multiple categories
                                         $this->entityManager->getRepository(Event::class)->doAddMilEvent(
                                             $cat,
                                             $user->getOrganisation(),
@@ -280,21 +282,13 @@ class MAPDService
                                     break;
                             }
                             if ($event !== null) {
-                                try {
-                                    $this->entityManager->persist($event);
-                                } catch (\Exception $e) {
-                                    throw $e;
-                                }
+                                $this->entityManager->persist($event);
                             }
                         }
                     }
 
-                    try {
-                        $this->entityManager->persist($lastUpdate->first());
-                        $this->entityManager->flush();
-                    } catch(\Exception $e) {
-                        throw $e;
-                    }
+                    $this->entityManager->persist($lastUpdate->first());
+                    $this->entityManager->flush();
 
                 }
             }
@@ -386,7 +380,7 @@ class MAPDService
     /**
      * @param Event $event
      * @return int Internal Id of the event, -1 if problem...
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveRSA(Event $event): int
     {
@@ -411,7 +405,7 @@ class MAPDService
                 }
                 try {
                     $this->updateRSA($internalId->getValue(), $name, $start, $end, $maxfl, $minfl);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw $e;
                 }
             } else {
@@ -429,7 +423,7 @@ class MAPDService
             $end = $event->getEnddate();
             try {
                 $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
-            } catch(\Exception $e) {
+            } catch(Exception $e) {
                 throw $e;
             }
             return $response['id'];

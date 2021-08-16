@@ -41,6 +41,7 @@ use Doctrine\ORM\Query\Expr;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
 use LmcUser\Controller\Plugin\LmcUserAuthentication;
+use RuntimeException;
 
 /**
  * Description of EventRepository
@@ -1610,9 +1611,10 @@ class EventRepository extends ExtendedRepository
      * Get an event of Milcategory with the corresponding $internalid
      * @param MilCategory $cat
      * @param $internalid
-     * @return id of the event or -1 if no event
+     * @return int id of the event or -1 if no event
+     * @throws RuntimeException
      */
-    public function getZoneMilEventId(MilCategory $cat, $internalid)
+    public function getZoneMilEventId(MilCategory $cat, $internalid): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select(array('e', 'v', 'cat'))
@@ -1634,6 +1636,8 @@ class EventRepository extends ExtendedRepository
         $results = $qb->getQuery()->getResult();
         if(count($results) == 1) {
             return $results[0]->getId();
+        } elseif (count($results) > 1 ) {
+            throw new RuntimeException("Too many events with internal id ".$internalid. ". ".count($results)." events found.");
         } else {
             return -1;
         }
