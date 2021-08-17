@@ -189,12 +189,26 @@ class GenerateReportCommand extends Command
             if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
                 $message = new Message();
                 $message->addTo($organisation[0]->getIpoEmail())
-                    ->addFrom($this->config['emailfrom'])
+                    ->addFrom($organisation[0]->getEmailFrom() ? $organisation[0]->getEmailFrom() : $this->config['emailfrom'])
                     ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
                     ->setBody($mimeMessage);
 
                 $transport = new \Laminas\Mail\Transport\Smtp();
+
                 $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
+
+                if($organisation[0]->getEmailAccount() && $organisation[0]->getEmailPassword()) {
+                    $password = openssl_decrypt(
+                        base64_decode($organisation->getEmailPassword()),
+                        "AES-256-CBC",
+                        $this->config['secret_key'],
+                        0,
+                        $this->config['secret_init']);
+                    $transportOptions->setConnectionConfig(array(
+                        'username' => $organisation[0]->getemailAccount(),
+                        'password' => $organisation[0]->getEmailPassword(),
+                    ));
+                }
                 $transport->setOptions($transportOptions);
                 $transport->send($message);
             }

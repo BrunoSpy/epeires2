@@ -92,6 +92,33 @@ class Organisation
      */
     protected $users;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Emails : compte sortant"})
+     */
+    protected $emailAccount;
+
+    /**
+     * @ORM\Column(type="string", length=128, nullable=true)
+     * @Annotation\Type("Laminas\Form\Element\Password")
+     * @Annotation\Attributes({"data-rule-minlength":"6"})
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Emails : mot de passe du compte sortant"})
+     */
+    protected $emailPassword;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Emails : Adresse d'envoi"})
+     * @Annotation\Attributes({"placeholder":"Si compte Amelia, doit être l'adresse email du compte sortant"})
+     */
+    protected $emailFrom;
+
+
     public function __construct()
     {
         $this->zones = new \Doctrine\Common\Collections\ArrayCollection();
@@ -171,6 +198,54 @@ class Organisation
     public function getZones()
     {
         return $this->zones;
+    }
+
+    /**
+     * @param mixed $emailPassword
+     */
+    public function setEmailPassword($emailPassword): void
+    {
+        $this->emailPassword = $emailPassword;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmailPassword()
+    {
+        return $this->emailPassword;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmailAccount()
+    {
+        return $this->emailAccount;
+    }
+
+    /**
+     * @param mixed $emailAccount
+     */
+    public function setEmailAccount($emailAccount): void
+    {
+        $this->emailAccount = $emailAccount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmailFrom()
+    {
+        return $this->emailFrom;
+    }
+
+    /**
+     * @param mixed $emailFrom
+     */
+    public function setEmailFrom($emailFrom): void
+    {
+        $this->emailFrom = $emailFrom;
     }
 
     public function getArrayCopy()
