@@ -21,7 +21,11 @@ use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="customfieldlog")
+ * @ORM\Table(name="customfieldlog",
+ *     indexes={
+ *     @ORM\Index(name="object_id", columns={"object_id"}),
+ *     @ORM\Index(name="object_class", columns={"object_class"})
+ *     })
  * @ORM\Entity(repositoryClass="Application\Repository\LogRepository")
  * @ORM\HasLifecycleCallbacks
  *
