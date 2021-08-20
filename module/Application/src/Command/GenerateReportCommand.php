@@ -19,6 +19,7 @@
 namespace Application\Command;
 
 use Application\Entity\Organisation;
+use Core\Service\EmailService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use DOMPDFModule\View\Model\PdfModel;
@@ -43,13 +44,13 @@ class GenerateReportCommand extends Command
 
     private EntityManager $entityManager;
     private PdfRenderer $viewpdfrenderer;
-    private $config;
+    private EmailService $emailService;
 
-    public function __construct(EntityManager $entityManager, PdfRenderer $viewpdfrenderer, $config)
+    public function __construct(EntityManager $entityManager, PdfRenderer $viewpdfrenderer, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
         $this->viewpdfrenderer = $viewpdfrenderer;
-        $this->config = $config;
+        $this->emailService = $emailService;
         parent::__construct();
     }
 
@@ -69,7 +70,7 @@ class GenerateReportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $orgName = $input->getArgument('orgshortname');
-        $organisation = $this->getEntityManager()->getRepository(Organisation::class)->findOneBy(array('name'=>$orgName));
+        $organisation = $this->getEntityManager()->getRepository(Organisation::class)->findOneBy(array('shortname'=>$orgName));
         if($organisation == null) {
             $output->writeln('Impossible de trouver l\'organisation spécifiée.');
             return Command::FAILURE;
@@ -153,8 +154,6 @@ class GenerateReportCommand extends Command
         $html = $this->viewpdfrenderer->getHtmlRenderer()->render($pdfView);
         $engine = $this->viewpdfrenderer->getEngine();
 
-        var_dump($html);
-
         $engineOptions = $engine->getOptions();
         $engineOptions->setChroot(__DIR__.'/../../../../..');
         $engine->setOptions($engineOptions);
@@ -186,31 +185,17 @@ class GenerateReportCommand extends Command
                 $text,
                 $attachment
             ));
-            if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
-                $message = new Message();
-                $message->addTo($organisation[0]->getIpoEmail())
-                    ->addFrom($organisation[0]->getEmailFrom() ? $organisation[0]->getEmailFrom() : $this->config['emailfrom'])
-                    ->setSubject('Rapport automatique du ' . $formatter->format(new \DateTime($day)))
-                    ->setBody($mimeMessage);
 
-                $transport = new \Laminas\Mail\Transport\Smtp();
-
-                $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-
-                if($organisation[0]->getEmailAccount() && $organisation[0]->getEmailPassword()) {
-                    $password = openssl_decrypt(
-                        base64_decode($organisation->getEmailPassword()),
-                        "AES-256-CBC",
-                        $this->config['secret_key'],
-                        0,
-                        $this->config['secret_init']);
-                    $transportOptions->setConnectionConfig(array(
-                        'username' => $organisation[0]->getemailAccount(),
-                        'password' => $organisation[0]->getEmailPassword(),
-                    ));
-                }
-                $transport->setOptions($transportOptions);
-                $transport->send($message);
+            try {
+                $this->emailService->sendEmailTo(
+                    $organisation->getIpoEmail(),
+                    'Rapport automatique du ' . $formatter->format(new \DateTime($day)),
+                    $mimeMessage,
+                    $organisation
+                );
+            } catch (\Exception $e) {
+                $output->writeln($e->getMessage());
+                return Command::FAILURE;
             }
         }
 

@@ -13,6 +13,8 @@ use Administration\Command\Factory\InitBTIVDBCommandFactory;
 use Administration\Command\Factory\InitDBCommandFactory;
 use Administration\Command\InitBTIVDBCommand;
 use Administration\Command\InitDBCommand;
+use Administration\Controller\Factory\ATFCMControllerFactory;
+use Administration\Controller\Factory\MaintenanceControllerFactory;
 
 return array(
     'router' => array(
@@ -86,7 +88,8 @@ return array(
             'Administration\Controller\Mil' => 'Administration\Controller\Factory\MilControllerFactory',
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
             'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory',
-            'Administration\Controller\Atfcm' => 'Administration\Controller\Factory\ATFCMControllerFactory'
+            'Administration\Controller\Atfcm' => ATFCMControllerFactory::class,
+            'Administration\Controller\Maintenance' => MaintenanceControllerFactory::class
         )
     ),
     'view_manager' => array(
@@ -159,6 +162,10 @@ return array(
             'admin.atfcm' => array(
                 'name' => 'ATFCM',
                 'description' => ''
+            ),
+            'admin.maintenance' => array(
+                'name' => 'Maintenance',
+                'description' => 'Lancement de commandes de maintenance sur le serveur'
             )
         ),
         'Messagerie instantanée' => array(
@@ -244,6 +251,12 @@ return array(
                     'controller' => 'Administration\Controller\Switchobjects',
                     'permissions' => [
                         'admin.switchobjects'
+                    ]
+                ),
+                array(
+                    'controller' => 'Administration\Controller\Maintenance',
+                    'permissions' => [
+                        'admin.maintenance'
                     ]
                 )
             )

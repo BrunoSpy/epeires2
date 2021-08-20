@@ -17,6 +17,7 @@
  */
 namespace Core\Factory;
 
+use Core\Service\NMB2BService;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
@@ -30,7 +31,10 @@ class NMB2BServiceFactory implements FactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new \Core\Service\NMB2BService($container->get('Doctrine\ORM\EntityManager'), $container->get('config'));
+        return new NMB2BService(
+            $container->get('Doctrine\ORM\EntityManager'),
+            $container->get('config'),
+            $container->get('emailservice'));
     }
 }
 

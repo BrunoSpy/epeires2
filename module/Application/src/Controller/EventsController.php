@@ -34,6 +34,8 @@ use Application\Entity\Status;
 use Application\Entity\SwitchObjectCategory;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
+use Core\Service\EmailService;
+use Core\Service\MAPDService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Model\ViewModel;
@@ -61,13 +63,14 @@ class EventsController extends TimelineTabController
     private $customfieldservice;
     private $zfcRbacOptions;
     private $translator;
-    private $mapd;
+    private MAPDService $mapd;
+    private EmailService $emailService;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, $mapd, $logger)
+                                $config, $mattermost, $translator, MAPDService $mapd, $logger, EmailService $emailService)
     {
         parent::__construct($entityManager, $config, $mattermost, $logger);
         $this->eventservice = $eventService;
@@ -75,6 +78,7 @@ class EventsController extends TimelineTabController
         $this->zfcRbacOptions = $zfcrbacOptions;
         $this->translator = $translator;
         $this->mapd = $mapd;
+        $this->emailService = $emailService;
     }
     
     public function indexAction()
@@ -2328,18 +2332,13 @@ class EventsController extends TimelineTabController
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
-                    $message = new \Laminas\Mail\Message();
-                    $message->addTo($event->getOrganisation()
-                        ->getIpoEmail())
-                        ->addFrom($this->config['emailfrom'])
-                        ->setSubject("Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event))
-                        ->setBody($mimeMessage);
-                    
-                    $transport = new \Laminas\Mail\Transport\Smtp();
-                    $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-                    $transport->setOptions($transportOptions);
                     try {
-                        $transport->send($message);
+                        $this->emailService->sendEmailTo(
+                            $event->getOrganisation()->getIpoEmail(),
+                            "Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event),
+                            $mimeMessage,
+                            $event->getOrganisation()
+                        );
                         $update = new EventUpdate();
                         $update->setHidden(true);
                         $update->setEvent($event);

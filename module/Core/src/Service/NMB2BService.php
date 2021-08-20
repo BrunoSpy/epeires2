@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManager;
 use DSNA\NMB2BDriver\Exception\WSDLFileUnavailable;
 use DSNA\NMB2BDriver\Models\EAUPChain;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
+use DSNA\NMB2BDriver\Models\RegulationListReply;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\ServiceManager\ServiceLocatorAwareInterface;
 use DSNA\NMB2BDriver\NMB2BClient;
@@ -34,19 +35,22 @@ class NMB2BService
 
     private $nmb2b;
 
-    private $entityManager;
+    private EntityManager $entityManager;
     
     private $config;
     
-    private $nmb2bClient;
+    private NMB2BClient $nmb2bClient;
 
-    private $errorEmail = false;
+    private bool $errorEmail = false;
 
-    public function __construct(EntityManager $entityManager, $config)
+    private EmailService $emailService;
+
+    public function __construct(EntityManager $entityManager, $config, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
         $this->config = $config;
         $this->nmb2b = $config['nm_b2b'];
+        $this->emailService = $emailService;
 
         $options = array();
         $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
@@ -69,7 +73,7 @@ class NMB2BService
         }
 
         $this->nmb2bClient = new NMB2BClient(
-            __DIR__ . '/../../../..' . $this->nmb2b['cert_path'],
+            __DIR__ . '/../../../../' . $this->nmb2b['cert_path'],
             $this->nmb2b['cert_password'],
             $this->nmb2b['wsdl'],
             $options
@@ -139,11 +143,12 @@ class NMB2BService
      * @param \DateTime $end
      * @param string $regex
      * @param string $filtre
-     * @return null|string
+     * @return RegulationListReply
      * @throws WSDLFileUnavailable
      * @throws \DSNA\NMB2BDriver\Exception\UnsupportedNMVersion
      */
-    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = "") {
+    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = ""): RegulationListReply
+    {
 
         if(strlen($regex) == 0 && strlen($filtre) == 0) $regex = "LF*";
 
@@ -160,7 +165,6 @@ class NMB2BService
             }
             throw new \RuntimeException('Erreur NM B2B');
         }
-        return $this->nmb2bClient->__getLastResponse();
     }
 
     public function activateErrorEmail()
@@ -189,18 +193,14 @@ class NMB2BService
         $mimeMessage->setParts(array(
             $text
         ));
-        if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
-            $message = new \Laminas\Mail\Message();
-            $message->addTo($ipoEmail)
-                ->addFrom($this->config['emailfrom'])
-                ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
-                ->setBody($mimeMessage);
-    
-            $transport = new \Laminas\Mail\Transport\Smtp();
-            $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-            $transport->setOptions($transportOptions);
-            $transport->send($message);
-        }
+
+        $this->emailService->sendEmailTo(
+            $ipoEmail,
+            "Erreur lors de l'import de l'AUP via NM B2B",
+            $mimeMessage,
+            $org[0]
+        );
+
     }
 
     public function setVerbose(bool $verbose)

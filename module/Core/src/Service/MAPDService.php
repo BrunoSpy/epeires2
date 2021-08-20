@@ -47,7 +47,7 @@ class MAPDService
 
     const ACTIVATIONSDIFF_ENDPOINT = "/activations/diff";
 
-    private $entityManager;
+    private EntityManager $entityManager;
     
     private $config;
 
@@ -63,11 +63,14 @@ class MAPDService
 
     private $defaultStatus;
 
-    public function __construct(EntityManager $entityManager, $config, Logger $logger)
+    private EmailService $emailService;
+
+    public function __construct(EntityManager $entityManager, $config, Logger $logger, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
         $this->config = $config;
         $this->logger = $logger;
+        $this->emailService = $emailService;
     }
 
     public function isEnabled()
@@ -573,18 +576,14 @@ class MAPDService
         $mimeMessage->setParts(array(
             $text
         ));
-        if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
-            $message = new \Laminas\Mail\Message();
-            $message->addTo($ipoEmail)
-                ->addFrom($this->config['emailfrom'])
-                ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
-                ->setBody($mimeMessage);
-    
-            $transport = new \Laminas\Mail\Transport\Smtp();
-            $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-            $transport->setOptions($transportOptions);
-            $transport->send($message);
-        }
+
+        $this->emailService->sendEmailTo(
+            $ipoEmail,
+            "Erreur lors de l'import de l'AUP via MAPD",
+            $mimeMessage,
+            $org[0]
+        );
+
     }
 
     public function setVerbose(bool $verbose)

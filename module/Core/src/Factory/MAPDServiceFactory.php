@@ -17,6 +17,7 @@
  */
 namespace Core\Factory;
 
+use Core\Service\MAPDService;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
@@ -30,10 +31,11 @@ class MAPDServiceFactory implements FactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new \Core\Service\MAPDService(
+        return new MAPDService(
             $container->get('Doctrine\ORM\EntityManager'),
             $container->get('config'),
-            $container->get('EpeiresLogger'));
+            $container->get('EpeiresLogger'),
+            $container->get('emailservice'));
     }
 }
 

@@ -32,7 +32,7 @@ class GenerateReportCommandFactory implements FactoryInterface {
         return new GenerateReportCommand(
             $container->get('Doctrine\ORM\EntityManager'),
             $container->get('ViewPdfRenderer'),
-            $container->get('config')
+            $container->get('emailservice')
         );
     }
 
