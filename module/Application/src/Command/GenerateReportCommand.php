@@ -40,7 +40,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateReportCommand extends Command
 {
-    protected static $defaultName = 'epeires2:generate-command';
+    protected static $defaultName = 'epeires2:generate-report';
 
     private EntityManager $entityManager;
     private PdfRenderer $viewpdfrenderer;
@@ -55,14 +55,14 @@ class GenerateReportCommand extends Command
     }
 
     /**
-     * report [--email] [--delta=] <orgshortname>
+     * epeires2:generate-report [--email] [--delta VALUE] <orgshortname>
      */
     protected function configure()
     {
         $this
             ->setDescription('Generate IPO report for the current (+-delta) day.')
             ->addOption('email', null, InputOption::VALUE_NONE, 'Sends the report to the IPO')
-            ->addOption('delta', null, InputOption::VALUE_REQUIRED, 'Days to add to the current day. (Import yesterday : --delta=-1)', 0)
+            ->addOption('delta', null, InputOption::VALUE_REQUIRED, 'Days to add to the current day. (Import yesterday : --delta -1)', 0)
             ->addArgument('orgshortname', InputArgument::REQUIRED, 'Which organisation to use.');
 
     }

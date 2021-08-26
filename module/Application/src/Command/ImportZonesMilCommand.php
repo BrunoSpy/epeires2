@@ -51,26 +51,27 @@ class ImportZonesMilCommand extends Command
     }
 
     /**
-     * [--delta=] [--email] service orgshortname username
+     * [--delta=] [--email] service organisation username
      */
     protected function configure()
     {
         $this
             ->setDescription('Import military activity from NM B2B or MAPD.')
-            ->addArgument('origin', InputArgument::REQUIRED, 'Which service to use : mapd OR nmb2b')
+            ->addArgument('service', InputArgument::REQUIRED, 'Which service to use : mapd OR nmb2b')
             ->addArgument('organisation', InputArgument::REQUIRED, 'Organisation to affect imported events')
-            ->addArgument('user', InputArgument::REQUIRED, 'Username to use to create events')
+            ->addArgument('username', InputArgument::REQUIRED, 'Username to use to create events')
             ->addOption('delta', null, InputOption::VALUE_REQUIRED, 'Days to add to the current day. (Import yesterday : --delta=-1)', 0)
             ->addOption('email', null, InputOption::VALUE_NONE, 'Send an email to IPO if failure.');
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $orgName = $input->getArgument('orgshortname');
+
+        $orgName = $input->getArgument('organisation');
         $userName = $input->getArgument('username');
 
-        $organisation = $this->entitymanager->getRepository(Organisation::class)->findOneBy(array('name'=>$orgName));
-        $user = $this->entitymanager->getRepository(User::class)->findOneBy(array('username'=>$userName));
+        $organisation = $this->entityManager->getRepository(Organisation::class)->findOneBy(array('shortname'=>$orgName));
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(array('username'=>$userName));
 
         if($organisation == null) {
             $output->writeln("Impossible de trouver l'organisation spécifiée.");
@@ -81,7 +82,7 @@ class ImportZonesMilCommand extends Command
             return Command::FAILURE;
         }
 
-        $j = $this->getOtion('delta');
+        $j = $input->getOption('delta');
 
         $day = new \DateTime('now');
         if ($j) {
@@ -105,13 +106,13 @@ class ImportZonesMilCommand extends Command
         if($input->getOption('email') == true) {
             $email = true;
         }
-        $service = $input->getArgument('origin');
+        $service = $input->getArgument('service');
         if(strcmp($service, 'nmb2b') == 0)  {
             return $this->importNMB2B($day, $organisation, $user, $email, $verbose, $output);
         } elseif (strcmp($service, 'mapd') == 0) {
             return $this->importMAPD($day, $organisation, $user, $email, $output);
         } else {
-            $output->writeln('Service '.$service.' non reconnue');
+            $output->writeln('Service '.$service.' non reconnu.');
             return Command::FAILURE;
         }
 

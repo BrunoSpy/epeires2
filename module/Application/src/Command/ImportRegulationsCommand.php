@@ -68,7 +68,7 @@ class ImportRegulationsCommand extends Command
         $orgName = $input->getArgument('orgshortname');
         $userName = $input->getArgument('username');
 
-        $organisation = $this->entitymanager->getRepository(Organisation::class)->findOneBy(array('name'=>$orgName));
+        $organisation = $this->entitymanager->getRepository(Organisation::class)->findOneBy(array('shortname'=>$orgName));
         $user = $this->entitymanager->getRepository(User::class)->findOneBy(array('username'=>$userName));
 
         if($organisation == null) {
@@ -90,7 +90,7 @@ class ImportRegulationsCommand extends Command
             $this->nmb2b->setVerbose(true);
         }
 
-        $j = $this->getOtion('delta');
+        $j = $input->getOption('delta');
 
         $day = new \DateTime('now');
         if ($j) {

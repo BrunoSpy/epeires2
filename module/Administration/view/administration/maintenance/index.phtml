@@ -1,0 +1,118 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/maintenance.js')?>
+
+<div class="container-fluid">
+  <div class="row">
+    <p></p>
+    <div class="col-sm-8 col-sm-offset-2">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Import d'évènements</h3>
+        </div>
+
+        <div class="panel-body">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Description</th>
+              <th>Commande</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td style="vertical-align: middle">Importer les zones militaires du jour via NM B2B</td>
+              <td>
+                <select id="maintenanceNMB2BOrganisation">
+                    <?php
+                    foreach ($this->organisations as $organisation) {
+                        echo '<option value="'.$organisation->getShortname().'">'.$organisation->getName().'</option>';
+                    }
+                    ?>
+                </select>
+                <a href="#" id="import-zonesnmb2b" class="btn btn-primary">Importer</a></td>
+            </tr>
+            <tr>
+              <td style="vertical-align: middle">Importer les zones militaires du jour via MAPD</td>
+              <td>
+                <select id="maintenanceMAPDOrganisation">
+                    <?php
+                    foreach ($this->organisations as $organisation) {
+                        echo '<option value="'.$organisation->getShortname().'">'.$organisation->getName().'</option>';
+                    }
+                    ?>
+                </select>
+                <a href="#" id="import-mapd" class="btn btn-primary">Importer</a></td>
+            </tr>
+            <tr>
+              <td style="vertical-align: middle">Importer les régulations via NM B2B</td>
+              <td>
+                <select id="maintenanceOrganisation">
+                    <?php
+                    foreach ($this->organisations as $organisation) {
+                        echo '<option value="'.$organisation->getShortname().'">'.$organisation->getName().'</option>';
+                    }
+                    ?>
+                </select>
+                <a href="#" id="import-regulations" class="btn btn-primary">Importer</a></td>
+            </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Envoi d'emails</h3>
+        </div>
+
+        <div class="panel-body">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Description</th>
+              <th>Commande</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td style="vertical-align: middle">Envoyer le compte-rendu RPO du jour aux destinataires</td>
+              <td>
+                <select id="maintenanceCRRPOOrganisation">
+                    <?php
+                    foreach ($this->organisations as $organisation) {
+                        echo '<option value="'.$organisation->getShortname().'">'.$organisation->getName().'</option>';
+                    }
+                    ?>
+                </select>
+                <a href="#" id="generate-rpo" class="btn btn-primary">Envoyer</a></td>
+            </tr>
+            <tr>
+              <td style="vertical-align: middle">Envoyer le compte-rendu de la veille aux destinataires</td>
+              <td>
+                <select id="maintenanceCRRPODeltaOrganisation">
+                    <?php
+                    foreach ($this->organisations as $organisation) {
+                        echo '<option value="'.$organisation->getShortname().'">'.$organisation->getName().'</option>';
+                    }
+                    ?>
+                </select>
+                <a href="#" id="generate-rpo-delta" class="btn btn-primary">Envoyer</a></td>
+            </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+  maintenance('<?php echo $this->url('administration', array('controller'=>'maintenance')); ?>');
+
+<?php echo $this->notifications($this->messages); ?>
+
+<?php $this->inlineScript()->captureEnd();?>

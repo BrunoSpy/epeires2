@@ -72,6 +72,16 @@
     					data-original-title="Paramètres globaux de l'application"
     					data-placement="bottom" data-toggle="tooltip">Paramètres</a>
     				</li>
+            <?php if($this->isGranted('admin.maintenance')) : ?>
+            <li>
+              <a
+              href="<?php echo $this->url('administration', array('controller'=>'maintenance', 'action' => 'index')) ?>"
+              data-original-title="Commandes de maintenance"
+              data-placement="bottom" data-toggle="tooltip">
+              Maintenance
+              </a>
+            </li>
+            <?php endif; ?>
 	                <?php if($this->isGranted('admin.centre')) : ?>
 				    <li class="dropdown">
     					<a href="#"

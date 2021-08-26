@@ -36,14 +36,16 @@ class NMB2BService
     private $nmb2b;
 
     private EntityManager $entityManager;
-    
+
     private $config;
-    
+
     private NMB2BClient $nmb2bClient;
 
     private bool $errorEmail = false;
 
     private EmailService $emailService;
+
+    private string $certpath;
 
     public function __construct(EntityManager $entityManager, $config, EmailService $emailService)
     {
@@ -72,8 +74,14 @@ class NMB2BService
             $options['location'] = $this->nmb2b['force_url'];
         }
 
+        $this->certpath = __DIR__ . '/../../../../' . $this->nmb2b['cert_path'];
+
+        if(!is_readable($this->certpath)) {
+            throw new \RuntimeException("Impossible de lire le certificat NM B2B au chemin indiqué : ".$this->certpath);
+        }
+
         $this->nmb2bClient = new NMB2BClient(
-            __DIR__ . '/../../../../' . $this->nmb2b['cert_path'],
+            $this->certpath,
             $this->nmb2b['cert_password'],
             $this->nmb2b['wsdl'],
             $options
@@ -107,7 +115,7 @@ class NMB2BService
                 error_log($text);
             }
             throw new \RuntimeException('Erreur NM B2B');
-        }catch (WSDLFileUnavailable $e) {
+        } catch (WSDLFileUnavailable $e) {
             error_log($e->getMessage());
         }
     }
@@ -161,9 +169,9 @@ class NMB2BService
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
-                error_log($text);
+                error_log(print_r($text, true));
             }
-            throw new \RuntimeException('Erreur NM B2B');
+            throw new \RuntimeException('Erreur NM B2B : '.$e->getMessage());
         }
     }
 
@@ -208,6 +216,11 @@ class NMB2BService
         if($this->nmb2bClient) {
             $this->nmb2bClient->setVerbose($verbose);
         }
+    }
+
+    public function getClient()
+    {
+        return $this->nmb2bClient;
     }
 }
 
