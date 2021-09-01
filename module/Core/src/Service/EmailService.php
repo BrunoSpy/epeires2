@@ -89,6 +89,7 @@ class EmailService
             $transportOptions->setConnectionConfig(array(
                 'username' => $fromOrg->getEmailAccount(),
                 'password' => $password,
+                'ssl' => 'tls'
             ));
             }
         }
