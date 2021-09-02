@@ -6,10 +6,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/BrunoSpy/DoctrineMigrationsModule"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/BrunoSpy/opentbsbundle"
         }
     ],
