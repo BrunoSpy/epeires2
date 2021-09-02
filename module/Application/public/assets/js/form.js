@@ -459,8 +459,8 @@ var form = function(url, cats, sunrise, sunrise_url){
 
 	//change end input constraint when input date change
     $("#event").on('change', "#start input", function(e){
-        var startdate = $("#start input.date").val()
-        $('#end input.date')
+        var startdate = $("#start input.dateform").val()
+        $('#end input.dateform')
             .bootstrapMaterialDatePicker('setMinDate', startdate);
 
     });
@@ -561,7 +561,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 					}
 					validator = $('#Event').validate({
 						errorClass: 'has-error',
-						ignore: ':hidden, .date',
+						ignore: ':hidden, .dateform',
 						success: function(label, element){
 							$(element).parents('.form-group').removeClass('has-error');
 						},
