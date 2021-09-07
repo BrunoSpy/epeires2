@@ -2299,4 +2299,123 @@ class EventRepository extends ExtendedRepository
         return $this->getEntityManager()->getRepository(Event::class)->findById($ids);
     }
 
+    /**
+     * Cloture l'évènement ains que l'ensemble de ses fils.
+     * Annule les alarmes non acquitées si positionnées par delta
+     *
+     * @param Event $event
+     * @param \DateTime|null $enddate
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function closeEvent(Event $event, \DateTime $enddate = null)
+    {
+        if ($enddate == null && ! $event->isPunctual()) {
+            throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
+        }
+
+        $closedStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::CLOSED);
+
+        if ($closedStatus == null || $closedStatus->getId() != Status::CLOSED) {
+            throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
+        }
+
+        if (! $event->isPunctual()) {
+            $event->setEnddate($enddate);
+        }
+        $event->setStatus($closedStatus);
+        $this->getEntityManager()->persist($event);
+
+        foreach ($event->getChildren() as $child) {
+            $class = get_class($child->getCategory());
+            switch ($class) {
+                case ActionCategory::class :
+                    //do nothing
+                    break;
+                case AlarmCategory::class :
+                    //cancel open alarms only if set by delta
+                    if($child->getStatus()->getId() == Status::CLOSED) {
+                        //do nothing
+                    } else {
+                        $deltaend = "";
+                        $deltabegin = "";
+                        foreach ($event->getCustomFieldsValues() as $value) {
+                            if ($value->getCustomField()->getId() == $event->getCategory()
+                                    ->getDeltaBeginField()
+                                    ->getId()
+                            ) {
+                                $deltabegin = preg_replace('/\s+/', '', $value->getValue());
+                            }
+                            if ($value->getCustomField()->getId() == $event->getCategory()
+                                    ->getDeltaEndField()
+                                    ->getId()
+                            ) {
+                                $deltaend = preg_replace('/\s+/', '', $value->getValue());
+                            }
+                            if(strlen(trim($deltaend)) > 0) {
+                                //do nothing
+                            } elseif (strlen(trim($deltabegin))) {
+                                //cancel alarm if startdate > event_enddate
+                                if($child->getStartdate() > $event->getStartdate()) {
+                                    $this->cancelEvent($child);
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    $this->closeEvent($child, $enddate);
+            }
+        }
+    }
+
+    /**
+     * Annule l'évènement et tous ses enfants
+     * Si pas d'heure de fin programmée, utilisation de l'heure actuelle +1h
+     *
+     * @param Event $event
+     * @throws \RuntimeException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function cancelEvent(Event $event)
+    {
+        $cancelStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::CANCELED);
+        $this->endEvent($event, $cancelStatus);
+    }
+
+    public function deleteEvent(Event $event)
+    {
+        $deleteStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::DELETED);
+        $this->endEvent($event, $deleteStatus);
+    }
+
+    /**
+     * Cancel or delete an event
+     * To close an event, use closeEvent
+     * @param Event $event
+     * @param Status $status
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function endEvent(Event $event, Status $status)
+    {
+        $event->setStatus($status);
+        if ($event->isPunctual() || (! $event->isPunctual() && $event->getEnddate() === null)) {
+            $now = new \DateTime('now');
+            $now->setTimezone(new \DateTimeZone('UTC'));
+            if($event->getStartdate() >= $now) {
+                $enddate = clone $event->getStartdate();
+                $enddate->add(new \DateInterval('PT1H'));
+                $event->setEnddate($enddate);
+            } else {
+                $event->setEnddate($now);
+            }
+        }
+        foreach ($event->getChildren() as $child) {
+            if (! $child instanceof ActionCategory) {
+                $this->endEvent($child, $status);
+            }
+        }
+        $this->getEntityManager()->persist($event);
+    }
+
 }

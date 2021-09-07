@@ -29,6 +29,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Status
 {
 
+    const NEW = 1;
+    const CONFIRMED = 2;
+    const CLOSED = 3;
+    const CANCELED = 4;
+    const DELETED = 5;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")

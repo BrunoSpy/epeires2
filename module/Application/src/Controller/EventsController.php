@@ -601,8 +601,7 @@ class EventsController extends TimelineTabController
                             if($recurrence === null) {
                                 //en cas de modification d'un évènement seul et ajout d'une recurrence
                                 $recurrence = new Recurrence($startdate, "");
-                                $event->setStatus($deleteStatus);
-                                $this->closeEvent($event);
+                                $this->getEntityManager()->getRepository(Event::class)->deleteEvent($event);
                             }
                             if(isset($post['exclude']) && $post['exclude'] == "true") {
                                 $recurrence->exclude($event);
@@ -797,10 +796,16 @@ class EventsController extends TimelineTabController
                         }
 
                         //une fois les évènements fils positionnés, on vérifie si il faut clore l'évènement
-                        if ($e->getStatus()->getId() == 3 // passage au statut terminé
-                            || $e->getStatus()->getId() == 4 // passage au statut annulé
-                            || $e->getStatus()->getId() == 5) { // passage au statut supprimé
-                            $this->closeEvent($e);
+                        switch ($e->getStatus()->getId()) {
+                            case Status::CLOSED:
+                                $this->getEntityManager()->getRepository(Event::class)->closeEvent($e);
+                                break;
+                            case Status::CANCELED:
+                                $this->getEntityManager()->getRepository(Event::class)->cancelEvent($e);
+                                break;
+                            case Status::DELETED:
+                                $this->getEntityManager()->getRepository(Event::class)->deleteEvent($e);
+                                break;
                         }
 
                         // create associated actions (only relevant if creation from a model)
@@ -2142,8 +2147,8 @@ class EventsController extends TimelineTabController
     /**
      * Usage :
      * $this->url('application', array('controller' => 'events'))+'/changefield?id=<id>&field=<field>&value=<newvalue>'
-     * 
-     * @return JSon with messages
+     *
+     * @return JsonModel with messages
      */
     public function changefieldAction()
     {
@@ -2194,15 +2199,15 @@ class EventsController extends TimelineTabController
                                 }
                                 // on ferme l'evt proprement
                                 if (! $status->isOpen()) {
-                                    $this->closeEvent($event);
+                                    $this->getEntityManager()->getRepository(Event::class)->closeEvent($event);
                                 }
                             } else 
                                 if (! $status->isOpen() && ! $status->isDefault()) {
                                     // si statut annulé
-                                    $event->cancelEvent($status);
+                                    $this->getEntityManager()->getRepository(Event::class)->cancelEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
                                 } else {
-                                    $event->setStatus($status);
+                                    $this->getEntityManager()->getRepository(Event::class)->deleteEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
                                 }
                             $objectManager->persist($event);
@@ -2267,16 +2272,8 @@ class EventsController extends TimelineTabController
                 $objectManager = $this->getEntityManager();
                 $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
                 if ($event) {
-                    $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
-                    $event->setStatus($deleteStatus);
-                    if(!$event->isPunctual() && $event->getEnddate() == null) {
-                        $enddate = clone $event->getStartdate();
-                        $enddate->add(new \DateInterval('PT1H'));
-                        $event->setEnddate($enddate);
-                    }
-                    $this->closeEvent($event);
                     try {
-                        $objectManager->persist($event);
+                        $objectManager->getRepository(Event::class)->deleteEvent($event);
                         $objectManager->flush();
                         $messages['success'][] = "Évènement correctement supprimé";
                         $json['event'] = array(
@@ -2407,7 +2404,7 @@ class EventsController extends TimelineTabController
                 if (($event->getStatus()->getId() == 2 || ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now)) && (($event->getEndDate()->format('U') - $now->format('U')) / 60) < 15) {
                     $event->setStatus($status);
                     // on ferme l'evt proprement
-                    $this->closeEvent($event);
+                    $this->getEntityManager()->getRepository(Event::class)->closeEvent($event, $enddate);
                     if (is_array($messages)) {
                         $messages['success'][] = "Evènement passé au statut : \"Fin confirmée\".";
                     }
@@ -2479,36 +2476,6 @@ class EventsController extends TimelineTabController
         }
     }
 
-    /**
-     * Cloture d'un evt : terminé ou annulé (statut 3 ou 4)
-     * TODO : use $event->close or $event->cancel
-     * 
-     * @param Event $event            
-     */
-    private function closeEvent(Event $event)
-    {
-        $objectManager = $this->getEntityManager();
-        foreach ($event->getChildren() as $child) {
-            if ($child->getCategory() instanceof FrequencyCategory) {
-                // on termine les évènements fils de type fréquence
-                if ($event->getStatus()->getId() == 3) {
-                    // date de fin uniquement pour les fermetures
-                    $child->setEnddate($event->getEnddate());
-                }
-                $child->setStatus($event->getStatus());
-            } elseif ($child->getCategory() instanceof AlarmCategory) {
-                    // si evt annulé uniquement : on annule toutes les alarmes
-                    if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
-                        $child->setStatus($event->getStatus());
-                    }
-            } elseif ($child->getCategory() instanceof SwitchObjectCategory) {
-                $child->setStatus($event->getStatus());
-                $child->setEnddate($event->getEnddate());
-            }
-            $objectManager->persist($child);
-        }
-    }
-
     public function getficheAction()
     {
         $viewmodel = new ViewModel();
@@ -2550,9 +2517,9 @@ class EventsController extends TimelineTabController
                 $eventupdate->setText($post['new-update']);
                 $eventupdate->setEvent($event);
                 $event->setLastModifiedOn();
-                $em->persist($eventupdate);
-                $em->persist($event);
                 try {
+                    $em->persist($eventupdate);
+                    $em->persist($event);
                     $em->flush();
                     $messages['success'][] = "Note correctement ajoutée.";
                     $messages['events'] = array(
@@ -2849,18 +2816,17 @@ class EventsController extends TimelineTabController
         return new JsonModel($messages);
     }
     
-    public function deletepostitAction(){
+    public function deletepostitAction()
+    {
         $id = $this->params()->fromQuery('id', null);
         $em = $this->getEntityManager();
         $messages = array();
         if($id) {
             $p = $em->getRepository(Event::class)->find($id);
-            $closeStatus = $em->getRepository(Status::class)->find('3');
             if($p) {
                 $now = new \DateTime();
                 $now->setTimezone(new \DateTimeZone('UTC'));
-                $p->close($closeStatus, $now);
-                $em->persist($p);
+                $this->getEntityManager()->getRepository(Event::class)->closeEvent($p, $now);
                 try{
                     $em->flush();
                     $messages['success'][] = "Post-It correctement supprimé";

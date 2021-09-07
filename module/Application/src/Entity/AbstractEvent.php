@@ -17,6 +17,7 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Laminas\Form\Annotation;
@@ -275,7 +276,7 @@ abstract class AbstractEvent
         return $this->parent;
     }
 
-    public function getChildren()
+    public function getChildren() : ArrayCollection
     {
         return $this->children;
     }
