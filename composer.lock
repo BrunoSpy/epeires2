@@ -313,16 +313,16 @@
         },
         {
             "name": "composer/package-versions-deprecated",
-            "version": "1.11.99.3",
+            "version": "1.11.99.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/package-versions-deprecated.git",
-                "reference": "fff576ac850c045158a250e7e27666e146e78d18"
+                "reference": "b174585d1fe49ceed21928a945138948cb394600"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/fff576ac850c045158a250e7e27666e146e78d18",
-                "reference": "fff576ac850c045158a250e7e27666e146e78d18",
+                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/b174585d1fe49ceed21928a945138948cb394600",
+                "reference": "b174585d1fe49ceed21928a945138948cb394600",
                 "shasum": ""
             },
             "require": {
@@ -366,7 +366,7 @@
             "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
             "support": {
                 "issues": "https://github.com/composer/package-versions-deprecated/issues",
-                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.3"
+                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.4"
             },
             "funding": [
                 {
@@ -382,7 +382,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-08-17T13:49:14+00:00"
+            "time": "2021-09-13T08:41:34+00:00"
         },
         {
             "name": "container-interop/container-interop",
@@ -846,16 +846,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.13.2",
+            "version": "2.13.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "8dd39d2ead4409ce652fd4f02621060f009ea5e4"
+                "reference": "0d7adf4cadfee6f70850e5b163e6cdd706417838"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/8dd39d2ead4409ce652fd4f02621060f009ea5e4",
-                "reference": "8dd39d2ead4409ce652fd4f02621060f009ea5e4",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/0d7adf4cadfee6f70850e5b163e6cdd706417838",
+                "reference": "0d7adf4cadfee6f70850e5b163e6cdd706417838",
                 "shasum": ""
             },
             "require": {
@@ -867,13 +867,14 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "9.0.0",
-                "jetbrains/phpstorm-stubs": "2020.2",
-                "phpstan/phpstan": "0.12.81",
+                "jetbrains/phpstorm-stubs": "2021.1",
+                "phpstan/phpstan": "0.12.96",
                 "phpunit/phpunit": "^7.5.20|^8.5|9.5.5",
+                "psalm/plugin-phpunit": "0.16.1",
                 "squizlabs/php_codesniffer": "3.6.0",
                 "symfony/cache": "^4.4",
                 "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
-                "vimeo/psalm": "4.6.4"
+                "vimeo/psalm": "4.10.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -934,7 +935,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/2.13.2"
+                "source": "https://github.com/doctrine/dbal/tree/2.13.3"
             },
             "funding": [
                 {
@@ -950,7 +951,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-06-18T21:48:39+00:00"
+            "time": "2021-09-12T19:11:48+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -5629,33 +5630,31 @@
         },
         {
             "name": "laminas/laminas-http",
-            "version": "2.14.3",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-http.git",
-                "reference": "bfaab8093e382274efed7fdc3ceb15f09ba352bb"
+                "reference": "e1f3420ab35e21ea135913d213b8d570e5e7b513"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-http/zipball/bfaab8093e382274efed7fdc3ceb15f09ba352bb",
-                "reference": "bfaab8093e382274efed7fdc3ceb15f09ba352bb",
+                "url": "https://api.github.com/repos/laminas/laminas-http/zipball/e1f3420ab35e21ea135913d213b8d570e5e7b513",
+                "reference": "e1f3420ab35e21ea135913d213b8d570e5e7b513",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-loader": "^2.5.1",
-                "laminas/laminas-stdlib": "^3.2.1",
-                "laminas/laminas-uri": "^2.5.2",
-                "laminas/laminas-validator": "^2.10.1",
-                "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.3 || ~8.0.0"
+                "laminas/laminas-loader": "^2.8",
+                "laminas/laminas-stdlib": "^3.6",
+                "laminas/laminas-uri": "^2.9.1",
+                "laminas/laminas-validator": "^2.15",
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
             },
-            "replace": {
-                "zendframework/zend-http": "^2.11.2"
+            "conflict": {
+                "zendframework/zend-http": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~1.0.0",
-                "laminas/laminas-config": "^3.1 || ^2.6",
-                "phpunit/phpunit": "^9.3"
+                "laminas/laminas-coding-standard": "~2.2.1",
+                "phpunit/phpunit": "^9.5.5"
             },
             "suggest": {
                 "paragonie/certainty": "For automated management of cacert.pem"
@@ -5691,7 +5690,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-02-18T21:58:11+00:00"
+            "time": "2021-09-10T10:45:31+00:00"
         },
         {
             "name": "laminas/laminas-hydrator",
@@ -7338,30 +7337,29 @@
         },
         {
             "name": "laminas/laminas-uri",
-            "version": "2.8.1",
+            "version": "2.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-uri.git",
-                "reference": "79bd4c614c8cf9a6ba715a49fca8061e84933d87"
+                "reference": "7e837dc15c8fd3949df7d1213246fd7c8640032b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-uri/zipball/79bd4c614c8cf9a6ba715a49fca8061e84933d87",
-                "reference": "79bd4c614c8cf9a6ba715a49fca8061e84933d87",
+                "url": "https://api.github.com/repos/laminas/laminas-uri/zipball/7e837dc15c8fd3949df7d1213246fd7c8640032b",
+                "reference": "7e837dc15c8fd3949df7d1213246fd7c8640032b",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-escaper": "^2.5",
-                "laminas/laminas-validator": "^2.10",
-                "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.3 || ~8.0.0"
+                "laminas/laminas-escaper": "^2.9",
+                "laminas/laminas-validator": "^2.15",
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
             },
-            "replace": {
-                "zendframework/zend-uri": "^2.7.1"
+            "conflict": {
+                "zendframework/zend-uri": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "^2.1",
-                "phpunit/phpunit": "^9.3"
+                "laminas/laminas-coding-standard": "~2.2.1",
+                "phpunit/phpunit": "^9.5.5"
             },
             "type": "library",
             "autoload": {
@@ -7393,7 +7391,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-02-17T21:53:05+00:00"
+            "time": "2021-09-09T18:37:15+00:00"
         },
         {
             "name": "laminas/laminas-validator",
@@ -8940,23 +8938,25 @@
         },
         {
             "name": "roave/psr-container-doctrine",
-            "version": "3.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/psr-container-doctrine.git",
-                "reference": "a1f7bd9179d1729d8a5fe2fc743013a050ef90aa"
+                "reference": "9ff7b05cdf4c03c06462cb388dfd4d2fab253721"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/psr-container-doctrine/zipball/a1f7bd9179d1729d8a5fe2fc743013a050ef90aa",
-                "reference": "a1f7bd9179d1729d8a5fe2fc743013a050ef90aa",
+                "url": "https://api.github.com/repos/Roave/psr-container-doctrine/zipball/9ff7b05cdf4c03c06462cb388dfd4d2fab253721",
+                "reference": "9ff7b05cdf4c03c06462cb388dfd4d2fab253721",
                 "shasum": ""
             },
             "require": {
+                "doctrine/cache": "^1.0",
                 "doctrine/common": "^2.6 || ^3.0",
                 "doctrine/dbal": "^2.5 || ^3.0",
                 "doctrine/migrations": "^3.0",
                 "doctrine/orm": "^2.5",
+                "doctrine/persistence": "^1.3 || ^2.0",
                 "php": ">=7.4.0",
                 "psr/container": "^1.0.0"
             },
@@ -8991,9 +8991,9 @@
             "homepage": "https://github.com/Roave/psr-container-doctrine",
             "support": {
                 "issues": "https://github.com/Roave/psr-container-doctrine/issues",
-                "source": "https://github.com/Roave/psr-container-doctrine/tree/3.0.0"
+                "source": "https://github.com/Roave/psr-container-doctrine/tree/3.1.0"
             },
-            "time": "2021-04-23T15:56:10+00:00"
+            "time": "2021-09-09T10:01:06+00:00"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -12237,33 +12237,33 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.13.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea"
+                "reference": "d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be1996ed8adc35c3fd795488a653f4b518be70ea",
-                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e",
+                "reference": "d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.2",
-                "php": "^7.2 || ~8.0, <8.1",
+                "php": "^7.2 || ~8.0, <8.2",
                 "phpdocumentor/reflection-docblock": "^5.2",
                 "sebastian/comparator": "^3.0 || ^4.0",
                 "sebastian/recursion-context": "^3.0 || ^4.0"
             },
             "require-dev": {
-                "phpspec/phpspec": "^6.0",
+                "phpspec/phpspec": "^6.0 || ^7.0",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.11.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -12298,9 +12298,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/1.13.0"
+                "source": "https://github.com/phpspec/prophecy/tree/1.14.0"
             },
-            "time": "2021-03-17T13:42:18+00:00"
+            "time": "2021-09-10T09:02:12+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
