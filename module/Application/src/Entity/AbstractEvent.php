@@ -276,7 +276,7 @@ abstract class AbstractEvent
         return $this->parent;
     }
 
-    public function getChildren() : ArrayCollection
+    public function getChildren() : Collection
     {
         return $this->children;
     }
