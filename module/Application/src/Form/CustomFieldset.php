@@ -92,7 +92,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                     if(strlen($category->getZonesRegex()) > 0) {
                         $regex = substr($category->getZonesRegex(), 1);
                         $regex = substr($regex, 0, -1);
-                        $definition['attributes']['pattern'] = $regex;
+                        $definition['attributes']['pattern'] = $regex.'.*';
                         $definition['attributes']['title'] = $category->getZonesRegex();
                         $definition['attributes']['placeholder'] = $category->getZonesRegex();
                     }
@@ -115,7 +115,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                 $definition['attributes']['maxlength'] = '48';
             }
 
-            if(strlen($customfield->getTooltip()) > 0) {
+            if(strlen($customfield->getTooltip()) > 0 && !array_key_exists('placeholder',$definition['attributes'])) {
                 $definition['attributes']['title'] = $customfield->getTooltip();
                 $definition['attributes']['placeholder'] = $customfield->getTooltip();
             }
