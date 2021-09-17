@@ -24,6 +24,7 @@ use Application\Entity\MilCategory;
 use Application\Entity\MilCategoryLastUpdate;
 use Application\Entity\Status;
 use Core\Entity\User;
+use Core\Exceptions\MAPDException;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
@@ -49,7 +50,7 @@ class MAPDService
     const ACTIVATIONSDIFF_ENDPOINT = "/activations/diff";
 
     private EntityManager $entityManager;
-    
+
     private $config;
 
     private $errorEmail = false;
@@ -336,6 +337,8 @@ class MAPDService
                 return json_decode($response->getBody(), true);
             }
         } else {
+            $this->logger->err($request->getUriString());
+            $this->logger->err($response->getBody());
             throw new RuntimeException('Récupération initiale '. $filter.' : '.$response->getStatusCode().' : '.$response->getReasonPhrase());
         }
 
@@ -362,7 +365,7 @@ class MAPDService
             'start' => $start->format("Y-m-d\TH:i:s\Z"), //TODO change server to accept ISO8601
             'end' => $end->format("Y-m-d\TH:i:s\Z"),
             'since' => $since->format("Y-m-d\TH:i:s\Z")
-            );
+        );
 
         if(strlen($filter) > 0 && strcmp($filter, '*') !== 0) {
             $parameters['areaName'] = $filter;
@@ -425,11 +428,7 @@ class MAPDService
             $maxfl = $event->getCustomFieldValue($event->getCategory()->getUpperLevelField())->getValue();
             $start = $event->getStartdate();
             $end = $event->getEnddate();
-            try {
-                $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
-            } catch(Exception $e) {
-                throw $e;
-            }
+            $response = $this->createRSA($name, $start, $end, $maxfl, $minfl);
             return $response['id'];
         }
         return -1;
@@ -486,12 +485,6 @@ class MAPDService
             'dateFrom' => $start->format("Y-m-d\TH:i:s\Z"),
             'dateUntil' => $end->format("Y-m-d\TH:i:s\Z")
         );
-        /*
-        $request = new Request();
-        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
-        $request->setMethod(Request::METHOD_POST);
-        $request->setPost(new Parameters());
-        */
 
         $this->getClient()->setUri($this->uri . self::ACTIVATIONS_ENDPOINT);
         $this->getClient()->setMethod(Request::METHOD_POST);
@@ -503,7 +496,7 @@ class MAPDService
         if($response->getStatusCode() == Response::STATUS_CODE_201) {
             return json_decode($response->getBody(), true);
         } else {
-            throw new RuntimeException($response->getStatusCode(). ' '. $response->getReasonPhrase().'<br>'.$response->getBody());
+            throw new MAPDException($response->getBody(),$response->getStatusCode());
         }
     }
 
@@ -516,19 +509,13 @@ class MAPDService
             throw new RuntimeException('Unable to get MAPD CLient');
         }
         $parameters = array(
-        'areaName' => $name,
-        'minFL' => $lowerFL,
-        'maxFL' => $upperFL,
-        'dateFrom' => $start->format("Y-m-d\TH:i:s\Z"),
-        'dateUntil' => $end->format("Y-m-d\TH:i:s\Z")
+            'areaName' => $name,
+            'minFL' => $lowerFL,
+            'maxFL' => $upperFL,
+            'dateFrom' => $start->format("Y-m-d\TH:i:s\Z"),
+            'dateUntil' => $end->format("Y-m-d\TH:i:s\Z")
         );
-        /*
-        $request = new Request();
-        $request->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
-        $request->setMethod(Request::METHOD_PUT);
 
-        $request->setPost(new Parameters($parameters));
-        */
         $this->getClient()->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
         $this->getClient()->setMethod(Request::METHOD_PUT);
         $this->getClient()->setRawBody(json_encode($parameters));
@@ -540,8 +527,7 @@ class MAPDService
         if($response->getStatusCode() == Response::STATUS_CODE_200) {
             return json_decode($response->getBody(), true);
         } else {
-            throw new RuntimeException($response->getStatusCode() . ' '.$response->getReasonPhrase().'<br>'
-                                    .$response->getBody());
+            throw new MAPDException($response->getBody(),$response->getStatusCode());
         }
     }
 
@@ -564,11 +550,10 @@ class MAPDService
         if($response->getStatusCode() == Response::STATUS_CODE_204) {
             return true;
         } else {
-            throw new RuntimeException($response->getStatusCode() . ' ' . $response->getReasonPhrase() . '<br>'
-                                       . $response->getBody());
+            throw new MAPDException($response->getBody(),$response->getStatusCode());
         }
     }
- 
+
     public function activateErrorEmail()
     {
         $this->errorEmail = true;
