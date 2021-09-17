@@ -32,6 +32,7 @@ use Exception;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
+use Laminas\Json\Json;
 use Laminas\Log\Logger;
 use Laminas\Stdlib\Parameters;
 use RuntimeException;
@@ -259,7 +260,7 @@ class MAPDService
                                         $this->entityManager->persist($lowerLevel);
                                         $this->entityManager->persist($upperlevel);
                                     } else {
-                                        $this->logger->info("Tentative de mise à jour d'un évènement non connue : création");
+                                        $this->logger->info("Tentative de mise à jour d'un évènement non connu : création");
                                         //update of an unknown event, should not happen but let's create it
                                         //can happen if event is hosted by multiple categories
                                         $this->entityManager->getRepository(Event::class)->doAddMilEvent(
@@ -406,10 +407,10 @@ class MAPDService
                 if(!$this->checkName($name, $event->getCategory())) {
                     throw new RuntimeException("Impossible de modifier l'évènement : le nom n'est pas cohérent avec la catégorie.");
                 }
-                try {
-                    $this->updateRSA($internalId->getValue(), $name, $start, $end, $maxfl, $minfl);
-                } catch (Exception $e) {
-                    throw $e;
+                $this->updateRSA($internalId->getValue(), $name, $start, $end, $maxfl, $minfl);
+                $statusId = $event->getStatus()->getId();
+                if($statusId == Status::DELETED || $statusId == Status::CANCELED) {
+                    $this->cancelRSA($internalId->getValue());
                 }
             } else {
                 throw new RuntimeException("Impossible de mettre à jour un évènement sans identifiant MAPD.");
@@ -533,7 +534,6 @@ class MAPDService
         $this->getClient()->setRawBody(json_encode($parameters));
         $this->getClient()->setEncType('application/json');
 
-        error_log(print_r(json_encode($parameters), true));
 
         $response = $this->getClient()->send();
 
@@ -545,11 +545,30 @@ class MAPDService
         }
     }
 
+
+    /**
+     * @param $id
+     * @return bool
+     * @throws RuntimeException
+     */
     public function cancelRSA($id)
     {
+        if($this->getClient() == null) {
+            throw new RuntimeException('Unable to get MAPD CLient');
+        }
+        $this->getClient()->setUri($this->uri . self::ACTIVATIONS_ENDPOINT . '/' . $id);
+        $this->getClient()->setMethod(Request::METHOD_DELETE);
 
+        $response = $this->getClient()->send();
+
+        if($response->getStatusCode() == Response::STATUS_CODE_204) {
+            return true;
+        } else {
+            throw new RuntimeException($response->getStatusCode() . ' ' . $response->getReasonPhrase() . '<br>'
+                                       . $response->getBody());
+        }
     }
-
+ 
     public function activateErrorEmail()
     {
         $this->errorEmail = true;
