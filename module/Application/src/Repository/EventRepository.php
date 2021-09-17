@@ -2309,7 +2309,7 @@ class EventRepository extends ExtendedRepository
      */
     public function closeEvent(Event $event, \DateTime $enddate = null)
     {
-        if ($enddate == null && ! $event->isPunctual()) {
+        if (($enddate == null && $event->getEnddate() == null) && ! $event->isPunctual()) {
             throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
         }
 
@@ -2319,7 +2319,7 @@ class EventRepository extends ExtendedRepository
             throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
         }
 
-        if (! $event->isPunctual()) {
+        if (! $event->isPunctual() && $enddate !== null) {
             $event->setEnddate($enddate);
         }
         $event->setStatus($closedStatus);
