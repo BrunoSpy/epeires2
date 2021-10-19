@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bb9cbd485a64fcbda0abf40f9fcf067",
+    "content-hash": "c924000b7409b1e67fe5e85f9a33b447",
     "packages": [
         {
             "name": "assetic/framework",
@@ -756,16 +756,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "3.1.2",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "a036d90c303f3163b5be8b8fde9b6755b2be4a3a"
+                "reference": "6d970a11479275300b5144e9373ce5feacfa9b91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/a036d90c303f3163b5be8b8fde9b6755b2be4a3a",
-                "reference": "a036d90c303f3163b5be8b8fde9b6755b2be4a3a",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/6d970a11479275300b5144e9373ce5feacfa9b91",
+                "reference": "6d970a11479275300b5144e9373ce5feacfa9b91",
                 "shasum": ""
             },
             "require": {
@@ -826,7 +826,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/common/issues",
-                "source": "https://github.com/doctrine/common/tree/3.1.2"
+                "source": "https://github.com/doctrine/common/tree/3.2.0"
             },
             "funding": [
                 {
@@ -842,7 +842,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-10T20:18:51+00:00"
+            "time": "2021-10-19T06:47:22+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -998,37 +998,36 @@
         },
         {
             "name": "doctrine/doctrine-laminas-hydrator",
-            "version": "2.1.1",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine-laminas-hydrator.git",
-                "reference": "aae72d294087bb5ca454ea212517d8e54797635e"
+                "reference": "346e511ed0c42b00963715585111eab760ffd025"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine-laminas-hydrator/zipball/aae72d294087bb5ca454ea212517d8e54797635e",
-                "reference": "aae72d294087bb5ca454ea212517d8e54797635e",
+                "url": "https://api.github.com/repos/doctrine/doctrine-laminas-hydrator/zipball/346e511ed0c42b00963715585111eab760ffd025",
+                "reference": "346e511ed0c42b00963715585111eab760ffd025",
                 "shasum": ""
             },
             "require": {
-                "doctrine/collections": "^1.6.5",
-                "doctrine/inflector": "^1.4.3 || ^2.0.3",
-                "doctrine/persistence": "^1.3.7 || ^2.0",
+                "doctrine/collections": "^1.6.8",
+                "doctrine/inflector": "^1.4.4 || ^2.0.3",
+                "doctrine/persistence": "^1.3.8 || ^2.2.2",
                 "ext-ctype": "*",
-                "laminas/laminas-hydrator": "^3.0.2 || ^4.0",
-                "laminas/laminas-stdlib": "^3.2.1",
-                "php": "^7.2 || ~8.0.0"
+                "laminas/laminas-hydrator": "^3.2.1 || ^4.3.1",
+                "laminas/laminas-stdlib": "^3.6.0",
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "^2.0",
-                "phpunit/phpunit": "^8.5"
+                "jangregor/phpstan-prophecy": "^0.8.1",
+                "laminas/laminas-coding-standard": "^2.3.0",
+                "phpspec/prophecy-phpunit": "^2.0.1",
+                "phpstan/phpstan": "^0.12.99",
+                "phpunit/phpunit": "^9.5.10",
+                "vimeo/psalm": "^4.10.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Doctrine\\Laminas\\Hydrator\\": "src/"
@@ -1064,20 +1063,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-24T04:22:30+00:00"
+            "time": "2021-10-17T12:48:44+00:00"
         },
         {
             "name": "doctrine/doctrine-module",
-            "version": "4.1.2",
+            "version": "4.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineModule.git",
-                "reference": "b2ab0f53d5de185e436b623b519bd91c95190fda"
+                "reference": "662362af298d25a305d62e96931c0a3608078b40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/b2ab0f53d5de185e436b623b519bd91c95190fda",
-                "reference": "b2ab0f53d5de185e436b623b519bd91c95190fda",
+                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/662362af298d25a305d62e96931c0a3608078b40",
+                "reference": "662362af298d25a305d62e96931c0a3608078b40",
                 "shasum": ""
             },
             "require": {
@@ -1101,6 +1100,7 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^8.2",
+                "doctrine/orm": "^2.9",
                 "laminas/laminas-i18n": "^2.7",
                 "laminas/laminas-log": "^2.9",
                 "laminas/laminas-modulemanager": "^2.8",
@@ -1173,7 +1173,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineModule/issues",
-                "source": "https://github.com/doctrine/DoctrineModule/tree/4.1.2"
+                "source": "https://github.com/doctrine/DoctrineModule/tree/4.1.3"
             },
             "funding": [
                 {
@@ -1189,7 +1189,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-19T20:03:47+00:00"
+            "time": "2021-10-18T19:22:32+00:00"
         },
         {
             "name": "doctrine/doctrine-orm-module",
@@ -3139,6 +3139,82 @@
             "time": "2021-06-16T13:22:51+00:00"
         },
         {
+            "name": "laminas-api-tools/api-tools-documentation-swagger",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas-api-tools/api-tools-documentation-swagger.git",
+                "reference": "c8db9b167bd4935e2fc583a63593dd7721893cab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas-api-tools/api-tools-documentation-swagger/zipball/c8db9b167bd4935e2fc583a63593dd7721893cab",
+                "reference": "c8db9b167bd4935e2fc583a63593dd7721893cab",
+                "shasum": ""
+            },
+            "require": {
+                "laminas-api-tools/api-tools-api-problem": "^1.2.1",
+                "laminas-api-tools/api-tools-content-negotiation": "^1.2.1",
+                "laminas-api-tools/api-tools-documentation": "^1.2",
+                "laminas/laminas-eventmanager": "^3.2",
+                "laminas/laminas-mvc": "^2.7.15 || ^3.0.4",
+                "laminas/laminas-servicemanager": "^2.7.6 || ^3.1",
+                "laminas/laminas-view": "^2.8.1",
+                "laminas/laminas-zendframework-bridge": "^1.1",
+                "php": "^7.3 || ~8.0.0"
+            },
+            "replace": {
+                "zfcampus/zf-apigility-documentation-swagger": "^1.3.0"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~2.2.0",
+                "laminas/laminas-http": "^2.5.4",
+                "laminas/laminas-stdlib": "^2.7.8 || ^3.0.1",
+                "phpunit/phpunit": "^9.3",
+                "psalm/plugin-phpunit": "^0.16.0",
+                "vimeo/psalm": "^4.7"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "module": "Laminas\\ApiTools\\Documentation\\Swagger"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\ApiTools\\Documentation\\Swagger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Laminas API Tools API Swagger documentation module",
+            "homepage": "https://api-tools.getlaminas.org",
+            "keywords": [
+                "api-tools",
+                "documentation",
+                "laminas",
+                "module",
+                "swagger"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://api-tools.getlaminas.org/documentation",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas-api-tools/api-tools-documentation-swagger/issues",
+                "rss": "https://github.com/laminas-api-tools/api-tools-documentation-swagger/releases.atom",
+                "source": "https://github.com/laminas-api-tools/api-tools-documentation-swagger"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-06-14T14:00:33+00:00"
+        },
+        {
             "name": "laminas-api-tools/api-tools-hal",
             "version": "1.7.0",
             "source": {
@@ -5058,6 +5134,72 @@
                 }
             ],
             "time": "2021-10-01T16:07:46+00:00"
+        },
+        {
+            "name": "laminas/laminas-console",
+            "version": "2.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-console.git",
+                "reference": "478a6ceac3e31fb38d6314088abda8b239ee23a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-console/zipball/478a6ceac3e31fb38d6314088abda8b239ee23a5",
+                "reference": "478a6ceac3e31fb38d6314088abda8b239ee23a5",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-stdlib": "^3.2.1",
+                "laminas/laminas-zendframework-bridge": "^1.0",
+                "php": "^5.6 || ^7.0"
+            },
+            "replace": {
+                "zendframework/zend-console": "self.version"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~1.0.0",
+                "laminas/laminas-filter": "^2.7.2",
+                "laminas/laminas-json": "^2.6 || ^3.0",
+                "laminas/laminas-validator": "^2.10.1",
+                "phpunit/phpunit": "^5.7.23 || ^6.4.3"
+            },
+            "suggest": {
+                "laminas/laminas-filter": "To support DefaultRouteMatcher usage",
+                "laminas/laminas-validator": "To support DefaultRouteMatcher usage"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8.x-dev",
+                    "dev-develop": "2.9.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Console\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Build console applications using getopt syntax or routing, complete with prompts",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "console",
+                "laminas"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-console/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-console/issues",
+                "rss": "https://github.com/laminas/laminas-console/releases.atom",
+                "source": "https://github.com/laminas/laminas-console"
+            },
+            "abandoned": "laminas/laminas-cli",
+            "time": "2019-12-31T16:31:45+00:00"
         },
         {
             "name": "laminas/laminas-crypt",
