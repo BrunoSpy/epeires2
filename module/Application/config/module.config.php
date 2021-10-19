@@ -33,7 +33,7 @@ return array(
                     'route' => '/[:controller[/:action[/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'controller' => '[a-zA-Z][a-zA-Z0-9-]*',
+                        'controller' => '^(?!(api-tools))[a-zA-Z][a-zA-Z0-9-]*',
                         'id' => '[0-9]+'
                     ),
                     'defaults' => array(
