@@ -11381,16 +11381,16 @@
         },
         {
             "name": "codeception/module-laminas",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/module-laminas.git",
-                "reference": "7423b3bcbb6babfdbb95fe8dea34b2f36144e9e8"
+                "reference": "c702087f8eaf7775f2dfe52c6ca526fa4ed5cbf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-laminas/zipball/7423b3bcbb6babfdbb95fe8dea34b2f36144e9e8",
-                "reference": "7423b3bcbb6babfdbb95fe8dea34b2f36144e9e8",
+                "url": "https://api.github.com/repos/Codeception/module-laminas/zipball/c702087f8eaf7775f2dfe52c6ca526fa4ed5cbf0",
+                "reference": "c702087f8eaf7775f2dfe52c6ca526fa4ed5cbf0",
                 "shasum": ""
             },
             "require": {
@@ -11431,9 +11431,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/module-laminas/issues",
-                "source": "https://github.com/Codeception/module-laminas/tree/1.2.0"
+                "source": "https://github.com/Codeception/module-laminas/tree/1.2.1"
             },
-            "time": "2021-10-16T07:55:13+00:00"
+            "time": "2021-10-19T17:50:26+00:00"
         },
         {
             "name": "codeception/module-webdriver",
@@ -12245,16 +12245,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "5.2.2",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "069a785b2141f5bcf49f3e353548dc1cce6df556"
+                "reference": "622548b623e81ca6d78b721c5e029f4ce664f170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/069a785b2141f5bcf49f3e353548dc1cce6df556",
-                "reference": "069a785b2141f5bcf49f3e353548dc1cce6df556",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/622548b623e81ca6d78b721c5e029f4ce664f170",
+                "reference": "622548b623e81ca6d78b721c5e029f4ce664f170",
                 "shasum": ""
             },
             "require": {
@@ -12265,7 +12265,8 @@
                 "webmozart/assert": "^1.9.1"
             },
             "require-dev": {
-                "mockery/mockery": "~1.3.2"
+                "mockery/mockery": "~1.3.2",
+                "psalm/phar": "^4.8"
             },
             "type": "library",
             "extra": {
@@ -12295,9 +12296,9 @@
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
             "support": {
                 "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
-                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/master"
+                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/5.3.0"
             },
-            "time": "2020-09-03T19:13:55+00:00"
+            "time": "2021-10-19T17:43:47+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
