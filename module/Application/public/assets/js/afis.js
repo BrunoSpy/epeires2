@@ -47,7 +47,7 @@ var afis = function(url)
             boolState = 1;
         }
 
-        $.post(url + 'afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
+        $.post(url + '/afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
 
         function switched(data) {
             noty({
@@ -84,6 +84,6 @@ var afis = function(url)
         $('#refresh-not').data('code', code);
 
         showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
-            code, url + "afis/testNotamAccess", url + "afis/getAllNotamFromCode");
+            code, url + "/afis/testNotamAccess", url + "afis/getAllNotamFromCode");
     }
 };

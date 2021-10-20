@@ -26,11 +26,21 @@ use Application\Command\ImportZonesMilCommand;
 return array(
     'router' => array(
         'routes' => array(
+            'root' => [
+                'type' => \Laminas\Router\Http\Literal::class,
+                'options' => [
+                    'route' => '/',
+                    'defaults' => [
+                        'controller' => 'Application\Controller\Events',
+                        'action' => 'index'
+                    ]
+                ]
+            ],
             'application' => array(
                 'type' => 'segment',
                 'may_terminate' => true,
                 'options' => array(
-                    'route' => '/[:controller[/:action[/:id]]]',
+                    'route' => '/app[/:controller[/:action[/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'controller' => '[a-zA-Z][a-zA-Z0-9-]*',

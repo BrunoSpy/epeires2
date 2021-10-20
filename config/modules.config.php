@@ -45,6 +45,7 @@ return array(
     'Laminas\Validator',
     'Laminas\ApiTools',
     'Laminas\ApiTools\Documentation',
+    'Laminas\ApiTools\Documentation\Swagger',
     'Laminas\ApiTools\ApiProblem',
     'Laminas\ApiTools\Configuration',
     'Laminas\ApiTools\OAuth2',
