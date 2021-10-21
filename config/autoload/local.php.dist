@@ -18,10 +18,6 @@ return array(
         "lon" => 2.3488
     ),
 
-    //activer la simplification de l'IHM OPE
-    //si paramètre absent ou différent de true : IHM normale
-    "IHM_OPE_Light" => true,
-
     "secret_key" => "<my secret key>",
     "secret_init" => "<my secret initialisation vector>",
 

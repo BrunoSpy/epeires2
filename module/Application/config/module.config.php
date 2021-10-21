@@ -178,6 +178,12 @@ return array(
         )
     ),
     'permissions' => array(
+        'IHM' => array(
+            'ihm.light' => [
+                'name' => 'Allégée',
+                'description' => 'Activation de l\'IHM allégée'
+            ]
+        ),
         'Evènements' => array(
             'events.create' => array(
                 'name' => 'Création',
@@ -224,12 +230,6 @@ return array(
             'frequencies.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Radio.'
-            )
-        ),
-        'Radars' => array(
-            'radars.read' => array(
-                'name' => 'Lecture',
-                'description' => ''
             )
         ),
         'Afis' => array(
@@ -291,12 +291,6 @@ return array(
                         'frequencies.read'
                     ]
                 ),
-                array(
-                    'controller' => 'Application\Controller\Radars',
-                    'permissions' => [
-                        'radars.read'
-                    ]
-                )
             )
         )
     ),

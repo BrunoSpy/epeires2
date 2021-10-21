@@ -103,14 +103,6 @@ class TimelineTabController extends TabController
             }
         }
 
-        if(array_key_exists('IHM_OPE_Light', $this->config) && $this->config['IHM_OPE_Light'] === true) {
-            $this->layout()->IHMLight = true;
-            $this->viewmodel->setVariable('IHMLight', true);
-        } else {
-            $this->layout()->IHMLight = false;
-            $this->viewmodel->setVariable('IHMLight', false);
-        }
-
         $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
         
         $this->viewmodel->setVariable('messages', $return);
