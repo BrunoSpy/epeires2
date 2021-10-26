@@ -1,8 +1,21 @@
 stages:
   - test
   - build_image
+  - build
+  - deploy
+  - review
+  - dast
+  - staging
+  - canary
+  - production
+  - incremental rollout 10%
+  - incremental rollout 25%
+  - incremental rollout 50%
+  - incremental rollout 100%
+  - performance
+
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
   - vendor/
 
@@ -48,73 +61,73 @@ variables:
   MYSQL_DATABASE: epeires2
   MYSQL_ROOT_PASSWORD: epeires2
   APP_ENV: development
-  TIMEZONE: "Europe/Paris"
+  TIMEZONE: Europe/Paris
 
 test:7.4-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
-    - mariadb:10.3
+  - mariadb:10.3
   variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+    DOCTRINE: config/autoload/doctrine.gitlab-ci.mariadb.php
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb104:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
-    - mariadb:10.4
+  - mariadb:10.4
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb105:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
-    - mariadb:10.5
+  - mariadb:10.5
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql57:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
-    - mysql:5.7
+  - mysql:5.7
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql80:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
   stage: test
   services:
-    - mysql:8.0
+  - mysql:8.0
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mariadb103:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
-    - mariadb:10.3
+  - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mariadb104:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
@@ -184,3 +197,8 @@ docker_images:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+
+sast:
+  stage: test
+include:
+- template: Auto-DevOps.gitlab-ci.yml
