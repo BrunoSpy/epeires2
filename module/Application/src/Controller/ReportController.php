@@ -92,7 +92,7 @@ class ReportController extends AbstractEntityManagerAwareController
             $pdf->setOption('paperSize', 'a4');
             
             $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'dd_LL_yyyy');
-            $pdf->setOption('filename', 'rapport_du_' . $formatter->format(new \DateTime($day)));
+            $pdf->setOption('fileName', 'rapport_du_' . $formatter->format(new \DateTime($day)));
 
             return $pdf;
         } else {
