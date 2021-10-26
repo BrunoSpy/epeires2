@@ -19,7 +19,7 @@ var newPostIt = function(id, date, name, content) {
 };
 
 var refreshPostit = function(url){
-    $.getJSON(url + 'events/getpostits'+(typeof lastupdate_postit != 'undefined' ? '?lastupdate='+lastupdate_postit.toUTCString() : ''),
+    $.getJSON(url + '/events/getpostits'+(typeof lastupdate_postit != 'undefined' ? '?lastupdate='+lastupdate_postit.toUTCString() : ''),
         function(data, textStatus, jqHXR){
         if(jqHXR.status != 304) {
             lastupdate_postit = new Date(jqHXR.getResponseHeader("Last-Modified"));
@@ -104,7 +104,7 @@ var postit = function(url) {
         if(typeof(id) !== 'undefined') {
             idurl = '?id='+id;
         }
-        $.post(url + 'events/addpostit'+idurl, me.serialize(), function (data) {
+        $.post(url + '/events/addpostit'+idurl, me.serialize(), function (data) {
             clearTimeout(timerpostit);
             refreshPostit(url);
             displayMessages(data);
@@ -124,7 +124,7 @@ var postit = function(url) {
 
     $(document).on('click', '.postit-delete', function(e){
         var id = $(this).closest('li').data('id');
-        $.post(url+'events/deletepostit?id='+id, function(data){
+        $.post(url+'/events/deletepostit?id='+id, function(data){
             displayMessages(data);
             clearTimeout(timerpostit);
             refreshPostit(url);

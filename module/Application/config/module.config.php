@@ -26,11 +26,21 @@ use Application\Command\ImportZonesMilCommand;
 return array(
     'router' => array(
         'routes' => array(
+            'root' => [
+                'type' => \Laminas\Router\Http\Literal::class,
+                'options' => [
+                    'route' => '/',
+                    'defaults' => [
+                        'controller' => 'Application\Controller\Events',
+                        'action' => 'index'
+                    ]
+                ]
+            ],
             'application' => array(
                 'type' => 'segment',
                 'may_terminate' => true,
                 'options' => array(
-                    'route' => '/[:controller[/:action[/:id]]]',
+                    'route' => '/app[/:controller[/:action[/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'controller' => '[a-zA-Z][a-zA-Z0-9-]*',
@@ -168,6 +178,12 @@ return array(
         )
     ),
     'permissions' => array(
+        'IHM' => array(
+            'ihm.light' => [
+                'name' => 'Allégée',
+                'description' => 'Activation de l\'IHM allégée'
+            ]
+        ),
         'Evènements' => array(
             'events.create' => array(
                 'name' => 'Création',
@@ -214,12 +230,6 @@ return array(
             'frequencies.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Radio.'
-            )
-        ),
-        'Radars' => array(
-            'radars.read' => array(
-                'name' => 'Lecture',
-                'description' => ''
             )
         ),
         'Afis' => array(
@@ -281,12 +291,6 @@ return array(
                         'frequencies.read'
                     ]
                 ),
-                array(
-                    'controller' => 'Application\Controller\Radars',
-                    'permissions' => [
-                        'radars.read'
-                    ]
-                )
             )
         )
     ),

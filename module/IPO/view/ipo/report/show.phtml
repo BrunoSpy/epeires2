@@ -229,7 +229,7 @@ echo $this->modalwindow('add-note-modal',
 
   $('body').scrollspy({target: '#sidebar', offset:120});
 
-  setURL('<?php echo $this->url('application');?>');
+  setURL('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>');
 
   iposhow('<?php echo $this->url('ipo'); ?>');
 

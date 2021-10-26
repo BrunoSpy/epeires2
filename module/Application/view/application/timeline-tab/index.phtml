@@ -36,7 +36,7 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
-<div id="fiche" class="panel-left panel-fixed" data-url="events/getfiche">
+<div id="fiche" class="panel-left panel-fixed" data-url="/events/getfiche">
 </div>
 
 <div class="page-wrap">
@@ -200,7 +200,7 @@ $('#timeline').timeline({
     										array('controller' => 'events', 'action' => 'getcategories'), 
     												array('query' => array('rootonly' => ($this->onlyroot ? true : false),
     																		'cats' => $this->cats))) ?>',
-    topOffset: <?php echo ($this->IHMLight ? 50 : 100)  ?>,
+    topOffset: <?php echo ($this->isGranted('ihm.light') ? 50 : 100)  ?>,
     leftOffset: 120,
     rightOffset: 85,
     tabCats: cats,

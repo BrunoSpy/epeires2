@@ -29,7 +29,7 @@ var flightplan = function(url, current_date)
     // click sur jour suivant
     $("#a-date-forward").click({amount: +1}, changeDaysHandler);
     // click sur jour courant
-    $("#a-date-today").click(function(e) { location.replace(url + 'flightplans') });
+    $("#a-date-today").click(function(e) { location.replace(url + '/flightplans') });
     // affichage des notam
     $('.a-show-not, #refresh-not').click(clickBtnNotamHandler)
 
@@ -48,7 +48,7 @@ var flightplan = function(url, current_date)
             $('.fp-closed').hide();
         else
             $('.fp-closed').show();
-        $.post(url + 'flightplans/toggleFilter', {filter: 'fp', value: $(this).prop("checked")});
+        $.post(url + '/flightplans/toggleFilter', {filter: 'fp', value: $(this).prop("checked")});
     })
 
     $('input[name=hide-ended-alt]').click(function() {
@@ -57,7 +57,7 @@ var flightplan = function(url, current_date)
         else
             $('.alt-closed').css('opacity', 1);
 
-        $.post(url + 'flightplans/toggleFilter', {filter: 'alt', value: $(this).prop("checked")});
+        $.post(url + '/flightplans/toggleFilter', {filter: 'alt', value: $(this).prop("checked")});
     })
 
     $.material.checkbox();
@@ -156,7 +156,7 @@ var flightplan = function(url, current_date)
 
     function getCurrentDateUrl()
     {
-        return url + "flightplans/index?d=" + selectedDate;
+        return url + "/flightplans/index?d=" + selectedDate;
     }
 
     function editFpHandler()
@@ -218,7 +218,7 @@ var flightplan = function(url, current_date)
         var endDate = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-fp').modal('hide');
         $.post(
-            url+'flightplans/end',
+            url+'/flightplans/end',
             {id: idEvent, endDate, fpNote: $('textarea[name=note-end-fp]').val()},
             function (data) {
                 $iDate.trigger('change');
@@ -236,7 +236,7 @@ var flightplan = function(url, current_date)
     {
         $('#mdl-reopen-fp').modal('hide');
         $.post(
-            url+'flightplans/reopen',
+            url+'/flightplans/reopen',
             {id: idEvent, fpNote: $('textarea[name=note-reopen-fp]').val()},
             function () {
                 $iDate.trigger('change');
@@ -254,7 +254,7 @@ var flightplan = function(url, current_date)
     {
         $('#mdl-reopen-alt').modal('hide');
         $.post(
-            url+'flightplans/reopenalt',
+            url+'/flightplans/reopenalt',
             {id: idEvent, altNote: $('textarea[name=note-reopen-alt]').val()},
             function () {
                 $iDate.trigger('change');
@@ -265,14 +265,14 @@ var flightplan = function(url, current_date)
     function histFpHandler() {
         hidePopovers();
         idEvent = $(this).data('id');
-        $('#p-hist-fp').load(url + 'flightplans/hist', { id: idEvent }, function() {});
+        $('#p-hist-fp').load(url + '/flightplans/hist', { id: idEvent }, function() {});
     }
 
     function trigAlertHandler()
     {
         hidePopovers();
         idEvent = $(this).data('id');
-        $('#f-trig-alt').load(url + 'flightplans/formAlt', { id: idEvent }, function() {});
+        $('#f-trig-alt').load(url + '/flightplans/formAlt', { id: idEvent }, function() {});
 
         return;
         // on ne fait rien si le bouton est inactif (alerte close)
@@ -294,7 +294,7 @@ var flightplan = function(url, current_date)
     {
         $('#mdl-trig-fp').modal('hide');
         $.post(
-            url+'flightplans/triggerAlert',
+            url+'/flightplans/triggerAlert',
             {
                 id: idEvent,
                 altType: $('#mdl-trig-fp select[name="alt-type"]').val(),
@@ -311,14 +311,14 @@ var flightplan = function(url, current_date)
     {
         hidePopovers();
         idEvent = $(this).data('id');
-        $('#f-edit-alt').load(url + 'flightplans/formAlt', { id: idEvent }, function() {});
+        $('#f-edit-alt').load(url + '/flightplans/formAlt', { id: idEvent }, function() {});
     }
 
     function editAltConfirmationHandler()
     {
         $('#mdl-edit-alt').modal('hide');
         $.post(
-            url+'flightplans/triggerAlert', {
+            url+'/flightplans/triggerAlert', {
             id: idEvent,
                 altType: $('#mdl-edit-alt select[name="alt-type"]').val(),
                 altCause: $('#mdl-edit-alt textarea[name="alt-cause"]').val(),
@@ -347,7 +347,7 @@ var flightplan = function(url, current_date)
         var endAltDate = moment.utc($('input[name=end-alt-date]').val(), "DD-MM-YYYY HH:mm").format();
         $('#mdl-end-alt').modal('hide');
         $.post(
-            url+'flightplans/endAlert',
+            url+'/flightplans/endAlert',
             {
                 id: idEvent,
                 altNote: $('#mdl-end-alt textarea[name="note-end-alt"]').val(),

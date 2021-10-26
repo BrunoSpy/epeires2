@@ -68,7 +68,7 @@ var switchlist = function(url, tabid){
 
     //refresh page every 30s
     var doPoll = function(){
-        $.post(url+'switchlisttab/getobjectstate?tabid='+tabid)
+        $.post(url+'/switchlisttab/getobjectstate?tabid='+tabid)
             .done(function(data) {
                 $.each(data, function(key, value){
                     $('#switch_'+key).prop('checked', value.status);

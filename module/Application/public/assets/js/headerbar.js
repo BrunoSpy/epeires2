@@ -23,21 +23,21 @@ var headerbar = function (url) {
     $("select[name=nameopsup]").on("change", function (event) {
         event.preventDefault();
         var form = $(this).closest('form');
-        $.post(url + 'opsups/saveopsup', form.serialize(), function (data) {
+        $.post(url + '/opsups/saveopsup', form.serialize(), function (data) {
             displayMessages(data);
         }, 'json');
     });
 
     $("select[name=nameipo]").on("change", function (event) {
         event.preventDefault();
-        $.post(url + 'events/saveipo', $("#ipo").serialize(), function (data) {
+        $.post(url + '/events/saveipo', $("#ipo").serialize(), function (data) {
             displayMessages(data);
         }, 'json');
     });
 
     //update IPO every minute
     setInterval(function () {
-        $.getJSON(url + 'events/getIPO', function (data) {
+        $.getJSON(url + '/events/getIPO', function (data) {
             $.each(data, function (key, value) {
                 if ($('#navbar-first-collapse #iponame').length > 0) { //ipo = span
                     $('#navbar-first-collapse #iponame').text(value);
@@ -54,7 +54,7 @@ var headerbar = function (url) {
             var me = $(this);
             var typeid = me.data('typeid');
             var zoneid = me.data('zoneid');
-            $.getJSON(url + 'opsups/getopsups?typeid='+typeid+'&zoneid='+zoneid, function(data){
+            $.getJSON(url + '/opsups/getopsups?typeid='+typeid+'&zoneid='+zoneid, function(data){
                $.each(data, function(key,value){
                    if($('#navbar-first .opsup-name.type-'+typeid+'.zone-'+zoneid).length > 0) {
                        $('#navbar-first .opsup-name.type-'+typeid+'.zone-'+zoneid+' span.opsupname').text(value);
@@ -68,7 +68,7 @@ var headerbar = function (url) {
 
 
     var updateTabs = function() {
-    	$.getJSON(url + 'events/getNumberEventsTab', function(data){
+    	$.getJSON(url + '/events/getNumberEventsTab', function(data){
     		$.each(data, function(key, value){
     			var count = parseInt(value);
     			var span = $('<span class="exp badge badge-important">'+count+'</span>');
@@ -120,7 +120,7 @@ var headerbar = function (url) {
     //noty for shift hours
     var shiftHoursNoty = new Array();
     var updateShiftHours = function () {
-        $.getJSON(url + 'events/getshifthours', function(data) {
+        $.getJSON(url + '/events/getshifthours', function(data) {
             var shifthours = [];
             $.each(data, function(key, value){
                 shifthours.push(value);
@@ -205,7 +205,7 @@ var headerbar = function (url) {
             day = $('#date').val();
             day = day.replace(/\//g,"-");
         }
-        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups'+ (day.length > 0 ? '?day='+day : ''), function(){
+        $("#opsupwindow #opsup-content").load(url + '/opsups/opsups'+ (day.length > 0 ? '?day='+day : ''), function(){
             $("#opsupwindow").modal('show');
         });
     });
@@ -225,7 +225,7 @@ var headerbar = function (url) {
 
     $('.filterable input[name=opsup-date]').on('change', function(e){
         var date = $(this).val();
-        $("#opsupwindow #opsup-content").load(url + 'opsups/opsups?day='+date);
+        $("#opsupwindow #opsup-content").load(url + '/opsups/opsups?day='+date);
     });
 
     $('.filterable .btn-filter').click(function(){

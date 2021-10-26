@@ -4,8 +4,8 @@ var fileupload = function(url) {
 
     //ajout formulaire fichier
     $(document).on('click', '#addfile', function(){
-        $("#file-upload-form").load(url+'file/form');
-        $.getJSON(url+'file/getmaxsize', function(data){
+        $("#file-upload-form").load(url+'/file/form');
+        $.getJSON(url+'/file/getmaxsize', function(data){
             maxSize = data;
         });
     });
