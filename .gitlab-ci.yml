@@ -19,7 +19,7 @@ cache:
   paths:
   - vendor/
 
-.before_script_test
+.before_script_test:
   before_script:
   # Setup Selenium
   - export DISPLAY=:99
