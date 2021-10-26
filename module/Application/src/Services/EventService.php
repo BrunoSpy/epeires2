@@ -18,6 +18,7 @@
 namespace Application\Services;
 
 use Application\Entity\EventUpdate;
+use Application\Entity\FrequencyCategory;
 use Application\Entity\MilCategory;
 use Application\Entity\PredefinedEvent;
 use Doctrine\ORM\EntityManager;
@@ -89,7 +90,8 @@ class EventService
 
         $category = $event->getCategory();
 
-        if ($category instanceof \Application\Entity\FrequencyCategory) {
+        if ($category instanceof FrequencyCategory) {
+            error_log('getname freq');
             $freqid = 0;
             $otherfreqid = 0;
             foreach ($event->getCustomFieldsValues() as $value) {
@@ -97,7 +99,7 @@ class EventService
                     $freqid = $value->getValue();
                 }
                 if ($value->getCustomField()->getId() == $category->getOtherFrequencyField()->getId()) {
-                    $otherfreqid = $value->getValue();
+                    $otherfreqid = intval($value->getValue());
                 }
             }
             if ($freqid != 0) {

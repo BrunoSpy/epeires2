@@ -178,7 +178,7 @@
       }
       ?>
 
-        setURL('<?php echo $this->url('application');?>');
+        setURL('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>');
 		
 		//init header bar
 		headerbar('<?php echo $this->url('application');?>');

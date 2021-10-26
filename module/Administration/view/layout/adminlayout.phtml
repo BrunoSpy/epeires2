@@ -216,7 +216,7 @@
 
 	<?php $this->inlineScript()->captureStart();?>
 
-	setURL('<?php echo $this->url('application');?>');
+	setURL('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>');
 
 	//init translation
 	i18n.init({
