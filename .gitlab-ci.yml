@@ -1,19 +1,7 @@
 stages:
   - test
   - build_image
-  - build
-  - deploy
-  - review
-  - dast
-  - staging
-  - canary
-  - production
-  - incremental rollout 10%
-  - incremental rollout 25%
-  - incremental rollout 50%
-  - incremental rollout 100%
-  - performance
-  - cleanup
+
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
   paths:
@@ -207,8 +195,3 @@ docker_images:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
-
-sast:
-  stage: test
-include:
-- template: Auto-DevOps.gitlab-ci.yml
