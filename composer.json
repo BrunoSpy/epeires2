@@ -21,7 +21,7 @@
         "ext-json": "*",
         "laminas/laminas-mvc": "^3.1",
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.1",
-        "laminas/laminas-mvc-form": "^1.0",
+        "laminas/laminas-mvc-form": "^2.0",
         "laminas/laminas-log": "^2.10",
         "laminas/laminas-mail": "^2.12",
         "laminas/laminas-code": "^3.5.0",
