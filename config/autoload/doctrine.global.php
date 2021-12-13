@@ -10,7 +10,7 @@ return array(
     'doctrine' => array(
         'connection' => array(
             'orm_default' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'driverClass' => \Doctrine\DBAL\Driver\PDO\MySQL\Driver::class,
                 'params' => array(
                     'host' => '127.0.0.1',
                     'port' => '3306',
