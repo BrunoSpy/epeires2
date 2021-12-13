@@ -44,7 +44,7 @@ class Afis extends TemporaryResource
      * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"Code OACI :"})
      * @Annotation\Required(True)
-     * @Annotation\Validator({"name": "StringLength", "options": {"min": 4, "max": 4}})
+     * @Annotation\Validator("StringLength", "options": {"min": 4, "max": 4})
      */
     protected $code;
 

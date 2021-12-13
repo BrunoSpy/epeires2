@@ -72,7 +72,7 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Options({"label":"Mot de passe :"})
      * @Annotation\Attributes({"data-rule-minlength":"6"})
      * @Annotation\Required({"required":"true"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":"6"}})
+     * @Annotation\Validator("StringLength", "options":{"min":"6"})
      */
     protected $password;
 
@@ -90,7 +90,7 @@ class User implements UserInterface, IdentityInterface
      * @Annotation\Options({"label":"Mot de passe Mattermost:"})
      * @Annotation\Attributes({"data-rule-minlength":"6"})
      * @Annotation\Required(false)
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":"6"}})
+     * @Annotation\Validator("StringLength", "options":{"min":"6"})
      */
     protected $mattermostPassword;
 
