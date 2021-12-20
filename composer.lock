@@ -6014,23 +6014,23 @@
         },
         {
             "name": "laminas/laminas-mvc-plugin-prg",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-plugin-prg.git",
-                "reference": "054b0a4c69d095de64869652ac24be89213f8d8f"
+                "reference": "f35eb80cbe8c0e1a5d8966e3b0a24fbaeb902f56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-prg/zipball/054b0a4c69d095de64869652ac24be89213f8d8f",
-                "reference": "054b0a4c69d095de64869652ac24be89213f8d8f",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-prg/zipball/f35eb80cbe8c0e1a5d8966e3b0a24fbaeb902f56",
+                "reference": "f35eb80cbe8c0e1a5d8966e3b0a24fbaeb902f56",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-mvc": "^3.0",
                 "laminas/laminas-session": "^2.8.5",
                 "laminas/laminas-stdlib": "^3.3.0",
-                "php": "^7.3 || ~8.0.0"
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
             },
             "conflict": {
                 "zendframework/zend-mvc-plugin-prg": "*"
@@ -6074,40 +6074,41 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-12-06T01:02:43+00:00"
+            "time": "2021-12-15T12:48:38+00:00"
         },
         {
             "name": "laminas/laminas-paginator",
-            "version": "2.11.0",
+            "version": "2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-paginator.git",
-                "reference": "7f00d5fdecd1b4f67c8e84e6f6d57bbabda4b7d8"
+                "reference": "fe51fdf2c938f7f8299e67c6f19628d890ef6868"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/7f00d5fdecd1b4f67c8e84e6f6d57bbabda4b7d8",
-                "reference": "7f00d5fdecd1b4f67c8e84e6f6d57bbabda4b7d8",
+                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/fe51fdf2c938f7f8299e67c6f19628d890ef6868",
+                "reference": "fe51fdf2c938f7f8299e67c6f19628d890ef6868",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "laminas/laminas-stdlib": "^3.6.0",
-                "php": "^7.3 || ~8.0.0 || ~8.1.0"
+                "laminas/laminas-stdlib": "^3.6.2",
+                "php": "^7.4 || ~8.0.0 || ~8.1.0"
             },
             "conflict": {
                 "zendframework/zend-paginator": "*"
             },
             "require-dev": {
-                "laminas/laminas-cache": "^2.13.0",
-                "laminas/laminas-coding-standard": "~2.1.4",
-                "laminas/laminas-config": "^2.6.0",
-                "laminas/laminas-filter": "^2.11.1",
-                "laminas/laminas-servicemanager": "^3.7.0",
-                "laminas/laminas-view": "^2.14.1",
+                "laminas/laminas-cache": "^3.1.2",
+                "laminas/laminas-cache-storage-adapter-memory": "^2.0.0",
+                "laminas/laminas-coding-standard": "^2.3.0",
+                "laminas/laminas-config": "^3.7.0",
+                "laminas/laminas-filter": "^2.13.0",
+                "laminas/laminas-servicemanager": "^3.10.0",
+                "laminas/laminas-view": "^2.15.0",
                 "phpunit/phpunit": "^9.5.10",
-                "psalm/plugin-phpunit": "^0.15.1",
-                "vimeo/psalm": "^4.10.0"
+                "psalm/plugin-phpunit": "^0.16.1",
+                "vimeo/psalm": "^4.15.0"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component to support cache features",
@@ -6152,7 +6153,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-10-14T15:59:50+00:00"
+            "time": "2021-12-17T16:45:14+00:00"
         },
         {
             "name": "laminas/laminas-permissions-acl",
@@ -6789,16 +6790,16 @@
         },
         {
             "name": "laminas/laminas-view",
-            "version": "2.14.2",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-view.git",
-                "reference": "ced4133462b917c62d1efc26f982a62b5e319b4b"
+                "reference": "af2f714e45eea7f1b1fa6acca2124b824cab3b0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/ced4133462b917c62d1efc26f982a62b5e319b4b",
-                "reference": "ced4133462b917c62d1efc26f982a62b5e319b4b",
+                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/af2f714e45eea7f1b1fa6acca2124b824cab3b0b",
+                "reference": "af2f714e45eea7f1b1fa6acca2124b824cab3b0b",
                 "shasum": ""
             },
             "require": {
@@ -6889,7 +6890,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-11-17T12:05:00+00:00"
+            "time": "2021-12-17T11:25:32+00:00"
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
@@ -7611,20 +7612,23 @@
         },
         {
             "name": "phenx/php-font-lib",
-            "version": "0.5.2",
+            "version": "0.5.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PhenX/php-font-lib.git",
-                "reference": "ca6ad461f032145fff5971b5985e5af9e7fa88d8"
+                "url": "https://github.com/dompdf/php-font-lib.git",
+                "reference": "dd448ad1ce34c63d09baccd05415e361300c35b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhenX/php-font-lib/zipball/ca6ad461f032145fff5971b5985e5af9e7fa88d8",
-                "reference": "ca6ad461f032145fff5971b5985e5af9e7fa88d8",
+                "url": "https://api.github.com/repos/dompdf/php-font-lib/zipball/dd448ad1ce34c63d09baccd05415e361300c35b4",
+                "reference": "dd448ad1ce34c63d09baccd05415e361300c35b4",
                 "shasum": ""
             },
+            "require": {
+                "ext-mbstring": "*"
+            },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5 || ^6 || ^7"
+                "symfony/phpunit-bridge": "^3 || ^4 || ^5"
             },
             "type": "library",
             "autoload": {
@@ -7645,10 +7649,10 @@
             "description": "A library to read, parse, export and make subsets of different types of font files.",
             "homepage": "https://github.com/PhenX/php-font-lib",
             "support": {
-                "issues": "https://github.com/PhenX/php-font-lib/issues",
-                "source": "https://github.com/PhenX/php-font-lib/tree/0.5.2"
+                "issues": "https://github.com/dompdf/php-font-lib/issues",
+                "source": "https://github.com/dompdf/php-font-lib/tree/0.5.4"
             },
-            "time": "2020-03-08T15:31:32+00:00"
+            "time": "2021-12-17T19:44:54+00:00"
         },
         {
             "name": "phenx/php-svg-lib",
@@ -10218,16 +10222,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "4.1.23",
+            "version": "4.1.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "27d18cd5d5a1d77d3f1b01ea776238676faf5dcc"
+                "reference": "1fc3a8f4d6cf7350e1b69afd136708cfffc89e9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/27d18cd5d5a1d77d3f1b01ea776238676faf5dcc",
-                "reference": "27d18cd5d5a1d77d3f1b01ea776238676faf5dcc",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/1fc3a8f4d6cf7350e1b69afd136708cfffc89e9e",
+                "reference": "1fc3a8f4d6cf7350e1b69afd136708cfffc89e9e",
                 "shasum": ""
             },
             "require": {
@@ -10304,7 +10308,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/Codeception/issues",
-                "source": "https://github.com/Codeception/Codeception/tree/4.1.23"
+                "source": "https://github.com/Codeception/Codeception/tree/4.1.24"
             },
             "funding": [
                 {
@@ -10312,7 +10316,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-12-11T18:05:26+00:00"
+            "time": "2021-12-16T12:57:06+00:00"
         },
         {
             "name": "codeception/lib-asserts",
@@ -10370,26 +10374,26 @@
         },
         {
             "name": "codeception/lib-innerbrowser",
-            "version": "1.5.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/lib-innerbrowser.git",
-                "reference": "31b4b56ad53c3464fcb2c0a14d55a51a201bd3c2"
+                "reference": "2a583993e806799576a1fac1a7f59197eb441678"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/lib-innerbrowser/zipball/31b4b56ad53c3464fcb2c0a14d55a51a201bd3c2",
-                "reference": "31b4b56ad53c3464fcb2c0a14d55a51a201bd3c2",
+                "url": "https://api.github.com/repos/Codeception/lib-innerbrowser/zipball/2a583993e806799576a1fac1a7f59197eb441678",
+                "reference": "2a583993e806799576a1fac1a7f59197eb441678",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "4.*@dev",
+                "codeception/codeception": "^4.0 | 4.*@dev",
                 "ext-dom": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "php": ">=5.6.0 <9.0",
-                "symfony/browser-kit": ">=2.7 <6.0",
-                "symfony/dom-crawler": ">=2.7 <6.0"
+                "php": "^7.4 | ^8.0",
+                "symfony/browser-kit": ">=4.4 <6.0",
+                "symfony/dom-crawler": ">=4.4 <6.0"
             },
             "conflict": {
                 "codeception/codeception": "<4.0"
@@ -10411,7 +10415,7 @@
                 {
                     "name": "Michael Bodnarchuk",
                     "email": "davert@mail.ua",
-                    "homepage": "http://codegyre.com"
+                    "homepage": "https://codegyre.com"
                 },
                 {
                     "name": "Gintautas Miselis"
@@ -10424,9 +10428,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/lib-innerbrowser/issues",
-                "source": "https://github.com/Codeception/lib-innerbrowser/tree/1.5.1"
+                "source": "https://github.com/Codeception/lib-innerbrowser/tree/2.0.0"
             },
-            "time": "2021-08-30T15:21:42+00:00"
+            "time": "2021-12-05T05:22:00+00:00"
         },
         {
             "name": "codeception/module-asserts",
@@ -10541,29 +10545,29 @@
         },
         {
             "name": "codeception/module-laminas",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/module-laminas.git",
-                "reference": "4b3e37e8fd05bf18a3ba160483b1aa6223169ae1"
+                "reference": "3c8ae13926937b1dce959f837cd4aad1e9a1d3d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-laminas/zipball/4b3e37e8fd05bf18a3ba160483b1aa6223169ae1",
-                "reference": "4b3e37e8fd05bf18a3ba160483b1aa6223169ae1",
+                "url": "https://api.github.com/repos/Codeception/module-laminas/zipball/3c8ae13926937b1dce959f837cd4aad1e9a1d3d0",
+                "reference": "3c8ae13926937b1dce959f837cd4aad1e9a1d3d0",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "^4.0",
-                "codeception/lib-innerbrowser": "^1.0",
+                "codeception/codeception": "^4.1",
+                "codeception/lib-innerbrowser": "^2.0",
                 "laminas/laminas-db": "^2.11.3",
                 "laminas/laminas-mvc": "^3.1.1",
-                "php": "^7.4 || ^8.0"
+                "php": "^7.4 | ^8.0"
             },
             "require-dev": {
-                "codeception/module-asserts": "^1.0",
-                "codeception/module-doctrine2": "^1.0",
-                "codeception/module-rest": "^1.0"
+                "codeception/module-asserts": "^2.0",
+                "codeception/module-doctrine2": "^2.0",
+                "codeception/module-rest": "^2.0"
             },
             "type": "library",
             "autoload": {
@@ -10591,9 +10595,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/module-laminas/issues",
-                "source": "https://github.com/Codeception/module-laminas/tree/1.3.0"
+                "source": "https://github.com/Codeception/module-laminas/tree/1.3.1"
             },
-            "time": "2021-11-30T00:25:47+00:00"
+            "time": "2021-12-08T03:22:05+00:00"
         },
         {
             "name": "codeception/module-webdriver",
