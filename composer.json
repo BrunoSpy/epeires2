@@ -85,6 +85,13 @@
     "config": {
         "platform": {
             "php": "8.0"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "laminas/laminas-dependency-plugin": true,
+            "mindplay/composer-locator": true,
+            "laminas-api-tools/api-tools-asset-manager": true,
+            "laminas/laminas-component-installer": true
         }
     },
     "autoload": {
