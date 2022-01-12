@@ -34,12 +34,14 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
         </div>
 </div>
 
-<input type="checkbox" class="main-nav-check" id="main-nav-check" />
+<input type="checkbox" class="main-nav-check" id="main-nav-check" autocomplete="off"/>
 
+<?php if($this->panel == true) :?>
 <div id="fiche" class="panel-left panel-fixed" data-url="/events/getfiche">
 </div>
 
 <div class="page-wrap">
+<?php endif; ?>
 
 <div id="timeline">
     <div class="loading"></div>
@@ -51,7 +53,10 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 <div id="calendarview">
     <div class="loading" style="display: none;"></div>
 </div>
+
+<?php if($this->panel == true) :?>
 </div>
+<?php endif; ?>
 
 <div class="floating-notes">
     <?php if($this->postitAllowed):?>
@@ -220,7 +225,7 @@ $('#timeline').timeline({
 });
 
 //init form
-form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
+form('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
 
 fileupload('<?php echo $this->url('application')?>');
 

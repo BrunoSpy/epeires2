@@ -16,6 +16,7 @@
  */
 
 var urlt;
+var basepath;
 
 let validator;
 
@@ -23,8 +24,8 @@ var formAddFile = function(fileId, formData, modifiable){
 	modifiable = (typeof modifiable === "undefined") ? true : modifiable;
 	var tr = $('<tr id="file_'+fileId+'"></tr>');
 	tr.append('<td>'+formData.reference+'</td>');
-	tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'">'+formData.name+'</a></td>');
-	tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'"><span class="glyphicon glyphicon-download"></span></a></td>');
+	tr.append('<td><a rel="external" href="'+basepath + formData.path+'">'+formData.name+'</a></td>');
+	tr.append('<td><a rel="external" href="'+basepath + formData.path+'"><span class="glyphicon glyphicon-download"></span></a></td>');
 	if(modifiable){
 		tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
 			'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
@@ -166,10 +167,12 @@ var formModifyAlarm = function(alarm) {
 	$('#alarm-table').append(tr);
 };
 
-var form = function(url, cats, sunrise, sunrise_url){
+var form = function(url, basePath, cats, sunrise, sunrise_url){
 
 	urlt = url;
-	
+
+	basepath = basePath;
+
 	/**
 	 *
 	 * @param newevt 0 : nouvel évènement, 1 : modification d'un evt, 2 : copie d'un evt ou intanciation modèle via recherche

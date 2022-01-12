@@ -350,7 +350,7 @@ if($this->cats) {
 }
 ?>
 //init form
-form('<?php echo $this->url('application');?>', cats);
+form('<?php echo $this->url('application');?>', <?php echo $this->basePath() ?>, cats);
 
 flightplan('<?php echo $this->url('application'); ?>', '<?php echo $this->current_date; ?>');
 

@@ -63,7 +63,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                 continue;
             
             $definition = array();
-            $definition['name'] = $customfield->getId();
+            $definition['name'] = (string) $customfield->getId();
             $this->names[] = $customfield->getId();
             $options = array(
                 'label' => $customfield->getName() . " :"
