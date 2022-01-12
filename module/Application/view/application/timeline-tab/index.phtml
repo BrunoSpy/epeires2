@@ -36,13 +36,6 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 
 <input type="checkbox" class="main-nav-check" id="main-nav-check" autocomplete="off"/>
 
-<?php if($this->panel == true) :?>
-<div id="fiche" class="panel-left panel-fixed" data-url="/events/getfiche">
-</div>
-
-<div class="page-wrap">
-<?php endif; ?>
-
 <div id="timeline">
     <div class="loading"></div>
     <div id="calendar">
@@ -53,10 +46,6 @@ $this->headLink()->prependStylesheet($this->basePath() . '/components/fullcalend
 <div id="calendarview">
     <div class="loading" style="display: none;"></div>
 </div>
-
-<?php if($this->panel == true) :?>
-</div>
-<?php endif; ?>
 
 <div class="floating-notes">
     <?php if($this->postitAllowed):?>
