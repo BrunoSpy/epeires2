@@ -17,6 +17,7 @@
  */
 namespace Core\View\Helper;
 
+use Application\Entity\Tab;
 use Laminas\Form\View\Helper\AbstractHelper;
 
 
@@ -120,38 +121,52 @@ class NavBar extends AbstractHelper
         
         foreach ($tabs as $tab) {
             if (!$tab->isDefault() && $this->view->hasRole($tab->getReadRoleNames())) {
-                if (strcmp($tab->getType(), 'timeline') == 0) {
-                    $html .= '<li class="dropdown">' .
-                        '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" ' .
-                        'href="' . $urlHelper('application', array(
-                            'controller' => 'timelinetab',
-                            'action' => 'index'
-                        ), array(
-                            'query' => array(
-                                'tabid' => $tab->getId()
-                            )));
-                    $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">';
-                    $html .= $tab->getName() . ' <span class="caret"></span></a>'
-                        . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
-                        . '<li class="dropdown-header">Tri</li>'
-                        . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
-                        . '<li class="tri"><a href="#" id="tri_deb">Par heure de début</a></li>';
-                    if ($this->view->isGranted('events.delete')) {
-                        $html .= '<li role="separator" class="divider"></li>'
-                            . '<li class="dropdown-header">Filtre</li>'
-                            . '<li class="filter active"><a href="#" id="filter_deleted">Évènements supprimés non affichés</a></li>'
-                            . '<li class="filter"><a href="#" id="filter_none">Évènements supprimés affichés</a></li>';
-                    }
-                    $html .= '</ul></li>';
-                } elseif (strcmp($tab->getType(), 'switchlist') == 0) {
-                    $html .= '<li>' .
-                        '<a class="customtab" id="tab-'.$tab->getId().'"' .
-                        'href ="' . $urlHelper('application', array(
-                            'controller' => 'switchlisttab',
-                            'action' => 'index'
-                        ), array('query' => array('tabid' => $tab->getId())));
-                    $html .= '">'.$tab->getName()."</a></li>";
+
+                switch ($tab->getType()) {
+                    case Tab::TIMELINE:
+                        $html .= '<li class="dropdown">' .
+                            '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" ' .
+                            'href="' . $urlHelper('application', array(
+                                'controller' => 'timelinetab',
+                                'action' => 'index'
+                            ), array(
+                                'query' => array(
+                                    'tabid' => $tab->getId()
+                                )));
+                        $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">';
+                        $html .= $tab->getName() . ' <span class="caret"></span></a>'
+                            . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
+                            . '<li class="dropdown-header">Tri</li>'
+                            . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
+                            . '<li class="tri"><a href="#" id="tri_deb">Par heure de début</a></li>';
+                        if ($this->view->isGranted('events.delete')) {
+                            $html .= '<li role="separator" class="divider"></li>'
+                                . '<li class="dropdown-header">Filtre</li>'
+                                . '<li class="filter active"><a href="#" id="filter_deleted">Évènements supprimés non affichés</a></li>'
+                                . '<li class="filter"><a href="#" id="filter_none">Évènements supprimés affichés</a></li>';
+                        }
+                        $html .= '</ul></li>';
+                        break;
+                    case Tab::SWITCHLIST:
+                        $html .= '<li>' .
+                            '<a class="customtab" id="tab-'.$tab->getId().'"' .
+                            'href ="' . $urlHelper('application', array(
+                                'controller' => 'switchlisttab',
+                                'action' => 'index'
+                            ), array('query' => array('tabid' => $tab->getId())));
+                        $html .= '">'.$tab->getName()."</a></li>";
+                        break;
+                    case Tab::SPLITTIMELINE:
+                        $html .= '<li>' .
+                            '<a class="customtab" id="tab-'.$tab->getId().'"' .
+                            'href ="' . $urlHelper('application', array(
+                                'controller' => 'splittimelinetab',
+                                'action' => 'index'
+                            ), array('query' => array('tabid' => $tab->getId())));
+                        $html .= '">'.$tab->getName()."</a></li>";
+                        break;
                 }
+
             }
         }
         $html .= '</ul>';

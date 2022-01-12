@@ -1,0 +1,42 @@
+<?php
+$this->headLink()->prependStylesheet($this->basePath() . '/assets/css/splittimeline.css');
+?>
+
+<?php
+$this->headScript()->appendFile($this->basePath() . '/components/pdfobject/pdfobject.min.js');
+$this->headScript()->appendFile( $this->basePath() . '/assets/js/pdfobject.js')
+?>
+
+<div class="col-sm-6 content-timeline">
+
+<?php
+echo $this->partial('application/timeline-tab/index.phtml', array(
+    'onlyroot' => $this->onlyroot,
+    'cats' => $this->cats,
+    'default' => $this->default,
+    'view' => $this->view,
+    'day' => $this->day,
+    'postitAllowed' => $this->postitAllowed,
+    'messages' => $this->messages,
+    'sunrise' => $this->sunrise,
+    'panel' => false
+));
+?>
+</div>
+
+<div class="col-sm-6" id="pdfviewer">
+
+  <div id="pdf-document">
+
+    
+
+  </div>
+
+</div>
+
+<?php $this->inlineScript()->captureStart();?>
+
+//remove tab
+  $('#timeline').timeline({"opentab": false});
+
+<?php $this->inlineScript()->captureEnd();?>

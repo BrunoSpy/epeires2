@@ -103,6 +103,8 @@ class TimelineTabController extends TabController
             }
         }
 
+        $this->viewmodel->setVariable('panel', true);
+
         $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
         
         $this->viewmodel->setVariable('messages', $return);

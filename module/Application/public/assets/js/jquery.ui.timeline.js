@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.3.2",
+        version: "1.4.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -160,7 +160,8 @@
             view: "",
             day: "",
             mattermost: false,
-            tabCats: ""
+            tabCats: "",
+            opentab: true
         },
         //Main function
         //Initialize the timeline
@@ -636,6 +637,12 @@
                         this._updateView(false);
                     }
                 }
+            } else if(key === "opentab") {
+                //remove existing icons
+                if(value === false) {
+                    $('.checklist-evt').remove();
+                }
+                this._super(key, value);
             } else {
                 this._super(key, value);
             }
@@ -2438,9 +2445,12 @@
             elmt_txt.append(elmt_b1);
             elmt_b1.append(' <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"
-            var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
-            elmt_txt.append(elmt_b2);
-            elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
+            if(this.options.opentab === true) {
+                var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
+                elmt_txt.append(elmt_b2);
+                elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
+                elmt_b2.css({'z-index': 1});
+            }
             //ajout bouton ouverture menu tooltip
             var elmt_b3 = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
             elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
@@ -2462,7 +2472,7 @@
             elmt_flecheG.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
-            elmt_b2.css({'z-index': 1});
+
             elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px'});
             lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
 

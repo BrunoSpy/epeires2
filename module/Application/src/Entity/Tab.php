@@ -34,8 +34,9 @@ class Tab
 
     const TIMELINE = "timeline";
     const SWITCHLIST = "switchlist";
+    const SPLITTIMELINE ="splittimeline";
 
-    const OPTIONS = array(self::TIMELINE, self::SWITCHLIST);
+    const OPTIONS = array(self::TIMELINE, self::SWITCHLIST, self::SPLITTIMELINE);
 
     /**
      * @ORM\Id
