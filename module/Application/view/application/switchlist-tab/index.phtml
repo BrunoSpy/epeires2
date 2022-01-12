@@ -178,7 +178,7 @@ echo 'cats = null;';
 }
 ?>
 
-form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
+form('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
 
 fileupload('<?php echo $this->url('application')?>');
 

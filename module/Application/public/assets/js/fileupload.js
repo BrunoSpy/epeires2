@@ -106,7 +106,7 @@ var fileupload = function(url) {
 
         hideErrors();
 
-        if ($('#file').val() == '' && $.trim($('input[name=url]').val()).length == 0) {
+        if ($('#file').val() === '' && $.trim($('input[name=url]').val()).length === 0) {
             showErrors('No file(s) selected');
             return;
         }
