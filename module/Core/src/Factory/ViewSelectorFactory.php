@@ -15,21 +15,22 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller;
+namespace Core\Factory;
 
+use Core\View\Helper\ViewSelector;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Controller for a timeline tab splitted view with PDF viewer
+ *
  * @author Bruno Spyckerelle
- * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+ *
  */
-class SplitTimelineTabController extends TimelineTabController
+class ViewSelectorFactory implements FactoryInterface
 {
 
-    public function indexAction()
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $this->layout()->viewduration = 3;
-        return parent::indexAction();
+        return new ViewSelector();
     }
-
 }

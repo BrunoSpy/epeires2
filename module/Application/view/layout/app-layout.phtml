@@ -81,9 +81,9 @@
     </head>
     <body class="fuelux" <?php if($this->isGranted('ihm.light')) echo 'style="padding-top:50px;"' ?> >
 
-	<?php echo $this->navbartop("blue", '', null, $this->iponumber,$this->isGranted('ihm.light')); ?>
+	<?php echo $this->navbartop("blue", '', null, $this->iponumber,$this->isGranted('ihm.light'), $this->viewduration); ?>
 
-	<?php if(!$this->isGranted('ihm.light')) {echo $this->navbar("blue", $this->showHome);} ?>
+	<?php if(!$this->isGranted('ihm.light')) {echo $this->navbar("blue", $this->showHome, $this->viewduration);} ?>
 
     <?php if($this->isGranted('events.create')):?>
 			<a

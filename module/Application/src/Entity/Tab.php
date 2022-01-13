@@ -108,7 +108,7 @@ class Tab
     protected $isDefault = false;
 
     /**
-     * Type of tab : timeline or switchlist
+     * Type of tab : timeline, switchlist or splittimeline
      * @ORM\Column(type="string")
      * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)

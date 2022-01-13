@@ -37,6 +37,10 @@ echo $this->partial('application/timeline-tab/index.phtml', array(
 <?php $this->inlineScript()->captureStart();?>
 
 //remove tab
-  $('#timeline').timeline({"opentab": false});
+  $('#timeline').timeline({
+    "opentab": false,
+    "viewduration": 3,
+    "pasthours": 0
+  });
 
 <?php $this->inlineScript()->captureEnd();?>

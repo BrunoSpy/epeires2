@@ -155,6 +155,7 @@ return array(
             'userMenu' => 'Core\Factory\UserMenuFactory',
             'navbartop' => 'Core\Factory\NavBarTopFactory',
             'navbar' => 'Core\Factory\NavBarFactory',
+            'viewselector' => 'Core\Factory\ViewSelectorFactory'
         )
     ),
     /**

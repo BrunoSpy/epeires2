@@ -161,7 +161,11 @@
             day: "",
             mattermost: false,
             tabCats: "",
-            opentab: true
+            opentab: true,
+            //duration of the zoomed view, 6 hours by default
+            viewduration: 6,
+            //min numbers of past hours to display, 1 by default
+            pasthours: 2
         },
         //Main function
         //Initialize the timeline
@@ -962,10 +966,10 @@
                         this.timelineDuration, 0, 0));
                 }
             } else {
-                this.timelineDuration = 6;
+                this.timelineDuration = this.options.viewduration;
                 var now = new Date();
-                this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
-                this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
+                this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - this.options.pasthours, 0, 0);
+                this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - this.options.pasthours + this.timelineDuration, 0, 0);
             }
             if (!this.update) {
                 return;

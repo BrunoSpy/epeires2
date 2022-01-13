@@ -31,7 +31,7 @@ class NavBar extends AbstractHelper
 
     private $sm;
 
-    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false)
+    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false, $viewduration = 6)
     {
         $html = "";
         
@@ -170,23 +170,10 @@ class NavBar extends AbstractHelper
             }
         }
         $html .= '</ul>';
-        $html .= '<form class="navbar-form navbar-right" role="search" id="search">';
-        $html .= '<div class="form-group form-group-material-'.$color.'-500 has-feedback">';
-        $html .= '<input type="text" class="form-control" placeholder="Chercher" name="search">';
-        $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
+
+        $html .= $this->view->viewselector($viewduration);
+
         $html .= '</div>';
-        $html .= '</form>';
-        $html .= '<div id="changeview" class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
-        $html .= '<label class="btn btn-xs btn-info active">';
-        $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked><strong>6 h</strong>';
-        $html .= '</label>';
-        $html .= '<label class="btn btn-xs btn-info ">';
-        $html .= '<input name="viewOptions" id="viewday" type="radio" autocomplete="off" value="day"><strong>24 h</strong>';
-        $html .= '</label>';
-        $html .= '<label class="btn btn-xs btn-info ">';
-        $html .= '<input name="viewOptions" id="viewmonth" type="radio" autocomplete="off" value="month"><strong>7 j/+</strong>';
-        $html .= '</label>';
-        $html .= '</div></div>';
         $html .= '</div></div></nav>';
         
         return $html;

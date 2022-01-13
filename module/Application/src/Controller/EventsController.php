@@ -32,6 +32,7 @@ use Application\Entity\PredefinedEvent;
 
 use Application\Entity\Status;
 use Application\Entity\SwitchObjectCategory;
+use Application\Entity\Tab;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Core\Service\EmailService;
@@ -106,11 +107,10 @@ class EventsController extends TimelineTabController
         $cats = array();
 
         $hasDefaultTab = false;
-
+        $tabType = "";
         //fusion des tabs principaux pour les rôles de l'utilisateur
         if ($userauth != null && $userauth->hasIdentity()) {
             $roles = $userauth->getIdentity()->getRoles();
-
             foreach ($roles as $r) {
                 $tabs = $r->getReadtabs();
                 foreach ($tabs as $t) {
@@ -122,6 +122,14 @@ class EventsController extends TimelineTabController
                         }
                         $hasDefaultTab = true;
                         $onlyroot += $t->isOnlyroot();
+                        if(strlen($tabType) == 0) {
+                            $tabType = $t->getType();
+                        } else {
+                            if(strcmp($tabType, $t->getType()) !== 0) {
+                                //mix of tab with different types -> default timeline
+                                $tabType = Tab::TIMELINE;
+                            }
+                        }
                         //break;
                     }
                 }
@@ -131,6 +139,10 @@ class EventsController extends TimelineTabController
                         return $this->redirect()->toRoute('application', array('controller' => 'tabs'), array('query' => array('tabid' => $tabs[0]->getId())));
                     }
 
+                } else {
+                    if(strcmp($tabType, Tab::SPLITTIMELINE) == 0) {
+                        return $this->redirect()->toRoute('application', array('controller' => 'splittimelinetab'), array('query' => array('cats' => $cats)));
+                    }
                 }
             }
         } else {
