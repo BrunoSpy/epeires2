@@ -43,7 +43,7 @@ cache:
     # Make sure Webdriver is running
   - curl http://localhost:4444/wd/hub/status
     #Make sure webserver is running
-  - curl http://localhost/events/testAuthentication
+  - curl http://localhost/app/events/testAuthentication
   - apache2ctl -S
 
 variables:
@@ -199,7 +199,7 @@ test:8.1-mysql80:
 
 test:docker:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
   - mariadb:10.3.20
