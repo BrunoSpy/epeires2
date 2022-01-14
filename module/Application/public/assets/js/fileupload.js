@@ -68,7 +68,7 @@ var fileupload = function(url) {
 
     $(document).on('change', 'input[name=file]', function(event) {
         if ($.trim($('#file-upload-form input[name=name]').val()).length == 0) {
-            $('#file-upload-form input[name=name]').val($(this).val());
+            $('#file-upload-form input[name=name]').val($(this)[0].files[0].name);
         }
         //disable url
         $("#file-upload-form input[name=url]").prop('disabled', true);

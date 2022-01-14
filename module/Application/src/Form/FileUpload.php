@@ -75,7 +75,7 @@ class FileUpload extends Form
         $file->getFilterChain()->attachByName('filerenameupload', array(
             'target' => './public/files/',
             'overwrite' => false,
-            'use_upload_name' => false,
+            'use_upload_name' => true,
             'randomize' => true
         ));
         $inputFilter->add($file);
