@@ -21,7 +21,6 @@ cache:
   - unzip ./sonar-scanner.zip
   #donwload dependencies
   - composer --version
-  - composer selfupdate --2
   - composer install --no-interaction --prefer-dist
   #configure database
   - cp $DOCTRINE config/autoload/doctrine.local.php
@@ -56,7 +55,7 @@ variables:
 
 test:7.4-mariadb103:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.3
@@ -68,7 +67,7 @@ test:7.4-mariadb103:
 
 test:7.4-mariadb104:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.4
@@ -80,7 +79,7 @@ test:7.4-mariadb104:
 
 test:7.4-mariadb105:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.5
@@ -92,7 +91,7 @@ test:7.4-mariadb105:
 
 test:7.4-mariadb106:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.6
@@ -104,7 +103,7 @@ test:7.4-mariadb106:
 
 test:7.4-mysql57:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mysql:5.7
@@ -116,7 +115,7 @@ test:7.4-mysql57:
 
 test:7.4-mysql80:
   extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mysql:8.0
