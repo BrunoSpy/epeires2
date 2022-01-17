@@ -21,7 +21,7 @@ cache:
   - unzip ./sonar-scanner.zip
   #donwload dependencies
   - composer --version
-  - composer self-update --2
+  - composer selfupdate --2
   - composer install --no-interaction --prefer-dist
   #configure database
   - cp $DOCTRINE config/autoload/doctrine.local.php
