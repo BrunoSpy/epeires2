@@ -111,7 +111,7 @@ test:7.4-mysql57:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql80:
   extends: .before_script_test
