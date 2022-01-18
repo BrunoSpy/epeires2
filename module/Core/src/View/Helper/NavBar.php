@@ -17,6 +17,7 @@
  */
 namespace Core\View\Helper;
 
+use Application\Entity\Tab;
 use Laminas\Form\View\Helper\AbstractHelper;
 
 
@@ -30,7 +31,7 @@ class NavBar extends AbstractHelper
 
     private $sm;
 
-    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false)
+    public function __invoke($color = 'epeires', $showHome = true, $IHMLight = false, $viewduration = 6)
     {
         $html = "";
         
@@ -120,58 +121,59 @@ class NavBar extends AbstractHelper
         
         foreach ($tabs as $tab) {
             if (!$tab->isDefault() && $this->view->hasRole($tab->getReadRoleNames())) {
-                if (strcmp($tab->getType(), 'timeline') == 0) {
-                    $html .= '<li class="dropdown">' .
-                        '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" ' .
-                        'href="' . $urlHelper('application', array(
-                            'controller' => 'timelinetab',
-                            'action' => 'index'
-                        ), array(
-                            'query' => array(
-                                'tabid' => $tab->getId()
-                            )));
-                    $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">';
-                    $html .= $tab->getName() . ' <span class="caret"></span></a>'
-                        . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
-                        . '<li class="dropdown-header">Tri</li>'
-                        . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
-                        . '<li class="tri"><a href="#" id="tri_deb">Par heure de début</a></li>';
-                    if ($this->view->isGranted('events.delete')) {
-                        $html .= '<li role="separator" class="divider"></li>'
-                            . '<li class="dropdown-header">Filtre</li>'
-                            . '<li class="filter active"><a href="#" id="filter_deleted">Évènements supprimés non affichés</a></li>'
-                            . '<li class="filter"><a href="#" id="filter_none">Évènements supprimés affichés</a></li>';
-                    }
-                    $html .= '</ul></li>';
-                } elseif (strcmp($tab->getType(), 'switchlist') == 0) {
-                    $html .= '<li>' .
-                        '<a class="customtab" id="tab-'.$tab->getId().'"' .
-                        'href ="' . $urlHelper('application', array(
-                            'controller' => 'switchlisttab',
-                            'action' => 'index'
-                        ), array('query' => array('tabid' => $tab->getId())));
-                    $html .= '">'.$tab->getName()."</a></li>";
+
+                switch ($tab->getType()) {
+                    case Tab::TIMELINE:
+                        $html .= '<li class="dropdown">' .
+                            '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" ' .
+                            'href="' . $urlHelper('application', array(
+                                'controller' => 'timelinetab',
+                                'action' => 'index'
+                            ), array(
+                                'query' => array(
+                                    'tabid' => $tab->getId()
+                                )));
+                        $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">';
+                        $html .= $tab->getName() . ' <span class="caret"></span></a>'
+                            . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
+                            . '<li class="dropdown-header">Tri</li>'
+                            . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
+                            . '<li class="tri"><a href="#" id="tri_deb">Par heure de début</a></li>';
+                        if ($this->view->isGranted('events.delete')) {
+                            $html .= '<li role="separator" class="divider"></li>'
+                                . '<li class="dropdown-header">Filtre</li>'
+                                . '<li class="filter active"><a href="#" id="filter_deleted">Évènements supprimés non affichés</a></li>'
+                                . '<li class="filter"><a href="#" id="filter_none">Évènements supprimés affichés</a></li>';
+                        }
+                        $html .= '</ul></li>';
+                        break;
+                    case Tab::SWITCHLIST:
+                        $html .= '<li>' .
+                            '<a class="customtab" id="tab-'.$tab->getId().'"' .
+                            'href ="' . $urlHelper('application', array(
+                                'controller' => 'switchlisttab',
+                                'action' => 'index'
+                            ), array('query' => array('tabid' => $tab->getId())));
+                        $html .= '">'.$tab->getName()."</a></li>";
+                        break;
+                    case Tab::SPLITTIMELINE:
+                        $html .= '<li>' .
+                            '<a class="customtab" id="tab-'.$tab->getId().'"' .
+                            'href ="' . $urlHelper('application', array(
+                                'controller' => 'splittimelinetab',
+                                'action' => 'index'
+                            ), array('query' => array('tabid' => $tab->getId())));
+                        $html .= '">'.$tab->getName()."</a></li>";
+                        break;
                 }
+
             }
         }
         $html .= '</ul>';
-        $html .= '<form class="navbar-form navbar-right" role="search" id="search">';
-        $html .= '<div class="form-group form-group-material-'.$color.'-500 has-feedback">';
-        $html .= '<input type="text" class="form-control" placeholder="Chercher" name="search">';
-        $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
+
+        $html .= $this->view->viewselector($viewduration);
+
         $html .= '</div>';
-        $html .= '</form>';
-        $html .= '<div id="changeview" class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
-        $html .= '<label class="btn btn-xs btn-info active">';
-        $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked><strong>6 h</strong>';
-        $html .= '</label>';
-        $html .= '<label class="btn btn-xs btn-info ">';
-        $html .= '<input name="viewOptions" id="viewday" type="radio" autocomplete="off" value="day"><strong>24 h</strong>';
-        $html .= '</label>';
-        $html .= '<label class="btn btn-xs btn-info ">';
-        $html .= '<input name="viewOptions" id="viewmonth" type="radio" autocomplete="off" value="month"><strong>7 j/+</strong>';
-        $html .= '</label>';
-        $html .= '</div></div>';
         $html .= '</div></div></nav>';
         
         return $html;

@@ -41,19 +41,18 @@ function addSwitchButton($name, $id, $helper, $inversed) {
 <?php if( $this->switchobjects && $this->form) : ?>
 <input type="checkbox" class="main-nav-check" id="main-nav-check" />
 
-<div class="main-nav panel-left" id="fiche" data-url="switchlisttab/getfiche"></div>
+<div class="main-nav panel-left" id="fiche" data-url="/switchlisttab/getfiche"></div>
 <div class="page-wrap">
     <div class="container-fluid" id="objects">
         <p></p>
         <div class="row" style="height: calc(100vh - 120px)">
 
 
-
             <div class="switch-content" style="flex-direction: <?php echo $this->direction; ?>">
 
                 <?php
                 function soCmp($a, $b) {
-                  return strcmp($a->getName(), $b->getName());
+                  return $a->getPlace() - $b->getPlace();
                 }
                 $sortedSO = call_user_func(function(array $a){usort($a, "soCmp");return $a;}, $this->switchobjectsObjects);
                 foreach ($sortedSO as $so) {
@@ -65,7 +64,8 @@ function addSwitchButton($name, $id, $helper, $inversed) {
                     echo '</div>';
                     echo '<div class="switchobject-button">'.addSwitchButton($so->getName(), $so->getId(), $this, $this->inversed).'</div>';
                     echo '</div>';
-                    foreach ($so->getChildren() as $child) {
+                    $children = call_user_func(function(array $a){usort($a, "soCmp");return $a;}, $so->getChildren()->toArray());
+                    foreach ($children as $child) {
                       $found = array_filter($sortedSO, function($uniqueobject) use ($child){
                         return $uniqueobject->getId() == $child->getId();
                       });
@@ -178,7 +178,7 @@ echo 'cats = null;';
 }
 ?>
 
-form('<?php echo $this->url('application');?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
+form('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>', cats, <?php echo (int) $this->sunrise ?>, '<?php echo $this->url('application', array('controller' => "sunrisesunset")) ?>');
 
 fileupload('<?php echo $this->url('application')?>');
 

@@ -215,6 +215,7 @@ class CategoryRepository extends ExtendedRepository
         if ($category instanceof MilCategory) {
             $category->setLowerLevelField(null);
             $category->setUpperLevelField(null);
+            $category->setInternalidField(null);
         }
         if($category instanceof AfisCategory) {
             $category->setAfisfield(null);

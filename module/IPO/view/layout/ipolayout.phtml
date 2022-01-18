@@ -84,7 +84,7 @@
 	} ?>
 
     <?php $this->inlineScript()->captureStart(); ?>
-    setURL('<?php echo $this->url('ipo');?>');
+    setURL('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>');
     <?php $this->inlineScript()->captureEnd(); ?>
 
     <?php echo $this->inlineScript() ?>

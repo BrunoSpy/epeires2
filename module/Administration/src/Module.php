@@ -20,15 +20,13 @@ namespace Administration;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ModuleManager\ModuleManager;
-use Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface;
-use Laminas\Console\Adapter\AdapterInterface as Console;
 
 /**
  *
  * @author Bruno Spyckerelle
  *
  */
-class Module implements ConsoleUsageProviderInterface
+class Module
 {
 
     public function onBootstrap(MvcEvent $e)
@@ -64,14 +62,4 @@ class Module implements ConsoleUsageProviderInterface
         ];
     }
 
-    public function getConsoleUsage(Console $console)
-    {
-        return array(
-            // Describe available commands
-            'delete-events <orgshortname>' => 'Delete all events in database',
-            'clean-logs' => 'Remove useless logs entries',
-            'initDB' => 'Fresh install database initialisation',
-            'initbtivDB' => 'Create mandatory categories for BTIV module activation'
-        );
-    }
 }

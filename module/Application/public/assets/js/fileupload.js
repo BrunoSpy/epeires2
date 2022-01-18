@@ -4,8 +4,8 @@ var fileupload = function(url) {
 
     //ajout formulaire fichier
     $(document).on('click', '#addfile', function(){
-        $("#file-upload-form").load(url+'file/form');
-        $.getJSON(url+'file/getmaxsize', function(data){
+        $("#file-upload-form").load(url+'/file/form');
+        $.getJSON(url+'/file/getmaxsize', function(data){
             maxSize = data;
         });
     });
@@ -68,7 +68,7 @@ var fileupload = function(url) {
 
     $(document).on('change', 'input[name=file]', function(event) {
         if ($.trim($('#file-upload-form input[name=name]').val()).length == 0) {
-            $('#file-upload-form input[name=name]').val($(this).val());
+            $('#file-upload-form input[name=name]').val($(this)[0].files[0].name);
         }
         //disable url
         $("#file-upload-form input[name=url]").prop('disabled', true);
@@ -106,7 +106,7 @@ var fileupload = function(url) {
 
         hideErrors();
 
-        if ($('#file').val() == '' && $.trim($('input[name=url]').val()).length == 0) {
+        if ($('#file').val() === '' && $.trim($('input[name=url]').val()).length === 0) {
             showErrors('No file(s) selected');
             return;
         }

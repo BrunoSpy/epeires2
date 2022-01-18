@@ -4,12 +4,12 @@ return array(
     'smtp' => array(
         'name'              => 'DGAC',
         'host'              => 'mail.****.aviation-civile.gouv.fr',
-        'connection_class'  => 'plain',
-        //'port'              => 587, //optionnel
+        'connection_class'  => 'login',
+        'port'              => 587,
         'connection_config' => array(
             'username'  => 'user',
             'password'  => 'pass',
-            //'ssl'       => 'tls', //optionnel : à n'utiliser que si besoin
+            'ssl'       => 'tls',
         ),
     ),
     'emailfrom' => 'user@aviation-civile.gouv.fr',

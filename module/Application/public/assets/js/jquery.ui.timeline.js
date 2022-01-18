@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.3.2",
+        version: "1.4.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -160,7 +160,12 @@
             view: "",
             day: "",
             mattermost: false,
-            tabCats: ""
+            tabCats: "",
+            opentab: true,
+            //duration of the zoomed view, 6 hours by default
+            viewduration: 6,
+            //min numbers of past hours to display, 1 by default
+            pasthours: 2
         },
         //Main function
         //Initialize the timeline
@@ -274,13 +279,14 @@
                     } else {
                         urlday = '?day=' + self.currentDay.toUTCString();
                     }
+
                 }
                 //get events and display them
                 $.when($.getJSON(self.options.eventUrl + urlday,
                     function (data, textStatus, jqHXR) {
                         if (jqHXR.status !== 304) {
                             var pos = 0;
-                            $.each(data, function (key, value) {
+                            $.each(data.events, function (key, value) {
                                 //ajout des attributs aux évènements
                                 value.display = true;
                                 value.shade = false;
@@ -635,6 +641,12 @@
                         this._updateView(false);
                     }
                 }
+            } else if(key === "opentab") {
+                //remove existing icons
+                if(value === false) {
+                    $('.checklist-evt').remove();
+                }
+                this._super(key, value);
             } else {
                 this._super(key, value);
             }
@@ -770,7 +782,7 @@
                                 function (data, textStatus, jqHXR) {
                                     if (jqHXR.status !== 304) {
                                         self.pauseUpdateView();
-                                        self.addEvents(data);
+                                        self.addEvents(data.events);
                                     }
                                 }))
                                 .then(function () {
@@ -954,10 +966,10 @@
                         this.timelineDuration, 0, 0));
                 }
             } else {
-                this.timelineDuration = 6;
+                this.timelineDuration = this.options.viewduration;
                 var now = new Date();
-                this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1, 0, 0);
-                this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1 + this.timelineDuration, 0, 0);
+                this.timelineBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - this.options.pasthours, 0, 0);
+                this.timelineEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - this.options.pasthours + this.timelineDuration, 0, 0);
             }
             if (!this.update) {
                 return;
@@ -1691,6 +1703,12 @@
             clearTimeout(this.timerUpdate);
             var self = this;
             var url = self.options.eventUrl;
+            if(url.indexOf('?') > 0){
+                urlday = '&day=' + self.currentDay.toUTCString();
+            } else {
+                urlday = '?day=' + self.currentDay.toUTCString();
+            }
+            url += urlday;
             if(typeof(refetch) == "undefined" || refetch == false) {
                 if(url.indexOf('?') > 0){
                     url += (self.lastupdate != 0 ? '&lastupdate=' + self.lastupdate.toUTCString() : '');
@@ -1703,9 +1721,12 @@
                 function (data, textStatus, jqHXR) {
                     if (jqHXR.status !== 304) {
                         self.update = false;
-                        self.addEvents(data);
+                        self.addEvents(data.events);
                         self.forceUpdateView();
                         self.lastupdate = new Date(jqHXR.getResponseHeader("Last-Modified"));
+                        if(data['messages']) {
+                            displayMessages(data.messages);
+                        }
                     }
                 }).always(function () {
                 self.timerUpdate = setTimeout(function () {
@@ -2428,9 +2449,12 @@
             elmt_txt.append(elmt_b1);
             elmt_b1.append(' <span class="glyphicon glyphicon-pencil"></span>');
             // ajout du bouton "ouverture fiche réflexe"
-            var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
-            elmt_txt.append(elmt_b2);
-            elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
+            if(this.options.opentab === true) {
+                var elmt_b2 = $('<a href="#" class="checklist-evt" data-id="' + event.id + '" data-name="' + event.name + '"></a>');
+                elmt_txt.append(elmt_b2);
+                elmt_b2.append(' <span class="glyphicon glyphicon-tasks"></span>');
+                elmt_b2.css({'z-index': 1});
+            }
             //ajout bouton ouverture menu tooltip
             var elmt_b3 = $('<a href="#" class="tooltip-evt" data-id="' + event.id + '"></a>');
             elmt_b3.append(' <span class="glyphicon glyphicon-chevron-up"></span>');
@@ -2452,7 +2476,7 @@
             elmt_flecheG.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_flecheD.css({'position': 'absolute', 'top': dy/2 - 10 + 'px', 'left': '0px'});
             elmt_b1.css({'z-index': 1});
-            elmt_b2.css({'z-index': 1});
+
             elmt_txt.css({'position': 'absolute', 'top': dy / 2 - 11 + 'px', 'left': '0px'});
             lien.css({'position': 'absolute', 'top': dy / 2 + 'px', 'left': '0px', 'width': '10px', 'height': '1px', 'background-color': 'gray', 'z-index': 1});
 

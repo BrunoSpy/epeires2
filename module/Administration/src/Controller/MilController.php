@@ -17,6 +17,7 @@
  */
 namespace Administration\Controller;
 
+use Application\Entity\MilCategory;
 use Doctrine\ORM\EntityManager;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -156,7 +157,9 @@ class MilController extends \Application\Controller\FormController
         
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
-        
+
+        $form->get('origin')->setValueOptions(array('' => '', MilCategory::MAPD => "MAPD", MilCategory::NMB2B => "NM B2B"));
+
         $form->get('color')->setAttribute('class', 'pick-a-color');
         
         if ($id) {

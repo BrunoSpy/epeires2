@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManager;
 use DSNA\NMB2BDriver\Exception\WSDLFileUnavailable;
 use DSNA\NMB2BDriver\Models\EAUPChain;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
+use DSNA\NMB2BDriver\Models\RegulationListReply;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\ServiceManager\ServiceLocatorAwareInterface;
 use DSNA\NMB2BDriver\NMB2BClient;
@@ -34,19 +35,24 @@ class NMB2BService
 
     private $nmb2b;
 
-    private $entityManager;
-    
+    private EntityManager $entityManager;
+
     private $config;
-    
-    private $nmb2bClient;
 
-    private $errorEmail = false;
+    private NMB2BClient $nmb2bClient;
 
-    public function __construct(EntityManager $entityManager, $config)
+    private bool $errorEmail = false;
+
+    private EmailService $emailService;
+
+    private string $certpath;
+
+    public function __construct(EntityManager $entityManager, $config, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
         $this->config = $config;
         $this->nmb2b = $config['nm_b2b'];
+        $this->emailService = $emailService;
 
         $options = array();
         $options['connection_timeout'] = (array_key_exists("timeout", $this->nmb2b) ? $this->nmb2b['timeout'] : 30000);
@@ -68,8 +74,14 @@ class NMB2BService
             $options['location'] = $this->nmb2b['force_url'];
         }
 
+        $this->certpath = __DIR__ . '/../../../../' . $this->nmb2b['cert_path'];
+
+        if(!is_readable($this->certpath)) {
+            throw new \RuntimeException("Impossible de lire le certificat NM B2B au chemin indiqué : ".$this->certpath);
+        }
+
         $this->nmb2bClient = new NMB2BClient(
-            ROOT_PATH . $this->nmb2b['cert_path'],
+            $this->certpath,
             $this->nmb2b['cert_password'],
             $this->nmb2b['wsdl'],
             $options
@@ -103,7 +115,7 @@ class NMB2BService
                 error_log($text);
             }
             throw new \RuntimeException('Erreur NM B2B');
-        }catch (WSDLFileUnavailable $e) {
+        } catch (WSDLFileUnavailable $e) {
             error_log($e->getMessage());
         }
     }
@@ -139,11 +151,12 @@ class NMB2BService
      * @param \DateTime $end
      * @param string $regex
      * @param string $filtre
-     * @return null|string
+     * @return RegulationListReply
      * @throws WSDLFileUnavailable
      * @throws \DSNA\NMB2BDriver\Exception\UnsupportedNMVersion
      */
-    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = "") {
+    public function getRegulationsList(\DateTime $start, \DateTime $end, $regex = "", $filtre = ""): RegulationListReply
+    {
 
         if(strlen($regex) == 0 && strlen($filtre) == 0) $regex = "LF*";
 
@@ -156,11 +169,10 @@ class NMB2BService
             if($this->errorEmail) {
                 $this->sendErrorEmail($text);
             } else {
-                error_log($text);
+                error_log(print_r($text, true));
             }
-            throw new \RuntimeException('Erreur NM B2B');
+            throw new \RuntimeException('Erreur NM B2B : '.$e->getMessage());
         }
-        return $this->nmb2bClient->__getLastResponse();
     }
 
     public function activateErrorEmail()
@@ -189,18 +201,14 @@ class NMB2BService
         $mimeMessage->setParts(array(
             $text
         ));
-        if (array_key_exists('emailfrom', $this->config) && array_key_exists('smtp', $this->config)) {
-            $message = new \Laminas\Mail\Message();
-            $message->addTo($ipoEmail)
-                ->addFrom($this->config['emailfrom'])
-                ->setSubject("Erreur lors de l'import de l'AUP via NM B2B")
-                ->setBody($mimeMessage);
-    
-            $transport = new \Laminas\Mail\Transport\Smtp();
-            $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-            $transport->setOptions($transportOptions);
-            $transport->send($message);
-        }
+
+        $this->emailService->sendEmailTo(
+            $ipoEmail,
+            "Erreur lors de l'import de l'AUP via NM B2B",
+            $mimeMessage,
+            $org[0]
+        );
+
     }
 
     public function setVerbose(bool $verbose)
@@ -208,6 +216,11 @@ class NMB2BService
         if($this->nmb2bClient) {
             $this->nmb2bClient->setVerbose($verbose);
         }
+    }
+
+    public function getClient()
+    {
+        return $this->nmb2bClient;
     }
 }
 

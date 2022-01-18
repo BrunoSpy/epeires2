@@ -1,0 +1,9 @@
+<?php
+return array(
+    'mapd' => array(
+        'url' => 'url du serveur',
+        'user' => 'username',
+        'password' => 'password',
+        'default_status' => 1 //optional, sets the status used when an event is imported 1: Nouveau; 2: Confirmé; 3: Fin Confirmée. Default : 1.
+    )
+);

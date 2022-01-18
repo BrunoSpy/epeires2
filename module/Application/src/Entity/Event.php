@@ -338,66 +338,7 @@ class Event extends AbstractEvent
         $this->setPunctual($e->isPunctual());
         $this->setPlace($e->getPlace());
     }
-    
-    /**
-     * Cloture l'évènement ains que l'ensemble de ses fils.
-     * 
-     * @param \Application\Entity\Status $status            
-     * @param \DateTime $enddate            
-     * @throws \RuntimeException
-     */
-    public function close(Status $status, \DateTime $enddate = null)
-    {
-        if ($enddate == null && ! $this->isPunctual()) {
-            throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
-        }
-        if ($status->getId() != 3) {
-            throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
-        }
-        
-        if (! $this->isPunctual()) {
-            $this->setEnddate($enddate);
-        }
-        $this->setStatus($status);
-        foreach ($this->getChildren() as $child) {
-            // cloturer tous les évènements sauf les alarmes et les actions
-            if (! $child->getCategory() instanceof AlarmCategory && ! $child->getCategory() instanceof ActionCategory) {
-                $child->close($status, $enddate);
-            }
-        }
-    }
 
-    /**
-     * Annule l'évènement et tous ses enfants
-     * Si pas d'heure de fin programmée, utilisation de l'heure actuelle +1h
-     * 
-     * @param \Application\Entity\Status $status            
-     * @throws \RuntimeException
-     */
-    public function cancelEvent(Status $status)
-    {
-        if ($status->getId() != 4) {
-            throw new \RuntimeException("Statut annulé attendu, un autre statut a été fourni.");
-        }
-        $this->setStatus($status);
-        if ($this->isPunctual() || (! $this->isPunctual() && $this->getEnddate() === null)) {
-            $now = new \DateTime('now');
-            $now->setTimezone(new \DateTimeZone('UTC'));
-            if($this->startdate >= $now) {
-                $enddate = clone $this->startdate;
-                $enddate->add(new \DateInterval('PT1H'));
-                $this->setEnddate($enddate);
-            } else {
-                $this->setEnddate($now);
-            }
-        }
-        foreach ($this->getChildren() as $child) {
-            // annuler tous les évènement sauf les actions
-            if (! $child instanceof ActionCategory) {
-                $child->cancelEvent($status);
-            }
-        }
-    }
 
     /**
      * Update alarms if case of modification of startdate and enddate

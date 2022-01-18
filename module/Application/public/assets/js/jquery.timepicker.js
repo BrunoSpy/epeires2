@@ -121,7 +121,7 @@
                 '<td class="day">' +
                 "<div class=\"input-group\">" +
                 "<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span>" +
-                '<input type="text" class="date form-control" ' + (parameters.required ? 'required="required"' : '') + '></input>' +
+                '<input type="text" class="dateform form-control" ' + (parameters.required ? 'required="required"' : '') +'>' +
                 "</div>" +
                 '</td>' +
                 '<td class="hour">' +
@@ -178,7 +178,7 @@
                 element.parent().append(div);
 
                 //add datepicker
-                $('input[type=text].date').bootstrapMaterialDatePicker({
+                $('input[type=text].dateform').bootstrapMaterialDatePicker({
                     format: "DD-MM-YYYY",
                     time: false,
                     lang: 'fr',
@@ -190,7 +190,7 @@
                 });
 
                 div.on('click', 'span.glyphicon-calendar', function(e){
-                    div.find('input[type=text].date').trigger('focus');
+                    div.find('input[type=text].dateform').trigger('focus');
                 });
 
                 //init fields if original field contains a date

@@ -18,7 +18,7 @@
 namespace Administration\Controller\Factory;
 
 use Administration\Controller\HomeController;
-use Doctrine\Migrations\Tools\Console\Command\StatusCommand;
+use Doctrine\Migrations\DependencyFactory;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
@@ -27,7 +27,9 @@ class HomeControllerFactory implements FactoryInterface {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new HomeController(
-            $container->get('config'));
+            $container->get('config'),
+            $container->get(DependencyFactory::class),
+            $container->get('mapd'));
     }
 
 }

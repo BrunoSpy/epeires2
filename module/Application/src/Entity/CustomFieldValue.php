@@ -23,7 +23,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * @ORM\Entity
  * @ORM\Table(name="customfieldvalues",indexes={@ORM\Index(columns={"value"}, flags={"fulltext"})})
- * @Gedmo\Loggable(logEntryClass="Application\Entity\Log")
+ * @Gedmo\Loggable(logEntryClass="Application\Entity\CustomFieldLog")
  * @author Bruno Spyckerelle
  */
 class CustomFieldValue

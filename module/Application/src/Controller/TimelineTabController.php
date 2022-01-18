@@ -21,6 +21,7 @@ use Application\Entity\Category;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
+use Laminas\Log\Logger;
 use Laminas\View\Model\ViewModel;
 
 /**
@@ -33,11 +34,14 @@ class TimelineTabController extends TabController
 
     protected $entityManager;
 
+    protected $logger;
+
     public function __construct(EntityManager $entityManager,
-                                $config, $mattermost)
+                                $config, $mattermost, $logger)
     {
         parent::__construct($config, $mattermost);
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     public function indexAction()
@@ -62,6 +66,8 @@ class TimelineTabController extends TabController
 
         $tabid = $this->params()->fromQuery('tabid', null);
 
+        $cats = $this->params()->fromQuery('cats', null);
+
         $userauth = $this->lmcUserAuthentication();
 
         if ($tabid) {
@@ -78,6 +84,10 @@ class TimelineTabController extends TabController
             } else {
                 $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
             }
+        } elseif ($cats) {
+            $this->viewmodel->setVariable('onlyroot', false);
+            $this->viewmodel->setVariable('cats', $cats);
+            $this->viewmodel->setVariable('default', false);
         } else {
             $return['error'][] = "Aucun onglet défini. Contactez votre administrateur.";
         }
@@ -99,18 +109,14 @@ class TimelineTabController extends TabController
             }
         }
 
-        if(array_key_exists('IHM_OPE_Light', $this->config) && $this->config['IHM_OPE_Light'] === true) {
-            $this->layout()->IHMLight = true;
-            $this->viewmodel->setVariable('IHMLight', true);
-        } else {
-            $this->layout()->IHMLight = false;
-            $this->viewmodel->setVariable('IHMLight', false);
-        }
+        $this->viewmodel->setVariable('panel', true);
 
         $this->viewmodel->setVariable('postitAllowed', $postitAllowed);
         
         $this->viewmodel->setVariable('messages', $return);
-        
+
+        $this->getLogger()->info('timeline index.html');
+
         return $this->viewmodel;
     }
     
@@ -121,4 +127,13 @@ class TimelineTabController extends TabController
     {
         return $this->entityManager;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLogger() : Logger
+    {
+        return $this->logger;
+    }
+
 }

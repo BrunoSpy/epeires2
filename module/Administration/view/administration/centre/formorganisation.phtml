@@ -27,6 +27,16 @@ echo $this->controlGroup($this->form->get('ipoemail'));
 
 ?>
 
+  <div class="panel panel-default">
+    <div class="panel-heading">Envoi d'email (facultatif, écrase les valeurs stockées dans le fichier de configuration)</div>
+    <div class="panel-body">
+        <?php
+        echo $this->controlGroup($this->form->get('emailAccount'));
+        echo $this->controlGroup($this->form->get('emailFrom'));
+        echo $this->controlGroup($this->form->get('emailPassword'));
+        ?>
+    </div>
+  </div>
 
 </div>
 <div class="modal-footer">

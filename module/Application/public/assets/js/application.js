@@ -122,14 +122,14 @@ var loadFiche = function(id, actionUrl, files) {
         if($('#fiche').data('id') === id){
             closeFiche();
         } else {
-            $('#fiche').load(url+actionUrl+'?id='+id, function(){
+            $('#fiche').load(urlApp+actionUrl+'?id='+id, function(){
                 $('tr[data-toggle=tooltip]').tooltip();
                 timerFiche = setTimeout(updateFiche, 10000, $("#close-button").data('id'));
             });
         }
     } else {
         $("#fiche").empty();
-        $('#fiche').load(url+actionUrl+'?id='+id, function(){
+        $('#fiche').load(urlApp+actionUrl+'?id='+id, function(){
             $('tr[data-toggle=tooltip]').tooltip();
             if(files){
                 $("#files-panel").trigger('click');
@@ -156,7 +156,7 @@ var updateFiche = function(id){
     //on ne met à jour que le contenu de la fiche reflexe
     //sinon on a un effet de flip-flop sur les panneaux
     var change = false;
-    $.getJSON(url + 'events/actionsStatus?id=' + id, function(data){
+    $.getJSON(urlApp + '/events/actionsStatus?id=' + id, function(data){
         $.each(data, function(key, value){
             var td = $('tr[data-id='+key+'] td:last a');
             if(value && td.hasClass('btn-success')) {
@@ -170,7 +170,7 @@ var updateFiche = function(id){
         //il faut aussi mettre l'historique à jour si il y a eu un changement
         if(change == true){
             //mise à jour histo
-            $("#history").load(url+'events/gethistory?id='+id, function(){
+            $("#history").load(urlApp+'/events/gethistory?id='+id, function(){
                 $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
             });
         }
@@ -180,9 +180,11 @@ var updateFiche = function(id){
 /* **** End Left Panel  **** */
 
 
- var url;
- var setURL = function(urlt){
-     url = urlt;
+ var urlApp;
+ var urlRoot;
+ var setURL = function(urlt, urlR){
+     urlApp = urlt;
+     urlRoot = urlR;
  };
 
  var enableBriefing = false;
@@ -340,19 +342,19 @@ $(document).ready(function(){
     $(document).on('submit', '#add-note, #add-note-fiche', function(e){
         e.preventDefault();
         var me = $(this);
-        $.post(url+'events/addnote?id='+me.data('id'), me.serialize(), function(data){
+        $.post(urlApp+'/events/addnote?id='+me.data('id'), me.serialize(), function(data){
             if(!data['error']){
                 me.find('textarea').val('');
                 var idFiche = $('#close-button').data('id');
                 if(typeof idFiche != 'undefined') {
                     //fiche ouverte
                     //mise à jour notes
-                    $("#updates").load(url+'events/updates?id='+idFiche, function(){
+                    $("#updates").load(urlApp+'/events/updates?id='+idFiche, function(){
                         $("#updates").closest('.panel').find(".panel-heading span.badge").html($("#updates blockquote").length);
                     });
                     $("#updates").show();
                     //mise à jour histo
-                    $("#history").load(url+'events/gethistory?id='+idFiche, function(){
+                    $("#history").load(urlApp+'/events/gethistory?id='+idFiche, function(){
                         $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
                     });
                 }
@@ -374,7 +376,7 @@ $(document).ready(function(){
 		var id = $(this).data('id');
 		var me = $(this);
 		//tell the server to toggle the status
-		$.getJSON(url+'events/togglefiche'+'?id='+id,
+		$.getJSON(urlApp+'/events/togglefiche'+'?id='+id,
                     function(data){
 			if(data.open){
 				me.html("<strong>A faire</strong>");
@@ -383,7 +385,7 @@ $(document).ready(function(){
 				me.html("<strong>Fait</strong>");
 				me.addClass("active btn-success");
 			}
-                        $("#history").load(url+'events/gethistory?id='+me.data('eventid'), function(){
+                        $("#history").load(urlApp+'/events/gethistory?id='+me.data('eventid'), function(){
                             $("#history").closest('.panel').find("span.badge").html($("#history dd").length);
                         });
                         
@@ -417,7 +419,7 @@ $(document).ready(function(){
         var me = $(this).html();
         var p = $(this).closest('p');
         p.empty();
-        var form = $('<form data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></form>');
+        var form = $('<form data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+urlApp+'/events/savenote?id='+$(this).data('id')+'"></form>');
         form.append('<textarea name="note" class="form-control">'+me.replace(/<br\s*\/?>/mg,"\n")+'</textarea>');
         form.append('<button class="btn btn-xs btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span></button>');
         form.append('<button href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-repeat"></span></button>');
@@ -544,7 +546,7 @@ $(document).ready(function(){
     });
 
     $("#calendarview").fullCalendar({
-        events: url+'events/geteventsFC'
+        events: urlApp+'/events/geteventsFC'
             +(typeof(cats) == "undefined" ? '' : '?'+cats)
             +(typeof(cats) == "undefined" ? '?' : '&') + 'rootcolor='+(typeof(onlyroot) == "undefined" ? '1' : onlyroot)
             +'&default='+(typeof(defaultTimeline) == "undefined" ? '0' : defaultTimeline),
@@ -694,7 +696,7 @@ $(document).ready(function(){
     var timerFC;
     var updateFC = function() {
         clearTimeout(timerFC);
-        var urlFC = url + 'events/geteventsFC';
+        var urlFC = urlApp + '/events/geteventsFC';
         if (typeof(cats) == "undefined" || cats == null) {
             urlFC += (lastupdateFC != 0 ? '?lastupdate=' + lastupdateFC.toUTCString() : '') ;
         } else {
@@ -734,7 +736,7 @@ $(document).ready(function(){
         e.preventDefault();
         var me = $(this);
         var id = me.data('id');
-        $.post(url+'events/changefield?id='+id+'&field=star&value=1',
+        $.post(urlApp+'/events/changefield?id='+id+'&field=star&value=1',
             function(data){
                 displayMessages(data.messages);
                 $('#calendarview').fullCalendar('refetchEvents');
@@ -747,7 +749,7 @@ $(document).ready(function(){
         e.preventDefault();
         var me = $(this);
         var id = me.data('id');
-        $.post(url+'events/changefield?id='+id+'&field=star&value=0',
+        $.post(urlApp+'/events/changefield?id='+id+'&field=star&value=0',
             function(data){
                 displayMessages(data.messages);
 
@@ -761,7 +763,7 @@ $(document).ready(function(){
         e.preventDefault();
         var me = $(this);
         var id = me.data('id');
-        $.post(url+'events/sendevent?id='+id,
+        $.post(urlApp+'/events/sendevent?id='+id,
             function(data){
                 displayMessages(data.messages);
             }
@@ -773,7 +775,7 @@ $(document).ready(function(){
         e.preventDefault();
         var me = $(this);
         var id = me.data('id');
-        $.post(url+'events/changefield?id='+id+'&field=status&value=4',
+        $.post(urlApp+'/events/changefield?id='+id+'&field=status&value=4',
             function(data){
                 displayMessages(data.messages);
 
@@ -787,7 +789,7 @@ $(document).ready(function(){
         e.preventDefault();
         var me = $(this);
         var id = me.data('id');
-        $.post(url+'events/deleteevent?id='+id,
+        $.post(urlApp+'/events/deleteevent?id='+id,
             function(data){
                 displayMessages(data.messages);
                 $('#calendarview').fullCalendar('refetchEvents');
@@ -804,9 +806,9 @@ $(document).ready(function(){
         var urlF = me.data('url');
         if(!isNaN(id)){
             if(files === 1 && typeof urlF != 'undefined'){
-                window.open(window.location.origin+url+urlF);
+                window.open(window.location.origin+urlRoot+urlF);
             } else {
-                loadFiche(id, "events/getfiche", true);
+                loadFiche(id, "/events/getfiche", true);
             }
         }
     });
@@ -889,7 +891,7 @@ $(document).ready(function(){
         e.preventDefault();
         var temp = $('#calendar input[type=text].date').val().split('/');
     	var date = new Date(temp[2],temp[1]-1,temp[0],"5");
-        window.open(url+'report/daily?day='+date.toUTCString());
+        window.open(urlApp+'/report/daily?day='+date.toUTCString());
     });
 
     $("#print").on('click', function(e){
@@ -919,28 +921,30 @@ $(document).ready(function(){
         	var event = $("#timeline").timeline('getEvent', id);
         	if(event !== null){
         		if(event.files === 1){
-        			window.open(window.location.origin+url+event.url_file1);
+        			window.open(window.location.origin+urlRoot+event.url_file1);
         		} else {
-        			loadFiche(id, "events/getfiche", true);
+        			loadFiche(id, "/events/getfiche", true);
         		}
         	} else {
-        		loadFiche(id, "events/getfiche", true);
+        		loadFiche(id, "/events/getfiche", true);
         	}
         }
     });
 
     $('select[name="nameopsup"]').on ('change', function(e){
         if(enableBriefing) {
-            $("#releve-content").load(url + 'briefing/briefing', function () {
+            $("#releve-content").load(urlApp + '/briefing/briefing', function () {
                 $("#briefing-content table").addClass("table");
+                $("#briefing-content img").addClass("img-responsive");
             });
             $('#releveWindow').modal('show');
         }
     });
 
     $('#usermenu-mod-briefing').on('click', function(e){
-        $("#releve-content").load(url + 'briefing/briefing', function () {
+        $("#releve-content").load(urlApp + '/briefing/briefing', function () {
             $("#briefing-content table").addClass("table");
+            $("#briefing-content img").addClass("img-responsive");
         });
         $('#releveWindow').modal('show');
     });
@@ -958,23 +962,26 @@ $(document).ready(function(){
                 onChange: function (e) {
                     $('#editor-preview').html(e.parseContent());
                     $("#editor-preview table").addClass("table");
+                    $("#editor-preview img").addClass("img-responsive");
                 },
                 resize: "vertical",
                 language: "fr",
                 onShow: function (e) {
-                    $.getJSON(url + 'briefing/getBriefing', function (data) {
+                    $.getJSON(urlApp + '/briefing/getBriefing', function (data) {
                         e.setContent(data.briefing);
                         $("#briefing-content table").addClass("table");
+                        $("#briefing-content img").addClass("img-responsive");
                     });
                 },
                 onSave: function (e) {
-                    $.post(url + 'briefing/save', {content: e.getContent()}, function (data) {
+                    $.post(urlApp + '/briefing/save', {content: e.getContent()}, function (data) {
                         if (data['messages']) {
                             displayMessages(data.messages);
                         }
                         $("#editwindow").modal('hide');
                         $("#briefing-content").html(e.parseContent());
                         $("#briefing-content table").addClass("table");
+                        $("#briefing-content img").addClass("img-responsive");
                     });
                 },
                 savable: true
@@ -995,7 +1002,7 @@ $(document).ready(function(){
     //dans ce cas on force le rechargement de la page
     var lastCode = 0;
     var testAuthentication = function() {
-        $.getJSON(url + 'events/testAuthentication',
+        $.getJSON(urlApp + '/events/testAuthentication',
             function (data, textStatus, jqHXR) {
                 lastCode = 200;
             }).fail(function(jqHXR){

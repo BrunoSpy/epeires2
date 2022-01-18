@@ -15,20 +15,21 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Application\Controller;
 
-use Application\Controller\ATFCMController;
-use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class ATFCMControllerFactory implements FactoryInterface {
+/**
+ * Controller for a timeline tab splitted view with PDF viewer
+ * @author Bruno Spyckerelle
+ * @license https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
+ */
+class SplitTimelineTabController extends TimelineTabController
+{
 
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function indexAction()
     {
-        return new ATFCMController(
-            $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('nmb2b')
-            );
+        $this->layout()->viewduration = 3;
+        return parent::indexAction();
     }
 
 }

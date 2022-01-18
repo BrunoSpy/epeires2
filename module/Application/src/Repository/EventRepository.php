@@ -25,8 +25,10 @@ use Application\Entity\CustomFieldValue;
 use Application\Entity\Event;
 use Application\Entity\Frequency;
 use Application\Entity\FrequencyCategory;
+use Application\Entity\MilCategory;
 use Application\Entity\Sector;
 use Application\Entity\Stack;
+use Application\Entity\Status;
 use Application\Entity\SwitchObjectCategory;
 use Application\Entity\Tab;
 use Core\Entity\TemporaryResource;
@@ -35,9 +37,11 @@ use Application\Entity\Antenna;
 
 use Core\Entity\User;
 
+use Doctrine\ORM\Query\Expr;
 use DSNA\NMB2BDriver\Models\EAUPRSAs;
 use DSNA\NMB2BDriver\Models\Regulation;
 use LmcUser\Controller\Plugin\LmcUserAuthentication;
+use RuntimeException;
 
 /**
  * Description of EventRepository
@@ -1443,7 +1447,7 @@ class EventRepository extends ExtendedRepository
             // si aucun evt pour la même zone (= même nom, même niveaux) existe ou inclus le nouvel evt
             // on en crée un nouveau
             if (count($previousEvents) == 0) {
-                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, $messages);
+                $this->doAddMilEvent($cat, $organisation, $user, $designator, $timeBegin, $timeEnd, $upperlevel, $lowerlevel, '', $messages);
                 $addedEvents++;
             }
         }
@@ -1451,7 +1455,23 @@ class EventRepository extends ExtendedRepository
         return $addedEvents;
     }
 
-    private function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, &$messages)
+    /**
+     * @param MilCategory $cat
+     * @param \Application\Entity\Organisation $organisation
+     * @param User $user
+     * @param $designator
+     * @param \DateTime $timeBegin
+     * @param \DateTime $timeEnd
+     * @param $upperLevel
+     * @param $lowerLevel
+     * @param $internalid
+     * @param $messages
+     * @param bool $flush
+     * @param Status|null $status
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function doAddMilEvent(\Application\Entity\MilCategory $cat, \Application\Entity\Organisation $organisation, \Core\Entity\User $user, $designator, \DateTime $timeBegin, \DateTime $timeEnd, $upperLevel, $lowerLevel, $internalid, &$messages, $flush = true, Status $status = null)
     {
         $event = new \Application\Entity\Event();
         $event->setOrganisation($organisation);
@@ -1460,10 +1480,14 @@ class EventRepository extends ExtendedRepository
         $event->setScheduled(false);
         $event->setPunctual(false);
         $event->setStartdate($timeBegin);
-        $status = $this->getEntityManager()
-            ->getRepository('Application\Entity\Status')
-            ->find('1');
+
+        if($status == null) {
+            $status = $this->getEntityManager()
+                ->getRepository('Application\Entity\Status')
+                ->find('1');
+        }
         $event->setStatus($status);
+
         $impact = $this->getEntityManager()
             ->getRepository('Application\Entity\Impact')
             ->find('2');
@@ -1485,6 +1509,14 @@ class EventRepository extends ExtendedRepository
         $lower->setEvent($event);
         $lower->setValue($lowerLevel);
 
+        // internalid : not available if import with nmb2b : manage compatibility with old DB
+        $internal = null;
+        if($cat->getInternalidField() !== null) {
+            $internal = new CustomFieldValue();
+            $internal->setCustomField($cat->getInternalidField());
+            $internal->setEvent($event);
+            $internal->setValue($internalid);
+        }
         $this->importModel($event, $user, $timeBegin, $designator, $organisation, $cat);
         
         try {
@@ -1492,11 +1524,17 @@ class EventRepository extends ExtendedRepository
             $this->getEntityManager()->persist($upper);
             $this->getEntityManager()->persist($lower);
             $this->getEntityManager()->persist($event);
-            $this->getEntityManager()->flush();
+            if($internal !== null) {
+                $this->getEntityManager()->persist($internal);
+            }
+            if($flush){
+                $this->getEntityManager()->flush();
+            }
         } catch (\Exception $ex) {
-            error_log($ex->getMessage());
             if ($messages != null) {
                 $messages['error'][] = $ex->getMessage();
+            } else {
+                throw $ex;
             }
         }
     }
@@ -1567,6 +1605,42 @@ class EventRepository extends ExtendedRepository
             }
         }
         return $results;
+    }
+
+    /**
+     * Get an event of Milcategory with the corresponding $internalid
+     * @param MilCategory $cat
+     * @param $internalid
+     * @return int id of the event or -1 if no event
+     * @throws RuntimeException
+     */
+    public function getZoneMilEventId(MilCategory $cat, $internalid): int
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select(array('e', 'v', 'cat'))
+            ->from('Application\Entity\Event', 'e')
+            ->leftJoin('e.custom_fields_values', 'v')
+            ->leftJoin('e.category', 'cat')
+            ->andWhere(
+                $qb->expr()->eq('cat.id', '?1')
+            )->andWhere(
+                $qb->expr()->eq('v.customfield', '?2')
+            )->andWhere(
+                $qb->expr()->eq('v.value', '?3')
+            )
+        ->setParameters(array(
+            1 => $cat->getId(),
+            2 => $cat->getInternalidField(),
+            3 => $internalid
+        ));
+        $results = $qb->getQuery()->getResult();
+        if(count($results) == 1) {
+            return $results[0]->getId();
+        } elseif (count($results) > 1 ) {
+            throw new RuntimeException("Too many events with internal id ".$internalid. ". ".count($results)." events found.");
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -2223,6 +2297,125 @@ class EventRepository extends ExtendedRepository
         $this->getEntityManager()->clear();
 
         return $this->getEntityManager()->getRepository(Event::class)->findById($ids);
+    }
+
+    /**
+     * Cloture l'évènement ains que l'ensemble de ses fils.
+     * Annule les alarmes non acquitées si positionnées par delta
+     *
+     * @param Event $event
+     * @param \DateTime|null $enddate
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function closeEvent(Event $event, \DateTime $enddate = null)
+    {
+        if (($enddate == null && $event->getEnddate() == null) && ! $event->isPunctual()) {
+            throw new \RuntimeException("Impossible de fermer un évènement non ponctuel sans date de fin.");
+        }
+
+        $closedStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::CLOSED);
+
+        if ($closedStatus == null || $closedStatus->getId() != Status::CLOSED) {
+            throw new \RuntimeException("Statut \"Fin confirmée\" attendu, un autre statut a été fourni.");
+        }
+
+        if (! $event->isPunctual() && $enddate !== null) {
+            $event->setEnddate($enddate);
+        }
+        $event->setStatus($closedStatus);
+        $this->getEntityManager()->persist($event);
+
+        foreach ($event->getChildren() as $child) {
+            $class = get_class($child->getCategory());
+            switch ($class) {
+                case ActionCategory::class :
+                    //do nothing
+                    break;
+                case AlarmCategory::class :
+                    //cancel open alarms only if set by delta
+                    if($child->getStatus()->getId() == Status::CLOSED) {
+                        //do nothing
+                    } else {
+                        $deltaend = "";
+                        $deltabegin = "";
+                        foreach ($event->getCustomFieldsValues() as $value) {
+                            if ($value->getCustomField()->getId() == $event->getCategory()
+                                    ->getDeltaBeginField()
+                                    ->getId()
+                            ) {
+                                $deltabegin = preg_replace('/\s+/', '', $value->getValue());
+                            }
+                            if ($value->getCustomField()->getId() == $event->getCategory()
+                                    ->getDeltaEndField()
+                                    ->getId()
+                            ) {
+                                $deltaend = preg_replace('/\s+/', '', $value->getValue());
+                            }
+                            if(strlen(trim($deltaend)) > 0) {
+                                //do nothing
+                            } elseif (strlen(trim($deltabegin))) {
+                                //cancel alarm if startdate > event_enddate
+                                if($child->getStartdate() > $event->getStartdate()) {
+                                    $this->cancelEvent($child);
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    $this->closeEvent($child, $enddate);
+            }
+        }
+    }
+
+    /**
+     * Annule l'évènement et tous ses enfants
+     * Si pas d'heure de fin programmée, utilisation de l'heure actuelle +1h
+     *
+     * @param Event $event
+     * @throws \RuntimeException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function cancelEvent(Event $event)
+    {
+        $cancelStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::CANCELED);
+        $this->endEvent($event, $cancelStatus);
+    }
+
+    public function deleteEvent(Event $event)
+    {
+        $deleteStatus = $this->getEntityManager()->getRepository(Status::class)->find(Status::DELETED);
+        $this->endEvent($event, $deleteStatus);
+    }
+
+    /**
+     * Cancel or delete an event
+     * To close an event, use closeEvent
+     * @param Event $event
+     * @param Status $status
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function endEvent(Event $event, Status $status)
+    {
+        $event->setStatus($status);
+        if ($event->isPunctual() || (! $event->isPunctual() && $event->getEnddate() === null)) {
+            $now = new \DateTime('now');
+            $now->setTimezone(new \DateTimeZone('UTC'));
+            if($event->getStartdate() >= $now) {
+                $enddate = clone $event->getStartdate();
+                $enddate->add(new \DateInterval('PT1H'));
+                $event->setEnddate($enddate);
+            } else {
+                $event->setEnddate($now);
+            }
+        }
+        foreach ($event->getChildren() as $child) {
+            if (! $child instanceof ActionCategory) {
+                $this->endEvent($child, $status);
+            }
+        }
+        $this->getEntityManager()->persist($event);
     }
 
 }

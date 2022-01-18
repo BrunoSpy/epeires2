@@ -1,110 +1,61 @@
 stages:
   - test
   - build_image
+
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
   - vendor/
 
-before_script:
-# Setup Selenium
-- export DISPLAY=:99
-- Xvfb :99 &
-- sleep 3
-# WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
-- wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
-- java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
-#download sonar scanner
-- wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
-- unzip ./sonar-scanner.zip
-#parallelize downloads
-- composer install --no-interaction --prefer-dist
-#configure database
-- cp $DOCTRINE config/autoload/doctrine.local.php
-#populate database
-- php public/index.php migrations:migrate --no-interaction -vvv
-- php public/index.php orm:generate-proxies
-- php public/index.php initDB
-- php public/index.php data-fixture:import default_group --no-interaction
-- chmod a+rwx -Rf ./data
-- chmod +x ./local-php-security-checker
-#launch server
-- cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
-- sed -e "s?%BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-enabled/vhost.conf
-- echo ServerName localhost >> /etc/apache2/apache2.conf
-- rm /etc/apache2/sites-enabled/000-default.conf
-- a2enmod rewrite
-- service apache2 restart
-  # Make sure Webdriver is running
-- curl http://localhost:4444/wd/hub/status
-  #Make sure webserver is running
-- curl http://localhost/events/testAuthentication
-- apache2ctl -S
+.before_script_test:
+  before_script:
+  # Setup Selenium
+  - export DISPLAY=:99
+  - Xvfb :99 &
+  - sleep 3
+  # WARNING - Takes a long time to start up. Php extensions compilation time should assure us that it's launched correctly
+  - wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.9/selenium-server-standalone-3.9.1.jar
+  - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
+  #download sonar scanner
+  - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+  - unzip ./sonar-scanner.zip
+  #donwload dependencies
+  - composer --version
+  - composer install --no-interaction --prefer-dist
+  #configure database
+  - cp $DOCTRINE config/autoload/doctrine.local.php
+  #populate database
+  - touch logs/epeires2.log
+  - chmod -Rf a+rwx logs
+  - vendor/bin/laminas-development-mode enable
+  - vendor/bin/doctrine-module migrations:migrate --no-interaction -vvv
+  - vendor/bin/doctrine-module orm:generate-proxies
+  - vendor/bin/laminas epeires2:initdb --no-interaction
+  - vendor/bin/doctrine-module data-fixture:import default_group --no-interaction
+  - chmod a+rwx -Rf ./data
+  - chmod +x ./local-php-security-checker
+  #launch server
+  - cp -f tests/build/vhost.conf /etc/apache2/sites-enabled/
+  - sed -e "s?%BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-enabled/vhost.conf
+  - echo ServerName localhost >> /etc/apache2/apache2.conf
+  - rm /etc/apache2/sites-enabled/000-default.conf
+  - a2enmod rewrite
+  - service apache2 restart
+    # Make sure Webdriver is running
+  - curl http://localhost:4444/wd/hub/status
+    #Make sure webserver is running
+  - curl http://localhost/app/events/testAuthentication
+  - apache2ctl -S
 
 variables:
   MYSQL_DATABASE: epeires2
   MYSQL_ROOT_PASSWORD: epeires2
   APP_ENV: development
-  TIMEZONE: "Europe/Paris"
-
-test:7.3-mariadb103:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - mariadb:10.3
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mariadb104:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - mariadb:10.4
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mariadb105:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - mariadb:10.5
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mysql57:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - mysql:5.7
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-
-test:7.3-mysql80:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
-  stage: test
-  services:
-    - name: mysql:8.0
-      command: ["--default-authentication-plugin=mysql_native_password"]
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  TIMEZONE: Europe/Paris
 
 test:7.4-mariadb103:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.3
@@ -112,10 +63,11 @@ test:7.4-mariadb103:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb104:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.4
@@ -123,10 +75,11 @@ test:7.4-mariadb104:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mariadb105:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mariadb:10.5
@@ -134,10 +87,23 @@ test:7.4-mariadb105:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:7.4-mariadb106:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
+  stage: test
+  services:
+    - mariadb:10.6
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql57:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mysql:5.7
@@ -145,10 +111,11 @@ test:7.4-mysql57:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:7.4-mysql80:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php74.1
   stage: test
   services:
     - mysql:8.0
@@ -156,20 +123,22 @@ test:7.4-mysql80:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
   script:
     - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+    - XDEBUG_MODE=coverage php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mariadb103:
+  extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
-    - mariadb:10.3
+  - mariadb:10.3
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
+  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mariadb104:
+  extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
@@ -181,6 +150,7 @@ test:8.0-mariadb104:
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mariadb105:
+  extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
@@ -191,7 +161,20 @@ test:8.0-mariadb105:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
+test:8.0-mariadb106:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
+  stage: test
+  services:
+    - mariadb:10.6
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 test:8.0-mysql57:
+  extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
@@ -203,6 +186,7 @@ test:8.0-mysql57:
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
 test:8.0-mysql80:
+  extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
@@ -213,22 +197,93 @@ test:8.0-mysql80:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
+test:8.1-mariadb103:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mariadb:10.3
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.1-mariadb104:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mariadb:10.4
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.1-mariadb105:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mariadb:10.5
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.1-mariadb106:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mariadb:10.6
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.1-mysql57:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mysql:5.7
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.1-mysql80:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
+  stage: test
+  services:
+    - mysql:8.0
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 test:docker:
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php73
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
   - mariadb:10.3.20
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
-  - ./sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
+  - ./sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
   - php vendor/bin/codecept run acceptance
   - php vendor/bin/codecept run unit --coverage-text --no-colors
   - ./local-php-security-checker
 
 docker_images:
-  before_script:
-    - echo 'Short circuit global before_script'
   stage: build_image
   image: docker:git
   services:

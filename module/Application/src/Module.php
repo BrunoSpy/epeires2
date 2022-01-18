@@ -20,7 +20,6 @@ namespace Application;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ModuleManager\ModuleManager;
-use Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Laminas\Console\Adapter\AdapterInterface as Console;
 
 /**
@@ -28,7 +27,7 @@ use Laminas\Console\Adapter\AdapterInterface as Console;
  * @author Bruno Spyckerelle
  *
  */
-class Module implements ConsoleUsageProviderInterface
+class Module
 {
 
     public function onBootstrap(MvcEvent $e)
@@ -63,64 +62,4 @@ class Module implements ConsoleUsageProviderInterface
         }, 100);
     }
 
-    public function getConsoleUsage(Console $console)
-    {
-        return array(
-            'report [--email] [--delta=] orgshortname' => 'Generate a daily report for an organisation',
-            array(
-                '--email',
-                '(optional) Send an email to IPO'
-            ),
-            array(
-                '--delta',
-                '(optional) Delta to add to the current day (-1=yesterday)'
-            ),
-            array(
-                'orgshortname',
-                'Shortname of the organisation as configured in the database'
-            ),
-            'import-nmb2b [--delta=] [--email] [--verbose] orgshortname username' => 'Import RSAs from NM B2B WS',
-            array(
-                '--delta',
-                '(optional) Delta to add to the current day (-1=yesterday)'
-            ),
-            array(
-                '--email',
-                '(optional) Send an email to IPO if error during import.'
-            ),
-            array(
-                '--verbose',
-                '(optional) Print requests and responses.'
-            ),
-            array(
-                'orgshortname',
-                'Shortname of the organisation as configured in the database'
-            ),
-            array(
-                'username',
-                'User Name of the author of created events'
-            ),
-            'import-regulations [--delta=] [--email] [--verbose] orgshortname username' => 'Import Regulations from NM B2B WS for the specidifed day and the day after',
-            array(
-                '--delta',
-                '(optional) Delta to add to the current day (-1=yesterday)'
-            ),
-            array(
-                '--email',
-                '(optional) Send an email to IPO if error during import.'
-            ),
-            array(
-                '--verbose',
-                '(optional) Print requests and responses.'
-            ),
-            array(
-                'orgshortname',
-                'Shortname of the organisation as configured in the database'
-            ),
-            array(
-                'username',
-                'User Name of the author of created events'
-            )
-        );
-    }
 }

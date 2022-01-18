@@ -4,6 +4,18 @@
  * Admin module configuration
  * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
+
+use Administration\Command\CleanLogsCommand;
+use Administration\Command\DeleteEventsCommand;
+use Administration\Command\Factory\CleanLogsCommandFactory;
+use Administration\Command\Factory\DeleteEventsCommandFactory;
+use Administration\Command\Factory\InitBTIVDBCommandFactory;
+use Administration\Command\Factory\InitDBCommandFactory;
+use Administration\Command\InitBTIVDBCommand;
+use Administration\Command\InitDBCommand;
+use Administration\Controller\Factory\ATFCMControllerFactory;
+use Administration\Controller\Factory\MaintenanceControllerFactory;
+
 return array(
     'router' => array(
         'routes' => array(
@@ -24,47 +36,13 @@ return array(
             )
         )
     ),
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                'delete-events' => array(
-                    'options' => array(
-                        'route' => 'delete-events <orgshortname>',
-                        'defaults' => array(
-                            'controller' => 'Administration\Controller\Maintenance',
-                            'action' => 'deleteEvents'
-                        )
-                    )
-                ),
-                'clean-logs' => array(
-                    'options' => array(
-                        'route' => 'clean-logs',
-                        'defaults' => array(
-                            'controller' => 'Administration\Controller\Maintenance',
-                            'action' => 'cleanLogs'
-                        )
-                    )
-                ),
-                'initDB' => array(
-                    'options' => array(
-                        'route' => 'initDB',
-                        'defaults' => array(
-                            'controller' => 'Administration\Controller\Maintenance',
-                            'action' => 'initDB'
-                        )
-                    )
-                ),
-                'initbtivDB' => array(
-                    'options' => array(
-                        'route' => 'initbtivDB',
-                        'defaults' => array(
-                            'controller' => 'Administration\Controller\Maintenance',
-                            'action' => 'initbtivDB'
-                        )
-                    )
-                ),
-            )
-        )
+    'laminas-cli' => array(
+        'commands' => [
+            'epeires2:delete-events' => DeleteEventsCommand::class,
+            'epeires2:clean-logs' => CleanLogsCommand::class,
+            'epeires2:initdb' => InitDBCommand::class,
+            'epeires2:initbtivdb' => InitBTIVDBCommand::class
+            ]
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -73,7 +51,15 @@ return array(
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator'
-        )
+        ),
+        'factories' => [
+            DeleteEventsCommand::class => DeleteEventsCommandFactory::class,
+            CleanLogsCommand::class => CleanLogsCommandFactory::class,
+            InitDBCommand::class => InitDBCommandFactory::class,
+            InitBTIVDBCommand::class => InitBTIVDBCommandFactory::class,
+            \Doctrine\Migrations\Configuration\Migration\ConfigurationLoader::class => \Roave\PsrContainerDoctrine\Migrations\ConfigurationLoaderFactory::class,
+            \Doctrine\Migrations\DependencyFactory::class => \Roave\PsrContainerDoctrine\Migrations\DependencyFactoryFactory::class
+        ]
     ),
     'translator' => array(
         'locale' => 'fr_FR',
@@ -101,9 +87,9 @@ return array(
             'Administration\Controller\Tabs' => 'Administration\Controller\Factory\TabsControllerFactory',
             'Administration\Controller\Mil' => 'Administration\Controller\Factory\MilControllerFactory',
             'Administration\Controller\Fields' => 'Administration\Controller\Factory\FieldsControllerFactory',
-            'Administration\Controller\Maintenance' => 'Administration\Controller\Factory\MaintenanceControllerFactory',
             'Administration\Controller\Afis' => 'Administration\Controller\Factory\AfisControllerFactory',
-            'Administration\Controller\Atfcm' => 'Administration\Controller\Factory\ATFCMControllerFactory'
+            'Administration\Controller\Atfcm' => ATFCMControllerFactory::class,
+            'Administration\Controller\Maintenance' => MaintenanceControllerFactory::class
         )
     ),
     'view_manager' => array(
@@ -120,7 +106,6 @@ return array(
             __DIR__ . '/../view/administration'
         )
     ),
-
     'view_helpers' => array(
         'invokables' => array(
             'afViewHelper' => 'Application\View\Helper\AfisHelper',
@@ -177,6 +162,10 @@ return array(
             'admin.atfcm' => array(
                 'name' => 'ATFCM',
                 'description' => ''
+            ),
+            'admin.maintenance' => array(
+                'name' => 'Maintenance',
+                'description' => 'Lancement de commandes de maintenance sur le serveur'
             )
         ),
         'Messagerie instantanée' => array(
@@ -262,6 +251,12 @@ return array(
                     'controller' => 'Administration\Controller\Switchobjects',
                     'permissions' => [
                         'admin.switchobjects'
+                    ]
+                ),
+                array(
+                    'controller' => 'Administration\Controller\Maintenance',
+                    'permissions' => [
+                        'admin.maintenance'
                     ]
                 )
             )

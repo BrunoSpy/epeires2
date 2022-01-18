@@ -34,8 +34,9 @@ class Tab
 
     const TIMELINE = "timeline";
     const SWITCHLIST = "switchlist";
+    const SPLITTIMELINE ="splittimeline";
 
-    const OPTIONS = array(self::TIMELINE, self::SWITCHLIST);
+    const OPTIONS = array(self::TIMELINE, self::SWITCHLIST, self::SPLITTIMELINE);
 
     /**
      * @ORM\Id
@@ -107,7 +108,7 @@ class Tab
     protected $isDefault = false;
 
     /**
-     * Type of tab : timeline or switchlist
+     * Type of tab : timeline, switchlist or splittimeline
      * @ORM\Column(type="string")
      * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(true)

@@ -15,20 +15,23 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Application\Controller\Factory;
+namespace Administration\Command\Factory;
 
-use Application\Controller\MilController;
+use Administration\Command\InitDBCommand;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class MilControllerFactory implements FactoryInterface {
+/**
+ * Class InitDBCommandFactory
+ * @package Administration\Command\Factory
+ */
+class InitDBCommandFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new MilController(
+        return new InitDBCommand(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('nmb2b')
-            );
+            $container->get('config')
+        );
     }
-
 }

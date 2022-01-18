@@ -668,13 +668,13 @@
     });
 
     function refreshNbEvents() {
-        $.get(url + 'sarbeacons/getnbcurrentip', function(data) {
+        $.get(url + '/sarbeacons/getnbcurrentip', function(data) {
             $aNow.find('.badge')
             .html(data.nbip)
             .show();
         })
 
-        $.get(url + 'sarbeacons/getnbendedip', function(data) {
+        $.get(url + '/sarbeacons/getnbendedip', function(data) {
             $aArch.find('span')
             .html(data.nbip)
             .show();
@@ -683,17 +683,17 @@
 
     $aNow.click(function() 
     {
-        $currentIp.load(url + 'sarbeacons/list', function() 
+        $currentIp.load(url + '/sarbeacons/list', function()
         {
             $('.list-group-item').click(function() {
                 var clickedIdIp = $(this).data('id');
-                $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
+                $.post(url + '/sarbeacons/getip', {id: clickedIdIp}, function(data) {
                     $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
                         data.ip.Alerte.Type
                     );
                 });
                 
-                $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {
+                $('#f-show-ip').load(url + '/sarbeacons/show', {id: clickedIdIp}, function() {
 
                     $('#f-show-ip .list-fields').click(function() {
                         $(this).children('p').toggleClass('cache');
@@ -703,7 +703,7 @@
                         $('#mdl-show-ip').modal('hide');
                         $('#a-start-ip-ok').data('trig', false);
                         idIp = clickedIdIp;
-                        $('#f-start-ip').load(url + 'sarbeacons/form', {id: clickedIdIp}, function (data) 
+                        $('#f-start-ip').load(url + '/sarbeacons/form', {id: clickedIdIp}, function (data)
                         {
                             $('#title-start-ip').html('Modifier un plan d\'interrogation');
                             $('#a-start-ip-ok')
@@ -722,8 +722,8 @@
                     });
 
                     $('.btn-print-ip').click(function() {
-                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            location.href = url + 'sarbeacons/print/' + clickedIdIp;
+                        $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            location.href = url + '/sarbeacons/print/' + clickedIdIp;
                             // noty({
                             //     text: data[1],
                             //     type: data[0],
@@ -733,8 +733,8 @@
                     });
 
                     $('.btn-mail-ip').click(function() {
-                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
+                        $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
                                 noty({
                                     text: data[1],
                                     type: data[0],
@@ -772,7 +772,7 @@
         {
             var trig = $(this).data('trig');
             if (trig  == true) triggerIp([lat, lon]); 
-            $.post(url + 'sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
+            $.post(url + '/sarbeacons/start', {id: idIp, type: $('select[name=type]').val(), typealerte: $('select[name=typealerte]').val(), cause: $('textarea[name=cause]').val(), lat: lat, lon: lon}, function(data) {
                 headerbar(url);
                 refreshNbEvents();
                 idIp = data['id'];
@@ -795,7 +795,7 @@
     $('#a-end-ip-ok').click(function(data) {
         var end_date = moment.utc($('input[name=end-date]').val(), "DD-MM-YYYY HH:mm").format();
         $.post(
-            url+'sarbeacons/end', 
+            url+'/sarbeacons/end',
             {id: idIp, end_date: end_date}, 
             function (data) {
                 $aNow.trigger('click');
@@ -815,31 +815,31 @@
 
 
     $aArch.click(function(data) {
-        $('#archives').load(url + 'sarbeacons/archives', function(data) 
+        $('#archives').load(url + '/sarbeacons/archives', function(data)
         {
             $('.list-group-item').click(function() {
                 var clickedIdIp = $(this).data('id');
-                $.post(url + 'sarbeacons/getip', {id: clickedIdIp}, function(data) {
+                $.post(url + '/sarbeacons/getip', {id: clickedIdIp}, function(data) {
                     $('#title-show-ip').html(moment.utc(data.ip.start_date.date).format('DD-MM-YY HH:mm:ss')+ ' ' + 
                         data.ip.Alerte.Type 
                     );
                 });
                 
-                $('#f-show-ip').load(url + 'sarbeacons/show', {id: clickedIdIp}, function() {
+                $('#f-show-ip').load(url + '/sarbeacons/show', {id: clickedIdIp}, function() {
 
                     $('#f-show-ip .list-fields').click(function() {
                         $(this).children('p').toggleClass('cache');
                     });
 
                     $('.btn-print-ip').click(function() {
-                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                        $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             location.href = url + 'sarbeacons/print/' + clickedIdIp;
                         });
                     });
 
                     $('.btn-mail-ip').click(function() {
-                        $.get(url + 'sarbeacons/validpdf/' + clickedIdIp, function(data) {
-                            $.post(url + 'sarbeacons/mail', {id: clickedIdIp}, function(data) {
+                        $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
+                            $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
                                 noty({
                                     text: data[1],
                                     type: data[0],
@@ -1051,7 +1051,7 @@
 
     function findByCoord(e) {
         if ($(this).hasClass('disabled')) return false;
-        $('#f-start-ip').load(url + 'sarbeacons/form', function (data) {
+        $('#f-start-ip').load(url + '/sarbeacons/form', function (data) {
             $('input[name="lat"]').val(mkSAR._latlng.lat).prop('disabled', true);
             $('input[name="lon"]').val(mkSAR._latlng.lng).prop('disabled', true);
             $('#a-start-ip-ok')
@@ -1181,7 +1181,7 @@
     {
         if (idIp) 
         {
-            $.post(url + 'sarbeacons/getip', {id : idIp}, function (data) {
+            $.post(url + '/sarbeacons/getip', {id : idIp}, function (data) {
                 latLon = [data.ip.Latitude, data.ip.Longitude];
                 trigDisplay();
                 if(data.ip.fields) {
@@ -1297,7 +1297,7 @@
         if ($(this).hasClass('disabled')) return false;
         $('#title-edit-ip').html("Editer le Plan d'Interrogation");
         if ($fEditIp.find('form').length == 0) {
-            $fEditIp.load(url + 'sarbeacons/form', {
+            $fEditIp.load(url + '/sarbeacons/form', {
                     'id': idIp,
                     'lat': mkSAR._latlng.lat,
                     'lon': mkSAR._latlng.lng
@@ -1346,7 +1346,7 @@
     function printIp() {
         if ($(this).hasClass('disabled')) return false;
         if (idIp) { 
-            $.get(url + 'sarbeacons/validpdf/' + idIp, function(data) {
+            $.get(url + '/sarbeacons/validpdf/' + idIp, function(data) {
                 if(data[0] !== 'error') {
                     location.href = url + 'sarbeacons/print/' + idIp;
                 } else {
@@ -1363,9 +1363,9 @@
     function mailIp() {
         if ($(this).hasClass('disabled')) return false;
         if (idIp) {
-            $.get(url + 'sarbeacons/validpdf/' + idIp, function(data) {
+            $.get(url + '/sarbeacons/validpdf/' + idIp, function(data) {
                 if(data[0] !== 'error') {
-                    $.post(url + 'sarbeacons/mail', { id: idIp }, function(data) {
+                    $.post(url + '/sarbeacons/mail', { id: idIp }, function(data) {
                         noty({
                             text: data[1],
                             type: data[0],
@@ -1390,7 +1390,7 @@
         $.each(intPlan.getIp(), function() {
             iP.push(this.toArray())
         });
-        $.post(url + 'sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), iP: iP }, function(data) {
+        $.post(url + '/sarbeacons/save', { datas: $("#InterrogationPlan").serialize(), iP: iP }, function(data) {
             idIp = data.id;
             if (idIp > 0) {
                 loadListIp();
@@ -1433,7 +1433,7 @@
         var index = $(this).data().index;
         var note = $(this).prev().find('textarea').val();
 
-        $.post(url + 'sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
+        $.post(url + '/sarbeacons/addnote', {id: $(this).data().idevent, text: note}, function(data) {
             intPlan.get(index).addUpdate(moment(), note);
             $ter.after(intPlan.get(index).getHtml())
                 .remove();
@@ -1453,7 +1453,7 @@
 
         if (!$(this).hasClass('btn-danger')) {
             
-            $.post(url + 'sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
+            $.post(url + '/sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
                 field.setIdEvent(data['id']);
                 intPlan.addIp(index);
                 $ter.after(field.getHtml())
@@ -1465,7 +1465,7 @@
                 });    
             })
         } else {
-            $.post(url + 'sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
+            $.post(url + '/sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
                 intPlan.delIp(index);
                 $ter.after(field.getHtml())
                     .remove();

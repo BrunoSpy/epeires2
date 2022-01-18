@@ -87,12 +87,23 @@ class CategoryEntityFactory
         $upper->setDefaultValue("");
         $upper->setTooltip("");
         $milcat->setUpperLevelField($upper);
-        
+
+        $internalid = new CustomField();
+        $internalid->setCategory($milcat);
+        $internalid->setName('Internal Id');
+        $internalid->setType($stringtype);
+        $internalid->setPlace(4);
+        $internalid->setDefaultValue("");
+        $internalid->setHidden(true);
+        $internalid->setTooltip("");
+        $milcat->setInternalidField($internalid);
+
         $milcat->setZonesRegex('');
         
         $em->persist($upper);
         $em->persist($lower);
         $em->persist($namefield);
+        $em->persist($internalid);
         return $milcat;
     }
 

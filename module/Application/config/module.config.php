@@ -15,14 +15,32 @@
  * along with Epeires². If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+use Application\Command\Factory\GenerateReportCommandFactory;
+use Application\Command\Factory\ImportRegulationsCommandFactory;
+use Application\Command\Factory\ImportZonesMilCommandFactory;
+use Application\Command\GenerateReportCommand;
+use Application\Command\ImportRegulationsCommand;
+use Application\Command\ImportZonesMilCommand;
+
 return array(
     'router' => array(
         'routes' => array(
+            'root' => [
+                'type' => \Laminas\Router\Http\Literal::class,
+                'options' => [
+                    'route' => '/',
+                    'defaults' => [
+                        'controller' => 'Application\Controller\Events',
+                        'action' => 'index'
+                    ]
+                ]
+            ],
             'application' => array(
                 'type' => 'segment',
                 'may_terminate' => true,
                 'options' => array(
-                    'route' => '/[:controller[/:action[/:id]]]',
+                    'route' => '/app[/:controller[/:action[/:id]]]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'controller' => '[a-zA-Z][a-zA-Z0-9-]*',
@@ -37,38 +55,12 @@ return array(
             )
         )
     ),
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                'generate-report' => array(
-                    'options' => array(
-                        'route' => 'report [--email] [--delta=] <orgshortname>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Report',
-                            'action' => 'report'
-                        )
-                    )
-                ),
-                'import-nmb2b' => array(
-                    'options' => array(
-                        'route' => 'import-nmb2b [--delta=] [--email] [--verbose] <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\Mil',
-                            'action' => 'importNMB2B'
-                        )
-                    )
-                ),
-                'import-regulations' => array(
-                    'options' => array(
-                        'route' => 'import-regulations [--delta=] [--email] [--verbose] <orgshortname> <username>',
-                        'defaults' => array(
-                            'controller' => 'Application\Controller\ATFCM',
-                            'action' => 'importRegulations'
-                        )
-                    )
-                )
-            )
-        )
+    'laminas-cli' => array(
+        'commands' => [
+            'epeires2:import-regulations' => ImportRegulationsCommand::class,
+            'epeires2:import-zones-mil' => ImportZonesMilCommand::class,
+            'epeires2:generate-report' => GenerateReportCommand::class
+        ]
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -81,7 +73,10 @@ return array(
         'factories' => array(
             'eventservice' => 'Application\Factories\EventServiceFactory',
             'customfieldservice' => 'Application\Factories\CustomfieldServiceFactory',
-            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory'
+            'categoryfactory' => 'Application\Factories\CategoryEntityFactoryFactory',
+            ImportRegulationsCommand::class => ImportRegulationsCommandFactory::class,
+            ImportZonesMilCommand::class => ImportZonesMilCommandFactory::class,
+            GenerateReportCommand::class => GenerateReportCommandFactory::class
         )
     ),
     'translator' => array(
@@ -110,7 +105,8 @@ return array(
             'Application\Controller\Sarbeacons' => 'Application\Controller\Factory\SarBeaconsControllerFactory',
             'Application\Controller\ATFCM' => 'Application\Controller\Factory\ATFCMControllerFactory',
             'Application\Controller\Briefing' => 'Application\Controller\Factory\BriefingControllerFactory',
-            'Application\Controller\Sunrisesunset' => 'Application\Controller\Factory\SunrisesunsetControllerFactory'
+            'Application\Controller\Sunrisesunset' => 'Application\Controller\Factory\SunrisesunsetControllerFactory',
+            'Application\Controller\Splittimelinetab' => 'Application\Controller\Factory\SplitTimelineTabControllerFactory'
         )
     ),
     'view_helpers' => array(
@@ -183,6 +179,12 @@ return array(
         )
     ),
     'permissions' => array(
+        'IHM' => array(
+            'ihm.light' => [
+                'name' => 'Allégée',
+                'description' => 'Activation de l\'IHM allégée'
+            ]
+        ),
         'Evènements' => array(
             'events.create' => array(
                 'name' => 'Création',
@@ -229,12 +231,6 @@ return array(
             'frequencies.read' => array(
                 'name' => 'Lecture',
                 'description' => 'Donne accès à l\'onglet Radio.'
-            )
-        ),
-        'Radars' => array(
-            'radars.read' => array(
-                'name' => 'Lecture',
-                'description' => ''
             )
         ),
         'Afis' => array(
@@ -296,13 +292,12 @@ return array(
                         'frequencies.read'
                     ]
                 ),
-                array(
-                    'controller' => 'Application\Controller\Radars',
-                    'permissions' => [
-                        'radars.read'
-                    ]
-                )
             )
         )
-    )
+    ),
+
+    'dompdf_module' => [
+        'chroot' => __DIR__ . '/../../..',
+        'default_paper_size' => 'a4'
+    ]
 );

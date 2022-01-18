@@ -17,8 +17,7 @@
  */
 namespace Core;
 
-use Laminas\ModuleManager\Feature\AutoloaderProviderInterface;
-use Laminas\ModuleManager\Feature\ConfigProviderInterface;
+use Laminas\Log\Logger;
 use Laminas\EventManager\EventInterface;
 use Core\Controller\UserController;
 
@@ -27,7 +26,7 @@ use Core\Controller\UserController;
  * @author Bruno Spyckerelle
  *        
  */
-class Module implements ConfigProviderInterface
+class Module
 {
 
     public function onBootstrap(EventInterface $e)
@@ -43,6 +42,9 @@ class Module implements ConfigProviderInterface
             }
         );
 
+        $logger = $sm->get("EpeiresLogger");
+        Logger::registerErrorHandler($logger);
+
         $events = $e->getApplication()->getEventManager()->getSharedManager();
         $events->attach('LmcUser\Form\Login','init', function($e) {
             $form = $e->getTarget();
@@ -52,7 +54,7 @@ class Module implements ConfigProviderInterface
         });
     }
 
-    public function getConfig()
+    public function getConfig() : array
     {
         return include __DIR__ . '/../config/module.config.php';
     }

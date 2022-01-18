@@ -27,8 +27,7 @@ class MaintenanceControllerFactory implements FactoryInterface {
     {
         return new MaintenanceController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('categoryfactory'),
-            $container->get('config'));
+            $container->get('nmb2b'));
     }
 
 }

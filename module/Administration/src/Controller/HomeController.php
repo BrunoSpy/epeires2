@@ -18,8 +18,9 @@
 namespace Administration\Controller;
 
 use Core\Version;
+use Doctrine\Migrations\DependencyFactory;
+use Doctrine\Migrations\Metadata\ExecutedMigrationsList;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Roave\PsrContainerDoctrine\MigrationsConfigurationFactory;
 
 /**
  *
@@ -32,8 +33,13 @@ class HomeController extends AbstractActionController
     private $doctrinemigrations;
     private $config;
 
-    public function __construct( $config) {
+    private $mapd;
+
+    public function __construct( $config, DependencyFactory $df, $mapd) {
         $this->config = $config;
+        $this->doctrinemigrations = $df;
+        $this->mapd = $mapd;
+
     }
 
     public function indexAction() {
@@ -57,14 +63,11 @@ class HomeController extends AbstractActionController
             }
         }
 
-    /*
-        $this->doctrinemigrations->validate();
-        $executedMigrations = $this->doctrinemigrations->getMigratedVersions();
-        $availableMigrations = $this->doctrinemigrations->getAvailableVersions();
-        $executedUnavailableMigrations = array_diff($executedMigrations, $availableMigrations);
-        $numExecutedUnavailableMigrations = count($executedUnavailableMigrations);
-        $newMigrations = count($availableMigrations) - count($executedMigrations);
-*/
+        $this->doctrinemigrations->getMetadataStorage()->ensureInitialized();
+        $executedMigrations = $this->doctrinemigrations->getMetadataStorage()->getExecutedMigrations();
+        $newMigrations = $this->doctrinemigrations->getMigrationStatusCalculator()->getNewMigrations()->count();
+        $connection = $this->doctrinemigrations->getConnection()->getDatabase();
+
         $extensions = array();
         $extensions['gd'] = extension_loaded('gd');
         $extensions['iconv'] = extension_loaded('iconv');
@@ -101,12 +104,24 @@ class HomeController extends AbstractActionController
             $IHMLight = false;
         }
 
+        if($this->mapd->isEnabled()) {
+            try {
+                $mapdStatus = $this->mapd->getStatus();
+            } catch (\Exception $e) {
+                $mapdStatus = array('status' => 'ERROR', 'aupToday' => array('status' => 'ERROR', 'statusReasons' => array($e->getMessage())));
+            }
+        } else {
+            $mapdStatus = null;
+        }
+
+
+
         return array(
-           /* 'db' => $this->doctrinemigrations->getConnection()->getDatabase(),
-            'version' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getCurrentVersion()),
-            'latestversion' => $this->doctrinemigrations->getDateTime($this->doctrinemigrations->getLatestVersion()),
-            'table' => $this->doctrinemigrations->getMigrationsTableName(),
-            'migrations' => $newMigrations,*/
+            'db' => $connection,
+            'currentversion' => $this->getFormattedVersionAlias('current', $executedMigrations),
+            'latestversion' => $this->getFormattedVersionAlias('latest', $executedMigrations),
+            'executedMigrations' => $executedMigrations->count(),
+            'migrations' => $newMigrations,
             'extensions' => $extensions,
             'phpversionid' => PHP_VERSION_ID,
             'certifvalid' => $certifValidTo,
@@ -115,7 +130,39 @@ class HomeController extends AbstractActionController
             'myversion' => Version::VERSION,
             'hostname' => getenv('COMPUTERNAME') ? getenv('COMPUTERNAME') : shell_exec('uname -n'),
             'git' => $git,
-            'IHMLight' => $IHMLight
+            'IHMLight' => $IHMLight,
+            'mapd' => $mapdStatus
+        );
+    }
+
+    private function getFormattedVersionAlias(string $alias, ExecutedMigrationsList $executedMigrations): string
+    {
+        try {
+            $version = $this->doctrinemigrations->getVersionAliasResolver()->resolveVersionAlias($alias);
+        } catch (\Throwable $e) {
+            $version = null;
+        }
+
+        // No version found
+        if ($version === null) {
+            if ($alias === 'next') {
+                return 'Already at latest version';
+            }
+
+            if ($alias === 'prev') {
+                return 'Already at first version';
+            }
+        }
+
+        // Before first version "virtual" version number
+        if ((string) $version === '0') {
+            return '<comment>0</comment>';
+        }
+
+        // Show normal version number
+        return sprintf(
+            '<comment>%s </comment>',
+            (string) $version
         );
     }
 }

@@ -23,6 +23,7 @@ use Application\Entity\Category;
 use Application\Entity\EventUpdate;
 use Application\Entity\FrequencyCategory;
 use Application\Entity\ActionCategory;
+use Application\Entity\MilCategory;
 use Application\Entity\PostItCategory;
 use Application\Entity\Recurrence;
 use Application\Entity\Event;
@@ -31,9 +32,13 @@ use Application\Entity\PredefinedEvent;
 
 use Application\Entity\Status;
 use Application\Entity\SwitchObjectCategory;
+use Application\Entity\Tab;
 use Application\Services\CustomFieldService;
 use Application\Services\EventService;
+use Core\Service\EmailService;
+use Core\Service\MAPDService;
 use Doctrine\ORM\EntityManager;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Form\Annotation\AnnotationBuilder;
@@ -59,18 +64,22 @@ class EventsController extends TimelineTabController
     private $customfieldservice;
     private $zfcRbacOptions;
     private $translator;
+    private MAPDService $mapd;
+    private EmailService $emailService;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator)
+                                $config, $mattermost, $translator, MAPDService $mapd, $logger, EmailService $emailService)
     {
-        parent::__construct($entityManager, $config, $mattermost);
+        parent::__construct($entityManager, $config, $mattermost, $logger);
         $this->eventservice = $eventService;
         $this->customfieldservice = $customfieldService;
         $this->zfcRbacOptions = $zfcrbacOptions;
         $this->translator = $translator;
+        $this->mapd = $mapd;
+        $this->emailService = $emailService;
     }
     
     public function indexAction()
@@ -98,22 +107,29 @@ class EventsController extends TimelineTabController
         $cats = array();
 
         $hasDefaultTab = false;
-
+        $tabType = "";
         //fusion des tabs principaux pour les rôles de l'utilisateur
         if ($userauth != null && $userauth->hasIdentity()) {
             $roles = $userauth->getIdentity()->getRoles();
-
             foreach ($roles as $r) {
                 $tabs = $r->getReadtabs();
                 foreach ($tabs as $t) {
                     if($t->isDefault()) {
                         foreach ($t->getCategories() as $c) {
-                            if(!in_array($c->getId(), $cats)) {
+                            if(!in_array($c->getId(), $cats) && $this->isReadableCategory($c)) {
                                 $cats[] = $c->getId();
                             }
                         }
                         $hasDefaultTab = true;
                         $onlyroot += $t->isOnlyroot();
+                        if(strlen($tabType) == 0) {
+                            $tabType = $t->getType();
+                        } else {
+                            if(strcmp($tabType, $t->getType()) !== 0) {
+                                //mix of tab with different types -> default timeline
+                                $tabType = Tab::TIMELINE;
+                            }
+                        }
                         //break;
                     }
                 }
@@ -123,6 +139,10 @@ class EventsController extends TimelineTabController
                         return $this->redirect()->toRoute('application', array('controller' => 'tabs'), array('query' => array('tabid' => $tabs[0]->getId())));
                     }
 
+                } else {
+                    if(strcmp($tabType, Tab::SPLITTIMELINE) == 0) {
+                        return $this->redirect()->toRoute('application', array('controller' => 'splittimelinetab'), array('query' => array('cats' => $cats)));
+                    }
                 }
             }
         } else {
@@ -136,7 +156,7 @@ class EventsController extends TimelineTabController
                     foreach ($roleentity->getReadtabs() as $t) {
                         if($t->isDefault()) {
                             foreach ($t->getCategories() as $c) {
-                                if (!in_array($c->getId(), $cats)) {
+                                if (!in_array($c->getId(), $cats) && $this->isReadableCategory($c)) {
                                     $cats[] = $c->getId();
                                 }
                             }
@@ -577,6 +597,15 @@ class EventsController extends TimelineTabController
 
                     $recurrence = null;
 
+                    $category = $objectManager->getRepository(Category::class)->find($post['category']);
+
+                    if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern']) &&
+                        $category instanceof MilCategory && strcmp($category->getOrigin(), MilCategory::MAPD) == 0) {
+                        //recurrence is forbidden for MAPD Categories
+                        $messages['error'][] = "Impossible d'enregistrer une récurrence pour un évènement MAPD. Seul le premier évènement est pris en compte.";
+                        $post['recurrencepattern'] = '';
+                    }
+
                     if(isset($post['recurrencepattern']) && !empty($post['recurrencepattern'])) {
                         if($id) {
                             //récurrence existante
@@ -584,8 +613,7 @@ class EventsController extends TimelineTabController
                             if($recurrence === null) {
                                 //en cas de modification d'un évènement seul et ajout d'une recurrence
                                 $recurrence = new Recurrence($startdate, "");
-                                $event->setStatus($deleteStatus);
-                                $this->closeEvent($event);
+                                $this->getEntityManager()->getRepository(Event::class)->deleteEvent($event);
                             }
                             if(isset($post['exclude']) && $post['exclude'] == "true") {
                                 $recurrence->exclude($event);
@@ -715,7 +743,7 @@ class EventsController extends TimelineTabController
                         $e->setImpact($impact);
 
                         //catégorie
-                        $e->setCategory($objectManager->getRepository('Application\Entity\Category')->find($post['category']));
+                        $e->setCategory($category);
 
                         //champs horaires : ponctuel, programmé
                         $e->setPunctual($post['punctual']);
@@ -780,10 +808,16 @@ class EventsController extends TimelineTabController
                         }
 
                         //une fois les évènements fils positionnés, on vérifie si il faut clore l'évènement
-                        if ($e->getStatus()->getId() == 3 // passage au statut terminé
-                            || $e->getStatus()->getId() == 4 // passage au statut annulé
-                            || $e->getStatus()->getId() == 5) { // passage au statut supprimé
-                            $this->closeEvent($e);
+                        switch ($e->getStatus()->getId()) {
+                            case Status::CLOSED:
+                                $this->getEntityManager()->getRepository(Event::class)->closeEvent($e);
+                                break;
+                            case Status::CANCELED:
+                                $this->getEntityManager()->getRepository(Event::class)->cancelEvent($e);
+                                break;
+                            case Status::DELETED:
+                                $this->getEntityManager()->getRepository(Event::class)->deleteEvent($e);
+                                break;
                         }
 
                         // create associated actions (only relevant if creation from a model)
@@ -1027,8 +1061,44 @@ class EventsController extends TimelineTabController
                             $objectManager->persist($recurrence);
                             $messages['success'][] = "Récurrence correctement enregistrée.";
                         }
-                        $objectManager->flush();
-                        $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                        //if event is managed by MAPD, we flush only is MAPD is successfull
+                        if($events[0]->getCategory() instanceof MilCategory && strcmp($events[0]->getCategory()->getOrigin(), MilCategory::MAPD) == 0) {
+                            if(count($events) !== 1) {
+                                //should not happen, no reccurence if MAPD event...
+                                $messages['error'][] = "Impossible d'enregistrer les modifications, les données sont incohérentes.";
+                            } else {
+                                if($events[0]->getEnddate() == null) {
+                                    $enddate = clone $events[0]->getStartdate();
+                                    $enddate->add(new \DateInterval('PT1H'));
+                                    $events[0]->setEnddate($enddate);
+                                }
+                                try {
+                                    $response = $this->mapd->saveRSA($events[0]);
+                                    $internalId = $events[0]->getCustomFieldValue($events[0]->getCategory()->getInternalidField());
+                                    if($response > -1 && $internalId !== null && $internalId->getValue() !== null &&
+                                        strlen($internalId->getValue()) > 0 &&
+                                        $response !== $internalId->getValue()) {
+                                        throw new \RuntimeException("Impossible de modifier l'évènment : MAPD a renvoyé un id différent de celui connu.");
+                                    }
+                                    if($internalId == null) {
+                                        $internalId = new CustomFieldValue();
+                                        $internalId->setCustomField($events[0]->getCategory()->getInternalidField());
+                                        $internalId->setEvent($events[0]);
+                                    }
+                                    $internalId->setValue($response);
+                                    $objectManager->persist($internalId);
+                                    $objectManager->persist($events[0]);
+                                    $objectManager->flush();
+                                } catch (\Exception $e) {
+                                    $messages['error'][] = "Impossible d'enregistrer l'évènement";
+                                    $messages['error'][] = $e->getMessage();
+                                    $events = array();
+                                }
+                            }
+                        } else {
+                            $objectManager->flush();
+                            $messages['success'][] = ($id ? "Evènement modifié" : "Évènement enregistré");
+                        }
                     } catch (\Exception $e) {
                         $messages['error'][] = "Impossible d'enregistrer l'évènement.";
                         $messages['error'][] = $e->getMessage();
@@ -1120,12 +1190,18 @@ class EventsController extends TimelineTabController
                     $id = $this->params()->fromQuery('id');
                     $em = $this->getEntityManager();
                     $category = $em->getRepository('Application\Entity\Category')->find($id);
+                    $subvalues = array();
+                    foreach ($category->getChildren() as $c) {
+                        if($this->isReadableCategory($c)) {
+                            $subvalues = array_merge($subvalues, $em->getRepository('Application\Entity\PredefinedEvent')
+                                ->getEventsFromCategoryAsArray($c));
+                        }
+                    }
                     $viewmodel->setVariables(array(
                         'part' => $part,
                         'values' => $em->getRepository('Application\Entity\PredefinedEvent')
                             ->getEventsWithCategoryAsArray($category),
-                        'subvalues' => $em->getRepository('Application\Entity\PredefinedEvent')
-                            ->getEventsFromCategoryAsArray($category)
+                        'subvalues' => $subvalues
                     ));
                     break;
                 case 'custom_fields':
@@ -1309,9 +1385,11 @@ class EventsController extends TimelineTabController
                             ->get($customfield->getId())
                             ->setValue($values);
                     } else {
-                        $form->get('custom_fields')
-                            ->get($customfield->getId())
-                            ->setAttribute('value', $customfieldvalue->getValue());
+                        if(!$customfield->isHidden()) {
+                            $form->get('custom_fields')
+                                ->get($customfield->getId())
+                                ->setAttribute('value', $customfieldvalue->getValue());
+                        }
                     }
                 }
             }
@@ -1719,10 +1797,11 @@ class EventsController extends TimelineTabController
      * },
      * 'evt_id_1' => ...
      * }
-     * 
-     * @return \Laminas\View\Model\JsonModel
+     *
+     * @return JsonModel
+     * @throws \Exception
      */
-    public function geteventsAction()
+    public function geteventsAction() : JsonModel
     {
         $lastmodified = $this->params()->fromQuery('lastupdate', null);
         
@@ -1737,7 +1816,15 @@ class EventsController extends TimelineTabController
         $json = array();
         
         $objectManager = $this->getEntityManager();
-        
+
+        $messages = array();
+
+        //update MAPD Events after this action
+        //as a consequence this call will not be fully updated but will not block the call if MAPD is offline
+        defer($_, function() use ($cats, $day) {$this->updateMAPDEvents($cats, new \DateTime($day));});
+
+        $events = array();
+
         foreach ($objectManager->getRepository('Application\Entity\Event')->getEvents(
             $this->lmcUserAuthentication(),
             $day,
@@ -1748,10 +1835,10 @@ class EventsController extends TimelineTabController
             null,
             $default
         ) as $event) {
-            $json[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
+            $events[$event->getId()] = $this->eventservice->getJSON($event, $extendedFormat);
         }
-        
-        if (count($json) === 0) {
+
+        if (count($events) === 0) {
             $this->getResponse()->setStatusCode(304);
             return new JsonModel();
         }
@@ -1759,8 +1846,37 @@ class EventsController extends TimelineTabController
         $this->getResponse()
             ->getHeaders()
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
-        
+
+        foreach ($this->flashMessenger()->getMessages(FlashMessenger::NAMESPACE_ERROR) as $message) {
+            $messages['error'][] = $message;
+            $this->flashMessenger()->clearMessages(FlashMessenger::NAMESPACE_ERROR);
+        }
+
+        $json['events'] = $events;
+        $json['messages'] = $messages;
+
         return new JsonModel($json);
+    }
+
+    private function updateMAPDEvents($cats, \DateTime $day)
+    {
+        if($this->mapd->isEnabled() && $cats != null){
+            foreach ($cats as $cat) {
+                $cat = $this->getEntityManager()->getRepository(Category::class)->find($cat);
+                if($cat !== null && $cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
+                    //check auth
+                    if($this->lmcUserAuthentication()->hasIdentity()) {
+                        if($this->isGranted('events.write')) {
+                            try {
+                                $this->mapd->updateCategory($cat, $day, $this->lmcUserAuthentication()->getIdentity());
+                            } catch(\Exception $e) {
+                                $this->flashMessenger()->addErrorMessage('Erreur du serveur MAPD : '.$e->getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private function hex2rgb($hex) {
@@ -1962,31 +2078,37 @@ class EventsController extends TimelineTabController
         return new JsonModel($json);
     }
 
-    private function filterReadableCategories($categories)
+    private function isReadableCategory(Category $category)
     {
         $objectManager = $this->getEntityManager();
+        if ($this->lmcUserAuthentication()->hasIdentity()) {
+            $roles = $this->lmcUserAuthentication()
+                ->getIdentity()
+                ->getRoles();
+            foreach ($roles as $role) {
+                if ($category->getReadroles(true)->contains($role)) {
+                    return true;
+                }
+            }
+        } else {
+            $role = $this->zfcRbacOptions->getGuestRole();
+            $roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array(
+                'name' => $role
+            ));
+            if ($roleentity) {
+                if ($category->getReadroles(true)->contains($roleentity)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    private function filterReadableCategories($categories)
+    {
         $readablecat = array();
         foreach ($categories as $category) {
-            if ($this->lmcUserAuthentication()->hasIdentity()) {
-                $roles = $this->lmcUserAuthentication()
-                    ->getIdentity()
-                    ->getRoles();
-                foreach ($roles as $role) {
-                    if ($category->getReadroles(true)->contains($role)) {
-                        $readablecat[] = $category;
-                        break;
-                    }
-                }
-            } else {
-                $role = $this->zfcRbacOptions->getGuestRole();
-                $roleentity = $objectManager->getRepository('Core\Entity\Role')->findOneBy(array(
-                    'name' => $role
-                ));
-                if ($roleentity) {
-                    if ($category->getReadroles(true)->contains($roleentity)) {
-                        $readablecat[] = $category;
-                    }
-                }
+            if($this->isReadableCategory($category)) {
+                $readablecat[] = $category;
             }
         }
         return $readablecat;
@@ -2037,8 +2159,8 @@ class EventsController extends TimelineTabController
     /**
      * Usage :
      * $this->url('application', array('controller' => 'events'))+'/changefield?id=<id>&field=<field>&value=<newvalue>'
-     * 
-     * @return JSon with messages
+     *
+     * @return JsonModel with messages
      */
     public function changefieldAction()
     {
@@ -2089,15 +2211,15 @@ class EventsController extends TimelineTabController
                                 }
                                 // on ferme l'evt proprement
                                 if (! $status->isOpen()) {
-                                    $this->closeEvent($event);
+                                    $this->getEntityManager()->getRepository(Event::class)->closeEvent($event);
                                 }
                             } else 
                                 if (! $status->isOpen() && ! $status->isDefault()) {
                                     // si statut annulé
-                                    $event->cancelEvent($status);
+                                    $this->getEntityManager()->getRepository(Event::class)->cancelEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
                                 } else {
-                                    $event->setStatus($status);
+                                    $this->getEntityManager()->getRepository(Event::class)->deleteEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
                                 }
                             $objectManager->persist($event);
@@ -2115,7 +2237,18 @@ class EventsController extends TimelineTabController
                             break;
                     }
                     try {
-                        $objectManager->flush();
+                        if($event->getCategory() instanceof MilCategory && strcmp($event->getCategory()->getOrigin(), MilCategory::MAPD) == 0) {
+                            try {
+                                $this->mapd->saveRSA($event, $messages);
+                                $objectManager->flush();
+                            } catch (\Exception $e) {
+                                $objectManager->refresh($event);
+                                $messages['error'][] = "Erreur du serveur MAPD. Impossible d'enregistrer la modification.";
+                                $messages['error'][] = $e->getMessage();
+                            }
+                        } else {
+                            $objectManager->flush();
+                        }
                     } catch (\Exception $ex) {
                         $messages['error'][] = $ex->getMessage();
                     }
@@ -2151,16 +2284,8 @@ class EventsController extends TimelineTabController
                 $objectManager = $this->getEntityManager();
                 $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
                 if ($event) {
-                    $deleteStatus = $objectManager->getRepository('Application\Entity\Status')->find(5);
-                    $event->setStatus($deleteStatus);
-                    if(!$event->isPunctual() && $event->getEnddate() == null) {
-                        $enddate = clone $event->getStartdate();
-                        $enddate->add(new \DateInterval('PT1H'));
-                        $event->setEnddate($enddate);
-                    }
-                    $this->closeEvent($event);
                     try {
-                        $objectManager->persist($event);
+                        $objectManager->getRepository(Event::class)->deleteEvent($event);
                         $objectManager->flush();
                         $messages['success'][] = "Évènement correctement supprimé";
                         $json['event'] = array(
@@ -2216,18 +2341,13 @@ class EventsController extends TimelineTabController
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
                 } else {
-                    $message = new \Laminas\Mail\Message();
-                    $message->addTo($event->getOrganisation()
-                        ->getIpoEmail())
-                        ->addFrom($this->config['emailfrom'])
-                        ->setSubject("Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event))
-                        ->setBody($mimeMessage);
-                    
-                    $transport = new \Laminas\Mail\Transport\Smtp();
-                    $transportOptions = new \Laminas\Mail\Transport\SmtpOptions($this->config['smtp']);
-                    $transport->setOptions($transportOptions);
                     try {
-                        $transport->send($message);
+                        $this->emailService->sendEmailTo(
+                            $event->getOrganisation()->getIpoEmail(),
+                            "Envoi d'un évènement par le CDS : " . $this->eventservice->getName($event),
+                            $mimeMessage,
+                            $event->getOrganisation()
+                        );
                         $update = new EventUpdate();
                         $update->setHidden(true);
                         $update->setEvent($event);
@@ -2296,7 +2416,7 @@ class EventsController extends TimelineTabController
                 if (($event->getStatus()->getId() == 2 || ($event->getStatus()->getId() <= 2 && $event->getStartDate() < $now)) && (($event->getEndDate()->format('U') - $now->format('U')) / 60) < 15) {
                     $event->setStatus($status);
                     // on ferme l'evt proprement
-                    $this->closeEvent($event);
+                    $this->getEntityManager()->getRepository(Event::class)->closeEvent($event, $enddate);
                     if (is_array($messages)) {
                         $messages['success'][] = "Evènement passé au statut : \"Fin confirmée\".";
                     }
@@ -2368,36 +2488,6 @@ class EventsController extends TimelineTabController
         }
     }
 
-    /**
-     * Cloture d'un evt : terminé ou annulé (statut 3 ou 4)
-     * TODO : use $event->close or $event->cancel
-     * 
-     * @param Event $event            
-     */
-    private function closeEvent(Event $event)
-    {
-        $objectManager = $this->getEntityManager();
-        foreach ($event->getChildren() as $child) {
-            if ($child->getCategory() instanceof FrequencyCategory) {
-                // on termine les évènements fils de type fréquence
-                if ($event->getStatus()->getId() == 3) {
-                    // date de fin uniquement pour les fermetures
-                    $child->setEnddate($event->getEnddate());
-                }
-                $child->setStatus($event->getStatus());
-            } elseif ($child->getCategory() instanceof AlarmCategory) {
-                    // si evt annulé uniquement : on annule toutes les alarmes
-                    if ($event->getStatus()->getId() == 4 || $event->getStatus()->getId() == 5) {
-                        $child->setStatus($event->getStatus());
-                    }
-            } elseif ($child->getCategory() instanceof SwitchObjectCategory) {
-                $child->setStatus($event->getStatus());
-                $child->setEnddate($event->getEnddate());
-            }
-            $objectManager->persist($child);
-        }
-    }
-
     public function getficheAction()
     {
         $viewmodel = new ViewModel();
@@ -2439,9 +2529,9 @@ class EventsController extends TimelineTabController
                 $eventupdate->setText($post['new-update']);
                 $eventupdate->setEvent($event);
                 $event->setLastModifiedOn();
-                $em->persist($eventupdate);
-                $em->persist($event);
                 try {
+                    $em->persist($eventupdate);
+                    $em->persist($event);
                     $em->flush();
                     $messages['success'][] = "Note correctement ajoutée.";
                     $messages['events'] = array(
@@ -2738,18 +2828,17 @@ class EventsController extends TimelineTabController
         return new JsonModel($messages);
     }
     
-    public function deletepostitAction(){
+    public function deletepostitAction()
+    {
         $id = $this->params()->fromQuery('id', null);
         $em = $this->getEntityManager();
         $messages = array();
         if($id) {
             $p = $em->getRepository(Event::class)->find($id);
-            $closeStatus = $em->getRepository(Status::class)->find('3');
             if($p) {
                 $now = new \DateTime();
                 $now->setTimezone(new \DateTimeZone('UTC'));
-                $p->close($closeStatus, $now);
-                $em->persist($p);
+                $this->getEntityManager()->getRepository(Event::class)->closeEvent($p, $now);
                 try{
                     $em->flush();
                     $messages['success'][] = "Post-It correctement supprimé";

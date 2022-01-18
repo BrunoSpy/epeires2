@@ -29,7 +29,7 @@ class NavBarTop extends AbstractHelper {
     
     private $sm;
     
-    public function __invoke($color, $title, $return = null, $iponumber = null, $IHMLight = false) {
+    public function __invoke($color, $title, $return = null, $iponumber = null, $IHMLight = false, $viewduration = 6) {
         
         $auth = $this->sm->get('LmcRbacMvc\Service\AuthorizationService');
         $zfcuserauth = $this->sm->get('lmcuser_auth_service');
@@ -80,24 +80,8 @@ class NavBarTop extends AbstractHelper {
 
         $html .= '<p class="navbar-text navbar-right" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
 
-        if($IHMLight) { //TODO refactor : same code in NavBar.php
-            $html .= '<form class="navbar-form navbar-right" role="search" id="search">';
-            $html .= '<div class="form-group form-group-material-' . $color . '-500 has-feedback">';
-            $html .= '<input type="text" class="form-control" placeholder="Chercher" name="search">';
-            $html .= '<span class="glyphicon glyphicon-search form-control-feedback"></span>';
-            $html .= '</div>';
-            $html .= '</form>';
-            $html .= '<div id="changeview" class="navbar-right" style="margin-top: 5px">Vue : <div class="btn-group" data-toggle="buttons">';
-            $html .= '<label class="btn btn-xs btn-info active">';
-            $html .= '<input name="viewOptions" id="viewsix" type="radio" autocomplete="off" value="six" checked><strong>6 h</strong>';
-            $html .= '</label>';
-            $html .= '<label class="btn btn-xs btn-info ">';
-            $html .= '<input name="viewOptions" id="viewday" type="radio" autocomplete="off" value="day"><strong>24 h</strong>';
-            $html .= '</label>';
-            $html .= '<label class="btn btn-xs btn-info ">';
-            $html .= '<input name="viewOptions" id="viewmonth" type="radio" autocomplete="off" value="month"><strong>7 j/+</strong>';
-            $html .= '</label>';
-            $html .= '</div>';
+        if($IHMLight) {
+           $html .= $this->view->viewselector($viewduration);
         }
 
         $html .= '</div></div></nav>';

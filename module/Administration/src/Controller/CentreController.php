@@ -41,11 +41,14 @@ use Application\Entity\Stack;
 class CentreController extends FormController
 {
 
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    public function __construct(EntityManager $entityManager)
+    private $config;
+
+    public function __construct(EntityManager $entityManager, $config)
     {
         $this->entityManager = $entityManager;
+        $this->config = $config;
     }
 
     public function indexAction()
@@ -131,12 +134,25 @@ class CentreController extends FormController
             $id = $post['id'];
             
             $datas = $this->getFormOrganisation($id);
+            $previousPass = $datas['organisation']->getEmailPassword();
             $form = $datas['form'];
             $form->setData($post);
             $form->setPreferFormInputFilter(true);
             $organisation = $datas['organisation'];
             
             if ($form->isValid()) {
+
+                if(isset($post['emailPassword']) && strlen($post['emailPassword']) > 0) {
+                    $organisation->setEmailPassword(base64_encode(openssl_encrypt(
+                        $organisation->getEmailPassword(),
+                        "AES-256-CBC",
+                        $this->config['secret_key'],
+                        0,
+                        $this->config['secret_init']
+                    )));
+                } else {
+                    $organisation->setEmailPassword($previousPass);
+                }
                 $objectManager->persist($organisation);
                 try {
                     $objectManager->flush();

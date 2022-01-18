@@ -1,11 +1,16 @@
 <?php
+
 use Doctrine\Migrations\Tools\Console\Command;
+use Doctrine\Migrations\DependencyFactory;
+
+use Roave\PsrContainerDoctrine\Migrations\CommandFactory;
+use Roave\PsrContainerDoctrine\Migrations\DependencyFactoryFactory;
 
 return array(
     'doctrine' => array(
         'connection' => array(
             'orm_default' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'driverClass' => \Doctrine\DBAL\Driver\PDO\MySQL\Driver::class,
                 'params' => array(
                     'host' => '127.0.0.1',
                     'port' => '3306',
@@ -14,6 +19,14 @@ return array(
                     'dbname' => 'epeires2',
                     'charset' => 'utf8'
                 )
+            )
+        ),
+        'migrations' => array( // /!\ do not change these settings /!\
+            'orm_default' => array(
+                'table_storage' => array(
+                    'table_name' => 'migrations',
+                ),
+                'migrations_paths' => array('DoctrineORMModule\Migrations' => 'data/DoctrineORMModule/Migrations')
             )
         ),
         'migrations_configuration' => array( // /!\ do not change these settings /!\
@@ -45,16 +58,22 @@ return array(
         ),
         'dependencies' => [
             'factories' => [
-                Command\DiffCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\DumpSchemaCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\ExecuteCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\GenerateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\LatestCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\MigrateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\RollupCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\StatusCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\UpToDateCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
-                Command\VersionCommand::class => Roave\PsrContainerDoctrine\MigrationsCommandFactory::class,
+                Command\CurrentCommand::class => CommandFactory::class,
+                Command\DiffCommand::class => CommandFactory::class,
+                Command\DumpSchemaCommand::class => CommandFactory::class,
+                Command\ExecuteCommand::class => CommandFactory::class,
+                Command\GenerateCommand::class => CommandFactory::class,
+                Command\LatestCommand::class => CommandFactory::class,
+                Command\ListCommand::class => CommandFactory::class,
+                Command\MigrateCommand::class => CommandFactory::class,
+                Command\RollupCommand::class => CommandFactory::class,
+                Command\SyncMetadataCommand::class => CommandFactory::class,
+                Command\StatusCommand::class => CommandFactory::class,
+                Command\UpToDateCommand::class => CommandFactory::class,
+                Command\VersionCommand::class => CommandFactory::class,
+
+                //ConfigurationLoader::class => ConfigurationLoaderFactory::class,
+                DependencyFactory::class => DependencyFactoryFactory::class,
                 ]
             ]
     )

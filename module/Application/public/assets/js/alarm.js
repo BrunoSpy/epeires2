@@ -38,7 +38,7 @@ var timerAlarm;
 var timerAnimation = setInterval(flash, 30000);
 
 var updateAlarms = function(){
-	$.getJSON(url+'alarm/getalarms'+(typeof lastupdate_alarm != 'undefined' ? '?lastupdate='+lastupdate_alarm.toUTCString() : ''),
+	$.getJSON(url+'/alarm/getalarms'+(typeof lastupdate_alarm != 'undefined' ? '?lastupdate='+lastupdate_alarm.toUTCString() : ''),
 			function(data, textStatus, jqHXR){
 		if(jqHXR.status != 304){
 			lastupdate_alarm = new Date(jqHXR.getResponseHeader("Last-Modified"));
@@ -76,7 +76,7 @@ var updateAlarms = function(){
 									timeout: false,
 									callback: {
 										onClose: function () {
-											$.post(url + 'alarm/confirm?id=' + item.id, function (data) {
+											$.post(url + '/alarm/confirm?id=' + item.id, function (data) {
 												displayMessages(data);
 											});
 											delete(alarmsnoty[item.id]);

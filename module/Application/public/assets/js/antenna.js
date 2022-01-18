@@ -15,7 +15,7 @@ var antenna = function(url, frequencyTestMenu){
     $(document).on('click','.switch-coverture', function(){
         var me = $(this);
         $('a.actions-freq, a#changefreq').popover('hide');
-        $.post(url+'frequencies/switchcoverture'
+        $.post(url+'/frequencies/switchcoverture'
             +'?frequencyid='+me.data("freqid")
             +'&cov='+me.data('cov')
             + (me.data('cause') ? '&cause='+me.data('cause') : ''),
@@ -41,7 +41,7 @@ var antenna = function(url, frequencyTestMenu){
         var me = $(this);
         //close all popover
         $('a.actions-freq, a#changefreq').popover('hide');
-        $.post(url+'frequencies/switchfrequency?fromid='+me.data('fromfreq')+'&toid='+me.data('tofreq'), function(data){
+        $.post(url+'/frequencies/switchfrequency?fromid='+me.data('fromfreq')+'&toid='+me.data('tofreq'), function(data){
             displayMessages(data.messages);
             //force page refresh
             clearTimeout(timer);
@@ -52,7 +52,7 @@ var antenna = function(url, frequencyTestMenu){
     $(document).on('click', '.switch-freq-state', function(e){
         var me = $(this);
         $('a.actions-freq, a#changefreq').popover('hide');
-        $.post(url+'frequencies/switchFrequencyState?freqid='+me.data('freqid')+'&state='+me.data('state'), function(data){
+        $.post(url+'/frequencies/switchFrequencyState?freqid='+me.data('freqid')+'&state='+me.data('state'), function(data){
             displayMessages(data);
             //force page refresh
             clearTimeout(timer);
@@ -69,7 +69,7 @@ var antenna = function(url, frequencyTestMenu){
 
         if(!newState){
             var select = $('<select class="form-control" id="freqsImpacted" name="frequencies[]" multiple></select>');
-            $.getJSON(url+'frequencies/getFrequenciesOnAntenna?antennaid='+$(this).data('antennaid'), function(data){
+            $.getJSON(url+'/frequencies/getFrequenciesOnAntenna?antennaid='+$(this).data('antennaid'), function(data){
                 $.each(data, function(key, value){
                     select.append($('<option>', {
                         value: key,
@@ -128,7 +128,7 @@ var antenna = function(url, frequencyTestMenu){
     $(document).on('click', '.switch-antenna', function(event){
         var me = $(this);
         $('a.actions-antenna').popover('hide');
-        $.post(url+'frequencies/switchantenna?antennaid='+me.data('antennaid')+'&state='+me.data('state')+'&freq='+me.data('freqid'), function(data){
+        $.post(url+'/frequencies/switchantenna?antennaid='+me.data('antennaid')+'&state='+me.data('state')+'&freq='+me.data('freqid'), function(data){
             displayMessages(data.messages);
             currentantennas = data.antennas;
             currentfrequencies = data.frequencies;
@@ -160,7 +160,7 @@ var antenna = function(url, frequencyTestMenu){
     $(document).on('click', '#changefreq', function(event){
         event.preventDefault();
         var me = $(this);
-        $.post(url+'frequencies/getfrequencies?id='+me.data('freqid')+'&groupid='+me.data('groupid'), function(data){
+        $.post(url+'/frequencies/getfrequencies?id='+me.data('freqid')+'&groupid='+me.data('groupid'), function(data){
             var list = $("<ul id=\"list-change-freq-"+me.data('freqid')+"\"></ul>");
             if(data['backup']) {
                 var dataArray = [];
@@ -226,7 +226,7 @@ var antenna = function(url, frequencyTestMenu){
 
     $(document).on('click', '.brouillage', function(e){
         $("#frequency_name").html($(this).data('freqname'));
-        $('#form-brouillage').load(url+'frequencies/formbrouillage?id='+$(this).data('freqid'), function(){
+        $('#form-brouillage').load(url+'/frequencies/formbrouillage?id='+$(this).data('freqid'), function(){
             $("input[name=startdate]").timepickerform({'id':'start', 'required':true});
         });
     });
@@ -564,7 +564,7 @@ var antenna = function(url, frequencyTestMenu){
     }
     //refresh page every 30s
     function doFullUpdate(){
-        $.post(url+'frequencies/getantennastate')
+        $.post(url+'/frequencies/getantennastate')
             .done(function(data) {
                 currentantennas = data;
             })
@@ -575,7 +575,7 @@ var antenna = function(url, frequencyTestMenu){
     };
 
     function doPollFrequencies(){
-        $.post(url+'frequencies/getfrequenciesstate')
+        $.post(url+'/frequencies/getfrequenciesstate')
             .done(function(data) {
                 currentfrequencies = data;
                 updateantennas();

@@ -25,7 +25,7 @@ class CentreControllerFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new CentreController($container->get('Doctrine\ORM\EntityManager'));
+        return new CentreController($container->get('Doctrine\ORM\EntityManager'), $container->get('config'));
     }
 
 }

@@ -20,6 +20,7 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Core\Entity\TemporaryResource;
 use Laminas\Form\Annotation;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="Application\Repository\ExtendedRepository")
@@ -30,11 +31,6 @@ use Laminas\Form\Annotation;
  */
 class SwitchObject extends TemporaryResource
 {
-
-
-
-    const RADAR = "radar";
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -77,6 +73,7 @@ class SwitchObject extends TemporaryResource
      * @Annotation\Type("Laminas\Form\Element\Text")
      * @Annotation\Required({"required":"true"})
      * @Annotation\Options({"label":"Type d'objet :"})
+     * @Gedmo\SortableGroup
      */
     protected $type;
 
@@ -85,6 +82,7 @@ class SwitchObject extends TemporaryResource
      * @Annotation\Type("Laminas\Form\Element\Select")
      * @Annotation\Required(false)
      * @Annotation\Options({"label":"Objet parent :", "empty_option":"Facultatif"})
+     * @Gedmo\SortableGroup
      */
     protected $parent;
 
@@ -97,6 +95,12 @@ class SwitchObject extends TemporaryResource
      * @ORM\ManyToMany(targetEntity="SwitchObjectCategory", mappedBy="switchObjects")
      */
     protected $categories;
+
+    /**
+     * @Gedmo\SortablePosition
+     * @ORM\Column(name="place", type="integer")
+     */
+    protected $place;
 
     public function getId()
     {
@@ -166,6 +170,7 @@ class SwitchObject extends TemporaryResource
 
     /**
      * @param mixed $parent
+     * @Gedmo\SortableGroup
      */
     public function setParent($parent): void
     {
@@ -202,6 +207,22 @@ class SwitchObject extends TemporaryResource
     public function setType($type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPlace()
+    {
+        return $this->place;
+    }
+
+    /**
+     * @param mixed $place
+     */
+    public function setPlace($place): void
+    {
+        $this->place = $place;
     }
 
     public function getArrayCopy()

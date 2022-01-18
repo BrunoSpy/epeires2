@@ -17,6 +17,8 @@
  */
 namespace Application\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Laminas\Form\Annotation;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MilCategory extends Category
 {
+
+    const NMB2B = "nmb2b";
+    const MAPD = "mapd";
 
     /**
      * @ORM\Column(type="string")
@@ -47,22 +52,17 @@ class MilCategory extends Category
     protected $filter;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string", nullable=true)
      * @Annotation\Required(false)
-     * @Annotation\Type("Laminas\Form\Element\Checkbox")
-     * @Annotation\Options({"label":"Actualiser avec NM B2B :"})
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Options({"label":"Actualiser avec :"})
      */
-    protected $nmB2B = false;
+    protected $origin;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\OneToMany(targetEntity="MilCategoryLastUpdate", mappedBy="category", cascade={"remove"}, orphanRemoval=true)
      */
-    protected $lastUpdateDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    protected $lastUpdateSequence;
+    protected $lastUpdates;
 
     /**
      * @ORM\OneToOne(targetEntity="CustomField")
@@ -74,34 +74,60 @@ class MilCategory extends Category
      */
     protected $lowerLevelField;
 
-    public function setNMB2B($nmb2b)
-    {
-        $this->nmB2B = $nmb2b;
+    /**
+     * @ORM\OneToOne(targetEntity="CustomField")
+     */
+    protected $internalidField;
+
+    public function __construct(){
+        parent::__construct();
+        $this->lastUpdates = new ArrayCollection();
     }
 
-    public function isNMB2B()
+    /**
+     * @param mixed $origin
+     */
+    public function setOrigin($origin): void
     {
-        return $this->nmB2B;
+        $this->origin = $origin;
     }
 
-    public function setLastUpdateDate($update)
+    /**
+     * @return mixed
+     */
+    public function getOrigin()
     {
-        $this->lastUpdateDate = $update;
+        return $this->origin;
     }
 
-    public function getLastUpdateDate()
+    public function addLastUpdate(MilCategoryLastUpdate $lastupdate)
     {
-        return $this->lastUpdateDate;
+        $this->lastUpdates->add($lastupdate);
     }
 
-    public function setLastUpdateSequence($sequence)
+    public function addLastUpdates(Collection $lastUpdates)
     {
-        $this->lastUpdateSequence = $sequence;
+        foreach ($lastUpdates as $u){
+            $this->lastUpdates->add($u);
+        }
     }
 
-    public function getLastUpdateSequence()
+    public function removeLastUpdates(Collection $lastUpdates)
     {
-        $this->lastUpdateSequence;
+        foreach ($lastUpdates as $u)
+        {
+            $this->lastUpdates->removeElement($u);
+        }
+    }
+
+    public function setLastUpdates($lastUpdates)
+    {
+        $this->lastUpdates = $lastUpdates;
+    }
+
+    public function getLastUpdates()
+    {
+        return $this->lastUpdates;
     }
 
     public function setZonesRegex($regex)
@@ -142,6 +168,16 @@ class MilCategory extends Category
     public function getLowerLevelField()
     {
         return $this->lowerLevelField;
+    }
+
+    public function setInternalidField($internalid)
+    {
+        $this->internalidField = $internalid;
+    }
+
+    public function getInternalidField()
+    {
+        return $this->internalidField;
     }
 
     public function getArrayCopy()

@@ -49,9 +49,14 @@ return array(
             'nmb2b' => 'Core\Factory\NMB2BServiceFactory',
             'mattermostservice' => 'Core\Factory\MattermostServiceFactory',
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
+            'mapd' => 'Core\Factory\MAPDServiceFactory',
+            'emailservice' => 'Core\Factory\EmailServiceFactory'
         ),
         'aliases' => array(
             'Laminas\Authentication\AuthenticationService' => 'lmcuser_auth_service'
+        ),
+        'abstract_factories' => array(
+            'Laminas\Log\LoggerAbstractServiceFactory'
         )
     ),
     'controllers' => array(
@@ -117,6 +122,7 @@ return array(
         'login_after_registration' => false,
         'logout_redirect_route' => 'application',
         'login_redirect_route' => 'application',
+        'use_login_form_csrf' => false,
         'use_redirect_parameter_if_present' => true,
         'auth_identity_fields' => array(
             'username',
@@ -149,6 +155,7 @@ return array(
             'userMenu' => 'Core\Factory\UserMenuFactory',
             'navbartop' => 'Core\Factory\NavBarTopFactory',
             'navbar' => 'Core\Factory\NavBarFactory',
+            'viewselector' => 'Core\Factory\ViewSelectorFactory'
         )
     ),
     /**
@@ -158,6 +165,40 @@ return array(
         'resolver_configs' => array(
             'paths' => array(
                 __DIR__ . '/../public'
+            )
+        )
+    ),
+    'log' => array(
+        'EpeiresLogger' => array(
+            'writers' => array(
+                'stream' => [
+                    'name' => 'stream',
+                    'priority' => 1,
+                    'options' => [
+                        'stream' => __DIR__ . '/../../../logs/epeires2.log',
+                        'formatter' => [
+                            'name' => \Laminas\Log\Formatter\Simple::class,
+                            'options' => [
+                                'format' => '%timestamp% %priorityName% (%priority%): %message% %extra%',
+                                'dateTimeFormat' => 'c',
+                            ],
+                        ],
+                        'filters' => [
+                            'priority' => [
+                                'name' => 'priority',
+                                'options' => [
+                                    'operator' => '<=',
+                                    'priority' => \Laminas\Log\Logger::INFO,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ),
+            'processors' => array(
+                'requestid' => [
+                    'name' => \Laminas\Log\Processor\RequestId::class,
+                ],
             )
         )
     )

@@ -17,6 +17,7 @@
  */
 namespace Application\Form;
 
+use Application\Entity\MilCategory;
 use Application\Services\CustomFieldService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Form\Fieldset;
@@ -62,7 +63,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                 continue;
             
             $definition = array();
-            $definition['name'] = $customfield->getId();
+            $definition['name'] = (string) $customfield->getId();
             $this->names[] = $customfield->getId();
             $options = array(
                 'label' => $customfield->getName() . " :"
@@ -87,6 +88,22 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             
             if (! $model && $customfield->getId() == $category->getFieldname()->getId()) {
                 $definition['attributes']['required'] = 'required';
+                if($category instanceof MilCategory) {
+                    if(strlen($category->getZonesRegex()) > 0) {
+                        $regex = substr($category->getZonesRegex(), 1);
+                        $regex = substr($regex, 0, -1);
+                        $definition['attributes']['pattern'] = $regex.'.*';
+                        $definition['attributes']['title'] = $category->getZonesRegex();
+                        $definition['attributes']['placeholder'] = $category->getZonesRegex();
+                    }
+                }
+            }
+
+            if($category instanceof MilCategory &&
+                ($customfield->getId() == $category->getUpperLevelField()->getId() || $customfield->getId() == $category->getLowerLevelField()->getId())) {
+                $definition['attributes']['data-rule-number'] = true;
+                $definition['attributes']['data-rule-min'] = 0;
+                $definition['attributes']['data-rule-max'] = 999;
             }
 
             //disable required fields if model
@@ -98,9 +115,10 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                 $definition['attributes']['maxlength'] = '48';
             }
 
-            $definition['attributes']['title'] = $customfield->getTooltip();
-            $definition['attributes']['placeholder'] = $customfield->getTooltip();
-            
+            if(strlen($customfield->getTooltip()) > 0 && !array_key_exists('placeholder',$definition['attributes'])) {
+                $definition['attributes']['title'] = $customfield->getTooltip();
+                $definition['attributes']['placeholder'] = $customfield->getTooltip();
+            }
             $this->add($definition);
         }
     }

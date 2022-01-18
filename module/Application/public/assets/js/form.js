@@ -16,13 +16,16 @@
  */
 
 var urlt;
+var basepath;
+
+let validator;
 
 var formAddFile = function(fileId, formData, modifiable){
 	modifiable = (typeof modifiable === "undefined") ? true : modifiable;
 	var tr = $('<tr id="file_'+fileId+'"></tr>');
 	tr.append('<td>'+formData.reference+'</td>');
-	tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'">'+formData.name+'</a></td>');
-	tr.append('<td><a rel="external" href="'+urlt.slice(0, -1)+formData.path+'"><span class="glyphicon glyphicon-download"></span></a></td>');
+	tr.append('<td><a rel="external" href="'+basepath + formData.path+'">'+formData.name+'</a></td>');
+	tr.append('<td><a rel="external" href="'+basepath + formData.path+'"><span class="glyphicon glyphicon-download"></span></a></td>');
 	if(modifiable){
 		tr.append('<td><a href="#confirm-delete-file" class="delete-file" '+
 			'data-href="'+urlt+'events/deletefile?id='+fileId+'" '+
@@ -164,10 +167,12 @@ var formModifyAlarm = function(alarm) {
 	$('#alarm-table').append(tr);
 };
 
-var form = function(url, cats, sunrise, sunrise_url){
+var form = function(url, basePath, cats, sunrise, sunrise_url){
 
 	urlt = url;
-	
+
+	basepath = basePath;
+
 	/**
 	 *
 	 * @param newevt 0 : nouvel évènement, 1 : modification d'un evt, 2 : copie d'un evt ou intanciation modèle via recherche
@@ -273,11 +278,12 @@ var form = function(url, cats, sunrise, sunrise_url){
         $("#event input, #event select, #event textarea").each(function(index){
             if($(this).prop('required') && !$(this).val()) {
                 fail = true;
-                $(this).parents('.form-group').addClass('has-error');
+                //$(this).parents('.form-group').addClass('has-error');
             } else {
-                $(this).parents('.form-group').removeClass('has-error');
+                //$(this).parents('.form-group').removeClass('has-error');
             }
         });
+
         if(fail) {
             $("#event input[name='submit']").prop('disabled', true).addClass('disabled');
         } else {
@@ -456,8 +462,8 @@ var form = function(url, cats, sunrise, sunrise_url){
 
 	//change end input constraint when input date change
     $("#event").on('change', "#start input", function(e){
-        var startdate = $("#start input.date").val()
-        $('#end input.date')
+        var startdate = $("#start input.dateform").val()
+        $('#end input.dateform')
             .bootstrapMaterialDatePicker('setMinDate', startdate);
 
     });
@@ -478,44 +484,45 @@ var form = function(url, cats, sunrise, sunrise_url){
 		if($('#end .hour input').val().length > 0 && $('#end .minute input').val().length === 0){
 			$('#end .minute input').val('00').trigger('change');
 		}
-		var formData = new FormData($("#Event")[0]);
-		$.ajax({
-			type: "POST",
-			url: url+'events/save',
-			xhr: function() {  // Custom XMLHttpRequest
-				var myXhr = $.ajaxSettings.xhr();
-				if(myXhr.upload){ // Check if upload property exists
-					//    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
-				}
-				return myXhr;
-			},
-			// Form data
-			data: formData,
-			//Options to tell jQuery not to process data or worry about content-type.
-			cache: false,
-			contentType: false,
-			processData: false,
-			success: function(data){
-				//close form
-				$("#create-link").trigger("click");
-				//update timeline
-				if(data['events'])
-				{
-					if ($("#timeline").length > 0) {
-						$("#timeline").timeline('pauseUpdateView');
+		if($("#Event").valid()) {
+			var formData = new FormData($("#Event")[0]);
+			$.ajax({
+				type: "POST",
+				url: url + '/events/save',
+				xhr: function () {  // Custom XMLHttpRequest
+					var myXhr = $.ajaxSettings.xhr();
+					if (myXhr.upload) { // Check if upload property exists
+						//    myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
 					}
-					var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
-					
-					if ($("#timeline").length > 0) {
-						$('#timeline').timeline('addEvents', data.events, sendToMattermost);
-						$('#timeline').timeline('forceUpdateView');
+					return myXhr;
+				},
+				// Form data
+				data: formData,
+				//Options to tell jQuery not to process data or worry about content-type.
+				cache: false,
+				contentType: false,
+				processData: false,
+				success: function (data) {
+					//close form
+					$("#create-link").trigger("click");
+					//update timeline
+					if (data['events']) {
+						if ($("#timeline").length > 0) {
+							$("#timeline").timeline('pauseUpdateView');
+						}
+						var sendToMattermost = Object.keys(data.events).length == 1 && data.events[Object.keys(data.events)[0]].mattermostid !== null;
+
+						if ($("#timeline").length > 0) {
+							$('#timeline').timeline('addEvents', data.events, sendToMattermost);
+							$('#timeline').timeline('forceUpdateView');
+						}
+						$('#calendarview').fullCalendar('refetchEvents');
 					}
-					$('#calendarview').fullCalendar('refetchEvents');
-				}
-				displayMessages(data.messages);
-			},
-			dataType: "json"
-		});
+					displayMessages(data.messages);
+				},
+				dataType: "json"
+			});
+		}
 	});
 
 	$("#event").on("click", "#cancel-form", function(event){
@@ -538,7 +545,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 			$("#event").html('');
 			$("#form-title").html("Nouvel évènement");
 			$("#event").load(
-				url+'events/form'+'?'+cats,
+				url+'/events/form'+'?'+cats,
 				function(){
 					initTabs(0);
 					$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
@@ -555,6 +562,19 @@ var form = function(url, cats, sunrise, sunrise_url){
 							$('#root_categories').trigger('change');
 						}
 					}
+					validator = $('#Event').validate({
+						errorClass: 'has-error',
+						ignore: ':hidden, .dateform',
+						success: function(label, element){
+							$(element).parents('.form-group').removeClass('has-error');
+						},
+						showErrors: function(errorMap, errorList) {
+							$.each(errorMap, function(key, value){
+								$("input[name='"+key+"']").parents('.form-group').addClass('has-error');
+							});
+							this.defaultShowErrors();
+						}
+					});
 				}
 			);
 			$("#create-evt").modal('show');
@@ -569,7 +589,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		$("#event").html('');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
-		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
+		$("#event").load(url+'/events/form?id='+me.data('id')+'&model=1&'+cats, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
@@ -586,7 +606,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
 
-		$("#event").load(url+'events/form?id='+me.data('id')+'&copy=1&'+cats, function(){
+		$("#event").load(url+'/events/form?id='+me.data('id')+'&copy=1&'+cats, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
@@ -602,7 +622,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		$(".category").popover('hide');
 		$("#form-title").html(me.data('name'));
 		$("#create-evt").modal('show');
-		$("#event").load(url+'events/form?id='+me.data('id')+'&model=1&'+cats, function(){
+		$("#event").load(url+'/events/form?id='+me.data('id')+'&model=1&'+cats, function(){
 			initTabs(2);
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
@@ -643,7 +663,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 
         $("#create-evt").modal('show');
 
-        $("#event").load(url+'events/form?id='+id+'&'+cats, function(){
+        $("#event").load(url+'/events/form?id='+id+'&'+cats, function(){
             initTabs(1);
             $("#event input[name=exclude]").val(exclude);
             $("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
@@ -663,7 +683,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		var id = $(this).data('id');
 		var me = $(this);
 		//tell the server to toggle the status
-		$.getJSON(url+'events/togglefiche'+'?id='+id,
+		$.getJSON(url+'/events/togglefiche'+'?id='+id,
 			function(data){
 				if(data.open){
 					me.html("A faire");
@@ -679,7 +699,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 	var getPredefinedValues = function(eventid) {
 		let customvalues;
         $.getJSON(
-            url+'events/getpredefinedvalues?id='+eventid,
+            url+'/events/getpredefinedvalues?id='+eventid,
             function(data){
                 $("#punctual").prop('checked', data.defaultvalues.punctual);
                 $("#punctual").trigger("change");
@@ -754,12 +774,12 @@ var form = function(url, cats, sunrise, sunrise_url){
             });
         });
         //get actions
-        $("#actions-tab").load(url+'events/actions?id='+eventid, function(e){
+        $("#actions-tab").load(url+'/events/actions?id='+eventid, function(e){
             $('#actions-tab [data-toggle="tooltip"]').tooltip();
         });
 
         //getfiles
-        $.getJSON(url+'events/getfiles?id='+eventid,
+        $.getJSON(url+'/events/getfiles?id='+eventid,
             function(data){
                 $('#files-tab #file-table tbody').empty();
                 $("#files-tab input").remove();
@@ -769,7 +789,7 @@ var form = function(url, cats, sunrise, sunrise_url){
                 });
             });
         //getalerts
-        $.getJSON(url+'events/getalarms?id='+eventid,
+        $.getJSON(url+'/events/getalarms?id='+eventid,
             function(data){
                 $('#memos-tab #alarm-table').empty();
                 $("#memos-title span.badge").html('0');
@@ -831,7 +851,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 
 		if(root_value > 0) {
 			$.when(
-				$.post(url+'events/subform?part=subcategories&id='+root_value + '&'+cats,
+				$.post(url+'/events/subform?part=subcategories&id='+root_value + '&'+cats,
 					function(data){
 						$('#subcategories').prop('disabled',false);
 						$("#subcategories").html(data);
@@ -851,14 +871,14 @@ var form = function(url, cats, sunrise, sunrise_url){
 				} else {
                     $.when(//récupération des modèles
                         $.post(
-                            url+'events/subform?part=predefined_events&id='+root_value+ '&'+cats,
+                            url+'/events/subform?part=predefined_events&id='+root_value+ '&'+cats,
                             function(data){
                                 $("#predefined_events").html(data);
                                 $.material.checkbox();
                             }
                         ),
                         $.post(
-                            url+'events/subform?part=custom_fields&id='+root_value+ '&'+cats,
+                            url+'/events/subform?part=custom_fields&id='+root_value+ '&'+cats,
                             function(data){
                                 $("#custom_fields").html(data);
                                 $("#custom_fields input, #custom_fields select").on("invalid", function(event){
@@ -897,19 +917,20 @@ var form = function(url, cats, sunrise, sunrise_url){
         rebootTabs();
         $("input[name='category']").val(subcatid);
         return $.when(
-            $.post(url + 'events/subform?part=custom_fields&id=' + subcatid+ '&'+cats,
+            $.post(url + '/events/subform?part=custom_fields&id=' + subcatid+ '&'+cats,
                 function(data) {
                     $("#custom_fields").html(data);
                     $("#event input, #event select").on("invalid", function(event){
                         $("#description-title a").trigger('click');
                     });
+
                     //force recalcule des conditions en fonction des champs chargés
                     $("#event").trigger('change');
                     $.material.checkbox();
                 }
             ),
             $.post(
-                url + 'events/subform?part=predefined_events&id=' + subcatid+ '&'+cats,
+                url + '/events/subform?part=predefined_events&id=' + subcatid+ '&'+cats,
                 function(data){
                     $("#predefined_events").html(data);
                     //don't open model panel if there is no model
@@ -1004,7 +1025,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 	$('#event').on('click', '#addalarm', function(e){
 		e.preventDefault();
 		$('#alarm-title').html("Ajout d'un mémo");
-		$('#alarm-form').load(url+'alarm/form', function(){
+		$('#alarm-form').load(url+'/alarm/form', function(){
 			$("#alarm-form input[name=startdate]").timepickerform({"required":true, "id":"alarmstart", 'init':true});
 		});
 	});
@@ -1014,7 +1035,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		$('#alarm-title').html("Modification d'un mémo");
 		var me = $(this);
 		var id = me.closest('tr').data('id');
-		$('#alarm-form').load(url+'alarm/form?id='+id, function(){
+		$('#alarm-form').load(url+'/alarm/form?id='+id, function(){
 			$("#alarm-form input[name=startdate]").timepickerform({"required":true, 'id':'alarmstart', 'init':true});
 		});
 	});
@@ -1060,7 +1081,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		e.preventDefault();
 		var me = $(this);
 		var id = me.closest('tr').data('id');
-		$.post(url+'alarm/delete?id='+id, function(data){
+		$.post(url+'/alarm/delete?id='+id, function(data){
 			if(!data['error']){
 				me.closest('tr').remove();
 				$('#memos-tile span.badge').html(parseInt($('#memos-tile span.badge').html())-1);
@@ -1099,7 +1120,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 
 	$("#add-note-modal").on('hide.bs.modal', function(){
 		//update notes
-		$("#form-notes").load(url+'events/updates?id='+$("#add-note").data('id'), function(){
+		$("#form-notes").load(url+'/events/updates?id='+$("#add-note").data('id'), function(){
 
 		});
 	});
@@ -1108,7 +1129,7 @@ var form = function(url, cats, sunrise, sunrise_url){
         var me = $(this).html();
         var p = $(this).closest('p');
         p.empty();
-        var form = $('<div data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'events/savenote?id='+$(this).data('id')+'"></div>');
+        var form = $('<div data-cancel="'+me+'" data-id="'+$(this).data('id')+'" class="form-inline modify-note" action="'+url+'/events/savenote?id='+$(this).data('id')+'"></div>');
         form.append('<textarea name="note" class="form-control">'+me.replace(/<br\s*\/?>/mg,"\n")+'</textarea>');
         form.append('<a href="#" class="btn btn-xs btn-primary submit-note" type="submit"><span class="glyphicon glyphicon-ok"></span></a>');
         form.append('<a href="#" class="cancel-note btn btn-xs"><span class="glyphicon glyphicon-repeat"></span></a>');
@@ -1186,7 +1207,7 @@ var form = function(url, cats, sunrise, sunrise_url){
             $("#recurr-button").text('Modifier...');
             var startD = moment($("#recurr-scheduler").scheduler('value')['startDateTime']);
             var start = startD.utc().format('YYYYMMDD[T]HHmm');
-            $.getJSON(url+'events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
+            $.getJSON(url+'/events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
                 var text = data.text;
                 if(text !== '') {
                     $('#recurr-humanreadable em').text('('+text+')');
@@ -1208,7 +1229,7 @@ var form = function(url, cats, sunrise, sunrise_url){
         var pattern = $("input[name=recurrencepattern]").val();
         if(pattern.length > 0 && pattern.localeCompare("FREQ=DAILY;INTERVAL=1;COUNT=1") != 0) {
             var start = moment($('input[name=startdate]').val(), "DD-MM-YYYY HH:mm").format('YYYYMMDD[T]HHmm');
-            $.getJSON(url+'events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
+            $.getJSON(url+'/events/getRecurrHumanReadable?pattern='+pattern+'&start='+start, function(data){
                 var text = data.text;
                 if(text !== '') {
                     $('#recurr-humanreadable em').text('('+text+')');
@@ -1245,7 +1266,7 @@ var form = function(url, cats, sunrise, sunrise_url){
 		var values = $.map($("[name='custom_fields["+target+"][]'] option:selected"), function(option) {
 			return option.value;
 		});
-		return $.getJSON(url + 'events/getCustomValues?origin='+id+'&target='+target+'&value='+value, function(data){
+		return $.getJSON(url + '/events/getCustomValues?origin='+id+'&target='+target+'&value='+value, function(data){
 			var elt = $("[name='custom_fields["+target+"][]']");
 			elt.empty();
 			var options = [];

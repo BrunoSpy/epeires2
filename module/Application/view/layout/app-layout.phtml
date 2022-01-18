@@ -62,6 +62,9 @@
             ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
             ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
             ->prependFile($this->basePath() . '/components/i18next/i18next.min.js')
+            ->prependFile($this->basePath() . '/components/jquery-validation/dist/additional-methods.min.js')
+            ->prependFile($this->basePath() . '/components/jquery-validation/dist/localization/messages_fr.min.js')
+            ->prependFile($this->basePath() . '/components/jquery-validation/dist/jquery.validate.min.js')
             ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js');
 
 
@@ -76,15 +79,15 @@
         ?>
 
     </head>
-    <body class="fuelux" <?php if($this->IHMLight) echo 'style="padding-top:50px;"' ?> >
+    <body class="fuelux" <?php if($this->isGranted('ihm.light')) echo 'style="padding-top:50px;"' ?> >
 
-	<?php echo $this->navbartop("blue", '', null, $this->iponumber,$this->IHMLight); ?>
+	<?php echo $this->navbartop("blue", '', null, $this->iponumber,$this->isGranted('ihm.light'), $this->viewduration); ?>
 
-	<?php if(!$this->IHMLight) {echo $this->navbar("blue", $this->showHome);} ?>
+	<?php if(!$this->isGranted('ihm.light')) {echo $this->navbar("blue", $this->showHome, $this->viewduration);} ?>
 
     <?php if($this->isGranted('events.create')):?>
 			<a
-              <?php if($this->IHMLight) echo 'style="top:55px"'; ?>
+              <?php if($this->isGranted('ihm.light')) echo 'style="top:55px"'; ?>
               id="create-link"
               href="#"
               type="button"
@@ -175,7 +178,7 @@
       }
       ?>
 
-        setURL('<?php echo $this->url('application');?>');
+        setURL('<?php echo $this->url('application');?>', '<?php echo $this->basePath() ?>');
 		
 		//init header bar
 		headerbar('<?php echo $this->url('application');?>');

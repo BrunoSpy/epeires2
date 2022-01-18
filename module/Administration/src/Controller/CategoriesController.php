@@ -300,7 +300,13 @@ class CategoriesController extends FormController
         $category = $objectManager->getRepository('Application\Entity\Category')->find($id);
         
         if ($category) {
-            $objectManager->getRepository(Category::class)->delete($category);
+            try {
+                $name = $category->getName();
+                $objectManager->getRepository(Category::class)->delete($category);
+                $this->flashMessenger()->addSuccessMessage("Catégorie ".$name." supprimée.");
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
         }
         
         return $this->redirect()->toRoute('administration', array(
