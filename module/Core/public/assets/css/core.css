@@ -6,6 +6,24 @@
 
 /** Round icons */
 
+.entrytab {
+    width: auto;
+}
+
+.entrytab-ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.entrytab-icon.hide {
+    display: none !important;
+}
+
+.entrytab-text.hide {
+    display: none !important;
+}
+
 .round {
     display: inline-block;
     height: 30px;

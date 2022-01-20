@@ -74,6 +74,7 @@ var updateNavbarTop = function() {
     }
 };
 
+var initialCenterWidth = 0;
 var updateNavbar = function() {
     if($('.navbar-lower').length > 0) { //do not try to update width if navbar doesn't exist (epeires light)
         var windowWidth = $(window).width();
@@ -83,11 +84,25 @@ var updateNavbar = function() {
         var searchWidth = $("#search").show().innerWidth();
         var viewWidth = $("#changeview").innerWidth();
 
-        var totalWidth = centerWidth + searchWidth + viewWidth;
+        if(initialCenterWidth === 0) {
+            initialCenterWidth = centerWidth;
+        }
+        var totalWidth = initialCenterWidth + searchWidth + viewWidth;
+
+        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 120;
 
         if (windowWidth > 768) {
             if (totalWidth > maxWidth) {
-                $("#search").hide();
+                //First tab is 138px wide
+                let tabsize = Math.ceil( (avalaibleWidth - 140) / $("#navbar-tabs .entrytab").length );
+
+                $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
+                $("#navbar-tabs .entrytab").addClass('entrytab-ellipsis');
+                $("#navbar-tabs .entrytab-icon").addClass('fa-2x').siblings('.entrytab-text').addClass('hide');
+            } else {
+                $("#navbar-tabs .entrytab").css('max-width', '');
+                $("#navbar-tabs .entrytab").removeClass('entrytab-ellipsis');
+                $("#navbar-tabs .entrytab-icon").removeClass('fa-2x').siblings('.entrytab-text').removeClass('hide');
             }
         } 
     }

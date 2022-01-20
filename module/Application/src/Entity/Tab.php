@@ -62,6 +62,15 @@ class Tab
     protected $shortname;
 
     /**
+     * @ORM\Column(type="string")
+     * @Annotation\Type("Laminas\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Icône"})
+     * @Annotation\Attributes({"placeholder":"Facultatif"})
+     */
+    protected $icon;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      * @Annotation\Type("Laminas\Form\Element\Number")
      * @Annotation\Attributes({"min":0})
@@ -211,6 +220,22 @@ class Tab
     public function setShortName($name)
     {
         $this->shortname = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param mixed $icon
+     */
+    public function setIcon($icon): void
+    {
+        $this->icon = $icon;
     }
 
     public function setOnlyroot($only)

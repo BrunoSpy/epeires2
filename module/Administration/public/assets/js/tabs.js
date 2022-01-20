@@ -4,6 +4,12 @@ var tab = function(url){
 		$("#tab-title").html("Nouvel onglet");
 		$("#tab-form").load(url+'/tabs/form', function(){
 		    $.material.checkbox();
+			$('input[name="icon"').iconpicker({
+				templates: {
+					popover: '<div class="popover iconpicker-popover" role="tooltip" style="color: rgb(51,51,51) !important;"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+				},
+				inputSearch: true
+			});
 		});
 	});
 	
@@ -17,6 +23,12 @@ var tab = function(url){
                     });
 			}*/
 			$.material.checkbox();
+			$('input[name="icon"').iconpicker({
+				templates: {
+					popover: '<div class="popover iconpicker-popover" role="tooltip" style="color: rgb(51,51,51) !important;"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+				},
+				inputSearch: true
+			});
 		});
 	});
 	
