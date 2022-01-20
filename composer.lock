@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef4ecec6a86dec4641f3544d3fe30c8b",
+    "content-hash": "6e46f54d92b03f1bf9957c050e97965a",
     "packages": [
         {
             "name": "assetic/framework",
@@ -8184,16 +8184,16 @@
         },
         {
             "name": "roave/psr-container-doctrine",
-            "version": "3.1.1",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/psr-container-doctrine.git",
-                "reference": "451090e5491029eb35c00b892bedba9821f9261d"
+                "reference": "b526f623f375e409a4922437815b97e61d2a46a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/psr-container-doctrine/zipball/451090e5491029eb35c00b892bedba9821f9261d",
-                "reference": "451090e5491029eb35c00b892bedba9821f9261d",
+                "url": "https://api.github.com/repos/Roave/psr-container-doctrine/zipball/b526f623f375e409a4922437815b97e61d2a46a4",
+                "reference": "b526f623f375e409a4922437815b97e61d2a46a4",
                 "shasum": ""
             },
             "require": {
@@ -8237,9 +8237,9 @@
             "homepage": "https://github.com/Roave/psr-container-doctrine",
             "support": {
                 "issues": "https://github.com/Roave/psr-container-doctrine/issues",
-                "source": "https://github.com/Roave/psr-container-doctrine/tree/3.1.1"
+                "source": "https://github.com/Roave/psr-container-doctrine/tree/3.2.0"
             },
-            "time": "2021-12-07T14:26:11+00:00"
+            "time": "2022-01-20T14:37:46+00:00"
         },
         {
             "name": "rwoverdijk/assetmanager",
@@ -13657,7 +13657,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",

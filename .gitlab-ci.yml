@@ -19,7 +19,8 @@ cache:
   #download sonar scanner
   - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
   - unzip ./sonar-scanner.zip
-  #parallelize downloads
+  #donwload dependencies
+  - composer --version
   - composer install --no-interaction --prefer-dist
   #configure database
   - cp $DOCTRINE config/autoload/doctrine.local.php
@@ -51,7 +52,6 @@ variables:
   MYSQL_ROOT_PASSWORD: epeires2
   APP_ENV: development
   TIMEZONE: Europe/Paris
-
 
 test:8.0-mariadb103:
   extends: .before_script_test
