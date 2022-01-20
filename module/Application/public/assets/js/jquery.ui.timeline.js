@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.4.0",
+        version: "1.4.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -165,7 +165,7 @@
             //duration of the zoomed view, 6 hours by default
             viewduration: 6,
             //min numbers of past hours to display, 1 by default
-            pasthours: 2
+            pasthours: 1
         },
         //Main function
         //Initialize the timeline
@@ -1464,10 +1464,11 @@
                     this.lastUpdateTimebar = now;
                     return;
                 }
-            //si vue six heures et diff > 2 heures : décaler d'une heure
-            //ou si jour affiché = aujourd'hui et diff > 2h -> décaler d'une heure
-            } else if((this.dayview === false && diff > 2) ||
-                (this.dayview === true && this._isToday(this.currentDay) && diff > 2)) {
+            //si vue six heures et diff > pasthours +1 heures : décaler d'une heure
+            //ou si jour affiché = aujourd'hui et diff > pasthours +1h -> décaler d'une heure
+            } else if(
+                (this.dayview === false && diff > (this.options.pasthours +1) ) ||
+                (this.dayview === true && this._isToday(this.currentDay) && diff > (this.options.pasthours +1 ))) {
                 //force la récupération de tous les évènements une fois par heure
                 this._updateEvents(true);
             } else {
