@@ -40,7 +40,8 @@ echo $this->partial('application/timeline-tab/index.phtml', array(
   $('#timeline').timeline({
     "opentab": false,
     "viewduration": 3,
-    "pasthours": 0
+    "pasthours": 0,
+    "fileIcon": true
   });
 
 <?php $this->inlineScript()->captureEnd();?>

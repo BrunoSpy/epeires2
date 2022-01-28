@@ -913,7 +913,7 @@ $(document).ready(function(){
     /**
      * Ouverture des protections via le label
      */
-    $("#timeline").on('click', ".label_elmt span.badge.scheduled", function(e){
+    $("#timeline").on('click', ".label_elmt span.badge.scheduled, .label_elmt span.badge.files", function(e){
         e.preventDefault();
         var me = $(this);
         var id = parseInt(me.closest(".elmt").data('ident'));
@@ -923,12 +923,22 @@ $(document).ready(function(){
         		if(event.files === 1){
         			window.open(window.location.origin+urlRoot+event.url_file1);
         		} else {
-        			loadFiche(id, "/events/getfiche", true);
+                    //if view is splitimeline, open file manager
+                    if(window.location.href.includes("splittimeline")) {
+                        $("#pdfviewer").load(urlApp+'/events/files?id='+id);
+                    } else {
+                        loadFiche(id, "/events/getfiche", true);
+                    }
         		}
         	} else {
         		loadFiche(id, "/events/getfiche", true);
         	}
         }
+    });
+
+    $("#pdfviewer").on('click', '.eventfile', function(e){
+        e.preventDefault();
+        window.open(window.location.origin + urlRoot + $(this).data('filepath'));
     });
 
     $('select[name="nameopsup"]').on ('change', function(e){

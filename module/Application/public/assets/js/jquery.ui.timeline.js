@@ -165,7 +165,9 @@
             //duration of the zoomed view, 6 hours by default
             viewduration: 6,
             //min numbers of past hours to display, 1 by default
-            pasthours: 1
+            pasthours: 1,
+            //display files icon if event has files attached
+            fileIcon: false
         },
         //Main function
         //Initialize the timeline
@@ -1819,6 +1821,9 @@
             }
             if (event.scheduled > 0) {
                 name += ' <a href="#"><span class="badge scheduled">P</span></a>';
+            }
+            if (this.options.fileIcon && event.files > 0) {
+                name += ' <a href="#"><span class="badge files"><span class="glyphicon glyphicon-file"></span></span></a>';
             }
             elmt_txt.find('span.elmt_name').html(name);
             elmt_txt.find('span.badge.recurrence').tooltip();

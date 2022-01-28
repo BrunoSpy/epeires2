@@ -2872,4 +2872,24 @@ class EventsController extends TimelineTabController
         }
         return new JsonModel($messages);
     }
+
+    public function filesAction()
+    {
+        $viewmodel = new ViewModel();
+
+        // disable layout if request by Ajax
+        $viewmodel->setTerminal($this->getRequest()->isXmlHttpRequest());
+
+        $id = $this->params()->fromQuery('id', null);
+
+        if($id !== null) {
+            $event = $this->getEntityManager()->getRepository(Event::class)->find($id);
+            if($event) {
+                $viewmodel->setVariable("files", $event->getFiles());
+                $viewmodel->setVariable("name", $this->eventservice->getName($event));
+            }
+        }
+
+        return $viewmodel;
+    }
 }
