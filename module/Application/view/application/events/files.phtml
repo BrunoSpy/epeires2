@@ -1,0 +1,48 @@
+<div class="row" style="margin-right: 1em;">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fichiers associés à <?php echo $this->name; ?></h3>
+      </div>
+      <div class="panel-body">
+
+        <div class="row">
+
+            <?php foreach ($this->files as $file): ?>
+              <div class="col-xs-3">
+
+                  <?php if (stripos($file->getMimeType(), "pdf") !== false || stripos($file->getMimeType(), "image") !== false) : ?>
+                    <a href="#" class="thumbnail eventfile" data-filepath="<?php echo $file->getPath(); ?>" title="<?php echo $file->getName(); ?>">
+                      <div class="file-icon">
+                        <i class="fa-3x
+          <?php
+                        if (stripos($file->getMimeType(), "pdf") !== false) {
+                            echo " far fa-file-pdf";
+                        } else if (stripos($file->getMimeType(), "image") !== false) {
+                            echo " far fa-file-image";
+                        }
+                        ?>
+          "></i>
+                      </div>
+                      <div class="file-name">
+                          <?php echo $file->getName() ?>
+                      </div>
+                    </a>
+                  <?php else: ?>
+                    <div class="thumbnail" data-toggle="tooltip" title="Format de fichier non supporté.">
+                      <div class="file-icon">
+                        <i class="fa-3x far fa-file"></i>
+                      </div>
+                      <div class="file-name">
+                          <?php echo $file->getName() ?>
+                      </div>
+                    </div>
+                  <?php endif; ?>
+
+              </div>
+
+            <?php endforeach; ?>
+
+        </div>
+      </div>
+    </div>
+</div>
