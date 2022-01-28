@@ -23,9 +23,11 @@
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap/dist/css/bootstrap.min.css');
 
+        $this->headLink()
+            ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.all.min.css');
+
         if($this->isGranted('chat.access') && $this->mattermost) {
-            $this->headLink()
-                ->appendStylesheet($this->basePath() . '/assets/css/font-awesome.all.min.css')
+          $this->headLink()
                 ->appendStylesheet($this->basePath() . '/components/lightbox2/dist/css/lightbox.min.css')
                 ->appendStylesheet($this->basePath() . '/assets/css/mattermostchat.css');
         }
