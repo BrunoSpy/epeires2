@@ -80,7 +80,7 @@ class NavBarTop extends AbstractHelper {
 
         $html .= '<p class="navbar-text navbar-right" id="navbar-clock"><span id="day"></span>&nbsp;&nbsp;<span id="clock"></span>&nbsp;</p>';
 
-        if($IHMLight) {
+        if($IHMLight && $viewduration !== null) {
            $html .= $this->view->viewselector($viewduration);
         }
 

@@ -16,3 +16,15 @@ html, body, content {
     padding-left: 0;
     padding-right: 0;
 }
+
+.file-icon {
+    text-align: center;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+.file-name {
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

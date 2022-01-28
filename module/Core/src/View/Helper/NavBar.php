@@ -182,8 +182,10 @@ class NavBar extends AbstractHelper
         }
         $html .= '</ul>';
 
-        $html .= $this->view->viewselector($viewduration);
-
+        if($viewduration != null) {
+            $html .= $this->view->viewselector($viewduration);
+        }
+        
         $html .= '</div>';
         $html .= '</div></div></nav>';
         
