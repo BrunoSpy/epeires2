@@ -1457,7 +1457,7 @@ class EventsController extends TimelineTabController
             $cat = $em->getRepository(Category::class)->find($catid);
             if($cat) {
                 if($cat->getParent() === null) {
-                    if (!in_array($cat, $tempRootCategories)) {
+                    if (!in_array($cat, $tempRootCategories, true)) {
                         $tempRootCategories[] = $cat;
                     }
                 } else {
