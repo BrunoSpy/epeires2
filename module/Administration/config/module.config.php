@@ -5,8 +5,10 @@
  * @license   https://www.gnu.org/licenses/agpl-3.0.html Affero Gnu Public License
  */
 
+use Administration\Command\CleanDeletedEventsCommand;
 use Administration\Command\CleanLogsCommand;
 use Administration\Command\DeleteEventsCommand;
+use Administration\Command\Factory\CleanDeletedEventsCommandFactory;
 use Administration\Command\Factory\CleanLogsCommandFactory;
 use Administration\Command\Factory\DeleteEventsCommandFactory;
 use Administration\Command\Factory\InitBTIVDBCommandFactory;
@@ -41,7 +43,8 @@ return array(
             'epeires2:delete-events' => DeleteEventsCommand::class,
             'epeires2:clean-logs' => CleanLogsCommand::class,
             'epeires2:initdb' => InitDBCommand::class,
-            'epeires2:initbtivdb' => InitBTIVDBCommand::class
+            'epeires2:initbtivdb' => InitBTIVDBCommand::class,
+            'epeires2:clean-deleted-events' => CleanDeletedEventsCommand::class
             ]
     ),
     'service_manager' => array(
@@ -57,6 +60,7 @@ return array(
             CleanLogsCommand::class => CleanLogsCommandFactory::class,
             InitDBCommand::class => InitDBCommandFactory::class,
             InitBTIVDBCommand::class => InitBTIVDBCommandFactory::class,
+            CleanDeletedEventsCommand::class => CleanDeletedEventsCommandFactory::class,
             \Doctrine\Migrations\Configuration\Migration\ConfigurationLoader::class => \Roave\PsrContainerDoctrine\Migrations\ConfigurationLoaderFactory::class,
             \Doctrine\Migrations\DependencyFactory::class => \Roave\PsrContainerDoctrine\Migrations\DependencyFactoryFactory::class
         ]

@@ -104,6 +104,11 @@ class EventRepository extends ExtendedRepository
             if($status) {
                 $qb->andWhere($qb->expr()->in('e.status', $status));
             }
+        } else {
+            //do not get system cat
+            $qb->andWhere($qb->expr()
+                ->neq('c.system', true)
+            );
         }
         if ($default) {
             // restriction éventuelle aux événements confirmés si timelineconfirmed
