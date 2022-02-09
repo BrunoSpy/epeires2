@@ -58,13 +58,13 @@
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Assetic": "src/"
-                },
                 "files": [
                     "src/functions.php",
                     "src/aliasing.php"
-                ]
+                ],
+                "psr-0": {
+                    "Assetic": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -848,16 +848,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.3.1",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "5b6eb6c8ce65ebdc60b0c0960a676cf76758dbf2"
+                "reference": "35eae239ef515d55ebb24e9d4715cad09a4f58ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/5b6eb6c8ce65ebdc60b0c0960a676cf76758dbf2",
-                "reference": "5b6eb6c8ce65ebdc60b0c0960a676cf76758dbf2",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/35eae239ef515d55ebb24e9d4715cad09a4f58ed",
+                "reference": "35eae239ef515d55ebb24e9d4715cad09a4f58ed",
                 "shasum": ""
             },
             "require": {
@@ -939,7 +939,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.3.1"
+                "source": "https://github.com/doctrine/dbal/tree/3.3.2"
             },
             "funding": [
                 {
@@ -955,7 +955,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-30T17:50:59+00:00"
+            "time": "2022-02-05T16:33:45+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -1071,16 +1071,16 @@
         },
         {
             "name": "doctrine/doctrine-module",
-            "version": "4.4.0",
+            "version": "4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineModule.git",
-                "reference": "b1db93d7d212d791571eba282f7b24c59ef4966a"
+                "reference": "0844e03d536299157927255626afb2dcf4fca50f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/b1db93d7d212d791571eba282f7b24c59ef4966a",
-                "reference": "b1db93d7d212d791571eba282f7b24c59ef4966a",
+                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/0844e03d536299157927255626afb2dcf4fca50f",
+                "reference": "0844e03d536299157927255626afb2dcf4fca50f",
                 "shasum": ""
             },
             "require": {
@@ -1119,7 +1119,7 @@
                 "laminas/laminas-mvc-console": "^1.3.0",
                 "laminas/laminas-serializer": "^2.11.0",
                 "laminas/laminas-session": "^2.12.0",
-                "laminas/laminas-test": "^3.5.1",
+                "laminas/laminas-test": "^3.8.0",
                 "phpspec/prophecy-phpunit": "^2.0.1",
                 "phpstan/phpstan": "^1.1.2",
                 "phpstan/phpstan-phpunit": "^1.0.0",
@@ -1142,12 +1142,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "DoctrineModule\\": "src/"
-                },
                 "files": [
                     "autoload/polyfill-form-elements.php"
-                ]
+                ],
+                "psr-4": {
+                    "DoctrineModule\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1188,7 +1188,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineModule/issues",
-                "source": "https://github.com/doctrine/DoctrineModule/tree/4.4.0"
+                "source": "https://github.com/doctrine/DoctrineModule/tree/4.4.1"
             },
             "funding": [
                 {
@@ -1204,20 +1204,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-12-01T10:15:04+00:00"
+            "time": "2022-02-03T21:51:44+00:00"
         },
         {
             "name": "doctrine/doctrine-orm-module",
-            "version": "4.2.0",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineORMModule.git",
-                "reference": "034c7074c3cfd6d5a11a4011fc49329670c93de8"
+                "reference": "19b568dfbe633d0644a3627722d4216a05828a89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineORMModule/zipball/034c7074c3cfd6d5a11a4011fc49329670c93de8",
-                "reference": "034c7074c3cfd6d5a11a4011fc49329670c93de8",
+                "url": "https://api.github.com/repos/doctrine/DoctrineORMModule/zipball/19b568dfbe633d0644a3627722d4216a05828a89",
+                "reference": "19b568dfbe633d0644a3627722d4216a05828a89",
                 "shasum": ""
             },
             "require": {
@@ -1226,7 +1226,7 @@
                 "doctrine/doctrine-laminas-hydrator": "^2.2.1",
                 "doctrine/doctrine-module": "^4.2.2",
                 "doctrine/event-manager": "^1.1.1",
-                "doctrine/orm": "^2.9.6",
+                "doctrine/orm": "^2.11.1",
                 "doctrine/persistence": "^2.2.2",
                 "ext-json": "*",
                 "laminas/laminas-eventmanager": "^3.4.0",
@@ -1313,7 +1313,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineORMModule/issues",
-                "source": "https://github.com/doctrine/DoctrineORMModule/tree/4.2.0"
+                "source": "https://github.com/doctrine/DoctrineORMModule/tree/4.2.1"
             },
             "funding": [
                 {
@@ -1329,7 +1329,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-12-31T11:33:41+00:00"
+            "time": "2022-02-04T19:40:50+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -1956,23 +1956,23 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "de4aad040737a89fae2129cdeb0f79c45513128d"
+                "reference": "60b704331479a69e9bcdb3496da2315b5c4f94fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/de4aad040737a89fae2129cdeb0f79c45513128d",
-                "reference": "de4aad040737a89fae2129cdeb0f79c45513128d",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/60b704331479a69e9bcdb3496da2315b5c4f94fd",
+                "reference": "60b704331479a69e9bcdb3496da2315b5c4f94fd",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-mbstring": "*",
-                "phenx/php-font-lib": "^0.5.2",
-                "phenx/php-svg-lib": "^0.3.3",
+                "phenx/php-font-lib": "^0.5.4",
+                "phenx/php-svg-lib": "^0.3.3 || ^0.4.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
@@ -2017,9 +2017,9 @@
             "homepage": "https://github.com/dompdf/dompdf",
             "support": {
                 "issues": "https://github.com/dompdf/dompdf/issues",
-                "source": "https://github.com/dompdf/dompdf/tree/v1.1.1"
+                "source": "https://github.com/dompdf/dompdf/tree/v1.2.0"
             },
-            "time": "2021-11-24T00:45:04+00:00"
+            "time": "2022-02-07T13:02:10+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -4843,16 +4843,16 @@
         },
         {
             "name": "laminas/laminas-filter",
-            "version": "2.13.1",
+            "version": "2.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-filter.git",
-                "reference": "79e8baa62035397044087907e89034726b3056a0"
+                "reference": "3da1df596b023fb0387a1dbb0e77e536afd9d1af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-filter/zipball/79e8baa62035397044087907e89034726b3056a0",
-                "reference": "79e8baa62035397044087907e89034726b3056a0",
+                "url": "https://api.github.com/repos/laminas/laminas-filter/zipball/3da1df596b023fb0387a1dbb0e77e536afd9d1af",
+                "reference": "3da1df596b023fb0387a1dbb0e77e536afd9d1af",
                 "shasum": ""
             },
             "require": {
@@ -4918,7 +4918,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-12-23T12:46:20+00:00"
+            "time": "2022-02-07T13:14:03+00:00"
         },
         {
             "name": "laminas/laminas-form",
@@ -5804,16 +5804,16 @@
         },
         {
             "name": "laminas/laminas-mvc",
-            "version": "3.3.1",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc.git",
-                "reference": "e00129958df85fb071e1ff5c931d01df05485c7f"
+                "reference": "16bb3bc6bed6cc42ef4d2e5e7dc4a5c97841c6a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc/zipball/e00129958df85fb071e1ff5c931d01df05485c7f",
-                "reference": "e00129958df85fb071e1ff5c931d01df05485c7f",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc/zipball/16bb3bc6bed6cc42ef4d2e5e7dc4a5c97841c6a2",
+                "reference": "16bb3bc6bed6cc42ef4d2e5e7dc4a5c97841c6a2",
                 "shasum": ""
             },
             "require": {
@@ -5882,7 +5882,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-02-02T12:53:57+00:00"
+            "time": "2022-02-08T21:08:00+00:00"
         },
         {
             "name": "laminas/laminas-mvc-form",
@@ -6349,28 +6349,28 @@
         },
         {
             "name": "laminas/laminas-progressbar",
-            "version": "2.9.0",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-progressbar.git",
-                "reference": "de3c203c59e0cc5b06e79683172841179dcb633c"
+                "reference": "3efb7e1b4b36dcfc0a6e5580640d109ef57e56c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-progressbar/zipball/de3c203c59e0cc5b06e79683172841179dcb633c",
-                "reference": "de3c203c59e0cc5b06e79683172841179dcb633c",
+                "url": "https://api.github.com/repos/laminas/laminas-progressbar/zipball/3efb7e1b4b36dcfc0a6e5580640d109ef57e56c9",
+                "reference": "3efb7e1b4b36dcfc0a6e5580640d109ef57e56c9",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-stdlib": "^3.2.1",
-                "php": "^7.3 || ~8.0.0"
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
             },
             "conflict": {
                 "zendframework/zend-progressbar": "*"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
-                "laminas/laminas-json": "^2.6.1",
+                "laminas/laminas-json": "^3.0.0",
                 "laminas/laminas-session": "^2.8.5",
                 "phpunit/phpunit": "^9.3"
             },
@@ -6408,7 +6408,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-12-06T02:17:50+00:00"
+            "time": "2022-02-05T15:45:26+00:00"
         },
         {
             "name": "laminas/laminas-router",
@@ -7983,21 +7983,22 @@
         },
         {
             "name": "phenx/php-svg-lib",
-            "version": "0.3.4",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PhenX/php-svg-lib.git",
-                "reference": "f627771eb854aa7f45f80add0f23c6c4d67ea0f2"
+                "url": "https://github.com/dompdf/php-svg-lib.git",
+                "reference": "3ffbbb037f0871c3a819e90cff8b36dd7e656189"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhenX/php-svg-lib/zipball/f627771eb854aa7f45f80add0f23c6c4d67ea0f2",
-                "reference": "f627771eb854aa7f45f80add0f23c6c4d67ea0f2",
+                "url": "https://api.github.com/repos/dompdf/php-svg-lib/zipball/3ffbbb037f0871c3a819e90cff8b36dd7e656189",
+                "reference": "3ffbbb037f0871c3a819e90cff8b36dd7e656189",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
                 "php": "^7.4 || ^8.0",
-                "sabberworm/php-css-parser": "^8.3"
+                "sabberworm/php-css-parser": "^8.4"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
@@ -8021,10 +8022,10 @@
             "description": "A library to read, parse and export to PDF SVG files.",
             "homepage": "https://github.com/PhenX/php-svg-lib",
             "support": {
-                "issues": "https://github.com/PhenX/php-svg-lib/issues",
-                "source": "https://github.com/PhenX/php-svg-lib/tree/0.3.4"
+                "issues": "https://github.com/dompdf/php-svg-lib/issues",
+                "source": "https://github.com/dompdf/php-svg-lib/tree/0.4.0"
             },
-            "time": "2021-10-18T02:13:32+00:00"
+            "time": "2021-12-17T14:08:35+00:00"
         },
         {
             "name": "php-defer/php-defer",
@@ -8865,16 +8866,16 @@
         },
         {
             "name": "samsonasik/force-https-module",
-            "version": "4.1.0",
+            "version": "4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/samsonasik/ForceHttpsModule.git",
-                "reference": "b1e7ea0e614cf76243047ed8a44ca209091643ba"
+                "reference": "909b916462bffabfbcdf1584d499b13b0cd318c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/samsonasik/ForceHttpsModule/zipball/b1e7ea0e614cf76243047ed8a44ca209091643ba",
-                "reference": "b1e7ea0e614cf76243047ed8a44ca209091643ba",
+                "url": "https://api.github.com/repos/samsonasik/ForceHttpsModule/zipball/909b916462bffabfbcdf1584d499b13b0cd318c3",
+                "reference": "909b916462bffabfbcdf1584d499b13b0cd318c3",
                 "shasum": ""
             },
             "require": {
@@ -8886,7 +8887,7 @@
                 "mezzio/mezzio": "<3.0"
             },
             "require-dev": {
-                "kahlan/kahlan": "dev-moving-to-github-action",
+                "kahlan/kahlan": "^5.2",
                 "laminas/laminas-coding-standard": "^2.0",
                 "laminas/laminas-mvc": "^3.0",
                 "mezzio/mezzio": "^3.0",
@@ -8933,7 +8934,7 @@
             ],
             "support": {
                 "issues": "https://github.com/samsonasik/ForceHttpsModule/issues",
-                "source": "https://github.com/samsonasik/ForceHttpsModule/tree/4.1.0"
+                "source": "https://github.com/samsonasik/ForceHttpsModule/tree/4.1.1"
             },
             "funding": [
                 {
@@ -8941,7 +8942,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2021-12-10T07:34:08+00:00"
+            "time": "2022-02-07T22:12:17+00:00"
         },
         {
             "name": "symfony/cache",
@@ -9626,12 +9627,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Grapheme\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Grapheme\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -9707,12 +9708,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -9871,12 +9872,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php72\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php72\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -9947,12 +9948,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php73\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php73\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -10026,12 +10027,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -10880,13 +10881,13 @@
                 "branch-alias": []
             },
             "autoload": {
+                "files": [
+                    "functions.php"
+                ],
                 "psr-4": {
                     "Codeception\\": "src/Codeception",
                     "Codeception\\Extension\\": "ext"
-                },
-                "files": [
-                    "functions.php"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -11755,12 +11756,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "DeepCopy\\": "src/DeepCopy/"
-                },
                 "files": [
                     "src/DeepCopy/deep_copy.php"
-                ]
+                ],
+                "psr-4": {
+                    "DeepCopy\\": "src/DeepCopy/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -11848,16 +11849,16 @@
         },
         {
             "name": "phar-io/version",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "bae7c545bef187884426f042434e561ab1ddb182"
+                "reference": "15a90844ad40f127afd244c0cad228de2a80052a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/bae7c545bef187884426f042434e561ab1ddb182",
-                "reference": "bae7c545bef187884426f042434e561ab1ddb182",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/15a90844ad40f127afd244c0cad228de2a80052a",
+                "reference": "15a90844ad40f127afd244c0cad228de2a80052a",
                 "shasum": ""
             },
             "require": {
@@ -11893,9 +11894,9 @@
             "description": "Library for handling version information and constraints",
             "support": {
                 "issues": "https://github.com/phar-io/version/issues",
-                "source": "https://github.com/phar-io/version/tree/3.1.0"
+                "source": "https://github.com/phar-io/version/tree/3.1.1"
             },
-            "time": "2021-02-23T14:00:09+00:00"
+            "time": "2022-02-07T21:56:48+00:00"
         },
         {
             "name": "php-webdriver/webdriver",
@@ -12569,11 +12570,11 @@
                 }
             },
             "autoload": {
-                "classmap": [
-                    "src/"
-                ],
                 "files": [
                     "src/Framework/Assert/Functions.php"
+                ],
+                "classmap": [
+                    "src/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
