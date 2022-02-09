@@ -56,3 +56,11 @@ data/NM_B2B
 data/tempimg
 
 screenshots/
+
+.DS_Store
+
+#public api-tools
+public/api-tools-ui/
+public/api-tools/
+public/api-tools-documentation-swagger/
+
