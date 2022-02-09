@@ -21,6 +21,7 @@ namespace Administration\Command;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -63,30 +64,32 @@ class CleanLogsCommand extends Command
             return Command::FAILURE;
         }
 
+        $progressBar = new ProgressBar($output, $removeRowsCount);
+
         $q = $objectmanager->createQuery('select l from Application\Entity\Log l where l.action = ?1');
         $q->setParameter(1, "remove");
-        $iterable = $q->iterate();
+        $iterable = $q->toIterable();
         $i = 0;
         $batchSize = 50;
         $output->writeln("Nettoyage des logs en cours... Cette opération peut prendre plusieurs minutes selon la taille de la base de données.");
+        $progressBar->start();
         try {
-            while(($row = $iterable->next()) !== false) {
-                $object = $row[0];
+            foreach ($iterable as $object) {
                 $q2 = $objectmanager->createQuery('select l from Application\Entity\Log l where l.objectId = ?1 and l.objectClass = ?2');
                 $q2->setParameters(array(1 => $object->getObjectId(), 2 => $object->getObjectClass()));
-                $iterable2 = $q2->iterate();
-                while(($row2 = $iterable2->next()) !== false) {
-                    $objectmanager->remove($row2[0]);
+                $iterable2 = $q2->toIterable();
+                foreach ($iterable2 as $row) {
+                    $objectmanager->remove($row);
                 }
-                $objectmanager->remove($row[0]);
+                $objectmanager->remove($object);
                 if(($i % $batchSize) === 0) {
-                    $output->writeln( "%.1f %% effectué... \n",(($i / $removeRowsCount)*100) );
                     $objectmanager->flush();
                     $objectmanager->clear();
                 }
+                $progressBar->advance();
                 $i++;
             }
-
+            $progressBar->finish();
             $objectmanager->flush();
             $output->writeln("Nettoyage des logs effectué.");
             return Command::SUCCESS;
