@@ -87,13 +87,13 @@ class CleanDeletedEventsCommand extends Command
             'select e from Application\Entity\Event e where e.organisation = ?1 and e.status = ?2 and e.recurrence IS NOT NULL');
         $q->setParameter(1, $organisation->getId());
         $q->setParameter(2, Status::DELETED);
-        $iterable = $q->iterate();
+        $iterable = $q->toIterable();
 
         $progressBar->start();
 
         try {
-            while (($row = $iterable->next()) !== false) {
-                $this->entityManager->remove($row[0]);
+            foreach ($iterable as $row) {
+                $this->entityManager->remove($row);
                 if (($i % $batchSize) === 0) {
                     $this->entityManager->flush();
                     $this->entityManager->clear();

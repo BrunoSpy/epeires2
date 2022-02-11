@@ -115,7 +115,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
                 $definition['attributes']['maxlength'] = '48';
             }
 
-            if(strlen($customfield->getTooltip()) > 0 && !array_key_exists('placeholder',$definition['attributes'])) {
+            if(strlen($customfield->getTooltip()) > 0 && is_array($definition['attributes']) && !array_key_exists('placeholder', $definition['attributes'])) {
                 $definition['attributes']['title'] = $customfield->getTooltip();
                 $definition['attributes']['placeholder'] = $customfield->getTooltip();
             }
