@@ -378,3 +378,7 @@
 .verticaltxt.reduced span {
 	margin-left: -3px;
 }
+
+.fc-toolbar.fc-header-toolbar {
+	margin-right: 4em;
+}
