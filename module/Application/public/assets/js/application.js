@@ -79,7 +79,7 @@ var updateNavbar = function() {
     if($('.navbar-lower').length > 0) { //do not try to update width if navbar doesn't exist (epeires light)
         var windowWidth = $(window).width();
         var totalWidth = 0;
-        var maxWidth = $("#navbar-collapse").width();
+        var maxWidth = $("#navbar-collapse").width() - 150;
         var centerWidth = $(".navbar-lower .navbar-nav").width();
         var searchWidth = $("#search").show().innerWidth();
         var viewWidth = $("#changeview").innerWidth();
@@ -89,12 +89,12 @@ var updateNavbar = function() {
         }
         var totalWidth = initialCenterWidth + searchWidth + viewWidth;
 
-        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 120;
+        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 50;
 
         if (windowWidth > 768) {
             if (totalWidth > maxWidth) {
                 //First tab is 138px wide
-                let tabsize = Math.ceil( (avalaibleWidth - 140) / $("#navbar-tabs .entrytab").length );
+                let tabsize = Math.ceil( avalaibleWidth / $("#navbar-tabs .entrytab").length );
 
                 $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
                 $("#navbar-tabs .entrytab").addClass('entrytab-ellipsis');
