@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aea1891a8ffd7f6adce6582603d9cba2",
+    "content-hash": "497d48c2570d30592907385e8778a3f0",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -378,24 +378,24 @@
         },
         {
             "name": "dgac/nmb2b-phpclient",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/nmb2b-phpclient.git",
-                "reference": "c8e155861f87b4fccb83f35bd9a88e54b910ee0a"
+                "reference": "0b2ffc5bf12089b81d8fdab10281e71fcf45d769"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/c8e155861f87b4fccb83f35bd9a88e54b910ee0a",
-                "reference": "c8e155861f87b4fccb83f35bd9a88e54b910ee0a",
+                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/0b2ffc5bf12089b81d8fdab10281e71fcf45d769",
+                "reference": "0b2ffc5bf12089b81d8fdab10281e71fcf45d769",
                 "shasum": ""
             },
             "require": {
                 "ext-soap": "*",
-                "php": "^7.2"
+                "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0"
+                "phpunit/phpunit": "^8.0"
             },
             "type": "library",
             "autoload": {
@@ -416,9 +416,9 @@
             "description": "PHP Client for NM B2B Web services",
             "support": {
                 "issues": "https://github.com/DGAC/nmb2b-phpclient/issues",
-                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.3.0"
+                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.0"
             },
-            "time": "2020-02-28T16:31:18+00:00"
+            "time": "2021-11-23T08:57:22+00:00"
         },
         {
             "name": "dino/dompdf-module",
