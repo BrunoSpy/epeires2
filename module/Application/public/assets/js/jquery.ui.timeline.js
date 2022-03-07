@@ -1595,7 +1595,7 @@
                         content: txt,
                         placement:'auto left',
                         html: 'true',
-                        viewport: '#timeline',
+                        viewport: '#timeline-base',
                         template: '<div class="popover quickaccess" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                     });
                     $("#category"+catid).on('mouseenter', function(e){
