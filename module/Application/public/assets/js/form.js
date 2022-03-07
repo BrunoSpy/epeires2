@@ -552,16 +552,6 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 					$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 					updateHours();
 					//updateHourTitle();
-					if(cat_parent_id >= 0){
-                        $("#root_categories").val(cat_parent_id);
-						$('#root_categories').trigger('change');
-					} else {
-						//pas de parent : cat_parent_id === -1
-						if(cat_id >= 0) {
-							$("#root_categories").val(cat_id);
-							$('#root_categories').trigger('change');
-						}
-					}
 					validator = $('#Event').validate({
 						errorClass: 'has-error',
 						ignore: ':hidden, .dateform',
@@ -570,11 +560,22 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 						},
 						showErrors: function(errorMap, errorList) {
 							$.each(errorMap, function(key, value){
-								$("input[name='"+key+"']").parents('.form-group').addClass('has-error');
+								$("textarea[name='"+key+"'], input[name='"+key+"']").parents('.form-group').addClass('has-error');
 							});
+							updateIconTabs();
 							this.defaultShowErrors();
-						}
+						},
 					});
+					if(cat_parent_id >= 0){
+						$("#root_categories").val(cat_parent_id);
+						$('#root_categories').trigger('change');
+					} else {
+						//pas de parent : cat_parent_id === -1
+						if(cat_id >= 0) {
+							$("#root_categories").val(cat_id);
+							$('#root_categories').trigger('change');
+						}
+					}
 				}
 			);
 			$("#create-evt").modal('show');
@@ -770,6 +771,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
                     } else if(elt.is('input')){
                         elt.prop('value', value);
                     }
+					//revalidtae form as fields how have values
+					validator.form();
                 });
             });
         });
@@ -893,6 +896,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
                         if($("#subcategories option").length <= 1 && $("#predefined_events table").length === 0){
                             $("#description-title a").trigger('click');
                         }
+						//revalidate form as fields have changed
+						validator.form();
                     });
                 }
 				cat_parent_id = -1;
@@ -920,7 +925,7 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
             $.post(url + '/events/subform?part=custom_fields&id=' + subcatid+ '&'+cats,
                 function(data) {
                     $("#custom_fields").html(data);
-                    $("#event input, #event select").on("invalid", function(event){
+                    $("#event input, #event select, #event textarea").on("invalid", function(event){
                         $("#description-title a").trigger('click');
                     });
 
@@ -942,7 +947,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
         ).then(function(){
             if($("#predefined_events table").length === 0){
                 $("#description-title a").trigger('click');
-            }
+			}
+			validator.form();
         });
     };
 
