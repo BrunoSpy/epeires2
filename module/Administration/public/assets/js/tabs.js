@@ -74,30 +74,37 @@ var tab = function(url){
 		}
 	});
 
-	$("#tab-container").on('change', 'select[name="type"]', function(e){
-		let type = $(this).find("option:selected").text();
+	let previousType;
+	$("#tab-container").on('focus', 'select[name="type"]', function(){
+		previousType = $(this).find("option:selected").text();
+	}).change(function(e){
+		let type = $(this).find('select[name="type"] option:selected').text();
 		switch (type) {
 			case 'timeline':
+			case 'splittimeline':
 				$('#tab-container input[name="onlyroot"]').closest('.form-group').show();
 				$('#tab-container input[name="horizontal"]').closest('.form-group').hide();
 				$('#tab-container input[name="colorsInversed"]').closest('.form-group').hide();
-				$.getJSON(url+'/tabs/getcategories?type=timeline', function(data){
-					let cats = [];
-					$.each(data, function(index, val){
-						cats.push(val);
+				//do not reset categoris if previous type is compatible
+				if(previousType == 'switchlist') {
+					$.getJSON(url + '/tabs/getcategories?type=timeline', function (data) {
+						let cats = [];
+						$.each(data, function (index, val) {
+							cats.push(val);
+						});
+						cats.sort(function (a, b) {
+							return a.place > b.place;
+						});
+						let elt = $('#tab-container select[name="categories[]"]').empty();
+						cats.forEach(function (element) {
+							elt.append($('<option>', {
+								value: element.id,
+								text: element.name
+							}));
+						});
+						elt.prop("multiple", "multiple");
 					});
-					cats.sort(function(a,b){
-						return a.place > b.place;
-					});
-					let elt = $('#tab-container select[name="categories[]"]').empty();
-					cats.forEach(function(element){
-						elt.append($('<option>',{
-							value: element.id,
-							text: element.name
-						}));
-					});
-					elt.prop("multiple", "multiple");
-				});
+				}
 				break;
 			case 'switchlist':
 				$('#tab-container input[name="onlyroot"]').closest('.form-group').hide();
@@ -122,5 +129,6 @@ var tab = function(url){
 				});
 				break;
 		}
+		previousType = type;
 	});
 };
