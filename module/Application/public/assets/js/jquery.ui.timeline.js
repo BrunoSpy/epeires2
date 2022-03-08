@@ -1588,6 +1588,9 @@
                         $('.category:not("#category'+catid+'")').popover('hide');
                         $(this).popover('show');
                     });
+                    $(document).on('mouseleave','.popover-content',function(){
+						$("#category"+catid).popover('hide');
+					});
                 });
             });
         },
