@@ -31,7 +31,7 @@ class Adapter implements AdapterInterface {
     
     public function count()
     {
-        return $this->repository->count();
+        return $this->repository->count(array());
     }
     
     public function getItems($offset, $itemCountPerPage)
