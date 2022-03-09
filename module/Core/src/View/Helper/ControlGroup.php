@@ -17,6 +17,7 @@
  */
 namespace Core\View\Helper;
 
+use Laminas\Form\Element\Hidden;
 use Laminas\Form\View\Helper\AbstractHelper;
 
 /**
@@ -67,11 +68,13 @@ class ControlGroup extends AbstractHelper
                                . '<div class="progress">'
                                . '<div class="progress-bar progress-bar-info progress-bar-striped active"></div>'
                                . '</div><p></p></div>';
+        } elseif ($element instanceof Hidden) {
+            $controlForm = $view->formHidden($element);
         } else {
             $controlForm = $view->formInput($element);
         }
         $result = "<div class=\"form-group " . $class . "\" " . $group_id . ">";
-        if($element->getLabel() !== null) {
+        if($element->getLabel() !== null && !($element instanceof Hidden)) {
             $result .= $view->formLabel($element);
         }
         $result .= "<div class=\"".($large ? "col-sm-10 col-lg-8" : "col-sm-9 col-lg-8")."\" " . $control_id . ">";

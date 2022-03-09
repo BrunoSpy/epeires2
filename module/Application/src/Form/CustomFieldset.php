@@ -59,9 +59,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
         ));
         
         foreach ($customfields as $customfield) {
-            if($customfield->isHidden())
-                continue;
-            
+
             $definition = array();
             $definition['name'] = (string) $customfield->getId();
             $this->names[] = $customfield->getId();
@@ -77,9 +75,11 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             if ($empty_option) {
                 $options['empty_option'] = $empty_option;
             }
-            
-            $definition['type'] = $customFieldService->getZendType($customfield->getType());
-            
+            if($customfield->isHidden()) {
+                $definition['type'] = '\Laminas\Form\Element\Hidden';
+            } else {
+                $definition['type'] = $customFieldService->getZendType($customfield->getType());
+            }
             foreach ($customFieldService->getFormAttributes($customfield) as $key => $attribute) {
                 $definition['attributes'][$key] = $attribute;
             }
