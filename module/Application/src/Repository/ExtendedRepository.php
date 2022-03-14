@@ -63,17 +63,4 @@ class ExtendedRepository extends EntityRepository
         return new Paginator($query);
     }
 
-    /**
-     * @return int
-     */
-    public function count(array $criteria)
-    {
-        $query = $this->getEntityManager()->createQueryBuilder();
-        $query->select(array('u.id'))
-            ->from($this->getEntityName(), 'u');
-        
-        $result = $query->getQuery()->getResult();
-        
-        return count($result);
-    }
 }

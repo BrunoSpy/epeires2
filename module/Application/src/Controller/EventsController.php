@@ -1385,11 +1385,9 @@ class EventsController extends TimelineTabController
                             ->get($customfield->getId())
                             ->setValue($values);
                     } else {
-                        if(!$customfield->isHidden()) {
-                            $form->get('custom_fields')
-                                ->get($customfield->getId())
-                                ->setAttribute('value', $customfieldvalue->getValue());
-                        }
+                        $form->get('custom_fields')
+                            ->get($customfield->getId())
+                            ->setAttribute('value', $customfieldvalue->getValue());
                     }
                 }
             }
