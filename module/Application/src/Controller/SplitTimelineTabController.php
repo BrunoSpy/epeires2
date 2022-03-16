@@ -28,8 +28,9 @@ class SplitTimelineTabController extends TimelineTabController
 
     public function indexAction()
     {
+        parent::indexAction();
         $this->layout()->viewduration = 3;
-        return parent::indexAction();
+        return $this->viewmodel;
     }
 
 }

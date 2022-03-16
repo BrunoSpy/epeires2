@@ -7,10 +7,6 @@ html, body, content {
 }
 
 #pdfviewer {
-    position: fixed !important;
-    left: 50%;
-    margin-top: 30px;
-    height: 100%;
     z-index:2;
     background-color: white;
     padding-left: 0;
@@ -27,4 +23,36 @@ html, body, content {
     text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+@media (orientation: landscape) {
+    #pdfviewer {
+        position: fixed !important;
+        height: 100%;
+        margin-top: 30px;
+        left: 50%;
+    }
+
+    .splitdiv {
+        float: left;
+        min-height: 1px;
+        width: 50%;
+    }
+}
+
+@media (orientation: portrait) {
+    .content-timeline {
+        overflow: scroll;
+    }
+
+    .content {
+        overflow: hidden;
+    }
+
+    .splitdiv {
+        height: calc(50vh - 50px);
+    }
+
+    #timeline-background {
+        height: calc(50vh - 50px);
+    }
 }

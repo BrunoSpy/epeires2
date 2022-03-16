@@ -382,3 +382,13 @@
 .fc-toolbar.fc-header-toolbar {
 	margin-right: 4em;
 }
+
+.label_elmt.ellipse {
+	width: calc(100% - 150px);
+}
+
+.label_elmt.ellipse .elmt_name {
+	display: inline-flex;
+	overflow: hidden;
+	width: calc(100% - 50px);
+}

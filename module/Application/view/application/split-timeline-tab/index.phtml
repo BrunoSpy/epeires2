@@ -7,7 +7,7 @@ $this->headScript()->appendFile($this->basePath() . '/components/pdfobject/pdfob
 $this->headScript()->appendFile( $this->basePath() . '/assets/js/pdfobject.js')
 ?>
 
-<div class="col-sm-6 content-timeline">
+<div class="splitdiv content-timeline">
 
 <?php
 echo $this->partial('application/timeline-tab/index.phtml', array(
@@ -24,7 +24,7 @@ echo $this->partial('application/timeline-tab/index.phtml', array(
 ?>
 </div>
 
-<div class="col-sm-6" id="pdfviewer">
+<div class="splitdiv" id="pdfviewer">
 
   <div id="pdf-document">
 
@@ -41,7 +41,8 @@ echo $this->partial('application/timeline-tab/index.phtml', array(
     "opentab": false,
     "viewduration": 3,
     "pasthours": 0,
-    "fileIcon": true
+    "fileIcon": true,
+    "enablePortrait": true
   });
 
 <?php $this->inlineScript()->captureEnd();?>
