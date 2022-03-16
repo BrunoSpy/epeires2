@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.4.1",
+        version: "1.5.0",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -129,6 +129,8 @@
          * ongoing drag event
          */
         on_drag: false,
+        //current orientation : "landscape" or "portrait"
+        orientation: "landscape",
         //paramètres pour les dessins, en pixels
         params: {
             //espace entre les catégories
@@ -167,13 +169,27 @@
             //min numbers of past hours to display, 1 by default
             pasthours: 1,
             //display files icon if event has files attached
-            fileIcon: false
+            fileIcon: false,
+            //enable portrait : use only half of the container if orientation == portrait
+            enablePortrait: false
         },
         //Main function
         //Initialize the timeline
         _create: function () {
             var self = this;
-            var height = $(window).height() - this.options.topOffset + 'px';
+            var height = ($(window).height() - this.options.topOffset) + 'px';
+            if(this.options.enablePortrait == true) {
+                let orientation = screen.orientation.type;
+                if(orientation === "portrait-primary" || orientation === "portrait-secondary") {
+                    //height is only half of container
+                    height = ($(window).height() - this.options.topOffset)/2 + 'px';
+                    this.orientation = "portrait";
+                } else {
+                    this.orientation = "landscape";
+                }
+            }
+
+
             this.element.css('height', height);
             //this.element.css('top', this.options.topOffset+'px');
             var eventsContainer = $('<div id="events"></div>');
@@ -318,8 +334,9 @@
 
             //retracé de la timeline en cas de changement de taille de fenêtre
             $(window).resize(function () {
-                var height = $(window).height() - self.options.topOffset + 'px';
+                var height = self._computeTimelineHeight();
                 self.element.css('height', height);
+                self._updateView(true);
                 if(self._elementsOutOfView()) {
                     $("#alert-bottom").show();
                 } else {
@@ -328,8 +345,13 @@
             });
 
             $(window).scroll(function(){
-                $('.Base').css('top', $(window).scrollTop());
-                $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+                let orientation = screen.orientation.type;
+                //timebar and base are fixed only in landscape mode
+                if(! self.options.enablePortrait ||
+                    (self.options.enablePortrait && (orientation === "landscape-primary" || orientation === "landscape-secondary"))) {
+                    $('.Base').css('top', $(window).scrollTop());
+                    $('#TimeBar').css('top', $(window).scrollTop() + self.params.topSpace + 'px');
+                }
                 if(self._elementsOutOfView()) {
                     $("#alert-bottom").show();
                 } else {
@@ -649,6 +671,9 @@
                     $('.checklist-evt').remove();
                 }
                 this._super(key, value);
+            } else if (key === "enablePortrait") {
+                this._super(key, value);
+                $(window).trigger("resize");
             } else {
                 this._super(key, value);
             }
@@ -2054,12 +2079,15 @@
                 //conversion en pixel de la taille du rectangle
                 var rectPixels = (x_end - x_deb) * largeurDisponible / 100;
                 if(rectPixels < 40) {
-                    // suppression des barres de modifcations des heures
+                    // suppression des barres de modifications des heures
                     // qui se chevauchent
                     move_deb.removeClass('disp');
                     move_fin.removeClass('disp');
                 }
-                if(txt_wid + 40 < rectPixels) {
+                let placeDroite = (100 - x_end) * largeurDisponible / 100;
+                let placeGauche = x_deb * largeurDisponible / 100;
+                if(txt_wid + 40 < rectPixels
+                    || !( (endWidth+txt_wid < placeDroite) || ( debWidth + txt_wid < placeGauche))) {
                     //assez de place dans le rectangle
                     //le label est positionnée par rapport à la boite
                     //et non par rapport au rectangle
@@ -2069,16 +2097,22 @@
                         'top': (this.options.eventHeight/2-11)+'px'});
                     //elmt_txt.css('color', textColor);
                     elmt_txt.find('a > span.glyphicon').css('color', textColor);
+                    //pas de place à gauche ou à droite et texte trop long : ellipse
+                    if(txt_wid + 40 >= rectPixels && !( (endWidth+txt_wid < placeDroite) || ( debWidth + txt_wid < placeGauche))) {
+                        elmt_txt.addClass('ellipse');
+                    } else {
+                        elmt_txt.removeClass('ellipse');
+                    }
                 } else {
+                    elmt_txt.removeClass('ellipse');
                     elmt_txt.css({'top': (this.options.eventHeight/2-13)+'px'});
                     //positionnement à droite ou à gauche
-                    var place = (100 - x_end) * largeurDisponible / 100;
                     lien.addClass('disp').show();
                     elmt_txt.addClass('outside');
                     textColor = (event.status_id == 4 ? 'grey' : 'black');
                     elmt_txt.css('color', textColor);
                     elmt_txt.find('a > span.glyphicon').css('color', textColor);
-                    if (endWidth + txt_wid < place) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
+                    if (endWidth + txt_wid < placeDroite) { // s'il reste assez de place à droite du rectangle, on écrit le txt à droite
                         elmt_txt.css({'left': 'calc(100% - '+txt_wid+'px)'});
                         totalWidth += txt_wid;
                         lien.css({'left': - endWidth + 'px',
@@ -2525,6 +2559,17 @@
         /* *********************** */
         /* ** Utilitary methods ** */
         /* *********************** */
+        /**
+         * Compute Timeline height depending on enablePortrait and orientation
+         * @private
+         */
+        _computeTimelineHeight: function() {
+            let orientation = screen.orientation.type;
+            if(this.options.enablePortrait && (orientation === "portrait-primary" || orientation === "portrait-secondary")) {
+                return ($(window).height() - this.options.topOffset)/2;
+            }
+            return ($(window).height() - this.options.topOffset);
+        },
         _getWidthAvalaible: function() {
             var largeurDispo = this.element.width() - this.options.leftOffset - this.options.rightOffset;
             if ($(document).height() > $(window).height()) {
