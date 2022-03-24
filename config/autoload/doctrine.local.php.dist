@@ -1,19 +1,23 @@
 <?php
 return array(
-	'doctrine' => array(
-		'connection' => array(
-			'orm_default' => array(
-				'driverClass' =>'Doctrine\DBAL\Driver\PDOMySql\Driver',
-				'params' => array(
-					'host'     => '127.0.0.1',
-					'port'     => '3306',
-					'user'     => '',
-					'password' => '',
-					'dbname'   => '',
-					'charset' => 'utf8'
-                                )
-                        )
-                ),
+    'doctrine' => array(
+        'connection' => array(
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'host' => '127.0.0.1',
+                    'port' => '3306',
+                    'user' => '',
+                    'password' => '',
+                    'dbname' => '',
+                    'charset' => 'utf8',
+                    // décommenter l'option suivante en cas d'utilisation de MySQL à la place de MariaDB
+                    //'driverOptions' => array(
+                    //    PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
+                    //),
+                )
             )
-    );
+        ),
+    )
+);
 
