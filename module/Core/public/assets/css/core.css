@@ -188,6 +188,11 @@ body{
 	padding-bottom: 15px;
 }
 
+
+.navbar .navbar-nav>.active>a {
+    background-color: rgb(125, 185, 245);
+}
+
 .navbar-static-top {
 	margin-bottom: 0px;
 }

@@ -1,7 +1,7 @@
 {
     "name": "dsna/epeires2",
     "description": "Cahier de marche \u00e9lectronique Exploitation",
-    "license": "AGPL-3.0",
+    "license": "AGPL-3.0-or-later",
     "homepage": "http://asap.dsna.fr/projects/pvcds",
     "repositories": [
         {

@@ -82,7 +82,7 @@ return array(
         /// paramétrage par défaut du serveur de carte 
         // chaque site doit se créer son accès mapbox et changer l'accesToken
         'ip_map' => [
-            'url' => 'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90'
+            'url' => 'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90',
             'accessToken' => "pk.eyJ1Ijoib3ppYXRlayIsImEiOiJjaW5oZXI1dW8wMDF2dnNrbGNkMmpzZzRwIn0.cD36ZQU6C4tc0uqLzU8MGw",
              'id' => "mapbox/streets",
              'maxZoom' => 18,
