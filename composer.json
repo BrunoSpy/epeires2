@@ -29,7 +29,7 @@
         "laminas/laminas-mvc-form": "^2.0",
         "laminas/laminas-log": "^2.10",
         "laminas/laminas-mail": "^2.12",
-        "laminas/laminas-code": "^3.5.0",
+        "laminas/laminas-code": "^4.5.0",
         "laminas/laminas-file": "^2.8",
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^2.0",
