@@ -675,7 +675,9 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
             //updateHourTitle();
             pauseUpdateAlarms();
             $('tr[data-toggle=tooltip]').tooltip();
-
+			$("#event").find("[data-trigger-refresh-to]").each(function(){
+				refreshField($(this));
+			});
         });
     };
     
@@ -1273,7 +1275,7 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			return option.value;
 		});
 		return $.getJSON(url + '/events/getCustomValues?origin='+id+'&target='+target+'&value='+value, function(data){
-			var elt = $("[name='custom_fields["+target+"][]']");
+			let elt = $("[name='custom_fields["+target+"][]']");
 			elt.empty();
 			var options = [];
 			$.each(data, function(index, val){
@@ -1285,7 +1287,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			options.forEach(function(element){
 				elt.append($('<option>',{
 					value: element.id,
-					text: element.name
+					text: element.name,
+					selected: values.includes(element.id.toString())
 				}));
 			});
 			elt.prepend("<option value=''>Toutes les fréquences.</option>");
