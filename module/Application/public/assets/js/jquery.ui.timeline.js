@@ -1569,6 +1569,8 @@
                 }
             }
             if ($('#category').length !== 0) {
+                //détruire les popovers associées pour éviter qu'elles restent affichées éternellement
+                $("#category").children().each(function(){$(this).popover('destroy')});
                 $('#category').empty();
             }
             return $.getJSON(url, function (data) {
