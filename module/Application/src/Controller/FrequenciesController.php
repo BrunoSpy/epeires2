@@ -264,7 +264,7 @@ class FrequenciesController extends TabController
                             //only 1 freq -> change from freq widget
                             $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($freqid);
                             if ($frequency) {
-                                $frequencies = $frequency;
+                                $frequencies[] = $frequency;
                             }
                         } else {
                             if ($freqids) {
@@ -370,8 +370,7 @@ class FrequenciesController extends TabController
                                 if (($otherfreq == null || $otherfreq == 0) && ($antenna == null || $antenna == 0) && $stateva != null && $stateva == true && $state == 'true') {
                                     // passage en disponible
                                     // les autres champs sont vides -> fermeture
-                                    $freqEvent->close($this->entityManager->getRepository('Application\Entity\Status')
-                                        ->find(3), $now);
+                                    $this->entityManager->getRepository(Event::class)->closeEvent($freqEvent, $now);
                                 } else {
                                     // on met à jour le champ correspondant sans fermer l'évènement
                                     if ($statefield == null) {
