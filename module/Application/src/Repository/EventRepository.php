@@ -1085,8 +1085,7 @@ class EventRepository extends ExtendedRepository
                         $cov == 0) { // prochaine couv : normale
                         // retour en couv normale
                         // les autres champs sont vides -> fermeture
-                        $freqEvent->close($this->getEntityManager()->getRepository('Application\Entity\Status')
-                            ->find(3), $now);
+                        $this->closeEvent($freqEvent, $now);
                     } else {
                         // on met à jour le champ correspondant
                         if ($antennafield == null) {
