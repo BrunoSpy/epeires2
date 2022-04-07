@@ -40,7 +40,7 @@
         "laminas/laminas-development-mode": "^3.2",
         "laminas/laminas-component-installer": "^2.1",
         "laminas/laminas-zendframework-bridge": "^1.0",
-        "doctrine/doctrine-orm-module": "^4.1",
+        "doctrine/doctrine-orm-module": "^4.1 || ^5.0",
         "roave/psr-container-doctrine": "^3.0.0",
         "gedmo/doctrine-extensions": "^3.0",
         "lm-commons/lmc-user": "^3.3.2",
