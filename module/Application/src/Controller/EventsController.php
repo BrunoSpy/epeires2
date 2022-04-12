@@ -2196,31 +2196,32 @@ class EventsController extends TimelineTabController
                             break;
                         case "status":
                             $status = $objectManager->getRepository('Application\Entity\Status')->find($value);
-                            // si statut terminé et (pas d'heure de fin + pas ponctuel) -> heure de fin = now
-                            if (! $status->isOpen() && $status->isDefault() && ! $event->getEnddate() && ! $event->isPunctual()) {
-                                $now = new \DateTime('now');
-                                $now->setTimezone(new \DateTimeZone('UTC'));
-                                if ($event->setEnddate($now)) {
-                                    $event->setStatus($status);
-                                    $messages['success'][] = "Date et heure de fin modifiée au " . $formatter->format($event->getEnddate());
-                                    $messages['success'][] = "Evènement passé au statut " . $status->getName();
-                                } else {
-                                    $messages['error'][] = "Impossible de changer le statut sans heure de fin";
-                                }
-                                // on ferme l'evt proprement
-                                if (! $status->isOpen()) {
+                            switch ($status->getId()) {
+                                case Status::CLOSED:
+                                    if(!$event->isPunctual() && !$event->getEnddate()) {
+                                        //évènement non ponctuel sans date de fin : date de fin = now
+                                        $now = new \DateTime('now');
+                                        $now->setTimezone(new \DateTimeZone('UTC'));
+                                        $event->setEnddate($now);
+                                        $messages['success'][] = "Date et heure de fin modifiée au " . $formatter->format($event->getEnddate());
+                                    }
                                     $this->getEntityManager()->getRepository(Event::class)->closeEvent($event);
-                                }
-                            } else 
-                                if (! $status->isOpen() && ! $status->isDefault()) {
-                                    // si statut annulé
+                                    $messages['success'][] = "Evènement passé au statut " . $status->getName();
+                                    break;
+                                case Status::CANCELED:
                                     $this->getEntityManager()->getRepository(Event::class)->cancelEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
-                                } else {
+                                    break;
+                                case Status::DELETED:
                                     $this->getEntityManager()->getRepository(Event::class)->deleteEvent($event);
                                     $messages['success'][] = "Evènement passé au statut " . $status->getName();
-                                }
-                            $objectManager->persist($event);
+                                    break;
+                                case Status::CONFIRMED:
+                                case Status::NEW:
+                                default:
+                                    $event->setStatus($status);
+                                    $objectManager->persist($event);
+                            }
                             break;
                         case 'star':
                             $event->setStar($value);
