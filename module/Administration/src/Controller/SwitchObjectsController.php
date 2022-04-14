@@ -120,13 +120,10 @@ class SwitchObjectsController extends FormController
         } else {
             $object = $this->entityManager->getRepository(SwitchObject::class)->find($id);
             if($object) {
-                error_log('place '.$place);
                 $object->setPlace($place);
                 try {
                     $this->entityManager->persist($object);
-                    error_log($object->getPlace());
                     $this->entityManager->flush();
-                    error_log($object->getPlace());
                     $messages['success'][] = "Objet correctement modifié à la place ".$place;
                 } catch (\Exception $e) {
                     $messages['error'][] = $e->getMessage();
