@@ -257,6 +257,7 @@ class FrequenciesController extends TabController
                 $freqid = $this->params()->fromQuery('freq', null);
                 $freqids = $this->params()->fromQuery('frequencies', null);
                 $frequencies = array();
+                $replace = true;
                 if ($antennaid) {
                     $antenna = $this->entityManager->getRepository('Application\Entity\Antenna')->find($antennaid);
                     if ($antenna) {
@@ -265,6 +266,7 @@ class FrequenciesController extends TabController
                             $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($freqid);
                             if ($frequency) {
                                 $frequencies[] = $frequency;
+                                $replace = false;
                             }
                         } else {
                             if ($freqids) {
@@ -272,6 +274,7 @@ class FrequenciesController extends TabController
                                     $frequency = $this->entityManager->getRepository('Application\Entity\Frequency')->find($fid);
                                     if ($frequency) {
                                         $frequencies[] = $frequency;
+                                        $replace = true;
                                     }
                                 }
                             }
@@ -284,6 +287,7 @@ class FrequenciesController extends TabController
                             $state,
                             $this->lmcUserAuthentication()->getIdentity(),
                             $frequencies,
+                            $replace,
                             $messages
                         );
                     } else {

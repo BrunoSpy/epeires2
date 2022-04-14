@@ -743,10 +743,11 @@ class EventRepository extends ExtendedRepository
      * @param Antenna $antenna
      * @param boolean $state
      * @param User $author
-     * @param mixed $frequencies frequency or array of frequencies
+     * @param array $frequencies array of frequencies
+     * @param bool $replace
      * @param array $messages
      */
-    public function addSwitchAntennaStateEvent(Antenna $antenna, $state, User $author, $frequencies = null, &$messages = null)
+    public function addSwitchAntennaStateEvent(Antenna $antenna, $state, User $author, $frequencies = null, $replace, &$messages = null)
     {
         $em = $this->getEntityManager();
         $now = new \DateTime('NOW');
@@ -924,27 +925,26 @@ class EventRepository extends ExtendedRepository
                     }
                 }
                 $newFreqIds = array();
-                if(!is_array($frequencies)) {
-                    //changement sur une seule fréquence
-                    // -> changement via freq widget
-                    // -> delta à faire
-                    if($frequencies->hasAntenna($antenna)) {
-                        if ($state) {
-                            $newFreqIds = array_diff($initialFreqIds, array($frequencies->getId()));
-                        } else {
-                            if (!in_array($frequencies->getId(), $initialFreqIds)) {
-                                $newFreqIds = array_merge($initialFreqIds, array($frequencies->getId()));
-                            }
-                        }
-                    }
-                } else {
-                    //array = passage de la liste exacte des fréquences impactées
+                if($replace) {
                     foreach ($frequencies as $f){
                         if($f->hasAntenna($antenna)) {
                             $newFreqIds[] = $f->getId();
                         }
                     }
+                } else {
+                    foreach ($frequencies as $frequency) {
+                        if($frequency->hasAntenna($antenna)) {
+                            if ($state) {
+                                $newFreqIds = array_diff($initialFreqIds, array($frequency->getId()));
+                            } else {
+                                if (!in_array($frequency->getId(), $initialFreqIds)) {
+                                    $newFreqIds = array_merge($initialFreqIds, array($frequency->getId()));
+                                }
+                            }
+                        }
+                    }
                 }
+
                 if(count($newFreqIds) == 0) {
                     //plus de fréquence impactée -> antenne ok -> on termine tout
                     $this->closeAntennaEvent($event, $statusClose, $now, $messages);
