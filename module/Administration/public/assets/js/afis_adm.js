@@ -94,11 +94,11 @@ var afis_adm = function(url)
             if ($(this).val().length == 4 && keyIsValid(e.which))
             {
                 var code = $(this).val();
-                noty({
+                new Noty({
                     text: 'Recherche des informations (horaires et contacts) associées au code donné.',
                     type: 'info',
                     timeout: 3000,
-                });
+                }).show();
 
                 $.get(url + '/afis/testNotamAccess', accesNotam);
 
@@ -107,11 +107,11 @@ var afis_adm = function(url)
                     if(data.notamAccess == 1) {
                         $.get(url + '/afis/getAllNotamFromCode', {code: code}, getFormDataFromNotam);
                     } else {
-                        noty({
+                        new Noty({
                             text: 'Impossible d\'accéder aux NOTAM pour extraire les données associées au code '+code,
                             type: 'error',
                             timeout: 4000,
-                        });
+                        }).show();
                      }
                 }
 

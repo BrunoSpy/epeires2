@@ -28,6 +28,19 @@ body {
 	line-height: normal;
 }
 
+#notyTopContainer {
+	top: 40px;
+	left: 50%;
+	transform: translateX(-50%);
+	position: fixed !important;
+	width: 310px;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	list-style-type: 'none';
+	z-index: 10000000
+}
+
 @media ( min-width :769px ) {
 	.navbar-lower .navbar-collapse {
 		margin-left: 75px;

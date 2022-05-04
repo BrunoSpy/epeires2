@@ -225,6 +225,10 @@ return array(
             'events.raz-checklist' => array(
                 'name' => 'RAZ Checklist',
                 'description' => 'Permet la remise à zéro de la checklist.'
+            ),
+            'events.read-sounds' => array(
+                'name' => 'Lire les fichiers sonores',
+                'description' => 'Active la lecture de sons lors d\'évènements comme les mémos.'
             )
         ),
         'Radio' => array(

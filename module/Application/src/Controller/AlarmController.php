@@ -220,7 +220,7 @@ class AlarmController extends FormController
         if ($alarmid) {
             $alarm = $this->entityManager->getRepository('Application\Entity\Event')->find($alarmid);
             if ($alarm) {
-                $this->entityManager->remove($alarm);
+                $this->entityManager->getRepository('Application\Entity\Event')->deleteEvent($alarm);
                 try {
                     $this->entityManager->flush();
                     $messages['success'][] = "Mémo supprimé";

@@ -39,12 +39,12 @@ class Notifications extends AbstractHelper
         if ($messages !== null) {
             if (isset($messages['success'])) {
                 foreach ($messages['success'] as $message) {
-                    $return .= "var n = noty({text:" . json_encode($message) . "," . "type:'success'," . "layout:'bottomRight'});";
+                    $return .= "new Noty({text:" . json_encode($message) . "," . "type:'success'," . "layout:'bottomRight'}).show();";
                 }
             }
             if (isset($messages['error'])) {
                 foreach ($messages['error'] as $message) {
-                    $return .= "var n = noty({text:" . json_encode($message) . "," . "type:'error'," . "layout:'bottomRight'});";
+                    $return .= "new Noty({text:" . json_encode($message) . "," . "type:'error'," . "layout:'bottomRight'}).show();";
                 }
             }
         }

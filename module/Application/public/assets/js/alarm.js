@@ -1,5 +1,5 @@
-var url;
-
+var urlAlarm;
+var soundAuthorized = false;
 /*
  *  This file is part of Epeires².
  *  Epeires² is free software: you can redistribute it and/or modify
@@ -17,28 +17,39 @@ var url;
  *
  */
 
-var setURLAlarm = function(urlt){
-	url = urlt;
+var setURLAlarm = function(urlt, sound){
+	urlAlarm = urlt;
+	soundAuthorized = sound;
+	//add draggable to container but do not close on drag
+	$("ul#notyTopContainer").draggable({
+		stop: function(event,ui){
+			$(event.originalEvent.target).one('click', function(e){e.stopImmediatePropagation();})
+		}
+	});
 };
-
+/** not used anymore
 var flash = function(){
-	$("ul#noty_topCenter_layout_container").draggable({
+	$("ul#notyTopContainer").draggable({
 		stop: function(event,ui){
 			$(event.originalEvent.target).one('click', function(e){e.stopImmediatePropagation();})
 		}
 	}).addClass('animated infinite flash');
-	setTimeout(function(){$("ul#noty_topCenter_layout_container").removeClass('animated infinite flash')}, 5000);
+	setTimeout(function(){$("ul#notyTopContainer").removeClass('animated infinite flash')}, 3000);
 };
+ */
+
+
+
 //stockage des timers
 var alarms = new Array();
 var alarmsnoty = new Array();
 var lastupdate_alarm;
 var timerAlarm;
 //animation : toutes les 30s, clignoter pendant 5s
-var timerAnimation = setInterval(flash, 30000);
+//var timerAnimation = setInterval(flash, 30000);
 
 var updateAlarms = function(){
-	$.getJSON(url+'/alarm/getalarms'+(typeof lastupdate_alarm != 'undefined' ? '?lastupdate='+lastupdate_alarm.toUTCString() : ''),
+	$.getJSON(urlAlarm+'/alarm/getalarms'+(typeof lastupdate_alarm != 'undefined' ? '?lastupdate='+lastupdate_alarm.toUTCString() : ''),
 			function(data, textStatus, jqHXR){
 		if(jqHXR.status != 304){
 			lastupdate_alarm = new Date(jqHXR.getResponseHeader("Last-Modified"));
@@ -57,7 +68,7 @@ var updateAlarms = function(){
 					if(alarmsnoty[item.id]){
 						//on ne peut pas utiliser .close à cause du callback
 						//par conséquent, on supprime à la main l'élément
-						$('div#alarmnoty-'+item.id).closest('li').remove();
+						$('#alarmnoty-'+item.id).closest('.noty_bar').remove();
 						delete(alarmsnoty[item.id]);
 					}
 					//on ajoute l'alarme si statut nouveau ou en cours
@@ -69,24 +80,38 @@ var updateAlarms = function(){
 						//car l'IHM sera forcément relancée dans la durée
 						if(delta < 2147483647) {
 							var timer = setTimeout(function () {
-								alarmsnoty[item.id] = noty({
+								alarmsnoty[item.id] = new Noty({
 									text: item.text,
 									type: 'error',
-									layout: 'topMiddleCenter',
+									layout: 'topCenter',
 									timeout: false,
-									callback: {
-										onClose: function () {
-											$.post(url + '/alarm/confirm?id=' + item.id, function (data) {
+									closeWith: ["click"],
+									modal: false,
+									queue: "alarms",
+									container: "#notyTopContainer",
+									animation: {
+										open: 'animated flash bounceInDown',
+										close: 'animated bounceOutUp'
+									},
+									callbacks: {
+										afterClose: function () {
+											$.post(urlAlarm + '/alarm/confirm?id=' + item.id, function (data) {
 												displayMessages(data);
 											});
 											delete(alarmsnoty[item.id]);
 										}
 									}
 								});
+								alarmsnoty[item.id].show();
+								//play sound if authorized
+								if(soundAuthorized) {
+									var audio = new Audio('sounds/Oxygen-Im-Highlight-Msg.ogg');
+									audio.play();
+								}
 								//à chaque ajout, réinitialiser le timer des animations
-								flash();
-								clearInterval(timerAnimation);
-								timerAnimation = setInterval(flash, 30000);
+								//flash();
+								//clearInterval(timerAnimation);
+								//timerAnimation = setInterval(flash, 30000);
 							}, delta);
 							alarms[item.id] = timer;
 						}

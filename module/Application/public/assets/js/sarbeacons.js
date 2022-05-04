@@ -735,11 +735,11 @@
                     $('.btn-mail-ip').click(function() {
                         $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                                noty({
+                                new Noty({
                                     text: data[1],
                                     type: data[0],
                                     timeout: 4000,
-                                });               
+                                }).show();
                             });
                         });
                     });
@@ -782,11 +782,11 @@
                     $('.list-group-item').filter('[data-id="' + idIp +'"]').trigger('click');
                 }
 
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             });
         }
     });
@@ -804,11 +804,11 @@
                 idIp = null;
                 $('#mdl-end-ip').modal('hide');
                 $('#mdl-show-ip').modal('hide');
-                noty({
+                new Noty({
                     text: data.msg,
                     type: data.type,
                     timeout: 4000,
-                });
+                }).show();
             }
         )
     });
@@ -840,11 +840,11 @@
                     $('.btn-mail-ip').click(function() {
                         $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                                noty({
+                                new Noty({
                                     text: data[1],
                                     type: data[0],
                                     timeout: 4000,
-                                });               
+                                }).show();
                             });
                         });
                     });
@@ -1350,11 +1350,11 @@
                 if(data[0] !== 'error') {
                     location.href = url + 'sarbeacons/print/' + idIp;
                 } else {
-                    noty({
+                    new Noty({
                         text: data[1],
                         type: data[0],
                         timeout: 4000,
-                    });               
+                    }).show();
                 };
             })
         }
@@ -1366,18 +1366,18 @@
             $.get(url + '/sarbeacons/validpdf/' + idIp, function(data) {
                 if(data[0] !== 'error') {
                     $.post(url + '/sarbeacons/mail', { id: idIp }, function(data) {
-                        noty({
+                        new Noty({
                             text: data[1],
                             type: data[0],
                             timeout: 4000,
-                        });
+                        }).show();
                     });
                 } else {
-                    noty({
+                    new Noty({
                         text: data[1],
                         type: data[0],
                         timeout: 4000,
-                    });               
+                    }).show();
                 };
             });
         }
@@ -1397,11 +1397,11 @@
                 $fEditIp.find('input[name=id]').val(idIp);
                 listBtn.setStates(2);
             }
-            noty({
+            new Noty({
                 text: data.msg,
                 type: data.type,
                 timeout: 4000,
-            });
+            }).show();
 
         })
     }
@@ -1438,11 +1438,11 @@
             $ter.after(intPlan.get(index).getHtml())
                 .remove();
 
-            noty({
+            new Noty({
                 text: data['msg'],
                 type: data['type'],
                 timeout: 4000,
-            });    
+            }).show();
         });
     }
 
@@ -1458,22 +1458,22 @@
                 intPlan.addIp(index);
                 $ter.after(field.getHtml())
                     .remove();
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             })
         } else {
             $.post(url + '/sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
                 intPlan.delIp(index);
                 $ter.after(field.getHtml())
                     .remove();
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             })                
         }
     }
@@ -1536,11 +1536,11 @@
 
     function loadJsonFieldsFail(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
-        noty({
+        new Noty({
             text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des terrains<br /> Fichier : <b>" + fichier_terrain + "</b>",
             type: 'error',
             timeout: 10000,
-        });
+        }).show();
     };
 
     function showJsonBeacons(data) {
@@ -1559,10 +1559,10 @@
 
     function loadJsonBeaconsFail(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
-        noty({
+        new Noty({
             text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des balises<br /> Fichier : <b>" + fichier_balise + "</b>",
             type: 'error',
             timeout: 10000,
-        });
+        }).show();
     };
 };

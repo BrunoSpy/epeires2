@@ -50,11 +50,11 @@ var afis = function(url)
         $.post(url + '/afis/switchafis', { id: $(this).data('id'), state: boolState }, switched, 'json');
 
         function switched(data) {
-            noty({
+            new Noty({
                 text: data.msg,
                 type: data.type,
                 timeout: 4000,
-            });
+            }).show();
             headerbar(url);
         }
         // $('span.glyphicon').tooltip();
