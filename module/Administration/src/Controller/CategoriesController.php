@@ -189,6 +189,7 @@ class CategoriesController extends FormController
                 }
                 
                 $form->get('fieldname')->setValueOptions($customfields);
+                $form->get('fieldname2')->setValueOptions($customfields);
                 
                 $form->bind($category);
                 $form->setData($category->getArrayCopy());
@@ -217,6 +218,7 @@ class CategoriesController extends FormController
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
             $fieldname = null;
+            $fieldname2 = null;
             if ($post['id']) {
                 $category = $objectManager->getRepository('Application\Entity\Category')->find($post['id']);
             } else {
@@ -245,6 +247,8 @@ class CategoriesController extends FormController
                 } else {
                     $category = new Category();
                     $fieldname = new CustomField();
+                    $fieldname2 = new CustomField();
+
                     $fieldname->setCategory($category);
                     $fieldname->setName('Nom');
                     $fieldname->setType($objectManager->getRepository('Application\Entity\CustomFieldType')
@@ -256,6 +260,19 @@ class CategoriesController extends FormController
                     $fieldname->setTooltip("");
                     $objectManager->persist($fieldname);
                     $category->setFieldname($fieldname);
+
+                    //FIELDNAME2
+                    $fieldname2->setCategory($category);
+                    $fieldname2->setName('Nom 2');
+                    $fieldname2->setType($objectManager->getRepository('Application\Entity\CustomFieldType')
+                        ->findOneBy(array(
+                        'type' => 'string'
+                    )));
+                    $fieldname2->setPlace(2);
+                    $fieldname2->setDefaultvalue("");
+                    $fieldname2->setTooltip("");
+                    $objectManager->persist($fieldname2);
+                    $category->setFieldname($fieldname2);
                 }
                 // force fieldname value
                 $fieldname = $category->getFieldname();
@@ -274,6 +291,7 @@ class CategoriesController extends FormController
                 if (! $post['id']) {
                     // if new cat, force fieldname
                     $category->setFieldname($fieldname);
+                    $category->setFieldname2($fieldname2);
                 }
                 if (! (strpos($category->getColor(), "#") === 0)) {
                     $category->setColor("#" . $category->getColor());

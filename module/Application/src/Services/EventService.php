@@ -125,13 +125,26 @@ class EventService
             $name .= ' (' . ($plancherfield !== null ? str_pad($plancherfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . '/' . ($plafondfield !== null ? str_pad($plafondfield->getValue(), 3, '0', STR_PAD_LEFT) : '--') . ')';
         } else {
             $titlefield = $category->getFieldname();
+            $titlefield2 = $category->getFieldname2();
+
             if ($titlefield) {
                 foreach ($event->getCustomFieldsValues() as $fieldvalue) {
                     if ($fieldvalue->getCustomField()->getId() == $titlefield->getId()) {
                         $tempname = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
-
+                        
                         if ($tempname) {
                             $name = ($category->getParent() != null ? $category->getShortName() : '') . ' ' . $tempname;
+                        }
+                    }
+                }
+            }
+            if ($titlefield2 != null) {
+                foreach ($event->getCustomFieldsValues() as $fieldvalue) {
+                    if ($fieldvalue->getCustomField()->getId() == $titlefield2->getId()) {
+                        $tempname2 = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
+                        
+                        if ($tempname2) {
+                            $name = $name." / ".$tempname2;
                         }
                     }
                 }

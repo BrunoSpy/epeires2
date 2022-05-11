@@ -193,6 +193,7 @@ class CategoryRepository extends ExtendedRepository
         }
         // delete fieldname to avoid loop
         $category->setFieldname(null);
+        $category->setFieldname2(null);
         if ($category instanceof AntennaCategory) {
             $category->setAntennafield(null);
             $category->setFrequenciesField(null);
