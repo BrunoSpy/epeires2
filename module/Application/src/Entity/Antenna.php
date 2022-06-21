@@ -205,8 +205,10 @@ class Antenna extends TemporaryResource
         $this->model = $model;
     }
 
-    public function getArrayCopy()
+    public function getArrayCopy(): array
     {
-        return get_object_vars($this);
+        $object_vars = get_object_vars($this);
+        $object_vars['organisation'] = ($this->organisation ? $this->organisation->getId() : null);
+        return $object_vars;
     }
 }
