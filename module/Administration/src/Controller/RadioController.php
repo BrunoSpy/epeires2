@@ -169,7 +169,7 @@ class RadioController extends \Application\Controller\FormController
         
         $form->get('organisation')->setValueOptions($this->objectManager->getRepository('Application\Entity\Organisation')
             ->getAllAsArray());
-        
+
         if ($id) {
             $antenna = $this->objectManager->getRepository('Application\Entity\Antenna')->find($id);
             if ($antenna) {
@@ -178,6 +178,7 @@ class RadioController extends \Application\Controller\FormController
                 $form->setData($antenna->getArrayCopy());
             }
         }
+
         return array(
             'form' => $form,
             'antenna' => $antenna
