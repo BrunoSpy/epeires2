@@ -100,7 +100,7 @@ class CustomFieldset extends Fieldset implements InputFilterProviderInterface
             }
 
             if($category instanceof MilCategory &&
-                ($customfield->getId() == $category->getUpperLevelField()->getId() || $customfield->getId() == $category->getLowerLevelField()->getId())) {
+                 $customfield->getId() == $category->getLowerLevelField()->getId()) {
                 $definition['attributes']['data-rule-number'] = true;
                 $definition['attributes']['data-rule-min'] = 0;
                 $definition['attributes']['data-rule-max'] = 999;
