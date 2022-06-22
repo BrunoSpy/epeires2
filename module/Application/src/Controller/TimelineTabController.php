@@ -68,6 +68,8 @@ class TimelineTabController extends TabController
 
         $cats = $this->params()->fromQuery('cats', null);
 
+        $onlyroot = $this->params()->fromQuery('onlyroot', false);
+
         $userauth = $this->lmcUserAuthentication();
 
         if ($tabid) {
@@ -85,7 +87,7 @@ class TimelineTabController extends TabController
                 $return['error'][] = "Impossible de trouver l'onglet correspondant. Contactez votre administrateur.";
             }
         } elseif ($cats) {
-            $this->viewmodel->setVariable('onlyroot', false);
+            $this->viewmodel->setVariable('onlyroot', $onlyroot);
             $this->viewmodel->setVariable('cats', $cats);
             $this->viewmodel->setVariable('default', false);
         } else {
