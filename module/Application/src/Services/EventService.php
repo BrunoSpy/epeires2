@@ -91,7 +91,6 @@ class EventService
         $category = $event->getCategory();
 
         if ($category instanceof FrequencyCategory) {
-            error_log('getname freq');
             $freqid = 0;
             $otherfreqid = 0;
             foreach ($event->getCustomFieldsValues() as $value) {
