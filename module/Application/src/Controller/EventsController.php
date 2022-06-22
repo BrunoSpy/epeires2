@@ -141,7 +141,7 @@ class EventsController extends TimelineTabController
 
                 } else {
                     if(strcmp($tabType, Tab::SPLITTIMELINE) == 0) {
-                        return $this->redirect()->toRoute('application', array('controller' => 'splittimelinetab'), array('query' => array('cats' => $cats)));
+                        return $this->redirect()->toRoute('application', array('controller' => 'splittimelinetab'), array('query' => array('cats' => $cats, 'onlyroot' => $onlyroot)));
                     }
                 }
             }

@@ -193,6 +193,10 @@ body{
     background-color: rgb(125, 185, 245);
 }
 
+.navbar .navbar-nav>.active>a[href*="/admin"] {
+    background-color: rgb(188, 0, 0);
+}
+
 .navbar-static-top {
 	margin-bottom: 0px;
 }
