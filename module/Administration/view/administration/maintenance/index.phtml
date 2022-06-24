@@ -5,6 +5,8 @@
     <p></p>
     <div class="col-sm-8 col-sm-offset-2">
 
+      <?php if($this->nmb2b || $this->mapd ): ?>
+
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Import d'évènements</h3>
@@ -19,6 +21,7 @@
             </tr>
             </thead>
             <tbody>
+            <?php if($this->nmb2b) : ?>
             <tr>
               <td style="vertical-align: middle">Importer les zones militaires du jour via NM B2B</td>
               <td>
@@ -31,6 +34,8 @@
                 </select>
                 <a href="#" id="import-zonesnmb2b" class="btn btn-primary">Importer</a></td>
             </tr>
+            <?php endif; ?>
+            <?php if($this->mapd) : ?>
             <tr>
               <td style="vertical-align: middle">Importer les zones militaires du jour via MAPD</td>
               <td>
@@ -43,6 +48,8 @@
                 </select>
                 <a href="#" id="import-mapd" class="btn btn-primary">Importer</a></td>
             </tr>
+            <?php endif; ?>
+            <?php if($this->nmb2b) : ?>
             <tr>
               <td style="vertical-align: middle">Importer les régulations via NM B2B</td>
               <td>
@@ -55,11 +62,14 @@
                 </select>
                 <a href="#" id="import-regulations" class="btn btn-primary">Importer</a></td>
             </tr>
+            <?php endif; ?>
             </tbody>
 
           </table>
         </div>
       </div>
+
+      <?php endif; ?>
 
       <div class="panel panel-default">
         <div class="panel-heading">

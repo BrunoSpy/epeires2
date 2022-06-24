@@ -23,11 +23,16 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class MaintenanceControllerFactory implements FactoryInterface {
 
+    /**
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
+
         return new MaintenanceController(
             $container->get('Doctrine\ORM\EntityManager'),
-            $container->get('nmb2b'));
+            $container->get('config'));
     }
 
 }
