@@ -64,7 +64,7 @@
     },
     "require-dev": {
         "codeception/codeception": "^4.0",
-        "api-skeletons/doctrine-data-fixture": "^6.0.6.2",
+        "api-skeletons/doctrine-data-fixture": "^6.0.6.4",
         "laminas-api-tools/api-tools-admin": "^2.0",
         "laminas-api-tools/api-tools-asset-manager": "^1.2",
         "codeception/module-webdriver": "^1.0.0",
