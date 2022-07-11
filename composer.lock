@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ff4438ed384a73947213fe187cff6e8",
+    "content-hash": "13e2c010756a2dfe840352604a74d6a9",
     "packages": [
         {
             "name": "assetic/framework",
@@ -4248,32 +4248,32 @@
         },
         {
             "name": "laminas/laminas-component-installer",
-            "version": "2.8.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-component-installer.git",
-                "reference": "3c998d2b2755985c71cd4d5d9b294228f63d3a65"
+                "reference": "3f161c88d4d9b59f8e6866580cea6eb830d39b67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-component-installer/zipball/3c998d2b2755985c71cd4d5d9b294228f63d3a65",
-                "reference": "3c998d2b2755985c71cd4d5d9b294228f63d3a65",
+                "url": "https://api.github.com/repos/laminas/laminas-component-installer/zipball/3f161c88d4d9b59f8e6866580cea6eb830d39b67",
+                "reference": "3f161c88d4d9b59f8e6866580cea6eb830d39b67",
                 "shasum": ""
             },
             "require": {
-                "composer-plugin-api": "^1.0 || ^2.0",
+                "composer-plugin-api": "^2.0",
                 "php": "^7.4 || ~8.0.0 || ~8.1.0"
             },
             "conflict": {
                 "zendframework/zend-component-installer": "*"
             },
             "require-dev": {
-                "composer/composer": "^2.1.9@RC",
+                "composer/composer": "^2.3",
                 "laminas/laminas-coding-standard": "~2.3.0",
                 "mikey179/vfsstream": "^1.6.10",
                 "phpunit/phpunit": "^9.5.19",
                 "psalm/plugin-phpunit": "^0.16.1",
-                "vimeo/psalm": "^4.22.0",
+                "vimeo/psalm": "^4.23",
                 "webmozart/assert": "^1.10.0"
             },
             "type": "composer-plugin",
@@ -4311,7 +4311,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-07-03T21:27:51+00:00"
+            "time": "2022-07-05T08:06:56+00:00"
         },
         {
             "name": "laminas/laminas-config",
@@ -6849,16 +6849,16 @@
         },
         {
             "name": "laminas/laminas-view",
-            "version": "2.20.0",
+            "version": "2.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-view.git",
-                "reference": "2cd6973a3e042be3d244260fe93f435668f5c2b4"
+                "reference": "4145f10db72ebfe34d11bc3b6a298aa62ad9533f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/2cd6973a3e042be3d244260fe93f435668f5c2b4",
-                "reference": "2cd6973a3e042be3d244260fe93f435668f5c2b4",
+                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/4145f10db72ebfe34d11bc3b6a298aa62ad9533f",
+                "reference": "4145f10db72ebfe34d11bc3b6a298aa62ad9533f",
                 "shasum": ""
             },
             "require": {
@@ -6869,8 +6869,8 @@
                 "laminas/laminas-escaper": "^2.5",
                 "laminas/laminas-eventmanager": "^3.4",
                 "laminas/laminas-json": "^3.3",
-                "laminas/laminas-servicemanager": "^3.10",
-                "laminas/laminas-stdlib": "^3.6",
+                "laminas/laminas-servicemanager": "^3.14.0",
+                "laminas/laminas-stdlib": "^3.10.1",
                 "php": "^7.4 || ~8.0.0 || ~8.1.0",
                 "psr/container": "^1 || ^2"
             },
@@ -6952,7 +6952,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-02-22T13:52:44+00:00"
+            "time": "2022-07-10T15:36:43+00:00"
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
@@ -10709,16 +10709,16 @@
     "packages-dev": [
         {
             "name": "api-skeletons/doctrine-data-fixture",
-            "version": "v6.0.6.4",
+            "version": "6.0.7",
             "source": {
                 "type": "git",
-                "url": "https://github.com/BrunoSpy/doctrine-data-fixture.git",
-                "reference": "95528f99c30ab110a4777dbbd90e14c3e1b582b2"
+                "url": "https://github.com/API-Skeletons/doctrine-data-fixture.git",
+                "reference": "05876937366f67ff40621a5eb40314a9b6e3bc26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BrunoSpy/doctrine-data-fixture/zipball/95528f99c30ab110a4777dbbd90e14c3e1b582b2",
-                "reference": "95528f99c30ab110a4777dbbd90e14c3e1b582b2",
+                "url": "https://api.github.com/repos/API-Skeletons/doctrine-data-fixture/zipball/05876937366f67ff40621a5eb40314a9b6e3bc26",
+                "reference": "05876937366f67ff40621a5eb40314a9b6e3bc26",
                 "shasum": ""
             },
             "require": {
@@ -10728,15 +10728,15 @@
                 "laminas/laminas-eventmanager": "^3.0",
                 "laminas/laminas-modulemanager": "^2.7.2 || ^3.0.0",
                 "laminas/laminas-servicemanager": "^3.1",
-                "php": "^7.2.0 || ^8.0 || ^8.1"
+                "php": "^7.2.0 || ~8.0"
             },
             "require-dev": {
                 "api-skeletons/coding-standard": "^1.0.0",
                 "doctrine/doctrine-orm-module": "^2.1 || ^3.0 || ^4.0 || ^5.0",
                 "dprevite/lint": "^1.0.0",
                 "laminas/laminas-i18n": "^2.7",
-                "laminas/laminas-test": "^3.0",
-                "phpstan/phpstan-doctrine": "^0.12.15",
+                "laminas/laminas-test": "^3.0 || ^4.0",
+                "phpstan/phpstan-doctrine": "^1.2",
                 "phpunit/phpunit": "^9.0",
                 "squizlabs/php_codesniffer": "^3.2.0"
             },
@@ -10752,29 +10752,7 @@
                     "ApiSkeletons\\Doctrine\\DataFixture\\": "src/"
                 }
             },
-            "scripts": {
-                "ci-check": [
-                    "@lint",
-                    "@phpcs",
-                    "@test",
-                    "@phpstan"
-                ],
-                "lint": [
-                    "lint src/"
-                ],
-                "phpcs": [
-                    "phpcs"
-                ],
-                "phpstan": [
-                    "phpstan analyze -c phpstan.neon --level=7 src/"
-                ],
-                "test": [
-                    "phpunit --colors=always"
-                ],
-                "test-coverage": [
-                    "phpunit --colors=always --coverage-clover clover.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -10792,9 +10770,10 @@
                 "laminas"
             ],
             "support": {
-                "source": "https://github.com/BrunoSpy/doctrine-data-fixture/tree/v6.0.6.4"
+                "issues": "https://github.com/API-Skeletons/doctrine-data-fixture/issues",
+                "source": "https://github.com/API-Skeletons/doctrine-data-fixture/tree/6.0.7"
             },
-            "time": "2022-07-05T13:18:54+00:00"
+            "time": "2022-07-09T22:54:38+00:00"
         },
         {
             "name": "behat/gherkin",
