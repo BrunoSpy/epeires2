@@ -367,7 +367,7 @@ var flightplan = function(url, current_date)
         $('#refresh-not').data('code', code);
 
         showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
-            code, url + "afis/testNotamAccess", url + "afis/getAllNotamFromCode");
+            code, url + "/afis/testNotamAccess", url + "/afis/getAllNotamFromCode");
     }
 
     function hidePopovers() {
