@@ -84,6 +84,6 @@ var afis = function(url)
         $('#refresh-not').data('code', code);
 
         showNotamInElement($('#show-not'), $("#mdl-show-not .loading"),
-            code, url + "/afis/testNotamAccess", url + "afis/getAllNotamFromCode");
+            code, url + "/afis/testNotamAccess", url + "/afis/getAllNotamFromCode");
     }
 };
