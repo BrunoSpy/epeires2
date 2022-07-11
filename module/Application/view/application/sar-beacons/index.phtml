@@ -145,6 +145,6 @@ $("#changeview").remove();
 
 $('#search').remove();
 
-sarbeacons('<?php echo $this->url('application'); ?>', '<?php echo json_encode($btivCONF); ?>');
+sarbeacons('<?php echo $this->url('application'); ?>', '<?php echo $this->basePath() ?>', '<?php echo json_encode($btivCONF); ?>');
 
 <?php $this->inlineScript()->captureEnd();?>
