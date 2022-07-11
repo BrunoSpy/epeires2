@@ -17,6 +17,7 @@
  */
 namespace Application\Controller;
 
+use Core\Service\EmailService;
 use DateTime;
 use DateInterval;
 use Laminas\View\Model\ViewModel;
@@ -74,7 +75,10 @@ class FlightPlansController extends EventsController
         $zfrcbacOptions,
         Array $config,
         $mattermost,
-        $translator
+        $translator,
+        $mapd,
+        $logger,
+        $emailService
         )
     {
         parent::__construct(
@@ -84,7 +88,10 @@ class FlightPlansController extends EventsController
             $zfrcbacOptions,
             $config,
             $mattermost,
-            $translator
+            $translator,
+            $mapd,
+            $logger,
+            $emailService
         );
 
         $this->em = $em;

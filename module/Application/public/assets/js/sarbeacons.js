@@ -14,13 +14,13 @@
  *  along with Epeires².  If not, see <http://www.gnu.org/licenses/>.
  */
  
- var sarbeacons = function(url, conf) {
+ var sarbeacons = function(url, basepath, conf) {
     "use strict";
     // récupération de la conf BTIV (local.php)
     var tabconf = $.parseJSON(conf);
     var centrage_defaut = (!tabconf.ip_centrage_defaut) ? [48.8534100, 2.3488000] : tabconf.ip_centrage_defaut;
-    var fichier_terrain = (!tabconf.ip_fichier_terrain) ? 'data/terLF.GeoJson' : tabconf.ip_fichier_terrain; 
-    var fichier_balise = (!tabconf.ip_fichier_balise) ? 'data/balLF.GeoJson' : tabconf.ip_fichier_balise; 
+    var fichier_terrain = basepath + '/' + ((!tabconf.ip_fichier_terrain) ? 'data/terLF.GeoJson' : tabconf.ip_fichier_terrain);
+    var fichier_balise = basepath + '/' + ((!tabconf.ip_fichier_balise) ? 'data/balLF.GeoJson' : tabconf.ip_fichier_balise);
     var image_balise = (!tabconf.ip_image_balise) ? 'btn-bal-g.png' : tabconf.ip_image_balise;
     var image_terrain = (!tabconf.ip_image_terrain) ? 'btn-ter.png' : tabconf.ip_image_terrain;
     var image_hel = (!tabconf.ip_image_hel) ? 'btn-hel.png' : tabconf.ip_image_hel;
@@ -488,7 +488,7 @@
     /* niveau de zoom lors d'un PI */
     const PIO_ZOOM = 9;
     /* image du marqueur représentant le lieu de l'alerte */
-    const URL_IMG = url + 'assets/img/orbit/',
+    const URL_IMG = basepath + '/assets/img/orbit/',
         IMG_PIO = URL_IMG + 'marker-pio.png';
     /* icones */
     const IC_TER_SIZE = 20,
