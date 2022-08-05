@@ -42,7 +42,7 @@
         "lm-commons/lmc-user": "^3.3.2",
         "lm-commons/lmc-user-doctrine-orm": "^3.0",
         "lm-commons/lmc-rbac-mvc": "^3.0",
-        "netiul/dompdf-module": "^0.6.0",
+        "netiul/dompdf-module": "^0.7.0",
         "kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^2.2",
         "maglnet/magl-markdown": "~1.1",
