@@ -226,7 +226,7 @@ test:docker:
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
-  - mariadb:10.3.20
+  - mariadb:10.5.15
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
