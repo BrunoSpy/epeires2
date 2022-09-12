@@ -19,7 +19,7 @@
     // récupération de la conf BTIV (local.php)
     var tabconf = $.parseJSON(conf);
     var centrage_defaut = (!tabconf.ip_centrage_defaut) ? [48.8534100, 2.3488000] : tabconf.ip_centrage_defaut;
-    var fichier_terrain = basepath + '/' + ((!tabconf.ip_fichier_terrain) ? 'data/terLF.GeoJson' : tabconf.ip_fichier_terrain);
+    var fichier_terrain = basepath + '/' + ((!tabconf.ip_fichier_terrain) ? 'data/terLFnum.GeoJson' : tabconf.ip_fichier_terrain);
     var fichier_balise = basepath + '/' + ((!tabconf.ip_fichier_balise) ? 'data/balLF.GeoJson' : tabconf.ip_fichier_balise);
     var image_balise = (!tabconf.ip_image_balise) ? 'btn-bal-g.png' : tabconf.ip_image_balise;
     var image_terrain = (!tabconf.ip_image_terrain) ? 'btn-ter.png' : tabconf.ip_image_terrain;
@@ -62,6 +62,7 @@
         this.toArray = function() {
             var array = {};
             array.name = this.getName();
+            array.numero = this.getNum();
             array.code = this.getCode();
             array.latitude = this.coord[0];
             array.longitude = this.coord[1];
@@ -90,6 +91,15 @@
             return this.props.name;
         },
 
+        this.getNum = function() {
+            let strNumero = this.props.numero;
+            if (typeof strNumero === 'string') {
+                return strNumero;
+            } else {
+                return strNumero.join('<br />');
+            }
+        },
+
         this.addUpdate = function(date, text) {
             var update = {
                 date: date,
@@ -113,6 +123,7 @@
         this.getPopup = function() {
             return '<h3>'+this.getCode()+'</h3>'+
                 '<h4>'+this.getName()+'</h4>'+
+                '<h5>'+this.getNum()+'</h5>'+
                 '<h5>distance : '+this.d+' km</h5>'+
                 '<h5>cap : '+this.cap+'°</h5>';
         },
@@ -121,7 +132,7 @@
             var $li = $('<li class="list-group-item">' +
                 '<strong>' + moment.unix(this.getIntTime()).format('HH:mm:ss') + '</strong> ' +
                 '[<em>' + this.getCode() + '</em>] ' + 
-                this.getName() + 
+                this.getName() +
                 '<span class="btn-del-field glyphicon glyphicon-remove-circle"></span><br />' +
                 '<div class = "comment">' + this.comment + '</div>' + 
             '</li>');
@@ -159,7 +170,7 @@
                 .append($bcontact)
                 .append('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
                 .append('<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>')
-                .append('<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>')
+                .append('<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> <br /><em>' + this.getNum() + '</em> </h5>')
                 .append(updates)
                 .append($text)
                 .append('<button class = "btn-xs btn-primary cache">Ajouter la note</button>')
@@ -1453,7 +1464,7 @@
 
         if (!$(this).hasClass('btn-danger')) {
             
-            $.post(url + '/sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
+            $.post(url + '/sarbeacons/addfield', {code: field.getCode(), name: field.getName(), numero: field.getNum(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
                 field.setIdEvent(data['id']);
                 intPlan.addIp(index);
                 $ter.after(field.getHtml())
