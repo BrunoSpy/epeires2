@@ -92,12 +92,14 @@
         },
 
         this.getNum = function() {
-            let strNumero = this.props.numero;
-            if (typeof strNumero === 'string') {
-                return strNumero;
-            } else {
-                return strNumero.join('<br />');
-            }
+            if(this.props.numero) {
+                let strNumero = this.props.numero;
+                if (typeof strNumero === 'string') {
+                    return strNumero;
+                } else {
+                    return strNumero.join('<br />');
+                }
+            } else return ""
         },
 
         this.addUpdate = function(date, text) {
