@@ -294,12 +294,15 @@ class SwitchObjectsController extends FormController
 
             $category = $this->getEntityManager()->getRepository(Category::class)->find($id);
 
-            if($category && isset($post['objects'])) {
+
+            if($category) {
                 $category->clearSwitchObjects();
-                foreach ($post['objects'] as $objectid) {
-                    $object = $this->getEntityManager()->getRepository(SwitchObject::class)->find($objectid);
-                    if($object) {
-                        $category->addSwitchObject($object);
+                if(isset($post['objects'])) {
+                    foreach ($post['objects'] as $objectid) {
+                        $object = $this->getEntityManager()->getRepository(SwitchObject::class)->find($objectid);
+                        if ($object) {
+                            $category->addSwitchObject($object);
+                        }
                     }
                 }
             }

@@ -169,6 +169,7 @@ class TabsController extends FormController
         
         $form->get('readroles')->setValueOptions($objectManager->getRepository('Core\Entity\Role')
             ->getAllAsArray());
+
         $form->get('categories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
             ->getAllAsArray(array('system'=>false, 'archived' => false)));
 
@@ -181,6 +182,10 @@ class TabsController extends FormController
         if ($id) {
             $tab = $objectManager->getRepository('Application\Entity\Tab')->find($id);
             if ($tab) {
+                if(strcmp($tab->getType(), Tab::SWITCHLIST) == 0) {
+                    $form->get('categories')->setValueOptions($objectManager->getRepository('Application\Entity\Category')
+            ->getAllAsArray(array('system'=>false, 'archived' => false), SwitchObjectCategory::class));
+                }
                 $form->bind($tab);
                 $form->setData($tab->getArrayCopy());
             }
@@ -219,7 +224,7 @@ class TabsController extends FormController
             $cats = $this->getEntityManager()->getRepository(Category::class)->findBy(array('system' => false, "archived" => false, 'parent' => null), array('place' => 'ASC'));
             $place = 0;
             foreach ($cats as $root) {
-                if($root instanceof StateCategoryInterface) {
+                if($root instanceof SwitchObjectCategory) {
                     $entry = array();
                     $entry["id"] = $root->getId();
                     $entry["name"] = $root->getName();
@@ -228,7 +233,7 @@ class TabsController extends FormController
                 }
                 $children = $this->getEntityManager()->getRepository(Category::class)->findBy(array('parent'=>$root->getId(), 'archived'=>false));
                 foreach ($children as $child) {
-                    if($child instanceof StateCategoryInterface) {
+                    if($child instanceof SwitchObjectCategory) {
                         $entry = array();
                         $entry["id"] = $child->getId();
                         $entry["name"] = ' > '.$child->getName();
