@@ -153,7 +153,7 @@ class CategoriesController extends FormController
             $category = $objectManager->getRepository('Application\Entity\Category')->find($id);
             if ($category) {
                 if ($category instanceof SwitchObjectCategory) {
-                    $form->get('type')->setValue('radar');
+                    $form->get('type')->setValue('switch');
                 } elseif ($category instanceof AntennaCategory) {
                     $form->get('type')->setValue('antenna');
                 } elseif ($category instanceof FrequencyCategory) {

@@ -44,7 +44,7 @@ class CategoryRepository extends ExtendedRepository
      * @param null $criteria
      * @return array|void
      */
-    public function getAllAsArray($criteria = null)
+    public function getAllAsArray($criteria = null, $instanceof = null)
     {
         //first get root categories
         $roots = array();
@@ -62,7 +62,9 @@ class CategoryRepository extends ExtendedRepository
 
         $res = array();
         foreach ($roots as $root) {
-            $res[$root->getId()] = $root->getName();
+            if($instanceof == null || $root instanceof $instanceof) {
+                $res[$root->getId()] = $root->getName();
+            }
             $children = array();
             if ($criteria instanceof Criteria) {
                 $criteria->andWhere(Criteria::expr()->eq('parent', $root->getId()))
@@ -76,7 +78,9 @@ class CategoryRepository extends ExtendedRepository
                 $children = parent::matching($newCriteria);
             }
             foreach ($children as $child) {
-                $res[$child->getId()] = " > " . $child->getName();
+                if($instanceof == null || $child instanceof $instanceof) {
+                    $res[$child->getId()] = " > " . $child->getName();
+                }
             }
         }
         return $res;

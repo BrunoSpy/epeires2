@@ -17,6 +17,7 @@ var tab = function(url){
                     });
 			}*/
 			$.material.checkbox();
+
 		});
 	});
 	
@@ -95,26 +96,28 @@ var tab = function(url){
 				}
 				break;
 			case 'switchlist':
-				$('#tab-container input[name="onlyroot"]').closest('.form-group').hide();
-				$('#tab-container input[name="horizontal"]').closest('.form-group').show();
-				$('#tab-container input[name="colorsInversed"]').closest('.form-group').show();
-				$.getJSON(url+'/tabs/getcategories?type=switchlist', function(data){
-					let cats = [];
-					$.each(data, function(index, val){
-						cats.push(val);
+				if(previousType !== 'switchlist') {
+					$('#tab-container input[name="onlyroot"]').closest('.form-group').hide();
+					$('#tab-container input[name="horizontal"]').closest('.form-group').show();
+					$('#tab-container input[name="colorsInversed"]').closest('.form-group').show();
+					$.getJSON(url + '/tabs/getcategories?type=switchlist', function (data) {
+						let cats = [];
+						$.each(data, function (index, val) {
+							cats.push(val);
+						});
+						cats.sort(function (a, b) {
+							return a.place > b.place;
+						});
+						let elt = $('#tab-container select[name="categories[]"]').empty();
+						cats.forEach(function (element) {
+							elt.append($('<option>', {
+								value: element.id,
+								text: element.name
+							}));
+						});
+						elt.prop("multiple", "");
 					});
-					cats.sort(function(a,b){
-						return a.place > b.place;
-					});
-					let elt = $('#tab-container select[name="categories[]"]').empty();
-					cats.forEach(function(element){
-						elt.append($('<option>',{
-							value: element.id,
-							text: element.name
-						}));
-					});
-					elt.prop("multiple", "");
-				});
+				}
 				break;
 		}
 		previousType = type;
