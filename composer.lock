@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7182b89e11d35dc8f07e5155c66d9675",
+    "content-hash": "fa3ee0374b6f5a7d2cd921a096184189",
     "packages": [
         {
             "name": "assetic/framework",
@@ -1956,26 +1956,29 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v1.2.1",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "c6dfd9bb8b0040609f04754f729d4cb3016e0575"
+                "reference": "c5310df0e22c758c85ea5288175fc6cd777bc085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/c6dfd9bb8b0040609f04754f729d4cb3016e0575",
-                "reference": "c6dfd9bb8b0040609f04754f729d4cb3016e0575",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/c5310df0e22c758c85ea5288175fc6cd777bc085",
+                "reference": "c5310df0e22c758c85ea5288175fc6cd777bc085",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-mbstring": "*",
-                "phenx/php-font-lib": "^0.5.4",
-                "phenx/php-svg-lib": "^0.3.3 || ^0.4.0",
+                "masterminds/html5": "^2.0",
+                "phenx/php-font-lib": ">=0.5.4 <1.0.0",
+                "phenx/php-svg-lib": ">=0.3.3 <1.0.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
+                "ext-json": "*",
+                "ext-zip": "*",
                 "mockery/mockery": "^1.3",
                 "phpunit/phpunit": "^7.5 || ^8 || ^9",
                 "squizlabs/php_codesniffer": "^3.5"
@@ -2001,25 +2004,17 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Ménager",
-                    "email": "fabien.menager@gmail.com"
-                },
-                {
-                    "name": "Brian Sweeney",
-                    "email": "eclecticgeek@gmail.com"
-                },
-                {
-                    "name": "Gabriel Bull",
-                    "email": "me@gabrielbull.com"
+                    "name": "The Dompdf Community",
+                    "homepage": "https://github.com/dompdf/dompdf/blob/master/AUTHORS.md"
                 }
             ],
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
             "support": {
                 "issues": "https://github.com/dompdf/dompdf/issues",
-                "source": "https://github.com/dompdf/dompdf/tree/v1.2.1"
+                "source": "https://github.com/dompdf/dompdf/tree/v2.0.1"
             },
-            "time": "2022-03-24T12:57:42+00:00"
+            "time": "2022-09-22T13:43:41+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -7575,6 +7570,75 @@
             "time": "2022-01-24T20:45:39+00:00"
         },
         {
+            "name": "masterminds/html5",
+            "version": "2.7.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Masterminds/html5-php.git",
+                "reference": "897eb517a343a2281f11bc5556d6548db7d93947"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/897eb517a343a2281f11bc5556d6548db7d93947",
+                "reference": "897eb517a343a2281f11bc5556d6548db7d93947",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Masterminds\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matt Butcher",
+                    "email": "technosophos@gmail.com"
+                },
+                {
+                    "name": "Matt Farina",
+                    "email": "matt@mattfarina.com"
+                },
+                {
+                    "name": "Asmir Mustafic",
+                    "email": "goetas@gmail.com"
+                }
+            ],
+            "description": "An HTML5 parser and serializer.",
+            "homepage": "http://masterminds.github.io/html5-php",
+            "keywords": [
+                "HTML5",
+                "dom",
+                "html",
+                "parser",
+                "querypath",
+                "serializer",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/Masterminds/html5-php/issues",
+                "source": "https://github.com/Masterminds/html5-php/tree/2.7.6"
+            },
+            "time": "2022-08-18T16:18:26+00:00"
+        },
+        {
             "name": "michelf/php-markdown",
             "version": "1.9.1",
             "source": {
@@ -7674,36 +7738,36 @@
         },
         {
             "name": "netiul/dompdf-module",
-            "version": "v0.6.0",
+            "version": "v0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netiul/DOMPDFModule.git",
-                "reference": "dad046b860b8e00e5d0672ff5b317cf6f699e4e0"
+                "reference": "816b641a70edd99c3c6485bdfad81864b1b0bda7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netiul/DOMPDFModule/zipball/dad046b860b8e00e5d0672ff5b317cf6f699e4e0",
-                "reference": "dad046b860b8e00e5d0672ff5b317cf6f699e4e0",
+                "url": "https://api.github.com/repos/netiul/DOMPDFModule/zipball/816b641a70edd99c3c6485bdfad81864b1b0bda7",
+                "reference": "816b641a70edd99c3c6485bdfad81864b1b0bda7",
                 "shasum": ""
             },
             "require": {
-                "dompdf/dompdf": "^v0.8.6 | ^v1.0.1",
+                "dompdf/dompdf": "^v1.2.0 || ^v2.0.0",
                 "laminas/laminas-eventmanager": "^3.3.0",
                 "laminas/laminas-modulemanager": "^2.10.1",
                 "laminas/laminas-servicemanager": "^3.4.1",
-                "laminas/laminas-view": "^2.11.5",
+                "laminas/laminas-view": "^2.13.0",
                 "mindplay/composer-locator": "^2.1.4",
-                "php": "~7.4.1 || ~8.0.0"
+                "php": "~7.4.1 || ~8.0.0 || ~8.1.0"
             },
             "replace": {
                 "dino/dompdf-module": "0.*"
             },
             "require-dev": {
-                "laminas/laminas-http": "^2.14",
-                "laminas/laminas-mvc": "^3.2",
-                "phpunit/phpunit": "^9.5",
-                "slevomat/coding-standard": "^6.4",
-                "squizlabs/php_codesniffer": "^3.5"
+                "laminas/laminas-http": "^2.15.0",
+                "laminas/laminas-mvc": "^3.2.0",
+                "phpunit/phpunit": "^9.5.0",
+                "slevomat/coding-standard": "^6.4.0",
+                "squizlabs/php_codesniffer": "^3.5.0"
             },
             "type": "library",
             "autoload": {
@@ -7730,9 +7794,9 @@
             ],
             "support": {
                 "issues": "https://github.com/netiul/DOMPDFModule/issues",
-                "source": "https://github.com/netiul/DOMPDFModule/tree/v0.6.0"
+                "source": "https://github.com/netiul/DOMPDFModule/tree/v0.7.0"
             },
-            "time": "2021-01-08T09:17:27+00:00"
+            "time": "2022-08-05T10:43:47+00:00"
         },
         {
             "name": "nette/schema",
