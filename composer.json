@@ -46,7 +46,7 @@
         "kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^2.2",
         "maglnet/magl-markdown": "~1.1",
-        "dgac/nmb2b-phpclient": "^0.4.0",
+        "dgac/nmb2b-phpclient": "^0.5.0",
         "dgac/mattermostmodule": "^0.4.0",
         "laminas-api-tools/api-tools": "^1.4",
         "laminas-api-tools/api-tools-documentation": "^1.3",

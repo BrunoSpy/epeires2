@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca3eb8466809538828e751e8bfdfe93a",
+    "content-hash": "86df728c69c497fd95820a070efcddb0",
     "packages": [
         {
             "name": "assetic/framework",
@@ -445,24 +445,24 @@
         },
         {
             "name": "dgac/nmb2b-phpclient",
-            "version": "v0.4.1",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/nmb2b-phpclient.git",
-                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706"
+                "reference": "490f07caad9353c6a69e457c3e9708dbaeedbe0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
-                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
+                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/490f07caad9353c6a69e457c3e9708dbaeedbe0b",
+                "reference": "490f07caad9353c6a69e457c3e9708dbaeedbe0b",
                 "shasum": ""
             },
             "require": {
                 "ext-soap": "*",
-                "php": "^7.2 || ^8.0"
+                "php": "^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0"
+                "phpunit/phpunit": "^9.0"
             },
             "type": "library",
             "autoload": {
@@ -483,9 +483,9 @@
             "description": "PHP Client for NM B2B Web services",
             "support": {
                 "issues": "https://github.com/DGAC/nmb2b-phpclient/issues",
-                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.1"
+                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.5.0"
             },
-            "time": "2022-12-13T09:05:10+00:00"
+            "time": "2022-12-13T09:07:27+00:00"
         },
         {
             "name": "doctrine/annotations",
