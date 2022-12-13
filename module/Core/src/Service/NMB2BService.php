@@ -51,6 +51,9 @@ class NMB2BService
     {
         $this->entityManager = $entityManager;
         $this->config = $config;
+        if(!array_key_exists('nm_b2b', $config)) {
+            return null;
+        }
         $this->nmb2b = $config['nm_b2b'];
         $this->emailService = $emailService;
 
@@ -101,7 +104,6 @@ class NMB2BService
      */
     public function getEAUPRSA($designators, \DateTime $date, $sequencenumber)
     {
-
         try {
             return $this->nmb2bClient->airspaceServices()->retrieveEAUPRSAs($designators, $date, $sequencenumber);
         } catch (\SoapFault $e) {
