@@ -147,6 +147,7 @@ class ImportZonesMilCommand extends Command
             $output->writeln( "Séquences récupérées en ".$dl." secondes");
         } catch(\Exception $e) {
             $dl = microtime(true) - $startSeq;
+            $output->writeln($e->getMessage());
             $output->writeln( "Erreur au bout de ". $dl . " secondes.");
             $output->writeln( "Erreur fatale pendant le téléchargement");
             $output->writeln( "Les données téléchargées sont incomplètes");

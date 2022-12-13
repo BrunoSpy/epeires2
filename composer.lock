@@ -445,16 +445,16 @@
         },
         {
             "name": "dgac/nmb2b-phpclient",
-            "version": "v0.4.0",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/nmb2b-phpclient.git",
-                "reference": "0b2ffc5bf12089b81d8fdab10281e71fcf45d769"
+                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/0b2ffc5bf12089b81d8fdab10281e71fcf45d769",
-                "reference": "0b2ffc5bf12089b81d8fdab10281e71fcf45d769",
+                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
+                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
                 "shasum": ""
             },
             "require": {
@@ -483,9 +483,9 @@
             "description": "PHP Client for NM B2B Web services",
             "support": {
                 "issues": "https://github.com/DGAC/nmb2b-phpclient/issues",
-                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.0"
+                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.1"
             },
-            "time": "2021-11-23T08:57:22+00:00"
+            "time": "2022-12-13T09:05:10+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -12172,16 +12172,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.19",
+            "version": "9.2.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "c77b56b63e3d2031bd8997fcec43c1925ae46559"
+                "reference": "af7463c955007de36db0c5e26d03e2f933c2e980"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/c77b56b63e3d2031bd8997fcec43c1925ae46559",
-                "reference": "c77b56b63e3d2031bd8997fcec43c1925ae46559",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/af7463c955007de36db0c5e26d03e2f933c2e980",
+                "reference": "af7463c955007de36db0c5e26d03e2f933c2e980",
                 "shasum": ""
             },
             "require": {
@@ -12237,7 +12237,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.19"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.20"
             },
             "funding": [
                 {
@@ -12245,7 +12245,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-11-18T07:47:47+00:00"
+            "time": "2022-12-13T07:49:28+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
