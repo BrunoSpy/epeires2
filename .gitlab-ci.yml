@@ -17,7 +17,7 @@ cache:
   - wget -O selenium.jar https://selenium-release.storage.googleapis.com/3.9/selenium-server-standalone-3.9.1.jar
   - java -jar selenium.jar -port 4444 >/dev/null 2>&1 &
   #download sonar scanner
-  - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+  - wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
   - unzip ./sonar-scanner.zip
   #donwload dependencies
   - composer --version
@@ -220,6 +220,91 @@ test:8.1-mysql80:
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb105:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.5
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb106:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.6
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb107:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.7
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb108:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.8
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb109:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.9
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mysql57:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mysql:5.7
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mysql80:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mysql:8.0
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 
 test:docker:
   extends: .before_script_test
