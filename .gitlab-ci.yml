@@ -305,7 +305,6 @@ test:8.2-mysql80:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
-
 test:docker:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
