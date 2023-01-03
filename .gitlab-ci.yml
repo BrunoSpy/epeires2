@@ -269,6 +269,78 @@ test:8.1-mysql80:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
 
+test:8.2-mariadb103:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.3
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb104:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.4
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb105:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.5
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mariadb106:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mariadb:10.6
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mysql57:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mysql:5.7
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
+test:8.2-mysql80:
+  extends: .before_script_test
+  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
+  stage: test
+  services:
+    - mysql:8.0
+  variables:
+    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mysql.php"
+  script:
+    - php vendor/bin/codecept run acceptance
+    - php vendor/bin/codecept run unit --coverage-text --no-colors
+
 test:docker:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
