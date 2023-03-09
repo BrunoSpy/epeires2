@@ -7,14 +7,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/BrunoSpy/opentbsbundle"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/BrunoSpy/doctrine-data-fixture"
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -23,23 +19,24 @@
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-json": "*",
+        "lib-curl": "*",
         "laminas/laminas-mvc": "^3.1",
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.1",
         "laminas/laminas-mvc-form": "^2.0",
         "laminas/laminas-log": "^2.10",
         "laminas/laminas-mail": "^2.12",
-        "laminas/laminas-code": "^3.5.0",
+        "laminas/laminas-code": "^4.5.0",
         "laminas/laminas-file": "^2.8",
         "laminas/laminas-progressbar": "^2.7",
         "laminas/laminas-dependency-plugin": "^2.0",
         "laminas/laminas-inputfilter": "^2.10",
         "laminas/laminas-mvc-i18n": "^1.1",
         "laminas/laminas-cli": "^1.0",
-        "laminas/laminas-router": "^3.3",
+        "laminas/laminas-router": "^3.7",
         "laminas/laminas-development-mode": "^3.2",
-        "laminas/laminas-component-installer": "^2.1",
+        "laminas/laminas-component-installer": "^3.0",
         "laminas/laminas-zendframework-bridge": "^1.0",
-        "doctrine/doctrine-orm-module": "^4.1",
+        "doctrine/doctrine-orm-module": "^5.0",
         "roave/psr-container-doctrine": "^3.0.0",
         "gedmo/doctrine-extensions": "^3.0",
         "lm-commons/lmc-user": "^3.3.2",
@@ -49,7 +46,7 @@
         "kipperlenny/opentbs-bundle": "dev-master",
         "rlanvin/php-rrule": "^2.2",
         "maglnet/magl-markdown": "~1.1",
-        "dgac/nmb2b-phpclient": "^0.4.0",
+        "dgac/nmb2b-phpclient": "^0.5.0",
         "dgac/mattermostmodule": "^0.4.0",
         "laminas-api-tools/api-tools": "^1.4",
         "laminas-api-tools/api-tools-documentation": "^1.3",
@@ -62,14 +59,14 @@
         "doctrine/dbal": "^3.2"
     },
     "require-dev": {
-        "codeception/codeception": "^4.0",
-        "api-skeletons/doctrine-data-fixture": "^6.0.6.2",
-        "laminas-api-tools/api-tools-admin": "^1.8",
+        "codeception/codeception": "^5.0",
+        "api-skeletons/doctrine-data-fixture": "^6.0.7",
+        "laminas-api-tools/api-tools-admin": "^2.0",
         "laminas-api-tools/api-tools-asset-manager": "^1.2",
-        "codeception/module-webdriver": "^1.0.0",
-        "codeception/module-asserts": "^1.0.0",
-        "codeception/module-laminas": "^1.0.0",
-        "codeception/module-doctrine2": "^1.0.0",
+        "codeception/module-webdriver": "^3.0.0",
+        "codeception/module-asserts": "^3.0.0",
+        "codeception/module-laminas": "^3.0.0",
+        "codeception/module-doctrine2": "^3.0.0",
         "laminas/laminas-developer-tools": "^2.0"
     },
     "replace": {
@@ -84,7 +81,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4.1"
+            "php": "8.0.2"
         },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,

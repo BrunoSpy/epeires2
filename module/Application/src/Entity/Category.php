@@ -136,6 +136,14 @@ class Category
     protected $fieldname;
 
     /**
+     * @ORM\OneToOne(targetEntity="CustomField", cascade={"remove"})
+     * @Annotation\Type("Laminas\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Champ titre n°2", "empty_option":"Choisir le champ titre n°2"})
+     */
+    protected $fieldname2;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Core\Entity\Role", inversedBy="readcategories")
      * @ORM\JoinTable(name="roles_categories_read")
      * @Annotation\Type("Laminas\Form\Element\Select")
@@ -317,7 +325,17 @@ class Category
     {
         $this->fieldname = $fieldname;
     }
-    
+
+    public function getFieldname2()
+    {
+        return $this->fieldname2;
+    }
+
+    public function setFieldname2($fieldname2)
+    {
+        $this->fieldname2 = $fieldname2;
+    }
+
     public function isArchived()
     {
         return $this->archived;
@@ -385,6 +403,8 @@ class Category
         $object_vars = get_object_vars($this);
         $object_vars["parent"] = ($this->parent ? $this->parent->getId() : null);
         $object_vars["fieldname"] = ($this->fieldname ? $this->fieldname->getId() : null);
+        $object_vars["fieldname2"] = ($this->fieldname2 ? $this->fieldname2->getId() : null);
+
         $roles = array();
         foreach ($this->readroles as $role) {
             $roles[] = $role->getId();

@@ -239,17 +239,17 @@ echo $this->modalwindow('add-note-modal',
 
 <?php if (isset($this->messages['success'])) { ?>
     <?php foreach ($this->messages['success'] as $message) { ?>
-    var n = noty({text:'<?php echo $message ?>',
+    new Noty({text:'<?php echo $message ?>',
     type:'success',
-    layout: 'bottomRight',});
+    layout: 'bottomRight',}).show();
     <?php }?>
 <?php } ?>
 
 <?php if (isset($this->messages['error'])) { ?>
     <?php foreach ($this->messages['error'] as $message) { ?>
-    var n = noty({text:"<?php echo $message ?>",
+    new Noty({text:"<?php echo $message ?>",
     type:'error',
-    layout: 'bottomRight',});
+    layout: 'bottomRight',}).show();
     <?php }?>
 <?php } ?>
 

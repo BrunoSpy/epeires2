@@ -1526,10 +1526,21 @@
             } else {
                 $('#category').show();
             }
-            var y = this.params.topSpace + this.params.catSpace;
-            for (var i = 0; i < this.categories.length; i++) {
-                var curCat = this.categories[i];
-                var text_cat = '<div class="verticaltxt">'+curCat.short_name+'</div>';
+            let y = this.params.topSpace + this.params.catSpace;
+            for (let i = 0; i < this.categories.length; i++) {
+                let curCat = this.categories[i];
+                let text_cat = '';
+                if(this._isCategoryEmpty(curCat)){
+                    let shorttext = '';
+                    if(curCat.short_name.length > 4) {
+                        shorttext = curCat.short_name.substring(0, 4) + '<span>⋮</span>';
+                    } else {
+                        shorttext = curCat.short_name;
+                    }
+                    text_cat = '<div class="verticaltxt reduced">'+shorttext+'</div>';
+                } else {
+                    text_cat = '<div class="verticaltxt">'+curCat.short_name+'</div>';
+                }
                 var cat = $('#category' + curCat.id);
                 if ($('#category' + curCat.id).length === 0) {
                     var cat = $('<div class="category" id="category' + curCat.id + '" data-id="' + curCat.id + '" data-parentid="'+curCat.parent_id+'">'
@@ -1543,10 +1554,13 @@
                     } else {
                         cat.css('color', "#fff");
                     }
+                } else {
+                    //update text if number of events changed
+                    cat.html(text_cat);
                 }
-                var minHeight = this._getCategoryMinHeight(curCat);
-                var height = this._getCategoryHeight(i);
-                var trueHeight = (minHeight > height ? minHeight : height);
+                let minHeight = this._getCategoryMinHeight(curCat);
+                let height = this._getCategoryHeight(i);
+                let trueHeight = (minHeight > height ? minHeight : height);
                 cat.animate({'top': y + 'px', 'height': trueHeight + 'px'});
                 y += trueHeight + this.params.catSpace;
             }
@@ -1608,7 +1622,7 @@
                         content: txt,
                         placement:'auto left',
                         html: 'true',
-                        viewport: '#timeline',
+                        viewport: '#timeline-base',
                         template: '<div class="popover quickaccess" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                     });
                     $("#category"+catid).on('mouseenter', function(e){
@@ -1630,7 +1644,27 @@
          * @returns {undefined}
          */
         _getCategoryMinHeight: function (category) {
-            return category.short_name.length * 20;
+            //si catégorie vide : 100px = 5 lettre
+            //sinon hauteur du texte
+            if(this._isCategoryEmpty(category)) {
+                return 100; //5 letters
+            } else {
+                return category.short_name.length * 20;
+            }
+        },
+        /**
+         * look if category (and subcategories if onlyroot activated) contains events
+         * return true if category is empty
+         * @param category
+         * @private
+         * @returns boolean
+         */
+        _isCategoryEmpty: function(category) {
+            if(this.options.showOnlyRootCategories) {
+                return this.eventsDisplayed.filter(event => event.category_root_id === category.id).length === 0;
+            } else {
+                return this.eventsDisplayed.filter(event => event.category_id === category.id).length === 0;
+            }
         },
         /**
          * Draw an event if necessary

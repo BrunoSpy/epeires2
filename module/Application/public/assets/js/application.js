@@ -16,16 +16,20 @@ function FormatNumberLength(num, length) {
 var displayMessages = function(messages){
 	if(messages['success']){
 		$.each(messages.success, function(key, value){
-			var n = noty({text:value, 
+			new Noty({
+                text:value,
 				type:'success',
-				layout: 'bottomRight',});
+				layout: 'bottomRight'
+            }).show();
 		});
 	}
 	if(messages['error']){
 		$.each(messages.error, function(key, value){
-			var n = noty({text:value, 
+			new Noty({
+                text:value,
 				type:'error',
-				layout: 'bottomRight',});
+				layout: 'bottomRight'
+            }).show();
 		});
 	}
 };
@@ -74,20 +78,35 @@ var updateNavbarTop = function() {
     }
 };
 
+var initialCenterWidth = 0;
 var updateNavbar = function() {
     if($('.navbar-lower').length > 0) { //do not try to update width if navbar doesn't exist (epeires light)
         var windowWidth = $(window).width();
         var totalWidth = 0;
-        var maxWidth = $("#navbar-collapse").width();
+        var maxWidth = $("#navbar-collapse").width() - 150;
         var centerWidth = $(".navbar-lower .navbar-nav").width();
         var searchWidth = $("#search").show().innerWidth();
         var viewWidth = $("#changeview").innerWidth();
 
-        var totalWidth = centerWidth + searchWidth + viewWidth;
+        if(initialCenterWidth === 0) {
+            initialCenterWidth = centerWidth;
+        }
+        var totalWidth = initialCenterWidth + searchWidth + viewWidth;
+
+        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 50;
 
         if (windowWidth > 768) {
             if (totalWidth > maxWidth) {
-                $("#search").hide();
+                //First tab is 138px wide
+                let tabsize = Math.ceil( avalaibleWidth / $("#navbar-tabs .entrytab").length );
+
+                $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
+                $("#navbar-tabs .entrytab").addClass('entrytab-ellipsis');
+                $("#navbar-tabs .entrytab-icon").addClass('fa-2x').siblings('.entrytab-text').addClass('hide');
+            } else {
+                $("#navbar-tabs .entrytab").css('max-width', '');
+                $("#navbar-tabs .entrytab").removeClass('entrytab-ellipsis');
+                $("#navbar-tabs .entrytab-icon").removeClass('fa-2x').siblings('.entrytab-text').removeClass('hide');
             }
         } 
     }
@@ -278,32 +297,15 @@ $(document).ready(function(){
         }
     });
        
-   $.noty.defaults = {
+   Noty.overrideDefaults({
 		    layout: 'bottomRight',
-		    theme: 'defaultTheme',
 		    type: 'alert',
-		    text: '',
-		    dismissQueue: true, // If you want to use queue feature set this true
-		    template: '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
-		    animation: {
-		        open: {height: 'toggle'},
-		        close: {height: 'toggle'},
-		        easing: 'swing',
-		        speed: 500 // opening & closing animation speed
-		    },
 		    timeout: 5000, // delay for closing event. Set false for sticky notifications
 		    force: false, // adds notification to the beginning of queue when set to true
 		    modal: false,
 		    maxVisible: 5, // you can set max visible notification for dismissQueue true option
-		    closeWith: ['click'], // ['click', 'button', 'hover']
-		    callback: {
-		        onShow: function() {},
-		        afterShow: function() {},
-		        onClose: function() {},
-		        afterClose: function() {}
-		    },
 		    buttons: false // an array of buttons
-		};
+		});
 
    if(Cookies.get("timelineview") == "day") {
        if(Cookies.get("timelineday") !== undefined) {

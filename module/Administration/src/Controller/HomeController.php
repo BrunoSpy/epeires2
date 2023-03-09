@@ -47,6 +47,7 @@ class HomeController extends AbstractActionController
         $git = false;
 
         if(is_dir(ROOT_PATH . '/.git')) {
+
             $git = array();
             $git['branchname'] = shell_exec("git rev-parse --abbrev-ref HEAD"); // get the one that is always the branch name
 
@@ -61,6 +62,7 @@ class HomeController extends AbstractActionController
             if($hasTag) {
                 $git['tag'] = $tag;
             }
+
         }
 
         $this->doctrinemigrations->getMetadataStorage()->ensureInitialized();

@@ -212,7 +212,8 @@ echo $this->formHidden($this->form->get('category'));
                     'd-MM-y HH:mm');
                 $alarms = ($this->event ? $this->event->getChildren() : $this->model->getChildren());
                 foreach($alarms as $child) {
-                    if($child->getCategory() instanceof Application\Entity\AlarmCategory){
+                    if($child->getCategory() instanceof Application\Entity\AlarmCategory &&
+                    $child->getStatus()->getId() <= 4){ //do not display canceled or deleted alarms
                         $countalarm++;
                         $now = new \DateTime();
                         $now->setTimezone(new \DateTimeZone("UTC"));
