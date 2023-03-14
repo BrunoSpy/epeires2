@@ -42,7 +42,7 @@
          *
          * @memberOf $
          */
-        version: "1.5.0",
+        version: "1.5.1",
         /**
          * List of events
          * Some properties are added during drawing:
@@ -1007,7 +1007,7 @@
                 } else {
                     this.currentDay = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate()));
                     this.timelineBegin = new Date(Date.UTC(this.currentDay.getUTCFullYear(), this.currentDay.getUTCMonth(), this.currentDay.getUTCDate(), 0, 0, 0));
-                    this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getFullYear(), this.timelineBegin.getMonth(), this.timelineBegin.getDate(),
+                    this.timelineEnd = new Date(Date.UTC(this.timelineBegin.getUTCFullYear(), this.timelineBegin.getUTCMonth(), this.timelineBegin.getUTCDate(),
                         this.timelineDuration, 0, 0));
                 }
             } else {
