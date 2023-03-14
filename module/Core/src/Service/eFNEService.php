@@ -61,12 +61,16 @@ class EFNEService
         $request->getPost()->set('options.bypass_validation', 'true');
 
         // CHAMPS SUPPLÉMENTAIRES (possibilité d'en rajouter)
-        $request->getPost()->set('lieu', $customFields['lieu']);
-        $aircrafts = explode(',', $customFields['aircrafts']);
-        foreach ($aircrafts as $index => $aircraft) {
-            $request->getPost()->set("aircrafts[$index].callsign", $aircraft);
+        if (!empty($customFields['lieu'])) {
+            $request->getPost()->set('lieu', $customFields['lieu']);
         }
-
+        if (!empty($customFields['aircrafts'])) {
+            $aircrafts = explode(',', $customFields['aircrafts']);
+            foreach ($aircrafts as $index => $aircraft) {
+                $request->getPost()->set("aircrafts[$index].callsign", $aircraft);
+            }
+        }
+        
         $response = $client->send($request);
 
         return $response;

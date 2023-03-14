@@ -2342,7 +2342,7 @@ class EventsController extends TimelineTabController
                         $fields['description'] = 'Description Principale : ' . $value;
                     } elseif ($name == "Regroupement") {
                         $fields['regroupement'] = $value;
-                    } elseif ($name == "Position") {
+                    } elseif ($name == "Position" || $name == "N° de position") {
                         $fields['position'] = $value;
                     } elseif ($name == "Lieu") {
                         $fields['lieu'] = $value;
@@ -2376,6 +2376,7 @@ class EventsController extends TimelineTabController
         $json = array();
         
         $json['messages'] = $messages;
+        echo $response;
         return new JsonModel($json);
     }
 
