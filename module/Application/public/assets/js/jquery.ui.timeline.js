@@ -505,6 +505,10 @@
                 var txt = '<p class="elmt_tooltip actions">'
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
+                // ajout envoie eFNE
+                // conditions à ajouter ??
+                txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> Dépôt eFNE </a></p>'
+                //
                 if(self.options.mattermost) {
                     txt += '<p><a ' +
                         'href="#" ' +
@@ -604,6 +608,20 @@
                 );
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
+
+            // action click eFNE
+            this.element.on('click', '.send-fne', function(e){
+                e.preventDefault();
+                var me = $(this);
+                var id = me.data('id');
+                $.post(self.options.controllerUrl+'/sendfne?id='+id,
+                    function(data){
+                        displayMessages(data.messages);
+                    }
+                );
+                self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
+            });
+            //
 
             this.element.on('click', '.cancel-evt', function(e){
                 e.preventDefault();

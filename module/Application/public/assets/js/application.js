@@ -773,6 +773,20 @@ $(document).ready(function(){
         $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
     });
 
+    // adding fne sending (not sure here)
+    $('#calendarview').on('click', '.send-fne', function(e){
+        e.preventDefault();
+        var me = $(this);
+        var id = me.data('id');
+        $.post(urlApp+'/events/sendfne?id='+id,
+            function(data){
+                displayMessages(data.messages);
+            }
+        );
+        $(".cal-event-"+id).find('.tooltip-evt').popover('hide');
+    });
+    //
+
     $('#calendarview').on('click', '.cancel-evt', function(e){
         e.preventDefault();
         var me = $(this);

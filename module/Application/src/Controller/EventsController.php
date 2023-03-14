@@ -37,6 +37,7 @@ use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Core\Service\EmailService;
 use Core\Service\MAPDService;
+use Core\Service\eFNEService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Model\ViewModel;
@@ -52,6 +53,10 @@ use Doctrine\ORM\QueryBuilder;
 
 use LmcRbacMvc\Exception\UnauthorizedException;
 
+// used to check if fne function works
+use Zend\Log\Logger;
+use Zend\Log\Writer\Stream;
+//
 
 /**
  *
@@ -66,12 +71,16 @@ class EventsController extends TimelineTabController
     private $translator;
     private MAPDService $mapd;
     private EmailService $emailService;
+    private eFNEService $efneService;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, MAPDService $mapd, $logger, EmailService $emailService)
+                                $config, $mattermost, $translator, 
+                                MAPDService $mapd, $logger, 
+                                EmailService $emailService,
+                                eFNEService $efneService)
     {
         parent::__construct($entityManager, $config, $mattermost, $logger);
         $this->eventservice = $eventService;
@@ -80,6 +89,7 @@ class EventsController extends TimelineTabController
         $this->translator = $translator;
         $this->mapd = $mapd;
         $this->emailService = $emailService;
+        $this->efneService = $efneService;
     }
     
     public function indexAction()
@@ -569,7 +579,7 @@ class EventsController extends TimelineTabController
                         $credentials = true;
                     }
                 }
-                
+
                 if ($credentials) {
                     //préparation de certains champs
                     $startdate = new \DateTime($post['startdate']);
@@ -2302,6 +2312,69 @@ class EventsController extends TimelineTabController
         } else {
             $messages['error'][] = "Suppression impossible : droits insuffisants";
         }
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    /**
+     * Create and publish an eFNE from the event on the diapason website 
+     */
+
+    public function sendfneAction()
+    {
+        $id = $this->params()->fromQuery('id', 0);
+        $messages = array();
+        if ($id) {
+            $fields = [];
+            $objectManager = $this->getEntityManager();
+            $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+            $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'y-MMM-dd, HH:mm');
+            $formatter->setPattern('yyyy-MM-dd HH:mm');
+            
+            if ($event) {
+                $fields['date'] = $formatter->format($event->getStartdate());
+                foreach ($event->getCustomFieldsValues() as $value) {
+                    $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
+                    $name = $value->getCustomField()->getName();
+                    $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                    
+                    if ($name == "Description") {
+                        $fields['description'] = 'Description Principale : ' . $value;
+                    } elseif ($name == "Regroupement") {
+                        $fields['regroupement'] = $value;
+                    } elseif ($name == "Position") {
+                        $fields['position'] = $value;
+                    } elseif ($name == "Lieu") {
+                        $fields['lieu'] = $value;
+                    } elseif ($name == "Alias") {
+                    } elseif ($name == "Indicatif") {
+                        $fields['aircrafts'] = $value;
+                    }
+                    else {
+                        $fields['description'] .= '  ---///---  ' . $name . " : " . $value;
+                    }
+                }
+                $fields['regroupement'] = empty($fields['regroupement']) ? 'Non précisé' : $fields['regroupement'];
+                $fields['position'] = empty($fields['position']) ? 'Non précisé' : $fields['position'];
+            
+                if (! array_key_exists('efne', $this->config)) {
+                    $messages['error'][] = "eFNE non configuré, contactez votre administrateur.";
+                } else {
+                    try {
+                        $response = $this->efneService->sendEventToEFNE($customField = $fields);
+                        $messages['success'][] = "Evènement correctement envoyé à eFNE";
+                    } catch (\Exception $e) {
+                        $messages['error'][] = $e->getMessage();
+                    }
+                }
+            } else {
+                $messages['error'][] = "Envoi d'eFNE impossible : évènement non trouvé.";
+            }
+        } else {
+            $messages['error'][] = "Envoi d'eFNE impossible : id non trouvé.";
+        }
+        $json = array();
+        
         $json['messages'] = $messages;
         return new JsonModel($json);
     }

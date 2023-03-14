@@ -35,7 +35,8 @@ class EventsControllerFactory implements FactoryInterface {
             $container->get('translator'),
             $container->get('mapd'),
             $container->get('EpeiresLogger'),
-            $container->get('emailservice')
+            $container->get('emailservice'),
+            $container->get('efneservice')
         );
     }
 

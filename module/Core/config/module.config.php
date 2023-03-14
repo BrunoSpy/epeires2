@@ -50,7 +50,9 @@ return array(
             'mattermostservice' => 'Core\Factory\MattermostServiceFactory',
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
             'mapd' => 'Core\Factory\MAPDServiceFactory',
-            'emailservice' => 'Core\Factory\EmailServiceFactory'
+            'emailservice' => 'Core\Factory\EmailServiceFactory',
+            'efneservice' => 'Core\Factory\EFNEServiceFactory'
+
         ),
         'aliases' => array(
             'Laminas\Authentication\AuthenticationService' => 'lmcuser_auth_service'
