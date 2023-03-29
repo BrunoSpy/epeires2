@@ -64,6 +64,14 @@ class EFNEService
         if (!empty($customFields['lieu'])) {
             $request->getPost()->set('lieu', $customFields['lieu']);
         }
+        if (!empty($customFields['redactors'])) {
+            $redactors = explode(',', $customFields['redactors']);
+            foreach ($redactors as $index => $redactor) {
+                $request->getPost()->set("redactors[$index].fullname", $redactor);
+                $request->getPost()->set("redactors[$index].team", $redactorsteam);
+                $request->getPost()->set("redactors[$index].role", "CDS");
+            }
+        }
         if (!empty($customFields['aircrafts'])) {
             $aircrafts = explode(',', $customFields['aircrafts']);
             foreach ($aircrafts as $index => $aircraft) {

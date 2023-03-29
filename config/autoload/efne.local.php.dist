@@ -1,0 +1,8 @@
+<?php
+return array(
+    'efne' => array(
+    'url' => 'https://url-de-votre-diapason.fr',
+    'username' => 'username',
+    'password' => 'password',
+    ),
+);

@@ -395,6 +395,7 @@ class EventService
             'files' => count($event->getFiles()),
             'url_file1' => (count($event->getFiles()) > 0 ? $event->getFiles()[0]->getPath() : ''),
             'star' => $event->isStar() ? true : false,
+            'efnesent' => $event->getEfneSent() ? true : false,
             'scheduled' => $event->isScheduled() ? true : false,
             'recurr' => $event->getRecurrence() ? true : false,
             'recurr_readable' => $event->getRecurrence() ? $event->getRecurrence()->getHumanReadable() : '',

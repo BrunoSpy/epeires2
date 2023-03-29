@@ -523,6 +523,24 @@ class EventsController extends TimelineTabController
         $qbEvents->andWhere($orEvents);
     }
 
+    public function addAction()
+    {
+        // get request data
+        $data = $this->params()->fromPost();
+
+        // add new event using EventService
+        $event = new EventEntity();
+        $event->setName($data['name']);
+        // set other properties
+        $this->eventservice->saveEvent($event);
+
+        // return response
+        return $this->getResponse()->setContent(json_encode([
+            'status' => 'success',
+            'event' => $event->getArrayCopy(),
+        ]));
+    }
+
     /**
      *
      * @return \Laminas\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application.
@@ -2332,39 +2350,56 @@ class EventsController extends TimelineTabController
             $formatter->setPattern('yyyy-MM-dd HH:mm');
             
             if ($event) {
-                $fields['date'] = $formatter->format($event->getStartdate());
-                foreach ($event->getCustomFieldsValues() as $value) {
-                    $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
-                    $name = $value->getCustomField()->getName();
-                    $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
-                    
-                    if ($name == "Description") {
-                        $fields['description'] = 'Description Principale : ' . $value;
-                    } elseif ($name == "Regroupement") {
-                        $fields['regroupement'] = $value;
-                    } elseif ($name == "Position" || $name == "N° de position") {
-                        $fields['position'] = $value;
-                    } elseif ($name == "Lieu") {
-                        $fields['lieu'] = $value;
-                    } elseif ($name == "Alias") {
-                    } elseif ($name == "Indicatif") {
-                        $fields['aircrafts'] = $value;
-                    }
-                    else {
-                        $fields['description'] .= '  ---///---  ' . $name . " : " . $value;
-                    }
-                }
-                $fields['regroupement'] = empty($fields['regroupement']) ? 'Non précisé' : $fields['regroupement'];
-                $fields['position'] = empty($fields['position']) ? 'Non précisé' : $fields['position'];
-            
-                if (! array_key_exists('efne', $this->config)) {
-                    $messages['error'][] = "eFNE non configuré, contactez votre administrateur.";
+                if ($event->getEfneSent()) {
+                    $messages['error'][] = "Cette eFNE a déja été envoyée";
                 } else {
-                    try {
-                        $response = $this->efneService->sendEventToEFNE($customField = $fields);
-                        $messages['success'][] = "Evènement correctement envoyé à eFNE";
-                    } catch (\Exception $e) {
-                        $messages['error'][] = $e->getMessage();
+                    $fields['date'] = $formatter->format($event->getStartdate());
+                    foreach ($event->getCustomFieldsValues() as $value) {
+                        $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
+                        $name = $value->getCustomField()->getName();
+                        $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                        
+                        if ($name == "Description") {
+                            $fields['description'] = 'Description Principale : ' . $value;
+                        } elseif ($name == "Regroupement") {
+                            $fields['regroupement'] = $value;
+                        } elseif ($name == "Position" || $name == "N° de position") {
+                            $fields['position'] = $value;
+                        } elseif ($name == "Lieu") {
+                            $fields['lieu'] = $value;
+                        } elseif ($name == "Alias") {
+                        } elseif ($name == "Dépôt d'une FNE") {
+                        } elseif ($name == "Indicatif") {
+                            $fields['aircrafts'] = $value;
+                        } elseif ($name == "Nom") {
+                            $fields['redactors'] = $value;
+                        } elseif ($name == "Équipe") {
+                            $fields['redactorsteam'] = $value;
+                        } 
+                        else {
+                            $fields['description'] .= "\n" . $name . " : " . $value;
+                        }
+                    }
+                    $fields['regroupement'] = empty($fields['regroupement']) ? 'Non précisé' : $fields['regroupement'];
+                    $fields['position'] = empty($fields['position']) ? 'Non précisé' : $fields['position'];
+                    $fields['redactorsteam'] = empty($fields['redactorsteam']) ? 'Non précisé' : $fields['redactorsteam'];
+                
+                    if (! array_key_exists('efne', $this->config)) {
+                        $messages['error'][] = "eFNE non configuré, contactez votre administrateur.";
+                    } else {
+                        try {
+                            $objectManager->refresh($event);
+                            $response = $this->efneService->sendEventToEFNE($customField = $fields);
+                            $messages['success'][] = "Evènement correctement envoyé à eFNE";
+                            
+                            // Marqueur de efne déjâ envoyée
+                            $event->setEfneSent(1);
+                            $objectManager->persist($event);
+                            $objectManager->flush();
+
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
                     }
                 }
             } else {
@@ -2373,10 +2408,12 @@ class EventsController extends TimelineTabController
         } else {
             $messages['error'][] = "Envoi d'eFNE impossible : id non trouvé.";
         }
+         // récupérer la valeur de efnesent
         $json = array();
-        
+        $json['event'] = array(
+            $event->getId() => $this->eventservice->getJSON($event)
+        );
         $json['messages'] = $messages;
-        echo $response;
         return new JsonModel($json);
     }
 
@@ -2413,6 +2450,9 @@ class EventsController extends TimelineTabController
                 
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
+                    $messages['error'][] .= $event->getEfneSent() ? 'True' : 'False';
+                    $messages['error'][] .= $event->isStar() ? 'True' : 'False';
+
                 } else {
                     try {
                         $this->emailService->sendEmailTo(

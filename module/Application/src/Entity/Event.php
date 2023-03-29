@@ -80,6 +80,11 @@ class Event extends AbstractEvent
     protected $star = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $efnesent = false;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Core\Entity\User", inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -214,6 +219,16 @@ class Event extends AbstractEvent
     public function isStar()
     {
         return $this->star;
+    }
+
+    public function setEfneSent($efnesent)
+    {
+        $this->efnesent = $efnesent;
+    }
+
+    public function getEfneSent()
+    {
+        return $this->efnesent;
     }
 
     /**

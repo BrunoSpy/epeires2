@@ -51,7 +51,7 @@ return array(
             'notamweb' => 'Core\Factory\NOTAMWebServiceFactory',
             'mapd' => 'Core\Factory\MAPDServiceFactory',
             'emailservice' => 'Core\Factory\EmailServiceFactory',
-            'efneservice' => 'Core\Factory\EFNEServiceFactory'
+            'efneservice' => 'Core\Factory\eFNEServiceFactory'
 
         ),
         'aliases' => array(
