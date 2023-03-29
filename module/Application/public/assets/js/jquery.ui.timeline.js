@@ -506,8 +506,11 @@
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
                 // ajout envoie eFNE
-                // conditions à ajouter ??
-                txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> Dépôt eFNE </a></p>'
+                if (event.efnesent === false) {
+                    txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> Dépôt eFNE</a></p>'
+                } else {
+                    txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> eFNE déja déposé</a></p>'
+                }
                 //
                 if(self.options.mattermost) {
                     txt += '<p><a ' +
@@ -617,6 +620,10 @@
                 $.post(self.options.controllerUrl+'/sendfne?id='+id,
                     function(data){
                         displayMessages(data.messages);
+                        if(data['event']){
+                            self.addEvents(data.event)
+                            self.forceUpdateView(false);
+                        }
                     }
                 );
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
@@ -2541,6 +2548,11 @@
             // ajout du nom de l'événement
             var elmt_txt = $('<p class="label_elmt"><span class="elmt_name">' + event.name + '</span></p>');
             elmt.append(elmt_txt);
+            // ajout de l'icone si eFNE envoyé
+            if(event.efnesent === true) {
+                var efne_icon = $('<span class="efne_icon glyphicon glyphicon-tag"></span>');
+                elmt_txt.append(efne_icon);
+            }
             // ajout du bouton "ouverture fiche"
             var elmt_b1 = $('<a href="#" class="modify-evt" data-id="' + event.id + '" data-name="' + event.name + '" data-recurr="' + event.recurr + '"></a>');
             elmt_txt.append(elmt_b1);
