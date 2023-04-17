@@ -2450,9 +2450,7 @@ class EventsController extends TimelineTabController
                 
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
-                    $messages['error'][] .= $event->getEfneSent() ? 'True' : 'False';
-                    $messages['error'][] .= $event->isStar() ? 'True' : 'False';
-
+                    
                 } else {
                     try {
                         $this->emailService->sendEmailTo(
