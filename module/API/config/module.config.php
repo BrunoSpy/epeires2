@@ -226,14 +226,14 @@ return array(
         'authorization' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => array(
                 'collection' => array(
-                    'GET' => true,
+                    'GET' => false,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
                 ),
                 'entity' => array(
-                    'GET' => true,
+                    'GET' => false,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,

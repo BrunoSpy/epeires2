@@ -62,8 +62,8 @@ class EventResource extends AbstractResourceListener
         $event = $this->em->getRepository('Application\Entity\Event')->find($id);
         if($event) {
             $result = array();
-    
             $result['name'] = $this->eventService->getName($event);
+            $result['date'] = $event->getStartdate();
             $files = array();
             foreach ($event->getFiles() as $file) {
                 $f = array();
