@@ -67,3 +67,4 @@ public/api-tools-documentation-swagger/
 #test api apps
 testapiapp
 testapienv
+users.htpasswd

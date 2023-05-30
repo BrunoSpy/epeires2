@@ -6,7 +6,7 @@ use Laminas\Http\Client;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
 
-class EFNEService
+class eFNEService
 {
     private $config;
 
