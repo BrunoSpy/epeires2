@@ -64,3 +64,6 @@ public/api-tools-ui/
 public/api-tools/
 public/api-tools-documentation-swagger/
 
+#test api apps
+testapiapp
+testapienv
