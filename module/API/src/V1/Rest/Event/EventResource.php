@@ -69,7 +69,6 @@ class EventResource extends AbstractResourceListener
 
         // Create the event
         $event = new Event();
-        #$event->setId(137000);
         $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => 'api']));
         $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
         $event->setScheduled(0);
@@ -110,13 +109,12 @@ class EventResource extends AbstractResourceListener
         }
 
         // Extract the values from the JSON
-        $category = $this->getCategoryNumber($jsonData['category']);
+        $category = $jsonData['category'];
         $startDate = $jsonData['dateDebut'];
         $endDate = $jsonData['dateFin'];
         $customfieldfromjson = $jsonData['customFields'];
 
-        // Create the event
-        $event->setCategory($this->em->getRepository('Application\Entity\Category')->find($category));
+        $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
         $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
         $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
 
