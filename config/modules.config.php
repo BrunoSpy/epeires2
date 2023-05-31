@@ -37,6 +37,7 @@ return array(
     'Laminas\Paginator',
     'Laminas\Router',
     'Laminas\Validator',
+    'Laminas\Form\Module',
     'Laminas\ApiTools',
     'Laminas\ApiTools\Documentation',
     'Laminas\ApiTools\Documentation\Swagger',
