@@ -51,6 +51,7 @@ class CustomfieldsResource extends AbstractResourceListener
                 $customfields[$field->getName()] = '';
             }
             $json['category'] = $category->getName();
+            $json['organisation'] = '';
             $json['dateDebut'] = '';
             $json['dateFin'] = '';
             $json['customFields'] = $customfields;
