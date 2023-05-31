@@ -10,11 +10,4 @@ return array(
         'ok' => 'green',
         'planned' => 'blue',
     ),
-    'api-tools-mvc-auth' => array(
-        'authentication' => array(
-            'map' => array(
-                'API\\V1' => 'adapterapi',
-            ),
-        ),
-    ),
 );
