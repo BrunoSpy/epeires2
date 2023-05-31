@@ -65,6 +65,7 @@ class EventResource extends AbstractResourceListener
         $startDate = $jsonData['dateDebut'];
         $endDate = $jsonData['dateFin'];
         $customfieldfromjson = $jsonData['customFields'];
+        $organisation = $jsonData['organisation'];
 
         // Create the event
         $event = new Event();
@@ -76,7 +77,7 @@ class EventResource extends AbstractResourceListener
         $event->setStatus($this->em->getRepository('Application\Entity\Status')->find(3));
         $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
         $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
-        $event->setOrganisation($this->em->getRepository('Application\Entity\Organisation')->findOneBy(['name' => 'LFMM']));
+        $event->setOrganisation($this->em->getRepository('Application\Entity\Organisation')->findOneBy(['name' => $organisation]));
 
         $customfield = $event->getCategory()->getCustomfields();
         
