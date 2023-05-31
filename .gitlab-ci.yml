@@ -221,6 +221,11 @@ test:8.2-mysql80:
   script:
     - php vendor/bin/codecept run acceptance
     - php vendor/bin/codecept run unit --coverage-text --no-colors
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - tests/_output
 
 test:docker:
   extends: .before_script_test
