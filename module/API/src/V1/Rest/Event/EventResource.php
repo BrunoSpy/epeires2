@@ -66,10 +66,11 @@ class EventResource extends AbstractResourceListener
         $endDate = $jsonData['dateFin'];
         $customfieldfromjson = $jsonData['customFields'];
         $organisation = $jsonData['organisation'];
+        $author = $jsonData['author'];
 
         // Create the event
         $event = new Event();
-        $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => 'api']));
+        $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => $author]));
         $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
         $event->setScheduled(0);
         $event->setPunctual(0);
