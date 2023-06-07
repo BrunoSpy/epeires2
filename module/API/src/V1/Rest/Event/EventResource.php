@@ -100,18 +100,27 @@ class EventResource extends AbstractResourceListener
         $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
 
         $customfield = $event->getCategory()->getCustomfields();
-        
+
         foreach ($customfield as $field) {
-            $customvalue = new CustomFieldValue();
-            $customvalue->setEvent($event);
-            $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
-            $customvalue->setValue($customfieldfromjson[$field->getName()]);
-            $event->addCustomFieldValue($customvalue);
+            $customvalue = $this->em->getRepository('Application\Entity\CustomFieldValue')
+            ->findOneBy(array(
+                'customfield' => $field->getId(),
+                'event' => $event->getId())
+            );
+            if (! $customvalue) {
+                $customvalue = new CustomFieldValue();
+                $customvalue->setEvent($event);
+                $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+                $event->addCustomFieldValue($customvalue);
+            } else {
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+            }
         }
 
         $this->em->persist($event);
         $this->em->flush();
-        
+
         return $event;
     }
 
