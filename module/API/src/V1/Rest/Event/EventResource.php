@@ -241,7 +241,5 @@ class EventResource extends AbstractResourceListener
         } else {
             return new ApiProblem(404, 'No event found.');
         }
-        return $this->eventService->getJSON($event);
-
     }
 }
