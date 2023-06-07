@@ -51,6 +51,7 @@ return array(
     'Laminas\ApiTools\Rest',
     'Laminas\ApiTools\Rpc',
     'Laminas\ApiTools\Versioning',
+    #'Laminas\ApiTools\Admin',
     'Core',
     'Application',
     'Administration',

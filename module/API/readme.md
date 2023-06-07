@@ -85,3 +85,16 @@ Vous pouvez aussi modifier un évènement en cours en utilisant une requête PUT
 **http://lien_vers_epeires/api/event/id_evenement_a_modifier**
 
 La requête doit contenir le même **body** et **auth** que pour la création d'un évènement.
+
+#### 6. Ajouter un fichier :
+
+Vous pouvez ajouter un fichier à un évènement existant de cette façon :
+
+**http://lien_vers_epeires/api/file/addfile**
+
+Le body devra être de type **multipart/form-data** avec les champs suivant :
+- file : Contient le fichier que vous souhaitez envoyer
+- event_id : Contient l'id de l'évènement dans lequel vous souhaitez envoyer l'évènement
+
+Si vous uploadez un fichier ayant le même nom qu'un fichier déjà existant dans votre évènement, l'ancien fichier sera remplacé par le nouveau
+
