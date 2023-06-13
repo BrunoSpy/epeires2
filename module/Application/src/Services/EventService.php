@@ -138,7 +138,7 @@ class EventService
                     }
                 }
             }
-            if ($titlefield2 != null) {
+            if ($titlefield2) {
                 foreach ($event->getCustomFieldsValues() as $fieldvalue) {
                     if ($fieldvalue->getCustomField()->getId() == $titlefield2->getId()) {
                         $tempname2 = $this->customfieldService->getFormattedValue($fieldvalue->getCustomField(), $fieldvalue->getValue());
@@ -149,6 +149,7 @@ class EventService
                     }
                 }
             }
+
         }
         return $name;
     }

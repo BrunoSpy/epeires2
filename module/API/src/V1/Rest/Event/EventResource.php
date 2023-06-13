@@ -7,8 +7,10 @@ use Doctrine\ORM\EntityManager;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Application\Entity\Event;
+use Application\Entity\Impact;
 use Application\Entity\CustomFieldValue;
 use Application\Entity\CustomField;
+
 
 class EventResource extends AbstractResourceListener
 {
@@ -19,30 +21,6 @@ class EventResource extends AbstractResourceListener
     {
         $this->em = $entityManager;
         $this->eventService = $eventService;
-    }
-
-    public function getCategoryNumber($category)
-    {
-        switch ($category) {
-            case "TR - Militaires - Patrouilles":
-                return 99;
-            case "TR - EPT":
-                return 100;
-            case "TR - Mission Photo - courses":
-                return 101;
-            case "TR - Parachutisme":
-                return 102;
-            case "TR - Laser":
-                return 103;
-            case "TR - Evénementiel":
-                return 104;
-            case "TR - Vols Spéciaux":
-                return 105;
-            case "TR - Divers":
-                return 106;
-            default:
-                return 0;
-        }
     }
 
     public function createEventFromJSON($data)
@@ -66,20 +44,22 @@ class EventResource extends AbstractResourceListener
         $endDate = $jsonData['dateFin'];
         $customfieldfromjson = $jsonData['customFields'];
         $organisation = $jsonData['organisation'];
+        $author = $jsonData['author'];
 
         // Create the event
         $event = new Event();
-        $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => 'api']));
+        $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => $author]));
         $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
         $event->setScheduled(0);
         $event->setPunctual(0);
+        $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
         $event->setStatus($this->em->getRepository('Application\Entity\Status')->find(3));
         $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
         $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
         $event->setOrganisation($this->em->getRepository('Application\Entity\Organisation')->findOneBy(['name' => $organisation]));
 
-        $customfield = $event->getCategory()->getCustomfields();
-        
+        // Get the custom fields for the selected category
+        $customfield = $event->getCategory()->getCustomfields();        
         foreach ($customfield as $field) {
             $customvalue = new CustomFieldValue();
             $customvalue->setEvent($event);
@@ -87,6 +67,7 @@ class EventResource extends AbstractResourceListener
             $customvalue->setValue($customfieldfromjson[$field->getName()]);
             $event->addCustomFieldValue($customvalue);
         }
+        
         $this->em->persist($event);
         $this->em->flush();
         
@@ -119,17 +100,27 @@ class EventResource extends AbstractResourceListener
         $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
 
         $customfield = $event->getCategory()->getCustomfields();
-        
+
         foreach ($customfield as $field) {
-            $customvalue = new CustomFieldValue();
-            $customvalue->setEvent($event);
-            $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
-            $customvalue->setValue($customfieldfromjson[$field->getName()]);
-            $event->addCustomFieldValue($customvalue);
+            $customvalue = $this->em->getRepository('Application\Entity\CustomFieldValue')
+            ->findOneBy(array(
+                'customfield' => $field->getId(),
+                'event' => $event->getId())
+            );
+            if (! $customvalue) {
+                $customvalue = new CustomFieldValue();
+                $customvalue->setEvent($event);
+                $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+                $event->addCustomFieldValue($customvalue);
+            } else {
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+            }
         }
+
         $this->em->persist($event);
         $this->em->flush();
-        
+
         return $event;
     }
 
@@ -141,9 +132,8 @@ class EventResource extends AbstractResourceListener
      * @return ApiProblem|mixed
      */
     public function create($data)
-    {
+    {   
         $eventFromJSON = $this->createEventFromJSON($data);
-
         return $this->eventService->getJSON($eventFromJSON);
     }
     
@@ -260,7 +250,5 @@ class EventResource extends AbstractResourceListener
         } else {
             return new ApiProblem(404, 'No event found.');
         }
-        return $this->eventService->getJSON($event);
-
     }
 }
