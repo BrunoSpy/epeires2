@@ -81,6 +81,7 @@ class Event extends AbstractEvent
 
     /**
      * @ORM\Column(type="boolean")
+     * @Gedmo\Versioned
      */
     protected $efnesent = false;
 
