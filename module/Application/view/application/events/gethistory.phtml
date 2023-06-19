@@ -27,9 +27,11 @@ if($this->history){
                         echo 'Mémo <em>'.$change['newvalue'].'</em> acquitté';
                     }
                 } else if($change['fieldname'] == 'create') {
-                    echo 'Évènement créé';
+                    echo 'Évènement créé.';
                 } else if ($change['fieldname'] == 'mattermostPostId'){
-                    echo 'Évènement envoyé sur Mattermost';
+                    echo 'Évènement envoyé sur Mattermost.';
+                } else if ($change['fieldname'] == 'efnesent') {
+                    echo 'eFNE envoyée.';
                 } else {
                     echo 'Champ <b>'.strtolower($this->eventfieldname($change['fieldname'])).'</b>';
                     if(empty($change['oldvalue'])){
