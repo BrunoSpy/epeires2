@@ -255,7 +255,7 @@ class EventService
                                 } elseif ($key == 'mattermostPostId') {
                                     $historyentry['oldvalue'] = '';
                                     $historyentry['newvalue'] = '';
-                                } elseif ($key = 'efnesent') {
+                                } elseif ($key == 'efnesent') {
                                     $historyentry['oldvalue'] = '';
                                     $historyentry['newvalue'] = '';
                                 } else {
