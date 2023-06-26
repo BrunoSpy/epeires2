@@ -6,6 +6,11 @@ use Application\Services\EventService;
 use Doctrine\ORM\EntityManager;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
+use Application\Entity\Event;
+use Application\Entity\Impact;
+use Application\Entity\CustomFieldValue;
+use Application\Entity\CustomField;
+
 
 class EventResource extends AbstractResourceListener
 {
@@ -17,6 +22,108 @@ class EventResource extends AbstractResourceListener
         $this->em = $entityManager;
         $this->eventService = $eventService;
     }
+
+    public function createEventFromJSON($data)
+    {
+        if (is_object($data)) {
+            $jsonString = json_encode($data);
+            if ($jsonString === false) {
+                return "Error in converting object to JSON";
+            }
+            $data = $jsonString;
+        }
+
+        $jsonData = json_decode($data, true);
+        if ($jsonData === null) {
+            return "Invalid JSON data";
+        }
+
+        // Extract the values from the JSON
+        $category = $jsonData['category'];
+        $startDate = $jsonData['dateDebut'];
+        $endDate = $jsonData['dateFin'];
+        $customfieldfromjson = $jsonData['customFields'];
+        $organisation = $jsonData['organisation'];
+        $author = $jsonData['author'];
+
+        // Create the event
+        $event = new Event();
+        $event->setAuthor($this->em->getRepository('Core\Entity\User')->findOneBy(['username' => $author]));
+        $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
+        $event->setScheduled(0);
+        $event->setPunctual(0);
+        $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
+        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find(3));
+        $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
+        $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
+        $event->setOrganisation($this->em->getRepository('Application\Entity\Organisation')->findOneBy(['name' => $organisation]));
+
+        // Get the custom fields for the selected category
+        $customfield = $event->getCategory()->getCustomfields();        
+        foreach ($customfield as $field) {
+            $customvalue = new CustomFieldValue();
+            $customvalue->setEvent($event);
+            $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
+            $customvalue->setValue($customfieldfromjson[$field->getName()]);
+            $event->addCustomFieldValue($customvalue);
+        }
+        
+        $this->em->persist($event);
+        $this->em->flush();
+        
+        return $event;
+    }
+
+    public function updateEventFromJSON($event, $data)
+    {
+        if (is_object($data)) {
+            $jsonString = json_encode($data);
+            if ($jsonString === false) {
+                return "Error in converting object to JSON";
+            }
+            $data = $jsonString;
+        }
+
+        $jsonData = json_decode($data, true);
+        if ($jsonData === null) {
+            return "Invalid JSON data";
+        }
+
+        // Extract the values from the JSON
+        $category = $jsonData['category'];
+        $startDate = $jsonData['dateDebut'];
+        $endDate = $jsonData['dateFin'];
+        $customfieldfromjson = $jsonData['customFields'];
+
+        $event->setCategory($this->em->getRepository('Application\Entity\Category')->findOneBy(['name' => $category]));
+        $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
+        $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
+
+        $customfield = $event->getCategory()->getCustomfields();
+
+        foreach ($customfield as $field) {
+            $customvalue = $this->em->getRepository('Application\Entity\CustomFieldValue')
+            ->findOneBy(array(
+                'customfield' => $field->getId(),
+                'event' => $event->getId())
+            );
+            if (! $customvalue) {
+                $customvalue = new CustomFieldValue();
+                $customvalue->setEvent($event);
+                $customvalue->setCustomField($this->em->getRepository('Application\Entity\CustomField')->find($field->getId()));
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+                $event->addCustomFieldValue($customvalue);
+            } else {
+                $customvalue->setValue($customfieldfromjson[$field->getName()]);
+            }
+        }
+
+        $this->em->persist($event);
+        $this->em->flush();
+
+        return $event;
+    }
+
     
     /**
      * Create a resource
@@ -25,8 +132,9 @@ class EventResource extends AbstractResourceListener
      * @return ApiProblem|mixed
      */
     public function create($data)
-    {
-        return new ApiProblem(405, 'The POST method has not been defined');
+    {   
+        $eventFromJSON = $this->createEventFromJSON($data);
+        return $this->eventService->getJSON($eventFromJSON);
     }
     
     /**
@@ -62,8 +170,8 @@ class EventResource extends AbstractResourceListener
         $event = $this->em->getRepository('Application\Entity\Event')->find($id);
         if($event) {
             $result = array();
-    
             $result['name'] = $this->eventService->getName($event);
+            $result['date'] = $event->getStartdate();
             $files = array();
             foreach ($event->getFiles() as $file) {
                 $f = array();
@@ -135,6 +243,12 @@ class EventResource extends AbstractResourceListener
      */
     public function update($id, $data)
     {
-        return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+        $event = $this->em->getRepository('Application\Entity\Event')->find($id);
+        if($event) {
+            $eventFromJSON = $this->updateEventFromJSON($event, $data);
+            return $this->eventService->getJSON($eventFromJSON);
+        } else {
+            return new ApiProblem(404, 'No event found.');
+        }
     }
 }

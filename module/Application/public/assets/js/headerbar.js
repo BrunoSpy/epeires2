@@ -157,16 +157,16 @@ var headerbar = function (url) {
                 }
                 var delta = new Date(nextDate) - new Date();
                 var timer = setTimeout(function(){
-                    var n = noty({
+                    new Noty({
                         text: "Rappel :<br> Relève de "+nextHour.hour+ " " + nextHour.name + (nextHour.zone.length > 0 ? " (zone "+nextHour.zone+")." : ".")
                                 + "<br>Penser à mettre à jour le nom du chef de salle en fonction.",
                         type: "warning",
                         timeout: false,
                         layout: "topRight",
-                        callback: {
+                        callbacks: {
                             onClose: function(){
                                 updateShiftHours();
-                            },
+                            }/*,
                             onShow: function() {
                                 $('ul#noty_topRight_layout_container').draggable({
                                     stop: function (event, ui) {
@@ -175,9 +175,9 @@ var headerbar = function (url) {
                                         })
                                     }
                                 });
-                            }
+                            }*/
                         }
-                    });
+                    }).show();
                 }, delta);
             });
         });

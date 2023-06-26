@@ -19,7 +19,7 @@
     // récupération de la conf BTIV (local.php)
     var tabconf = $.parseJSON(conf);
     var centrage_defaut = (!tabconf.ip_centrage_defaut) ? [48.8534100, 2.3488000] : tabconf.ip_centrage_defaut;
-    var fichier_terrain = basepath + '/' + ((!tabconf.ip_fichier_terrain) ? 'data/terLF.GeoJson' : tabconf.ip_fichier_terrain);
+    var fichier_terrain = basepath + '/' + ((!tabconf.ip_fichier_terrain) ? 'data/terLFnum.GeoJson' : tabconf.ip_fichier_terrain);
     var fichier_balise = basepath + '/' + ((!tabconf.ip_fichier_balise) ? 'data/balLF.GeoJson' : tabconf.ip_fichier_balise);
     var image_balise = (!tabconf.ip_image_balise) ? 'btn-bal-g.png' : tabconf.ip_image_balise;
     var image_terrain = (!tabconf.ip_image_terrain) ? 'btn-ter.png' : tabconf.ip_image_terrain;
@@ -62,6 +62,7 @@
         this.toArray = function() {
             var array = {};
             array.name = this.getName();
+            array.numero = this.getNum();
             array.code = this.getCode();
             array.latitude = this.coord[0];
             array.longitude = this.coord[1];
@@ -90,6 +91,17 @@
             return this.props.name;
         },
 
+        this.getNum = function() {
+            if(this.props.numero) {
+                let strNumero = this.props.numero;
+                if (typeof strNumero === 'string') {
+                    return strNumero;
+                } else {
+                    return strNumero.join('<br />');
+                }
+            } else return ""
+        },
+
         this.addUpdate = function(date, text) {
             var update = {
                 date: date,
@@ -113,6 +125,7 @@
         this.getPopup = function() {
             return '<h3>'+this.getCode()+'</h3>'+
                 '<h4>'+this.getName()+'</h4>'+
+                '<h5>'+this.getNum()+'</h5>'+
                 '<h5>distance : '+this.d+' km</h5>'+
                 '<h5>cap : '+this.cap+'°</h5>';
         },
@@ -121,7 +134,7 @@
             var $li = $('<li class="list-group-item">' +
                 '<strong>' + moment.unix(this.getIntTime()).format('HH:mm:ss') + '</strong> ' +
                 '[<em>' + this.getCode() + '</em>] ' + 
-                this.getName() + 
+                this.getName() +
                 '<span class="btn-del-field glyphicon glyphicon-remove-circle"></span><br />' +
                 '<div class = "comment">' + this.comment + '</div>' + 
             '</li>');
@@ -159,7 +172,7 @@
                 .append($bcontact)
                 .append('<button class = "btn-xs btn-info"><span class="glyphicon ' + img + '"></span></button>')
                 .append('<span class="badge">d = ' + Math.trunc(this.d) + ' km, cap = ' + Math.trunc(this.cap) + '°</span>')
-                .append('<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> </h5>')
+                .append('<h5><strong>' + this.props.code + '</strong> <br /><em>' + this.props.name + '</em> <br /><em>' + this.getNum() + '</em> </h5>')
                 .append(updates)
                 .append($text)
                 .append('<button class = "btn-xs btn-primary cache">Ajouter la note</button>')
@@ -735,11 +748,11 @@
                     $('.btn-mail-ip').click(function() {
                         $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                                noty({
+                                new Noty({
                                     text: data[1],
                                     type: data[0],
                                     timeout: 4000,
-                                });               
+                                }).show();
                             });
                         });
                     });
@@ -782,11 +795,11 @@
                     $('.list-group-item').filter('[data-id="' + idIp +'"]').trigger('click');
                 }
 
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             });
         }
     });
@@ -804,11 +817,11 @@
                 idIp = null;
                 $('#mdl-end-ip').modal('hide');
                 $('#mdl-show-ip').modal('hide');
-                noty({
+                new Noty({
                     text: data.msg,
                     type: data.type,
                     timeout: 4000,
-                });
+                }).show();
             }
         )
     });
@@ -840,11 +853,11 @@
                     $('.btn-mail-ip').click(function() {
                         $.get(url + '/sarbeacons/validpdf/' + clickedIdIp, function(data) {
                             $.post(url + '/sarbeacons/mail', {id: clickedIdIp}, function(data) {
-                                noty({
+                                new Noty({
                                     text: data[1],
                                     type: data[0],
                                     timeout: 4000,
-                                });               
+                                }).show();
                             });
                         });
                     });
@@ -1350,11 +1363,11 @@
                 if(data[0] !== 'error') {
                     location.href = url + 'sarbeacons/print/' + idIp;
                 } else {
-                    noty({
+                    new Noty({
                         text: data[1],
                         type: data[0],
                         timeout: 4000,
-                    });               
+                    }).show();
                 };
             })
         }
@@ -1366,18 +1379,18 @@
             $.get(url + '/sarbeacons/validpdf/' + idIp, function(data) {
                 if(data[0] !== 'error') {
                     $.post(url + '/sarbeacons/mail', { id: idIp }, function(data) {
-                        noty({
+                        new Noty({
                             text: data[1],
                             type: data[0],
                             timeout: 4000,
-                        });
+                        }).show();
                     });
                 } else {
-                    noty({
+                    new Noty({
                         text: data[1],
                         type: data[0],
                         timeout: 4000,
-                    });               
+                    }).show();
                 };
             });
         }
@@ -1397,11 +1410,11 @@
                 $fEditIp.find('input[name=id]').val(idIp);
                 listBtn.setStates(2);
             }
-            noty({
+            new Noty({
                 text: data.msg,
                 type: data.type,
                 timeout: 4000,
-            });
+            }).show();
 
         })
     }
@@ -1438,11 +1451,11 @@
             $ter.after(intPlan.get(index).getHtml())
                 .remove();
 
-            noty({
+            new Noty({
                 text: data['msg'],
                 type: data['type'],
                 timeout: 4000,
-            });    
+            }).show();
         });
     }
 
@@ -1453,27 +1466,27 @@
 
         if (!$(this).hasClass('btn-danger')) {
             
-            $.post(url + '/sarbeacons/addfield', {code: field.getCode(), name: field.getName(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
+            $.post(url + '/sarbeacons/addfield', {code: field.getCode(), name: field.getName(), numero: field.getNum(), lat: field.getLat(), lon: field.getLon(), id: idIp}, function(data) {
                 field.setIdEvent(data['id']);
                 intPlan.addIp(index);
                 $ter.after(field.getHtml())
                     .remove();
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             })
         } else {
             $.post(url + '/sarbeacons/delfield', {id: idIp, code: field.getCode()}, function(data) {
                 intPlan.delIp(index);
                 $ter.after(field.getHtml())
                     .remove();
-                noty({
+                new Noty({
                     text: data['msg'],
                     type: data['type'],
                     timeout: 4000,
-                });    
+                }).show();
             })                
         }
     }
@@ -1536,11 +1549,11 @@
 
     function loadJsonFieldsFail(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
-        noty({
+        new Noty({
             text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des terrains<br /> Fichier : <b>" + fichier_terrain + "</b>",
             type: 'error',
             timeout: 10000,
-        });
+        }).show();
     };
 
     function showJsonBeacons(data) {
@@ -1559,10 +1572,10 @@
 
     function loadJsonBeaconsFail(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
-        noty({
+        new Noty({
             text: "Request Failed: " + err + "<br />Erreur lors du chargement du fichier GeoJson des balises<br /> Fichier : <b>" + fichier_balise + "</b>",
             type: 'error',
             timeout: 10000,
-        });
+        }).show();
     };
 };

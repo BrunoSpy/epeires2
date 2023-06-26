@@ -75,17 +75,17 @@ class NavBar extends AbstractHelper
             $html .= '</li>';
         }
         if ($this->view->isGranted('frequencies.read')) {
-            $html .= '<li><a id="frequency" href="' 
+            $html .= '<li class="entrytab"><a id="frequency" href="'
                 . $urlHelper('application',
                     array(
                         'controller' => 'frequencies',
                         'action' => 'index'
                     )) 
-                . '">Radio</a></li>';
+                . '"><i class="fas fa-broadcast-tower entrytab-icon"></i> <span class="entrytab-text">Radio</span></a></li>';
         }
 
         if ($this->view->isGranted('afis.read')) {
-            $html .= '<li><a id="tab-afis" href="'
+            $html .= '<li class="entrytab"><a id="tab-afis" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'afis',
@@ -95,7 +95,7 @@ class NavBar extends AbstractHelper
         }
 
         if ($this->view->isGranted('flightplans.read')) {
-            $html .= '<li><a id="tab-flightplans" href="'
+            $html .= '<li class="entrytab"><a id="tab-flightplans" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'flightplans',
@@ -105,7 +105,7 @@ class NavBar extends AbstractHelper
         }
 
         if ($this->view->isGranted('sarbeacons.read')) {
-            $html .= '<li><a id="tab-sarbeacons" href="'
+            $html .= '<li class="entrytab"><a id="tab-sarbeacons" href="'
                 . $urlHelper('application',
                     [
                         'controller' => 'sarbeacons',
@@ -124,7 +124,7 @@ class NavBar extends AbstractHelper
 
                 switch ($tab->getType()) {
                     case Tab::TIMELINE:
-                        $html .= '<li class="dropdown">' .
+                        $html .= '<li class="dropdown entrytab">' .
                             '<a class="customtab dropdown-toggle" id="tab-' . $tab->getId() . '" ' .
                             'href="' . $urlHelper('application', array(
                                 'controller' => 'timelinetab',
@@ -133,8 +133,11 @@ class NavBar extends AbstractHelper
                                 'query' => array(
                                     'tabid' => $tab->getId()
                                 )));
-                        $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">';
-                        $html .= $tab->getName() . ' <span class="caret"></span></a>'
+                        $html .= '" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.$tab->getName().'">';
+                        if(strlen($tab->getIcon()) > 0) {
+                            $html .= '<i class="entrytab-icon '.$tab->getIcon().'"></i> ';
+                        }
+                        $html .= '<span class="entrytab-text">'.$tab->getName() . '</span> <span class="caret"></span></a>'
                             . '<ul class="dropdown-menu dropdown-menu-material-purple-300">'
                             . '<li class="dropdown-header">Tri</li>'
                             . '<li class="tri active"><a href="#" id="tri_cat">Par catégorie</a></li>'
@@ -148,22 +151,30 @@ class NavBar extends AbstractHelper
                         $html .= '</ul></li>';
                         break;
                     case Tab::SWITCHLIST:
-                        $html .= '<li>' .
+                        $html .= '<li class="entrytab">' .
                             '<a class="customtab" id="tab-'.$tab->getId().'"' .
                             'href ="' . $urlHelper('application', array(
                                 'controller' => 'switchlisttab',
                                 'action' => 'index'
                             ), array('query' => array('tabid' => $tab->getId())));
-                        $html .= '">'.$tab->getName()."</a></li>";
+                        $html .= '">';
+                        if(strlen($tab->getIcon()) > 0) {
+                            $html .= '<i class="entrytab-icon '.$tab->getIcon().'"></i> ';
+                        }
+                        $html .= '<span class="entrytab-text">'.$tab->getName()."</span></a></li>";
                         break;
                     case Tab::SPLITTIMELINE:
-                        $html .= '<li>' .
+                        $html .= '<li class="entrytab">' .
                             '<a class="customtab" id="tab-'.$tab->getId().'"' .
                             'href ="' . $urlHelper('application', array(
                                 'controller' => 'splittimelinetab',
                                 'action' => 'index'
                             ), array('query' => array('tabid' => $tab->getId())));
-                        $html .= '">'.$tab->getName()."</a></li>";
+                        $html .= '">';
+                        if(strlen($tab->getIcon()) > 0) {
+                            $html .= '<i class="entrytab-icon '.$tab->getIcon().'"></i> ';
+                        }
+                        $html .= '<span class="entrytab-text">'.$tab->getName()."</span></a></li>";
                         break;
                 }
 

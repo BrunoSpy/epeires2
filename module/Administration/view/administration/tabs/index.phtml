@@ -1,4 +1,12 @@
-<?php $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js'); ?>
+<?php
+  $this->headScript()->appendFile($this->basePath() . '/assets/js/tabs.js');
+  $this->headScript()->appendFile($this->basePath() . '/components/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.min.js');
+
+  $this->headLink()->appendStylesheet($this->basePath() . '/components/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css');
+
+?>
+
+
 
 <div class="container-fluid">
     <div class="row">

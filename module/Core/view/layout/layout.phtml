@@ -8,10 +8,11 @@
         <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
 
         <!-- Le styles -->
-        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/png', 'href' => $this->basePath() . '/img/epeires.png'))
                         ->prependStylesheet($this->basePath() . '/assets/css/application.css') 
                         ->prependStylesheet($this->basePath() . '/assets/css/admin.css')
                         ->prependStylesheet($this->basePath() . '/assets/css/google_material_font.css')
+                        ->prependStylesheet($this->basePath() . '/components/noty/lib/noty.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/ripples.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/material-palette.min.css')
                         ->prependStylesheet($this->basePath() . '/components/bootstrap-material-design/dist/css/roboto.min.css')
@@ -21,7 +22,7 @@
         <!-- Scripts -->
         <?php echo $this->headScript()->prependFile($this->basePath() . '/assets/js/application.js')
                                       ->prependFile($this->basePath() . '/components/bootstrap/dist/js/bootstrap.min.js')
-                                      ->prependFile($this->basePath() . '/components/noty/js/noty/packaged/jquery.noty.packaged.min.js')
+                                      ->prependFile($this->basePath() . '/components/noty/lib/noty.min.js')
                                       ->prependFile($this->basePath() . '/components/jquery-ui/jquery-ui.min.js')
                                       ->prependFile($this->basePath() . '/components/jquery/dist/jquery.min.js')
         							   ?>

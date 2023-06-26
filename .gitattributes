@@ -1,3 +1,4 @@
 public/components/* linguist-vendored
 composer.lock linguist-vendored
 tests/_support/* linguist-vendored
+/composer.lock -merge

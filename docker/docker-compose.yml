@@ -6,7 +6,7 @@ volumes:
 
 services:
   db:
-    image: mariadb:10.3.20
+    image: mariadb:10.5.15
     environment:
       - MYSQL_ROOT_PASSWORD=changeme
       - MYSQL_DATABASE=epeires2

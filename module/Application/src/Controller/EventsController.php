@@ -37,6 +37,7 @@ use Application\Services\CustomFieldService;
 use Application\Services\EventService;
 use Core\Service\EmailService;
 use Core\Service\MAPDService;
+use Core\Service\eFNEService;
 use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Model\ViewModel;
@@ -52,6 +53,10 @@ use Doctrine\ORM\QueryBuilder;
 
 use LmcRbacMvc\Exception\UnauthorizedException;
 
+// used to check if fne function works
+use Zend\Log\Logger;
+use Zend\Log\Writer\Stream;
+//
 
 /**
  *
@@ -66,12 +71,16 @@ class EventsController extends TimelineTabController
     private $translator;
     private MAPDService $mapd;
     private EmailService $emailService;
+    private eFNEService $efneService;
 
     public function __construct(EntityManager $entityManager,
                                 EventService $eventService,
                                 CustomFieldService $customfieldService,
                                 $zfcrbacOptions,
-                                $config, $mattermost, $translator, MAPDService $mapd, $logger, EmailService $emailService)
+                                $config, $mattermost, $translator, 
+                                MAPDService $mapd, $logger, 
+                                EmailService $emailService,
+                                eFNEService $efneService)
     {
         parent::__construct($entityManager, $config, $mattermost, $logger);
         $this->eventservice = $eventService;
@@ -80,6 +89,7 @@ class EventsController extends TimelineTabController
         $this->translator = $translator;
         $this->mapd = $mapd;
         $this->emailService = $emailService;
+        $this->efneService = $efneService;
     }
     
     public function indexAction()
@@ -513,6 +523,24 @@ class EventsController extends TimelineTabController
         $qbEvents->andWhere($orEvents);
     }
 
+    public function addAction()
+    {
+        // get request data
+        $data = $this->params()->fromPost();
+
+        // add new event using EventService
+        $event = new EventEntity();
+        $event->setName($data['name']);
+        // set other properties
+        $this->eventservice->saveEvent($event);
+
+        // return response
+        return $this->getResponse()->setContent(json_encode([
+            'status' => 'success',
+            'event' => $event->getArrayCopy(),
+        ]));
+    }
+
     /**
      *
      * @return \Laminas\View\Model\JsonModel Exception : if query param 'return' is true, redirect to route application.
@@ -569,7 +597,7 @@ class EventsController extends TimelineTabController
                         $credentials = true;
                     }
                 }
-                
+
                 if ($credentials) {
                     //préparation de certains champs
                     $startdate = new \DateTime($post['startdate']);
@@ -2307,6 +2335,89 @@ class EventsController extends TimelineTabController
     }
 
     /**
+     * Create and publish an eFNE from the event on the diapason website 
+     */
+
+    public function sendfneAction()
+    {
+        $id = $this->params()->fromQuery('id', 0);
+        $messages = array();
+        if ($id) {
+            $fields = [];
+            $objectManager = $this->getEntityManager();
+            $event = $objectManager->getRepository('Application\Entity\Event')->find($id);
+            $formatter = \IntlDateFormatter::create(\Locale::getDefault(), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL, 'UTC', \IntlDateFormatter::GREGORIAN, 'y-MMM-dd, HH:mm');
+            $formatter->setPattern('yyyy-MM-dd HH:mm');
+            
+            if ($event) {
+                if ($event->getEfneSent()) {
+                    $messages['error'][] = "Cette eFNE a déja été envoyée";
+                } else {
+                    $fields['date'] = $formatter->format($event->getStartdate());
+                    foreach ($event->getCustomFieldsValues() as $value) {
+                        $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
+                        $name = $value->getCustomField()->getName();
+                        $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
+                        
+                        if ($name == "Description") {
+                            $fields['description'] = 'Description Principale : ' . $value;
+                        } elseif ($name == "Regroupement") {
+                            $fields['regroupement'] = $value;
+                        } elseif ($name == "Position" || $name == "N° de position") {
+                            $fields['position'] = $value;
+                        } elseif ($name == "Lieu") {
+                            $fields['lieu'] = $value;
+                        } elseif ($name == "Alias") {
+                        } elseif ($name == "Dépôt d'une FNE") {
+                        } elseif ($name == "Indicatif") {
+                            $fields['aircrafts'] = $value;
+                        } elseif ($name == "Nom") {
+                            $fields['redactors'] = $value;
+                        } elseif ($name == "Équipe") {
+                            $fields['redactorsteam'] = $value;
+                        } 
+                        else {
+                            $fields['description'] .= "\n" . $name . " : " . $value;
+                        }
+                    }
+                    $fields['regroupement'] = empty($fields['regroupement']) ? 'Non précisé' : $fields['regroupement'];
+                    $fields['position'] = empty($fields['position']) ? 'Non précisé' : $fields['position'];
+                    $fields['redactorsteam'] = empty($fields['redactorsteam']) ? 'Non précisé' : $fields['redactorsteam'];
+                
+                    if (! array_key_exists('efne', $this->config)) {
+                        $messages['error'][] = "eFNE non configuré, contactez votre administrateur.";
+                    } else {
+                        try {
+                            $objectManager->refresh($event);
+                            $response = $this->efneService->sendEventToEFNE($customField = $fields);
+                            $messages['success'][] = "Evènement correctement envoyé à eFNE";
+                            
+                            // Marqueur de efne déjâ envoyée
+                            $event->setEfneSent(1);
+                            $objectManager->persist($event);
+                            $objectManager->flush();
+
+                        } catch (\Exception $e) {
+                            $messages['error'][] = $e->getMessage();
+                        }
+                    }
+                }
+            } else {
+                $messages['error'][] = "Envoi d'eFNE impossible : évènement non trouvé.";
+            }
+        } else {
+            $messages['error'][] = "Envoi d'eFNE impossible : id non trouvé.";
+        }
+         // récupérer la valeur de efnesent
+        $json = array();
+        $json['event'] = array(
+            $event->getId() => $this->eventservice->getJSON($event)
+        );
+        $json['messages'] = $messages;
+        return new JsonModel($json);
+    }
+
+    /**
      * Send an event by email to the corresponding IPO
      */
     public function sendEventAction()
@@ -2339,6 +2450,7 @@ class EventsController extends TimelineTabController
                 
                 if (! array_key_exists('emailfrom', $this->config) || ! array_key_exists('smtp', $this->config)) {
                     $messages['error'][] = "Envoi d'email non configuré, contactez votre administrateur.";
+                    
                 } else {
                     try {
                         $this->emailService->sendEmailTo(
