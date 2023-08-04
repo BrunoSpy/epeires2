@@ -23,9 +23,14 @@ class MAPDException extends \RuntimeException
 
     const ERRORS = [
         "E007" => "Impossible de modifier le nom d'une zone.",
+        "E008" => "Le FL plafond doit être supérieur au FL plancher",
         "E010" => "Impossible de créer la zone, la durée maximale autorisée est de 24h.",
         "E011" => "Il existe déjà une zone sur le créneau horaire spécifié.",
-        "E020" => "Droits insuffisants pour effectuer cette opération."
+        "E020" => "Droits insuffisants pour effectuer cette opération.",
+        "E022" => "Impossible de créer ou modifier une zone pendant les horaires d'ouverture de la CNGE",
+        "E023" => "Impossible de créer ou modifier une zone pendant les horaires d'ouverture de la CNGE",
+        "E024" => "Impossible de créer ou modifier une zone pendant les horaires d'ouverture de la CNGE",
+        "E025" => "Impossible de modifier une zone qui est déjà commencée."
     ];
 
     public function __construct(string $body, int $statusCode)
@@ -36,7 +41,12 @@ class MAPDException extends \RuntimeException
             foreach ($json['errors'] as $error) {
                 $message .= self::ERRORS[$error['code']];
             }
-            parent::__construct($message);
+            if(strlen($message) > 0) {
+                parent::__construct($message);
+            } else {
+                //no prefconfigured message : raw print
+                parent::__construct('Erreur '.$statusCode.' : '.$body);
+            }
         } else {
             //message au format inconnu
             parent::__construct('Erreur '.$statusCode.' : '.$body);
