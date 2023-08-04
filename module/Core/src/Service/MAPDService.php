@@ -141,6 +141,8 @@ class MAPDService
         $end = clone $start;
         $end->setTime(23,59,59);
 
+        $now = new DateTime();
+
         $this->logger->info('Mise à jour catégorie '.$cat->getName());
 
         if($cat instanceof MilCategory && strcmp($cat->getOrigin(), MilCategory::MAPD) == 0) {
@@ -162,7 +164,7 @@ class MAPDService
 
                 if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
                     $lastModified = new DateTime($eauprsas['lastModified']);
-                    $milLastUpdate = new MilCategoryLastUpdate($lastModified, $cat, $day->format('Y-m-d'));
+                    $milLastUpdate = new MilCategoryLastUpdate($lastModified, $now, $cat, $day->format('Y-m-d'));
                     $cat->addLastUpdate($milLastUpdate);
 
                     foreach ($eauprsas['results'] as $zonemil) {
@@ -196,106 +198,121 @@ class MAPDService
                     $this->entityManager->persist($milLastUpdate);
                     $this->entityManager->flush();
 
+                } else {
+                    //answer is empty
+                    //we still need to store lastcall et lastmilupdate in order to avoid multiple calls
+                    $startDay = new DateTime();
+                    $startDay->setTimezone(new \DateTimeZone('UTC'));
+                    $startDay->setTime(0,0,0);
+                    $milLastUpdate = new MilCategoryLastUpdate($startDay, $now, $cat, $day->format('Y-m-d'));
+                    $this->entityManager->persist($milLastUpdate);
+                    $this->entityManager->flush();
                 }
 
             } else {
                 $this->logger->info('Data present : get data from /activations/diff');
                 $lastModified = $lastUpdate->first()->getLastUpdate();
-                $eauprsas = $this->getEAUPRSADiff($filter, $start, $end, $lastModified);
-                $this->logger->debug(print_r($eauprsas, true));
-                if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
-                    $newLastModified = $eauprsas['lastModified'];
-                    $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
-                    foreach ($eauprsas['results'] as $zonemil) {
-                        if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
-                            $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
-                            if($eventid !== -1) {
-                                $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
-                            } else {
-                                $event = null;
-                            }
-                            //query getzonemilevent filters custom fields, refresh needed
-                            if($event !== null) {
-                                $this->entityManager->refresh($event);
-                            }
-                            switch ($zonemil['diffType']) {
-                                case 'created':
-                                    if ($event == null) {
-                                        $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                            $cat,
-                                            $user->getOrganisation(),
-                                            $user,
-                                            $zonemil["areaName"],
-                                            new \DateTime($zonemil['dateFrom']),
-                                            new \DateTime($zonemil['dateUntil']),
-                                            $zonemil['maxFL'],
-                                            $zonemil['minFL'],
-                                            $zonemil['id'],
-                                            $messages,
-                                            false
-                                        );
-                                    } else {
-                                        //do nothing, event should not pre-exist
-                                    }
-                                    break;
-                                case 'updated':
-                                    if ($event !== null) {
-                                        $upperlevel = $event->getCustomFieldValue($cat->getUpperLevelField());
-                                        if ($upperlevel == null) {
-                                            $upperlevel = new CustomFieldValue();
-                                            $upperlevel->setEvent($event);
-                                            $upperlevel->setCustomField($cat->getUpperLevelField());
+                $lastCall = $lastUpdate->first()->getLastCall();
+                $duration = $now->getTimestamp() - $lastCall->getTimestamp();
+                if($duration > 30) { //do not call MAPD more than once per 30s per category
+                    $eauprsas = $this->getEAUPRSADiff($filter, $start, $end, $lastModified);
+                    $lastUpdate->first()->setLastCall($now);
+                    $this->logger->debug(print_r($eauprsas, true));
+                    if($eauprsas !== null && $eauprsas['lastModified'] !== null) {
+                        $newLastModified = $eauprsas['lastModified'];
+                        $lastUpdate->first()->setLastUpdate(new \DateTime($newLastModified));
+                        foreach ($eauprsas['results'] as $zonemil) {
+                            if(strlen($cat->getZonesRegex()) == 0 || (strlen($cat->getZonesRegex()) > 0 && preg_match($cat->getZonesRegex(), $zonemil['areaName']))) {
+                                $eventid = $this->entityManager->getRepository(Event::class)->getZoneMilEventId($cat, $zonemil['id']);
+                                if($eventid !== -1) {
+                                    $event = $this->entityManager->getRepository(Event::class)->findOneBy(array('id' => $eventid));
+                                } else {
+                                    $event = null;
+                                }
+                                //query getzonemilevent filters custom fields, refresh needed
+                                if($event !== null) {
+                                    $this->entityManager->refresh($event);
+                                }
+                                switch ($zonemil['diffType']) {
+                                    case 'created':
+                                        if ($event == null) {
+                                            $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                                $cat,
+                                                $user->getOrganisation(),
+                                                $user,
+                                                $zonemil["areaName"],
+                                                new \DateTime($zonemil['dateFrom']),
+                                                new \DateTime($zonemil['dateUntil']),
+                                                $zonemil['maxFL'],
+                                                $zonemil['minFL'],
+                                                $zonemil['id'],
+                                                $messages,
+                                                false
+                                            );
+                                        } else {
+                                            //do nothing, event should not pre-exist
                                         }
-                                        $upperlevel->setValue($zonemil['maxFL']);
+                                        break;
+                                    case 'updated':
+                                        if ($event !== null) {
+                                            $upperlevel = $event->getCustomFieldValue($cat->getUpperLevelField());
+                                            if ($upperlevel == null) {
+                                                $upperlevel = new CustomFieldValue();
+                                                $upperlevel->setEvent($event);
+                                                $upperlevel->setCustomField($cat->getUpperLevelField());
+                                            }
+                                            $upperlevel->setValue($zonemil['maxFL']);
 
-                                        $lowerLevel = $event->getCustomFieldValue($cat->getLowerLevelField());
-                                        if ($lowerLevel == null) {
-                                            $lowerLevel = new CustomFieldValue();
-                                            $lowerLevel->setEvent($event);
-                                            $lowerLevel->setCustomField($cat->getLowerLevelField());
+                                            $lowerLevel = $event->getCustomFieldValue($cat->getLowerLevelField());
+                                            if ($lowerLevel == null) {
+                                                $lowerLevel = new CustomFieldValue();
+                                                $lowerLevel->setEvent($event);
+                                                $lowerLevel->setCustomField($cat->getLowerLevelField());
+                                            }
+                                            $lowerLevel->setValue($zonemil['minFL']);
+
+                                            $event->setDates(new Datetime($zonemil['dateFrom']), new Datetime($zonemil['dateUntil']));
+
+                                            $this->entityManager->persist($lowerLevel);
+                                            $this->entityManager->persist($upperlevel);
+                                        } else {
+                                            $this->logger->info("Tentative de mise à jour d'un évènement non connu : création");
+                                            //update of an unknown event, should not happen but let's create it
+                                            //can happen if event is hosted by multiple categories
+                                            $this->entityManager->getRepository(Event::class)->doAddMilEvent(
+                                                $cat,
+                                                $user->getOrganisation(),
+                                                $user,
+                                                $zonemil["areaName"],
+                                                new \DateTime($zonemil['dateFrom']),
+                                                new \DateTime($zonemil['dateUntil']),
+                                                $zonemil['maxFL'],
+                                                $zonemil['minFL'],
+                                                $zonemil['id'],
+                                                $messages,
+                                                false
+                                            );
                                         }
-                                        $lowerLevel->setValue($zonemil['minFL']);
-
-                                        $event->setDates(new Datetime($zonemil['dateFrom']), new Datetime($zonemil['dateUntil']));
-
-                                        $this->entityManager->persist($lowerLevel);
-                                        $this->entityManager->persist($upperlevel);
-                                    } else {
-                                        $this->logger->info("Tentative de mise à jour d'un évènement non connu : création");
-                                        //update of an unknown event, should not happen but let's create it
-                                        //can happen if event is hosted by multiple categories
-                                        $this->entityManager->getRepository(Event::class)->doAddMilEvent(
-                                            $cat,
-                                            $user->getOrganisation(),
-                                            $user,
-                                            $zonemil["areaName"],
-                                            new \DateTime($zonemil['dateFrom']),
-                                            new \DateTime($zonemil['dateUntil']),
-                                            $zonemil['maxFL'],
-                                            $zonemil['minFL'],
-                                            $zonemil['id'],
-                                            $messages,
-                                            false
-                                        );
-                                    }
-                                    break;
-                                case 'deleted':
-                                    if ($event !== null) {
-                                        $status = $this->entityManager->getRepository(Status::class)->find(5);
-                                        $event->setStatus($status);
-                                    }
-                                    break;
-                            }
-                            if ($event !== null) {
-                                $this->entityManager->persist($event);
+                                        break;
+                                    case 'deleted':
+                                        if ($event !== null) {
+                                            $status = $this->entityManager->getRepository(Status::class)->find(4);
+                                            $event->setStatus($status);
+                                        }
+                                        break;
+                                }
+                                if ($event !== null) {
+                                    $this->entityManager->persist($event);
+                                }
                             }
                         }
+
                     }
-
-                    $this->entityManager->persist($lastUpdate->first());
-                    $this->entityManager->flush();
-
                 }
+
+                //persist lastcall or lastupdate or both
+                $this->entityManager->persist($lastUpdate->first());
+                $this->entityManager->flush();
             }
 
         }
