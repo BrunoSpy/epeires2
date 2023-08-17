@@ -102,11 +102,11 @@ var updateNavbar = function() {
 
                 $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
                 $("#navbar-tabs .entrytab").addClass('entrytab-ellipsis');
-                $("#navbar-tabs .entrytab-icon").addClass('fa-2x').siblings('.entrytab-text').addClass('hide');
+                $("#navbar-tabs .entrytab-icon").addClass('entrytab-icon-lonely').siblings('.entrytab-text').addClass('hide');
             } else {
                 $("#navbar-tabs .entrytab").css('max-width', '');
                 $("#navbar-tabs .entrytab").removeClass('entrytab-ellipsis');
-                $("#navbar-tabs .entrytab-icon").removeClass('fa-2x').siblings('.entrytab-text').removeClass('hide');
+                $("#navbar-tabs .entrytab-icon").removeClass('entrytab-icon-lonely').siblings('.entrytab-text').removeClass('hide');
             }
         } 
     }

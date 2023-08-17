@@ -8,6 +8,11 @@
 
 .entrytab {
     width: auto;
+    max-height: 50px;
+}
+.entrytab-icon-lonely {
+    vertical-align: text-top;
+    font-size: 1.8em;
 }
 
 .entrytab-ellipsis {
