@@ -16,9 +16,11 @@
 }
 
 .entrytab-ellipsis {
+    display: block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    float: left;
 }
 
 .entrytab-icon.hide {
