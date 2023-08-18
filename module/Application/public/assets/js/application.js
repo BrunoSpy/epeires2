@@ -107,12 +107,17 @@ var updateNavbar = function() {
                 $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
 
                 $("#navbar-tabs .entrytab.dropdown .entrytab-text").addClass('entrytab-ellipsis');
-               // $("#navbar-tabs .entrytab.dropdown.active .entrytab-text").css('max-width', (entryTextWidth-10)+'px');
-                $("#navbar-tabs .entrytab.dropdown.active").has('.badge').find('.entrytab-text').css('max-width', (entryTextWidth-18-10)+'px');
+                $("#navbar-tabs .entrytab.dropdown.active .entrytab-text").css('max-width', (entryTextWidth-10)+'px');
+                $("#navbar-tabs .entrytab.dropdown.active").has('.badge').each(function(index){
+                    let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
+                    $(this).find('.entrytab-text').css('max-width', (entryTextWidth-10-badgeWidth)+'px');
+                });
 
                 $("#navbar-tabs .entrytab.dropdown:not(.active) .entrytab-text").css('max-width', entryTextWidth+'px');
-                $("#navbar-tabs .entrytab.dropdown:not(.active)").has('.badge').find(".entrytab-text").css('max-width', (entryTextWidth-18)+'px');
-
+                $("#navbar-tabs .entrytab.dropdown:not(.active)").has('.badge').each(function(index){
+                    let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
+                    $(this).find('.entrytab-text').css('max-width', (entryTextWidth-badgeWidth)+'px');
+                });
 
                 $("#navbar-tabs .entrytab:not(.dropdown) a").addClass('entrytab-ellipsis').css('max-width', tabsize+'px');
                 $("#navbar-tabs .entrytab-icon").addClass('entrytab-icon-lonely').siblings('.entrytab-text').addClass('hide');
