@@ -8,12 +8,19 @@
 
 .entrytab {
     width: auto;
+    max-height: 50px;
+}
+.entrytab-icon-lonely {
+    vertical-align: text-top;
+    font-size: 1.8em;
 }
 
 .entrytab-ellipsis {
+    display: block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    float: left;
 }
 
 .entrytab-icon.hide {
