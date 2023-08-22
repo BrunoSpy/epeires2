@@ -612,7 +612,6 @@
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
 
-            // action click eFNE
             this.element.on('click', '.send-fne', function(e){
                 e.preventDefault();
                 var me = $(this);
@@ -628,7 +627,6 @@
                 );
                 self.element.find('#event'+id+' .tooltip-evt').popover('destroy');
             });
-            //
 
             this.element.on('click', '.cancel-evt', function(e){
                 e.preventDefault();
@@ -1975,9 +1973,10 @@
 
             event.txtSize = txtSize;
             //taille totale de la boite contenant le texte et les icônes
-            var txt_wid = txtSize +
+            var txt_wid = txtSize
                 + 17*3
                 + (elmt_txt.find('.badge').length * 14)
+                + (elmt_txt.find('.efne_icon').length * 27); //padding if efne_icon is present
                 + 4 //padding
                 + 2; //border-width*2
             //place à droite du texte
