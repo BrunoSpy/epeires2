@@ -448,14 +448,14 @@ return array(
         'authorization' => array(
             'API\\V1\\Rest\\Frequency\\Controller' => array(
                 'collection' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
                 ),
                 'entity' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,
