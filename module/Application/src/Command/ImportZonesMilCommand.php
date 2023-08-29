@@ -99,7 +99,7 @@ class ImportZonesMilCommand extends Command
 
 
         $verbose = false;
-        if($input->getOption('verbose') == true){
+        if($output->isVerbose()){
             $verbose = true;
         }
         $email = false;
@@ -152,6 +152,10 @@ class ImportZonesMilCommand extends Command
             $output->writeln( "Erreur fatale pendant le téléchargement");
             $output->writeln( "Les données téléchargées sont incomplètes");
             $output->writeln( "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré");
+            $output->writeln("Erreur reçue : ".$e->getMessage());
+            if($output->isVerbose()) {
+                $output->writeln($e->getTraceAsString());
+            }
             return Command::FAILURE;
         }
 
@@ -190,6 +194,10 @@ class ImportZonesMilCommand extends Command
                 $output->writeln( "Erreur fatale pendant le téléchargement");
                 $output->writeln( "Les données téléchargées sont incomplètes");
                 $output->writeln( "Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré");
+                $output->writeln("Erreur reçue : ".$e->getMessage());
+                if($output->isVerbose()) {
+                    $output->writeln($e->getTraceAsString());
+                }
                 //abort import
                 //email sent by service
                 return Command::FAILURE;
@@ -231,7 +239,10 @@ class ImportZonesMilCommand extends Command
                 $this->mapd->updateCategory($milcat, $day, $user);
                 $output->writeln( $milcat->getName(). ' importée');
             } catch (\Exception $e) {
-                $output->writeln( $e->getMessage());
+                $output->writeln("Erreur reçue : ".$e->getMessage());
+                if($output->isVerbose()) {
+                    $output->writeln($e->getTraceAsString());
+                }
                 return Command::FAILURE;
             }
         }

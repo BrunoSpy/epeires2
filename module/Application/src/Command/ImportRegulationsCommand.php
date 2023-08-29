@@ -86,7 +86,7 @@ class ImportRegulationsCommand extends Command
             $this->nmb2b->deActivateErrorEmail();
         }
 
-        if($input->getOption('verbose') == true) {
+        if($output->isVerbose()) {
             $this->nmb2b->setVerbose(true);
         }
 
@@ -129,6 +129,10 @@ class ImportRegulationsCommand extends Command
                 $output->writeln("Erreur fatale pendant le téléchargement");
                 $output->writeln("Les données téléchargées sont incomplètes");
                 $output->writeln("Le rapport d'erreur a été envoyé sur l'adresse de l'IPO, si configuré");
+                $output->writeln("Erreur reçue : ".$e->getMessage());
+                if($output->isVerbose()) {
+                    $output->writeln($e->getTraceAsString());
+                }
                 return Command::FAILURE;
             }
             foreach ($regulations->getRegulations() as $regulation) {
