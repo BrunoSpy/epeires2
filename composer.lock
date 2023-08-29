@@ -474,16 +474,16 @@
         },
         {
             "name": "dgac/nmb2b-phpclient",
-            "version": "v0.4.1",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DGAC/nmb2b-phpclient.git",
-                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706"
+                "reference": "e826d301a7bb0e5f8cdb70040007cc4751be12a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
-                "reference": "c81d5ea5ecbb73904cf5df0cb894cf235e80a706",
+                "url": "https://api.github.com/repos/DGAC/nmb2b-phpclient/zipball/e826d301a7bb0e5f8cdb70040007cc4751be12a6",
+                "reference": "e826d301a7bb0e5f8cdb70040007cc4751be12a6",
                 "shasum": ""
             },
             "require": {
@@ -512,9 +512,9 @@
             "description": "PHP Client for NM B2B Web services",
             "support": {
                 "issues": "https://github.com/DGAC/nmb2b-phpclient/issues",
-                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.1"
+                "source": "https://github.com/DGAC/nmb2b-phpclient/tree/v0.4.2"
             },
-            "time": "2022-12-13T09:05:10+00:00"
+            "time": "2023-08-29T09:18:24+00:00"
         },
         {
             "name": "doctrine/annotations",
