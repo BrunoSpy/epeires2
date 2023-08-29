@@ -246,6 +246,23 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			.addClass('glyphicon glyphicon-warning-sign');
 	};
 
+	let initValidator = function() {
+		validator = $('#Event').validate({
+			errorClass: 'has-error',
+			ignore: ':hidden, .dateform',
+			success: function(label, element){
+				$(element).parents('.form-group').removeClass('has-error');
+			},
+			showErrors: function(errorMap, errorList) {
+				$.each(errorMap, function(key, value){
+					$("textarea[name='"+key+"'], input[name='"+key+"']").parents('.form-group').addClass('has-error');
+				});
+				updateIconTabs();
+				this.defaultShowErrors();
+			},
+		});
+	};
+
 	$('#event').arrive('#memos-tab tr', function(){
 		var count = $('#memos-tab tr').length;
 		$('#memos-title span.badge').html(count);
@@ -552,20 +569,7 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 					$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 					updateHours();
 					//updateHourTitle();
-					validator = $('#Event').validate({
-						errorClass: 'has-error',
-						ignore: ':hidden, .dateform',
-						success: function(label, element){
-							$(element).parents('.form-group').removeClass('has-error');
-						},
-						showErrors: function(errorMap, errorList) {
-							$.each(errorMap, function(key, value){
-								$("textarea[name='"+key+"'], input[name='"+key+"']").parents('.form-group').addClass('has-error');
-							});
-							updateIconTabs();
-							this.defaultShowErrors();
-						},
-					});
+					initValidator();
 					if(cat_parent_id >= 0){
 						$("#root_categories").val(cat_parent_id);
 						$('#root_categories').trigger('change');
@@ -595,6 +599,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
+			initValidator();
+			validator.form();
 		});
 		$("#search-results").offset({top:0});
 		pauseUpdateAlarms();
@@ -612,6 +618,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
+			initValidator();
+			validator.form();
 		});
 		$("#search-results").offset({top:0});
 		pauseUpdateAlarms();
@@ -628,6 +636,8 @@ var form = function(url, basePath, cats, sunrise, sunrise_url){
 			$("#event input[name=startdate]").timepickerform({'id':'start', 'sunrise': sunrise, 'api_sunrise_url': sunrise_url});
 			$("#event input[name=enddate]").timepickerform({'id':'end', 'clearable':true, 'sunset': sunrise, 'api_sunrise_url': sunrise_url});
 			updateHours();
+			initValidator();
+			validator.form();
 		});
 		pauseUpdateAlarms();
 	});
