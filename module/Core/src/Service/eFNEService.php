@@ -81,8 +81,6 @@ class eFNEService
         
         $response = $client->send($request);
 
-        return $response;
-
         if (!$response->isSuccess()) {
             throw new \RuntimeException(sprintf(
                 'Erreur lors de la requête POST à l\'URL %s : %s',
@@ -90,5 +88,7 @@ class eFNEService
                 $response->getStatusCode()
             ));
         }
+
+        return $response;
     }
 }

@@ -53,9 +53,11 @@ class EventResource extends AbstractResourceListener
         $event->setScheduled(0);
         $event->setPunctual(0);
         $event->setImpact($this->em->getRepository('Application\Entity\Impact')->find('3'));
-        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find(3));
+        $event->setStatus($this->em->getRepository('Application\Entity\Status')->find(2));
         $event->setStartdate(\DateTime::createFromFormat('Y-m-d H:i', $startDate));
-        $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
+        if ($endDate != "") {
+            $event->setEnddate(\DateTime::createFromFormat('Y-m-d H:i', $endDate));
+        }
         $event->setOrganisation($this->em->getRepository('Application\Entity\Organisation')->findOneBy(['name' => $organisation]));
 
         // Get the custom fields for the selected category
