@@ -50,14 +50,27 @@ class MilCategoryLastUpdate
     private $lastUpdate;
 
     /**
+     * Stores datetime of last call to server
+     * @ORM\Column(type="datetime")
+     */
+    private $lastCall;
+
+    /**
      * Stores Y-m-d day of data imported
      * Only one value per day : the last lastModified value received
      * @ORM\Column(type="string")
      */
     private $day;
 
-    public function __construct(\DateTime $lastUpdate, MilCategory $category, $day)
+    /**
+     * @param \DateTime $lastUpdate
+     * @param \DateTime $lastCall Last call to server
+     * @param MilCategory $category
+     * @param $day
+     */
+    public function __construct(\DateTime $lastUpdate, \DateTime $lastCall, MilCategory $category, $day)
     {
+        $this->setLastCall($lastCall);
         $this->setLastUpdate($lastUpdate);
         $this->setCategory($category);
         $this->setDay($day);
@@ -72,6 +85,11 @@ class MilCategoryLastUpdate
             $offset = $this->lastUpdate->getTimezone()->getOffset($this->lastUpdate);
             $this->lastUpdate->setTimezone(new \DateTimeZone("UTC"));
             $this->lastUpdate->add(new \DateInterval("PT" . $offset . "S"));
+        }
+        if ($this->lastCall) {
+            $offset = $this->lastCall->getTimezone()->getOffset($this->lastCall);
+            $this->lastCall->setTimezone(new \DateTimeZone("UTC"));
+            $this->lastCall->add(new \DateInterval("PT" . $offset . "S"));
         }
     }
 
@@ -112,5 +130,21 @@ class MilCategoryLastUpdate
     public function getLastUpdate(): \DateTime
     {
         return $this->lastUpdate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastCall()
+    {
+        return $this->lastCall;
+    }
+
+    /**
+     * @param mixed $lastCall
+     */
+    public function setLastCall(\DateTime $lastCall): void
+    {
+        $this->lastCall = $lastCall;
     }
 }

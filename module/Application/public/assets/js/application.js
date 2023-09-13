@@ -81,17 +81,17 @@ var updateNavbarTop = function() {
 var initialCenterWidth = 0;
 var updateNavbar = function() {
     if($('.navbar-lower').length > 0) { //do not try to update width if navbar doesn't exist (epeires light)
-        var windowWidth = $(window).width();
-        var totalWidth = 0;
-        var maxWidth = $("#navbar-collapse").width() - 150;
-        var centerWidth = $(".navbar-lower .navbar-nav").width();
-        var searchWidth = $("#search").show().innerWidth();
-        var viewWidth = $("#changeview").innerWidth();
+        let windowWidth = $(window).width();
+        let totalWidth = 0;
+        let maxWidth = $("#navbar-collapse").width() - 150;
+        let centerWidth = $(".navbar-lower .navbar-nav").width();
+        let searchWidth = $("#search").show().innerWidth();
+        let viewWidth = $("#changeview").innerWidth();
 
         if(initialCenterWidth === 0) {
             initialCenterWidth = centerWidth;
         }
-        var totalWidth = initialCenterWidth + searchWidth + viewWidth;
+        totalWidth = initialCenterWidth + searchWidth + viewWidth;
 
         let avalaibleWidth = maxWidth - searchWidth - viewWidth - 50;
 
@@ -99,16 +99,35 @@ var updateNavbar = function() {
             if (totalWidth > maxWidth) {
                 //First tab is 138px wide
                 let tabsize = Math.ceil( avalaibleWidth / $("#navbar-tabs .entrytab").length );
+                let entryTextWidth = tabsize - 30;
+
+                //badgeWidth : 18px
+                //caretWidth : 10px
 
                 $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
-                $("#navbar-tabs .entrytab").addClass('entrytab-ellipsis');
-                $("#navbar-tabs .entrytab-icon").addClass('fa-2x').siblings('.entrytab-text').addClass('hide');
+
+                $("#navbar-tabs .entrytab.dropdown .entrytab-text").addClass('entrytab-ellipsis');
+                $("#navbar-tabs .entrytab.dropdown.active .entrytab-text").css('max-width', (entryTextWidth-10)+'px');
+                $("#navbar-tabs .entrytab.dropdown.active").has('.badge').each(function(index){
+                    let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
+                    $(this).find('.entrytab-text').css('max-width', (entryTextWidth-10-badgeWidth)+'px');
+                });
+
+                $("#navbar-tabs .entrytab.dropdown:not(.active) .entrytab-text").css('max-width', entryTextWidth+'px');
+                $("#navbar-tabs .entrytab.dropdown:not(.active)").has('.badge').each(function(index){
+                    let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
+                    $(this).find('.entrytab-text').css('max-width', (entryTextWidth-badgeWidth)+'px');
+                });
+
+                $("#navbar-tabs .entrytab:not(.dropdown) a").addClass('entrytab-ellipsis').css('max-width', tabsize+'px');
+                $("#navbar-tabs .entrytab-icon").addClass('entrytab-icon-lonely').siblings('.entrytab-text').addClass('hide');
             } else {
                 $("#navbar-tabs .entrytab").css('max-width', '');
-                $("#navbar-tabs .entrytab").removeClass('entrytab-ellipsis');
-                $("#navbar-tabs .entrytab-icon").removeClass('fa-2x').siblings('.entrytab-text').removeClass('hide');
+                $("#navbar-tabs .entrytab.dropdown .entrytab-text").removeClass('entrytab-ellipsis').css('maw-width', '');
+                $("#navbar-tabs .entrytab:not(.dropdown) a").removeClass('entrytab-ellipsis').css('max-width', '');
+                $("#navbar-tabs .entrytab-icon").removeClass('entrytab-icon-lonely').siblings('.entrytab-text').removeClass('hide');
             }
-        } 
+        }
     }
 };
 
