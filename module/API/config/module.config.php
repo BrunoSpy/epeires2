@@ -1,5 +1,10 @@
 <?php
 return array(
+    'lmc_cors' => array(
+        'allowed_origins' => ['*'],
+        'allowed_methods' => ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
+        'allowed_headers' => ['Authorization', 'Content-Type'],
+    ),
     'service_manager' => array(
         'factories' => array(
             'API\\V1\\Rest\\Frequency\\FrequencyResource' => 'API\\V1\\Rest\\Frequency\\FrequencyResourceFactory',
@@ -35,6 +40,10 @@ return array(
                     'route' => '/api/event/addnewevent',
                     'defaults' => array(
                         'controller' => 'API\\V1\\Rest\\Event\\Controller',
+                        LmcCors\Options\CorsOptions::ROUTE_PARAM => [
+                            'allowed_origins' => ["http://localhost:3000"],
+                            'allowed_methods' => ['POST'],
+                        ],
                     ),
                 ),
                 'may_terminate' => true,

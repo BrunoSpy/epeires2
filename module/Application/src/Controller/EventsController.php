@@ -2355,7 +2355,6 @@ class EventsController extends TimelineTabController
                 } else {
                     $fields['date'] = $formatter->format($event->getStartdate());
                     foreach ($event->getCustomFieldsValues() as $value) {
-                        $content .= $value->getCustomField()->getName() . ' : ' . $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue()) . '<br />';
                         $name = $value->getCustomField()->getName();
                         $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
                         
