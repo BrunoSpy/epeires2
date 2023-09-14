@@ -68,7 +68,7 @@ test:8.0-mariadb105:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mariadb106:
   extends: .before_script_test
@@ -85,7 +85,7 @@ test:8.0-mariadb106:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mariadb107:
   extends: .before_script_test
@@ -102,7 +102,7 @@ test:8.0-mariadb107:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mariadb108:
   extends: .before_script_test
@@ -119,7 +119,7 @@ test:8.0-mariadb108:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mariadb109:
   extends: .before_script_test
@@ -136,7 +136,7 @@ test:8.0-mariadb109:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mysql57:
   extends: .before_script_test
@@ -153,7 +153,7 @@ test:8.0-mysql57:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.0-mysql80:
   extends: .before_script_test
@@ -170,7 +170,7 @@ test:8.0-mysql80:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mariadb105:
   extends: .before_script_test
@@ -187,7 +187,7 @@ test:8.1-mariadb105:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mariadb106:
   extends: .before_script_test
@@ -204,7 +204,7 @@ test:8.1-mariadb106:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mariadb107:
   extends: .before_script_test
@@ -221,7 +221,7 @@ test:8.1-mariadb107:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mariadb108:
   extends: .before_script_test
@@ -238,7 +238,7 @@ test:8.1-mariadb108:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mariadb109:
   extends: .before_script_test
@@ -255,7 +255,7 @@ test:8.1-mariadb109:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mysql57:
   extends: .before_script_test
@@ -272,7 +272,7 @@ test:8.1-mysql57:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.1-mysql80:
   extends: .before_script_test
@@ -289,7 +289,7 @@ test:8.1-mysql80:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mariadb105:
   extends: .before_script_test
@@ -306,7 +306,7 @@ test:8.2-mariadb105:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mariadb106:
   extends: .before_script_test
@@ -323,7 +323,7 @@ test:8.2-mariadb106:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mariadb107:
   extends: .before_script_test
@@ -340,7 +340,7 @@ test:8.2-mariadb107:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mariadb108:
   extends: .before_script_test
@@ -357,7 +357,7 @@ test:8.2-mariadb108:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mariadb109:
   extends: .before_script_test
@@ -374,7 +374,7 @@ test:8.2-mariadb109:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mysql57:
   extends: .before_script_test
@@ -391,7 +391,7 @@ test:8.2-mysql57:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:8.2-mysql80:
   extends: .before_script_test
@@ -408,7 +408,7 @@ test:8.2-mysql80:
     when: always
     expire_in: 1 week
     paths:
-      - tests/_output
+      - tests/_output/
 
 test:docker:
   extends: .before_script_test
