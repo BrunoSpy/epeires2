@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c18611d81fa8a6f57977ddfdf8a1bb2",
+    "content-hash": "7c7e7cc06732e105afb5666ff80ce050",
     "packages": [
         {
             "name": "assetic/framework",
@@ -7270,6 +7270,86 @@
                 "source": "https://github.com/linkorb/jsmin-php/tree/1.0.0"
             },
             "time": "2013-03-15T13:16:35+00:00"
+        },
+        {
+            "name": "lm-commons/lmc-cors",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LM-Commons/LmcCors.git",
+                "reference": "452291f2ee341290cdbda6bf50facf7eeb92202d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LM-Commons/LmcCors/zipball/452291f2ee341290cdbda6bf50facf7eeb92202d",
+                "reference": "452291f2ee341290cdbda6bf50facf7eeb92202d",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-eventmanager": "^2.6.4 || ^3.2.1",
+                "laminas/laminas-http": "^2.10",
+                "laminas/laminas-mvc": "^2.7.15 || ^3.1.1",
+                "laminas/laminas-servicemanager": "^2.7.9 || ^3.4.0",
+                "php": "^7.3 | ^8.0"
+            },
+            "replace": {
+                "laminas-commons/lmc-cors": "v1.0.1"
+            },
+            "require-dev": {
+                "laminas/laminas-i18n": "^2.9",
+                "laminas/laminas-log": "^2.10",
+                "laminas/laminas-modulemanager": "^2.7.2",
+                "laminas/laminas-serializer": "^2.8",
+                "laminas/laminas-view": "^2.8.1",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^9.5.0",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "module": "LmcCors"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LmcCors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent Blaison",
+                    "email": "florent.blaison@gmail.com"
+                },
+                {
+                    "name": "Michaël Gallego",
+                    "email": "mic.gallego@gmail.com",
+                    "homepage": "http://www.michaelgallego.fr/"
+                },
+                {
+                    "name": "Eric Richer",
+                    "email": "eric.richer@vistoconsulting.com",
+                    "homepage": "https://visto9259.github.io/"
+                }
+            ],
+            "description": "Laminas MVC module that let you deal with CORS requests",
+            "homepage": "https://github.com/lm-commons/lmc-cors",
+            "keywords": [
+                "Laminas mvc",
+                "cors",
+                "cross origin sharing resource",
+                "laminas",
+                "rest"
+            ],
+            "support": {
+                "issues": "https://github.com/LM-Commons/LmcCors/issues",
+                "source": "https://github.com/LM-Commons/LmcCors/tree/v1.2.0"
+            },
+            "time": "2021-06-09T02:09:55+00:00"
         },
         {
             "name": "lm-commons/lmc-rbac-mvc",

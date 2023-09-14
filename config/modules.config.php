@@ -52,6 +52,7 @@ return array(
     'Laminas\ApiTools\Rpc',
     'Laminas\ApiTools\Versioning',
     #'Laminas\ApiTools\Admin',
+    'LmcCors',
     'Core',
     'Application',
     'Administration',
