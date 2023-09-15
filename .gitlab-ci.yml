@@ -87,12 +87,12 @@ test:8.0-mariadb106:
     paths:
       - tests/_output/
 
-test:8.0-mariadb107:
+test:8.0-mariadb1010:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
-    - mariadb:10.7
+    - mariadb:10.10
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -104,12 +104,12 @@ test:8.0-mariadb107:
     paths:
       - tests/_output/
 
-test:8.0-mariadb108:
+test:8.0-mariadb1011:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
   stage: test
   services:
-    - mariadb:10.8
+    - mariadb:10.11
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -121,22 +121,6 @@ test:8.0-mariadb108:
     paths:
       - tests/_output/
 
-test:8.0-mariadb109:
-  extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php80.1
-  stage: test
-  services:
-    - mariadb:10.9
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-  artifacts:
-    when: always
-    expire_in: 1 week
-    paths:
-      - tests/_output/
 
 test:8.0-mysql57:
   extends: .before_script_test
@@ -206,12 +190,12 @@ test:8.1-mariadb106:
     paths:
       - tests/_output/
 
-test:8.1-mariadb107:
+test:8.1-mariadb1010:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
   stage: test
   services:
-    - mariadb:10.7
+    - mariadb:10.10
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -223,29 +207,12 @@ test:8.1-mariadb107:
     paths:
       - tests/_output/
 
-test:8.1-mariadb108:
+test:8.1-mariadb1011:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
   stage: test
   services:
-    - mariadb:10.8
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-  artifacts:
-    when: always
-    expire_in: 1 week
-    paths:
-      - tests/_output/
-
-test:8.1-mariadb109:
-  extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php81
-  stage: test
-  services:
-    - mariadb:10.9
+    - mariadb:10.11
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -325,12 +292,12 @@ test:8.2-mariadb106:
     paths:
       - tests/_output/
 
-test:8.2-mariadb107:
+test:8.2-mariadb1010:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
   stage: test
   services:
-    - mariadb:10.7
+    - mariadb:10.10
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
@@ -342,29 +309,12 @@ test:8.2-mariadb107:
     paths:
       - tests/_output/
 
-test:8.2-mariadb108:
+test:8.2-mariadb1011:
   extends: .before_script_test
   image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
   stage: test
   services:
-    - mariadb:10.8
-  variables:
-    DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
-  script:
-    - php vendor/bin/codecept run acceptance
-    - php vendor/bin/codecept run unit --coverage-text --no-colors
-  artifacts:
-    when: always
-    expire_in: 1 week
-    paths:
-      - tests/_output/
-
-test:8.2-mariadb109:
-  extends: .before_script_test
-  image: registry.asap.dsna.fr/bruno.spyckerelle/epeires-test-images:php82
-  stage: test
-  services:
-    - mariadb:10.9
+    - mariadb:10.11
   variables:
     DOCTRINE: "config/autoload/doctrine.gitlab-ci.mariadb.php"
   script:
