@@ -83,7 +83,7 @@ var updateNavbar = function() {
     if($('.navbar-lower').length > 0) { //do not try to update width if navbar doesn't exist (epeires light)
         let windowWidth = $(window).width();
         let totalWidth = 0;
-        let maxWidth = $("#navbar-collapse").width() - 150;
+        let maxWidth = $("#navbar-collapse").width() - 90; //left margin 75; right margin 15
         let centerWidth = $(".navbar-lower .navbar-nav").width();
         let searchWidth = $("#search").show().innerWidth();
         let viewWidth = $("#changeview").innerWidth();
@@ -93,35 +93,56 @@ var updateNavbar = function() {
         }
         totalWidth = initialCenterWidth + searchWidth + viewWidth;
 
-        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 50;
+        let avalaibleWidth = maxWidth - searchWidth - viewWidth - 30;
+
+        //min width to correctly display all elements
+        //below this value, search field is hidden
+        //76px is approx icon + badge of 1 number
+        let minCenterWidth = 140 + $("#navbar-tabs .entrytab").length * 76;
+
+        //add a min width to at least have some letters visible
+        let minTextWidth = 30;
 
         if (windowWidth > 768) {
             if (totalWidth > maxWidth) {
+
+                if(avalaibleWidth < minCenterWidth) {
+                    $("#search").hide();
+                    avalaibleWidth += searchWidth;
+                }
+
                 //First tab is 138px wide
                 let tabsize = Math.ceil( avalaibleWidth / $("#navbar-tabs .entrytab").length );
                 let entryTextWidth = tabsize - 30;
 
-                //badgeWidth : 18px
+                //badgeWidth : 12px + 6px * number
                 //caretWidth : 10px
 
-                $("#navbar-tabs .entrytab").css('max-width', tabsize+'px');
+                $("#navbar-tabs .entrytab").css('max-width', Math.max(76,tabsize)+'px')
+                                                   .css('min-width', 76+'px');
 
                 $("#navbar-tabs .entrytab.dropdown .entrytab-text").addClass('entrytab-ellipsis');
+
+                $("#navbar-tabs .entrytab.dropdown .entrytab-text").css('min-width', minTextWidth+'px');
+
                 $("#navbar-tabs .entrytab.dropdown.active .entrytab-text").css('max-width', (entryTextWidth-10)+'px');
                 $("#navbar-tabs .entrytab.dropdown.active").has('.badge').each(function(index){
                     let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
                     $(this).find('.entrytab-text').css('max-width', (entryTextWidth-10-badgeWidth)+'px');
+                    $(this).css('max-width', Math.max(tabsize,minTextWidth+badgeWidth+10+30)+'px');
                 });
 
                 $("#navbar-tabs .entrytab.dropdown:not(.active) .entrytab-text").css('max-width', entryTextWidth+'px');
                 $("#navbar-tabs .entrytab.dropdown:not(.active)").has('.badge').each(function(index){
                     let badgeWidth = $(this).find('.badge').first().text().length * 6 + 12;
                     $(this).find('.entrytab-text').css('max-width', (entryTextWidth-badgeWidth)+'px');
+                    $(this).css('max-width', Math.max(tabsize,minTextWidth+badgeWidth+30)+'px');
                 });
 
                 $("#navbar-tabs .entrytab:not(.dropdown) a").addClass('entrytab-ellipsis').css('max-width', tabsize+'px');
                 $("#navbar-tabs .entrytab-icon").addClass('entrytab-icon-lonely').siblings('.entrytab-text').addClass('hide');
             } else {
+                $("#search").show();
                 $("#navbar-tabs .entrytab").css('max-width', '');
                 $("#navbar-tabs .entrytab.dropdown .entrytab-text").removeClass('entrytab-ellipsis').css('maw-width', '');
                 $("#navbar-tabs .entrytab:not(.dropdown) a").removeClass('entrytab-ellipsis').css('max-width', '');
