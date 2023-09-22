@@ -8181,16 +8181,16 @@
         },
         {
             "name": "php-defer/php-defer",
-            "version": "v5.0.6",
+            "version": "v5.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-defer/php-defer.git",
-                "reference": "94c611cdf9ac7becfba43d0cd8ad86802702d226"
+                "reference": "9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-defer/php-defer/zipball/94c611cdf9ac7becfba43d0cd8ad86802702d226",
-                "reference": "94c611cdf9ac7becfba43d0cd8ad86802702d226",
+                "url": "https://api.github.com/repos/php-defer/php-defer/zipball/9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7",
+                "reference": "9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7",
                 "shasum": ""
             },
             "require": {
@@ -8222,9 +8222,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-defer/php-defer/issues",
-                "source": "https://github.com/php-defer/php-defer/tree/v5.0.6"
+                "source": "https://github.com/php-defer/php-defer/tree/v5.0.7"
             },
-            "time": "2022-12-14T19:27:13+00:00"
+            "time": "2023-09-21T16:38:54+00:00"
         },
         {
             "name": "pimple/pimple",
