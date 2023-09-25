@@ -506,10 +506,12 @@
                     + '<p><a href="#" data-id="'+id+'" class="send-evt"><span class="glyphicon glyphicon-envelope"></span> Envoyer '+i18n.t('ipo.IPO')+'</a></p>';
                 var event = self.events[self.eventsPosition[id]];
                 // ajout envoie eFNE
-                if (event.efnesent === false) {
-                    txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> Dépôt eFNE</a></p>'
-                } else {
-                    txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> eFNE déja déposé</a></p>'
+                if(self.options.efne) {
+                    if (event.efnesent === false) {
+                        txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> Dépôt eFNE</a></p>'
+                    } else {
+                        txt += '<p><a href="#" data-id="'+id+'" class="send-fne"><span class="glyphicon glyphicon-share"></span> eFNE déja déposé</a></p>'
+                    }
                 }
                 //
                 if(self.options.mattermost) {

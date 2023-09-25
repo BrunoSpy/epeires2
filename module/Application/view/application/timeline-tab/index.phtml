@@ -214,14 +214,17 @@ $('#timeline').timeline({
     day: Cookies.get("timelineday"),
     initComplete: function(){
         $("#timeline .loading").hide();
-<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost) {
-        echo '$(".chat-container") . mattermost("initialize");';
-}
-?>
-    }<?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost){echo ',';
-      echo 'mattermost: true';
+        <?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost) {
+                echo '$(".chat-container") . mattermost("initialize");';
+        }?>
     }
-    ?>
+    <?php if($this->isGranted('chat.access') && $this->viewModel()->getRoot()->mattermost){echo ',';
+        echo 'mattermost: true';
+    }?>
+    <?php if($this->viewModel()->getRoot()->efne){echo ',';
+        echo 'efne: true';
+    }?>
+
 });
 
 //init form

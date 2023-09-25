@@ -107,6 +107,13 @@ class TabController extends FormController
                 $this->messages['error'][] = "Impossible de se connecter au serveur Mattermost : ".$e->getMessage();
             }
         }
+
+        // verification de la config efne
+        if($this->lmcUserAuthentication()->hasIdentity() && array_key_exists('efne', $this->config)) {
+            $this->layout()->efne = true;
+        } else {
+            $this->layout()->efne = false;
+        }
     }
 
     private function getZoneForm()
