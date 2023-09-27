@@ -2359,7 +2359,7 @@ class EventsController extends TimelineTabController
                         $value = $this->customfieldservice->getFormattedValue($value->getCustomField(), $value->getValue());
                         
                         if ($name == "Description") {
-                            $fields['description'] = 'Description Principale : ' . $value;
+                            $fields['description'] = $value;
                         } elseif ($name == "Regroupement") {
                             $fields['regroupement'] = $value;
                         } elseif ($name == "Position" || $name == "N° de position") {

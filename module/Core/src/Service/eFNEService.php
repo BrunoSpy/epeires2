@@ -46,39 +46,55 @@ class eFNEService
 
         // Envoie des données vers eFNE
         $client->resetParameters(true);
-        $client->setEncType('multipart/form-data');
 
         $request = new Request();
         $request->setMethod('POST');
         $request->setUri($efneUrl);
 
-        // CHAMPS OBLIGATOIRES
-        $request->getPost()->set('event_date', $customFields['date']);
-        $request->getPost()->set('position', $customFields['position']);
-        $request->getPost()->set('regroupement', $customFields['regroupement']);
-        $request->getPost()->set('description', $customFields['description']);
-        $request->getPost()->set('options.proceed', 'true');
-        $request->getPost()->set('options.bypass_validation', 'true');
-
-        // CHAMPS SUPPLÉMENTAIRES (possibilité d'en rajouter)
-        if (!empty($customFields['lieu'])) {
-            $request->getPost()->set('lieu', $customFields['lieu']);
-        }
+        // Prepare the data
+        $data = array(
+            'event_date' => $customFields['date'],
+            'position' => $customFields['position'],
+            'regroupement' => $customFields['regroupement'],
+            'description' => $customFields['description'],
+            'options' => array(
+                'proceed' => true,  // changed from 'true' to true
+                'bypass_validation' => true,  // changed from 'true' to true
+            ),
+            'redactors' => array(),
+            'aircrafts' => array(),
+        );
+        
         if (!empty($customFields['redactors'])) {
             $redactors = explode(',', $customFields['redactors']);
             foreach ($redactors as $index => $redactor) {
-                $request->getPost()->set("redactors[$index].fullname", $redactor);
-                $request->getPost()->set("redactors[$index].team", $redactorsteam);
-                $request->getPost()->set("redactors[$index].role", "CDS");
-            }
-        }
-        if (!empty($customFields['aircrafts'])) {
-            $aircrafts = explode(',', $customFields['aircrafts']);
-            foreach ($aircrafts as $index => $aircraft) {
-                $request->getPost()->set("aircrafts[$index].callsign", $aircraft);
+                $data['redactors'][$index] = array(
+                    'fullname' => $redactor,
+                    'team' => $redactorsteam,
+                    'role' => 'CDS',
+                );
             }
         }
         
+        if (!empty($customFields['aircrafts'])) {
+            $aircrafts = explode(',', $customFields['aircrafts']);
+            foreach ($aircrafts as $index => $aircraft) {
+                $data['aircrafts'][$index] = array(
+                    'callsign' => $aircraft,
+                );
+            }
+        }
+        
+        $jsonData = json_encode($data, JSON_PRETTY_PRINT);
+
+        // Set the headers and the body
+        $request->getHeaders()->addHeaders(array(
+            'Content-Type' => 'application/json',
+            'Content-Length' => strlen($jsonData)
+        ));
+        $request->setContent($jsonData);
+
+        // Send the request
         $response = $client->send($request);
 
         if (!$response->isSuccess()) {
